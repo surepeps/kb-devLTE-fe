@@ -29,7 +29,7 @@ const Button: FC<ButtonProps> = ({
       onClick={isDisabled ? undefined : onClick}
       className={`${className} ${green && 'bg-[#8DDB90] text-white'} ${
         red && 'bg-[#FF3D00] text-white'
-      }`}
+      } transition-all duration-500`}
       type={type ? type : 'button'}>
       {value}
     </button>

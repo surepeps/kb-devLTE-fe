@@ -163,3 +163,27 @@ export const HighlightData: { title: string; text: string }[] = [
     text: `Developing customized strategies to showcase properties and attract buyers.`,
   },
 ];
+
+//FAQs
+export const FAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How do I find a property on Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `What makes Khabi-Teq different?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `How can I contact Khabi-Teq for support?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Is there a fee for using Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Can I inspect a property before renting or buying`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
