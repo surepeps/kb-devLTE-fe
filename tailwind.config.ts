@@ -11,7 +11,14 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        
       },
+       width: {
+        'custom': '1200px', 
+      },
+      // maxWidth: {
+      //   'custom': '1200px',
+      // },
     },
   },
   plugins: [],
