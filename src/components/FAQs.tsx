@@ -2,10 +2,10 @@
 'use client';
 import React, { useState } from 'react';
 import Button from './button';
-import { FAQsData } from '@/data';
+import { GeneralFAQsData, LandlordFAQsData, TenantsFAQsData } from '@/data';
 import Details from './details';
 
-const Section4 = () => {
+const FAQs = () => {
   const [buttons, setButtons] = useState({
     button1: true,
     button2: false,
@@ -13,12 +13,12 @@ const Section4 = () => {
   });
 
   return (
-    <section className='flex items-center justify-center min-h-[782px] mt-[60px]'>
-      <div className='container min-h-[782px] flex flex-col lg:gap-[57px] justify-center items-center p-[20px]'>
-        <h2 className='lg:text-[42px] lg:leading-[46px] font-semibold text-center text-[#09391C]'>
+    <section className='flex bg-white items-center justify-center md:min-h-[782px] md:py-[60px]'>
+      <div className='container min-h-[782px] flex flex-col gap-[20px] lg:gap-[57px] justify-center items-center p-[20px]'>
+        <h2 className='lg:text-[42px] text-[24px] leading-[26px] lg:leading-[46px] font-semibold text-center text-[#09391C]'>
           Frequently Asked Question
         </h2>
-        <div className='min-h-[38px] lg:w-[529px] flex gap-[15px]'>
+        <div className='min-h-[38px] lg:w-[529px] md:flex gap-[15px] hidden'>
           <Button
             green={buttons.button1}
             value='General'
@@ -58,15 +58,31 @@ const Section4 = () => {
           />
         </div>
         <div className='flex flex-col min-h-[584px] gap-[25px] w-full'>
-          {FAQsData.map(
-            (item: { heading: string; text: string }, idx: number) => (
-              <Details key={idx} {...item} />
-            )
-          )}
+          {/**General */}
+          {buttons.button1 &&
+            GeneralFAQsData.map(
+              (item: { heading: string; text: string }, idx: number) => (
+                <Details key={idx} {...item} />
+              )
+            )}
+          {/**For Landlord */}
+          {buttons.button2 &&
+            LandlordFAQsData.map(
+              (item: { heading: string; text: string }, idx: number) => (
+                <Details key={idx} {...item} />
+              )
+            )}
+          {/**For Tenants */}
+          {buttons.button3 &&
+            TenantsFAQsData.map(
+              (item: { heading: string; text: string }, idx: number) => (
+                <Details key={idx} {...item} />
+              )
+            )}
         </div>
       </div>
     </section>
   );
 };
 
-export default Section4;
+export default FAQs;

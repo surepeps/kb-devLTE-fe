@@ -7,7 +7,7 @@ import HouseFrame from './house-frame';
 import houseImage from '@/assets/assets.png';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
-import { useVisibility } from '@/utils/useVisibility';
+import { useVisibility } from '@/hooks/useVisibility';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -23,7 +23,7 @@ const Section2 = () => {
   const areHousesVisible = useVisibility(housesRef);
 
   return (
-    <section className='flex justify-center items-center min-h-[1050px]'>
+    <section className='flex bg-white justify-center items-center min-h-[1050px]'>
       <div className='container min-h-[1050px] flex flex-col gap-[20px] px-[20px] overflow-hidden'>
         <div
           ref={buttonsRef}

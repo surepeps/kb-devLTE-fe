@@ -5,40 +5,51 @@ import facebookIcon from '@/svgs/facebook.svg';
 import instagramIcon from '@/svgs/instagram.svg';
 import twitterIcon from '@/svgs/twitter.svg';
 import linkedInIcon from '@/svgs/linkedIn.svg';
+import envelopeIcon from '@/svgs/envelope.svg';
+import phoneIcon from '@/svgs/phone.svg';
+import whatsappIcon from '@/svgs/whatsapp.svg';
 
 //Navbar data
-export const navData: { name: string; url: string }[] = [
+export const navData: { name: string; url: string; isClicked: boolean }[] = [
   {
     name: 'Home',
     url: '/',
+    isClicked: true,
   },
   {
     name: 'Buy',
-    url: '#',
+    url: '/buy',
+    isClicked: false,
   },
   {
     name: 'Sell',
-    url: '#',
+    url: '/sell',
+    isClicked: false,
   },
   {
     name: 'Rent',
-    url: '#',
+    url: '/rent',
+    isClicked: false,
   },
   {
     name: 'Landlord',
-    url: '#',
+    url: '/landlord',
+    isClicked: false,
   },
   {
     name: 'Agent',
-    url: '#',
+    url: '/agent',
+    isClicked: false,
   },
   {
     name: 'Policies',
-    url: '#',
+    url: '/policies',
+    isClicked: false,
   },
   {
     name: 'About us',
-    url: '#',
+    url: '/aboutUs',
+    isClicked: false,
   },
 ];
 
@@ -165,7 +176,7 @@ export const HighlightData: { title: string; text: string }[] = [
 ];
 
 //FAQs
-export const FAQsData: { heading: string; text: string }[] = [
+export const GeneralFAQsData: { heading: string; text: string }[] = [
   {
     heading: `How do I find a property on Khabi-Teq?`,
     text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
@@ -185,5 +196,94 @@ export const FAQsData: { heading: string; text: string }[] = [
   {
     heading: `Can I inspect a property before renting or buying`,
     text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+export const LandlordFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How do I find a property on Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `What makes Khabi-Teq different?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `How can I contact Khabi-Teq for support?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Is there a fee for using Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Can I inspect a property before renting or buying`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+export const TenantsFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How do I find a property on Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `What makes Khabi-Teq different?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `How can I contact Khabi-Teq for support?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Is there a fee for using Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Can I inspect a property before renting or buying`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+//CLients feedbacks
+export const clientData: { name: string; text: string; starsRated: number }[] =
+  [
+    {
+      name: 'Michael .A',
+      text: `Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way`,
+      starsRated: 5,
+    },
+    {
+      name: 'Johnson Kent',
+      text: `Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way`,
+      starsRated: 4,
+    },
+    {
+      name: 'Jordan Faraway',
+      text: `Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way`,
+      starsRated: 5,
+    },
+  ];
+
+//Contact Us data
+export const contactUsData: {
+  value: string;
+  icon: StaticImageData;
+  type: string;
+}[] = [
+  {
+    value: 'Khabireqrealty.com',
+    icon: envelopeIcon,
+    type: 'mail',
+  },
+  {
+    value: '070567778906',
+    icon: phoneIcon,
+    type: 'call',
+  },
+  {
+    value: '070454556775',
+    icon: whatsappIcon,
+    type: 'social_media',
   },
 ];

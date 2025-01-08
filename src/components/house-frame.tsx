@@ -28,7 +28,7 @@ const HouseFrame: FC<HouseFrameProps> = ({
         width={1000}
         height={1000}
         alt=''
-        className='lg:w-[343px] h-[222px]'
+        className='lg:w-[343px] h-[222px] object-cover'
       />
       <div className='flex flex-col min-h-[109px] gap-[7px]'>
         <h2 className='lg:text-[18px] leading-[29px] font-medium text-[#000000]'>

@@ -15,7 +15,7 @@ const HighlightUnit: FC<HighlightUnitProps> = ({ title, text }) => {
     <motion.div
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className='py-[15px] cursor-pointer px-[24px] flex-shrink-0 lg:flex-shrink w-[366px] min-h-[176px] md:min-h-[208px] border-[1px] lg:py-[20px] lg:px-[32px] flex flex-col lg:gap-[16px] gap-[15px] border-[#D6DDEB]'>
+      className='py-[15px] cursor-pointer px-[24px] flex-shrink-0 lg:flex-shrink w-[366px] min-h-[176px] lg:min-h-[208px] border-[1px] lg:py-[20px] lg:px-[32px] flex flex-col lg:gap-[16px] gap-[15px] border-[#D6DDEB]'>
       <Image
         src={icon}
         width={42}
