@@ -10,6 +10,7 @@ import Link from 'next/link';
 import barIcon from '@/svgs/bars.svg';
 import { usePageContext } from '@/context/page-context';
 import { reducer } from '@/hooks/reducer';
+// import { useRouter } from 'next/router';
 
 const Header = () => {
   const { isContactUsClicked } = usePageContext();

@@ -287,3 +287,31 @@ export const contactUsData: {
     type: 'social_media',
   },
 ];
+
+//CardData for section 1
+export const cardData: {
+  header: string;
+  value: string;
+}[] = [
+  {
+    header: 'Property Type',
+    value: 'Residential',
+  },
+  {
+    header: 'Location',
+    value: 'Lagos Ikeja',
+  },
+  {
+    header: 'Property Prices',
+    value: 'Residential',
+  },
+  {
+    header: 'Document',
+    value: 'C of o, recepit,...',
+  },
+];
+
+/**propertyType: 'Residential',
+    location: 'Lagos Ikeja',
+    propertyPrices: 'Residential',
+    document: 'C of o, recepit,...', */

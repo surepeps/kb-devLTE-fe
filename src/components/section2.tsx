@@ -3,11 +3,12 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import Button from '@/components/button';
-import HouseFrame from './house-frame';
-import houseImage from '@/assets/assets.png';
+// import HouseFrame from './house-frame';
+// import houseImage from '@/assets/assets.png';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
 import { useVisibility } from '@/hooks/useVisibility';
+import Card from './card';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -75,20 +76,21 @@ const Section2 = () => {
         </div>
         <div
           ref={housesRef}
-          className={`min-h-[729px] w-full lg:grid lg:grid-cols-3 lg:gap-[83px] flex flex-col gap-[24px] px-[20px] md:px-0 ${
+          className={`w-full lg:grid lg:grid-cols-4 lg:gap-[83px] flex flex-col gap-[24px] px-[20px] md:px-0 ${
             areHousesVisible && 'slide-from-right'
           }`}>
-          {Array.from({ length: 6 }).map((__, idx: number) => {
+          {Array.from({ length: 4 }).map((__, idx: number) => {
             return (
-              <HouseFrame
-                key={idx}
-                image={houseImage}
-                title='Contemporary Bedroom Home'
-                location='Ikoyi'
-                bedroom={5}
-                bathroom={2}
-                carPark={3}
-              />
+              // <HouseFrame
+              //   key={idx}
+              //   image={houseImage}
+              //   title='Contemporary Bedroom Home'
+              //   location='Ikoyi'
+              //   bedroom={5}
+              //   bathroom={2}
+              //   carPark={3}
+              // />
+              <Card key={idx} />
             );
           })}
         </div>

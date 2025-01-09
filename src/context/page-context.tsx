@@ -12,6 +12,7 @@ export const PageContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [isContactUsClicked, setIsContactUsClicked] = useState<boolean>(false);
+
   return (
     <PageContext.Provider value={{ isContactUsClicked, setIsContactUsClicked }}>
       {children}

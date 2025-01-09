@@ -11,6 +11,8 @@ import FAQs from '@/components/FAQs';
 import Feedback from '@/components/feedback';
 import HelpButton from '@/components/helpButton';
 import { usePageContext } from '@/context/page-context';
+import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 const Homepage = () => {
   //Simulating the loading page
@@ -28,6 +30,7 @@ const Homepage = () => {
   if (isLoading) return <Loading />;
   return (
     <Fragment>
+      <Header />
       <section
         className={`w-full  ${
           isContactUsClicked &&
@@ -43,6 +46,7 @@ const Homepage = () => {
           <HelpButton />
         </main>
       </section>
+      <Footer />
     </Fragment>
   );
 };
