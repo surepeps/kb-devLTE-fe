@@ -2,18 +2,9 @@
 /** @format */
 
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
+//import { Roboto } from 'next/font/google';
 import '@/app/globals.css';
 import { PageContextProvider } from '@/context/page-context';
-import Header from '@/components/header';
-import Footer from '@/components/footer';
-//import Head from 'next/head';
-
-const roboto = Roboto({
-  variable: '--font-roboto',
-  subsets: ['latin'],
-  weight: ['400', '700'], // Specify weights you want to use (optional)
-});
 
 export const metadata: Metadata = {
   title: 'Khabiteq | Buy',
@@ -25,15 +16,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <PageContextProvider>
-      <html lang='en'>
-        <body className={`${roboto.variable} antialiased`}>
-          <Header />
-          {children}
-          <Footer />
-        </body>
-      </html>
-    </PageContextProvider>
-  );
+  return <PageContextProvider>{children}</PageContextProvider>;
 }

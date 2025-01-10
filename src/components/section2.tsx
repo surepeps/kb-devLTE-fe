@@ -24,8 +24,8 @@ const Section2 = () => {
   const areHousesVisible = useVisibility(housesRef);
 
   return (
-    <section className='flex bg-white justify-center items-center min-h-[1050px]'>
-      <div className='container min-h-[1050px] flex flex-col gap-[20px] px-[20px] overflow-hidden'>
+    <section className='flex bg-white justify-center items-center'>
+      <div className='container min-h-[700px] flex flex-col justify-center items-center gap-[20px] px-[20px] overflow-hidden'>
         <div
           ref={buttonsRef}
           className={`w-[344px] md:min-w-[466px] min-h-[38px] gap-[15px] flex ${
@@ -74,9 +74,19 @@ const Section2 = () => {
             }`}
           />
         </div>
+        <div className='min-h-[128px] w-full flex flex-col justify-center items-center gap-[9px] py-[20px]'>
+          <h2 className='text-[20px] leading-[32px] text-[#000000] font-semibold'>
+            Buyer frequency reference Match
+          </h2>
+          <p className='text-[#5A5D63] text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
+            Your trusted partner in Lagos&apos; real estate market. Since 2020,
+            we&apos;ve been delivering expert solutions with integrity and
+            personalized service, helping you naviga```javascript
+          </p>
+        </div>
         <div
           ref={housesRef}
-          className={`w-full lg:grid lg:grid-cols-4 lg:gap-[83px] flex flex-col gap-[24px] px-[20px] md:px-0 ${
+          className={`lg:w-[1154px] w-full min-h-[446px] lg:grid lg:grid-cols-4 lg:gap-[83px] flex flex-col gap-[24px] px-[20px] md:px-0 ${
             areHousesVisible && 'slide-from-right'
           }`}>
           {Array.from({ length: 4 }).map((__, idx: number) => {

@@ -1,28 +1,11 @@
 /** @format */
 
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
 import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
-// import Header from '@/components/header';
-// import Footer from '@/components/footer';
-//import Head from 'next/head';
-
-// const geistSans = Geist({
-//   variable: '--font-geist-sans',
-//   subsets: ['latin'],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin'],
-// });
-
-const roboto = Roboto({
-  variable: '--font-roboto',
-  subsets: ['latin'],
-  weight: ['400', '700'], // Specify weights you want to use (optional)
-});
+import Header from '@/components/header';
+import Footer from '@/components/footer';
+import { epilogue, roboto } from '@/styles/font';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -37,7 +20,12 @@ export default function RootLayout({
   return (
     <PageContextProvider>
       <html lang='en'>
-        <body className={`${roboto.variable} antialiased`}>{children}</body>
+        <body className={`${roboto.variable} ${epilogue.variable} antialiased`}>
+          {' '}
+          <Header />
+          {children}
+          <Footer />
+        </body>
       </html>
     </PageContextProvider>
   );

@@ -2,28 +2,21 @@
 'use client';
 import Loading from '@/components/loading';
 import { useVisibility } from '@/hooks/useVisibility';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useRef } from 'react';
 import '@/styles/stylish.modules.css';
 import { data, servicesData } from '@/data/about_us_data';
 import AboutUsUnit from '@/components/aboutus_unit';
 import { usePageContext } from '@/context/page-context';
 import CEO from '@/components/displayCEO';
+import { useLoading } from '@/hooks/useLoading';
 
 const AboutUs = () => {
   //Simulating the loading page
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isLoading = useLoading();
   const divRef = useRef<HTMLHeadingElement>(null);
   const { isContactUsClicked } = usePageContext();
 
   const isDivVisible = useVisibility(divRef);
-
-  useEffect(() => {
-    const timeOutID = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timeOutID);
-  }, []);
 
   if (isLoading) return <Loading />;
 
