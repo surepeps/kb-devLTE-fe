@@ -1,6 +1,8 @@
 /** @format */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { FC, MouseEventHandler } from 'react';
+import { motion } from 'framer-motion';
 
 interface ButtonProps {
   value: string;
@@ -11,6 +13,7 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   green?: boolean;
   red?: boolean;
+  onSubmit?: any;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -18,13 +21,17 @@ const Button: FC<ButtonProps> = ({
   title,
   isDisabled,
   onClick,
+  onSubmit,
   className,
   type,
   green,
   red,
 }) => {
   return (
-    <button
+    <motion.button
+      // whileHover={{ scale: 1.1 }}
+      // whileTap={{ scale: 0.95 }}
+      onSubmit={isDisabled ? undefined : onSubmit}
       title={title ? title : value}
       onClick={isDisabled ? undefined : onClick}
       className={`${className} ${green && 'bg-[#8DDB90] text-white'} ${
@@ -32,7 +39,7 @@ const Button: FC<ButtonProps> = ({
       } transition-all duration-500`}
       type={type ? type : 'button'}>
       {value}
-    </button>
+    </motion.button>
   );
 };
 
