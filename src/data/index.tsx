@@ -57,23 +57,23 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
 export const exploreData: { name: string; url: string }[] = [
   {
     name: 'Buy',
-    url: '#',
+    url: '/buy',
   },
   {
     name: 'sell a property',
-    url: '#',
+    url: '/sell',
   },
   {
     name: 'Agent',
-    url: '#',
+    url: '/agent',
   },
   {
     name: 'Landlord',
-    url: '#',
+    url: '/landlord',
   },
   {
     name: 'About Us',
-    url: '#',
+    url: '/aboutUs',
   },
 ];
 
