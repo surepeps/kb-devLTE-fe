@@ -11,18 +11,14 @@ import { reducer } from '@/hooks/reducer';
 //import { useVisibility } from '@/utils/useVisibility';
 
 const Footer = () => {
-  const [state, dispatch]= useReducer(reducer, servicesData);
+  const [state, dispatch]= useReducer(reducer, exploreData);
   // const footerRef = React.useRef<HTMLElement>(null);
 
   // const isFooterVisible = useVisibility(footerRef);
   const { isContactUsClicked, setIsContactUsClicked } = usePageContext();
 
-  const handleClick = () => {
-    // event?.preventDefault();
-    dispatch({
-      type: item.name,
-      name: item.name,
-    })
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event?.preventDefault();
   };
 
   return (
@@ -56,10 +52,15 @@ const Footer = () => {
                   Explore
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
-                  {exploreData.map(
-                    (item: { name: string; url: string }, idx: number) => (
+                  {state.map(
+                    (item: { name: string; url: string; isClicked: boolean }, idx: number) => (
                       <Link
-                        onClick={handleClick}
+                        onClick={() => {
+                          dispatch({
+                            type: item.name,
+                            name: item.name,
+                          });
+                        }}
                         className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
                         key={idx}
                         href={item.url}>
@@ -75,7 +76,7 @@ const Footer = () => {
                   Services
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
-                  {state.map(
+                  {servicesData.map(
                     (item: { name: string; url: string }, idx: number) => (
                       <Link
                         className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'

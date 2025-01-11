@@ -54,26 +54,31 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
 ];
 
 //Footer Data
-export const exploreData: { name: string; url: string }[] = [
+export const exploreData: { name: string; url: string; isClicked: boolean }[] = [
   {
     name: 'Buy',
     url: '/buy',
+    isClicked: false,
   },
   {
     name: 'sell a property',
     url: '/sell',
+    isClicked: false,
   },
   {
     name: 'Agent',
     url: '/agent',
+    isClicked: false,
   },
   {
     name: 'Landlord',
     url: '/landlord',
+    isClicked: false,
   },
   {
     name: 'About Us',
     url: '/aboutUs',
+    isClicked: false,
   },
 ];
 
