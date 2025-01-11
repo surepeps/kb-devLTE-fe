@@ -59,7 +59,7 @@ const Feedback = () => {
     }, 3000);
 
     return () => clearInterval(timeIntervalId);
-  }, [count]);
+  }, [clients, count, totalLen]);
   return (
     <section className='min-h-[359px] bg-white w-full flex justify-center items-center py-[40px]'>
       <div className='container min-h-[359px] flex flex-col gap-[45px] justify-center items-center px-[20px]'>

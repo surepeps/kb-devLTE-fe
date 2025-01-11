@@ -448,7 +448,7 @@ const Buy = () => {
   );
 };
 
-export const Input = ({
+const Input = ({
   name,
   placeholder,
   type,

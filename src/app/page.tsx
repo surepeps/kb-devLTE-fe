@@ -4,7 +4,7 @@
 //import Image from "next/image";
 import { Fragment } from 'react';
 import '@/styles/stylish.modules.css';
-import Homepage from '@/pages/homepage';
+import Homepage from '@/app/homepage/page';
 
 export default function Home() {
   return (

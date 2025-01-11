@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import Buy from '@/pages/buy_page';
+import Buy from '@/app/buy_page/page';
 import React from 'react';
 
 const page = () => {

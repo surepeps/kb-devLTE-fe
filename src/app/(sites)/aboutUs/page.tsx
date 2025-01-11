@@ -1,6 +1,6 @@
 /** @format */
 
-import AboutUs from '@/pages/about_us';
+import AboutUs from '@/app/about_us/page';
 import React from 'react';
 import '@/styles/stylish.modules.css';
 
