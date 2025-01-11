@@ -1,22 +1,28 @@
 /** @format */
 'use client';
 import Image from 'next/image';
-import React from 'react';
+import React, { useReducer } from 'react';
 import khabiTeqIcon from '@/svgs/white-khabi-teq.svg';
 import { exploreData, iconsData, servicesData, supportData } from '@/data';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
 import ContactUs from '@/components/contactus';
+import { reducer } from '@/hooks/reducer';
 //import { useVisibility } from '@/utils/useVisibility';
 
 const Footer = () => {
+  const [state, dispatch]= useReducer(reducer, servicesData);
   // const footerRef = React.useRef<HTMLElement>(null);
 
   // const isFooterVisible = useVisibility(footerRef);
   const { isContactUsClicked, setIsContactUsClicked } = usePageContext();
 
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event?.preventDefault();
+  const handleClick = () => {
+    // event?.preventDefault();
+    dispatch({
+      type: item.name,
+      name: item.name,
+    })
   };
 
   return (
@@ -69,7 +75,7 @@ const Footer = () => {
                   Services
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
-                  {servicesData.map(
+                  {state.map(
                     (item: { name: string; url: string }, idx: number) => (
                       <Link
                         className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
