@@ -6,7 +6,7 @@ import HighlightUnit from './hightlight-unit';
 
 const Section3 = () => {
   return (
-    <section className='flex bg-white lg:min-h-[614px] items-center justify-center md:py-[40px] lg:py-0'>
+    <section className='flex lg:min-h-[614px] items-center justify-center md:py-[40px] lg:py-0'>
       <div className='container py-[30px] lg:h-[614px] flex flex-col gap-[20px] md:gap-0 justify-between items-center px-[20px]'>
         <h2 className='text-[#09391C] text-[24px] text-center lg:text-[42px] leading-[26.4px] lg:leading-[46px] font-semibold'>
           Highlight of Our Real Estate Expertise

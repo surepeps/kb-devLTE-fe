@@ -25,9 +25,9 @@ const Homepage = () => {
       <section
         className={`w-full  ${
           isContactUsClicked &&
-          'filter brightness-[30%] transition-all duration-500 overflow-hidden'
+          'filter brightness-[30%] bg-[#EEF1F1] transition-all duration-500 overflow-hidden'
         }`}>
-        <main className='w-full ]'>
+        <main className='w-full bg-[#EEF1F1]'>
           <HeroSection />
           <Section1 />
           <Section2 />

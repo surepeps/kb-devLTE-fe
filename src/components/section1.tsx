@@ -14,7 +14,7 @@ const Section1 = () => {
   const areCountsVisible = useVisibility(countsRef);
 
   return (
-    <section className='lg:min-h-[500px] bg-white flex items-center justify-center'>
+    <section className='lg:min-h-[500px] flex items-center justify-center'>
       <div className='container py-[30px] lg:py-0 lg:min-h-[400px] flex flex-col gap-[20px] items-center justify-center px-[20px]'>
         <div className='lg:w-[870px] w-full min-h-[173px] lg:min-h-[160px] flex flex-col gap-[24px] justify-center items-center '>
           <h2

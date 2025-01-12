@@ -9,7 +9,7 @@ import Button from './button';
 
 const HeroSection = () => {
   return (
-    <section className='flex bg-white items-center justify-center min-h-[536px] w-full overflow-hidden'>
+    <section className='flex items-center justify-center min-h-[536px] w-full overflow-hidden'>
       <div className='container h-full flex md:flex-row flex-col px-[20px] slide-from-bottom'>
         <div className='md:w-[50%] lg:w-[40%] w-full lg:h-[536px] flex flex-col gap-[20px] bg-[#0B423D] flex-grow-1 px-[20px] lg:px-[40px] py-[20px] lg:py-[40px]'>
           <h2 className='lg:text-[60px] font-semibold text-[50px] leading-[55px] lg:leading-[66px] text-[#FFFFFF]'>

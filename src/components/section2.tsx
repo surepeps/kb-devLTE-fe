@@ -24,7 +24,7 @@ const Section2 = () => {
   const areHousesVisible = useVisibility(housesRef);
 
   return (
-    <section className='flex bg-white justify-center items-center'>
+    <section className='flex justify-center items-center'>
       <div className='container min-h-[700px] flex flex-col justify-center items-center gap-[20px] px-[20px] overflow-hidden'>
         <div
           ref={buttonsRef}

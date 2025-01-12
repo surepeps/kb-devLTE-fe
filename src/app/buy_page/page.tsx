@@ -133,13 +133,13 @@ const Buy = () => {
 
   return (
     <section
-      className={`flex justify-center w-full bg-white pb-[50px] ${
+      className={`flex justify-center w-full bg-[#EEF1F1] pb-[50px] ${
         isContactUsClicked &&
         'filter brightness-[30%] transition-all duration-500 overflow-hidden'
       }`}>
       <div className='flex flex-col items-center gap-[20px] w-full'>
         <div className='min-h-[90px] container w-full flex items-center lg:px-[40px]'>
-          <div className='flex gap-1 items-center'>
+          <div className='flex gap-1 items-center px-[10px] lg:px-[0px]'>
             <Image
               alt=''
               src={arrowRightIcon}
@@ -452,17 +452,11 @@ const Input = ({
   name,
   placeholder,
   type,
-  // value,
-  // handleBlur,
-  // handleChange,
   formik,
 }: {
   name: string;
   placeholder: string;
   type: string;
-  // value: string;
-  // handleBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formik: any;
 }) => {
   return (

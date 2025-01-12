@@ -19,6 +19,7 @@
 body {
   /* color: var(--foreground);
   background: var(--background); */
+  background: #eef1f1;
   font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;

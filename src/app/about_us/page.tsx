@@ -23,7 +23,7 @@ const AboutUs = () => {
   return (
     <Fragment>
       <section
-        className={`w-full bg-white flex justify-center items-center min-h-[1050px] ${
+        className={`w-full bg-[#EEF1F1] flex justify-center items-center min-h-[1050px] ${
           isContactUsClicked &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         }`}>

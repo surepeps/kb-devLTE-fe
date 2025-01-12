@@ -18,7 +18,7 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Buy',
-    url: '/buy',
+    url: '/buy_page',
     isClicked: false,
   },
   {
@@ -28,7 +28,7 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Rent',
-    url: '/rent',
+    url: '/rent_page',
     isClicked: false,
   },
   {
@@ -48,39 +48,40 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'About us',
-    url: '/aboutUs',
+    url: '/about_us',
     isClicked: false,
   },
 ];
 
 //Footer Data
-export const exploreData: { name: string; url: string; isClicked: boolean }[] = [
-  {
-    name: 'Buy',
-    url: '/buy',
-    isClicked: false,
-  },
-  {
-    name: 'sell a property',
-    url: '/sell',
-    isClicked: false,
-  },
-  {
-    name: 'Agent',
-    url: '/agent',
-    isClicked: false,
-  },
-  {
-    name: 'Landlord',
-    url: '/landlord',
-    isClicked: false,
-  },
-  {
-    name: 'About Us',
-    url: '/aboutUs',
-    isClicked: false,
-  },
-];
+export const exploreData: { name: string; url: string; isClicked: boolean }[] =
+  [
+    {
+      name: 'Buy',
+      url: '/buy',
+      isClicked: false,
+    },
+    {
+      name: 'sell a property',
+      url: '/sell',
+      isClicked: false,
+    },
+    {
+      name: 'Agent',
+      url: '/agent',
+      isClicked: false,
+    },
+    {
+      name: 'Landlord',
+      url: '/landlord',
+      isClicked: false,
+    },
+    {
+      name: 'About Us',
+      url: '/aboutUs',
+      isClicked: false,
+    },
+  ];
 
 export const servicesData: { name: string; url: string }[] = [
   {
@@ -313,6 +314,14 @@ export const cardData: {
   {
     header: 'Document',
     value: 'C of o, recepit,...',
+  },
+  {
+    header: 'Land size',
+    value: `500 m<sup>2</sup>`,
+  },
+  {
+    header: 'Property Features',
+    value: `<ul className='list disc list-inside'><li>4 bed Room</li><li>Parking Space</li><li>Security Features</li></ul>`,
   },
 ];
 

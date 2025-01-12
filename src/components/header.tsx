@@ -18,7 +18,7 @@ const Header = () => {
 
   return (
     <header
-      className={`w-full flex justify-center items-center py-[20px] pl-[10px] bg-white pr-[20px] ${
+      className={`w-full flex justify-center items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
         isContactUsClicked &&
         'filter brightness-[30%] transition-all duration-500 overflow-hidden'
       } ${'slide-from-top'}`}>

@@ -13,7 +13,7 @@ const FAQs = () => {
   });
 
   return (
-    <section className='flex bg-white items-center justify-center md:min-h-[782px] md:py-[60px]'>
+    <section className='flex items-center justify-center md:min-h-[782px] md:py-[60px]'>
       <div className='container min-h-[782px] flex flex-col gap-[20px] lg:gap-[57px] justify-center items-center p-[20px]'>
         <h2 className='lg:text-[42px] text-[24px] leading-[26px] lg:leading-[46px] font-semibold text-center text-[#09391C]'>
           Frequently Asked Question

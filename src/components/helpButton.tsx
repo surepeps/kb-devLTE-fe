@@ -5,7 +5,7 @@ import Button from './button';
 
 const HelpButton = () => {
   return (
-    <section className='w-full bg-white flex justify-center items-center py-[40px]'>
+    <section className='w-full flex justify-center items-center py-[40px]'>
       <Button
         type='button'
         value='How Can We Help You'
