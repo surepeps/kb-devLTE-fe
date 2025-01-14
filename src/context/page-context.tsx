@@ -12,9 +12,18 @@ export const PageContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [isContactUsClicked, setIsContactUsClicked] = useState<boolean>(false);
+  const [rentPage, setRentPage] = useState({
+    isSubmitForInspectionClicked: false,
+  });
 
   return (
-    <PageContext.Provider value={{ isContactUsClicked, setIsContactUsClicked }}>
+    <PageContext.Provider
+      value={{
+        isContactUsClicked,
+        setIsContactUsClicked,
+        rentPage,
+        setRentPage,
+      }}>
       {children}
     </PageContext.Provider>
   );

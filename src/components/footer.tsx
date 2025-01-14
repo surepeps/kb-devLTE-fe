@@ -11,11 +11,12 @@ import { reducer } from '@/hooks/reducer';
 //import { useVisibility } from '@/utils/useVisibility';
 
 const Footer = () => {
-  const [state, dispatch]= useReducer(reducer, exploreData);
+  const [state, dispatch] = useReducer(reducer, exploreData);
   // const footerRef = React.useRef<HTMLElement>(null);
 
   // const isFooterVisible = useVisibility(footerRef);
-  const { isContactUsClicked, setIsContactUsClicked } = usePageContext();
+  const { isContactUsClicked, setIsContactUsClicked, rentPage } =
+    usePageContext();
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event?.preventDefault();
@@ -25,7 +26,7 @@ const Footer = () => {
     <React.Fragment>
       <footer
         className={`bg-[#0B423D] flex items-center justify-center min-h-[497px] w-full ${
-          isContactUsClicked &&
+          (isContactUsClicked || rentPage.isSubmitForInspectionClicked) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-left'}`}>
         <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[20px]'>
@@ -53,7 +54,10 @@ const Footer = () => {
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
                   {state.map(
-                    (item: { name: string; url: string; isClicked: boolean }, idx: number) => (
+                    (
+                      item: { name: string; url: string; isClicked: boolean },
+                      idx: number
+                    ) => (
                       <Link
                         onClick={() => {
                           dispatch({

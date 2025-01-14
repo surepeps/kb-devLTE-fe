@@ -5,7 +5,7 @@ import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
-import { epilogue, roboto } from '@/styles/font';
+import { epilogue, roboto, archivo } from '@/styles/font';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -20,7 +20,8 @@ export default function RootLayout({
   return (
     <PageContextProvider>
       <html lang='en'>
-        <body className={`${roboto.variable} ${epilogue.variable} antialiased`}>
+        <body
+          className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} antialiased`}>
           {' '}
           <Header />
           {children}

@@ -40,6 +40,10 @@ body {
   font-family: var(--font-epilogue);
 }
 
+.font-archivo {
+  font-family: var(--font-archivo);
+}
+
 * {
   font-family: var(--font-roboto);
 }

@@ -13,13 +13,13 @@ import { reducer } from '@/hooks/reducer';
 // import { useRouter } from 'next/router';
 
 const Header = () => {
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, rentPage } = usePageContext();
   const [state, dispatch] = useReducer(reducer, navData);
 
   return (
     <header
       className={`w-full flex justify-center items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
-        isContactUsClicked &&
+        (isContactUsClicked || rentPage.isSubmitForInspectionClicked) &&
         'filter brightness-[30%] transition-all duration-500 overflow-hidden'
       } ${'slide-from-top'}`}>
       <nav className='h-[50px] container flex justify-between items-center'>

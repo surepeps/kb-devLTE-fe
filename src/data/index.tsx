@@ -23,7 +23,7 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Sell',
-    url: '/sell',
+    url: '/sell_page',
     isClicked: false,
   },
   {
@@ -58,12 +58,12 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
   [
     {
       name: 'Buy',
-      url: '/buy',
+      url: '/buy_page',
       isClicked: false,
     },
     {
       name: 'sell a property',
-      url: '/sell',
+      url: '/sell_page',
       isClicked: false,
     },
     {
@@ -78,7 +78,7 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
     },
     {
       name: 'About Us',
-      url: '/aboutUs',
+      url: '/about_us',
       isClicked: false,
     },
   ];

@@ -1,7 +1,7 @@
 /** @format */
 
 // styles/font.js
-import { Roboto, Open_Sans, Epilogue } from 'next/font/google';
+import { Roboto, Open_Sans, Epilogue, Archivo } from 'next/font/google';
 
 export const roboto = Roboto({
   variable: '--font-roboto',
@@ -20,4 +20,10 @@ export const openSans = Open_Sans({
   subsets: ['latin'],
   weight: ['400'],
   variable: '--font-open-sans',
+});
+
+export const archivo = Archivo({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-archivo',
 });
