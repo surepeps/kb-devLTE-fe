@@ -33,17 +33,17 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Landlord',
-    url: '/landlord',
+    url: '/landlord_page',
     isClicked: false,
   },
   {
     name: 'Agent',
-    url: '/agent',
+    url: '/agent_page',
     isClicked: false,
   },
   {
     name: 'Policies',
-    url: '/policies',
+    url: '/policies_page',
     isClicked: false,
   },
   {
@@ -68,12 +68,12 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
     },
     {
       name: 'Agent',
-      url: '/agent',
+      url: '/agent_page',
       isClicked: false,
     },
     {
       name: 'Landlord',
-      url: '/landlord',
+      url: '/landlord_page',
       isClicked: false,
     },
     {
@@ -113,7 +113,7 @@ export const supportData: { name: string; url: string }[] = [
   },
   {
     name: 'policies',
-    url: '#',
+    url: '/policies_page',
   },
 ];
 
@@ -178,6 +178,34 @@ export const HighlightData: { title: string; text: string }[] = [
   {
     title: 'Post - Sale Support',
     text: `Developing customized strategies to showcase properties and attract buyers.`,
+  },
+];
+
+//Agenty - Benefit of partnering with Khabi-teq
+export const benefitData: { title: string; text: string }[] = [
+  {
+    title: 'Marketing Support',
+    text: `Gain exposure through our platform and marketing efforts, ensuring your listings reach the right audience`,
+  },
+  {
+    title: 'Access to Investors',
+    text: `Connect with verified buyers and investors actively seeking properties in your area.`,
+  },
+  {
+    title: 'Transparency',
+    text: `Enjoy clear and straightforward processes, fostering trust and efficiency in every transaction.`,
+  },
+  {
+    title: 'Due Diligence',
+    text: `Benefit from our thorough verification of buyers and sellers, ensuring secure and reliable deals.`,
+  },
+  {
+    title: 'Networking Opportunities',
+    text: `Join a growing community of agents and industry professionals, creating opportunities for collaboration and growth.`,
+  },
+  {
+    title: 'Scalable Platform',
+    text: `Utilize a user-friendly platform designed to support your business as it grows, with tools that simplify property management and transactions.`,
   },
 ];
 
@@ -248,6 +276,26 @@ export const TenantsFAQsData: { heading: string; text: string }[] = [
   {
     heading: `Can I inspect a property before renting or buying`,
     text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+//Agent ~ Frequently Asked Question
+export const agentFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How can I partner with Khabi-Teq as an agent?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+  {
+    heading: `What are the benefits of partnering with Khabi-Teq?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+  {
+    heading: `HIs there a fee to join as an agent?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+  {
+    heading: `Is my data secure with Khabi-Teq?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
   },
 ];
 

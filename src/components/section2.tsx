@@ -81,7 +81,8 @@ const Section2 = () => {
           <p className='text-[#5A5D63] text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
             Your trusted partner in Lagos&apos; real estate market. Since 2020,
             we&apos;ve been delivering expert solutions with integrity and
-            personalized service, helping you naviga```javascript
+            personalized service, helping you navigate property sales, rentals,
+            and more. Let us help you find your perfect property today
           </p>
         </div>
         <div
