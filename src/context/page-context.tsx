@@ -16,6 +16,8 @@ export const PageContextProvider = ({
     isSubmitForInspectionClicked: false,
   });
 
+  const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
+
   return (
     <PageContext.Provider
       value={{
@@ -23,6 +25,8 @@ export const PageContextProvider = ({
         setIsContactUsClicked,
         rentPage,
         setRentPage,
+        selectedNav,
+        setSelectedNav,
       }}>
       {children}
     </PageContext.Provider>

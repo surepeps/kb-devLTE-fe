@@ -35,7 +35,7 @@ const Sell = () => {
           </h3>
 
           <div className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
-            <div className='min-h-[629px] py-[40px] px-[20px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
+            <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
               <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
                 {/**Property Type */}
                 <div className='min-h-[73px] gap-[15px] flex flex-col lg:w-[535px] w-full'>
@@ -135,7 +135,7 @@ const Sell = () => {
               </div>
             </div>
             {/**contact detail */}
-            <div className='min-h-[348px] py-[40px] px-[20px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
+            <div className='min-h-[348px] py-[40px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
               <div className='w-full min-h-[348px] flex flex-col gap-[40px]'>
                 <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold'>
                   Contact Detail

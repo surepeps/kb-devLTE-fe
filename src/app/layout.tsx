@@ -3,9 +3,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
-import Header from '@/components/header';
+//import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { epilogue, roboto, archivo } from '@/styles/font';
+import HeaderLogic from '@/logic/headerLogic';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -23,7 +24,7 @@ export default function RootLayout({
         <body
           className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} antialiased`}>
           {' '}
-          <Header />
+          <HeaderLogic />
           {children}
           <Footer />
         </body>

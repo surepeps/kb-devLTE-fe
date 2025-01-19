@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { FC } from 'react';
+import React, { FC, MouseEventHandler } from 'react';
 
 interface RadioCheckProps {
   id?: string;
@@ -8,14 +8,27 @@ interface RadioCheckProps {
   value: string;
   name: string;
   type?: 'radio' | 'checkbox';
+  onClick?: MouseEventHandler<HTMLLabelElement> | undefined;
+  isDisabled?: boolean;
+  className?: string;
 }
 
-const RadioCheck: FC<RadioCheckProps> = ({ id, title, value, name, type }) => {
+const RadioCheck: FC<RadioCheckProps> = ({
+  id,
+  title,
+  value,
+  name,
+  type,
+  onClick,
+  isDisabled,
+  className,
+}) => {
   return (
     <label
       title={title ?? value}
       htmlFor={id}
-      className='flex gap-[17px] cursor-pointer'>
+      onClick={isDisabled ? undefined : onClick}
+      className={`flex gap-[17px] cursor-pointer ${className}`}>
       <input
         title={title ?? value}
         type={type}
@@ -44,9 +57,10 @@ const RadioCheck: FC<RadioCheckProps> = ({ id, title, value, name, type }) => {
           />
         </svg>
       )}
-      <span className='text-base leading-[25.6px] font-normal text-[#000000]'>
-        {value}
-      </span>
+      <span
+        dangerouslySetInnerHTML={{ __html: value }}
+        className='text-base leading-[25.6px] font-normal text-[#000000]'
+      />
     </label>
   );
 };

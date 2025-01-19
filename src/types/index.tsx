@@ -13,4 +13,6 @@ export interface GlobalContextTypes {
     isSubmitForInspectionClicked: boolean;
   }) => void;
   //router: ReturnType<typeof useRouter> | null;
+  selectedNav: string;
+  setSelectedNav: (type: string) => void;
 }
