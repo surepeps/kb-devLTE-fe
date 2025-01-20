@@ -23,7 +23,7 @@ const Register = () => {
   const { isContactUsClicked } = usePageContext();
 
   const validationSchema = Yup.object({
-    email: Yup.string().required(),
+    email: Yup.string().required('enter email'),
     password: Yup.string().required(),
     firstName: Yup.string().required(),
     lastName: Yup.string().required(),

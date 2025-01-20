@@ -48,6 +48,9 @@ const HeroSection: FC<HeroSectionProps> = ({
             green={true}
             className='h-[66px] w-full lg:w-[393px] py-[12px] px-[24px] text-white text-[20px] leading-[32px] font-bold'
             value={buttonText}
+            onClick={() => {
+              window.location.href = '/auth/agent';
+            }}
           />
         </div>
         <Image

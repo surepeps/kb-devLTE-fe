@@ -20,6 +20,7 @@ const Header = () => {
 
   useEffect(() => {
     console.log(pathName);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
