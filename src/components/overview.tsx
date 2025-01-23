@@ -44,7 +44,7 @@ const Overview = () => {
         />
       ) : (
         <div className='lg:w-[805px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[60px] flex flex-col'>
-          <div className='w-full min-h-[140px] flex flex-wrap items-center gap-[20px]'>
+          <div className='w-full min-h-[140px] flex flex-wrap lg:flex-nowrap items-center gap-[20px]'>
             {/**Total Brief */}
             <div className='lg:w-[220px] w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
               <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
@@ -91,6 +91,7 @@ const Overview = () => {
 
           {/**Second section */}
           <ShowTable
+            headerData={headerData}
             setDetailsToCheck={setDetailsToCheck}
             setShowFullDetails={setIsFullDetailsClicked}
             heading='Publish Brief'
@@ -101,5 +102,14 @@ const Overview = () => {
     </Fragment>
   );
 };
+
+const headerData: string[] = [
+  'Date',
+  'Property Type',
+  'Location',
+  'Property price',
+  'Document',
+  'Full details',
+];
 
 export default Overview;
