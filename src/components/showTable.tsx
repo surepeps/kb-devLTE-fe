@@ -2,10 +2,12 @@
 import { ShowTableProps } from '@/types/show_table';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '@/styles/tables.css';
 
 const ShowTable: React.FC<ShowTableProps> = ({
   data,
   heading,
+  headerData,
   setShowFullDetails,
   setDetailsToCheck,
 }) => {
@@ -17,45 +19,41 @@ const ShowTable: React.FC<ShowTableProps> = ({
       <table className='w-full h-[446px] flex flex-col gap-[15px]'>
         <thead className='min-h-[54px] p-[16px] bg-[#FAFAFA]'>
           {''}
-          <tr className='w-full flex space-x-12 justify-evenly'>
-            <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
-              Date
-            </td>
-            <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
-              Property Type
-            </td>
-            <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
-              Location
-            </td>
-            <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
-              Property price
-            </td>
-            <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
-              Document
-            </td>
-            <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
-              Full details
-            </td>
+          <tr className='w-full flex'>
+            {headerData?.map((item: string, idx: number) => (
+              <td
+                key={idx}
+                className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
+                {item}
+              </td>
+            ))}
           </tr>
         </thead>
-        <tbody className='space-y-6 flex flex-col overflow-y-scroll hide-scrollbar'>
+        <tbody className='space-y-6 flex flex-col justify-start overflow-y-scroll hide-scrollbar px-[8px]'>
           {data.map((item, idx: number) => (
-            <tr className='w-full flex space-x-8 justify-evenly' key={idx}>
+            <tr className='w-full flex' key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.date}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.propertyType}
               </td>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+              <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.location}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.propertyPrice}
+                N {Number(item.propertyPrice).toLocaleString()}
               </td>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.document}
-              </td>
+              {item.document ? (
+                <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+                  {item.document}
+                </td>
+              ) : null}
+              {item.amountSold ? (
+                <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
+                  N {Number(item.amountSold).toLocaleString()}
+                </td>
+              ) : null}
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 <FontAwesomeIcon
                   onClick={() => {

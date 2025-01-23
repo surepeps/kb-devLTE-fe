@@ -12,7 +12,7 @@ const Overview = () => {
     totalBrief: 0,
     draftBrief: 0,
     completeTransaction: 0,
-    totalAmount: '3,000,000,000.00',
+    totalAmount: 3000000000.0,
   });
 
   const [isFullDetailsClicked, setIsFullDetailsClicked] =
@@ -23,7 +23,7 @@ const Overview = () => {
       totalBrief: 80,
       draftBrief: 2,
       completeTransaction: 35,
-      totalAmount: '3,000,000,000.00',
+      totalAmount: 3000000000.0,
     });
   }, []);
 
@@ -43,10 +43,10 @@ const Overview = () => {
           detailsToCheck={detailsToCheck}
         />
       ) : (
-        <div className='lg:w-[805px] bg-transparent gap-[30px] px-[30px] mt-[60px] p-[20px] flex flex-col'>
-          <div className='w-full min-h-[140px] flex items-center gap-[20px]'>
+        <div className='lg:w-[805px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[60px] flex flex-col'>
+          <div className='w-full min-h-[140px] flex flex-wrap items-center gap-[20px]'>
             {/**Total Brief */}
-            <div className='w-[220px] h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
+            <div className='lg:w-[220px] w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
               <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
                 Total Brief
               </h4>
@@ -55,7 +55,7 @@ const Overview = () => {
               </h2>
             </div>
             {/**Draft Brief */}
-            <div className='w-[220px] h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
+            <div className='lg:w-[220px] w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
               <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
                 Draft Brief
               </h4>
@@ -64,7 +64,7 @@ const Overview = () => {
               </h2>
             </div>
             {/**Complete Transaction */}
-            <div className='w-[356px] h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
+            <div className='lg:w-[356px] w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
               <div className='flex justify-between min-h-[24px] border-b-[1px] border-[#E4DFDF] pb-1 w-full'>
                 <span className='text-base leading-[18px] text-[#2CAF67] tracking-[0.25px] font-archivo'>
                   Complete Transaction
@@ -79,7 +79,11 @@ const Overview = () => {
                   Total Amount
                 </span>
                 <h2 className='text-[24px] leading-[22px] tracking-[0.25px] font-semibold font-archivo font-[#181336]'>
-                  N {briefs.totalAmount}
+                  N{' '}
+                  {Number(briefs.totalAmount || 0).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </h2>
               </div>
             </div>

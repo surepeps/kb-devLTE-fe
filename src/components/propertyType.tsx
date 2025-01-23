@@ -14,7 +14,7 @@ const PropertyType = () => {
   ]; //Document on the property
 
   return (
-    <div className='lg:w-[805px] min-h-[797px] gap-[30px] px-[30px] mt-[60px]'>
+    <div className='lg:w-[805px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[60px]'>
       <div className='flex flex-col gap-[35px] w-full'>
         {/**Property Type */}
         <div className='lg:w-[535px] min-h-[73px] flex flex-col gap-[15px]'>
@@ -34,10 +34,14 @@ const PropertyType = () => {
             Location
           </h2>
           {/**inputs */}
-          <div className='min-h-[26px] w-full flex gap-[15px]'>
-            <Input name='State' type='input' className='w-1/3' />
-            <Input name='Local government' type='input' className='w-1/3' />
-            <Input name='Area' type='input' className='w-1/3' />
+          <div className='min-h-[26px] w-full flex flex-wrap gap-[15px]'>
+            <Input name='State' type='input' className='lg:w-1/3 w-full' />
+            <Input
+              name='Local government'
+              type='input'
+              className='lg:w-1/3 w-full'
+            />
+            <Input name='Area' type='input' className='lg:w-1/3 w-full' />
           </div>
         </div>
         {/**Price */}
@@ -60,7 +64,7 @@ const PropertyType = () => {
             Document on the property
           </h2>
           {/**options */}
-          <div className='min-h-[26px] w-full flex gap-[30px]'>
+          <div className='min-h-[26px] w-full flex flex-wrap gap-[30px]'>
             {docOfTheProperty.map((item: string, idx: number) => (
               <RadioCheck
                 type='checkbox'

@@ -1,15 +1,24 @@
 /** @format */
 
-import React, { FC } from 'react';
+import React, { ChangeEventHandler, FC } from 'react';
 
 interface SelectProps {
   name: string;
   className?: string;
   id?: string;
   options: string[];
+  value?: string;
+  onChange?: ChangeEventHandler<HTMLSelectElement>;
 }
 
-const Select: FC<SelectProps> = ({ className, id, name, options }) => {
+const Select: FC<SelectProps> = ({
+  className,
+  id,
+  name,
+  options,
+  value,
+  onChange,
+}) => {
   return (
     <label
       htmlFor={id ?? name}
@@ -23,6 +32,8 @@ const Select: FC<SelectProps> = ({ className, id, name, options }) => {
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
       /> */}
       <select
+        value={value}
+        onChange={onChange}
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
         name=''
         id=''>

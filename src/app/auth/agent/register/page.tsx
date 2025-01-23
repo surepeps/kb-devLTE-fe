@@ -1,5 +1,6 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
@@ -35,12 +36,13 @@ const Register = () => {
       password: '',
       firstName: '',
       lastName: '',
-      phone: 0,
+      phone: '',
     },
-    validationSchema,
+    // validationSchema,
     onSubmit: (values) => {
       console.log(values);
       //Handle logic here
+      window.location.href = '/auth/agent/form';
     },
   });
 
@@ -51,18 +53,45 @@ const Register = () => {
         isContactUsClicked && 'filter brightness-[30%]'
       } transition-all duration-500`}>
       <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
-        <div className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
+        <form
+          onSubmit={formik.handleSubmit}
+          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
           <h2 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C]'>
             Register with us
           </h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
-            <Input formik={formik} title='Email' icon={mailIcon} type='email' />
-            <Input formik={formik} title='Password' icon={''} type='password' />
-            <Input formik={formik} title='First name' icon={''} type='text' />
-            <Input formik={formik} title='Last name' icon={''} type='text' />
+            <Input
+              formik={formik}
+              title='Email'
+              id='email'
+              icon={mailIcon}
+              type='email'
+            />
+            <Input
+              formik={formik}
+              title='Password'
+              id='password'
+              icon={''}
+              type='password'
+            />
+            <Input
+              formik={formik}
+              title='First name'
+              id='password'
+              icon={''}
+              type='text'
+            />
+            <Input
+              formik={formik}
+              title='Last name'
+              id='password'
+              icon={''}
+              type='text'
+            />
             <Input
               formik={formik}
               title='Phone'
+              id='phone'
               icon={phoneIcon}
               type='number'
             />
@@ -80,6 +109,8 @@ const Register = () => {
           <Button
             value='Register'
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
+            type='submit'
+            onSubmit={formik.handleSubmit}
             green={true}
           />
           {/**Already have an account */}
@@ -94,7 +125,7 @@ const Register = () => {
             <RegisterWith icon={googleIcon} text='Continue with Google' />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );
@@ -121,13 +152,14 @@ const Input: FC<InputProps> = ({
 }) => {
   return (
     <label
-      htmlFor={id ?? title}
+      htmlFor={id}
       className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
       <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
         {title}
       </span>
       <div className='flex'>
         <input
+          name={id}
           type={type}
           value={formik.values[title]}
           onBlur={formik.handleBlur}

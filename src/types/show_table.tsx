@@ -6,6 +6,7 @@ export interface ShowTableProps {
   data: DataPropsArray;
   heading: string;
   showFullDetails?: boolean;
+  headerData?: string[];
   setShowFullDetails: (type: boolean) => void;
   setDetailsToCheck: ({}: DataProps) => void;
 }

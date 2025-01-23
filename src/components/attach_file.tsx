@@ -44,6 +44,7 @@ const AttachFile: React.FC<AttachFileProps> = ({ heading }) => {
           y='0.5'
           width='366'
           height='57'
+          className='w-full'
           rx='3.5'
           stroke='#8DDB90'
           strokeDasharray='12 12'

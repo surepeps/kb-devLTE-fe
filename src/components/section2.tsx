@@ -87,7 +87,7 @@ const Section2 = () => {
         </div>
         <div
           ref={housesRef}
-          className={`lg:w-[1154px] w-full min-h-[446px] lg:grid lg:grid-cols-4 lg:gap-[83px] flex flex-col gap-[24px] ${
+          className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-2 md:grid-cols-2 gap-[24px] ${
             areHousesVisible && 'slide-from-right'
           }`}>
           {Array.from({ length: 4 }).map((__, idx: number) => {

@@ -8,11 +8,13 @@ import { FC } from 'react';
 interface DetailsToCheckProps {
   setIsFullDetailsClicked: (type: boolean) => void;
   detailsToCheck: DataProps;
+  heading?: string;
 }
 
 const DetailsToCheck: FC<DetailsToCheckProps> = ({
   setIsFullDetailsClicked,
   detailsToCheck,
+  heading,
 }) => {
   return (
     <div className='lg:w-[863px] min-h-[342px] mt-[60px] flex flex-col gap-[60px]'>
@@ -30,7 +32,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
         />
         <div className='flex items-center gap-[8px]'>
           <span className='text-[20px] leading-[32px] text-[#25324B] font-normal'>
-            Total Brief
+            {heading}
           </span>
           <svg
             width='4'

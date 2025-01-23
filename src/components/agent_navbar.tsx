@@ -3,7 +3,7 @@
 'use client';
 import { usePageContext } from '@/context/page-context';
 import { AgentNavData } from '@/enums';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 const AgentNav = () => {
   const { selectedNav, setSelectedNav } = usePageContext();
@@ -13,18 +13,47 @@ const AgentNav = () => {
   };
 
   return (
-    <div className='min-h-[51px] flex gap-[20px] w-full flex-wrap justify-center items-center'>
-      {navData.map((item: string, idx: number) => (
+    <Fragment>
+      <div className='min-h-[51px] hidden md:flex gap-[20px] flex-wrap flex-row justify-center items-center'>
+        {navData.map((item: string, idx: number) => (
+          <Box
+            selectedText={selectedNav}
+            onClick={() => {
+              handleSelect(item);
+            }}
+            key={idx}
+            name={item}
+          />
+        ))}
+      </div>
+      <div className='min-h-[51px] md:hidden flex gap-[20px] flex-col justify-center items-center w-full'>
         <Box
           selectedText={selectedNav}
+          className='w-full'
           onClick={() => {
-            handleSelect(item);
+            handleSelect('Create Brief');
           }}
-          key={idx}
-          name={item}
+          name={'Create Brief'}
         />
-      ))}
-    </div>
+        <div className='flex gap-[10px] overflow-x-scroll w-full'>
+          {navData.map((item: string, idx: number) => {
+            if (idx >= 1) {
+              return (
+                <Box
+                  className='min-w-[162px]'
+                  selectedText={selectedNav}
+                  onClick={() => {
+                    handleSelect(item);
+                  }}
+                  key={idx}
+                  name={item}
+                />
+              );
+            }
+          })}
+        </div>
+      </div>
+    </Fragment>
   );
 };
 
@@ -51,6 +80,7 @@ interface BoxProps {
   onClick: () => void;
   isDisabled?: boolean;
   selectedText: string;
+  className?: string;
 }
 
 const Box: React.FC<BoxProps> = ({
@@ -58,12 +88,13 @@ const Box: React.FC<BoxProps> = ({
   onClick,
   isDisabled,
   selectedText,
+  className,
 }) => {
   return (
     <button
       type='button'
       onClick={isDisabled ? undefined : onClick}
-      className={`${
+      className={`${className} ${
         selectedText === name
           ? 'bg-[#09391C] text-[#8DDB90]'
           : 'text-[#5A5D63] bg-transparent'
