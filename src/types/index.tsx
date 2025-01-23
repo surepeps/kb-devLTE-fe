@@ -15,4 +15,7 @@ export interface GlobalContextTypes {
   //router: ReturnType<typeof useRouter> | null;
   selectedNav: string;
   setSelectedNav: (type: string) => void;
+  //modal bar
+  isModalOpened: boolean;
+  setIsModalOpened: (type: boolean) => void;
 }

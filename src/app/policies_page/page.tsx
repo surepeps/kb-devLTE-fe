@@ -7,7 +7,7 @@ import { useLoading } from '@/hooks/useLoading';
 import React, { useState } from 'react';
 
 const Policies = () => {
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
   const isLoading = useLoading();
   const [policiesButton, setPoliciesButton] = useState({
     clientEngagementPolicyButton: false,
@@ -19,7 +19,7 @@ const Policies = () => {
   return (
     <section
       className={`min-h-[600px] bg-[#EEF1F1] w-full flex justify-center ${
-        isContactUsClicked && 'filter brightness-[30%]'
+        (isContactUsClicked || isModalOpened) && 'filter brightness-[30%]'
       } transition-all duration-500`}>
       <div className='container flex flex-col h-[600px] gap-[30px] my-[60px] px-[20px]'>
         <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-epilogue text-center text-[30px] leading-[41px]'>

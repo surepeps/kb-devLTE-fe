@@ -15,6 +15,7 @@ export const PageContextProvider = ({
   const [rentPage, setRentPage] = useState({
     isSubmitForInspectionClicked: false,
   });
+  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 
   const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
 
@@ -27,6 +28,8 @@ export const PageContextProvider = ({
         setRentPage,
         selectedNav,
         setSelectedNav,
+        isModalOpened,
+        setIsModalOpened,
       }}>
       {children}
     </PageContext.Provider>

@@ -38,7 +38,7 @@ interface FormProps {
 
 const Buy = () => {
   const [point, setPoint] = useState<string>('Details');
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
   const [scrollPosition, setScrollPosition] = useState(0);
   const isLoading = useLoading();
   const [details, setDetails] = useState<DetailsProps>({
@@ -134,7 +134,7 @@ const Buy = () => {
   return (
     <section
       className={`flex justify-center w-full bg-[#EEF1F1] pb-[50px] ${
-        isContactUsClicked &&
+        (isContactUsClicked || isModalOpened) &&
         'filter brightness-[30%] transition-all duration-500 overflow-hidden'
       }`}>
       <div className='flex flex-col items-center gap-[20px] w-full'>

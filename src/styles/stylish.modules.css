@@ -11,6 +11,17 @@
   }
 }
 
+@keyframes slidingOut {
+  0% {
+    transform: translateX(0%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-100);
+    opacity: 1;
+  }
+}
+
 @keyframes slideFromLeft {
   0% {
     transform: translateX(-20%);
@@ -215,6 +226,10 @@
 
 .slide-out {
   animation: slideOut 0.8s ease-out forwards;
+}
+
+.sliding-out {
+  animation: slidingOut 0.8s ease-out forwards;
 }
 
 .fade-out {

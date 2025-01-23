@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 //import * as Yup from 'yup';
 
 const AgentData = () => {
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
   const [selectedAgentType, setSelectedAgentType] =
     useState<string>('Individual Agent');
 
@@ -34,7 +34,7 @@ const AgentData = () => {
   return (
     <section
       className={`flex items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
-        isContactUsClicked && 'brightness-[30%]'
+        (isContactUsClicked || isModalOpened) && 'brightness-[30%]'
       }`}>
       <form
         onSubmit={formik.handleSubmit}

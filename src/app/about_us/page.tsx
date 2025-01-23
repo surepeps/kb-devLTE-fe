@@ -14,7 +14,7 @@ const AboutUs = () => {
   //Simulating the loading page
   const isLoading = useLoading();
   const divRef = useRef<HTMLHeadingElement>(null);
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
 
   const isDivVisible = useVisibility(divRef);
 
@@ -24,7 +24,7 @@ const AboutUs = () => {
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center min-h-[1050px] ${
-          isContactUsClicked &&
+          (isContactUsClicked || isModalOpened) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         }`}>
         <div className='container min-h-[1000px] flex flex-col items-center lg:px-[40px] overflow-hidden py-[30px] lg:py-[60px] px-[20px]'>

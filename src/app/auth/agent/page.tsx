@@ -13,14 +13,16 @@ import '@/styles/stylish.modules.css';
 import { RegisterWith } from '@/components/registerWith';
 
 const Register = () => {
-  const { isContactUsClicked, rentPage } = usePageContext();
+  const { isContactUsClicked, rentPage, isModalOpened } = usePageContext();
   const isLoading = useLoading();
 
   if (isLoading) return <Loading />;
   return (
     <section
       className={`min-h-[500px] overflow-hidden bg-[#EEF1F1] flex justify-center items-center w-full transition-all duration-500 ${
-        (isContactUsClicked || rentPage.isSubmitForInspectionClicked) &&
+        (isContactUsClicked ||
+          rentPage.isSubmitForInspectionClicked ||
+          isModalOpened) &&
         'brightness-[30%]'
       }`}>
       <div className='container slide-from-right min-h-[400px] lg:w-[603px] w-full flex flex-col justify-center gap-[40px] items-center px-[20px]'>

@@ -18,15 +18,16 @@ const Homepage = () => {
   //Simulating the loading page
   const isLoading = useLoading();
 
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
   if (isLoading) return <Loading />;
 
   return (
     <Fragment>
       <section
         className={`w-full  ${
-          isContactUsClicked &&
-          'filter brightness-[30%] bg-[#EEF1F1] transition-all duration-500 overflow-hidden'
+          isContactUsClicked ||
+          (isModalOpened &&
+            'filter brightness-[30%] bg-[#EEF1F1] transition-all duration-500 overflow-hidden')
         }`}>
         <main className='w-full bg-[#EEF1F1]'>
           <HeroSection

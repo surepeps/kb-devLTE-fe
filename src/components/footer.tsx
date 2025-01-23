@@ -15,7 +15,7 @@ const Footer = () => {
   // const footerRef = React.useRef<HTMLElement>(null);
 
   // const isFooterVisible = useVisibility(footerRef);
-  const { isContactUsClicked, setIsContactUsClicked, rentPage } =
+  const { isContactUsClicked, setIsContactUsClicked, rentPage, isModalOpened } =
     usePageContext();
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -26,7 +26,9 @@ const Footer = () => {
     <React.Fragment>
       <footer
         className={`bg-[#0B423D] flex items-center justify-center min-h-[497px] w-full ${
-          (isContactUsClicked || rentPage.isSubmitForInspectionClicked) &&
+          (isContactUsClicked ||
+            rentPage.isSubmitForInspectionClicked ||
+            isModalOpened) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-left'}`}>
         <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[20px]'>

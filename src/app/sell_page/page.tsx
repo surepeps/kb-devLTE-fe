@@ -10,14 +10,14 @@ import Input from '@/components/Input';
 import Select from '@/components/select';
 
 const Sell = () => {
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
   const isLoading = useLoading();
 
   if (isLoading) return <Loading />;
   return (
     <section
       className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center ${
-        isContactUsClicked && 'filter brightness-[30%]'
+        (isContactUsClicked || isModalOpened) && 'filter brightness-[30%]'
       } transition-all duration-500`}>
       <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
         <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-epilogue text-center text-[30px] leading-[41px]'>

@@ -12,7 +12,8 @@ import ContactUs from '@/components/contact_information';
 
 export default function Rent() {
   const isLoading = useLoading();
-  const { isContactUsClicked, setRentPage, rentPage } = usePageContext();
+  const { isContactUsClicked, setRentPage, rentPage, isModalOpened } =
+    usePageContext();
   const [found, setFound] = useState({
     isFound: false,
     count: 0,
@@ -36,7 +37,9 @@ export default function Rent() {
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
-          (isContactUsClicked || rentPage.isSubmitForInspectionClicked) &&
+          (isContactUsClicked ||
+            rentPage.isSubmitForInspectionClicked ||
+            isModalOpened) &&
           'filter brightness-[30%] transition-all duration-500'
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>

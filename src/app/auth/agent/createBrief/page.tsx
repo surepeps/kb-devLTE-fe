@@ -11,7 +11,7 @@ import { briefData, completeTransactionData } from '@/data/sampleDataForAgent';
 import Brief from '@/components/brief';
 
 const Form2 = () => {
-  const { isContactUsClicked } = usePageContext();
+  const { isContactUsClicked, isModalOpened } = usePageContext();
   const { selectedNav } = usePageContext();
 
   /**TotalBrief */
@@ -27,7 +27,7 @@ const Form2 = () => {
   return (
     <section
       className={`flex w-full items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
-        isContactUsClicked && 'brightness-[30%]'
+        (isContactUsClicked || isModalOpened) && 'brightness-[30%]'
       }`}>
       <div className='container flex flex-col min-h-[700px] items-center p-[20px]'>
         <AgentNav />
