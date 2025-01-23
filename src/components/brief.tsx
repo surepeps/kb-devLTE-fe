@@ -1,0 +1,43 @@
+/** @format */
+
+import { DataProps } from '@/types/agent_data_props';
+import { FC } from 'react';
+import DetailsToCheck from '@/components/detailsToCheck';
+import { ShowTableProps } from '@/types/show_table';
+import ShowTable from '@/components/showTable';
+
+interface TotalBriefProps extends ShowTableProps {
+  detailsToCheck: DataProps;
+}
+
+const Brief: FC<TotalBriefProps> = ({
+  data,
+  heading,
+  setShowFullDetails,
+  setDetailsToCheck,
+  showFullDetails,
+  detailsToCheck,
+  headerData,
+}) => {
+  return (
+    <div className='lg:w-[863px] mt-[60px] flex items-center justify-center'>
+      {showFullDetails ? (
+        <DetailsToCheck
+          heading={heading}
+          setIsFullDetailsClicked={setShowFullDetails}
+          detailsToCheck={detailsToCheck}
+        />
+      ) : (
+        <ShowTable
+          headerData={headerData}
+          setDetailsToCheck={setDetailsToCheck}
+          setShowFullDetails={setShowFullDetails}
+          heading={heading}
+          data={data}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Brief;

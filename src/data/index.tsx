@@ -1,0 +1,379 @@
+/** @format */
+
+import { StaticImageData } from 'next/image';
+import facebookIcon from '@/svgs/facebook.svg';
+import instagramIcon from '@/svgs/instagram.svg';
+import twitterIcon from '@/svgs/twitter.svg';
+import linkedInIcon from '@/svgs/linkedIn.svg';
+import envelopeIcon from '@/svgs/envelope.svg';
+import phoneIcon from '@/svgs/phone.svg';
+import whatsappIcon from '@/svgs/whatsapp.svg';
+
+//Navbar data
+export const navData: { name: string; url: string; isClicked: boolean }[] = [
+  {
+    name: 'Home',
+    url: '/',
+    isClicked: true,
+  },
+  {
+    name: 'Buy',
+    url: '/buy_page',
+    isClicked: false,
+  },
+  {
+    name: 'Sell',
+    url: '/sell_page',
+    isClicked: false,
+  },
+  {
+    name: 'Rent',
+    url: '/rent_page',
+    isClicked: false,
+  },
+  {
+    name: 'Landlord',
+    url: '/landlord_page',
+    isClicked: false,
+  },
+  {
+    name: 'Agent',
+    url: '/agent_page',
+    isClicked: false,
+  },
+  {
+    name: 'Policies',
+    url: '/policies_page',
+    isClicked: false,
+  },
+  {
+    name: 'About us',
+    url: '/about_us',
+    isClicked: false,
+  },
+];
+
+//Footer Data
+export const exploreData: { name: string; url: string; isClicked: boolean }[] =
+  [
+    {
+      name: 'Buy',
+      url: '/buy_page',
+      isClicked: false,
+    },
+    {
+      name: 'sell a property',
+      url: '/sell_page',
+      isClicked: false,
+    },
+    {
+      name: 'Agent',
+      url: '/agent_page',
+      isClicked: false,
+    },
+    {
+      name: 'Landlord',
+      url: '/landlord_page',
+      isClicked: false,
+    },
+    {
+      name: 'About Us',
+      url: '/about_us',
+      isClicked: false,
+    },
+  ];
+
+export const servicesData: { name: string; url: string }[] = [
+  {
+    name: 'Property management',
+    url: '#',
+  },
+  {
+    name: 'Property Valuation',
+    url: '#',
+  },
+  {
+    name: 'Legal Management',
+    url: '#',
+  },
+  {
+    name: 'Exchange Management',
+    url: '#',
+  },
+];
+
+export const supportData: { name: string; url: string }[] = [
+  {
+    name: 'FAQ',
+    url: '#',
+  },
+  {
+    name: 'Contact us',
+    url: '#',
+  },
+  {
+    name: 'policies',
+    url: '/policies_page',
+  },
+];
+
+export const iconsData: { image: StaticImageData; url: string }[] = [
+  {
+    image: facebookIcon,
+    url: '#',
+  },
+  {
+    image: instagramIcon,
+    url: '#',
+  },
+  {
+    image: twitterIcon,
+    url: '#',
+  },
+  {
+    image: linkedInIcon,
+    url: '#',
+  },
+];
+
+//Section1 data
+export const section1Data: { name: string; count: number }[] = [
+  {
+    name: 'Properties',
+    count: 22,
+  },
+  {
+    name: 'Years of Experiences',
+    count: 4,
+  },
+  {
+    name: 'Satisfied Clients',
+    count: 34,
+  },
+];
+
+//Highlight of Our Real Estate Expertise Section
+
+export const HighlightData: { title: string; text: string }[] = [
+  {
+    title: 'Market Analysis',
+    text: `In-depth understanding of market trends to guide pricing and strategy.`,
+  },
+  {
+    title: 'Property Valuation',
+    text: `Accurate assessments to determine the true value of your favourite apartment, cottage etc.`,
+  },
+  {
+    title: 'Legal Assistance',
+    text: `Helping clients navigate the complexities of legal paperwork to ensure a smooth transaction`,
+  },
+  {
+    title: 'Negotiation Skill',
+    text: `In-depth understanding of market trends to guide pricing and strategy`,
+  },
+  {
+    title: 'Tailored Marketing plan',
+    text: `Providing assistance even after the sale, ensuring clients feel supported throughout their journey`,
+  },
+  {
+    title: 'Post - Sale Support',
+    text: `Developing customized strategies to showcase properties and attract buyers.`,
+  },
+];
+
+//Agenty - Benefit of partnering with Khabi-teq
+export const benefitData: { title: string; text: string }[] = [
+  {
+    title: 'Marketing Support',
+    text: `Gain exposure through our platform and marketing efforts, ensuring your listings reach the right audience`,
+  },
+  {
+    title: 'Access to Investors',
+    text: `Connect with verified buyers and investors actively seeking properties in your area.`,
+  },
+  {
+    title: 'Transparency',
+    text: `Enjoy clear and straightforward processes, fostering trust and efficiency in every transaction.`,
+  },
+  {
+    title: 'Due Diligence',
+    text: `Benefit from our thorough verification of buyers and sellers, ensuring secure and reliable deals.`,
+  },
+  {
+    title: 'Networking Opportunities',
+    text: `Join a growing community of agents and industry professionals, creating opportunities for collaboration and growth.`,
+  },
+  {
+    title: 'Scalable Platform',
+    text: `Utilize a user-friendly platform designed to support your business as it grows, with tools that simplify property management and transactions.`,
+  },
+];
+
+//FAQs
+export const GeneralFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How do I find a property on Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `What makes Khabi-Teq different?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `How can I contact Khabi-Teq for support?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Is there a fee for using Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Can I inspect a property before renting or buying`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+export const LandlordFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How do I find a property on Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `What makes Khabi-Teq different?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `How can I contact Khabi-Teq for support?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Is there a fee for using Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Can I inspect a property before renting or buying`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+export const TenantsFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How do I find a property on Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `What makes Khabi-Teq different?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `How can I contact Khabi-Teq for support?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Is there a fee for using Khabi-Teq?`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+  {
+    heading: `Can I inspect a property before renting or buying`,
+    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+  },
+];
+
+//Agent ~ Frequently Asked Question
+export const agentFAQsData: { heading: string; text: string }[] = [
+  {
+    heading: `How can I partner with Khabi-Teq as an agent?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+  {
+    heading: `What are the benefits of partnering with Khabi-Teq?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+  {
+    heading: `HIs there a fee to join as an agent?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+  {
+    heading: `Is my data secure with Khabi-Teq?`,
+    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+  },
+];
+
+//CLients feedbacks
+export const clientData: { name: string; text: string; starsRated: number }[] =
+  [
+    {
+      name: 'Michael .A',
+      text: `Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way`,
+      starsRated: 5,
+    },
+    {
+      name: 'Johnson Kent',
+      text: `Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way`,
+      starsRated: 4,
+    },
+    {
+      name: 'Jordan Faraway',
+      text: `Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way`,
+      starsRated: 5,
+    },
+  ];
+
+//Contact Us data
+export const contactUsData: {
+  value: string;
+  icon: StaticImageData;
+  type: string;
+}[] = [
+  {
+    value: 'Khabireqrealty.com',
+    icon: envelopeIcon,
+    type: 'mail',
+  },
+  {
+    value: '070567778906',
+    icon: phoneIcon,
+    type: 'call',
+  },
+  {
+    value: '070454556775',
+    icon: whatsappIcon,
+    type: 'social_media',
+  },
+];
+
+//CardData for section 1
+export const cardData: {
+  header: string;
+  value: string;
+}[] = [
+  {
+    header: 'Property Type',
+    value: 'Residential',
+  },
+  {
+    header: 'Location',
+    value: 'Lagos Ikeja',
+  },
+  {
+    header: 'Property Prices',
+    value: 'Residential',
+  },
+  {
+    header: 'Document',
+    value: 'C of o, recepit,...',
+  },
+  {
+    header: 'Land size',
+    value: `500 m<sup>2</sup>`,
+  },
+  {
+    header: 'Property Features',
+    value: `<ul className='list disc list-inside'><li>4 bed Room</li><li>Parking Space</li><li>Security Features</li></ul>`,
+  },
+];
+
+/**propertyType: 'Residential',
+    location: 'Lagos Ikeja',
+    propertyPrices: 'Residential',
+    document: 'C of o, recepit,...', */
