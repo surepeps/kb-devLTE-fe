@@ -38,7 +38,7 @@ const AgentData = () => {
       }`}>
       <form
         onSubmit={formik.handleSubmit}
-        className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full'>
+        className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full px-[20px]'>
         <div className='w-full min-h-[137px] flex flex-col gap-[24px] justify-center items-center'>
           <h2 className='text-center text-[40px] leading-[49.2px] font-bold text-[#09391C]'>
             Welcome to <span className='text-[#8DDB90]'>Khabi-teq</span> realty
