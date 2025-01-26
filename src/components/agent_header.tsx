@@ -86,6 +86,9 @@ const AgentHeader = () => {
             height={22}
             alt=''
             className='w-[35px] h-[22px] lg:hidden'
+            onClick={() => {
+              setIsModalOpened(true);
+            }}
           />
         </nav>
       </header>

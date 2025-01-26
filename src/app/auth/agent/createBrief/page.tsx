@@ -24,6 +24,14 @@ const Form2 = () => {
   const [detailsToCheckForDraftBrief, setDetailsToCheckForDraftBrief] =
     useState<DataProps>(briefData[0]);
 
+  /**Transaction History */
+  const [showTransactionHistory, setShowTransactionHistory] =
+    useState<boolean>(false);
+  const [
+    detailsToCheckForTransactionHistory,
+    setDetailsToCheckForTransactionHistory,
+  ] = useState<DataProps>(briefData[0]);
+
   return (
     <section
       className={`flex w-full items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
@@ -58,10 +66,10 @@ const Form2 = () => {
         {selectedNav === AgentNavData.TRANSACTION_HISTORY && (
           <Brief
             headerData={transactionHeaderData}
-            detailsToCheck={detailsToCheckForDraftBrief}
-            setShowFullDetails={setShowDraftBriefFullDetails}
-            setDetailsToCheck={setDetailsToCheckForDraftBrief}
-            showFullDetails={showDraftBriefFullDetails}
+            detailsToCheck={detailsToCheckForTransactionHistory}
+            setShowFullDetails={setShowTransactionHistory}
+            setDetailsToCheck={setDetailsToCheckForTransactionHistory}
+            showFullDetails={showTransactionHistory}
             heading='Complete Transaction'
             data={completeTransactionData}
           />

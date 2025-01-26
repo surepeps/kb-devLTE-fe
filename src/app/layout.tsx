@@ -5,12 +5,13 @@ import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
 //import Header from '@/components/header';
 import Footer from '@/components/footer';
-import { epilogue, roboto, archivo } from '@/styles/font';
+import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
 import HeaderLogic from '@/logic/headerLogic';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
-  description: 'Simplifying real estate transactions in Lagos. Buy, sell, rent, and manage properties with ease through Khabi-Teq’s trusted platform',
+  description:
+    'Simplifying real estate transactions in Lagos. Buy, sell, rent, and manage properties with ease through Khabi-Teq’s trusted platform',
   icons: {
     icon: '/khabi-teq.svg',
   },
@@ -25,7 +26,7 @@ export default function RootLayout({
     <PageContextProvider>
       <html lang='en'>
         <body
-          className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} antialiased`}>
+          className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
           {' '}
           <HeaderLogic />
           {children}
