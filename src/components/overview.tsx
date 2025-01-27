@@ -39,11 +39,13 @@ const Overview = () => {
   return (
     <Fragment>
       {isFullDetailsClicked ? (
-        <DetailsToCheck
-          heading='Overview'
-          setIsFullDetailsClicked={setIsFullDetailsClicked}
-          detailsToCheck={detailsToCheck}
-        />
+        <div className='w-full mt-[30px]'>
+          <DetailsToCheck
+            heading='Overview'
+            setIsFullDetailsClicked={setIsFullDetailsClicked}
+            detailsToCheck={detailsToCheck}
+          />
+        </div>
       ) : (
         <div className='lg:w-[805px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[60px] flex flex-col'>
           <div className='w-full min-h-[140px] grid grid-cols-2 lg:flex lg:flex-nowrap items-center gap-[20px]'>
@@ -107,7 +109,8 @@ const Overview = () => {
           {/**Mobile View */}
           <Briefs
             header='Publish Brief'
-            headerData={headerData}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
             briefData={briefData}
           />
         </div>

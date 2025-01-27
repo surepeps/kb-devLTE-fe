@@ -5,8 +5,14 @@ import { FC } from 'react';
 
 interface PublishMobileViewProps {
   item: DataProps;
+  setDetailsToCheck: ({}: DataProps) => void;
+  setShowFullDetails: (type: boolean) => void;
 }
-const PublishMobileView: FC<PublishMobileViewProps> = ({ item }) => {
+const PublishMobileView: FC<PublishMobileViewProps> = ({
+  item,
+  setDetailsToCheck,
+  setShowFullDetails,
+}) => {
   return (
     <div className='w-full min-h-[287px] rounded-[24px] gap-[1px] flex flex-col'>
       <UniformStyling
@@ -40,6 +46,10 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({ item }) => {
       />
 
       <button
+        onClick={() => {
+          setShowFullDetails(true);
+          setDetailsToCheck(item);
+        }}
         type='button'
         className={`w-full min-h-[57px] pt-[10px] pr-[20px] pb-[25px] pl-[20px] flex justify-center items-center bg-[#F7F7F8] text-[#09391C] leading-[22.4px] tracking-[0.1px] font-ubuntu`}>
         View full details
@@ -51,10 +61,16 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({ item }) => {
 interface BriefsProps {
   header: string;
   briefData: DataPropsArray;
-  headerData: string[];
+  setDetailsToCheck: ({}: DataProps) => void;
+  setShowFullDetails: (type: boolean) => void;
 }
 
-const Briefs: FC<BriefsProps> = ({ header, briefData }) => {
+const Briefs: FC<BriefsProps> = ({
+  header,
+  briefData,
+  setDetailsToCheck,
+  setShowFullDetails,
+}) => {
   return (
     <div className='flex md:hidden'>
       <div className='w-full border-[1px] border-[#E4DFDF] min-h-[558px] rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
@@ -62,7 +78,12 @@ const Briefs: FC<BriefsProps> = ({ header, briefData }) => {
           {header}
         </h1>
         {briefData.map((item: DataProps, idx: number) => (
-          <PublishMobileView key={idx} item={item} />
+          <PublishMobileView
+            key={idx}
+            item={item}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setShowFullDetails}
+          />
         ))}
       </div>
     </div>
