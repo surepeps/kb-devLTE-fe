@@ -31,7 +31,7 @@ const HeroSection: FC<HeroSectionProps> = ({
         <div
           style={{ backgroundColor: bgColor }}
           className={`md:w-[50%] lg:w-[40%] w-full lg:h-[536px] flex flex-col gap-[20px] flex-grow-1 px-[20px] lg:px-[40px] py-[20px] lg:py-[40px] border-[1px] border-[${borderColor}`}>
-          <h2 className='lg:text-[60px] font-semibold text-[50px] leading-[55px] lg:leading-[66px] text-[#FFFFFF]'>
+          <h2 className='lg:text-[60px] font-semibold text-[50px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF]'>
             {headingText} <span className='text-[#8DDB90]'>Khabiteq</span>
           </h2>
           <Image

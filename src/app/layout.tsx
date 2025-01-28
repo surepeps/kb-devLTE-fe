@@ -1,4 +1,5 @@
 /** @format */
+/* eslint-disable @next/next/no-page-custom-font */
 
 import type { Metadata } from 'next';
 import './globals.css';
@@ -25,6 +26,12 @@ export default function RootLayout({
   return (
     <PageContextProvider>
       <html lang='en'>
+        <head>
+          <link
+            href='https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600&display=swap'
+            rel='stylesheet'
+          />
+        </head>
         <body
           className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
           {' '}

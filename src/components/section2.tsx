@@ -24,11 +24,23 @@ const Section2 = () => {
   const areHousesVisible = useVisibility(housesRef);
 
   return (
-    <section className='flex justify-center items-center'>
+    <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
       <div className='container min-h-[700px] flex flex-col justify-center items-center gap-[20px] px-[20px] overflow-hidden'>
+        <div className='min-h-[128px] w-full lg:w-[870px] flex flex-col justify-center items-center gap-[9px] pt-[40px]'>
+          <h2 className='text-[20px] lg:text-[36px] lg:leading-[57.6px] leading-[32px] text-[#09391C] text-center font-semibold'>
+            Buyer frequency reference Match
+          </h2>
+          <p className='text-[#5A5D63] text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
+            Your trusted partner in Lagos&apos; real estate market. Since 2020,
+            we&apos;ve been delivering expert solutions with integrity and
+            personalized service, helping you navigate property sales, rentals,
+            and more. Let us help you find your perfect property today
+          </p>
+        </div>
+
         <div
           ref={buttonsRef}
-          className={`w-[344px] md:min-w-[466px] min-h-[38px] gap-[15px] flex ${
+          className={`w-[344px] md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex ${
             areButtonsVisible && 'slide-from-top'
           }`}>
           <Button
@@ -73,17 +85,6 @@ const Section2 = () => {
               buttons.button3 ? '' : 'text-[#5A5D63] '
             }`}
           />
-        </div>
-        <div className='min-h-[128px] w-full flex flex-col justify-center items-center gap-[9px] py-[20px]'>
-          <h2 className='text-[20px] leading-[32px] text-[#000000] font-semibold'>
-            Buyer frequency reference Match
-          </h2>
-          <p className='text-[#5A5D63] text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
-            Your trusted partner in Lagos&apos; real estate market. Since 2020,
-            we&apos;ve been delivering expert solutions with integrity and
-            personalized service, helping you navigate property sales, rentals,
-            and more. Let us help you find your perfect property today
-          </p>
         </div>
         <div
           ref={housesRef}

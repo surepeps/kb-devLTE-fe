@@ -1,7 +1,7 @@
 /** @format */
 
 // styles/font.js
-import { Roboto, Open_Sans, Epilogue, Archivo, Ubuntu } from 'next/font/google';
+import { Roboto, Open_Sans, Epilogue, Archivo, Ubuntu, } from 'next/font/google';
 
 export const roboto = Roboto({
   variable: '--font-roboto',
