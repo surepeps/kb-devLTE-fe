@@ -1,12 +1,9 @@
 /** @format */
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
-//import Header from '@/components/header';
-import Footer from '@/components/footer';
 import { epilogue, roboto, archivo } from '@/styles/font';
-import HeaderLogic from '@/logic/headerLogic';
+import HeaderFooterWrapper from '@/components/header_footer_wrapper';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -27,9 +24,8 @@ export default function RootLayout({
         <body
           className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} antialiased`}>
           {' '}
-          <HeaderLogic />
-          {children}
-          <Footer />
+          {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
+          <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
         </body>
       </html>
     </PageContextProvider>
