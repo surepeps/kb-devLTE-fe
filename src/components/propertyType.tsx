@@ -22,7 +22,7 @@ const PropertyType = () => {
             Property Type
           </h2>
           {/**options */}
-          <div className='min-h-[26px] w-full flex gap-[50px]'>
+          <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
             <RadioCheck type='radio' name='propertyType' value='Residential' />
             <RadioCheck type='radio' name='propertyType' value='Commercial' />
             <RadioCheck type='radio' name='propertyType' value='Land' />
@@ -100,7 +100,7 @@ const PropertyType = () => {
         <div className='min-h-[50px] w-full flex justify-end items-center'>
           <Button
             value='Submit Brief'
-            className='min-h-[50px] lg:w-[256px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
+            className='min-h-[50px] w-full lg:w-[256px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
           />
         </div>
       </div>

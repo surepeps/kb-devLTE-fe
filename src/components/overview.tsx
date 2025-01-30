@@ -6,6 +6,7 @@ import ShowTable from '@/components/showTable';
 import { DataProps } from '@/types/agent_data_props';
 import DetailsToCheck from '@/components/detailsToCheck';
 import { briefData } from '@/data/sampleDataForAgent';
+import Briefs from './mobileBrief';
 
 const Overview = () => {
   const [briefs, setBriefs] = useState({
@@ -38,13 +39,16 @@ const Overview = () => {
   return (
     <Fragment>
       {isFullDetailsClicked ? (
-        <DetailsToCheck
-          setIsFullDetailsClicked={setIsFullDetailsClicked}
-          detailsToCheck={detailsToCheck}
-        />
+        <div className='w-full mt-[30px]'>
+          <DetailsToCheck
+            heading='Overview'
+            setIsFullDetailsClicked={setIsFullDetailsClicked}
+            detailsToCheck={detailsToCheck}
+          />
+        </div>
       ) : (
         <div className='lg:w-[805px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[60px] flex flex-col'>
-          <div className='w-full min-h-[140px] flex flex-wrap lg:flex-nowrap items-center gap-[20px]'>
+          <div className='w-full min-h-[140px] grid grid-cols-2 lg:flex lg:flex-nowrap items-center gap-[20px]'>
             {/**Total Brief */}
             <div className='lg:w-[220px] w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
               <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
@@ -64,7 +68,7 @@ const Overview = () => {
               </h2>
             </div>
             {/**Complete Transaction */}
-            <div className='lg:w-[356px] w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
+            <div className='lg:w-[356px] col-span-2 w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
               <div className='flex justify-between min-h-[24px] border-b-[1px] border-[#E4DFDF] pb-1 w-full'>
                 <span className='text-base leading-[18px] text-[#2CAF67] tracking-[0.25px] font-archivo'>
                   Complete Transaction
@@ -90,12 +94,24 @@ const Overview = () => {
           </div>
 
           {/**Second section */}
-          <ShowTable
-            headerData={headerData}
+          {/**PC View */}
+          <div className='hidden md:flex'>
+            {' '}
+            <ShowTable
+              headerData={headerData}
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setIsFullDetailsClicked}
+              heading='Publish Brief'
+              data={briefData}
+            />
+          </div>
+
+          {/**Mobile View */}
+          <Briefs
+            header='Publish Brief'
             setDetailsToCheck={setDetailsToCheck}
             setShowFullDetails={setIsFullDetailsClicked}
-            heading='Publish Brief'
-            data={briefData}
+            briefData={briefData}
           />
         </div>
       )}

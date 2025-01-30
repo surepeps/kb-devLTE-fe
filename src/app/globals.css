@@ -41,7 +41,11 @@ body {
 }
 
 .font-archivo {
-  font-family: var(--font-archivo);
+  font-family: var(--font-archivo), sans-serif;
+}
+
+.font-ubuntu {
+  font-family: var(--font-ubuntu), sans-serif;
 }
 
 * {

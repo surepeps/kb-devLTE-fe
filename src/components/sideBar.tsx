@@ -14,13 +14,13 @@ const SideBar = ({
   const pathName = usePathname();
   return (
     <section
-      className={`fixed top-0 right-0 z-50 p-[20px] h-full bg-[#EEF1F1] transition-all duration-500 ${
+      className={`fixed top-0 right-0 z-50 p-[20px] shadow-md h-full bg-[#EEF1F1] transition-all duration-1000 ${
         isModalOpened ? 'w-[322px] visible' : 'w-0 invisible'
       } lg:hidden flex`}>
       {isModalOpened && (
-        <nav className='w-[322px] h-[100%] pt-[30px]'>
+        <nav className='w-[322px] h-[100%] pt-[10px]'>
           <button
-            className='absolute right-10'
+            className='absolute right-5'
             onClick={() => {
               setIsModalOpened(false);
             }}

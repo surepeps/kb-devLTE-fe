@@ -1,7 +1,7 @@
 /** @format */
 
 // styles/font.js
-import { Roboto, Open_Sans, Epilogue, Archivo } from 'next/font/google';
+import { Roboto, Open_Sans, Epilogue, Archivo, Ubuntu, } from 'next/font/google';
 
 export const roboto = Roboto({
   variable: '--font-roboto',
@@ -26,4 +26,11 @@ export const archivo = Archivo({
   subsets: ['latin'],
   weight: ['400'],
   variable: '--font-archivo',
+});
+
+export const ubuntu = Ubuntu({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-ubuntu',
 });

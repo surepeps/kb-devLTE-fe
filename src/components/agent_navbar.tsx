@@ -35,12 +35,12 @@ const AgentNav = () => {
           }}
           name={'Create Brief'}
         />
-        <div className='flex gap-[10px] overflow-x-scroll w-full'>
+        <div className='flex gap-[10px] overflow-x-scroll w-full hide-scrollbar'>
           {navData.map((item: string, idx: number) => {
             if (idx >= 1) {
               return (
                 <Box
-                  className='min-w-[162px]'
+                  className='min-w-fit'
                   selectedText={selectedNav}
                   onClick={() => {
                     handleSelect(item);

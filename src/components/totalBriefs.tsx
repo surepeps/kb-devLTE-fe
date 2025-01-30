@@ -26,12 +26,14 @@ const TotalBrief: FC<TotalBriefProps> = ({
           detailsToCheck={detailsToCheck}
         />
       ) : (
-        <ShowTable
-          setDetailsToCheck={setDetailsToCheck}
-          setShowFullDetails={setShowFullDetails}
-          heading={heading}
-          data={data}
-        />
+        <div className='hidden md:flex'>
+          <ShowTable
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setShowFullDetails}
+            heading={heading}
+            data={data}
+          />
+        </div>
       )}
     </div>
   );

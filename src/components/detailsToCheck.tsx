@@ -17,8 +17,8 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
   heading,
 }) => {
   return (
-    <div className='lg:w-[863px] min-h-[342px] mt-[60px] flex flex-col gap-[60px]'>
-      <div className='min-h-[32px] min-w-[268px] flex gap-[24px] items-center'>
+    <div className='lg:w-[863px] w-full min-h-[342px] mt-[5px] lg:mt-[60px] flex flex-col gap-[20px] lg:gap-[60px]'>
+      <div className='min-h-[32px] lg:min-w-[268px] flex gap-[24px] items-center'>
         <Image
           src={arrowRight}
           width={24}
@@ -48,11 +48,11 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
         </div>
       </div>
 
-      <div className='w-full min-h-[310px] border-[1px] py-[30px] flex items-center gap-[39px] border-[#E9EBEB] bg-[#FFFFFF]'>
-        <div className='h-[250px] w-[592px]'>
+      <div className='w-full min-h-[310px] border-[1px] py-[30px] flex lg:flex-row flex-col items-center gap-[39px] border-[#E9EBEB] bg-[#FFFFFF]'>
+        <div className='h-[250px] lg:w-[592px] w-full'>
           {/**Property Type and Property Price */}
           <div className='w-full min-h-[70px] py-[9px] px-[24px] flex gap-[100px]'>
-            <div className='min-w-[142px] min-h-[52px] flex flex-col'>
+            <div className='lg:min-w-[142px] min-h-[52px] flex flex-col'>
               <span className='text-[14px] leading-[22.4px] tracking-[0.1px] font-normal text-[#585B6C]'>
                 Property Type
               </span>
@@ -60,7 +60,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                 {detailsToCheck.propertyType}
               </span>
             </div>
-            <div className='min-w-[142px] min-h-[52px] flex flex-col'>
+            <div className='lg:min-w-[142px] min-h-[52px] flex flex-col'>
               <span className='text-[14px] leading-[22.4px] tracking-[0.1px] font-normal text-[#585B6C]'>
                 Property price
               </span>
@@ -72,7 +72,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
 
           {/**Location and Property Features */}
           <div className='w-full min-h-[70px] py-[9px] px-[24px] flex gap-[100px]'>
-            <div className='min-w-[142px] min-h-[52px] flex flex-col'>
+            <div className='lg:min-w-[142px] min-h-[52px] flex flex-col'>
               <span className='text-[14px] leading-[22.4px] tracking-[0.1px] font-normal text-[#585B6C]'>
                 Location
               </span>
@@ -80,7 +80,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                 {detailsToCheck.location}
               </span>
             </div>
-            <div className='min-w-[142px] min-h-[52px] flex flex-col'>
+            <div className='lg:min-w-[142px] min-h-[52px] flex flex-col'>
               <span className='text-[14px] leading-[22.4px] tracking-[0.1px] font-normal text-[#585B6C]'>
                 Property Features
               </span>
@@ -95,7 +95,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
 
           {/**Date Created and Document  */}
           <div className='w-full min-h-[70px] py-[9px] px-[24px] flex gap-[100px]'>
-            <div className='min-w-[142px] min-h-[52px] flex flex-col'>
+            <div className='lg:min-w-[142px] min-h-[52px] flex flex-col'>
               <span className='text-[14px] leading-[22.4px] tracking-[0.1px] font-normal text-[#585B6C]'>
                 Date Created
               </span>

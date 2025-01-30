@@ -54,8 +54,8 @@ const Section1: FC<Section1Props> = ({ text, displayCounts, headingColor }) => {
                 return (
                   <div
                     key={idx}
-                    className={`flex flex-col gap-[1px] border-r-[2px] pr-[30px] ${
-                      idx === section1Data.length - 1 ? 'border-r-0' : ''
+                    className={`flex flex-col gap-[1px] border-r-[2px] px-[10px] md:pr-[30px] ${
+                      idx === section1Data.length - 1 ? 'border-none' : ''
                     }`}>
                     <h2 className='text-[#0B423D] font-bold text-[18px] lg:text-[28px] leading-[28px] lg:leading-[44px]'>
                       {count} +

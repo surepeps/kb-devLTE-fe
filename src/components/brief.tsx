@@ -5,6 +5,7 @@ import { FC } from 'react';
 import DetailsToCheck from '@/components/detailsToCheck';
 import { ShowTableProps } from '@/types/show_table';
 import ShowTable from '@/components/showTable';
+import Briefs from './mobileBrief';
 
 interface TotalBriefProps extends ShowTableProps {
   detailsToCheck: DataProps;
@@ -20,7 +21,7 @@ const Brief: FC<TotalBriefProps> = ({
   headerData,
 }) => {
   return (
-    <div className='lg:w-[863px] mt-[60px] flex items-center justify-center'>
+    <div className='lg:w-[863px] w-full mt-[60px] flex items-center justify-center'>
       {showFullDetails ? (
         <DetailsToCheck
           heading={heading}
@@ -28,13 +29,26 @@ const Brief: FC<TotalBriefProps> = ({
           detailsToCheck={detailsToCheck}
         />
       ) : (
-        <ShowTable
-          headerData={headerData}
-          setDetailsToCheck={setDetailsToCheck}
-          setShowFullDetails={setShowFullDetails}
-          heading={heading}
-          data={data}
-        />
+        <>
+          <div className='hidden md:flex'>
+            <ShowTable
+              headerData={headerData}
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setShowFullDetails}
+              heading={heading}
+              data={data}
+            />
+          </div>
+          {/**Mobile View */}
+          <div className='w-full'>
+            <Briefs
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setShowFullDetails}
+              header={heading}
+              briefData={data}
+            />
+          </div>
+        </>
       )}
     </div>
   );
