@@ -1,15 +1,14 @@
+
+
 import { ReactNode } from "react";
+import AdminNavbar from "@/components/admincomponents/navbar";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="admin-container">
-      <nav>
-        <ul>
-          <li><a href="/admin/dashboard">Dashboard</a></li>
-          <li><a href="/admin/settings">Settings</a></li>
-        </ul>
-      </nav>
-      <main>{children}</main>
-    </div>
+    <main className="w-full min-h-full flex">
+      <AdminNavbar />
+      {/* Content */}
+      <section className="flex-1 p-4">{children}</section>
+    </main>
   );
 }
