@@ -5,7 +5,7 @@ import AdminNavbar from "@/components/admincomponents/navbar";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="w-full min-h-full flex">
+    <main className="w-screen min-h-full flex bg-[#fafafa]">
       <AdminNavbar />
       {/* Content */}
       <section className="flex-1 p-4">{children}</section>

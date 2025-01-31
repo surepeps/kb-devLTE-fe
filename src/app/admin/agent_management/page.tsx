@@ -1,8 +1,9 @@
 export default function AgentManagement () {
     return (
-        <div>
+        <section>
             <h1>Agent Management</h1>
-        </div>
+            
+        </section>
     )
 }
 
