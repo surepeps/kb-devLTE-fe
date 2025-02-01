@@ -18,7 +18,7 @@ const Card = ({ isRed }: { isRed?: boolean }) => {
     }
   }, [count]);
   return (
-    <div className='md:w-[266px] w-full min-h-[446px] bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500'>
+    <div className='lg:w-[266px] w-full min-h-[446px] bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500'>
       <div className='flex flex-col gap-[3px] w-full'>
         <BreadCrumb limit={count} />
         <button

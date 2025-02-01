@@ -18,8 +18,8 @@ const NewSection = () => {
   const isInView3 = useInView(ref3, { once: false });
   return (
     <section className='w-full flex items-center justify-center pt-[70px]'>
-      <div className='container w-full flex lg:flex-row flex-col min-h-[528px] gap-[64px] lg:pl-[20px] lg:pr-0 px-[20px]'>
-        <div className='lg:w-[483px] min-h-[496px] flex flex-col gap-[31px]'>
+      <div className='container w-full flex md:flex-row flex-col min-h-[528px] gap-[64px] lg:pl-[20px] lg:pr-0 px-[20px]'>
+        <div className='lg:w-[483px] w-1/2 min-h-[496px] flex flex-col gap-[31px]'>
           <h2 className='leading-[41.02px] text-[35px] text-[#09391C] font-bold'>
             How Khabi-Teq Works for You
           </h2>
@@ -184,14 +184,14 @@ const Container: FC<ContainerProps> = ({ heading, text, buttons }) => {
         />
       </div>
       <motion.div
-        initial={{ visibility: 'hidden', height: 0 }}
+        initial={{ visibility: 'hidden' }}
         animate={
-          isModalOpened
-            ? { visibility: 'visible', minHeight: '100px' }
-            : { visibility: 'hidden', height: 0 }
+          isModalOpened ? { visibility: 'visible' } : { visibility: 'hidden' }
         }
         transition={{ delay: 0.3 }}
-        className='w-full px-[30px] flex flex-col gap-[5px]'>
+        className={`'w-full px-[30px] flex flex-col gap-[5px] ${
+          isModalOpened ? 'min-h-[100px]' : 'h-0'
+        }`}>
         <motion.p
           initial={{ opacity: 0 }}
           animate={isModalOpened ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}

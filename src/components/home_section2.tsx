@@ -29,7 +29,7 @@ const Section2 = () => {
           className='text-[35px] text-[#09391C] lg:leading-[41.02px] text-center font-bold'>
           Why Khabi-Teq Is Your Trusted Real Estate Partner
         </motion.h2>
-        <div className='w-full min-h-[412px] flex justify-center items-center lg:flex-row gap-[25px] flex-col'>
+        <div className='w-full min-h-[412px] flex justify-center items-center md:grid md:grid-cols-2 lg:flex lg:flex-row gap-[25px] flex-col'>
           {cardData.map((item: CardProps, idx: number) => (
             <Card key={idx} {...item} />
           ))}

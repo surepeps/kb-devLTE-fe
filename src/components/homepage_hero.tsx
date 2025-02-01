@@ -57,10 +57,10 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className='flex items-center justify-center gap-[27px] min-h-[66px] lg:w-[604px] lg:flex-row flex-col'>
+            className='flex items-center justify-center gap-[27px] min-h-[66px] w-full lg:w-[604px] md:flex-row flex-col'>
             <Button
               green={true}
-              className='h-[66px] w-full lg:w-[283px] py-[12px] px-[24px] text-white text-[20px] leading-[32px] font-bold'
+              className='h-[66px] w-full md:w-1/2 lg:w-[283px] py-[12px] px-[24px] text-white text-[20px] leading-[32px] font-bold'
               value={'Submit Your Preference'}
               onClick={() => {
                 window.location.href = '/auth/agent';
@@ -68,7 +68,7 @@ const HeroSection = () => {
             />
             <Button
               green={true}
-              className='h-[66px] w-full lg:w-[294px] py-[12px] px-[24px] text-white text-[20px] leading-[32px] font-bold'
+              className='h-[66px] w-full md:w-1/2 lg:w-[294px] py-[12px] px-[24px] text-white text-[20px] leading-[32px] font-bold'
               value={'Submit Your Brief'}
               onClick={() => {
                 window.location.href = '/auth/agent';
