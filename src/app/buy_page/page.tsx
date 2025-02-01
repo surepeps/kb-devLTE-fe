@@ -147,7 +147,7 @@ const Buy = () => {
               height={24}
               className='w-[24px] h-[24px]'
             />
-            <div className='flex gap-2 items-center align-middle'>
+            <div className='flex gap-2 items-center justify-center align-middle'>
               <Link
                 href={'/'}
                 className='text-[20px] leading-[32px] text-[#25324B] font-normal'>

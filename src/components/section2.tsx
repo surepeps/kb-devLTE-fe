@@ -9,6 +9,7 @@ import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
 import { useVisibility } from '@/hooks/useVisibility';
 import Card from './card';
+import { motion, useInView } from 'framer-motion';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -21,14 +22,14 @@ const Section2 = () => {
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areButtonsVisible = useVisibility(buttonsRef);
-  const areHousesVisible = useVisibility(housesRef);
+  const areHousesVisible = useInView(housesRef, { once: false });
 
   return (
     <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
       <div className='container min-h-[700px] flex flex-col justify-center items-center gap-[20px] px-[20px] overflow-hidden'>
         <div className='min-h-[128px] w-full lg:w-[870px] flex flex-col justify-center items-center gap-[9px] pt-[40px]'>
-          <h2 className='text-[20px] lg:text-[36px] lg:leading-[57.6px] leading-[32px] text-[#09391C] text-center font-semibold'>
-            Buyer frequency reference Match
+          <h2 className='text-[24px] leading-[28.13px] lg:text-[36px] lg:leading-[57.6px] md:leading-[32px] text-[#09391C] text-center font-semibold'>
+            See What Other Buyers Are Exploring
           </h2>
           <p className='text-[#5A5D63] text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
             Your trusted partner in Lagos&apos; real estate market. Since 2020,
@@ -44,7 +45,7 @@ const Section2 = () => {
             areButtonsVisible && 'slide-from-top'
           }`}>
           <Button
-            value='Hone for sale'
+            value='Property insight'
             green={buttons.button1}
             onClick={() => {
               setButtons({
@@ -53,7 +54,7 @@ const Section2 = () => {
                 button3: false,
               });
             }}
-            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:w-[168px] ${
+            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button1 ? '' : 'text-[#5A5D63]'
             }`}
           />
@@ -67,7 +68,7 @@ const Section2 = () => {
                 button3: false,
               });
             }}
-            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:w-[168px] ${
+            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button2 ? '' : 'text-[#5A5D63]'
             }`}
           />
@@ -81,16 +82,17 @@ const Section2 = () => {
                 button3: true,
               });
             }}
-            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:w-[168px] ${
+            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button3 ? '' : 'text-[#5A5D63] '
             }`}
           />
         </div>
-        <div
+        <motion.div
           ref={housesRef}
-          className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px] ${
-            areHousesVisible && 'slide-from-right'
-          }`}>
+          initial={{ opacity: 0, x: 20 }}
+          animate={areHousesVisible ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.3 }}
+          className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px]`}>
           {Array.from({ length: 4 }).map((__, idx: number) => {
             return (
               // <HouseFrame
@@ -105,7 +107,7 @@ const Section2 = () => {
               <Card key={idx} />
             );
           })}
-        </div>
+        </motion.div>
         <div className='flex justify-center items-center mt-6'>
           <button
             type='button'
