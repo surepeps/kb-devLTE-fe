@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +31,7 @@ export default function ActivitiesScroll() {
                 </p>
               </div>
               <p className="text-gray-700 text-sm mt-2">
-                James Joseph Bond account has been deactivated because he's a...
+                James Joseph Bond account has been deactivated because he&apos;s a...
                 <span className="text-blue-500 cursor-pointer"> view more</span>
               </p>
               <p className="flex text-xs justify-end text-gray-400 mt-2">

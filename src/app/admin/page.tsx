@@ -1,18 +1,11 @@
-"use client";
 import {
   faMagnifyingGlass,
   faQuestion,
-  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ActivitiesScroll from "@/components/admincomponents/activities_scroll";
-import { useState } from "react";
-import PendingBriefs from "@/components/admincomponents/pending_briefs";
 import AttentionOverview from "@/components/admincomponents/attention_overview";
-import OverdueBriefs from "@/components/admincomponents/overdue_brief"
 
 export default function AdminHome() {
-  const [active, setActive] = useState("pending");
   return (
     <section>
       <div className="flex justify-between items-center">
