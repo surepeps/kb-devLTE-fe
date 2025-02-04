@@ -28,7 +28,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className={`w-full blended-image lg:h-[536px] flex flex-col gap-[20px] px-[20px] lg:px-[40px] py-[20px] lg:py-[40px] border-[3px] justify-center items-center`}>
+          className={`w-full blended-image md:h-[536px] flex flex-col gap-[20px] px-[20px] lg:px-[40px] py-[20px] lg:py-[40px] border-[3px] justify-center items-center`}>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

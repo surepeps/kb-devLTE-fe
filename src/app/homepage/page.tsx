@@ -10,7 +10,7 @@ import SeeWhatOthers from '@/components/section2';
 import Section3 from '@/components/section3';
 import FAQs from '@/components/FAQs';
 import Feedback from '@/components/feedback';
-import HelpButton from '@/components/helpButton';
+import HelpButton from '@/components/home_helpbutton';
 import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 //import homeImage from '@/assets/assets.png';
@@ -63,7 +63,7 @@ const Homepage = () => {
           />
           <FAQs isHomePage={true} />
           <Feedback />
-          <HelpButton isHomePage={true} />
+          <HelpButton />
         </main>
       </section>
     </Fragment>

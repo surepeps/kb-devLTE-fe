@@ -1,36 +1,37 @@
 /** @format */
 'use client';
 import Loading from '@/components/loading';
-import PropertyReference from '@/components/propertyReference';
 import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
-import Card from '@/components/card';
+//import Card from '@/components/card';
 import { Fragment, useState } from 'react';
-import Button from '@/components/button';
+//import Button from '@/components/button';
 import ContactUs from '@/components/contact_information';
+import RentalReference from '@/components/rentalReference';
+import HouseFrame from '@/components/house-frame';
+import imgSample from '@/assets/assets.png';
 
 export default function Rent() {
   const isLoading = useLoading();
-  const { isContactUsClicked, setRentPage, rentPage, isModalOpened } =
-    usePageContext();
-  const [found, setFound] = useState({
-    isFound: false,
-    count: 0,
-  });
-  const [isSelectedBriefClicked, setIsSelectedBriefClicked] =
-    useState<boolean>(false);
-  const [text, setText] = useState<string>('View selected Brief');
+  const { isContactUsClicked, rentPage, isModalOpened } = usePageContext();
+  // const [found, setFound] = useState({
+  //   isFound: false,
+  //   count: 0,
+  // });
+  //const [isSelectedBriefClicked, setIsSelectedBriefClicked] =
+  useState<boolean>(false);
+  //const [text, setText] = useState<string>('View selected Brief');
 
-  const viewSelectedBrief = () => {
-    if (text === 'View selected Brief') {
-      setIsSelectedBriefClicked(true);
-      setText('Hide selected Brief');
-    } else if (text === 'Hide selected Brief') {
-      setIsSelectedBriefClicked(!isSelectedBriefClicked);
-      setText('View selected Brief');
-    }
-  };
+  // const viewSelectedBrief = () => {
+  //   if (text === 'View selected Brief') {
+  //     setIsSelectedBriefClicked(true);
+  //     setText('Hide selected Brief');
+  //   } else if (text === 'Hide selected Brief') {
+  //     setIsSelectedBriefClicked(!isSelectedBriefClicked);
+  //     setText('View selected Brief');
+  //   }
+  // };
 
   if (isLoading) return <Loading />;
   return (
@@ -44,16 +45,11 @@ export default function Rent() {
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-epilogue'>
-            Enter Your{' '}
-            <span className='text-[#8DDB90]'>Property Reference</span>
+            Submit Your <span className='text-[#8DDB90]'>Rental Reference</span>
           </h2>
-          <PropertyReference
-            found={found}
-            setFound={setFound}
-            propertyReferenceData={propertyReferenceData}
-          />
-          <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px]'>
-            {/**Found */}
+          <RentalReference rentalReferenceData={propertyReferenceData} />
+          {/* <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px]'>
+            
             <div className='flex flex-col gap-2 w-full'>
               {found.isFound && (
                 <div className='flex justify-between'>
@@ -112,7 +108,7 @@ export default function Rent() {
                 ))}
               </div>
             </div>
-            {/**Submit for inspection */}
+           
             {found.isFound && (
               <div
                 className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] ${
@@ -136,6 +132,21 @@ export default function Rent() {
                 />
               </div>
             )}
+          </div> */}
+          <div className='w-full px-[20px] flex flex-col'>
+            <div className='flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
+              {Array.from({ length: 8 }).map((__, idx: number) => (
+                <HouseFrame
+                  key={idx}
+                  title='Sample'
+                  image={imgSample}
+                  location=''
+                  bedroom={4}
+                  bathroom={3}
+                  carPark={2}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
