@@ -29,7 +29,7 @@ const AboutUs = () => {
         }`}>
         <div className='container min-h-[1000px] flex flex-col items-center lg:px-[40px] overflow-hidden py-[30px] lg:py-[60px] px-[20px]'>
           <h2
-            className={`min-h-[66px] font-semibold lg:text-[60px] lg:leading-[66px] text-[30px] leading-[33px] text-[#000000] ${'slide-from-right'}`}>
+            className={`min-h-[66px] font-semibold lg:text-[60px] lg:leading-[66px] text-[30px] leading-[33px] text-[#000000] ${'slide-from-right'} font-display`}>
             About <span className='text-[#8DDB90]'>Khabiteq</span>
           </h2>
           <p className='font-normal text-[#5A5D63] lg:text-[24px] lg:leading-[38px] text-base leading-[25.6px] tracking-[5%] text-center lg:mt-[40px] slide-from-left'>

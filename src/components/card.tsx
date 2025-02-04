@@ -18,12 +18,12 @@ const Card = ({ isRed }: { isRed?: boolean }) => {
     }
   }, [count]);
   return (
-    <div className='md:w-[266px] w-full min-h-[446px] bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500'>
+    <div className='lg:w-[266px] w-full min-h-[446px] bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500'>
       <div className='flex flex-col gap-[3px] w-full'>
         <BreadCrumb limit={count} />
         <button
           type='button'
-          className='min-h-[42px] border-[1px] py-[10px] px-[20px] bg-[#F3F8FC] flex justify-center items-center text-[14px] leading-[22.4px] text-[#1976D2] tracking-[0.1px]'>
+          className='min-h-[42px] border-[1px] py-[10px] px-[20px] bg-[#F3F8FC] flex justify-center items-center text-[14px] leading-[22.4px] font-ubuntu text-[#1976D2] tracking-[0.1px]'>
           View Image
         </button>
         <button
@@ -34,7 +34,7 @@ const Card = ({ isRed }: { isRed?: boolean }) => {
               setCount(4);
             }
           }}
-          className='min-h-[37px] border-[1px] py-[10px] px-[20px] bg-[#F7F7F8] flex justify-center items-center text-[12px] leading-[19.2px] text-[#5A5D63] tracking-[0.1px] gap-1'>
+          className='min-h-[37px] border-[1px] py-[10px] px-[20px] bg-[#F7F7F8] flex justify-center items-center text-[12px] leading-[19.2px] text-[#5A5D63] tracking-[0.1px] gap-1 font-ubuntu'>
           <span>{text}</span>
           <Image
             src={arrowDown}
@@ -72,12 +72,12 @@ const BreadCrumb = ({ limit }: { limit: number }) => {
             <div
               key={idx}
               className='min-h-[60px] w-full py-[5px] px-[20px] gap-[6px] flex flex-row justify-between items-center lg:items-start lg:flex-col bg-[#F7F7F8]'>
-              <h2 className='text-[14px] leading-[22.4px] tracking-[0.1px] text-[#707281]'>
+              <h2 className='text-[14px] font-ubuntu leading-[22.4px] tracking-[0.1px] text-[#707281]'>
                 {item.header}
               </h2>
               <span
                 dangerouslySetInnerHTML={{ __html: item.value }}
-                className='font-medium text-[14px] leading-[22.4px] tracking-[0.1px] text-[#0B0D0C]'
+                className='font-medium text-[14px] font-ubuntu leading-[22.4px] tracking-[0.1px] text-[#0B0D0C]'
               />
             </div>
           );

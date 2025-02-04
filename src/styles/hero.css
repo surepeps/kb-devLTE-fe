@@ -1,0 +1,9 @@
+/** @format */
+
+.blended-image {
+  background-image: url('../assets/assets.png');
+  background-color: #0b423db2;
+  background-blend-mode: soft-light;
+  background-size: cover;
+  background-position: center;
+}
