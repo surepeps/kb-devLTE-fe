@@ -14,7 +14,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "country-state-city": "^3.2.1",
+    "embla-carousel-react": "^8.5.2",
     "formik": "^2.4.6",
     "framer-motion": "^11.16.0",
     "khabi-teq": "file:",
