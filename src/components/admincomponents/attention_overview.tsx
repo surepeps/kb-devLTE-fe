@@ -1,17 +1,15 @@
 "use client";
-import {
-  faBars,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ActivitiesScroll from "@/components/admincomponents/activities_scroll";
 import { useState, Fragment } from "react";
 import PendingBriefs from "@/components/admincomponents/pending_briefs";
-import OverdueBriefs from "@/components/admincomponents/overdue_brief"
+import OverdueBriefs from "@/components/admincomponents/overdue_brief";
 export default function AttentionOverview() {
-    const [active, setActive] = useState("pending");
-    return (
-        <Fragment>
-             <div className="bg-white flex flex-col border h-auto rounded-md mt-6 mr-3">
+  const [active, setActive] = useState("pending");
+  return (
+    <Fragment>
+      <div className="bg-white flex flex-col border h-auto rounded-md mt-6 mr-3">
         <div className=" border-b flex justify-between items-center px-6 py-2">
           <h3 className="text-[#2E2C34] text-xl font-medium ">
             Admins Activities
@@ -31,18 +29,6 @@ export default function AttentionOverview() {
           </div>
         </div>
         <ActivitiesScroll />
-        {/* <div className="flex justify-between items-center  px-6 py-2">
-          <button className="border rounded-full py:6 px-2 hover:bg-[#8DDB90] hover:text-white">
-            <FontAwesomeIcon
-              icon={faChevronLeft}
-            />
-          </button>
-          <button className="border rounded-full py:6 px-2 hover:bg-[#8DDB90] hover:text-white">
-            <FontAwesomeIcon
-              icon={faChevronRight}
-            />
-          </button>
-        </div> */}
       </div>
       <div className="pt-6">
         <div className="flex border-b text-lg gap-8 ">
@@ -75,6 +61,6 @@ export default function AttentionOverview() {
         </div>
         {active === "pending" ? <PendingBriefs /> : <OverdueBriefs />}
       </div>
-        </Fragment>
-    )
+    </Fragment>
+  );
 }
