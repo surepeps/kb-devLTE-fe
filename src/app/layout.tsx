@@ -27,12 +27,6 @@ export default function RootLayout({
   return (
     <PageContextProvider>
       <html lang='en'>
-        <head>
-          <link
-            href='https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600&display=swap'
-            rel='stylesheet'
-          />
-        </head>
         <body
           className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
           {' '}

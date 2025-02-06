@@ -4,21 +4,29 @@ import Button from '@/components/button';
 import Loading from '@/components/loading';
 // import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
-import React from 'react';
+import React, { useState } from 'react';
 import RadioCheck from '@/components/radioCheck';
 import Input from '@/components/Input';
 import Select from '@/components/select';
 
+interface Option {
+  value: string;
+  label: string;
+}
 const Sell = () => {
   const isLoading = useLoading();
+  const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedCity, setSelectedCity] = useState<Option | null>(null);
 
   if (isLoading) return <Loading />;
   return (
     <section
       className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
       <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
-        <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-epilogue text-center text-[30px] leading-[41px]'>
-          Submit Your <span className='text-[#8DDB90]'>Property Brief</span>
+        <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
+          Submit Your{' '}
+          <span className='text-[#8DDB90] font-display'>Property Brief</span>
         </h2>
         <div className='lg:w-[953px] w-full text-[24px] leading-[38.4px] text-[#5A5D63] font-normal text-center'>
           Khabi-Teq helps you reach a wide network of potential buyers and
@@ -27,7 +35,7 @@ const Sell = () => {
           and streamlines negotiations for a smooth and successful sale
         </div>
         <div className='lg:w-[877px] w-full'>
-          <h3 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C] lg:py-[40px] py-[20px] lg:px-[80px] w-full'>
+          <h3 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C] lg:py-[30px] py-[20px] lg:px-[80px] w-full'>
             Brief Details
           </h3>
 
@@ -53,15 +61,72 @@ const Sell = () => {
                     <RadioCheck type='radio' value='Land' name='property' />
                   </div>
                 </div>
+                {/**Usage Options */}
+                <div className='min-h-[73px] flex flex-col gap-[15px]'>
+                  <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                    Usage Options
+                  </h2>
+                  <div className='flex flex-wrap gap-[15px] w-full'>
+                    <RadioCheck
+                      type='checkbox'
+                      value='All'
+                      name='usageOptions'
+                    />
+                    <RadioCheck
+                      type='checkbox'
+                      value='Lease'
+                      name='usageOption'
+                    />
+                    <RadioCheck
+                      type='checkbox'
+                      value='Joint Venture (JV)'
+                      name='usageOption'
+                    />
+                    <RadioCheck
+                      type='checkbox'
+                      value='Outright Sale'
+                      name='usageOption'
+                    />
+                  </div>
+                </div>
                 {/**Location */}
                 <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
                   <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                     Location
                   </h2>
-                  <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
-                    <Input name='State' type='text' />
+                  <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                    <Input
+                      name='Address'
+                      selectedCountry={selectedCountry}
+                      setSelectedCountry={(option) => {
+                        setSelectedCountry(option);
+                        setSelectedState(null); // Reset state when country changes
+                        setSelectedCity(null); // Reset city when country changes
+                      }}
+                      forCountry={true}
+                      type='text'
+                    />
+                    <Input
+                      name='State'
+                      selectedCountry={selectedCountry} // Ensure state dropdown receives country
+                      selectedState={selectedState}
+                      setSelectedState={(option) => {
+                        setSelectedState(option);
+                        setSelectedCity(null); // Reset city when state changes
+                      }}
+                      forState={true}
+                      type='text'
+                    />
                     <Input name='local government' type='text' />
-                    <Input name='Area' type='text' />
+                    <Input
+                      name='Area'
+                      forCity={true}
+                      selectedCountry={selectedCountry}
+                      selectedState={selectedState} // Ensure city dropdown receives state
+                      selectedCity={selectedCity}
+                      setSelectedCity={setSelectedCity}
+                      type='text'
+                    />
                   </div>
                 </div>
                 {/**Price */}
