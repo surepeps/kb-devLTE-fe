@@ -6,6 +6,10 @@ export const propertyReferenceData: { heading: string; options: string[] }[] = [
     options: ['Sample 1', ' Sample 2', 'Sample 3'],
   },
   {
+    heading: 'Usage Options',
+    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+  },
+  {
     heading: 'Budget Range',
     options: ['Sample 1', ' Sample 2', 'Sample 3'],
   },

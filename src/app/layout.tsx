@@ -7,6 +7,7 @@ import { PageContextProvider } from '@/context/page-context';
 import HeaderFooterWrapper from '@/components/header_footer_wrapper';
 //import Header from '@/components/header';
 import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -36,6 +37,7 @@ export default function RootLayout({
           {' '}
           {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
           <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
+          <Toaster />
         </body>
       </html>
     </PageContextProvider>

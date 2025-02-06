@@ -10,6 +10,7 @@ import arrowIcon from '@/svgs/arrowIcon.svg';
 import { useVisibility } from '@/hooks/useVisibility';
 import Card from './card';
 import { motion, useInView } from 'framer-motion';
+import { cardDataArray } from '@/data';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -93,19 +94,10 @@ const Section2 = () => {
           animate={areHousesVisible ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.3 }}
           className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px]`}>
-          {Array.from({ length: 4 }).map((__, idx: number) => {
-            return (
-              // <HouseFrame
-              //   key={idx}
-              //   image={houseImage}
-              //   title='Contemporary Bedroom Home'
-              //   location='Ikoyi'
-              //   bedroom={5}
-              //   bathroom={2}
-              //   carPark={3}
-              // />
-              <Card key={idx} />
-            );
+          {cardDataArray.map((item, idx: number) => {
+            if (idx <= 3) {
+              return <Card cardData={item} key={idx} />;
+            }
           })}
         </motion.div>
         <div className='flex justify-center items-center mt-6'>
