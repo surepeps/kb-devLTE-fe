@@ -19,6 +19,11 @@ export const PageContextProvider = ({
 
   const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
 
+  /**
+   * View image
+   */
+  const [viewImage, setViewImage] = useState<boolean>(false);
+
   return (
     <PageContext.Provider
       value={{
@@ -30,6 +35,8 @@ export const PageContextProvider = ({
         setSelectedNav,
         isModalOpened,
         setIsModalOpened,
+        viewImage,
+        setViewImage,
       }}>
       {children}
     </PageContext.Provider>

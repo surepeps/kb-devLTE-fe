@@ -11,6 +11,7 @@ interface HouseFrameProps {
   bedroom: number;
   bathroom: number;
   carPark: number;
+  onClick?: () => void;
 }
 
 const HouseFrame: FC<HouseFrameProps> = ({
@@ -20,9 +21,12 @@ const HouseFrame: FC<HouseFrameProps> = ({
   bedroom,
   bathroom,
   carPark,
+  onClick,
 }) => {
   return (
-    <div className='lg:w-[343px] min-h-[342px] flex flex-col gap-[11px]'>
+    <div
+      onClick={onClick}
+      className='w-full min-h-[342px] flex flex-col gap-[11px] cursor-pointer'>
       <Image
         src={image}
         width={1000}

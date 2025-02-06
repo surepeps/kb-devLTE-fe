@@ -18,4 +18,7 @@ export interface GlobalContextTypes {
   //modal bar
   isModalOpened: boolean;
   setIsModalOpened: (type: boolean) => void;
+  //view Image
+  viewImage: boolean;
+  setViewImage: (type: boolean) => void;
 }

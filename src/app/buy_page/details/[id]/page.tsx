@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
-import React, { Fragment, MouseEventHandler, useState } from 'react';
+import React, { Fragment, MouseEventHandler, useEffect, useState } from 'react';
 import arrowRightIcon from '@/svgs/arrowR.svg';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -26,10 +26,10 @@ import PhoneInput, {
 } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import Select from 'react-select';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 
 interface DetailsProps {
-  price: number | string;
+  price: number;
   propertyType: string;
   bedRoom: number;
   propertyStatus: string;
@@ -49,12 +49,15 @@ const Buy = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const isLoading = useLoading();
   const [details, setDetails] = useState<DetailsProps>({
-    price: '1,000,000,000',
-    propertyType: 'Residential',
-    bedRoom: 5,
-    propertyStatus: 'For Sale',
+    price: 0,
+    propertyType: '',
+    bedRoom: 0,
+    propertyStatus: '',
   });
+  const [featureData, setFeatureData] = useState<string[]>([]);
   const path = usePathname();
+  const { id } = useParams();
+  const router = useRouter();
 
   const handlePreviousSlide = () => {
     const scrollableElement = document.getElementById(
@@ -140,6 +143,27 @@ const Buy = () => {
       console.log(values);
     },
   });
+
+  //fetch data from the backend
+  //uncomment when the endpoint is given
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const response = await fetch(`/data/${id}`);
+  //     console.log(response.json());
+  //   };
+  //   getData();
+  // });
+
+  //simulate render for now
+  useEffect(() => {
+    setDetails({
+      price: 1000000000,
+      propertyType: 'Residential',
+      bedRoom: 5,
+      propertyStatus: 'For Sale',
+    });
+    setFeatureData(featuresData);
+  }, []);
 
   if (isLoading) return <Loading />;
 
@@ -233,7 +257,7 @@ const Buy = () => {
                         Price
                       </h4>
                       <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
-                        {details.price}
+                        {Number(details.price).toLocaleString()}
                       </h3>
                     </div>
 
@@ -277,7 +301,7 @@ const Buy = () => {
                   </h2>
 
                   <div className='w-full grid grid-cols-2 mt-[10px] gap-[8px]'>
-                    {featuresData.map((item: string, idx: number) => {
+                    {featureData.map((item: string, idx: number) => {
                       return (
                         <div key={idx} className='flex items-center gap-[8px]'>
                           <Image
@@ -450,6 +474,9 @@ const Buy = () => {
                       bedroom={5}
                       bathroom={2}
                       carPark={3}
+                      onClick={() => {
+                        router.push(`/buy_page/details/${idx}`);
+                      }}
                     />
                   );
                 })}

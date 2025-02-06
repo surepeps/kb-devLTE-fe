@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use clients';
-import React, { Fragment, MouseEvent, useEffect } from 'react';
+import React, { Fragment, MouseEvent } from 'react';
 import Button from './button';
 import ReactSelect from 'react-select';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
@@ -72,11 +72,6 @@ const PropertyReference = ({
     console.log(e);
   };
 
-  useEffect(() => {
-    if (!formik.values) {
-      toast.error('Please, fill all the required inputs');
-    }
-  }, [formik.handleSubmit, formik.values]);
   return (
     <Fragment>
       <div className='min-h-[250px] lg:min-h-[250px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>

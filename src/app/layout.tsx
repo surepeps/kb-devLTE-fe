@@ -8,6 +8,7 @@ import HeaderFooterWrapper from '@/components/header_footer_wrapper';
 //import Header from '@/components/header';
 import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
 import { Toaster } from 'react-hot-toast';
+import Body from '@/components/body';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -36,7 +37,9 @@ export default function RootLayout({
           className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
           {' '}
           {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-          <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
+          <HeaderFooterWrapper>
+            <Body>{children}</Body>
+          </HeaderFooterWrapper>
           <Toaster />
         </body>
       </html>

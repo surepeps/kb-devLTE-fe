@@ -11,7 +11,6 @@ import Section3 from '@/components/section3';
 import FAQs from '@/components/FAQs';
 import Feedback from '@/components/feedback';
 import HelpButton from '@/components/home_helpbutton';
-import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 //import homeImage from '@/assets/assets.png';
 import HeroSection from '@/components/homepage_hero';
@@ -21,36 +20,13 @@ import NewSection from '@/components/new_section';
 const Homepage = () => {
   //Simulating the loading page
   const isLoading = useLoading();
-
-  const { isContactUsClicked, isModalOpened } = usePageContext();
   if (isLoading) return <Loading />;
 
   return (
     <Fragment>
-      <section
-        className={`w-full  ${
-          (isContactUsClicked || isModalOpened) &&
-          'filter brightness-[30%] bg-[#EEF1F1] transition-all duration-500 overflow-hidden'
-        }`}>
+      <section className={`w-full`}>
         <main className='w-full bg-[#EEF1F1]'>
-          {/* <HeroSection
-            image={homeImage}
-            headingText='Embrace The Future With'
-            description="Tell us what you're looking for! Submit your property
-            preferences below and let us find the perfect match for you"
-            buttonText='Enter Preference'
-            bgColor='#0B423D'
-            borderColor='#63A3BE'
-          /> */}
           <HeroSection />
-          {/* <Section1
-            headingColor='#09391C'
-            displayCounts={true}
-            text={` Your trusted partner in Lagos' real estate market. Since 2020,
-            we've been delivering expert solutions with integrity and
-            personalized service, helping you navigate property sales, rentals,
-            and more. Let us help you find your perfect property today`}
-          /> */}
           <Section1 />
           <Section2 />
           <NewSection />
@@ -66,6 +42,7 @@ const Homepage = () => {
           <HelpButton />
         </main>
       </section>
+      {/* {viewImage && <ViewImage />} */}
     </Fragment>
   );
 };

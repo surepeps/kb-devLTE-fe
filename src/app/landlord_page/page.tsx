@@ -2,7 +2,7 @@
 'use client';
 import Button from '@/components/button';
 import Loading from '@/components/loading';
-import { usePageContext } from '@/context/page-context';
+// import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import React from 'react';
 import RadioCheck from '@/components/radioCheck';
@@ -11,15 +11,12 @@ import Select from '@/components/select';
 import { featuresData, tenantCriteriaData } from '@/data/landlord';
 
 const Landlord = () => {
-  const { isContactUsClicked, isModalOpened } = usePageContext();
   const isLoading = useLoading();
 
   if (isLoading) return <Loading />;
   return (
     <section
-      className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center ${
-        (isContactUsClicked || isModalOpened) && 'filter brightness-[30%]'
-      } transition-all duration-500`}>
+      className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
       <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
         <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-epilogue text-center text-[30px] leading-[41px]'>
           Submit Your&nbsp;

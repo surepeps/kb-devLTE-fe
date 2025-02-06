@@ -15,8 +15,13 @@ import { usePathname } from 'next/navigation';
 import SideBar from './sideBar';
 
 const Header = () => {
-  const { isContactUsClicked, rentPage, isModalOpened, setIsModalOpened } =
-    usePageContext();
+  const {
+    isContactUsClicked,
+    rentPage,
+    isModalOpened,
+    setIsModalOpened,
+    viewImage,
+  } = usePageContext();
   const [state, dispatch] = useReducer(reducer, navData);
   const pathName = usePathname();
 
@@ -29,7 +34,8 @@ const Header = () => {
         className={`w-full flex justify-center items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
-            isModalOpened) &&
+            isModalOpened ||
+            viewImage) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-top'}`}>
         <nav className='h-[50px] container flex justify-between items-center'>
