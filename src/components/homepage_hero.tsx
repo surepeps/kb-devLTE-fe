@@ -33,9 +33,9 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className='lg:text-[50px] font-semibold text-[45px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF] lg:text-center'>
+            className='lg:text-[50px] font-semibold text-[45px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF] text-center lg:text-center'>
             Find the Perfect <span className='text-[#8DDB90]'>Match</span> for
-            Your Property <br />
+            Your Property <br className='hidden md:flex' />
             Needs - <span className='text-[#8DDB90]'>Simplified</span>
           </motion.h2>
           <Image

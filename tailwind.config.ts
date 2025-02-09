@@ -19,6 +19,7 @@ export default {
       },
       fontFamily: {
         display: ['Clash Display', 'sans-serif'],
+        // 'clash-display': ['Clash Display', 'sans-serif'],
       },
       // maxWidth: {
       //   'custom': '1200px',

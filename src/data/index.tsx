@@ -373,6 +373,272 @@ export const cardData: {
   },
 ];
 
+export const cardDataArray: {
+  header: string;
+  value: string;
+}[][] = [
+  [
+    {
+      header: 'Property Type',
+      value: 'Residential',
+    },
+    {
+      header: 'Location',
+      value: 'Lagos Ikeja',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦75,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'C of O, Receipt,...',
+    },
+    {
+      header: 'Land size',
+      value: `500 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>4 Bed Room</li><li>Parking Space</li><li>Security Features</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Commercial',
+    },
+    {
+      header: 'Location',
+      value: 'Abuja, Garki',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦120,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'Governor’s Consent, Deed of Assignment',
+    },
+    {
+      header: 'Land size',
+      value: `800 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>Office Space</li><li>Ample Parking</li><li>24/7 Security</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Land',
+    },
+    {
+      header: 'Location',
+      value: 'Lekki, Lagos',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦50,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'Excision, Registered Survey',
+    },
+    {
+      header: 'Land size',
+      value: `600 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>Dry Land</li><li>Well Titled</li><li>Close to Major Road</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Apartment',
+    },
+    {
+      header: 'Location',
+      value: 'Victoria Island, Lagos',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦90,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'C of O, Deed of Assignment',
+    },
+    {
+      header: 'Land size',
+      value: `350 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>3 Bed Room</li><li>Swimming Pool</li><li>24/7 Power Supply</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Detached Duplex',
+    },
+    {
+      header: 'Location',
+      value: 'Banana Island, Lagos',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦450,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'Governor’s Consent, C of O',
+    },
+    {
+      header: 'Land size',
+      value: `1000 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>5 Bed Room</li><li>Smart Home System</li><li>Private Cinema</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Mini Flat',
+    },
+    {
+      header: 'Location',
+      value: 'Yaba, Lagos',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦25,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'C of O, Survey Plan',
+    },
+    {
+      header: 'Land size',
+      value: `250 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>1 Bed Room</li><li>Furnished</li><li>Good Road Network</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Penthouse',
+    },
+    {
+      header: 'Location',
+      value: 'Ikoyi, Lagos',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦500,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'Governor’s Consent',
+    },
+    {
+      header: 'Land size',
+      value: `1200 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>6 Bed Room</li><li>Elevator</li><li>Private Pool</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Bungalow',
+    },
+    {
+      header: 'Location',
+      value: 'Ibadan, Oyo State',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦40,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'Deed of Assignment, Registered Survey',
+    },
+    {
+      header: 'Land size',
+      value: `500 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>3 Bed Room</li><li>Gated Compound</li><li>Borehole Water</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Terrace Duplex',
+    },
+    {
+      header: 'Location',
+      value: 'Surulere, Lagos',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦65,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'C of O, Survey Plan',
+    },
+    {
+      header: 'Land size',
+      value: `400 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>4 Bed Room</li><li>24/7 Security</li><li>Gated Estate</li></ul>`,
+    },
+  ],
+  [
+    {
+      header: 'Property Type',
+      value: 'Studio Apartment',
+    },
+    {
+      header: 'Location',
+      value: 'GRA, Port Harcourt',
+    },
+    {
+      header: 'Property Prices',
+      value: '₦18,000,000',
+    },
+    {
+      header: 'Document',
+      value: 'C of O, Deed of Lease',
+    },
+    {
+      header: 'Land size',
+      value: `200 m<sup>2</sup>`,
+    },
+    {
+      header: 'Property Features',
+      value: `<ul className='list-disc list-inside'><li>Furnished</li><li>Gym Access</li><li>24/7 Electricity</li></ul>`,
+    },
+  ],
+];
+
 /**propertyType: 'Residential',
     location: 'Lagos Ikeja',
     propertyPrices: 'Residential',

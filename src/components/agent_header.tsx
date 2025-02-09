@@ -14,8 +14,13 @@ import SideBar from './sideBar';
 // import { useRouter } from 'next/router';
 
 const AgentHeader = () => {
-  const { isContactUsClicked, rentPage, isModalOpened, setIsModalOpened } =
-    usePageContext();
+  const {
+    isContactUsClicked,
+    rentPage,
+    isModalOpened,
+    setIsModalOpened,
+    viewImage,
+  } = usePageContext();
   const [state, dispatch] = useReducer(reducer, navData);
 
   return (
@@ -24,7 +29,8 @@ const AgentHeader = () => {
         className={`w-full flex justify-center items-center py-[20px] pl-[10px] border-b-[1px] border-[#C7CAD0] bg-[#EEF1F1] pr-[20px] ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
-            isModalOpened) &&
+            isModalOpened ||
+            viewImage) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-top'}`}>
         <nav className='h-[50px] container flex justify-between items-center'>

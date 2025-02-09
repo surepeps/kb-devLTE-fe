@@ -2,7 +2,7 @@
 'use client';
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
-import { propertyReferenceData } from '@/data/buy_page_data';
+import { propertyReferenceDataWithoutUsageOption } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
 //import Card from '@/components/card';
 import { Fragment, useState } from 'react';
@@ -11,10 +11,12 @@ import ContactUs from '@/components/contact_information';
 import RentalReference from '@/components/rentalReference';
 import HouseFrame from '@/components/house-frame';
 import imgSample from '@/assets/assets.png';
+import { useRouter } from 'next/navigation';
 
 export default function Rent() {
   const isLoading = useLoading();
-  const { isContactUsClicked, rentPage, isModalOpened } = usePageContext();
+  const { rentPage } = usePageContext();
+  const router = useRouter();
   // const [found, setFound] = useState({
   //   isFound: false,
   //   count: 0,
@@ -38,16 +40,16 @@ export default function Rent() {
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
-          (isContactUsClicked ||
-            rentPage.isSubmitForInspectionClicked ||
-            isModalOpened) &&
+          rentPage.isSubmitForInspectionClicked &&
           'filter brightness-[30%] transition-all duration-500'
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-epilogue'>
             Submit Your <span className='text-[#8DDB90]'>Rental Reference</span>
           </h2>
-          <RentalReference rentalReferenceData={propertyReferenceData} />
+          <RentalReference
+            rentalReferenceData={propertyReferenceDataWithoutUsageOption}
+          />
           {/* <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px]'>
             
             <div className='flex flex-col gap-2 w-full'>
@@ -133,7 +135,7 @@ export default function Rent() {
               </div>
             )}
           </div> */}
-          <div className='w-full px-[20px] flex flex-col'>
+          <div className='w-full px-[20px] flex flex-col lg:w-[1153px]'>
             <div className='flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
               {Array.from({ length: 8 }).map((__, idx: number) => (
                 <HouseFrame
@@ -144,6 +146,9 @@ export default function Rent() {
                   bedroom={4}
                   bathroom={3}
                   carPark={2}
+                  onClick={() => {
+                    router.push(`/buy_page/details/${idx}`);
+                  }}
                 />
               ))}
             </div>
