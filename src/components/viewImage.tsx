@@ -4,11 +4,12 @@ import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import arrow from '@/svgs/arrowRight.svg';
-import image from '@/assets/assets.png';
+//import image from '@/assets/assets.png';
 import cancelIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
-const ViewImage = () => {
+const ViewImage = ({ imageData }: { imageData: StaticImport[] }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const { setViewImage, viewImage } = usePageContext();
   const ref = useRef<HTMLDivElement>(null);
@@ -101,7 +102,7 @@ const ViewImage = () => {
         <div
           id='scrollableElement2'
           className='w-full hide-scrollbar gap-[30px] flex mt-0 md:mt-10 lg:mt-0 overflow-x-scroll'>
-          {Array.from({ length: 18 }).map((__, idx: number) => (
+          {imageData.map((image, idx: number) => (
             <Image
               src={image}
               width={1000}

@@ -10,15 +10,20 @@ import Button from '@/components/button';
 import ContactUs from '@/components/contact_information';
 import PropertyReference from '@/components/propertyReference';
 //import HouseFrame from '@/components/house-frame';
-//import imgSample from '@/assets/assets.png';
+import imgSample from '@/assets/assets.png';
 import { cardDataArray } from '@/data';
 import { toast } from 'react-hot-toast';
 
 type CardData = { header: string; value: string }[];
 export default function Rent() {
   const isLoading = useLoading();
-  const { isContactUsClicked, rentPage, setRentPage, isModalOpened } =
-    usePageContext();
+  const {
+    isContactUsClicked,
+    rentPage,
+    setRentPage,
+    isModalOpened,
+    setImageData,
+  } = usePageContext();
   const [found, setFound] = useState({
     isFound: false,
     count: 0,
@@ -46,6 +51,11 @@ export default function Rent() {
   useEffect(() => {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
+
+  useEffect(() => {
+    const image = imgSample;
+    setImageData(Array(18).fill(image));
+  }, []);
 
   if (isLoading) return <Loading />;
   return (

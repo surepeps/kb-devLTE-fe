@@ -1,6 +1,7 @@
 /** @format */
 'use client';
 import { GlobalContextTypes } from '@/types';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState } from 'react';
 
 /** @format */
@@ -23,6 +24,7 @@ export const PageContextProvider = ({
    * View image
    */
   const [viewImage, setViewImage] = useState<boolean>(false);
+  const [imageData, setImageData] = useState<StaticImport[]>([]);
 
   return (
     <PageContext.Provider
@@ -37,6 +39,8 @@ export const PageContextProvider = ({
         setIsModalOpened,
         viewImage,
         setViewImage,
+        imageData,
+        setImageData,
       }}>
       {children}
     </PageContext.Provider>

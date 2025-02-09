@@ -18,13 +18,13 @@ interface Props {
 export default function HeaderFooterWrapper({ children }: Props) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith('/admin');
-  const { viewImage } = usePageContext();
+  const { viewImage, imageData } = usePageContext();
   return (
     <Fragment>
       {!isAdminRoute && <HeaderLogic />}
       {children}
       {!isAdminRoute && <Footer />}
-      {viewImage && <ViewImage />}
+      {viewImage && <ViewImage imageData={imageData} />}
     </Fragment>
   );
 }
