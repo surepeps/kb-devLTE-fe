@@ -26,4 +26,7 @@ export interface GlobalContextTypes {
   //image data
   imageData: StaticImport[];
   setImageData: ([]: StaticImport[]) => void;
+  //submitted successfully type
+  isSubmittedSuccessfully: boolean;
+  setIsSubmittedSuccessfully: (type: boolean) => void
 }

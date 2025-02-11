@@ -26,6 +26,9 @@ export const PageContextProvider = ({
   const [viewImage, setViewImage] = useState<boolean>(false);
   const [imageData, setImageData] = useState<StaticImport[]>([]);
 
+  //Submitted successfully context logic.
+  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState<boolean>(false)
+
   return (
     <PageContext.Provider
       value={{
@@ -41,6 +44,8 @@ export const PageContextProvider = ({
         setViewImage,
         imageData,
         setImageData,
+        isSubmittedSuccessfully,
+        setIsSubmittedSuccessfully
       }}>
       {children}
     </PageContext.Provider>

@@ -21,6 +21,7 @@ const Header = () => {
     isModalOpened,
     setIsModalOpened,
     viewImage,
+    isSubmittedSuccessfully
   } = usePageContext();
   const [state, dispatch] = useReducer(reducer, navData);
   const pathName = usePathname();
@@ -35,7 +36,7 @@ const Header = () => {
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||
-            viewImage) &&
+            viewImage || isSubmittedSuccessfully) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-top'}`}>
         <nav className='h-[50px] container flex justify-between items-center'>

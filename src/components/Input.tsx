@@ -33,6 +33,8 @@ interface InputProps {
   setSelectedState?: (type: Option | null) => void;
   selectedCity?: Option | null;
   setSelectedCity?: (type: Option | null) => void;
+  isDisabled?: boolean;
+  setIsDisabled?: (type: boolean) => void;
 }
 
 const Input: FC<InputProps> = ({
@@ -53,6 +55,8 @@ const Input: FC<InputProps> = ({
   setSelectedCity,
   setSelectedCountry,
   setSelectedState,
+  isDisabled,
+  // setIsDisabled
 }) => {
   // const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
   // const [selectedState, setSelectedState] = useState<Option | null>(null);
@@ -83,8 +87,8 @@ const Input: FC<InputProps> = ({
       : [];
 
   useEffect(() => {
-    console.log(selectedCity, '\n', selectedCountry, '\n', selectedState);
-  }, [selectedCity, selectedCountry, selectedState]);
+    console.log(isDisabled)
+  }, [isDisabled]);
 
   return (
     <Fragment>
@@ -138,8 +142,9 @@ const Input: FC<InputProps> = ({
             id={id}
             type={type}
             value={value}
-            onChange={onChange}
+            onChange={isDisabled? undefined : onChange}
             onBlur={onBlur}
+            disabled={isDisabled}
             placeholder={placeholder ?? 'This is placeholder'}
             className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
           />

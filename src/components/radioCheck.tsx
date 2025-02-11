@@ -11,6 +11,8 @@ interface RadioCheckProps {
   onClick?: MouseEventHandler<HTMLLabelElement> | undefined;
   isDisabled?: boolean;
   className?: string;
+  // isChecked?: boolean | undefined;
+  // setIsChecked?: (type: boolean) => void;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
@@ -22,6 +24,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
   onClick,
   isDisabled,
   className,
+  
 }) => {
   return (
     <label
