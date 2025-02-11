@@ -25,7 +25,9 @@ const HelpButton = () => {
           />
           <Button
             type='button'
-            onClick={() => {}}
+            onClick={() => {
+              window.location.href = '/joint_ventures'
+            }}
             value={`Learn More About Joint Ventures`}
             className='h-[50px] font-bold text-[#FFFFFF] text-base min-w-[249px] py-[12px] px-[24px] bg-[#8DDB90] leading-[25.6px]'
           />
