@@ -22,9 +22,9 @@ const Policies = () => {
         (isContactUsClicked || isModalOpened) && 'filter brightness-[30%]'
       } transition-all duration-500`}>
       <div className='container flex flex-col h-[600px] gap-[30px] my-[60px] px-[20px]'>
-        <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-epilogue text-center text-[30px] leading-[41px]'>
+        <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
           Our&nbsp;
-          <span className='text-[#8DDB90]'>Policies</span>
+          <span className='text-[#8DDB90] font-display'>Policies</span>
         </h2>
         <div className='w-full flex lg:flex-row flex-col gap-[15px] min-h-[38px] lg:min-w-[623px] justify-center items-center'>
           {buttons.map((item: string, idx: number) => (
