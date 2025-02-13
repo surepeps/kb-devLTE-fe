@@ -6,18 +6,20 @@ import Image from 'next/image';
 import Button from './button';
 //import ViewImage from './viewImage';
 import { usePageContext } from '@/context/page-context';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
 interface CardDataProps {
   isRed?: boolean;
   cardData: { header: string; value: string }[];
   onClick?: () => void;
   className?: string;
+  images: StaticImport[]
 }
 
-const Card = ({ isRed, cardData, onClick, className }: CardDataProps) => {
+const Card = ({ isRed, cardData, onClick, className, images }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
-  const { setViewImage } = usePageContext();
+  const { setViewImage, setImageData } = usePageContext();
 
   useEffect(() => {
     if (count === 6) {
@@ -35,6 +37,7 @@ const Card = ({ isRed, cardData, onClick, className }: CardDataProps) => {
           <button
             type='button'
             onClick={() => {
+              setImageData(images)
               setViewImage(true);
             }}
             className='min-h-[42px] border-[1px] py-[10px] px-[20px] bg-[#F3F8FC] flex justify-center items-center text-[14px] leading-[22.4px] font-ubuntu text-[#1976D2] tracking-[0.1px]'>

@@ -17,7 +17,7 @@ const Section1 = () => {
 
   return (
     <section className='flex items-center justify-center pb-10'>
-      <div className='container flex flex-col gap-[20px] items-center justify-center px-[20px]'>
+      <div className='container flex flex-col gap-[20px] items-center justify-center px-[20px] overflow-hidden'>
         <div className='px-[10px] mt-4 w-full flex flex-col gap-[24px] justify-center items-center '>
           <span
             ref={textRef}

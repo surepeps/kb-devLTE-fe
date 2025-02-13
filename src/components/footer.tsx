@@ -21,6 +21,7 @@ const Footer = () => {
     rentPage,
     isModalOpened,
     viewImage,
+    isSubmittedSuccessfully
   } = usePageContext();
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -34,7 +35,7 @@ const Footer = () => {
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||
-            viewImage) &&
+            viewImage || isSubmittedSuccessfully) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-left'}`}>
         <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[20px]'>

@@ -22,7 +22,6 @@ export default function Rent() {
     rentPage,
     setRentPage,
     isModalOpened,
-    setImageData,
   } = usePageContext();
   const [found, setFound] = useState({
     isFound: false,
@@ -51,11 +50,6 @@ export default function Rent() {
   useEffect(() => {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
-
-  useEffect(() => {
-    const image = imgSample;
-    setImageData(Array(18).fill(image));
-  }, []);
 
   if (isLoading) return <Loading />;
   return (
@@ -140,6 +134,7 @@ export default function Rent() {
                   }`}>
                   {allCards.map((card: CardData, idx: number) => (
                     <Card
+                    images={Array(12).fill(imgSample)}
                       onClick={() => {
                         setBriefIDs((prevItems) => new Set(prevItems).add(idx));
                         setSelectedBriefs((prevItems) =>
@@ -168,6 +163,7 @@ export default function Rent() {
                   <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
                     {[...selectedBriefs].map((brief, idx: number) => (
                       <Card
+                      images={Array(12).fill(imgSample)}
                         onClick={() => {
                           setTracker(idx);
                           console.log(idx, briefIDs);

@@ -4,10 +4,12 @@ import Button from '@/components/button';
 import Loading from '@/components/loading';
 // import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import RadioCheck from '@/components/radioCheck';
 import Input from '@/components/Input';
-import Select from '@/components/select';
+import { usePageContext } from '@/context/page-context';
+//import SubmitPopUp from '@/components/submit';
+//import Select from '@/components/select';
 
 interface Option {
   value: string;
@@ -18,9 +20,13 @@ const Sell = () => {
   const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedCity, setSelectedCity] = useState<Option | null>(null);
+  const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
+
+  const { setIsSubmittedSuccessfully } = usePageContext()
 
   if (isLoading) return <Loading />;
   return (
+    <Fragment>
     <section
       className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
       <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
@@ -117,9 +123,9 @@ const Sell = () => {
                       forState={true}
                       type='text'
                     />
-                    <Input name='local government' type='text' />
+                    <Input name='Local Government' type='text' />
                     <Input
-                      name='Area'
+                      name='Area or Neighborhood'
                       forCity={true}
                       selectedCountry={selectedCountry}
                       selectedState={selectedState} // Ensure city dropdown receives state
@@ -170,7 +176,7 @@ const Sell = () => {
                     />
                     <RadioCheck
                       type='checkbox'
-                      value='deed of assignment'
+                      value='Deed of Assignment'
                       name='documentOfProperty'
                     />
                   </div>
@@ -204,23 +210,29 @@ const Sell = () => {
                 </h2>
 
                 <div className='w-full flex flex-col gap-[15px] min-h-[270px]'>
-                  <Select
+                  {/* <Select
                     options={['Yes', 'No', 'Prefer not to say']}
                     name='Are you the owner of the property'
-                  />
+                  /> */}
+                  <RadioCheck name='confirm' type='checkbox' onClick={()=>{
+                    setIsLegalOwner(!isLegalOwner)
+                    //console.log(isLegalOwner)
+                  }} value='I confirm that I am the legal owner of this property or authorized to submit this brief'/>
                   <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                     <Input
+                    isDisabled={isLegalOwner}
                       name='Full name'
                       className='lg:w-1/2 w-full'
                       type='text'
                     />
                     <Input
+                    isDisabled={isLegalOwner}
                       name='Phone'
                       className='lg:w-1/2 w-full'
                       type='number'
                     />
                   </div>
-                  <Input name='Email' className='w-full' type='email' />
+                  <Input name='Email' isDisabled={isLegalOwner} className='w-full' type='email' />
                 </div>
               </div>
             </div>
@@ -228,6 +240,9 @@ const Sell = () => {
             {/**Button */}
             <div className='w-full flex justify-center items-center mt-8'>
               <Button
+              onClick={()=>{
+                setIsSubmittedSuccessfully(true)
+              }}
                 value='Submit Brief'
                 className='bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px]'
               />
@@ -236,6 +251,8 @@ const Sell = () => {
         </div>
       </div>
     </section>
+    
+    </Fragment>
   );
 };
 

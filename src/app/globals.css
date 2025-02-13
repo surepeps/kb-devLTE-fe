@@ -52,17 +52,25 @@ body {
   font-family: var(--font-roboto);
 }
 
+/* @font-face {
+  font-family: 'Clash Display';
+  src: url('/public/Fonts/WEB/fonts/ClashDisplay-Regular.woff2')
+      format('woff2'),
+    url('/public/Fonts/OTF/ClashDisplay-Regular.otf')
+      format('opentype');
+  font-weight: 400;
+  font-style: normal;
+} */
 @font-face {
   font-family: 'Clash Display';
-  src: url('/public/fonts/ClashDisplay_Complete/Fonts/WEB/fonts/ClashDisplay-Regular.woff2')
-      format('woff2'),
-    url('/public/fonts/ClashDisplay_Complete/Fonts/OTF/ClashDisplay-Regular.otf')
-      format('opentype');
+  src: url('/Fonts/WEB/fonts/ClashDisplay-Regular.woff2') format('woff2'),
+       url('/Fonts/OTF/ClashDisplay-Regular.otf') format('opentype'),
+       url('/Fonts/WEB/fonts/ClashDisplay-Regular.woff') format('woff'); /* Optional fallback */
   font-weight: 400;
   font-style: normal;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'Clash Display';
   src: url('/public/fonts/ClashDisplay_Complete/Fonts/WEB/fonts/ClashDisplay-Medium.woff2')
       format('woff2'),
@@ -70,14 +78,30 @@ body {
       format('opentype');
   font-weight: 500;
   font-style: normal;
+} */
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/Fonts/WEB/fonts/ClashDisplay-Semibold.woff2') format('woff2'),
+       url('/Fonts/OTF/ClashDisplay-Medium.otf') format('opentype'),
+       url('/Fonts/WEB/fonts/ClashDisplay-Medium.woff') format('woff'); /* Optional fallback */
+  font-weight: 400;
+  font-style: normal;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'Clash Display';
   src: url('/public/fonts/ClashDisplay_Complete/Fonts/WEB/fonts/ClashDisplay-Bold.woff')
       format('woff'),
     url('/public/fonts/ClashDisplay_Complete/Fonts/OTF/ClashDisplay-Bold.otf')
       format('opentype');
   font-weight: 600;
+  font-style: normal;
+} */
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/Fonts/WEB/fonts/ClashDisplay-Bold.woff2') format('woff2'),
+       url('/Fonts/OTF/ClashDisplay-Bold.otf') format('opentype'),
+       url('/Fonts/WEB/fonts/ClashDisplay-Bold.woff') format('woff'); /* Optional fallback */
+  font-weight: 400;
   font-style: normal;
 }
