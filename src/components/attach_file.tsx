@@ -1,21 +1,45 @@
 /** @format */
 
+import { POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 import React from 'react';
+import toast from 'react-hot-toast';
 
 interface AttachFileProps {
   heading: string;
+  setFileUrl?: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const AttachFile: React.FC<AttachFileProps> = ({ heading }) => {
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+const AttachFile: React.FC<AttachFileProps> = ({ heading, setFileUrl }) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    console.log(file);
+    const fromData = new FormData();
+    fromData.append('file', file as Blob);
+
+    const url = URLS.BASE + URLS.uploadImg;
+
+    await toast.promise(
+      POST_REQUEST_FILE_UPLOAD(url, fromData).then((response) => {
+        if ((response as unknown as { url: string }).url) {
+          if (setFileUrl) {
+            setFileUrl((response as unknown as { url: string }).url as string);
+          }
+          return 'Image uploaded successfully';
+        } else {
+          toast.error('Image upload failed');
+          throw new Error('Image upload failed');
+        }
+      }),
+      {
+        loading: 'Uploading...',
+        success: 'Image  uploaded successfully',
+        error: 'Image upload failed',
+      }
+    );
   };
   return (
     <div className='min-h-[58px] w-full flex lg:flex-row flex-col justify-between lg:items-center items-start'>
-      <span className='text-base leading-[25.6px] text-[#202430] font-semibold'>
-        {heading}
-      </span>
+      <span className='text-base leading-[25.6px] text-[#202430] font-semibold'>{heading}</span>
       <input
         type='file'
         name=''
@@ -37,7 +61,8 @@ const AttachFile: React.FC<AttachFileProps> = ({ heading }) => {
         viewBox='0 0 367 58'
         fill='none'
         className='cursor-pointer w-full lg:w-[367px]'
-        xmlns='http://www.w3.org/2000/svg'>
+        xmlns='http://www.w3.org/2000/svg'
+      >
         <rect x='0.5' y='0.5' width='366' height='57' rx='3.5' fill='#F8F8FD' />
         <rect
           x='0.5'
@@ -64,12 +89,7 @@ const AttachFile: React.FC<AttachFileProps> = ({ heading }) => {
         />
         <defs>
           <clipPath id='clip0_704_10046'>
-            <rect
-              width='24'
-              height='24'
-              fill='white'
-              transform='translate(110.5 17)'
-            />
+            <rect width='24' height='24' fill='white' transform='translate(110.5 17)' />
           </clipPath>
         </defs>
       </svg>
