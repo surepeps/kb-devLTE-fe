@@ -26,7 +26,7 @@ const Register = () => {
         'brightness-[30%]'
       }`}>
       <div className='container slide-from-right min-h-[400px] lg:w-[603px] w-full flex flex-col justify-center gap-[40px] items-center px-[20px]'>
-        <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold'>
+        <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold font-display'>
           Register
         </h2>
         <div className='w-full min-h-[237px] flex flex-col justify-center items-center gap-[19px]'>

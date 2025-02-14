@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { FC, MouseEventHandler } from 'react';
+import React, { ChangeEventHandler, FC, MouseEventHandler } from 'react';
 
 interface RadioCheckProps {
   id?: string;
@@ -13,6 +13,8 @@ interface RadioCheckProps {
   className?: string;
   // isChecked?: boolean | undefined;
   // setIsChecked?: (type: boolean) => void;
+  handleChange?: ChangeEventHandler<HTMLInputElement> | undefined;
+  selectedValue?: string | undefined;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
@@ -24,7 +26,8 @@ const RadioCheck: FC<RadioCheckProps> = ({
   onClick,
   isDisabled,
   className,
-  
+  handleChange,
+  //selectedValue
 }) => {
   return (
     <label
@@ -38,6 +41,8 @@ const RadioCheck: FC<RadioCheckProps> = ({
         name={name}
         id={id}
         className='peer hidden'
+        onChange={handleChange}
+        //checked={selectedValue === value}
       />
       {type === 'radio' ? (
         <span className='w-[24px] h-[24px] flex items-center justify-center rounded-full border-white peer-checked:bg-[#8DDB90] border-[5px]'></span>

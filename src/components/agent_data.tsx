@@ -40,8 +40,10 @@ const AgentData = () => {
         onSubmit={formik.handleSubmit}
         className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full px-[20px]'>
         <div className='w-full min-h-[137px] flex flex-col gap-[24px] justify-center items-center'>
-          <h2 className='text-center text-[40px] leading-[49.2px] font-bold text-[#09391C]'>
-            Welcome to <span className='text-[#8DDB90]'>Khabi-teq</span> realty
+          <h2 className='text-center text-[40px] leading-[49.2px] font-display font-bold text-[#09391C]'>
+            Welcome to{' '}
+            <span className='text-[#8DDB90] font-display'>Khabi-teq</span>{' '}
+            realty
           </h2>
           <p className='text-[#5A5D63] text-[20px] leading-[32px] text-center tracking-[5%]'>
             Lorem ipsum dolor sit amet consectetur. Ornare feugiat suspendisse

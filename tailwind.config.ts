@@ -1,5 +1,6 @@
 /** @format */
 
+//import { archivo } from '@/styles/font';
 import type { Config } from 'tailwindcss';
 
 export default {
@@ -19,6 +20,7 @@ export default {
       },
       fontFamily: {
         display: ['Clash Display', 'sans-serif'],
+        // archivo: archivo.style.fontFamily,
         // 'clash-display': ['Clash Display', 'sans-serif'],
       },
       // maxWidth: {

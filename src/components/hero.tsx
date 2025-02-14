@@ -26,13 +26,14 @@ const HeroSection: FC<HeroSectionProps> = ({
 }) => {
   return (
     /**#0A3E72 */
-    <section className='flex items-center justify-center min-h-[536px] w-full overflow-hidden'>
+    <section className='flex items-center justify-center min-h-[536px] w-full overflow-hidden pt-[20px]'>
       <div className='container h-full flex md:flex-row flex-col px-[20px] slide-from-bottom'>
         <div
           style={{ backgroundColor: bgColor }}
           className={`md:w-[50%] lg:w-[40%] w-full lg:h-[536px] flex flex-col gap-[20px] flex-grow-1 px-[20px] lg:px-[40px] py-[20px] lg:py-[40px] border-[1px] border-[${borderColor}`}>
           <h2 className='lg:text-[60px] font-semibold text-[50px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF]'>
-            {headingText} <span className='text-[#8DDB90]'>Khabiteq</span>
+            {headingText}{' '}
+            <span className='text-[#8DDB90] font-display'>Khabiteq</span>
           </h2>
           <Image
             src={lineStyle}

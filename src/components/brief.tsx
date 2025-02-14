@@ -29,7 +29,7 @@ const Brief: FC<TotalBriefProps> = ({
           detailsToCheck={detailsToCheck}
         />
       ) : (
-        <>
+        <div className='container'>
           <div className='hidden md:flex'>
             <ShowTable
               headerData={headerData}
@@ -48,7 +48,7 @@ const Brief: FC<TotalBriefProps> = ({
               briefData={data}
             />
           </div>
-        </>
+        </div>
       )}
     </div>
   );

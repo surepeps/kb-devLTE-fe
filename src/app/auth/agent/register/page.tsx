@@ -18,6 +18,7 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
+import axios from 'axios';
 
 const Register = () => {
   const isLoading = useLoading();
@@ -39,10 +40,17 @@ const Register = () => {
       phone: '',
     },
     // validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
       //Handle logic here
       window.location.href = '/auth/agent/form';
+
+      try {
+        const response = await axios.post('', formik.values);
+        if (response.status == 200) {
+          console.log(response.data);
+        }
+      } catch (error) {}
     },
   });
 
@@ -56,7 +64,7 @@ const Register = () => {
         <form
           onSubmit={formik.handleSubmit}
           className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
-          <h2 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C]'>
+          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
             Register with us
           </h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
@@ -167,7 +175,7 @@ const Input: FC<InputProps> = ({
           placeholder={placeholder ?? 'This is placeholder'}
           className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar'
         />
-        {icon ? (
+        {/* {icon ? (
           <Image
             src={icon}
             alt=''
@@ -175,7 +183,7 @@ const Input: FC<InputProps> = ({
             height={20}
             className='w-[20px] h-[20px] absolute ml-[330px] lg:ml-[440px] z-20 mt-[15px]'
           />
-        ) : null}
+        ) : null} */}
       </div>
       {formik.touched[title] ||
         (formik.errors[title] && (

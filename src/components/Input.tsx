@@ -87,7 +87,7 @@ const Input: FC<InputProps> = ({
       : [];
 
   useEffect(() => {
-    console.log(isDisabled)
+    console.log(isDisabled);
   }, [isDisabled]);
 
   return (
@@ -142,7 +142,7 @@ const Input: FC<InputProps> = ({
             id={id}
             type={type}
             value={value}
-            onChange={isDisabled? undefined : onChange}
+            onChange={isDisabled ? undefined : onChange}
             onBlur={onBlur}
             disabled={isDisabled}
             placeholder={placeholder ?? 'This is placeholder'}
@@ -168,6 +168,7 @@ const customStyle = {
     paddingBottom: '6px',
     paddingLeft: '10px',
     paddingRight: '10px',
+    width: '100%',
   }),
 };
 export default Input;

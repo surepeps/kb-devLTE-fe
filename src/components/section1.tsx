@@ -25,7 +25,7 @@ const Section1: FC<Section1Props> = ({ text, displayCounts, headingColor }) => {
 
   return (
     <section className='flex items-center justify-center'>
-      <div className='container py-[60px] flex flex-col gap-[20px] items-center justify-center px-[20px]'>
+      <div className='container py-[60px] flex flex-col gap-[20px] items-center justify-center px-[20px] overflow-hidden'>
         <div className='lg:w-[870px] w-full min-h-[173px] lg:min-h-[160px] flex flex-col gap-[24px] justify-center items-center '>
           <h2
             ref={headingRef}
