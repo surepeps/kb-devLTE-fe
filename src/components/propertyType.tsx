@@ -1,10 +1,15 @@
 /** @format */
-
+'use client';
 import AttachFile from '@/components/attach_file';
 import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
+import { useEffect, useState } from 'react';
 
+interface Option {
+  value: string;
+  label: string;
+}
 const PropertyType = () => {
   const docOfTheProperty: string[] = [
     'C of O',
@@ -12,6 +17,31 @@ const PropertyType = () => {
     'receipt',
     'Governor',
   ]; //Document on the property
+  const [details, setDetails] = useState<{
+    propertyType: string;
+    usageOptions: string[];
+    price: string;
+    documents: string[];
+    noOfBedroom: string;
+    additionalFeatures: string;
+  }>({
+    propertyType: '',
+    usageOptions: [],
+    price: '',
+    documents: [],
+    noOfBedroom: '',
+    additionalFeatures: '',
+  });
+
+  const [currentItem, setCurrentItem] = useState<string>('');
+  //const [documentItem, setDocumentItem] = useState<string>('');
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedCity, setSelectedCity] = useState<Option | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
+
+  useEffect(() => {
+    console.log(details);
+  }, [details, setDetails]);
 
   return (
     <div className='lg:w-[805px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[60px]'>
@@ -23,9 +53,68 @@ const PropertyType = () => {
           </h2>
           {/**options */}
           <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
-            <RadioCheck type='radio' name='propertyType' value='Residential' />
-            <RadioCheck type='radio' name='propertyType' value='Commercial' />
-            <RadioCheck type='radio' name='propertyType' value='Land' />
+            <RadioCheck
+              selectedValue={details.propertyType}
+              handleChange={() => {
+                setDetails({ ...details, propertyType: 'Residential' });
+              }}
+              type='radio'
+              name='propertyType'
+              value='Residential'
+            />
+            <RadioCheck
+              selectedValue={details.propertyType}
+              handleChange={() => {
+                setDetails({ ...details, propertyType: 'Commercial' });
+              }}
+              type='radio'
+              name='propertyType'
+              value='Commercial'
+            />
+            <RadioCheck
+              selectedValue={details.propertyType}
+              handleChange={() => {
+                setDetails({ ...details, propertyType: 'Land' });
+              }}
+              type='radio'
+              name='propertyType'
+              value='Land'
+            />
+          </div>
+        </div>
+        {/**Usage Options */}
+        <div className='min-h-[73px] flex flex-col gap-[15px]'>
+          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+            Usage Options
+          </h2>
+          <div className='flex flex-wrap gap-[30px]'>
+            {['All', 'Lease', 'Joint Venture(JV)', 'Outright Sale'].map(
+              (item: string, idx: number) => (
+                <RadioCheck
+                  type='checkbox'
+                  value={item}
+                  key={idx}
+                  name='Usage Options'
+                  handleChange={() => {
+                    if (details.usageOptions.includes(item)) {
+                      setCurrentItem((prevItem) => prevItem);
+                      return setDetails({
+                        ...details,
+                        usageOptions: details.usageOptions.filter(
+                          (item) => item !== currentItem
+                        ),
+                      });
+                    }
+                    return setDetails({
+                      ...details,
+                      usageOptions: [
+                        ...new Set([...details.usageOptions, item]),
+                      ],
+                    });
+                  }}
+                />
+              )
+            )}
           </div>
         </div>
         {/**Location */}
@@ -34,14 +123,46 @@ const PropertyType = () => {
             Location
           </h2>
           {/**inputs */}
-          <div className='min-h-[26px] w-full flex flex-wrap gap-[15px]'>
-            <Input name='State' type='input' className='lg:w-1/3 w-full' />
+          <div className='min-h-[26px] w-full flex flex-col flex-wrap lg:grid lg:grid-cols-3 gap-[15px]'>
+            {/* <Input name='State' type='input' className='lg:w-1/3 w-full' />
             <Input
               name='Local government'
               type='input'
               className='lg:w-1/3 w-full'
             />
-            <Input name='Area' type='input' className='lg:w-1/3 w-full' />
+            <Input name='Area' type='input' className='lg:w-1/3 w-full' /> */}
+            <Input
+              name='Address'
+              selectedCountry={selectedCountry}
+              setSelectedCountry={(option) => {
+                setSelectedCountry(option);
+                setSelectedState(null); // Reset state when country changes
+                setSelectedCity(null); // Reset city when country changes
+              }}
+              forCountry={true}
+              type='text'
+            />
+            <Input
+              name='State'
+              selectedCountry={selectedCountry} // Ensure state dropdown receives country
+              selectedState={selectedState}
+              setSelectedState={(option) => {
+                setSelectedState(option);
+                setSelectedCity(null); // Reset city when state changes
+              }}
+              forState={true}
+              type='text'
+            />
+            <Input name='Local Government' type='text' />
+            <Input
+              name='Area or Neighborhood'
+              forCity={true}
+              selectedCountry={selectedCountry}
+              selectedState={selectedState} // Ensure city dropdown receives state
+              selectedCity={selectedCity}
+              setSelectedCity={setSelectedCity}
+              type='text'
+            />
           </div>
         </div>
         {/**Price */}
@@ -55,6 +176,10 @@ const PropertyType = () => {
               name='Enter property price'
               type='input'
               className='w-full'
+              value={details.price}
+              onChange={(e: { target: { value: string } }) => {
+                setDetails({ ...details, price: e.target.value });
+              }}
             />
           </div>
         </div>
@@ -71,6 +196,19 @@ const PropertyType = () => {
                 key={idx}
                 value={item}
                 name={'docOnTheProperty'}
+                handleChange={() => {
+                  if (details.documents.includes(item)) {
+                    const index = details.documents.indexOf(item);
+                    return setDetails({
+                      ...details,
+                      documents: details.documents.splice(index),
+                    });
+                  }
+                  return setDetails({
+                    ...details,
+                    documents: [...new Set([...details.documents, item])],
+                  });
+                }}
               />
             ))}
           </div>
@@ -86,11 +224,19 @@ const PropertyType = () => {
               name='Number of Bedroom'
               type='number'
               className='lg:w-1/2 w-full'
+              value={details.noOfBedroom}
+              onChange={(e: { target: { value: string } }) => {
+                setDetails({ ...details, noOfBedroom: e.target.value });
+              }}
             />
             <Input
               name='Additional Features'
               type='text'
               className='lg:w-1/2 w-full'
+              value={details.additionalFeatures}
+              onChange={(e: { target: { value: string } }) => {
+                setDetails({ ...details, additionalFeatures: e.target.value });
+              }}
             />
           </div>
         </div>
