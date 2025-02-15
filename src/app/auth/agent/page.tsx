@@ -48,8 +48,8 @@ const Register = () => {
           </div>
           <span className='text-base text-center leading-[25.6px] font-normal'>
             Already have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'#'}>
-              Sign
+            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/login'}>
+              Sign In
             </Link>
           </span>
           <span className='text-base text-center leading-[25.6px] font-normal'>

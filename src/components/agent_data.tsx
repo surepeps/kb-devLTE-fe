@@ -8,12 +8,14 @@ import Select from './select';
 import AttachFile from '@/components/attach_file';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 //import * as Yup from 'yup';
 import Cookies from 'js-cookie';
 import { PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 
 const AgentData = () => {
+  const router = useRouter();
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const [selectedAgentType, setSelectedAgentType] = useState<string>('Individual Agent');
 
@@ -64,16 +66,18 @@ const AgentData = () => {
           if (response.success) {
             toast.success('Agent data submitted successfully');
             Cookies.set('token', (response as unknown as { token: string }).token);
+            router.push('/auth/agent/createBrief');
             return 'Agent data submitted successfully';
           } else {
-            toast.error(response.message);
-            throw new Error(response.message);
+            const errorMessage = (response as any).error || 'Submission failed';
+            toast.error(errorMessage);
+            throw new Error(errorMessage);
           }
         }),
         {
           loading: 'Submitting...',
           success: 'Agent data submitted successfully',
-          error: 'An error occurred, please try again',
+          // error: 'An error occurred, please try again',
         }
       );
     },

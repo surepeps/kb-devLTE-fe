@@ -63,19 +63,20 @@ const Register = () => {
               router.push('/auth/agent/form');
               return 'Registration successful';
             } else {
-              // toast.error((response.message as any).error);
-              throw new Error((response as any).error);
+              const errorMessage = (response as any).error || 'Registration failed';
+              toast.error(errorMessage);
+              throw new Error(errorMessage);
             }
           }),
           {
             loading: 'Signing up...',
-            success: 'Registration successful',
-            error: 'Registration failed',
+            // success: 'Registration successful',
+            // error: 'Registration failed',
           }
         );
       } catch (error) {
         console.log(error);
-        toast.error('Registration failed, please try again!');
+        // toast.error('Registration failed, please try again!');
       }
     },
   });
