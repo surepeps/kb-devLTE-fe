@@ -14,9 +14,11 @@ const NewSection = () => {
   const ref2 = useRef(null);
   const ref3 = useRef(null);
   // const [tracker, setTracker] = useState();
+
   const isInView = useInView(ref, { once: false });
   const isInView2 = useInView(ref2, { once: false });
   const isInView3 = useInView(ref3, { once: false });
+
   return (
     <section className='w-full flex items-center justify-center pt-[70px]'>
       <div className='container w-full flex md:flex-row justify-between flex-col min-h-[528px] gap-[64px] lg:pl-[20px] lg:pr-0 px-[20px]'>
@@ -25,7 +27,7 @@ const NewSection = () => {
             How Khabi-Teq Works for You
           </h2>
           <div className='w-full flex flex-col gap-[25px]'>
-            {data.map((item: ContainerProps, idx: number) => (
+            {data.map((item, idx: number) => (
               <Container key={idx} {...item} />
             ))}
           </div>
@@ -147,15 +149,22 @@ type ContainerProps = {
 
 const Container: FC<ContainerProps> = ({ heading, text, buttons }) => {
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const isContainerInView = useInView(containerRef, { once: false });
 
   return (
-    <div
+    <motion.div
       // onMouseOut={() => {
       //   setIsModalOpened(false);
       // }}
       // onMouseOver={() => {
       //   setIsModalOpened(true);
       // }}
+
+      initial={{ opacity: 0, x: 80 }}
+      animate={isContainerInView ? { opacity: 1, x: 0 } : {}}
+      transition={{ delay: 0.3 }}
+      ref={containerRef}
       className={`w-full min-h-[85px] overflow-hidden border-[1px] ${
         isModalOpened ? 'border-[#8DDB90]' : 'border-[#C7CAD0]'
       } bg-[#EEF1F1] p-[20px] flex flex-col gap-[20px] items-center justify-center`}>
@@ -207,7 +216,7 @@ const Container: FC<ContainerProps> = ({ heading, text, buttons }) => {
           ))}
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -232,7 +241,7 @@ const UniformButton = ({ isModalOpened, value, url }: UniformButtonprops) => {
   );
 };
 
-const data: ContainerProps[] = [
+const data = [
   {
     heading: 'For Buyers and Tenants',
     text: `Tell us what you're looking for! Submit your preferences below and let us find the perfect match for you`,

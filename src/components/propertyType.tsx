@@ -4,12 +4,13 @@ import AttachFile from '@/components/attach_file';
 import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
+import { usePageContext } from '@/context/page-context';
 import { useEffect, useState } from 'react';
 
-interface Option {
-  value: string;
-  label: string;
-}
+// interface Option {
+//   value: string;
+//   label: string;
+// }
 const PropertyType = () => {
   const docOfTheProperty: string[] = [
     'C of O',
@@ -35,16 +36,23 @@ const PropertyType = () => {
 
   const [currentItem, setCurrentItem] = useState<string>('');
   //const [documentItem, setDocumentItem] = useState<string>('');
-  const [selectedState, setSelectedState] = useState<Option | null>(null);
-  const [selectedCity, setSelectedCity] = useState<Option | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
+  // const [selectedState, setSelectedState] = useState<Option | null>(null);
+  // const [selectedCity, setSelectedCity] = useState<Option | null>(null);
+  //const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
+  const { propertyDetails } = usePageContext();
+  const [fillData, setFillData] = useState(propertyDetails);
+
+  // useEffect(() => {
+  //   console.log(details);
+  // }, [details, setDetails]);
 
   useEffect(() => {
-    console.log(details);
-  }, [details, setDetails]);
+    console.log(fillData?.selectedCity);
+    // setFillData(propertyDetails);
+  }, [fillData]);
 
   return (
-    <div className='lg:w-[805px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[60px]'>
+    <div className='lg:w-[805px] bg-white p-[20px] lg:py-[50px] lg:px-[100px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[30px] lg:mt-[60px]'>
       <div className='flex flex-col gap-[35px] w-full'>
         {/**Property Type */}
         <div className='lg:w-[535px] min-h-[73px] flex flex-col gap-[15px]'>
@@ -54,27 +62,33 @@ const PropertyType = () => {
           {/**options */}
           <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
             <RadioCheck
-              selectedValue={details.propertyType}
+              isDisabled={fillData?.propertyType ? true : false}
+              selectedValue={fillData?.propertyType}
               handleChange={() => {
-                setDetails({ ...details, propertyType: 'Residential' });
+                // setDetails({ ...details, propertyType: 'Residential' });
+                setFillData({ ...fillData, propertyType: 'Residential' });
               }}
               type='radio'
               name='propertyType'
               value='Residential'
             />
             <RadioCheck
-              selectedValue={details.propertyType}
+              isDisabled={fillData?.propertyType ? true : false}
+              selectedValue={fillData?.propertyType}
               handleChange={() => {
-                setDetails({ ...details, propertyType: 'Commercial' });
+                //setDetails({ ...details, propertyType: 'Commercial' });
+                setFillData({ ...fillData, propertyType: 'Commercial' });
               }}
               type='radio'
               name='propertyType'
               value='Commercial'
             />
             <RadioCheck
-              selectedValue={details.propertyType}
+              isDisabled={fillData?.propertyType ? true : false}
+              selectedValue={fillData?.propertyType}
               handleChange={() => {
-                setDetails({ ...details, propertyType: 'Land' });
+                //setDetails({ ...details, propertyType: 'Land' });
+                setFillData({ ...fillData, propertyType: 'Land' });
               }}
               type='radio'
               name='propertyType'
@@ -96,19 +110,38 @@ const PropertyType = () => {
                   key={idx}
                   name='Usage Options'
                   handleChange={() => {
-                    if (details.usageOptions.includes(item)) {
-                      setCurrentItem((prevItem) => prevItem);
-                      return setDetails({
-                        ...details,
-                        usageOptions: details.usageOptions.filter(
-                          (item) => item !== currentItem
-                        ),
-                      });
+                    if (fillData?.usageOptions) {
+                      if (fillData?.usageOptions?.includes(item)) {
+                        setCurrentItem(item);
+                        return setDetails({
+                          ...details,
+                          usageOptions: fillData?.usageOptions?.filter(
+                            (item) => item !== currentItem
+                          ),
+                        });
+                      }
                     }
-                    return setDetails({
-                      ...details,
+
+                    // if (details.usageOptions.includes(item)) {
+                    //   setCurrentItem((prevItem) => prevItem);
+                    //   return setDetails({
+                    //     ...details,
+                    //     usageOptions: details.usageOptions.filter(
+                    //       (item) => item !== currentItem
+                    //     ),
+                    //   });
+                    // }
+                    // return setDetails({
+                    //   ...details,
+                    //   usageOptions: [
+                    //     ...new Set([...details.usageOptions, item]),
+                    //   ],
+                    // });
+
+                    return setFillData({
+                      ...fillData,
                       usageOptions: [
-                        ...new Set([...details.usageOptions, item]),
+                        ...new Set([...fillData?.usageOptions, item]),
                       ],
                     });
                   }}
@@ -131,7 +164,7 @@ const PropertyType = () => {
               className='lg:w-1/3 w-full'
             />
             <Input name='Area' type='input' className='lg:w-1/3 w-full' /> */}
-            <Input
+            {/* <Input
               name='Address'
               selectedCountry={selectedCountry}
               setSelectedCountry={(option) => {
@@ -141,14 +174,20 @@ const PropertyType = () => {
               }}
               forCountry={true}
               type='text'
-            />
+            /> */}
             <Input
               name='State'
-              selectedCountry={selectedCountry} // Ensure state dropdown receives country
-              selectedState={selectedState}
+              // selectedCountry={selectedCountry} // Ensure state dropdown receives country
+              selectedState={fillData?.selectedState}
+              // isDisabled={fillData?.givenState ? true : false}
               setSelectedState={(option) => {
-                setSelectedState(option);
-                setSelectedCity(null); // Reset city when state changes
+                setFillData({
+                  ...fillData,
+                  selectedState: option,
+                });
+
+                // setSelectedState(option);
+                // setSelectedCity(null); // Reset city when state changes
               }}
               forState={true}
               type='text'
@@ -157,10 +196,15 @@ const PropertyType = () => {
             <Input
               name='Area or Neighborhood'
               forCity={true}
-              selectedCountry={selectedCountry}
-              selectedState={selectedState} // Ensure city dropdown receives state
-              selectedCity={selectedCity}
-              setSelectedCity={setSelectedCity}
+              // isDisabled={
+              //   fillData?.givenState && fillData?.givenCity ? true : false
+              // }
+              // selectedCountry={selectedCountry}
+              selectedState={fillData?.selectedState} // Ensure city dropdown receives state
+              // selectedCity={fillData?.givenCity}
+              setSelectedCity={(option) => {
+                setFillData({ ...fillData, selectedCity: option });
+              }}
               type='text'
             />
           </div>
@@ -176,9 +220,10 @@ const PropertyType = () => {
               name='Enter property price'
               type='input'
               className='w-full'
-              value={details.price}
+              value={fillData?.price}
               onChange={(e: { target: { value: string } }) => {
-                setDetails({ ...details, price: e.target.value });
+                // setDetails({ ...details, price: e.target.value });
+                setFillData({ ...fillData, price: e.target.value });
               }}
             />
           </div>
@@ -190,27 +235,58 @@ const PropertyType = () => {
           </h2>
           {/**options */}
           <div className='min-h-[26px] w-full flex flex-wrap gap-[30px]'>
-            {docOfTheProperty.map((item: string, idx: number) => (
-              <RadioCheck
-                type='checkbox'
-                key={idx}
-                value={item}
-                name={'docOnTheProperty'}
-                handleChange={() => {
-                  if (details.documents.includes(item)) {
-                    const index = details.documents.indexOf(item);
+            {fillData?.documents?.length !== 0 &&
+              fillData?.documents?.map((item: string, idx: number) => (
+                <RadioCheck
+                  type='checkbox'
+                  key={idx}
+                  value={item}
+                  name={'docOnTheProperty'}
+                  handleChange={() => {
+                    if (fillData?.documents?.includes(item)) {
+                      const index = fillData?.documents?.indexOf(item);
+                      // return setDetails({
+                      //   ...details,
+                      //   documents: details.documents.splice(index),
+                      // });
+                      return setFillData({
+                        ...fillData,
+                        documents: fillData.documents.splice(index),
+                      });
+                    }
+                    // return setDetails({
+                    //   ...details,
+                    //   documents: [...new Set([...details.documents, item])],
+                    // });
+                    return setFillData({
+                      ...fillData,
+                      documents: [...new Set([...fillData.documents, item])],
+                    });
+                  }}
+                />
+              ))}
+            {fillData?.documents?.length === undefined &&
+              docOfTheProperty.map((item: string, idx: number) => (
+                <RadioCheck
+                  type='checkbox'
+                  key={idx}
+                  value={item}
+                  name={'docOnTheProperty'}
+                  handleChange={() => {
+                    if (details.documents.includes(item)) {
+                      const index = details.documents.indexOf(item);
+                      return setDetails({
+                        ...details,
+                        documents: details.documents.splice(index),
+                      });
+                    }
                     return setDetails({
                       ...details,
-                      documents: details.documents.splice(index),
+                      documents: [...new Set([...details.documents, item])],
                     });
-                  }
-                  return setDetails({
-                    ...details,
-                    documents: [...new Set([...details.documents, item])],
-                  });
-                }}
-              />
-            ))}
+                  }}
+                />
+              ))}
           </div>
         </div>
         {/**Property Features */}
@@ -224,18 +300,23 @@ const PropertyType = () => {
               name='Number of Bedroom'
               type='number'
               className='lg:w-1/2 w-full'
-              value={details.noOfBedroom}
+              isDisabled={fillData?.noOfBedroom ? true : false}
+              value={fillData?.noOfBedroom}
               onChange={(e: { target: { value: string } }) => {
-                setDetails({ ...details, noOfBedroom: e.target.value });
+                setFillData({ ...fillData, noOfBedroom: e.target.value });
               }}
             />
             <Input
               name='Additional Features'
               type='text'
               className='lg:w-1/2 w-full'
-              value={details.additionalFeatures}
+              isDisabled={fillData?.additionalFeatures ? true : false}
+              value={fillData?.additionalFeatures}
               onChange={(e: { target: { value: string } }) => {
-                setDetails({ ...details, additionalFeatures: e.target.value });
+                setFillData({
+                  ...fillData,
+                  additionalFeatures: e.target.value,
+                });
               }}
             />
           </div>

@@ -21,7 +21,7 @@ interface InputProps {
   type: string;
   className?: string;
   id?: string;
-  value?: string;
+  value?: string | number | undefined;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: FocusEventHandler<HTMLInputElement>;
   forState?: boolean;
@@ -37,6 +37,7 @@ interface InputProps {
   setIsDisabled?: (type: boolean) => void;
 }
 
+const defaultCountry = { value: 'NG', label: 'Nigeria' };
 const Input: FC<InputProps> = ({
   className,
   id,
@@ -50,7 +51,7 @@ const Input: FC<InputProps> = ({
   forCountry,
   forCity,
   selectedCity,
-  selectedCountry,
+  selectedCountry = defaultCountry,
   selectedState,
   setSelectedCity,
   setSelectedCountry,

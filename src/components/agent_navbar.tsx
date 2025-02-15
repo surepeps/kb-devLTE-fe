@@ -29,7 +29,7 @@ const AgentNav = () => {
       <div className='min-h-[51px] md:hidden flex gap-[20px] flex-col justify-center items-center w-full'>
         <Box
           selectedText={selectedNav}
-          className='w-full'
+          className='w-full bg-[#09391C] text-[#8DDB90]'
           onClick={() => {
             handleSelect('Create Brief');
           }}
@@ -96,7 +96,7 @@ const Box: React.FC<BoxProps> = ({
       onClick={isDisabled ? undefined : onClick}
       className={`${className} ${
         selectedText === name
-          ? 'bg-[#09391C] text-[#8DDB90] shadow-lg'
+          ? 'bg-[#09391C] text-[#8DDB90] shadow-md'
           : 'text-[#5A5D63] bg-transparent'
       } text-[18px] leading-[21.09px] transition-all duration-500 font-semibold py-[15px] px-[20px] gap-[10px] border-[1px] border-[#C7CAD0] border-sm lg:min-w-[202px] hover:bg-[#8DDB90] hover:text-[#FFFFFF]`}>
       {name}

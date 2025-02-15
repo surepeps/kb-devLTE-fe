@@ -1,25 +1,35 @@
 /** @format */
 'use client';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import arrowDown from '@/svgs/arrowDown.svg';
 import Image from 'next/image';
 import Button from './button';
 //import ViewImage from './viewImage';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { motion, useInView } from 'framer-motion';
 
 interface CardDataProps {
   isRed?: boolean;
   cardData: { header: string; value: string }[];
   onClick?: () => void;
   className?: string;
-  images: StaticImport[]
+  images: StaticImport[];
 }
 
-const Card = ({ isRed, cardData, onClick, className, images }: CardDataProps) => {
+const Card = ({
+  isRed,
+  cardData,
+  onClick,
+  className,
+  images,
+}: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
   const { setViewImage, setImageData } = usePageContext();
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  const isCardInView = useInView(cardRef, { once: false });
 
   useEffect(() => {
     if (count === 6) {
@@ -30,14 +40,18 @@ const Card = ({ isRed, cardData, onClick, className, images }: CardDataProps) =>
   }, [count]);
   return (
     <Fragment>
-      <div
+      <motion.div
+        initial={{ opacity: 0, x: 80 }}
+        animate={isCardInView ? { opacity: 1, x: 0 } : {}}
+        transition={{ delay: 0.3 }}
+        ref={cardRef}
         className={`lg:w-[266px] w-full min-h-[446px] bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500 ${className}`}>
         <div className='flex flex-col gap-[3px] w-full'>
           <BreadCrumb cardData={cardData} limit={count} />
           <button
             type='button'
             onClick={() => {
-              setImageData(images)
+              setImageData(images);
               setViewImage(true);
             }}
             className='min-h-[42px] border-[1px] py-[10px] px-[20px] bg-[#F3F8FC] flex justify-center items-center text-[14px] leading-[22.4px] font-ubuntu text-[#1976D2] tracking-[0.1px]'>
@@ -77,7 +91,7 @@ const Card = ({ isRed, cardData, onClick, className, images }: CardDataProps) =>
             className='min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold'
           />
         </div>
-      </div>
+      </motion.div>
     </Fragment>
   );
 };

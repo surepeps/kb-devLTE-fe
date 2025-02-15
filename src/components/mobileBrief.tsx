@@ -36,7 +36,7 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='py-[10px] px-[20px] min-h-[42px]'
         name='Property price'
-        value={item.propertyPrice}
+        value={`N ${Number(item.propertyPrice).toLocaleString()}`}
       />
 
       <UniformStyling
@@ -96,7 +96,7 @@ const UniformStyling = ({
   className,
 }: {
   name: string;
-  value: string | number | undefined;
+  value: string | undefined;
   className: string;
 }) => {
   return (
@@ -106,7 +106,7 @@ const UniformStyling = ({
         {name}
       </span>
       <span className='font-ubuntu font-medium text-[14px] leading-[22.4px] text-[#000000] tracking-[0.1px]'>
-        {value}
+        {value?.split('').splice(0, 14).join('') + '...'}
       </span>
     </div>
   );
