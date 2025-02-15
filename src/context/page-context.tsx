@@ -27,15 +27,22 @@ export const PageContextProvider = ({
   const [propertyDetails, setPropertyDetails] = useState<{
     propertyType: string;
     usageOptions: string[];
-    // givenState?: Option | null;
-    // givenCity?: Option | null;
-    price?: string | number;
+    price: string | number;
     documents: string[];
-    noOfBedroom?: string;
-    additionalFeatures?: string;
+    noOfBedroom: string;
+    additionalFeatures: string;
     selectedState: Option | null;
     selectedCity: Option | null;
-  }>();
+  }>({
+    propertyType: '',
+    usageOptions: [],
+    price: '',
+    documents: [],
+    noOfBedroom: '',
+    additionalFeatures: '',
+    selectedCity: null,
+    selectedState: null,
+  });
 
   /**
    * View image

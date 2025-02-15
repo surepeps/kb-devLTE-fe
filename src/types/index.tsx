@@ -37,24 +37,20 @@ export interface GlobalContextTypes {
   propertyDetails: {
     propertyType: string;
     usageOptions: string[];
-    // givenState?: Option | null;
-    // givenCity?: Option | null;
-    price?: string | number;
+    price: string | number;
     documents: string[];
-    noOfBedroom?: string;
-    additionalFeatures?: string;
+    noOfBedroom: string;
+    additionalFeatures: string;
     selectedState: Option | null;
     selectedCity: Option | null;
   };
   setPropertyDetails: ({}: {
     propertyType: string;
     usageOptions: string[];
-    // givenState?: Option | null;
-    // givenCity?: Option | null;
-    price?: string | number;
+    price: string | number;
     documents: string[];
-    noOfBedroom?: string;
-    additionalFeatures?: string;
+    noOfBedroom: string;
+    additionalFeatures: string;
     selectedState: Option | null;
     selectedCity: Option | null;
   }) => void;
