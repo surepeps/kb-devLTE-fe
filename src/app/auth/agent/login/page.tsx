@@ -50,26 +50,26 @@ const Login = () => {
         const {  ...payload } = values;
         await toast.promise(
           POST_REQUEST(url, { ...payload }).then((response) => {
-            console.log("response from signup", response)
+            console.log("response from signin", response)
             if ((response as any).id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
               router.push('/auth/agent/form');
               return 'Sign in successful';
             } else {
-              // toast.error((response.message as any).error);
-              throw new Error((response as any).error);
+              const errorMessage = (response as any).error || 'Sign In failed';
+              toast.error(errorMessage);
+              throw new Error(errorMessage);
             }
           }),
           {
             loading: 'Logging in...',
             success: 'Welcome Back!',
-            error: 'Sign In failed',
           }
         );
       } catch (error) {
-        console.log(error);
-        toast.error('Sign In failed, please try again!');
+        // console.log(error);
+        // toast.error('Sign In failed, please try again!');
       }
     },
   });
