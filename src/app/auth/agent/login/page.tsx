@@ -18,15 +18,15 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
-import axios from 'axios';
+// import axios from 'axios';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
-import { resolve } from 'path';
+// import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
-const Register = () => {
+const Login = () => {
   const isLoading = useLoading();
   const { isContactUsClicked } = usePageContext();
 
@@ -36,46 +36,40 @@ const Register = () => {
   const validationSchema = Yup.object({
     email: Yup.string().required('enter email'),
     password: Yup.string().required(),
-    firstName: Yup.string().required(),
-    lastName: Yup.string().required(),
-    phone: Yup.number().required(),
   });
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
     },
     // validationSchema,
     onSubmit: async (values) => {
       console.log(values);
       try {
-        const url = URLS.BASE + URLS.agentSignup;
-        const { phone, ...payload } = values;
+        const url = URLS.BASE + URLS.agentLogin;
+        const {  ...payload } = values;
         await toast.promise(
-          POST_REQUEST(url, { ...payload, phoneNumber: String(values.phone) }).then((response) => {
+          POST_REQUEST(url, { ...payload }).then((response) => {
             console.log("response from signup", response)
             if ((response as any).id) {
-              toast.success('Registration successful');
+              toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
               router.push('/auth/agent/form');
-              return 'Registration successful';
+              return 'Sign in successful';
             } else {
               // toast.error((response.message as any).error);
               throw new Error((response as any).error);
             }
           }),
           {
-            loading: 'Signing up...',
-            success: 'Registration successful',
-            error: 'Registration failed',
+            loading: 'Logging in...',
+            success: 'Welcome Back!',
+            error: 'Sign In failed',
           }
         );
       } catch (error) {
         console.log(error);
-        toast.error('Registration failed, please try again!');
+        toast.error('Sign In failed, please try again!');
       }
     },
   });
@@ -92,8 +86,8 @@ const Register = () => {
           onSubmit={formik.handleSubmit}
           className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
         >
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Register with us</h2>
-          <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
+          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Sign In To Your Account</h2>
+          <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
             <Input
               formik={formik}
               title='Email'
@@ -110,60 +104,25 @@ const Register = () => {
               type='password'
               placeholder='Enter your password'
             />
-            <Input
-              formik={formik}
-              title='First name'
-              id='firstName'
-              icon={''}
-              type='text'
-              placeholder='Enter your first name'
-            />
-            <Input
-              formik={formik}
-              title='Last name'
-              id='lastName'
-              icon={''}
-              type='text'
-              placeholder='Enter your last name'
-            />
-            <Input
-              formik={formik}
-              title='Phone'
-              id='phone'
-              icon={phoneIcon}
-              type='number'
-              placeholder='Enter your phone number'
-            />
-          </div>
-          <div className='flex justify-center items-center w-full lg:px-[60px]'>
-            <RadioCheck
-              onClick={() => {
-                setAgreed(!agreed);
-              }}
-              type='checkbox'
-              name='agree'
-              className='w-full'
-              value={`By clicking here, I agree to the Khabi-Teq realty <br/> <a href='/policies_page'><span style='color: #0B423D; font-weight: bold'>Policy</span> and <span style='color: #0B423D; font-weight: bold'>Rules</span></a>`}
-            />
           </div>
           {/**Button */}
           <Button
-            value='Register'
+            value='Sign In'
             isDisabled
-            className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
+            className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
             type='submit'
             onSubmit={formik.handleSubmit}
             green={true}
           />
           {/**Already have an account */}
           <span className='text-base leading-[25.6px] font-normal'>
-            Already have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/login'}>
-              Sign In
+            Don&apos;t have an account?{' '}
+            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/register'}>
+              Sign Up
             </Link>
           </span>
           {/**Google | Facebook */}
-          <div className='flex justify-between lg:flex-row flex-col gap-[15px]'>
+          <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
             <RegisterWith icon={googleIcon} text='Continue with Google' />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
@@ -213,4 +172,4 @@ const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, 
   );
 };
 
-export default Register;
+export default Login;
