@@ -3,6 +3,10 @@
 
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
+interface Option {
+  value: string;
+  label: string;
+}
 export interface GlobalContextTypes {
   isContactUsClicked: boolean;
   setIsContactUsClicked: (type: boolean) => void;
@@ -28,5 +32,30 @@ export interface GlobalContextTypes {
   setImageData: ([]: StaticImport[]) => void;
   //submitted successfully type
   isSubmittedSuccessfully: boolean;
-  setIsSubmittedSuccessfully: (type: boolean) => void
+  setIsSubmittedSuccessfully: (type: boolean) => void;
+  //propertyDetailsProps
+  propertyDetails: {
+    propertyType: string;
+    usageOptions: string[];
+    // givenState?: Option | null;
+    // givenCity?: Option | null;
+    price?: string | number;
+    documents: string[];
+    noOfBedroom?: string;
+    additionalFeatures?: string;
+    selectedState: Option | null;
+    selectedCity: Option | null;
+  };
+  setPropertyDetails: ({}: {
+    propertyType: string;
+    usageOptions: string[];
+    // givenState?: Option | null;
+    // givenCity?: Option | null;
+    price?: string | number;
+    documents: string[];
+    noOfBedroom?: string;
+    additionalFeatures?: string;
+    selectedState: Option | null;
+    selectedCity: Option | null;
+  }) => void;
 }

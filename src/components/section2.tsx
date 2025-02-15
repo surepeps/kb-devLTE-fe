@@ -12,7 +12,7 @@ import Card from './card';
 import { motion, useInView } from 'framer-motion';
 import { cardDataArray } from '@/data';
 //import { usePageContext } from '@/context/page-context';
-import imgSample from '@/assets/assets.png'
+import imgSample from '@/assets/assets.png';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -99,7 +99,13 @@ const Section2 = () => {
           className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px]`}>
           {cardDataArray.map((item, idx: number) => {
             if (idx <= 3) {
-              return <Card images={Array(19).fill(imgSample)} cardData={item} key={idx} />;
+              return (
+                <Card
+                  images={Array(19).fill(imgSample)}
+                  cardData={item}
+                  key={idx}
+                />
+              );
             }
           })}
         </motion.div>

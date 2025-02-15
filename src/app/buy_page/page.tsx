@@ -17,12 +17,8 @@ import { toast } from 'react-hot-toast';
 type CardData = { header: string; value: string }[];
 export default function Rent() {
   const isLoading = useLoading();
-  const {
-    isContactUsClicked,
-    rentPage,
-    setRentPage,
-    isModalOpened,
-  } = usePageContext();
+  const { isContactUsClicked, rentPage, setRentPage, isModalOpened } =
+    usePageContext();
   const [found, setFound] = useState({
     isFound: false,
     count: 0,
@@ -74,7 +70,7 @@ export default function Rent() {
           />
           {/**All cards for isnpection */}
           {
-            <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px]'>
+            <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px] overflow-hidden'>
               <div className='flex flex-col gap-2 w-full'>
                 {found.isFound && (
                   <div className='flex justify-between'>
@@ -134,7 +130,7 @@ export default function Rent() {
                   }`}>
                   {allCards.map((card: CardData, idx: number) => (
                     <Card
-                    images={Array(12).fill(imgSample)}
+                      images={Array(12).fill(imgSample)}
                       onClick={() => {
                         setBriefIDs((prevItems) => new Set(prevItems).add(idx));
                         setSelectedBriefs((prevItems) =>
@@ -163,7 +159,7 @@ export default function Rent() {
                   <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
                     {[...selectedBriefs].map((brief, idx: number) => (
                       <Card
-                      images={Array(12).fill(imgSample)}
+                        images={Array(12).fill(imgSample)}
                         onClick={() => {
                           setTracker(idx);
                           console.log(idx, briefIDs);

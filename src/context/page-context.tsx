@@ -4,7 +4,10 @@ import { GlobalContextTypes } from '@/types';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState } from 'react';
 
-/** @format */
+interface Option {
+  value: string;
+  label: string;
+}
 const PageContext = createContext<GlobalContextTypes | undefined>(undefined);
 
 export const PageContextProvider = ({
@@ -20,6 +23,20 @@ export const PageContextProvider = ({
 
   const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
 
+  /**Property Details */
+  const [propertyDetails, setPropertyDetails] = useState<{
+    propertyType: string;
+    usageOptions: string[];
+    // givenState?: Option | null;
+    // givenCity?: Option | null;
+    price?: string | number;
+    documents: string[];
+    noOfBedroom?: string;
+    additionalFeatures?: string;
+    selectedState: Option | null;
+    selectedCity: Option | null;
+  }>();
+
   /**
    * View image
    */
@@ -27,7 +44,8 @@ export const PageContextProvider = ({
   const [imageData, setImageData] = useState<StaticImport[]>([]);
 
   //Submitted successfully context logic.
-  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState<boolean>(false)
+  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] =
+    useState<boolean>(false);
 
   return (
     <PageContext.Provider
@@ -45,7 +63,9 @@ export const PageContextProvider = ({
         imageData,
         setImageData,
         isSubmittedSuccessfully,
-        setIsSubmittedSuccessfully
+        setIsSubmittedSuccessfully,
+        propertyDetails,
+        setPropertyDetails,
       }}>
       {children}
     </PageContext.Provider>

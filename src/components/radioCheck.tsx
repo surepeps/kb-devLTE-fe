@@ -45,7 +45,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
         //checked={selectedValue === value}
       />
       {type === 'radio' ? (
-        <span className='w-[24px] h-[24px] flex items-center justify-center rounded-full border-white peer-checked:bg-[#8DDB90] border-[5px]'></span>
+        <span className='w-[24px] h-[24px] flex items-center justify-center rounded-full border-[#5A5D63] peer-checked:bg-[#8DDB90] border-[2px]'></span>
       ) : (
         <svg
           width='24'

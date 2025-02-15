@@ -19,7 +19,8 @@ const Overview = () => {
 
   const [selectedOption, setSelectedOption] =
     useState<string>('Require Attention');
-  const [heading, setHeading] = useState<string>('');
+  const [heading, setHeading] = useState<string>(selectedOption);
+  const [submitBrief, setSubmitBrief] = useState<boolean>(false);
 
   const [isFullDetailsClicked, setIsFullDetailsClicked] =
     useState<boolean>(false);
@@ -42,11 +43,20 @@ const Overview = () => {
     document: 'C of o, recepit,...',
   });
 
+  useEffect(() => {
+    if (selectedOption === 'Require Attention') {
+      setSubmitBrief(true);
+    } else {
+      setSubmitBrief(false);
+    }
+  }, [selectedOption]);
+
   return (
     <Fragment>
       {isFullDetailsClicked ? (
         <div className='w-full mt-[30px]'>
           <DetailsToCheck
+            submitBrief={submitBrief}
             heading={heading ?? 'Overview'}
             setIsFullDetailsClicked={setIsFullDetailsClicked}
             detailsToCheck={detailsToCheck}
@@ -108,7 +118,7 @@ const Overview = () => {
             </div>
           </div>
 
-          <div className='w-full min-h-[51px] flex flex-wrap gap-[25px]'>
+          <div className='w-full min-h-[51px] md:flex flex-wrap gap-[25px] hidden'>
             {OptionData.map((item: string, idx: number) => (
               <Options
                 onClick={() => {
@@ -219,7 +229,7 @@ const Table: FC<TableProps> = ({
 }) => {
   return (
     <section className='lg:w-[1184px] flex flex-col'>
-      <div className='lg:w-[1184px] min-h-[960px] py-[43.9px] px-[41.16px] bg-white flex flex-col gap-[41.6px]'>
+      <div className='lg:w-[1184px] min-h-fit py-[43.9px] px-[41.16px] bg-white flex flex-col gap-[41.6px]'>
         <div className='min-h-[99px] flex flex-col gap-[10px]'>
           <h2
             className={`font-archivo text-[24.7px] font-semibold text-[#FF3D00] leading-[24.7px] tracking-[0%]`}>
@@ -259,8 +269,8 @@ const Table: FC<TableProps> = ({
                   N {Number(item.propertyPrice).toLocaleString()}
                 </td>
                 {item.document ? (
-                  <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                    {item.document}
+                  <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
+                    {item.document.split('').splice(0, 14).join('') + '...'}
                   </td>
                 ) : null}
                 {item.amountSold ? (

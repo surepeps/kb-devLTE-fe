@@ -46,7 +46,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
               </td>
               {item.document ? (
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item.document}
+                  {item.document.split('').splice(0, 14).join('') + '...'}
                 </td>
               ) : null}
               {item.amountSold ? (
