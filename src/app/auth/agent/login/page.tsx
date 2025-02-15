@@ -47,11 +47,11 @@ const Login = () => {
       console.log(values);
       try {
         const url = URLS.BASE + URLS.agentLogin;
-        const {  ...payload } = values;
+        const { ...payload } = values;
         await toast.promise(
           POST_REQUEST(url, { ...payload }).then((response) => {
-            console.log("response from signin", response)
-            if ((response as any).id) {
+            console.log('response from signin', response);
+            if ((response as any).user.id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
               router.push('/auth/agent/form');
@@ -86,7 +86,9 @@ const Login = () => {
           onSubmit={formik.handleSubmit}
           className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
         >
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Sign In To Your Account</h2>
+          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+            Sign In To Your Account
+          </h2>
           <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
             <Input
               formik={formik}
