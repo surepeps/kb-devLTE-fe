@@ -54,7 +54,7 @@ const Login = () => {
             if ((response as any).user.id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
-              router.push('/auth/agent/form');
+              router.push('/auth/agent/createBrief');
               return 'Sign in successful';
             } else {
               const errorMessage = (response as any).error || 'Sign In failed';
