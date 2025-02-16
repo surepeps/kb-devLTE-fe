@@ -5,28 +5,24 @@ import AttachFile from '@/components/attach_file';
 import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
-// import { usePageContext } from '@/context/page-context';
-// import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 // import { useRouter } from 'next/navigation';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useUserContext } from '@/context/user-context';
 // import Cookies from 'js-cookie';
 
 const PropertyType = () => {
+  const { user } = useUserContext(); 
   const docOfTheProperty: string[] = [
     'Survey Document',
     'Deed of Assignment',
     'Receipt',
     'C of O',
   ];
-const owner = {
-  ownerFullName: 'Oluwafemi Omolounnu',
-  ownerPhoneNumber: '08090250410',
-  ownerEmail: 'oluwafemiomolounnu@gmail.ccom',
-};
+
   const formik = useFormik({
     initialValues: {
       propertyType: '',
@@ -38,9 +34,9 @@ const owner = {
       selectedState: '',
       selectedCity: '',
       selectedLGA: '',
-      ownerFullName: owner.ownerFullName,
-      ownerPhoneNumber: owner.ownerPhoneNumber,
-      ownerEmail: owner.ownerEmail, 
+      ownerFullName: user?.firstName + ' ' + user?.lastName,
+      ownerPhoneNumber: user?.phoneNumber,
+      ownerEmail: user?.email, 
       areYouTheOwner: false,
     },
     validationSchema: Yup.object({
