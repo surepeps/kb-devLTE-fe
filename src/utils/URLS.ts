@@ -5,4 +5,5 @@ export const URLS = {
   agentLogin: '/agent/login',
   uploadImg: '/upload-image',
   agentOnboarding: '/agent/onboard',
+  agentCreateBrief: '/properties/sell/new',
 };
