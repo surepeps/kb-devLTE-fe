@@ -80,11 +80,13 @@ const Landlord = () => {
                   </h2>
                   <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                     <Input
+                      label='State'
                       name='State'
                       type='text'
                       className='lg:w-1/2 w-full'
                     />
                     <Input
+                      label='Local Government'
                       name='local government'
                       type='text'
                       className='lg:w-1/2 w-full'
@@ -95,11 +97,13 @@ const Landlord = () => {
                 <div className='w-full flex flex-col gap-[15px]'>
                   <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                     <Input
+                      label='Rental Price'
                       name='Rental Price'
                       type='number'
                       className='lg:w-1/2 w-full'
                     />
                     <Input
+                      label='Number of Bedroom'
                       name='Number of Bedroom'
                       type='number'
                       className='lg:w-1/2 w-full'
@@ -155,17 +159,24 @@ const Landlord = () => {
                   />
                   <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                     <Input
+                      label='Full name'
                       name='Full name'
                       className='lg:w-1/2 w-full'
                       type='text'
                     />
                     <Input
+                      label='Phone'
                       name='Phone'
                       className='lg:w-1/2 w-full'
                       type='number'
                     />
                   </div>
-                  <Input name='Email' className='w-full' type='email' />
+                  <Input 
+                    label='Email'
+                    name='Email' 
+                    className='w-full' 
+                    type='email' 
+                  />
                 </div>
               </div>
             </div>
