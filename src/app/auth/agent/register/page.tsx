@@ -50,7 +50,7 @@ const Register = () => {
     },
     // validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      // console.log(values);
       try {
         const url = URLS.BASE + URLS.agentSignup;
         const { phone, ...payload } = values;
