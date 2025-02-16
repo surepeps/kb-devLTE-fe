@@ -141,6 +141,7 @@ const Input: FC<InputProps> = ({
         {!(forCountry || forState || forCity) && (
           <input
             id={id}
+            name={name}
             type={type}
             value={value}
             onChange={isDisabled ? undefined : onChange}
