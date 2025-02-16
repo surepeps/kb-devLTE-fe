@@ -17,6 +17,7 @@ interface Option {
 }
 interface InputProps {
   name: string;
+  label: string;
   placeholder?: string;
   type: string;
   className?: string;
@@ -42,6 +43,7 @@ const Input: FC<InputProps> = ({
   className,
   id,
   name,
+  label,
   type,
   placeholder,
   value,
@@ -97,7 +99,7 @@ const Input: FC<InputProps> = ({
         htmlFor={id}
         className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
         <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
-          {name}
+          {label}
         </span>
         {forCountry && (
           <>
