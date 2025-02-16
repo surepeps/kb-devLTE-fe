@@ -313,12 +313,14 @@ const PropertyType = () => {
               }}
             />
           </div>
-          {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
-            <span className='text-red-600 text-sm'>{formik.errors.noOfBedroom}</span>
-          )}
-          {formik.touched.additionalFeatures && formik.errors.additionalFeatures && (
-            <span className='text-red-600 text-sm'>{formik.errors.additionalFeatures}</span>
-          )}
+            <div className='w-full flex gap-[15px]'>
+            {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
+              <span className='text-red-600 text-sm'>{formik.errors.noOfBedroom}</span>
+            )}
+            {formik.touched.additionalFeatures && formik.errors.additionalFeatures && (
+              <span className='text-red-600 text-sm'>{formik.errors.additionalFeatures}</span>
+            )}
+          </div>
         </div>
         {/**Upload Image | Documents */}
         <AttachFile heading='Upload image(optional)' />
