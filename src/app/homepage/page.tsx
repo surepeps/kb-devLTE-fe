@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, Suspense } from 'react';
 //import HeroSection from '@/components/hero';
 import Loading from '@/components/loading';
 //import Section1 from '@/components/section1';
@@ -16,32 +16,33 @@ import { useLoading } from '@/hooks/useLoading';
 import HeroSection from '@/components/homepage_hero';
 import Section1 from '@/components/home_section1';
 import NewSection from '@/components/new_section';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { URLS } from '@/utils/URLS';
-import { GET_REQUEST } from '@/utils/requests';
-import Cookies from 'js-cookie';
+import EmailVerification from '@/components/EmailVerification';
+// import { useRouter, useSearchParams } from 'next/navigation';
+// import { URLS } from '@/utils/URLS';
+// import { GET_REQUEST } from '@/utils/requests';
+// import Cookies from 'js-cookie';
 
 const Homepage = () => {
   //Simulating the loading page
   const isLoading = useLoading();
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  // const searchParams = useSearchParams();
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (searchParams.get('access_token')) {
-      const url = URLS.BASE + URLS.agent + URLS.verifyEmail + `?access_token=${searchParams.get('access_token')}`;
+  // useEffect(() => {
+  //   if (searchParams.get('access_token')) {
+  //     const url = URLS.BASE + URLS.agent + URLS.verifyEmail + `?access_token=${searchParams.get('access_token')}`;
 
-      (async () => {
-        await GET_REQUEST(url).then((response) => {
-          console.log('response from email verification', response);
-          if ((response as unknown as { id: string; token: string }).id) {
-            Cookies.set('token', (response as unknown as { token: string }).token);
-            router.push('/');
-          }
-        });
-      })();
-    }
-  }, [router, searchParams]);
+  //     (async () => {
+  //       await GET_REQUEST(url).then((response) => {
+  //         console.log('response from email verification', response);
+  //         if ((response as unknown as { id: string; token: string }).id) {
+  //           Cookies.set('token', (response as unknown as { token: string }).token);
+  //           router.push('/');
+  //         }
+  //       });
+  //     })();
+  //   }
+  // }, [router, searchParams]);
 
   if (isLoading) return <Loading />;
 
@@ -65,6 +66,9 @@ const Homepage = () => {
           <HelpButton />
         </main>
       </section>
+      <Suspense fallback={<Loading />}>
+        <EmailVerification />
+      </Suspense>
       {/* {viewImage && <ViewImage />} */}
     </Fragment>
   );
