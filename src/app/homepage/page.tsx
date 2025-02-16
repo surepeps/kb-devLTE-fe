@@ -41,7 +41,7 @@ const Homepage = () => {
         });
       })();
     }
-  }, []);
+  }, [router, searchParams]);
 
   if (isLoading) return <Loading />;
 
