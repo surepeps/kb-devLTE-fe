@@ -147,17 +147,6 @@ const Sell = () => {
           <h3 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C] lg:py-[30px] py-[20px] lg:px-[80px] w-full'>
             Brief Details
           </h3>
-          <div className='w-full flex flex-col gap-[15px]'>
-          {formik.errors.ownerFullName && (
-            <span className='text-red-600 text-sm'>{formik.errors.ownerFullName}</span>
-          )}
-          {formik.errors.ownerPhoneNumber && (
-            <span className='text-red-600 text-sm'>{formik.errors.ownerPhoneNumber}</span>
-          )}
-          {formik.errors.ownerEmail && (
-            <span className='text-red-600 text-sm'>{formik.errors.ownerEmail}</span>
-          )}
-        </div>
           <form onSubmit={formik.handleSubmit} className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
             <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
               <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
@@ -198,6 +187,9 @@ const Sell = () => {
                       value='Land'
                     />
                   </div>
+                  {formik.touched.propertyType && formik.errors.propertyType && (
+                      <span className='text-red-600 text-sm'>{formik.errors.propertyType}</span>
+                  )}
                 </div>
                 {/**Usage Options */}
                 <div className='min-h-[73px] flex flex-col gap-[15px]'>
@@ -222,6 +214,9 @@ const Sell = () => {
                     )
                   )}
                   </div>
+                  {formik.touched.usageOptions && formik.errors.usageOptions && (
+                    <span className='text-red-600 text-sm'>{formik.errors.usageOptions}</span>
+                  )}
                 </div>
                 {/**Location */}
                 <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
@@ -265,6 +260,15 @@ const Sell = () => {
                         type='text'
                       />
                   </div>
+                    {formik.touched.selectedState && formik.errors.selectedState && (
+                      <span className='text-red-600 text-sm'>{formik.errors.selectedState}</span>
+                    )}
+                    {formik.touched.selectedLGA && formik.errors.selectedLGA && (
+                      <span className='text-red-600 text-sm'>{formik.errors.selectedLGA}</span>
+                    )}
+                    {formik.touched.selectedCity && formik.errors.selectedCity && (
+                      <span className='text-red-600 text-sm'>{formik.errors.selectedCity}</span>
+                    )}
                 </div>
                 {/**Price */}
                 <div className='min-h-[50px] flex flex-col gap-[15px]'>
@@ -278,6 +282,9 @@ const Sell = () => {
                       onChange={formik.handleChange}
                     />
                 </div>
+                {formik.touched.documents && formik.errors.documents && (
+                  <span className='text-red-600 text-sm'>{formik.errors.documents}</span>
+                )}
                 {/**Document of the property */}
                 <div className='min-h-[50px] flex flex-col gap-[15px]'>
                   <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
@@ -299,6 +306,9 @@ const Sell = () => {
                     />
                   ))}
                   </div>
+                  {formik.touched.documents && formik.errors.documents && (
+                    <span className='text-red-600 text-sm'>{formik.errors.documents}</span>
+                  )}
                 </div>
                 {/**Property Features */}
                 <div className='min-h-[129px] gap-[15px] flex flex-col w-full'>
@@ -327,6 +337,12 @@ const Sell = () => {
                       }}
                     />
                   </div>
+                  {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
+                    <span className='text-red-600 text-sm'>{formik.errors.noOfBedroom}</span>
+                  )}
+                  {formik.touched.additionalFeatures && formik.errors.additionalFeatures && (
+                    <span className='text-red-600 text-sm'>{formik.errors.additionalFeatures}</span>
+                  )}
                 </div>
                 {/**end */}
               </div>
