@@ -1,5 +1,4 @@
 /** @format */
- 
 
 import type { Metadata } from 'next';
 import './globals.css';
@@ -9,6 +8,7 @@ import HeaderFooterWrapper from '@/components/header_footer_wrapper';
 import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
 import { Toaster } from 'react-hot-toast';
 import Body from '@/components/body';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from '@/context/user-context';
 
 export const metadata: Metadata = {
@@ -30,11 +30,16 @@ export default function RootLayout({
       <PageContextProvider>
         <html lang='en'>
           <body
-            className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
+            className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+          >
             {' '}
             {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
             <HeaderFooterWrapper>
-              <Body>{children}</Body>
+              <Body>
+                <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                  {children}
+                </GoogleOAuthProvider>
+              </Body>
             </HeaderFooterWrapper>
             <Toaster />
           </body>
