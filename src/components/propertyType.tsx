@@ -88,9 +88,9 @@ const PropertyType = () => {
           POST_REQUEST(url, payload).then((response) => {
             console.log('response from brief', response);
             if ((response as any).owner) {
-              toast.success('Property submitted successfully');
+              toast.success('Brief submitted successfully');
               // router.push('/success');
-              return 'Property submitted successfully';
+              return 'Brief submitted successfully';
             } else {
               const errorMessage = (response as any).error || 'Submission failed';
               toast.error(errorMessage);
@@ -202,23 +202,27 @@ const PropertyType = () => {
           {/**inputs */}
           <div className='min-h-[26px] w-full flex flex-col flex-wrap lg:grid lg:grid-cols-3 gap-[15px]'>
             <Input
-              name='State'
+              label='State'
+              name='selectedState'
               selectedState={{ value: formik.values?.selectedState, label: formik.values?.selectedState }}
               setSelectedState={(option) => {
                 formik.setFieldValue('selectedState', option?.value);
               }}
               forState={true}
               type='text'
+              placeholder='Select State'
             />
             {/* <Input name='Local Government' type='text' /> */}
             <Input
+              label='Local Government'
               name='selectedLGA'
               type='text'
               value={formik.values.selectedLGA}
               onChange={formik.handleChange}
             />
             <Input
-              name='Area'
+              label='City'
+              name='selectedCity'
               forCity={true}
               selectedState={{ value: formik.values?.selectedState, label: formik.values?.selectedState }} // Ensure city dropdown receives state
               setSelectedCity={(option) => {
@@ -242,6 +246,7 @@ const PropertyType = () => {
           {/**input */}
           <div className='min-h-[26px] w-full flex gap-[50px]'>
             <Input
+              label='Price'
               placeholder='Enter property price'
               name='price'
               type='number'
@@ -288,6 +293,7 @@ const PropertyType = () => {
           {/**options */}
           <div className='min-h-[26px] w-full flex gap-[15px]'>
             <Input
+              label='Number of Bedrooms'
               name='noOfBedroom'
               type='number'
               className='lg:w-1/2 w-full'
@@ -296,6 +302,7 @@ const PropertyType = () => {
               onChange={formik.handleChange}
             />
             <Input
+              label='Additional Features'
               name='additionalFeatures'
               type='text'
               className='lg:w-1/2 w-full'
