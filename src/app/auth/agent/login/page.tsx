@@ -25,6 +25,7 @@ import toast from 'react-hot-toast';
 // import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const isLoading = useLoading();
@@ -72,6 +73,24 @@ const Login = () => {
         // toast.error('Sign In failed, please try again!');
       }
     },
+  });
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      console.log(codeResponse);
+      const url = URLS.BASE + URLS.agent + URLS.googleLogin;
+
+      await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
+        if ((response as unknown as { id: string }).id) {
+          Cookies.set('token', (response as unknown as { token: string }).token);
+
+          router.push('/auth/agent/form');
+        }
+        console.log(response);
+      });
+    },
+    onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
   });
 
   if (isLoading) return <Loading />;
@@ -125,7 +144,7 @@ const Login = () => {
           </span>
           {/**Google | Facebook */}
           <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith icon={googleIcon} text='Continue with Google' />
+            <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
         </form>
