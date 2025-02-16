@@ -39,8 +39,8 @@ const Form2 = () => {
       }`}>
       <div className='container flex flex-col min-h-[700px] items-center p-[20px]'>
         <AgentNav />
-        {selectedNav === AgentNavData.CREATE_BRIEF && <PropertyType />}
         {selectedNav === AgentNavData.OVERVIEW && <Overview />}
+        {selectedNav === AgentNavData.CREATE_BRIEF && <PropertyType />}
         {selectedNav === AgentNavData.TOTAL_BRIEF && (
           <Brief
             headerData={headerData}
