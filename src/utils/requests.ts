@@ -1,4 +1,5 @@
 interface IResponse {
+  error: string;
   success: boolean;
   message: string;
   data?: unknown;
@@ -16,6 +17,7 @@ export const GET_REQUEST = async (url: string, token?: string): Promise<IRespons
   } catch (error: unknown) {
     console.log(error);
     return {
+      error: (error as Error).message || 'Unknown error',
       success: false,
       message: 'An error occurred, please try again.',
     };
@@ -37,6 +39,7 @@ export const POST_REQUEST = async (url: string, data: unknown, token?: string): 
   } catch (error: unknown) {
     console.log(error);
     return {
+      error: (error as Error).message || 'Unknown error',
       success: false,
       message: 'An error occurred, please try again.',
     };
@@ -57,6 +60,7 @@ export const POST_REQUEST_FILE_UPLOAD = async (url: string, data: FormData, toke
   } catch (error: unknown) {
     console.log(error);
     return {
+      error: (error as Error).message || 'Unknown error',
       success: false,
       message: 'An error occurred, please try again.',
     };
@@ -78,6 +82,7 @@ export const PUT_REQUEST = async (url: string, data: unknown, token?: string): P
   } catch (error: unknown) {
     console.log(error);
     return {
+      error: (error as Error).message || 'Unknown error',
       success: false,
       message: 'An error occurred, please try again.',
     };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
 import { usePageContext } from '@/context/page-context';

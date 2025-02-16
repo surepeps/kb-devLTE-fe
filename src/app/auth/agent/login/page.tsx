@@ -18,7 +18,7 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
-// import axios from 'axios';
+import { useUserContext } from '@/context/user-context';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
@@ -30,7 +30,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 const Login = () => {
   const isLoading = useLoading();
   const { isContactUsClicked } = usePageContext();
-
+  const { setUser } = useUserContext();
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
 
@@ -45,7 +45,6 @@ const Login = () => {
     },
     // validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       try {
         const url = URLS.BASE + URLS.agentLogin;
         const { ...payload } = values;
@@ -55,7 +54,8 @@ const Login = () => {
             if ((response as any).user.id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
-              router.push('/auth/agent/form');
+              setUser((response as any).user);
+              router.push('/auth/agent/createBrief');
               return 'Sign in successful';
             } else {
               const errorMessage = (response as any).error || 'Sign In failed';
@@ -83,7 +83,7 @@ const Login = () => {
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
         if ((response as unknown as { id: string }).id) {
-          Cookies.set('token', (response.data as { token: string }).token);
+          Cookies.set('token', (response as unknown as { token: string }).token);
 
           router.push('/auth/agent/form');
         }

@@ -30,8 +30,9 @@ const Agent = () => {
           <HeroSection
             image={agentImage}
             headingText='Partner with'
-            description='Lorem ipsum dolor sit amet consectetur. Malesuada ut tellus cursus nascetur mauris.'
-            buttonText='Submit your Brief'
+            description='"Partner with Khabi-Teq for exclusive listings, referral commissions, and seamless transactions to grow your real estate business'
+            buttonText1='Paertner with us'
+            buttonText2='Login'
             bgColor='#0A3E72'
             borderColor='#63A3BE'
           />
