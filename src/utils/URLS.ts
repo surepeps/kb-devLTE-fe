@@ -5,4 +5,7 @@ export const URLS = {
   agentLogin: '/agent/login',
   uploadImg: '/upload-image',
   agentOnboarding: '/agent/onboard',
+  googleSignup: '/signup/google',
+  googleLogin: '/login/google',
+  verifyEmail: '/verify-email',
 };
