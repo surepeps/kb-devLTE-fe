@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
 import { usePageContext } from '@/context/page-context';
@@ -8,12 +9,14 @@ import Select from './select';
 import AttachFile from '@/components/attach_file';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 //import * as Yup from 'yup';
 import Cookies from 'js-cookie';
 import { PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 
 const AgentData = () => {
+  const router = useRouter();
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const [selectedAgentType, setSelectedAgentType] = useState<string>('Individual Agent');
 
@@ -64,16 +67,18 @@ const AgentData = () => {
           if (response.success) {
             toast.success('Agent data submitted successfully');
             Cookies.set('token', (response as unknown as { token: string }).token);
+            router.push('/auth/agent/createBrief');
             return 'Agent data submitted successfully';
           } else {
-            toast.error(response.message);
-            throw new Error(response.message);
+            const errorMessage = (response as any).error || 'Submission failed';
+            toast.error(errorMessage);
+            throw new Error(errorMessage);
           }
         }),
         {
           loading: 'Submitting...',
           success: 'Agent data submitted successfully',
-          error: 'An error occurred, please try again',
+          // error: 'An error occurred, please try again',
         }
       );
     },
@@ -105,6 +110,7 @@ const AgentData = () => {
             <div className='w-full flex flex-col gap-[20px] min-h-[181px]'>
               <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                 <Input
+                  label='Street'
                   name='Street'
                   type='text'
                   value={formik.values.street}
@@ -114,6 +120,7 @@ const AgentData = () => {
                   placeholder='This is a placeholder'
                 />
                 <Input
+                  label='State'
                   name='State'
                   type='text'
                   value={formik.values.state}
@@ -123,6 +130,7 @@ const AgentData = () => {
                   placeholder='This is a placeholder'
                 />
                 <Input
+                  label='Local Government Area'
                   name='Local Government Area'
                   type='text'
                   value={formik.values.localGovtArea}
@@ -133,6 +141,7 @@ const AgentData = () => {
                 />
               </div>
               <Input
+                label='Region of Operation'
                 name='Region of Operation'
                 className='w-full'
                 type='text'
@@ -158,6 +167,7 @@ const AgentData = () => {
               <div className='w-full min-h-[80px] gap-[15px] flex lg:flex-row flex-col'>
                 {selectedAgentType === 'Individual Agent' ? (
                   <Input
+                    label='Type of ID'
                     name='Type of ID'
                     className='md:w-1/2 w-full'
                     type='text'
@@ -169,6 +179,7 @@ const AgentData = () => {
                   />
                 ) : (
                   <Input
+                    label='Business/Company Name'
                     name='Business/Company Name'
                     className='md:w-1/2 w-full'
                     type='text'
@@ -181,6 +192,7 @@ const AgentData = () => {
                 )}
                 {selectedAgentType === 'Individual Agent' ? (
                   <Input
+                    label='ID Number'
                     name='ID Number'
                     className='md:w-1/2 w-full'
                     type='text'
@@ -192,6 +204,7 @@ const AgentData = () => {
                   />
                 ) : (
                   <Input
+                    label='Registration Number'
                     name='Registration Number'
                     className='md:w-1/2 w-full'
                     type='number'

@@ -18,18 +18,19 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
-// import axios from 'axios';
+import { useUserContext } from '@/context/user-context';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
 // import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const isLoading = useLoading();
   const { isContactUsClicked } = usePageContext();
-
+  const { setUser } = useUserContext();
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
 
@@ -44,34 +45,52 @@ const Login = () => {
     },
     // validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       try {
         const url = URLS.BASE + URLS.agentLogin;
-        const {  ...payload } = values;
+        const { ...payload } = values;
         await toast.promise(
           POST_REQUEST(url, { ...payload }).then((response) => {
-            console.log("response from signup", response)
-            if ((response as any).id) {
+            console.log('response from signin', response);
+            if ((response as any).user.id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
-              router.push('/auth/agent/form');
+              setUser((response as any).user);
+              router.push('/auth/agent/createBrief');
               return 'Sign in successful';
             } else {
-              // toast.error((response.message as any).error);
-              throw new Error((response as any).error);
+              const errorMessage = (response as any).error || 'Sign In failed';
+              toast.error(errorMessage);
+              throw new Error(errorMessage);
             }
           }),
           {
             loading: 'Logging in...',
             success: 'Welcome Back!',
-            error: 'Sign In failed',
           }
         );
       } catch (error) {
-        console.log(error);
-        toast.error('Sign In failed, please try again!');
+        // console.log(error);
+        // toast.error('Sign In failed, please try again!');
       }
     },
+  });
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      console.log(codeResponse);
+      const url = URLS.BASE + URLS.agent + URLS.googleLogin;
+
+      await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
+        if ((response as unknown as { id: string }).id) {
+          Cookies.set('token', (response as unknown as { token: string }).token);
+
+          router.push('/auth/agent/form');
+        }
+        console.log(response);
+      });
+    },
+    onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
   });
 
   if (isLoading) return <Loading />;
@@ -86,7 +105,9 @@ const Login = () => {
           onSubmit={formik.handleSubmit}
           className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
         >
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Sign In To Your Account</h2>
+          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+            Sign In To Your Account
+          </h2>
           <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
             <Input
               formik={formik}
@@ -123,7 +144,7 @@ const Login = () => {
           </span>
           {/**Google | Facebook */}
           <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith icon={googleIcon} text='Continue with Google' />
+            <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
         </form>
