@@ -28,12 +28,14 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Rent',
-    url: '/rent_page',
+    // url: '/rent_page',
+    url: '',
     isClicked: false,
   },
   {
     name: 'Landlord',
-    url: '/landlord_page',
+    // url: '/landlord_page',
+    url: '',
     isClicked: false,
   },
   {
@@ -43,7 +45,8 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Policies',
-    url: '/policies_page',
+    // url: '/policies_page',
+    url: '',
     isClicked: false,
   },
   {

@@ -10,7 +10,7 @@ import FAQs from '@/components/FAQs';
 import HelpButton from '@/components/helpButton';
 import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
-import agentImage from '@/assets/agentImage.png';
+import agentImage from '@/assets/Agentpic.png';
 
 const Agent = () => {
   //Simulating the loading page
