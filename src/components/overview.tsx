@@ -142,6 +142,7 @@ const Overview = () => {
             {' '}
             {selectedOption === 'Require Attention' && (
               <Table
+                headingColor='#FF3D00'
                 headerData={headerData}
                 setDetailsToCheck={setDetailsToCheck}
                 setShowFullDetails={setIsFullDetailsClicked}
@@ -150,6 +151,17 @@ const Overview = () => {
             match it with available property briefs. Upload suitable options to
             the preference form as soon as possible to ensure a fast and
             seamless transaction`}
+                data={briefData}
+              />
+            )}
+            {selectedOption === '3 month ago Brief' && (
+              <Table
+                headingColor='black'
+                headerData={headerData}
+                setDetailsToCheck={setDetailsToCheck}
+                setShowFullDetails={setIsFullDetailsClicked}
+                heading='3 month ago Brief'
+                description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
                 data={briefData}
               />
             )}
@@ -218,6 +230,7 @@ interface TableProps {
   setDetailsToCheck: ({}: DataProps) => void;
   heading: string;
   description: string;
+  headingColor: string;
 }
 
 const Table: FC<TableProps> = ({
@@ -226,13 +239,15 @@ const Table: FC<TableProps> = ({
   setDetailsToCheck,
   description,
   heading,
+  headingColor,
 }) => {
   return (
     <section className='lg:w-[1184px] flex flex-col'>
       <div className='lg:w-[1184px] min-h-fit py-[43.9px] px-[41.16px] bg-white flex flex-col gap-[41.6px]'>
         <div className='min-h-[99px] flex flex-col gap-[10px]'>
           <h2
-            className={`font-archivo text-[24.7px] font-semibold text-[#FF3D00] leading-[24.7px] tracking-[0%]`}>
+            style={{ color: headingColor }}
+            className={`font-archivo text-[24.7px] font-semibold leading-[24.7px] tracking-[0%]`}>
             {heading}
           </h2>
           <span className='text-[20px] leading-[32px] tracking-[5%] font-normal text-[#000000]'>

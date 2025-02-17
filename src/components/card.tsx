@@ -7,7 +7,7 @@ import Button from './button';
 //import ViewImage from './viewImage';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface CardDataProps {
   isRed?: boolean;
@@ -29,7 +29,7 @@ const Card = ({
   const { setViewImage, setImageData } = usePageContext();
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  const isCardInView = useInView(cardRef, { once: false });
+  //const isCardInView = useInView(cardRef, { once: false });
 
   useEffect(() => {
     if (count === 6) {
@@ -41,9 +41,9 @@ const Card = ({
   return (
     <Fragment>
       <motion.div
-        initial={{ opacity: 0, x: 80 }}
-        animate={isCardInView ? { opacity: 1, x: 0 } : {}}
-        transition={{ delay: 0.3 }}
+        // initial={{ opacity: 0, x: 80 }}
+        // animate={isCardInView ? { opacity: 1, x: 0 } : {}}
+        // transition={{ delay: 0.3 }}
         ref={cardRef}
         className={`lg:w-[266px] w-full min-h-[446px] bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500 ${className}`}>
         <div className='flex flex-col gap-[3px] w-full'>
