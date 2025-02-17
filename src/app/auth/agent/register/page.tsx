@@ -89,7 +89,7 @@ const Register = () => {
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (codeResponse: any) => {
       console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleSignup;
 
@@ -107,7 +107,7 @@ const Register = () => {
         }
       );
     },
-    onError: (errorResponse) => console.error(errorResponse),
+    onError: (errorResponse: any) => console.error(errorResponse),
   });
 
   if (isLoading) return <Loading />;
