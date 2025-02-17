@@ -56,7 +56,10 @@ const Register = () => {
         const url = URLS.BASE + URLS.agentSignup;
         const { phone, ...payload } = values;
         await toast.promise(
-          POST_REQUEST(url, { ...payload, phoneNumber: String(values.phone) }).then((response) => {
+          POST_REQUEST(url, {
+            ...payload,
+            phoneNumber: String(values.phone),
+          }).then((response) => {
             console.log('response from signup', response);
             if ((response as any).id) {
               toast.success('Registration successful');
@@ -65,7 +68,8 @@ const Register = () => {
               // router.push('/auth/agent/form');
               return 'Registration successful';
             } else {
-              const errorMessage = (response as any).error || 'Registration failed';
+              const errorMessage =
+                (response as any).error || 'Registration failed';
               toast.error(errorMessage);
               throw new Error(errorMessage);
             }
@@ -85,20 +89,25 @@ const Register = () => {
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (codeResponse: any) => {
       console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleSignup;
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
-        if ((response as unknown as { id: string }).id) {
-          Cookies.set('token', (response as unknown as { token: string }).token);
+      await POST_REQUEST(url, { code: codeResponse.code }).then(
+        async (response) => {
+          if ((response as unknown as { id: string }).id) {
+            Cookies.set(
+              'token',
+              (response as unknown as { token: string }).token
+            );
 
-          router.push('/auth/agent/form');
+            router.push('/auth/agent/form');
+          }
+          console.log(response);
         }
-        console.log(response);
-      });
+      );
     },
-    onError: (errorResponse) => console.error(errorResponse),
+    onError: (errorResponse: any) => console.error(errorResponse),
   });
 
   if (isLoading) return <Loading />;
@@ -106,14 +115,14 @@ const Register = () => {
     <section
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
-      } transition-all duration-500`}
-    >
+      } transition-all duration-500`}>
       <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
         <form
           onSubmit={formik.handleSubmit}
-          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
-        >
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Register with us</h2>
+          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
+          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+            Register with us
+          </h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
             <Input
               formik={formik}
@@ -179,13 +188,19 @@ const Register = () => {
           {/**Already have an account */}
           <span className='text-base leading-[25.6px] font-normal'>
             Already have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/login'}>
+            <Link
+              className='font-semibold text-[#09391C]'
+              href={'/auth/agent/login'}>
               Sign In
             </Link>
           </span>
           {/**Google | Facebook */}
           <div className='flex justify-between lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
+            <RegisterWith
+              icon={googleIcon}
+              text='Continue with Google'
+              onClick={googleLogin}
+            />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
         </form>
@@ -204,10 +219,22 @@ interface InputProps {
   formik: any;
 }
 
-const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, formik }) => {
+const Input: FC<InputProps> = ({
+  className,
+  id,
+  title,
+  type,
+  placeholder,
+  icon,
+  formik,
+}) => {
   return (
-    <label htmlFor={id} className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
-      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>{title}</span>
+    <label
+      htmlFor={id}
+      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+        {title}
+      </span>
       <div className='flex'>
         <input
           name={id}
@@ -229,7 +256,9 @@ const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, 
         ) : null} */}
       </div>
       {formik.touched[title] ||
-        (formik.errors[title] && <span className='text-red-600 text-sm'>{formik.errors[title]}</span>)}
+        (formik.errors[title] && (
+          <span className='text-red-600 text-sm'>{formik.errors[title]}</span>
+        ))}
     </label>
   );
 };
