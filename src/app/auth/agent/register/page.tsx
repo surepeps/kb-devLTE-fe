@@ -25,6 +25,7 @@ import toast from 'react-hot-toast';
 import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const isLoading = useLoading();
@@ -50,7 +51,7 @@ const Register = () => {
     },
     // validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      // console.log(values);
       try {
         const url = URLS.BASE + URLS.agentSignup;
         const { phone, ...payload } = values;
@@ -62,25 +63,51 @@ const Register = () => {
             console.log('response from signup', response);
             if ((response as any).id) {
               toast.success('Registration successful');
-              Cookies.set('token', (response as any).token);
-              router.push('/auth/agent/form');
+              // Cookies.set('token', (response as any).token);
+              toast.success('Please verify your email to continue');
+              // router.push('/auth/agent/form');
               return 'Registration successful';
             } else {
-              // toast.error((response.message as any).error);
-              throw new Error((response as any).error);
+              const errorMessage =
+                (response as any).error || 'Registration failed';
+              toast.error(errorMessage);
+              throw new Error(errorMessage);
             }
           }),
           {
             loading: 'Signing up...',
-            success: 'Registration successful',
+            // success: 'Registration successful',
             // error: 'Registration failed',
           }
         );
       } catch (error) {
         console.log(error);
-        toast.error('Registration failed, please try again!');
+        // toast.error('Registration failed, please try again!');
       }
     },
+  });
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      console.log(codeResponse);
+      const url = URLS.BASE + URLS.agent + URLS.googleSignup;
+
+      await POST_REQUEST(url, { code: codeResponse.code }).then(
+        async (response) => {
+          if ((response as unknown as { id: string }).id) {
+            Cookies.set(
+              'token',
+              (response as unknown as { token: string }).token
+            );
+
+            router.push('/auth/agent/form');
+          }
+          console.log(response);
+        }
+      );
+    },
+    onError: (errorResponse) => console.error(errorResponse),
   });
 
   if (isLoading) return <Loading />;
@@ -169,7 +196,11 @@ const Register = () => {
           </span>
           {/**Google | Facebook */}
           <div className='flex justify-between lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith icon={googleIcon} text='Continue with Google' />
+            <RegisterWith
+              icon={googleIcon}
+              text='Continue with Google'
+              onClick={googleLogin}
+            />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
         </form>
