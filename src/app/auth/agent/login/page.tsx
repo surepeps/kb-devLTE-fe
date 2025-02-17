@@ -85,9 +85,9 @@ const Login = () => {
         if ((response as unknown as { id: string }).id) {
           Cookies.set('token', (response as unknown as { token: string }).token);
 
-          router.push('/auth/agent/form');
+          router.push('/auth/agent/createBrief');
         }
-        console.log(response);
+        console.log("response", response);
       });
     },
     onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
