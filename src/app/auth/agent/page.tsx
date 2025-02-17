@@ -32,10 +32,9 @@ const Register = () => {
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
         if ((response as unknown as { id: string }).id) {
           Cookies.set('token', (response as unknown as { token: string }).token);
-
           router.push('/auth/agent/form');
         }
-        console.log(response);
+        console.log("response", response);
       });
     },
     onError: (errorResponse) => console.error(errorResponse),
