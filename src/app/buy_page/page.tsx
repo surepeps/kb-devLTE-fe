@@ -1,4 +1,11 @@
+/**
+ 
+ *
+ * @format
+ */
+
 /** @format */
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
@@ -13,6 +20,8 @@ import PropertyReference from '@/components/propertyReference';
 import imgSample from '@/assets/assets.png';
 import { cardDataArray } from '@/data';
 import { toast } from 'react-hot-toast';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 
 type CardData = { header: string; value: string }[];
 export default function Rent() {
@@ -32,6 +41,7 @@ export default function Rent() {
   const [tracker, setTracker] = useState<number>(0);
   const [briefIDs, setBriefIDs] = useState<Set<number>>(new Set([]));
   const [allCards, setAllCards] = useState(cardDataArray);
+  const [properties, setProperties] = useState<any[]>([]);
 
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
@@ -47,6 +57,19 @@ export default function Rent() {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
 
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
+        console.log(response);
+        setProperties(response);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchAllData();
+  }, []);
+
   if (isLoading) return <Loading />;
   return (
     <Fragment>
@@ -58,9 +81,11 @@ export default function Rent() {
           'filter brightness-[30%] transition-all duration-500'
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
-          <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-epilogue'>
+          <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
             Enter Your{' '}
-            <span className='text-[#8DDB90]'>Property Reference</span>
+            <span className='text-[#8DDB90] font-display'>
+              Property Reference
+            </span>
           </h2>
           <PropertyReference
             found={found}
@@ -128,20 +153,42 @@ export default function Rent() {
                   } ${
                     isSelectedBriefClicked ? 'hidden lg:grid' : 'flex lg:grid'
                   }`}>
-                  {allCards.map((card: CardData, idx: number) => (
+                  {properties.map((property, idx: number) => (
                     <Card
                       images={Array(12).fill(imgSample)}
                       onClick={() => {
                         setBriefIDs((prevItems) => new Set(prevItems).add(idx));
                         setSelectedBriefs((prevItems) =>
-                          new Set(prevItems).add(card)
+                          new Set(prevItems).add(property)
                         );
-                        if (selectedBriefs.has(card)) {
+                        if (selectedBriefs.has(property)) {
                           return toast.success('Already added for inspection');
                         }
                         toast.success('Successfully added for inspection');
                       }}
-                      cardData={card}
+                      cardData={[
+                        {
+                          header: 'Property Type',
+                          value: property.propertyType,
+                        },
+                        { header: 'Price', value: `$${property.price}` },
+                        {
+                          header: 'Bedrooms',
+                          value:
+                            property.propertyFeatures?.noOfBedrooms || 'N/A',
+                        },
+                        {
+                          header: 'Location',
+                          value: `${property.location.state}, ${property.location.localGovernment}`,
+                        },
+                        {
+                          header: 'Documents',
+                          value: `<ol>${property.docOnProperty.map(
+                            (item: { _id: string; docName: string }) =>
+                              `<li key={${item._id}>${item.docName}</li>`
+                          )}<ol>`,
+                        },
+                      ]}
                       key={idx}
                     />
                   ))}
