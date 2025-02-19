@@ -40,6 +40,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
         type={type}
         name={name}
         id={id}
+        disabled={isDisabled}
         className='peer hidden'
         onChange={handleChange}
         //checked={selectedValue === value}
