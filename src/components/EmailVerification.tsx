@@ -18,7 +18,7 @@ const EmailVerification = () => {
           console.log('response from email verification', response);
           if ((response as unknown as { id: string; token: string }).id) {
             Cookies.set('token', (response as unknown as { token: string }).token);
-            router.push('/');
+            router.push('/auth/agent/form');
           }
         });
       })();
