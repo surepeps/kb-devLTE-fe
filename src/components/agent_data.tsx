@@ -111,7 +111,7 @@ const AgentData = () => {
               <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                 <Input
                   label='Street'
-                  name='Street'
+                  name='street'
                   type='text'
                   value={formik.values.street}
                   id='street'
@@ -121,7 +121,7 @@ const AgentData = () => {
                 />
                 <Input
                   label='State'
-                  name='State'
+                  name='state'
                   type='text'
                   value={formik.values.state}
                   onChange={formik.handleChange}
@@ -131,7 +131,7 @@ const AgentData = () => {
                 />
                 <Input
                   label='Local Government Area'
-                  name='Local Government Area'
+                  name='localGovtArea'
                   type='text'
                   value={formik.values.localGovtArea}
                   onChange={formik.handleChange}
@@ -142,7 +142,7 @@ const AgentData = () => {
               </div>
               <Input
                 label='Region of Operation'
-                name='Region of Operation'
+                name='regionOfOperation'
                 className='w-full'
                 type='text'
                 value={formik.values.regionOfOperation}
@@ -168,7 +168,7 @@ const AgentData = () => {
                 {selectedAgentType === 'Individual Agent' ? (
                   <Input
                     label='Type of ID'
-                    name='Type of ID'
+                    name='typeOfID'
                     className='md:w-1/2 w-full'
                     type='text'
                     value={formik.values.typeOfID}
@@ -180,7 +180,7 @@ const AgentData = () => {
                 ) : (
                   <Input
                     label='Business/Company Name'
-                    name='Business/Company Name'
+                    name='companyName'
                     className='md:w-1/2 w-full'
                     type='text'
                     value={formik.values.companyName}
@@ -193,7 +193,7 @@ const AgentData = () => {
                 {selectedAgentType === 'Individual Agent' ? (
                   <Input
                     label='ID Number'
-                    name='ID Number'
+                    name='idNumber'
                     className='md:w-1/2 w-full'
                     type='text'
                     value={formik.values.idNumber}
@@ -205,7 +205,7 @@ const AgentData = () => {
                 ) : (
                   <Input
                     label='Registration Number'
-                    name='Registration Number'
+                    name='registrationNumber'
                     className='md:w-1/2 w-full'
                     type='number'
                     value={formik.values.registrationNumber}
