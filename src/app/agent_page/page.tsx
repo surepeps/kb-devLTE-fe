@@ -31,7 +31,7 @@ const Agent = () => {
             image={agentImage}
             headingText='Partner with'
             description='"Partner with Khabi-Teq for exclusive listings, referral commissions, and seamless transactions to grow your real estate business'
-            buttonText1='Paertner with us'
+            buttonText1='Partner with us'
             buttonText2='Login'
             bgColor='#0A3E72'
             borderColor='#63A3BE'
