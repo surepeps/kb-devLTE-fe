@@ -18,12 +18,12 @@ import ContactUs from '@/components/contact_information';
 import PropertyReference from '@/components/propertyReference';
 //import HouseFrame from '@/components/house-frame';
 import imgSample from '@/assets/assets.png';
-import { cardDataArray } from '@/data';
+//import { cardDataArray } from '@/data';
 import { toast } from 'react-hot-toast';
 import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 
-type CardData = { header: string; value: string }[];
+//type CardData = { header: string; value: string }[];
 export default function Rent() {
   const isLoading = useLoading();
   const { isContactUsClicked, rentPage, setRentPage, isModalOpened } =
@@ -35,13 +35,12 @@ export default function Rent() {
   const [isSelectedBriefClicked, setIsSelectedBriefClicked] =
     useState<boolean>(false);
   const [text, setText] = useState<string>('View selected Brief');
-  const [selectedBriefs, setSelectedBriefs] = useState<Set<CardData>>(
-    new Set([])
-  );
+  const [selectedBriefs, setSelectedBriefs] = useState<Set<any>>(new Set([]));
   const [tracker, setTracker] = useState<number>(0);
   const [briefIDs, setBriefIDs] = useState<Set<number>>(new Set([]));
-  const [allCards, setAllCards] = useState(cardDataArray);
+  //const [allCards, setAllCards] = useState(cardDataArray);
   const [properties, setProperties] = useState<any[]>([]);
+  const [isFetchingData, setFetchingData] = useState<boolean>(false);
 
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
@@ -59,12 +58,17 @@ export default function Rent() {
 
   useEffect(() => {
     const fetchAllData = async () => {
+      setFetchingData(true);
       try {
         const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
         console.log(response);
-        setProperties(response);
+        if (response.success) {
+          setFetchingData(false);
+          setProperties(response);
+        }
       } catch (err) {
         console.log(err);
+        setFetchingData(false);
       }
     };
     fetchAllData();
@@ -90,7 +94,7 @@ export default function Rent() {
           <PropertyReference
             found={found}
             setFound={setFound}
-            setAllCards={setAllCards}
+            setAllCards={setProperties}
             propertyReferenceData={propertyReferenceData}
           />
           {/**All cards for isnpection */}
@@ -171,7 +175,10 @@ export default function Rent() {
                           header: 'Property Type',
                           value: property.propertyType,
                         },
-                        { header: 'Price', value: `$${property.price}` },
+                        {
+                          header: 'Price',
+                          value: `N${Number(property.price).toLocaleString()}`,
+                        },
                         {
                           header: 'Bedrooms',
                           value:
@@ -193,6 +200,7 @@ export default function Rent() {
                     />
                   ))}
                 </div>
+                {}
               </div>
 
               {[...selectedBriefs].length !== 0 ? (
@@ -219,7 +227,32 @@ export default function Rent() {
                           });
                           toast.success('Removed successfully');
                         }}
-                        cardData={brief}
+                        cardData={[
+                          {
+                            header: 'Property Type',
+                            value: brief.propertyType,
+                          },
+                          {
+                            header: 'Price',
+                            value: `N${Number(brief.price).toLocaleString()}`,
+                          },
+                          {
+                            header: 'Bedrooms',
+                            value:
+                              brief.propertyFeatures?.noOfBedrooms || 'N/A',
+                          },
+                          {
+                            header: 'Location',
+                            value: `${brief.location.state}, ${brief.location.localGovernment}`,
+                          },
+                          {
+                            header: 'Documents',
+                            value: `<ol>${brief.docOnProperty.map(
+                              (item: { _id: string; docName: string }) =>
+                                `<li key={${item._id}>${item.docName}</li>`
+                            )}<ol>`,
+                          },
+                        ]}
                         isRed={true}
                         key={idx}
                       />
