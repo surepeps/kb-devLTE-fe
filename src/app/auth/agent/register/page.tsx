@@ -65,7 +65,7 @@ const Register = () => {
               toast.success('Registration successful');
               // Cookies.set('token', (response as any).token);
               toast.success('Please verify your email to continue');
-              // router.push('/auth/agent/form');
+              router.push('/auth/agent/form');
               return 'Registration successful';
             } else {
               const errorMessage =
@@ -100,15 +100,18 @@ const Register = () => {
               'token',
               (response as unknown as { token: string }).token
             );
-
+            toast.success('Registration successful');
             router.push('/auth/agent/form');
           }
           console.log(response);
+          toast.error(response.message);
         }
       );
     },
     onError: (errorResponse: any) => console.error(errorResponse),
   });
+
+
 
   if (isLoading) return <Loading />;
   return (
