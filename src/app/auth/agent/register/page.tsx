@@ -27,6 +27,7 @@ import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGoogleLogin } from '@react-oauth/google';
+import CustomToast from '@/components/CustomToast';
 
 const Register = () => {
   const isLoading = useLoading();
@@ -81,7 +82,7 @@ const Register = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // setIsDisabled(true);
+      setIsDisabled(true);
       try {
         const url = URLS.BASE + URLS.agentSignup;
         const { phone, ...payload } = values;
@@ -94,16 +95,22 @@ const Register = () => {
             if ((response as any).id) {
               toast.success('Registration successful');
               setUser((response as any).user);
-              toast.success('Please verify your email to continue');
+              setTimeout(() => {
+                toast.custom(
+                <CustomToast 
+                  title="Registration successful" 
+                  subtitle="A Verification has been sent to your email. Please verify your email to continue" 
+                  />
+                );
+              }, 2000);
+              setIsDisabled(false);
               // router.push('/auth/agent/form');
-              // router.push('/auth/agent/form');
-              // setIsDisabled(false);
               return 'Registration successful';
             } else {
               const errorMessage =
                 (response as any).error || 'Registration failed';
               toast.error(errorMessage);
-              // setIsDisabled(false);
+              setIsDisabled(false);
               throw new Error(errorMessage);
             }
           }),
@@ -134,6 +141,7 @@ const Register = () => {
               'token',
               (response as unknown as { token: string }).token
             );
+            console.log('response', response);
             setUser((response as any).user);
             toast.success('Registration successful');
             router.push('/auth/agent/form');
