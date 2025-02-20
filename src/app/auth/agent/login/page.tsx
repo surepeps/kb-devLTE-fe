@@ -66,7 +66,7 @@ const Login = () => {
           {
             loading: 'Logging in...',
             success: 'Welcome Back!',
-            error: (error) => {
+            error: (error: { message: any; }) => {
               console.log('error', error);
               return error.message || 'Sign In failed, please try again!';
             },
@@ -87,11 +87,15 @@ const Login = () => {
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
         if ((response as unknown as { id: string }).id) {
+          toast.success('Sign in successful');
           Cookies.set('token', (response as unknown as { token: string }).token);
-
+          console.log('response', response);
+          console.log('response Data', response.data);
+          setUser((response as any).user);
           router.push('/auth/agent/createBrief');
         }
         console.log('response', response);
+        toast.error(response.message);
       });
     },
     onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
