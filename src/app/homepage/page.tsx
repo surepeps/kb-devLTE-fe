@@ -63,7 +63,7 @@ const Homepage = () => {
         });
       })();
     }
-  }, []);
+  }, [router, searchParams, setUser]);
 
   if (isLoading) return <Loading />;
 
