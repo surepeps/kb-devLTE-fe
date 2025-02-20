@@ -1,4 +1,11 @@
+/**
+ 
+ *
+ * @format
+ */
+
 /** @format */
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
@@ -11,10 +18,15 @@ import ContactUs from '@/components/contact_information';
 import PropertyReference from '@/components/propertyReference';
 //import HouseFrame from '@/components/house-frame';
 import imgSample from '@/assets/assets.png';
-import { cardDataArray } from '@/data';
+//import { cardDataArray } from '@/data';
 import { toast } from 'react-hot-toast';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWifi } from '@fortawesome/free-solid-svg-icons';
 
-type CardData = { header: string; value: string }[];
+//type CardData = { header: string; value: string }[];
+
 export default function Rent() {
   const isLoading = useLoading();
   const { isContactUsClicked, rentPage, setRentPage, isModalOpened } =
@@ -26,12 +38,13 @@ export default function Rent() {
   const [isSelectedBriefClicked, setIsSelectedBriefClicked] =
     useState<boolean>(false);
   const [text, setText] = useState<string>('View selected Brief');
-  const [selectedBriefs, setSelectedBriefs] = useState<Set<CardData>>(
-    new Set([])
-  );
+  const [selectedBriefs, setSelectedBriefs] = useState<Set<any>>(new Set([]));
   const [tracker, setTracker] = useState<number>(0);
   const [briefIDs, setBriefIDs] = useState<Set<number>>(new Set([]));
-  const [allCards, setAllCards] = useState(cardDataArray);
+  //const [allCards, setAllCards] = useState(cardDataArray);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [isFetchingData, setFetchingData] = useState<boolean>(false);
+  const [errMessage, setErrMessage] = useState<string>('');
 
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
@@ -47,6 +60,26 @@ export default function Rent() {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
 
+  useEffect(() => {
+    const fetchAllData = async () => {
+      setFetchingData(true);
+      try {
+        const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
+        console.log(response);
+        setFetchingData(false);
+        setProperties(response);
+        if (response.error) {
+          setFetchingData(false);
+          setErrMessage(response.error);
+        }
+      } catch (err) {
+        console.log(err);
+        setFetchingData(false);
+      }
+    };
+    fetchAllData();
+  }, []);
+
   if (isLoading) return <Loading />;
   return (
     <Fragment>
@@ -58,14 +91,16 @@ export default function Rent() {
           'filter brightness-[30%] transition-all duration-500'
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
-          <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-epilogue'>
+          <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
             Enter Your{' '}
-            <span className='text-[#8DDB90]'>Property Reference</span>
+            <span className='text-[#8DDB90] font-display'>
+              Property Reference
+            </span>
           </h2>
           <PropertyReference
             found={found}
             setFound={setFound}
-            setAllCards={setAllCards}
+            setAllCards={setProperties}
             propertyReferenceData={propertyReferenceData}
           />
           {/**All cards for isnpection */}
@@ -128,32 +163,70 @@ export default function Rent() {
                   } ${
                     isSelectedBriefClicked ? 'hidden lg:grid' : 'flex lg:grid'
                   }`}>
-                  {allCards.map((card: CardData, idx: number) => (
+                  {properties?.map((property, idx: number) => (
                     <Card
                       images={Array(12).fill(imgSample)}
                       onClick={() => {
                         setBriefIDs((prevItems) => new Set(prevItems).add(idx));
                         setSelectedBriefs((prevItems) =>
-                          new Set(prevItems).add(card)
+                          new Set(prevItems).add(property)
                         );
-                        if (selectedBriefs.has(card)) {
+                        if (selectedBriefs.has(property)) {
                           return toast.success('Already added for inspection');
                         }
                         toast.success('Successfully added for inspection');
                       }}
-                      cardData={card}
+                      cardData={[
+                        {
+                          header: 'Property Type',
+                          value: property.propertyType,
+                        },
+                        {
+                          header: 'Price',
+                          value: `N${Number(property.price).toLocaleString()}`,
+                        },
+                        {
+                          header: 'Bedrooms',
+                          value:
+                            property.propertyFeatures?.noOfBedrooms || 'N/A',
+                        },
+                        {
+                          header: 'Location',
+                          value: `${property.location.state}, ${property.location.localGovernment}`,
+                        },
+                        {
+                          header: 'Documents',
+                          value: `<ol class='' style='list-style: 'dics';'>${property.docOnProperty.map(
+                            (item: { _id: string; docName: string }) =>
+                              `<li key={${item._id}>${item.docName}</li>`
+                          )}<ol>`,
+                        },
+                      ]}
                       key={idx}
                     />
                   ))}
                 </div>
+                {isFetchingData && (
+                  <div className='container min-h-[300px] flex items-center justify-center'>
+                    <p>Loading...</p>
+                  </div>
+                )}
+                {errMessage !== '' && (
+                  <div className='container min-h-[300px] flex items-center justify-center'>
+                    <p className='text-base font-medium text-center'>
+                      {errMessage}, check your internet connection{' '}
+                      <FontAwesomeIcon icon={faWifi} />
+                    </p>
+                  </div>
+                )}
               </div>
 
-              {[...selectedBriefs].length !== 0 ? (
+              {[...selectedBriefs].length !== 0 && (
                 <div
                   className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] ${
                     isSelectedBriefClicked ? 'flex lg:flex' : 'hidden lg:flex'
                   }`}>
-                  <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-epilogue font-semibold'>
+                  <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
                     Submit for inspection
                   </h2>
                   <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
@@ -172,7 +245,32 @@ export default function Rent() {
                           });
                           toast.success('Removed successfully');
                         }}
-                        cardData={brief}
+                        cardData={[
+                          {
+                            header: 'Property Type',
+                            value: brief.propertyType,
+                          },
+                          {
+                            header: 'Price',
+                            value: `N${Number(brief.price).toLocaleString()}`,
+                          },
+                          {
+                            header: 'Bedrooms',
+                            value:
+                              brief.propertyFeatures?.noOfBedrooms || 'N/A',
+                          },
+                          {
+                            header: 'Location',
+                            value: `${brief.location.state}, ${brief.location.localGovernment}`,
+                          },
+                          {
+                            header: 'Documents',
+                            value: `<ol>${brief.docOnProperty.map(
+                              (item: { _id: string; docName: string }) =>
+                                `<li key={${item._id}>${item.docName}</li>`
+                            )}<ol>`,
+                          },
+                        ]}
                         isRed={true}
                         key={idx}
                       />
@@ -186,10 +284,6 @@ export default function Rent() {
                     }}
                     className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
                   />
-                </div>
-              ) : (
-                <div className='flex justify-center items-center h-[200px] md:hidden'>
-                  <p>No Selected Briefs</p>
                 </div>
               )}
             </div>
