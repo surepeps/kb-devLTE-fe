@@ -95,4 +95,10 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+const HomepageWrapper = () => (
+  <Suspense fallback={<Loading />}>
+    <Homepage />
+  </Suspense>
+);
+
+export default HomepageWrapper;
