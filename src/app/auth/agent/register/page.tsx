@@ -18,6 +18,7 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
+import { useUserContext } from '@/context/user-context';
 import axios from 'axios';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
@@ -26,9 +27,11 @@ import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGoogleLogin } from '@react-oauth/google';
+import CustomToast from '@/components/CustomToast';
 
 const Register = () => {
   const isLoading = useLoading();
+  const { setUser } = useUserContext();
   const { isContactUsClicked } = usePageContext();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
@@ -36,22 +39,17 @@ const Register = () => {
   const [agreed, setAgreed] = useState(false);
 
   const validationSchema = Yup.object({
-    email: Yup.string()
-      .email('Invalid email address') // Ensures correct email format
-      .required('Enter email'),
+    email: Yup.string().email('Invalid email address').required('Enter email'),
 
     password: Yup.string()
-      .min(8, 'Password must be at least 8 characters') // Minimum length
-      .matches(
-        /^(.*[A-Z]){2,}/,
-        'Password must contain at least two uppercase letters'
-      ) // At least two uppercase letters
+      .min(8, 'Password must be at least 8 characters')
+      // .matches(
+      //   /^(.*[A-Z]){2,}/,
+      //   'Password must contain at least two uppercase letters'
+      // ) // At least two uppercase letters
       .matches(/[a-z]/, 'Password must contain at least one lowercase letter') // At least one lowercase letter
-      .matches(/\d/, 'Password must contain at least one number') // At least one number
-      .matches(
-        /[\W_]{2,}/,
-        'Password must contain at least two special character'
-      ) // At least two special character
+      // .matches(/\d/, 'Password must contain at least one number') // At least one number
+      .matches(/[\W_]{2,}/, 'Password must contain at least two special character') // At least two special character
       .required('Password is required'),
 
     firstName: Yup.string()
@@ -91,14 +89,20 @@ const Register = () => {
             console.log('response from signup', response);
             if ((response as any).id) {
               toast.success('Registration successful');
-              // Cookies.set('token', (response as any).token);
-              toast.success('Please verify your email to continue');
-              // router.push('/auth/agent/form');
+              setUser((response as any).user);
+              setTimeout(() => {
+                toast.custom(
+                  <CustomToast
+                    title='Registration successful'
+                    subtitle='A Verification has been sent to your email. Please verify your email to continue'
+                  />
+                );
+              }, 2000);
               setIsDisabled(false);
+              // router.push('/auth/agent/form');
               return 'Registration successful';
             } else {
-              const errorMessage =
-                (response as any).error || 'Registration failed';
+              const errorMessage = (response as any).error || 'Registration failed';
               toast.error(errorMessage);
               setIsDisabled(false);
               throw new Error(errorMessage);
@@ -124,19 +128,20 @@ const Register = () => {
       console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleSignup;
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(
-        async (response) => {
-          if ((response as unknown as { id: string }).id) {
-            Cookies.set(
-              'token',
-              (response as unknown as { token: string }).token
-            );
-
-            router.push('/auth/agent/form');
-          }
-          console.log(response);
+      await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
+        if ((response as unknown as { id: string }).id) {
+          Cookies.set('token', (response as unknown as { token: string }).token);
+          console.log('response', response);
+          setUser((response as any).user);
+          toast.success('Registration successful');
+          router.push('/auth/agent/form');
         }
-      );
+        console.log(response);
+        if (response.error) {
+          toast.error(response.error);
+        }
+        // toast.error(response.message);
+      });
     },
     onError: (errorResponse: any) => console.error(errorResponse),
   });
@@ -146,14 +151,14 @@ const Register = () => {
     <section
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
-      } transition-all duration-500`}>
+      } transition-all duration-500`}
+    >
       <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
         <form
           onSubmit={formik.handleSubmit}
-          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
-            Register with us
-          </h2>
+          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
+        >
+          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Register with us</h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
             <Input
               formik={formik}
@@ -225,19 +230,13 @@ const Register = () => {
           {/**Already have an account */}
           <span className='text-base leading-[25.6px] font-normal'>
             Already have an account?{' '}
-            <Link
-              className='font-semibold text-[#09391C]'
-              href={'/auth/agent/login'}>
+            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/login'}>
               Sign In
             </Link>
           </span>
           {/**Google | Facebook */}
           <div className='flex justify-between lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith
-              icon={googleIcon}
-              text='Continue with Google'
-              onClick={googleLogin}
-            />
+            <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
             <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
           </div>
         </form>
@@ -257,25 +256,12 @@ interface InputProps {
   isDisabled?: boolean;
 }
 
-const Input: FC<InputProps> = ({
-  className,
-  id,
-  title,
-  type,
-  placeholder,
-  icon,
-  formik,
-  isDisabled,
-}) => {
+const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, formik, isDisabled }) => {
   const fieldError = formik.errors[id];
   const fieldTouched = formik.touched[id];
   return (
-    <label
-      htmlFor={id}
-      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
-      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
-        {title}
-      </span>
+    <label htmlFor={id} className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>{title}</span>
       <div className='flex'>
         <input
           name={id}
@@ -297,9 +283,7 @@ const Input: FC<InputProps> = ({
           />
         ) : null} */}
       </div>
-      {fieldError && fieldTouched && (
-        <span className='text-red-600 text-sm'>{fieldError}</span>
-      )}
+      {fieldError && fieldTouched && <span className='text-red-600 text-sm'>{fieldError}</span>}
     </label>
   );
 };
