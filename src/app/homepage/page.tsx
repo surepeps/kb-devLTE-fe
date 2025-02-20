@@ -37,7 +37,7 @@ const Homepage = () => {
 
       (async () => {
         await GET_REQUEST(url).then((response) => {
-          console.log('response from email verification', response);
+          // console.log('response from email verification', response);
           if ((response as unknown as { id: string; token: string }).id) {
             Cookies.set('token', (response as unknown as { token: string }).token);
 

@@ -10,3 +10,4 @@ export const URLS = {
   verifyEmail: '/verify-email',
   agentCreateBrief: '/properties/sell/new',
 };
+
