@@ -63,7 +63,7 @@ const HeroSection = () => {
               className='h-[66px] w-full md:w-1/2 lg:w-[283px] py-[12px] px-[24px] text-white text-[20px] leading-[32px] font-bold'
               value={'Submit Your Preference'}
               onClick={() => {
-                window.location.href = '/auth/agent';
+                window.location.href = '/buy_page';
               }}
             />
             <Button
