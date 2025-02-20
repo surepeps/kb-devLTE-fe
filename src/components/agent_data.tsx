@@ -14,10 +14,12 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
+import { useUserContext } from '@/context/user-context';
 
 const AgentData = () => {
   const router = useRouter();
   const { isContactUsClicked, isModalOpened } = usePageContext();
+  const { user } = useUserContext();
   const [selectedAgentType, setSelectedAgentType] = useState<string>('Individual Agent');
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -32,6 +34,9 @@ const AgentData = () => {
       companyName: '',
       idNumber: '',
       registrationNumber: '',
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      phoneNumber: user?.phoneNumber,
     },
     onSubmit: async (values) => {
       console.log(values);
@@ -61,9 +66,12 @@ const AgentData = () => {
               },
             }),
         doc: fileUrl, // Assuming doc is a static value or should be handled separately
+        phoneNumber: formik.values.phoneNumber,
+        firstName: formik.values.firstName,
+        lastName: formik.values.lastName,
       };
       await toast.promise(
-        PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload).then((response) => {
+        PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload, Cookies.get('token')).then((response) => {
           if (response.success) {
             console.log('response from form', response);
             toast.success('Agent data submitted successfully');
@@ -218,6 +226,42 @@ const AgentData = () => {
                 )}
               </div>
               <AttachFile heading='Upload your document' setFileUrl={setFileUrl} />
+              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Contact Information</h2>
+              <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
+                <Input
+                  label='First Name'
+                  name='firstName'
+                  className='w-full'
+                  id='firstName'
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  type='text'
+                  placeholder='Enter your first name'
+                />
+                <Input
+                  label='Last Name'
+                  name='lastName'
+                  className='w-full'
+                  id='lastName'
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  type='text'
+                  placeholder='Enter your first name'
+                />
+                <Input
+                  label='Phone Number'
+                  name='phoneNumber'
+                  className='w-full'
+                  id='phoneNumber'
+                  value={formik.values.phoneNumber}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  type='text'
+                  placeholder='Enter your phone number'
+                />
+              </div>
             </div>
           </div>
           <Button

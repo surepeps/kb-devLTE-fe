@@ -66,7 +66,7 @@ const Login = () => {
           {
             loading: 'Logging in...',
             success: 'Welcome Back!',
-            error: (error: { message: any; }) => {
+            error: (error: { message: any }) => {
               console.log('error', error);
               return error.message || 'Sign In failed, please try again!';
             },
@@ -92,15 +92,19 @@ const Login = () => {
           console.log('response', response);
           console.log('response Data', response.data);
 
-          const user = {
-            id: (response.data as any).id,
-            email: (response.data as any).email,
-            name: (response.data as any).name,
-            phoneNumber: (response.data as any).phone,
-            role: (response.data as any).role,
-          }
+          const user = response as unknown as {
+            id: string;
+            email: string;
+            password: string;
+            lastName: string;
+            firstName: string;
+            phoneNumber: string;
+          };
+
           setUser(user);
-          router.push('/auth/agent/createBrief');
+
+          if ((response as unknown as { phoneNumber: string }).phoneNumber) router.push('/auth/agent/form');
+          else router.push('/auth/agent/createBrief');
         }
         console.log('response', response);
         if (response.error) {
