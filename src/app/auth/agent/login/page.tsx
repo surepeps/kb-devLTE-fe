@@ -47,33 +47,33 @@ const Login = () => {
     onSubmit: async (values) => {
       try {
         const url = URLS.BASE + URLS.agentLogin;
-        const { ...payload } = values;
-        console.log('payload', payload);
+        const payload = { ...values };
+
         await toast.promise(
-          POST_REQUEST(url, { 
-            ...payload 
-          }).then((response) => {
+          POST_REQUEST(url, payload).then((response) => {
             console.log('response from signin', response);
-            if ((response as any).id) {
+
+            if ((response as any)?.user?.id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
               setUser((response as any).user);
               router.push('/auth/agent/createBrief');
               return 'Sign in successful';
             } else {
-              const errorMessage = (response as any).error || 'Sign In failed';
-              toast.error(errorMessage);
-              throw new Error(errorMessage);
+              throw new Error((response as any).error || 'Sign In failed');
             }
           }),
           {
             loading: 'Logging in...',
-            // success: 'Welcome Back!',
-            // error: 'Sign In failed, please try again!',
+            success: 'Welcome Back!',
+            error: (error) => {
+              console.log('error', error);
+              return error.message || 'Sign In failed, please try again!';
+            },
           }
         );
       } catch (error) {
-        // console.log(error);
+        console.log('Unexpected error:', error);
         // toast.error('Sign In failed, please try again!');
       }
     },
@@ -91,8 +91,7 @@ const Login = () => {
           setUser((response as any).user);
           router.push('/auth/agent/createBrief');
         }
-        console.log("response", response);
-        toast.error(response.message);
+        console.log('response', response);
       });
     },
     onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
@@ -134,7 +133,6 @@ const Login = () => {
           {/**Button */}
           <Button
             value='Sign In'
-            isDisabled
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
             type='submit'
             onSubmit={formik.handleSubmit}
