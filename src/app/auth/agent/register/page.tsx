@@ -30,17 +30,45 @@ import { useGoogleLogin } from '@react-oauth/google';
 const Register = () => {
   const isLoading = useLoading();
   const { isContactUsClicked } = usePageContext();
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
 
   const validationSchema = Yup.object({
-    email: Yup.string().required('enter email'),
-    password: Yup.string().required(),
-    firstName: Yup.string().required(),
-    lastName: Yup.string().required(),
-    phone: Yup.number().required(),
+    email: Yup.string()
+      .email('Invalid email address') // Ensures correct email format
+      .required('Enter email'),
+
+    password: Yup.string()
+      .min(8, 'Password must be at least 8 characters') // Minimum length
+      .matches(
+        /^(.*[A-Z]){2,}/,
+        'Password must contain at least two uppercase letters'
+      ) // At least two uppercase letters
+      .matches(/[a-z]/, 'Password must contain at least one lowercase letter') // At least one lowercase letter
+      .matches(/\d/, 'Password must contain at least one number') // At least one number
+      .matches(
+        /[\W_]{2,}/,
+        'Password must contain at least two special character'
+      ) // At least two special character
+      .required('Password is required'),
+
+    firstName: Yup.string()
+      .matches(/^[a-zA-Z]+$/, 'First name must only contain letters') // Only letters
+      .required('Firstname is required'),
+
+    lastName: Yup.string()
+      .matches(/^[a-zA-Z]+$/, 'Last name must only contain letters') // Only letters
+      .required('Lastname is required'),
+
+    phone: Yup.string()
+      .matches(/^[0-9]+$/, 'Phone number must only contain digits') // Only digits
+      .min(10, 'Phone number must be at least 10 digits')
+      .max(15, 'Phone number must be at most 15 digits')
+      .required('Phone number is required'),
   });
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -49,9 +77,9 @@ const Register = () => {
       lastName: '',
       phone: '',
     },
-    // validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
-      // console.log(values);
+      setIsDisabled(true);
       try {
         const url = URLS.BASE + URLS.agentSignup;
         const { phone, ...payload } = values;
@@ -65,12 +93,15 @@ const Register = () => {
               toast.success('Registration successful');
               // Cookies.set('token', (response as any).token);
               toast.success('Please verify your email to continue');
-              router.push('/auth/agent/form');
+              // router.push('/auth/agent/form');
+              // router.push('/auth/agent/form');
+              setIsDisabled(false);
               return 'Registration successful';
             } else {
               const errorMessage =
                 (response as any).error || 'Registration failed';
               toast.error(errorMessage);
+              setIsDisabled(false);
               throw new Error(errorMessage);
             }
           }),
@@ -82,6 +113,7 @@ const Register = () => {
         );
       } catch (error) {
         console.log(error);
+        setIsDisabled(false);
         // toast.error('Registration failed, please try again!');
       }
     },
@@ -130,6 +162,7 @@ const Register = () => {
             <Input
               formik={formik}
               title='Email'
+              isDisabled={isDisabled}
               id='email'
               icon={mailIcon}
               type='email'
@@ -138,6 +171,7 @@ const Register = () => {
             <Input
               formik={formik}
               title='Password'
+              isDisabled={isDisabled}
               id='password'
               icon={''}
               type='password'
@@ -146,6 +180,7 @@ const Register = () => {
             <Input
               formik={formik}
               title='First name'
+              isDisabled={isDisabled}
               id='firstName'
               icon={''}
               type='text'
@@ -154,6 +189,7 @@ const Register = () => {
             <Input
               formik={formik}
               title='Last name'
+              isDisabled={isDisabled}
               id='lastName'
               icon={''}
               type='text'
@@ -166,10 +202,12 @@ const Register = () => {
               icon={phoneIcon}
               type='number'
               placeholder='Enter your phone number'
+              isDisabled={isDisabled}
             />
           </div>
           <div className='flex justify-center items-center w-full lg:px-[60px]'>
             <RadioCheck
+              isDisabled={isDisabled}
               onClick={() => {
                 setAgreed(!agreed);
               }}
@@ -181,8 +219,8 @@ const Register = () => {
           </div>
           {/**Button */}
           <Button
-            value='Register'
-            isDisabled
+            value={`${isDisabled ? 'Registering...' : 'Register'}`}
+            isDisabled={isDisabled}
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
             type='submit'
             onSubmit={formik.handleSubmit}
@@ -217,9 +255,10 @@ interface InputProps {
   placeholder?: string;
   type: string;
   className?: string;
-  id?: string;
+  id: string;
   icon: StaticImport | string;
   formik: any;
+  isDisabled?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -230,7 +269,10 @@ const Input: FC<InputProps> = ({
   placeholder,
   icon,
   formik,
+  isDisabled,
 }) => {
+  const fieldError = formik.errors[id];
+  const fieldTouched = formik.touched[id];
   return (
     <label
       htmlFor={id}
@@ -245,8 +287,9 @@ const Input: FC<InputProps> = ({
           value={formik.values[title]}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
+          disabled={isDisabled}
           placeholder={placeholder ?? 'This is placeholder'}
-          className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar'
+          className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar disabled:bg-gray-200'
         />
         {/* {icon ? (
           <Image
@@ -258,10 +301,9 @@ const Input: FC<InputProps> = ({
           />
         ) : null} */}
       </div>
-      {formik.touched[title] ||
-        (formik.errors[title] && (
-          <span className='text-red-600 text-sm'>{formik.errors[title]}</span>
-        ))}
+      {fieldError && fieldTouched && (
+        <span className='text-red-600 text-sm'>{fieldError}</span>
+      )}
     </label>
   );
 };
