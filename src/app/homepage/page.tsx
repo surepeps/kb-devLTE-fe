@@ -63,7 +63,7 @@ const Homepage = () => {
         });
       })();
     }
-  }, []);
+  }, [router, searchParams, setUser]);
 
   if (isLoading) return <Loading />;
 
@@ -95,4 +95,10 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+const HomepageWrapper = () => (
+  <Suspense fallback={<Loading />}>
+    <Homepage />
+  </Suspense>
+);
+
+export default HomepageWrapper;
