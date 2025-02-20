@@ -18,6 +18,7 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
+import { useUserContext } from '@/context/user-context';
 import axios from 'axios';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
@@ -29,6 +30,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const isLoading = useLoading();
+  const { setUser } = useUserContext();
   const { isContactUsClicked } = usePageContext();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
@@ -91,7 +93,7 @@ const Register = () => {
             console.log('response from signup', response);
             if ((response as any).id) {
               toast.success('Registration successful');
-              // Cookies.set('token', (response as any).token);
+              setUser((response as any).user);
               toast.success('Please verify your email to continue');
               // router.push('/auth/agent/form');
               // router.push('/auth/agent/form');
@@ -132,11 +134,15 @@ const Register = () => {
               'token',
               (response as unknown as { token: string }).token
             );
+            setUser((response as any).user);
             toast.success('Registration successful');
             router.push('/auth/agent/form');
           }
           console.log(response);
-          toast.error(response.message);
+          if (response.error) {
+            toast.error(response.error);
+          }
+          // toast.error(response.message);
         }
       );
     },
