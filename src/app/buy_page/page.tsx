@@ -67,7 +67,7 @@ export default function Rent() {
         const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
         console.log(response);
         setFetchingData(false);
-        setProperties(response);
+        setProperties(response.data as any[]);
         if (response.error) {
           setFetchingData(false);
           setErrMessage(response.error);
