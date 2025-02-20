@@ -82,7 +82,7 @@ const Login = () => {
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
-      console.log(codeResponse);
+      // console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleLogin;
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
@@ -91,7 +91,15 @@ const Login = () => {
           Cookies.set('token', (response as unknown as { token: string }).token);
           console.log('response', response);
           console.log('response Data', response.data);
-          setUser((response as any).user);
+
+          const user = {
+            id: (response.data as any).id,
+            email: (response.data as any).email,
+            name: (response.data as any).name,
+            phoneNumber: (response.data as any).phone,
+            role: (response.data as any).role,
+          }
+          setUser(user);
           router.push('/auth/agent/createBrief');
         }
         console.log('response', response);
