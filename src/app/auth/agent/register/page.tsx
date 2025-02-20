@@ -37,11 +37,11 @@ const Register = () => {
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .email('Invalid email address') // Ensures correct email format
+      .email('Invalid email address')
       .required('Enter email'),
 
     password: Yup.string()
-      .min(8, 'Password must be at least 8 characters') // Minimum length
+      .min(8, 'Password must be at least 8 characters')
       .matches(
         /^(.*[A-Z]){2,}/,
         'Password must contain at least two uppercase letters'
@@ -79,7 +79,7 @@ const Register = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      setIsDisabled(true);
+      // setIsDisabled(true);
       try {
         const url = URLS.BASE + URLS.agentSignup;
         const { phone, ...payload } = values;
@@ -94,13 +94,14 @@ const Register = () => {
               // Cookies.set('token', (response as any).token);
               toast.success('Please verify your email to continue');
               // router.push('/auth/agent/form');
-              setIsDisabled(false);
+              // router.push('/auth/agent/form');
+              // setIsDisabled(false);
               return 'Registration successful';
             } else {
               const errorMessage =
                 (response as any).error || 'Registration failed';
               toast.error(errorMessage);
-              setIsDisabled(false);
+              // setIsDisabled(false);
               throw new Error(errorMessage);
             }
           }),
@@ -131,15 +132,18 @@ const Register = () => {
               'token',
               (response as unknown as { token: string }).token
             );
-
+            toast.success('Registration successful');
             router.push('/auth/agent/form');
           }
           console.log(response);
+          toast.error(response.message);
         }
       );
     },
     onError: (errorResponse: any) => console.error(errorResponse),
   });
+
+
 
   if (isLoading) return <Loading />;
   return (
