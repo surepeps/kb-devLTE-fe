@@ -14,10 +14,12 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
+import { useUserContext } from '@/context/user-context';
 
 const AgentData = () => {
   const router = useRouter();
   const { isContactUsClicked, isModalOpened } = usePageContext();
+  const { user } = useUserContext();
   const [selectedAgentType, setSelectedAgentType] = useState<string>('Individual Agent');
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -32,6 +34,9 @@ const AgentData = () => {
       companyName: '',
       idNumber: '',
       registrationNumber: '',
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      phoneNumber: user?.phoneNumber,
     },
     onSubmit: async (values) => {
       console.log(values);
@@ -61,10 +66,14 @@ const AgentData = () => {
               },
             }),
         doc: fileUrl, // Assuming doc is a static value or should be handled separately
+        phoneNumber: formik.values.phoneNumber,
+        firstName: formik.values.firstName,
+        lastName: formik.values.lastName,
       };
       await toast.promise(
-        PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload).then((response) => {
+        PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload, Cookies.get('token')).then((response) => {
           if (response.success) {
+            console.log('response from form', response);
             toast.success('Agent data submitted successfully');
             Cookies.set('token', (response as unknown as { token: string }).token);
             router.push('/auth/agent/createBrief');
@@ -111,7 +120,7 @@ const AgentData = () => {
               <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                 <Input
                   label='Street'
-                  name='Street'
+                  name='street'
                   type='text'
                   value={formik.values.street}
                   id='street'
@@ -121,7 +130,7 @@ const AgentData = () => {
                 />
                 <Input
                   label='State'
-                  name='State'
+                  name='state'
                   type='text'
                   value={formik.values.state}
                   onChange={formik.handleChange}
@@ -131,7 +140,7 @@ const AgentData = () => {
                 />
                 <Input
                   label='Local Government Area'
-                  name='Local Government Area'
+                  name='localGovtArea'
                   type='text'
                   value={formik.values.localGovtArea}
                   onChange={formik.handleChange}
@@ -142,7 +151,7 @@ const AgentData = () => {
               </div>
               <Input
                 label='Region of Operation'
-                name='Region of Operation'
+                name='regionOfOperation'
                 className='w-full'
                 type='text'
                 value={formik.values.regionOfOperation}
@@ -168,7 +177,7 @@ const AgentData = () => {
                 {selectedAgentType === 'Individual Agent' ? (
                   <Input
                     label='Type of ID'
-                    name='Type of ID'
+                    name='typeOfID'
                     className='md:w-1/2 w-full'
                     type='text'
                     value={formik.values.typeOfID}
@@ -180,7 +189,7 @@ const AgentData = () => {
                 ) : (
                   <Input
                     label='Business/Company Name'
-                    name='Business/Company Name'
+                    name='companyName'
                     className='md:w-1/2 w-full'
                     type='text'
                     value={formik.values.companyName}
@@ -193,7 +202,7 @@ const AgentData = () => {
                 {selectedAgentType === 'Individual Agent' ? (
                   <Input
                     label='ID Number'
-                    name='ID Number'
+                    name='idNumber'
                     className='md:w-1/2 w-full'
                     type='text'
                     value={formik.values.idNumber}
@@ -205,7 +214,7 @@ const AgentData = () => {
                 ) : (
                   <Input
                     label='Registration Number'
-                    name='Registration Number'
+                    name='registrationNumber'
                     className='md:w-1/2 w-full'
                     type='number'
                     value={formik.values.registrationNumber}
@@ -217,6 +226,42 @@ const AgentData = () => {
                 )}
               </div>
               <AttachFile heading='Upload your document' setFileUrl={setFileUrl} />
+              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Contact Information</h2>
+              <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
+                <Input
+                  label='First Name'
+                  name='firstName'
+                  className='w-full'
+                  id='firstName'
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  type='text'
+                  placeholder='Enter your first name'
+                />
+                <Input
+                  label='Last Name'
+                  name='lastName'
+                  className='w-full'
+                  id='lastName'
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  type='text'
+                  placeholder='Enter your first name'
+                />
+                <Input
+                  label='Phone Number'
+                  name='phoneNumber'
+                  className='w-full'
+                  id='phoneNumber'
+                  value={formik.values.phoneNumber}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  type='text'
+                  placeholder='Enter your phone number'
+                />
+              </div>
             </div>
           </div>
           <Button

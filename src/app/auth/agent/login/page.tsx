@@ -47,29 +47,33 @@ const Login = () => {
     onSubmit: async (values) => {
       try {
         const url = URLS.BASE + URLS.agentLogin;
-        const { ...payload } = values;
+        const payload = { ...values };
+
         await toast.promise(
-          POST_REQUEST(url, { ...payload }).then((response) => {
+          POST_REQUEST(url, payload).then((response) => {
             console.log('response from signin', response);
-            if ((response as any).user.id) {
+
+            if ((response as any)?.user?.id) {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
               setUser((response as any).user);
               router.push('/auth/agent/createBrief');
               return 'Sign in successful';
             } else {
-              const errorMessage = (response as any).error || 'Sign In failed';
-              toast.error(errorMessage);
-              throw new Error(errorMessage);
+              throw new Error((response as any).error || 'Sign In failed');
             }
           }),
           {
             loading: 'Logging in...',
             success: 'Welcome Back!',
+            error: (error: { message: any }) => {
+              console.log('error', error);
+              return error.message || 'Sign In failed, please try again!';
+            },
           }
         );
       } catch (error) {
-        // console.log(error);
+        console.log('Unexpected error:', error);
         // toast.error('Sign In failed, please try again!');
       }
     },
@@ -78,16 +82,34 @@ const Login = () => {
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
-      console.log(codeResponse);
+      // console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleLogin;
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
         if ((response as unknown as { id: string }).id) {
+          toast.success('Sign in successful');
           Cookies.set('token', (response as unknown as { token: string }).token);
+          console.log('response', response);
+          console.log('response Data', response.data);
 
-          router.push('/auth/agent/createBrief');
+          const user = response as unknown as {
+            id: string;
+            email: string;
+            password: string;
+            lastName: string;
+            firstName: string;
+            phoneNumber: string;
+          };
+
+          setUser(user);
+
+          if ((response as unknown as { phoneNumber: string }).phoneNumber) router.push('/auth/agent/form');
+          else router.push('/auth/agent/createBrief');
         }
-        console.log("response", response);
+        console.log('response', response);
+        if (response.error) {
+          toast.error(response.error);
+        }
       });
     },
     onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
@@ -129,7 +151,6 @@ const Login = () => {
           {/**Button */}
           <Button
             value='Sign In'
-            isDisabled
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
             type='submit'
             onSubmit={formik.handleSubmit}
