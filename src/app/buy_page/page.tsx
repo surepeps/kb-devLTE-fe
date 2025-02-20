@@ -22,8 +22,11 @@ import imgSample from '@/assets/assets.png';
 import { toast } from 'react-hot-toast';
 import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWifi } from '@fortawesome/free-solid-svg-icons';
 
 //type CardData = { header: string; value: string }[];
+
 export default function Rent() {
   const isLoading = useLoading();
   const { isContactUsClicked, rentPage, setRentPage, isModalOpened } =
@@ -41,6 +44,7 @@ export default function Rent() {
   //const [allCards, setAllCards] = useState(cardDataArray);
   const [properties, setProperties] = useState<any[]>([]);
   const [isFetchingData, setFetchingData] = useState<boolean>(false);
+  const [errMessage, setErrMessage] = useState<string>('');
 
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
@@ -62,9 +66,11 @@ export default function Rent() {
       try {
         const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
         console.log(response);
-        if (response.success) {
+        setFetchingData(false);
+        setProperties(response);
+        if (response.error) {
           setFetchingData(false);
-          setProperties(response);
+          setErrMessage(response.error);
         }
       } catch (err) {
         console.log(err);
@@ -157,7 +163,7 @@ export default function Rent() {
                   } ${
                     isSelectedBriefClicked ? 'hidden lg:grid' : 'flex lg:grid'
                   }`}>
-                  {properties.map((property, idx: number) => (
+                  {properties?.map((property, idx: number) => (
                     <Card
                       images={Array(12).fill(imgSample)}
                       onClick={() => {
@@ -190,7 +196,7 @@ export default function Rent() {
                         },
                         {
                           header: 'Documents',
-                          value: `<ol>${property.docOnProperty.map(
+                          value: `<ol class='' style='list-style: 'dics';'>${property.docOnProperty.map(
                             (item: { _id: string; docName: string }) =>
                               `<li key={${item._id}>${item.docName}</li>`
                           )}<ol>`,
@@ -200,15 +206,27 @@ export default function Rent() {
                     />
                   ))}
                 </div>
-                {}
+                {isFetchingData && (
+                  <div className='container min-h-[300px] flex items-center justify-center'>
+                    <p>Loading...</p>
+                  </div>
+                )}
+                {errMessage !== '' && (
+                  <div className='container min-h-[300px] flex items-center justify-center'>
+                    <p className='text-base font-medium text-center'>
+                      {errMessage}, check your internet connection{' '}
+                      <FontAwesomeIcon icon={faWifi} />
+                    </p>
+                  </div>
+                )}
               </div>
 
-              {[...selectedBriefs].length !== 0 ? (
+              {[...selectedBriefs].length !== 0 && (
                 <div
                   className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] ${
                     isSelectedBriefClicked ? 'flex lg:flex' : 'hidden lg:flex'
                   }`}>
-                  <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-epilogue font-semibold'>
+                  <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
                     Submit for inspection
                   </h2>
                   <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
@@ -266,10 +284,6 @@ export default function Rent() {
                     }}
                     className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
                   />
-                </div>
-              ) : (
-                <div className='flex justify-center items-center h-[200px] md:hidden'>
-                  <p>No Selected Briefs</p>
                 </div>
               )}
             </div>
