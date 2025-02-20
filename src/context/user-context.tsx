@@ -2,21 +2,21 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  regionOfOperation: string;
-  address: {
+  id?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  regionOfOperation?: string;
+  address?: {
     localGovtArea: string;
     city: string;
     state: string;
     street: string;
   },
-  agentType: string;
-  doc: string;
-  individualAgent: {
+  agentType?: string;
+  doc?: string;
+  individualAgent?: {
     idNumber: string;
     typeOfId: string;
   }

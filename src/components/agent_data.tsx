@@ -65,6 +65,7 @@ const AgentData = () => {
       await toast.promise(
         PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload).then((response) => {
           if (response.success) {
+            console.log('response from form', response);
             toast.success('Agent data submitted successfully');
             Cookies.set('token', (response as unknown as { token: string }).token);
             router.push('/auth/agent/createBrief');
