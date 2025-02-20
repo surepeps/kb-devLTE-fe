@@ -95,7 +95,9 @@ const Login = () => {
           router.push('/auth/agent/createBrief');
         }
         console.log('response', response);
-        toast.error(response.message);
+        if (response.error) {
+          toast.error(response.error);
+        }
       });
     },
     onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
