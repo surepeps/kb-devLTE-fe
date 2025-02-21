@@ -9,9 +9,11 @@ import arrowRIcon from '@/svgs/arrowR.svg';
 import Link from 'next/link';
 import Button from '@/components/button';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation'
 
 const JointVentures = () => {
   const isLoading = useLoading();
+  const route = useRouter()
 
   if (isLoading) return <Loading />;
   return (
@@ -23,7 +25,11 @@ const JointVentures = () => {
             alt=''
             width={1000}
             height={1000}
-            className='w-[24px] h-[24px]'
+            onClick={()=>{
+              route.back()
+            }}
+            title='Go Back'
+            className='w-[24px] h-[24px] cursor-pointer'
           />
           <div className='min-w-[205px] min-h-[32px] flex items-center gap-[8px]'>
             <Link
@@ -49,7 +55,7 @@ const JointVentures = () => {
             initial={{ y: 90, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className='text-[40px] leading-[64px] font-semibold text-[#09391C] font-display'>
+            className='text-[40px] leading-[64px] text-center font-semibold text-[#09391C] font-display'>
             Understanding Joint Ventures (JV) at{' '}
             <span className='text-[#8DDB90] font-display'>Khabi-Teq</span>
           </motion.h2>
@@ -266,7 +272,7 @@ const JointVentures = () => {
                   initial={{ y: 40, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className='list-disc list-inside pl-[50px]'>
+                  className='list-disc list-inside md:pl-[50px]'>
                   <motion.li>
                     <span className='text-[#000000] text-[24px] font-semibold leading-[44.8px] tracking-[2%]'>
                       Seamless Matching:
