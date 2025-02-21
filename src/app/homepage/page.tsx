@@ -37,7 +37,7 @@ const Homepage = () => {
 
       (async () => {
         await GET_REQUEST(url).then((response) => {
-          console.log('response from email verification', response);
+          // console.log('response from email verification', response);
           if ((response as unknown as { id: string; token: string }).id) {
             Cookies.set('token', (response as unknown as { token: string }).token);
 
@@ -63,7 +63,7 @@ const Homepage = () => {
         });
       })();
     }
-  }, []);
+  }, [router, searchParams, setUser]);
 
   if (isLoading) return <Loading />;
 
@@ -95,4 +95,10 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+const HomepageWrapper = () => (
+  <Suspense fallback={<Loading />}>
+    <Homepage />
+  </Suspense>
+);
+
+export default HomepageWrapper;
