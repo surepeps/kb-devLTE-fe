@@ -60,25 +60,59 @@ export default function Rent() {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
 
+  // useEffect(() => {
+  //   const fetchAllData = async () => {
+  //     setFetchingData(true);
+  //     try {
+  //       // const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
+  //       const response = await fetch(URLS.BASE + '/properties/sell/all');
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log(data);
+  //         setFetchingData(false);
+  //         setProperties(data);
+  //       } else {
+  //         setFetchingData(false);
+  //         setErrMessage('Failed to fetch data');
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       setFetchingData(false);
+  //     }
+  //   };
+  //   fetchAllData();
+  // }, []);
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchAllData = async () => {
       setFetchingData(true);
       try {
-        const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
-        console.log(response);
-        setFetchingData(false);
-        setProperties(response);
-        if (response.error) {
-          setFetchingData(false);
-          setErrMessage(response.error);
+        const response = await fetch(URLS.BASE + "/properties/sell/all", { signal });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
         }
-      } catch (err) {
-        console.log(err);
+
+        const data = await response.json();
+        setProperties(data);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error(err);
+          setErrMessage(err.message || "An error occurred");
+        }
+      } finally {
         setFetchingData(false);
       }
     };
+
     fetchAllData();
-  }, []);
+
+    return () => {
+      controller.abort(); // Cleanup to prevent memory leaks
+    };
+  }, []); // Add dependencies if necessary
 
   if (isLoading) return <Loading />;
   return (
