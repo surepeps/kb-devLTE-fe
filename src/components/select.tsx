@@ -1,7 +1,7 @@
 /** @format */
 
-import React, { ChangeEventHandler, FC } from 'react';
-import ReactSelect from 'react-select'
+import React, { FC } from 'react';
+import ReactSelect from 'react-select';
 
 interface SelectOption {
   value: string;
@@ -25,11 +25,15 @@ const Select: FC<SelectProps> = ({
   value,
   onChange,
 }) => {
-   // Convert string array to ReactSelect option format
-  const formattedOptions = options.map((option) => ({ value: option, label: option }));
+  // Convert string array to ReactSelect option format
+  const formattedOptions = options.map((option) => ({
+    value: option,
+    label: option,
+  }));
 
   // Find the selected option
-  const selectedOption = formattedOptions.find((opt) => opt.value === value) || null;
+  const selectedOption =
+    formattedOptions.find((opt) => opt.value === value) || null;
   return (
     <label
       htmlFor={id ?? name}
@@ -43,13 +47,14 @@ const Select: FC<SelectProps> = ({
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
       /> */}
       <ReactSelect
-      options={formattedOptions}
+        options={formattedOptions}
         value={selectedOption}
         onChange={onChange}
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
         name=''
-        id=''/>
-        {/* {options.map((item: string, idx: number) => (
+        id=''
+      />
+      {/* {options.map((item: string, idx: number) => (
           <option value={item} key={idx}>
             {item}
           </option>
