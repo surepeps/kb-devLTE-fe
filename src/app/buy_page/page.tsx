@@ -14,7 +14,7 @@ import PropertyReference from '@/components/propertyReference';
 import imgSample from '@/assets/assets.png';
 //import { cardDataArray } from '@/data';
 import { toast } from 'react-hot-toast';
-import { GET_REQUEST } from '@/utils/requests';
+//import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWifi } from '@fortawesome/free-solid-svg-icons';
