@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * eslint-disable @typescript-eslint/no-explicit-any
+ *
+ * @format
+ */
+
 /** @format */
 'use client';
 import { usePageContext } from '@/context/page-context';
@@ -20,7 +25,8 @@ const AgentData = () => {
   const router = useRouter();
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const { user } = useUserContext();
-  const [selectedAgentType, setSelectedAgentType] = useState<string>('Individual Agent');
+  const [selectedAgentType, setSelectedAgentType] =
+    useState<string>('Individual Agent');
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
@@ -51,7 +57,8 @@ const AgentData = () => {
           localGovtArea: formik.values.localGovtArea,
         },
         regionOfOperation: formik.values.regionOfOperation,
-        agentType: selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
+        agentType:
+          selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
         ...(selectedAgentType === 'Individual Agent'
           ? {
               individualAgent: {
@@ -71,11 +78,18 @@ const AgentData = () => {
         lastName: formik.values.lastName,
       };
       await toast.promise(
-        PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload, Cookies.get('token')).then((response) => {
+        PUT_REQUEST(
+          URLS.BASE + URLS.agentOnboarding,
+          payload,
+          Cookies.get('token')
+        ).then((response) => {
           if (response.success) {
             console.log('response from form', response);
             toast.success('Agent data submitted successfully');
-            Cookies.set('token', (response as unknown as { token: string }).token);
+            Cookies.set(
+              'token',
+              (response as unknown as { token: string }).token
+            );
             router.push('/auth/agent/createBrief');
             return 'Agent data submitted successfully';
           } else {
@@ -97,25 +111,28 @@ const AgentData = () => {
     <section
       className={`flex items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
         (isContactUsClicked || isModalOpened) && 'brightness-[30%]'
-      }`}
-    >
+      }`}>
       <form
         onSubmit={formik.handleSubmit}
-        className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full px-[20px]'
-      >
+        className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full px-[20px]'>
         <div className='w-full min-h-[137px] flex flex-col gap-[24px] justify-center items-center'>
           <h2 className='text-center text-[40px] leading-[49.2px] font-display font-bold text-[#09391C]'>
-            Welcome to <span className='text-[#8DDB90] font-display'>Khabi-teq</span> realty
+            Welcome to{' '}
+            <span className='text-[#8DDB90] font-display'>Khabi-teq</span>{' '}
+            realty
           </h2>
           <p className='text-[#5A5D63] text-[20px] leading-[32px] text-center tracking-[5%]'>
-            Lorem ipsum dolor sit amet consectetur. Ornare feugiat suspendisse tincidunt erat scelerisque. Tortor aenean
-            a urna metus cursus dui commodo velit. Tellus mattis quam.
+            Lorem ipsum dolor sit amet consectetur. Ornare feugiat suspendisse
+            tincidunt erat scelerisque. Tortor aenean a urna metus cursus dui
+            commodo velit. Tellus mattis quam.
           </p>
         </div>
 
         <div className='lg:w-[602px] min-h-[654px] flex flex-col gap-[40px]'>
           <div className='flex flex-col w-full gap-[20px]'>
-            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Address Information</h2>
+            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
+              Address Information
+            </h2>
             <div className='w-full flex flex-col gap-[20px] min-h-[181px]'>
               <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                 <Input
@@ -162,14 +179,16 @@ const AgentData = () => {
               />
             </div>
             {/**Agent Type */}
-            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Agent Type</h2>
+            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
+              Agent Type
+            </h2>
             <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
               <Select
                 value={selectedAgentType}
                 // onChange={(e: { target: { value: string } }) => {
                 //   setSelectedAgentType(e.target.value);
                 // }}
-                onChange={(option) => setSelectedAgentType(option?.value)}
+                onChange={(option: any) => setSelectedAgentType(option.value)}
                 name='Are you an Individual Agent or Corporate Agent?'
                 className='cursor-pointer'
                 options={['Individual Agent', 'Corporate Agent']}
@@ -226,8 +245,13 @@ const AgentData = () => {
                   />
                 )}
               </div>
-              <AttachFile heading='Upload your document' setFileUrl={setFileUrl} />
-              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Contact Information</h2>
+              <AttachFile
+                heading='Upload your document'
+                setFileUrl={setFileUrl}
+              />
+              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
+                Contact Information
+              </h2>
               <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
                 <Input
                   label='First Name'
