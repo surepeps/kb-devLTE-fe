@@ -1,9 +1,3 @@
-/**
- 
- *
- * @format
- */
-
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
@@ -250,7 +244,7 @@ export default function Rent() {
                 {errMessage !== '' && (
                   <div className='container min-h-[300px] flex items-center justify-center'>
                     <p className='text-base font-medium text-center'>
-                      {errMessage}, check your internet connection{' '}
+                      {errMessage}, check your internet connection and reload{' '}
                       <FontAwesomeIcon icon={faWifi} />
                     </p>
                   </div>
