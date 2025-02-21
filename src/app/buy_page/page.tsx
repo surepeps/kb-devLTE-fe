@@ -89,18 +89,20 @@ export default function Rent() {
     const fetchAllData = async () => {
       setFetchingData(true);
       try {
-        const response = await fetch(URLS.BASE + "/properties/sell/all", { signal });
+        const response = await fetch(URLS.BASE + '/properties/sell/all', {
+          signal,
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error('Failed to fetch data');
         }
 
         const data = await response.json();
         setProperties(data);
       } catch (err: any) {
-        if (err.name !== "AbortError") {
+        if (err.name !== 'AbortError') {
           console.error(err);
-          setErrMessage(err.message || "An error occurred");
+          setErrMessage(err.message || 'An error occurred');
         }
       } finally {
         setFetchingData(false);
