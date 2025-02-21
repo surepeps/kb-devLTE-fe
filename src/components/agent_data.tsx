@@ -1,10 +1,5 @@
-/**
- * eslint-disable @typescript-eslint/no-explicit-any
- *
- * @format
- */
-
 /** @format */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { usePageContext } from '@/context/page-context';
 import React, { useState } from 'react';
