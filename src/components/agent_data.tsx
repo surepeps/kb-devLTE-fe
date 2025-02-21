@@ -166,9 +166,10 @@ const AgentData = () => {
             <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
               <Select
                 value={selectedAgentType}
-                onChange={(e: { target: { value: string } }) => {
-                  setSelectedAgentType(e.target.value);
-                }}
+                // onChange={(e: { target: { value: string } }) => {
+                //   setSelectedAgentType(e.target.value);
+                // }}
+                onChange={(option) => setSelectedAgentType(option?.value)}
                 name='Are you an Individual Agent or Corporate Agent?'
                 className='cursor-pointer'
                 options={['Individual Agent', 'Corporate Agent']}
