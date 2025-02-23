@@ -43,8 +43,8 @@ export default function Rent() {
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
       setIsSelectedBriefClicked(true);
-      setText('Hide selected Brief');
-    } else if (text === 'Hide selected Brief') {
+      setText('< Back');
+    } else if (text === '< Back') {
       setIsSelectedBriefClicked(!isSelectedBriefClicked);
       setText('View selected Brief');
     }

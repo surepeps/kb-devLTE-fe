@@ -241,7 +241,7 @@ const PropertyReference = ({
             <button
               type='button'
               onClick={submitReference}
-              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:w-[245px] min-h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'>
+              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:min-w-[245px] h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'>
               Submit your preferences
             </button>
           </div>
