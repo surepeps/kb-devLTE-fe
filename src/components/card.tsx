@@ -83,7 +83,7 @@ const Card = ({
           Select of Inspection
         </button> */}
           <Button
-            value={`${isRed ? 'Remove' : 'Select of Inspection'}`}
+            value={`${isRed ? 'Remove' : 'Select for Inspection'}`}
             type='button'
             green={isRed ? false : true}
             red={isRed}

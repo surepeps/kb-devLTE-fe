@@ -78,7 +78,7 @@ const Policies = () => {
 const buttons: string[] = [
   'Client Engagement policy',
   'Agent Engagement policy',
-  'Data Production policy',
+  'Data Protection policy',
 ];
 
 export default Policies;
