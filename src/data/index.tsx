@@ -123,15 +123,15 @@ export const supportData: { name: string; url: string }[] = [
 export const iconsData: { image: StaticImageData; url: string }[] = [
   {
     image: facebookIcon,
-    url: '#',
+    url: 'https://www.facebook.com/profile.php?id=61568584928290&mibextid=ZbWKwL',
   },
   {
     image: instagramIcon,
-    url: '#',
+    url: 'https://www.instagram.com/khabiteq_realty/profilecard/?igsh=YjRvanQ3YmlmdDNl',
   },
   {
     image: twitterIcon,
-    url: '#',
+    url: 'https://x.com/Khabi_Teq?t=Jq6MpEMfwfJ6aQ46CYGPpQ&s=09',
   },
   {
     image: linkedInIcon,
@@ -216,69 +216,68 @@ export const benefitData: { title: string; text: string }[] = [
 export const GeneralFAQsData: { heading: string; text: string }[] = [
   {
     heading: `How do I find a property on Khabi-Teq?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `Use our intuitive search tool to input your preferences, such as property type,
+location, and budget. Our system will then match you with the best available
+options tailored to your criteria`,
   },
   {
     heading: `What makes Khabi-Teq different?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `"We combine real estate expertise with innovative technology to simplify
+property transactions and management, offering tailored solutions to meet your needs."`,
   },
   {
     heading: `How can I contact Khabi-Teq for support?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `You can reach us through email, phone, or WhatsApp. Visit our Contact Us page
+for detailed contact information`,
   },
   {
     heading: `Is there a fee for using Khabi-Teq?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `Searching for properties on our platform is completely free. However, fees may
+apply for engaging in property transactions or using property management
+services`,
   },
   {
     heading: `Can I inspect a property before renting or buying`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `Yes, we encourage you to request an inspection for any property that interests you. This allows you to ensure it meets your expectations before finalizing any decisions.`,
   },
 ];
 
 export const LandlordFAQsData: { heading: string; text: string }[] = [
   {
-    heading: `How do I find a property on Khabi-Teq?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    heading: `How does Khabi-Teq help landlords?`,
+    text: `Khabi-Teq connects you with verified tenants, offers comprehensive property management services through trusted partners, and facilitates seamless rent collection and property maintenance.`,
   },
   {
-    heading: `What makes Khabi-Teq different?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    heading: `Can I list my property for free?`,
+    text: `Yes, submitting a property brief is free of charge. Our team will review and list it
+on the platform to attract potential tenants or buyers.`,
   },
   {
-    heading: `How can I contact Khabi-Teq for support?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    heading: `What types of properties can I list?`,
+    text: `You can list residential, commercial, and land properties available for rent or sale.`,
   },
   {
-    heading: `Is there a fee for using Khabi-Teq?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
-  },
-  {
-    heading: `Can I inspect a property before renting or buying`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    heading: `How does property management work?`,
+    text: `We handle all aspects of tenant onboarding, rent collection, property maintenance, and dispute resolution to make property management as seamless as possible for you.`,
   },
 ];
 
 export const TenantsFAQsData: { heading: string; text: string }[] = [
   {
     heading: `How do I find a property on Khabi-Teq?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
-  },
-  {
-    heading: `What makes Khabi-Teq different?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
-  },
-  {
-    heading: `How can I contact Khabi-Teq for support?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `Use our search feature to set your preferences, including property type, location, and budget. The system will display relevant listings matching your criteria.`,
   },
   {
     heading: `Is there a fee for using Khabi-Teq?`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    text: `Searching for properties on the platform is free. However, if you proceed with a property transaction or use additional services, relevant fees may apply.`,
   },
   {
-    heading: `Can I inspect a property before renting or buying`,
-    text: `We combine real estate expertise with innovative technology to simplify property transactions and management, offering tailored solutions to meet your needs.`,
+    heading: `Can I inspect a property before renting or buying?`,
+    text: `Yes, you can request an inspection for any property that meets your needs. This allows you to see the property firsthand and make an informed decision.`,
+  },
+  {
+    heading: `What happens after I select a property?`,
+    text: `Our team will contact you to arrange a property inspection and guide you through the subsequent steps, ensuring a smooth transition from selection to leasing or purchase`,
   },
 ];
 
