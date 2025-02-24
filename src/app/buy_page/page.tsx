@@ -216,7 +216,7 @@ export default function Rent() {
                         },
                         {
                           header: 'Price',
-                          value: `N${Number(property.price).toLocaleString()}`,
+                          value: `₦${Number(property.price).toLocaleString()}`,
                         },
                         {
                           header: 'Bedrooms',
@@ -291,7 +291,7 @@ export default function Rent() {
                           },
                           {
                             header: 'Price',
-                            value: `N${Number(brief.price).toLocaleString()}`,
+                            value: `₦${Number(brief.price).toLocaleString()}`,
                           },
                           {
                             header: 'Bedrooms',
