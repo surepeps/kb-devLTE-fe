@@ -18,6 +18,7 @@ import { toast } from 'react-hot-toast';
 import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWifi } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';
 
 //type CardData = { header: string; value: string }[];
 
@@ -39,6 +40,7 @@ export default function Rent() {
   const [properties, setProperties] = useState<any[]>([]);
   const [isFetchingData, setFetchingData] = useState<boolean>(false);
   const [errMessage, setErrMessage] = useState<string>('');
+  const route = useRouter();
 
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
@@ -88,6 +90,7 @@ export default function Rent() {
         });
 
         if (!response.ok) {
+          setErrMessage('Failed to fetch data');
           throw new Error('Failed to fetch data');
         }
 
@@ -124,7 +127,7 @@ export default function Rent() {
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
             Enter Your{' '}
             <span className='text-[#8DDB90] font-display'>
-              Property Reference
+              Property Preference
             </span>
           </h2>
           <PropertyReference
@@ -144,7 +147,7 @@ export default function Rent() {
                       {found.count} match Found
                     </h2>
                     <h2 className='flex gap-[5px] lg:hidden'>
-                      <svg
+                      {/* <svg
                         width='24'
                         height='25'
                         viewBox='0 0 24 25'
@@ -172,7 +175,7 @@ export default function Rent() {
                           rx='1'
                           fill='#FF3D00'
                         />
-                      </svg>
+                      </svg> */}
                       <span
                         onClick={viewSelectedBrief}
                         className='text-base leading-[25.6px] font-medium text-[#FF3D00]'>
@@ -244,7 +247,13 @@ export default function Rent() {
                 {errMessage !== '' && (
                   <div className='container min-h-[300px] flex items-center justify-center'>
                     <p className='text-base font-medium text-center'>
-                      {errMessage}, check your internet connection and reload{' '}
+                      {errMessage}, check your internet connection and{' '}
+                      <span
+                        onClick={() => {
+                          route.refresh();
+                        }}>
+                        reload
+                      </span>{' '}
                       <FontAwesomeIcon icon={faWifi} />
                     </p>
                   </div>
