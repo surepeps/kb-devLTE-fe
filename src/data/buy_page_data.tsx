@@ -1,13 +1,16 @@
 /** @format */
-
-export const propertyReferenceData: { heading: string; options: string[] }[] = [
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const propertyReferenceData: {
+  heading: string;
+  options: any[];
+}[] = [
   {
     heading: 'Type of Property',
     options: ['Land', 'Residential', 'Commercial'],
   },
   {
     heading: 'Usage Options',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['Lease', 'Outright Sale', 'All', 'Joint Venture'],
   },
   {
     heading: 'Budget Range',
@@ -27,15 +30,15 @@ export const propertyReferenceData: { heading: string; options: string[] }[] = [
   },
   {
     heading: 'Document Type',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['Governor Consent', 'C of O', 'Survey Document'],
   },
   {
     heading: 'Desires Features',
     options: [
-      '1 Bedroom',
-      '2 Bedrooms',
-      '3 Bedrooms',
-      '4 Bedrooms and more',
+      // '1 Bedroom',
+      // '2 Bedrooms',
+      // '3 Bedrooms',
+      // '4 Bedrooms and more',
       'Contemporary Designs',
       'Modern Interior Finishing',
       'Guest Toilet',
@@ -59,6 +62,10 @@ export const propertyReferenceData: { heading: string; options: string[] }[] = [
       'CCTV',
       'Swimming Pool',
     ],
+  },
+  {
+    heading: 'Bedroom',
+    options: [1, 2, 3, 4],
   },
 ];
 
