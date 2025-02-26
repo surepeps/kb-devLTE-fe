@@ -56,4 +56,30 @@ export interface GlobalContextTypes {
   }) => void;
   propertyReference: object;
   setPropertyReference: ({}: object) => void;
+  cardData: [];
+  setCardData: ([]: []) => void;
+  selectedBriefs: Set<BriefType>;
+  addBrief: (brief: BriefType) => void;
+  removeBrief: (briefId: BriefType) => void;
+  clearBriefs: () => void;
 }
+
+export type BriefType = {
+  id: string;
+  name: string;
+  propertyType: string;
+  price: number;
+  propertyFeatures: { noOfBedrooms: string };
+  location: {
+    state: string;
+    localGovernment: string;
+  };
+  docOnProperty: { _id: string; docName: string }[];
+}; // Adjust fields as needed
+
+// type BriefsContextType = {
+//   selectedBriefs: Set<BriefType>;
+//   addBrief: (brief: BriefType) => void;
+//   removeBrief: (briefId: string) => void;
+//   clearBriefs: () => void;
+// };
