@@ -4,7 +4,7 @@
 'use client';
 import React, { FC } from 'react';
 import Image, { StaticImageData } from 'next/image';
-import houseImage from '@/assets/assets.png';
+//import houseImage from '@/assets/assets.png';
 import lineStyle from '@/svgs/linestyle.svg';
 import Button from './button';
 import '@/styles/hero.css';
@@ -34,9 +34,11 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className='lg:text-[50px] font-semibold text-[30px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF] text-center lg:text-center'>
-            Find the Perfect <span className='text-[#8DDB90] font-display'>Match</span> for
-            Your Property <br className='hidden md:flex' />
-            Needs - <span className='text-[#8DDB90] font-display'>Simplified</span>
+            Find the Perfect{' '}
+            <span className='text-[#8DDB90] font-display'>Match</span> for Your
+            Property <br className='hidden md:flex' />
+            Needs -{' '}
+            <span className='text-[#8DDB90] font-display'>Simplified</span>
           </motion.h2>
           <Image
             src={lineStyle}

@@ -18,9 +18,9 @@ const Landlord = () => {
     <section
       className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
       <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
-        <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-epilogue text-center text-[30px] leading-[41px]'>
+        <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
           Submit Your&nbsp;
-          <span className='text-[#8DDB90]'>Landlord Brief</span>
+          <span className='text-[#8DDB90] font-display'>Landlord Brief</span>
         </h2>
         <div className='lg:w-[953px] w-full text-[24px] leading-[38.4px] text-[#5A5D63] font-normal text-center'>
           Khabi-Teq connects you with{' '}
@@ -171,11 +171,11 @@ const Landlord = () => {
                       type='number'
                     />
                   </div>
-                  <Input 
+                  <Input
                     label='Email'
-                    name='Email' 
-                    className='w-full' 
-                    type='email' 
+                    name='Email'
+                    className='w-full'
+                    type='email'
                   />
                 </div>
               </div>

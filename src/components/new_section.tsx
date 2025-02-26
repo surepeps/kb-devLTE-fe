@@ -86,7 +86,7 @@ const NewSection = () => {
             className='flex flex-row-reverse z-10 items-center lg:-ml-[100px]'>
             <Card
               heading='Inspect and Decide'
-              desc='Our platform finds options that meet your criteria'
+              desc='Choose the perfect property with ease'
               backgroundColor='#09391C'
               headingColor='#8DDB90'
               descColor='#FFFFFF'
@@ -248,11 +248,11 @@ const data = [
     buttons: [
       {
         value: 'Buyer Preference',
-        url: '#',
+        url: '/buy_page',
       },
       {
         value: 'Tenant Preference',
-        url: '#',
+        url: '/rent_page',
       },
     ],
   },
@@ -261,8 +261,8 @@ const data = [
     text: `Tell us what you're looking for! Submit your preferences below and let us find the perfect match for you`,
     buttons: [
       {
-        value: 'Buyer Preference',
-        url: '#',
+        value: 'Seller Preference',
+        url: '/sell_page',
       },
       {
         value: 'Tenant Preference',

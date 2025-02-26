@@ -21,7 +21,8 @@ const Header = () => {
     isModalOpened,
     setIsModalOpened,
     viewImage,
-    isSubmittedSuccessfully
+    isSubmittedSuccessfully,
+    setIsContactUsClicked
   } = usePageContext();
   const [state, dispatch] = useReducer(reducer, navData);
   const pathName = usePathname();
@@ -78,6 +79,9 @@ const Header = () => {
           <Button
             value="Let's talk"
             green={true}
+            onClick={()=>{
+              setIsContactUsClicked(true)
+            }}
             className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px] hidden lg:inline'
           />
           <Image

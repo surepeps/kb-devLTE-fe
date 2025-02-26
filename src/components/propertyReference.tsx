@@ -7,19 +7,13 @@ import ReactSelect from 'react-select';
 import { useFormik } from 'formik';
 //import * as Yup from 'yup';
 //import { cardDataArray } from '@/data';
-//import toast from 'react-hot-toast';
-import { URLS } from '@/utils/URLS';
-import { POST_REQUEST } from '@/utils/requests';
+// import toast from 'react-hot-toast';
+// import { URLS } from '@/utils/URLS';
+// import { POST_REQUEST } from '@/utils/requests';
 import Input from '@/components/Input';
-
-// interface OptionType {
-//   value: string;
-//   label: string;
-// }
-
-// type FormValues = {
-//   [key: string]: OptionType | null; // Allow dynamic keys for each select
-// };
+// import axios from 'axios';
+// import toast from 'react-hot-toast';
+import { usePageContext } from '@/context/page-context';
 
 interface valuesProps {
   propertyType: string;
@@ -29,6 +23,7 @@ interface valuesProps {
   landSize: string;
   docOnProperty: [];
   desireFeatures: [];
+  bedroom: number;
 }
 
 interface PropertyReferenceDataProps {
@@ -43,24 +38,7 @@ const PropertyReference = ({
   found,
   setFound,
 }: PropertyReferenceDataProps) => {
-  // const validationSchema = Yup.object({
-  //   propertyType: Yup.string().required('Property Type is Required'),
-  //   usageOption: Yup.array()
-  //     .min(1, 'Usage Option is required')
-  //     .required('Usage Option is required'),
-  //   budgetRange: Yup.string().required('Budget Range is required'),
-  //   state: Yup.string().required('State is required'),
-  //   landSize: Yup.string().required('Land size is required'),
-  //   docOnProperty: Yup.array()
-  //     .min(1, 'At least one Document Type is required')
-  //     .required('Document Type is required'),
-  //   desireFeatures: Yup.object().shape({
-  //     additionalFeatures: Yup.array(),
-  //     noOfBedroom: Yup.number()
-  //       .min(1, 'Must have at least 1 bedroom')
-  //       .required('Number of bedrooms is required'),
-  //   }),
-  // });
+  const { setPropertyReference, setRentPage, rentPage } = usePageContext();
   const formik = useFormik({
     initialValues: {
       propertyType: '',
@@ -70,6 +48,7 @@ const PropertyReference = ({
       landSize: '',
       docOnProperty: [],
       desireFeatures: [],
+      bedroom: 0,
     },
     // validationSchema,
     onSubmit: (values: valuesProps) => {
@@ -80,55 +59,40 @@ const PropertyReference = ({
       });
     },
   });
-  // const formik = useFormik({
-  //   initialValues: propertyReferenceData.reduce((acc, item) => {
-  //     acc[item.heading] = null; // Initialize with null for each select
-  //     return acc;
-  //   }, {} as FormValues),
-  //   validationSchema: Yup.object(
-  //     propertyReferenceData.reduce((acc, item) => {
-  //       acc[item.heading] = Yup.object().required(
-  //         `${item.heading} field is required`
-  //       );
-  //       return acc;
-  //     }, {} as { [key: string]: Yup.Schema<any> })
-  //   ),
-  //   onSubmit: (values) => {
-  //     console.log(values);
-
-  //     //simulating the data
-  //     const limit = 5;
-
-  //     setFound({
-  //       isFound: !found.isFound,
-  //       count: limit,
-  //     });
-  //   },
-  // });
 
   const submitReference = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    //reducing through the property documents to get the required object format
+    const propertyDoc = formik.values.docOnProperty.reduce(
+      (acc: { docName: string; isProvided: boolean }[], item: string) => {
+        acc.push({ docName: item, isProvided: true });
+        return acc;
+      },
+      []
+    );
+
     const payload = {
       propertyType: formik.values.propertyType,
-      // usageOptions: formik.values.usageOption,
+      areYouTheOwner: true, //assumption
+      usageOptions: formik.values.usageOption,
+      pictures: [], //no pictures required in the design,
       budgetRange: formik.values.budgetRange,
       location: {
         state: formik.values.state,
+        localGovernment: 'Egbeda', //assumption, no local govt input on the design
+        area: 'Iwo', //assumption, same,
       },
-      // desiresFeatures: formik.values.desireFeatures,
-      // docOnProperty: formik.values.docOnProperty,
+      price: 2048344930, //assumption, supposing we are using the budget range instead
+      docOnProperty: propertyDoc,
+      propertyFeatures: {
+        additionalFeatures: formik.values.desireFeatures,
+        noOfBedrooms: formik.values.bedroom,
+      },
     };
-    try {
-      const response = await POST_REQUEST(
-        URLS.BASE + '/properties/buy/request/new',
-        payload
-      );
-      if (response.success) {
-      }
-    } catch (error) {
-      console.log('error', error);
-    }
-    console.log('submitted', payload);
+
+    setPropertyReference(payload);
+    setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
   };
 
   return (
@@ -207,6 +171,15 @@ const PropertyReference = ({
               options={propertyReferenceData[6].options}
               placeholder='Select'
             />
+            {/**Bedroom */}
+            <Select
+              allowMultiple={false}
+              heading={'bedroom'}
+              formik={formik}
+              name={propertyReferenceData[7].heading}
+              options={propertyReferenceData[7].options}
+              placeholder='Select'
+            />
 
             <Button
               value='Search'
@@ -241,7 +214,7 @@ const PropertyReference = ({
             <button
               type='button'
               onClick={submitReference}
-              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:w-[245px] min-h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'>
+              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:min-w-[245px] h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'>
               Submit your preferences
             </button>
           </div>
@@ -256,7 +229,7 @@ export default PropertyReference;
 interface SelectProps {
   heading: string;
   placeholder?: string;
-  options: string[];
+  options: any[];
   formik: any;
   allowMultiple?: boolean;
   name: string;
@@ -273,8 +246,8 @@ const Select: React.FC<SelectProps> = ({
   //   useState<SingleValue<OptionType>>(null);
 
   const opts = options.map((item) => ({
-    value: item.toLowerCase(),
-    label: item,
+    value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
+    label: typeof item === 'number' ? Number(item) : item,
   }));
   return (
     <label
@@ -288,11 +261,15 @@ const Select: React.FC<SelectProps> = ({
         name={name}
         onChange={(selectedOption) =>
           allowMultiple
-            ? formik.setFieldValue(heading, [
-                ...selectedOption.map((opt: any) => opt.label),
-                selectedOption?.label,
-              ])
-            : formik.setFieldValue(heading, selectedOption?.label)
+            ? formik.setFieldValue(
+                heading,
+                [
+                  ...(Array.isArray(selectedOption)
+                    ? selectedOption.map((opt: any) => opt.label)
+                    : []),
+                ].filter(Boolean) // Removes undefined values
+              )
+            : formik.setFieldValue(heading, selectedOption?.label ?? '')
         }
         /** const selectedLabels = selectedOption ? selectedOption.map(opt => opt.label) : [];
     formik.setFieldValue(heading, selectedLabels); */
@@ -342,3 +319,50 @@ const Crumb = ({ text }: { text: any }) => {
     </Fragment>
   );
 };
+
+/**
+ * const samplePayload = {
+      propertyFeatures: {
+        additionalFeatures: [],
+        noOfBedrooms: 12,
+      },
+      areYouTheOwner: true,
+      usageOptions: ['Lease', 'Outright Sale'],
+      pictures: [],
+      propertyType: 'Land',
+      location: {
+        state: 'Oyo',
+        localGovernment: 'Egbeda',
+        area: 'Iwo',
+      },
+      price: 2048344930,
+      docOnProperty: [
+        {
+          docName: 'Survey Document',
+          isProvided: true,
+        },
+        {
+          docName: 'C of O',
+          isProvided: true,
+        },
+        {
+          docName: 'Governor Consent',
+          isProvided: false,
+        },
+      ],
+      owner: {
+        fullName: 'John Doe',
+        phoneNumber: '09012345678',
+        email: 'akanjiabayomi2@gmail.com',
+      },
+      budgetRange: '1000-3000',
+    };
+    const propertyDoc = formik.values.docOnProperty.reduce(
+      (acc: { docName: string; isProvided: boolean }[], item: string) => {
+        acc.push({ docName: item, isProvided: true });
+        console.log(acc);
+        return acc;
+      },
+      []
+    );
+ */
