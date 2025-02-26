@@ -42,7 +42,6 @@ export const POST_REQUEST = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-      mode: 'no-cors',
     });
     const response = await request.json();
     return response;
