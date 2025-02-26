@@ -16,6 +16,8 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ReactSelect from 'react-select';
 import { propertyReferenceData } from '@/data/buy_page_data';
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 // import { useUserContext } from '@/context/user-context';
 
 //import SubmitPopUp from '@/components/submit';
@@ -30,6 +32,7 @@ const Sell = () => {
   const isLoading = useLoading();
   const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
   const { setIsSubmittedSuccessfully } = usePageContext();
+  const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
 
   const docOfTheProperty: string[] = [
     'C of O',
@@ -69,13 +72,18 @@ const Sell = () => {
       selectedCity: Yup.string().required('City is required'),
       selectedLGA: Yup.string().required('LGA is required'),
       ownerFullName: Yup.string().required('Owner full name is required'),
-      ownerPhoneNumber: Yup.string().required('Owner phone number is required'),
+      ownerPhoneNumber: Yup.string()
+        .required('Owner phone number is required')
+        .test('is-valid-phone', 'Invalid phone number', (value) =>
+          value ? isValidPhoneNumber(value) : false
+        ),
       ownerEmail: Yup.string()
         .email('Invalid email')
         .required('Owner email is required'),
     }),
     onSubmit: async (values) => {
       console.log(values);
+      setAreInputsDisabled(true);
       try {
         const url = URLS.BASE + URLS.agentCreateBrief;
         const payload = {
@@ -113,11 +121,13 @@ const Sell = () => {
               toast.success('Property submitted successfully');
               // router.push('/success');
               setIsSubmittedSuccessfully(true);
+              setAreInputsDisabled(false);
               return 'Property submitted successfully';
             } else {
               const errorMessage =
                 (response as any).error || 'Submission failed';
               toast.error(errorMessage);
+              setAreInputsDisabled(false);
               throw new Error(errorMessage);
             }
           }),
@@ -129,7 +139,10 @@ const Sell = () => {
         );
       } catch (error) {
         console.error(error);
+        setAreInputsDisabled(false);
         // toast.error('An error occurred, please try again');
+      } finally {
+        setAreInputsDisabled(false);
       }
     },
   });
@@ -213,6 +226,7 @@ const Sell = () => {
                       {['All', 'Lease', 'Joint Venture', 'Outright Sale'].map(
                         (item: string, idx: number) => (
                           <RadioCheck
+                            isDisabled={areInputsDisabled}
                             type='checkbox'
                             value={item}
                             key={idx}
@@ -266,6 +280,7 @@ const Sell = () => {
                         forState={true}
                         type='text'
                         placeholder='Select State'
+                        isDisabled={areInputsDisabled}
                       />
                       <Input
                         label='Local Government'
@@ -273,6 +288,7 @@ const Sell = () => {
                         type='text'
                         value={formik.values?.selectedLGA}
                         onChange={formik.handleChange}
+                        isDisabled={areInputsDisabled}
                       />
                       <Input
                         label='Area or Neighbourhood'
@@ -286,6 +302,7 @@ const Sell = () => {
                           formik.setFieldValue('selectedCity', option?.value);
                         }}
                         type='text'
+                        isDisabled={areInputsDisabled}
                       />
                     </div>
                     {formik.touched.selectedState &&
@@ -315,8 +332,10 @@ const Sell = () => {
                       name='price'
                       type='number'
                       className='w-full'
+                      minNumber={0}
                       value={formik.values?.price}
                       onChange={formik.handleChange}
+                      isDisabled={areInputsDisabled}
                     />
                   </div>
                   {formik.touched.documents && formik.errors.documents && (
@@ -346,6 +365,7 @@ const Sell = () => {
                               : [...formik.values.documents, item];
                             formik.setFieldValue('documents', documents);
                           }}
+                          isDisabled={areInputsDisabled}
                         />
                       ))}
                     </div>
@@ -369,10 +389,11 @@ const Sell = () => {
                         // isDisabled={formik.values?.noOfBedroom ? true : false}
                         value={formik.values?.noOfBedroom}
                         onChange={formik.handleChange}
+                        isDisabled={areInputsDisabled}
                       />
                       <Select
                         label='Additional Features'
-                        name='additionalFeatures'
+                        name='Additional Features'
                         heading='additionalFeatures'
                         allowMultiple={true}
                         options={
@@ -381,6 +402,7 @@ const Sell = () => {
                           ].options
                         }
                         formik={formik}
+                        isDisabled={areInputsDisabled}
                       />
                     </div>
                     {formik.touched.noOfBedroom &&
@@ -417,6 +439,7 @@ const Sell = () => {
                         setIsLegalOwner(!isLegalOwner);
                         //console.log(isLegalOwner)
                       }}
+                      isDisabled={areInputsDisabled}
                       value='I confirm that I am the legal owner of this property or authorized to submit this brief'
                     />
                     <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
@@ -429,7 +452,7 @@ const Sell = () => {
                         className='lg:w-1/2 w-full'
                         type='text'
                       />
-                      <Input
+                      {/* <Input
                         label='Phone Number'
                         isDisabled={isLegalOwner}
                         name='ownerPhoneNumber'
@@ -437,7 +460,30 @@ const Sell = () => {
                         onChange={formik.handleChange}
                         className='lg:w-1/2 w-full'
                         type='text'
-                      />
+                      /> */}
+                      <div className='flex flex-col gap-2'>
+                        <label className='block text-sm font-medium'>
+                          Phone Number:
+                        </label>
+                        <PhoneInput
+                          international
+                          defaultCountry='NG'
+                          disabled={areInputsDisabled}
+                          value={formik.values?.ownerPhoneNumber}
+                          style={{ outline: 'none' }}
+                          onChange={(value) =>
+                            formik.setFieldValue('ownerPhoneNumber', value)
+                          }
+                          placeholder='Enter phone number'
+                          className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] focus:outline-none focus:ring-0'
+                        />
+                        {(formik.touched.ownerPhoneNumber ||
+                          formik.errors.ownerPhoneNumber) && (
+                          <p className='text-red-500 text-sm mt-1'>
+                            {formik.errors.ownerPhoneNumber}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <Input
                       label='Email'
@@ -476,6 +522,7 @@ interface SelectProps {
   allowMultiple?: boolean;
   label?: string;
   name?: string;
+  isDisabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -483,6 +530,8 @@ const Select: React.FC<SelectProps> = ({
   options,
   formik,
   allowMultiple,
+  name,
+  isDisabled,
 }) => {
   // const [valueSelected, setValueSelected] =
   //   useState<SingleValue<OptionType>>(null);
@@ -496,10 +545,11 @@ const Select: React.FC<SelectProps> = ({
       htmlFor='select'
       className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
       <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
-        {heading}
+        {name}
       </h2>
       <ReactSelect
         isMulti={allowMultiple}
+        isDisabled={isDisabled}
         name={heading}
         onChange={(selectedOption) =>
           formik.setFieldValue(heading, selectedOption.label)

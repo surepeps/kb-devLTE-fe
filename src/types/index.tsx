@@ -54,4 +54,6 @@ export interface GlobalContextTypes {
     selectedState: Option | null;
     selectedCity: Option | null;
   }) => void;
+  propertyReference: object;
+  setPropertyReference: ({}: object) => void;
 }
