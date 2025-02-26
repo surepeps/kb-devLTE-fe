@@ -1,9 +1,3 @@
-/**
- 
- *
- * @format
- */
-
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
@@ -20,10 +14,11 @@ import PropertyReference from '@/components/propertyReference';
 import imgSample from '@/assets/assets.png';
 //import { cardDataArray } from '@/data';
 import { toast } from 'react-hot-toast';
-import { GET_REQUEST } from '@/utils/requests';
+//import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWifi } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';
 
 //type CardData = { header: string; value: string }[];
 
@@ -45,12 +40,13 @@ export default function Rent() {
   const [properties, setProperties] = useState<any[]>([]);
   const [isFetchingData, setFetchingData] = useState<boolean>(false);
   const [errMessage, setErrMessage] = useState<string>('');
+  const route = useRouter();
 
   const viewSelectedBrief = () => {
     if (text === 'View selected Brief') {
       setIsSelectedBriefClicked(true);
-      setText('Hide selected Brief');
-    } else if (text === 'Hide selected Brief') {
+      setText('< Back');
+    } else if (text === '< Back') {
       setIsSelectedBriefClicked(!isSelectedBriefClicked);
       setText('View selected Brief');
     }
@@ -60,25 +56,62 @@ export default function Rent() {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
 
+  // useEffect(() => {
+  //   const fetchAllData = async () => {
+  //     setFetchingData(true);
+  //     try {
+  //       // const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
+  //       const response = await fetch(URLS.BASE + '/properties/sell/all');
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log(data);
+  //         setFetchingData(false);
+  //         setProperties(data);
+  //       } else {
+  //         setFetchingData(false);
+  //         setErrMessage('Failed to fetch data');
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       setFetchingData(false);
+  //     }
+  //   };
+  //   fetchAllData();
+  // }, []);
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchAllData = async () => {
       setFetchingData(true);
       try {
-        const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
-        console.log(response);
-        setFetchingData(false);
-        setProperties(response.data as any[]);
-        if (response.error) {
-          setFetchingData(false);
-          setErrMessage(response.error);
+        const response = await fetch(URLS.BASE + '/properties/sell/all', {
+          signal,
+        });
+
+        if (!response.ok) {
+          setErrMessage('Failed to fetch data');
+          throw new Error('Failed to fetch data');
         }
-      } catch (err) {
-        console.log(err);
+
+        const data = await response.json();
+        setProperties(data);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          setErrMessage(err.message || 'An error occurred');
+        }
+      } finally {
         setFetchingData(false);
       }
     };
+
     fetchAllData();
-  }, []);
+
+    return () => {
+      controller.abort(); // Cleanup to prevent memory leaks
+    };
+  }, []); // Add dependencies if necessary
 
   if (isLoading) return <Loading />;
   return (
@@ -94,7 +127,7 @@ export default function Rent() {
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
             Enter Your{' '}
             <span className='text-[#8DDB90] font-display'>
-              Property Reference
+              Property Preference
             </span>
           </h2>
           <PropertyReference
@@ -114,7 +147,7 @@ export default function Rent() {
                       {found.count} match Found
                     </h2>
                     <h2 className='flex gap-[5px] lg:hidden'>
-                      <svg
+                      {/* <svg
                         width='24'
                         height='25'
                         viewBox='0 0 24 25'
@@ -142,7 +175,7 @@ export default function Rent() {
                           rx='1'
                           fill='#FF3D00'
                         />
-                      </svg>
+                      </svg> */}
                       <span
                         onClick={viewSelectedBrief}
                         className='text-base leading-[25.6px] font-medium text-[#FF3D00]'>
@@ -183,7 +216,7 @@ export default function Rent() {
                         },
                         {
                           header: 'Price',
-                          value: `N${Number(property.price).toLocaleString()}`,
+                          value: `₦${Number(property.price).toLocaleString()}`,
                         },
                         {
                           header: 'Bedrooms',
@@ -214,7 +247,13 @@ export default function Rent() {
                 {errMessage !== '' && (
                   <div className='container min-h-[300px] flex items-center justify-center'>
                     <p className='text-base font-medium text-center'>
-                      {errMessage}, check your internet connection{' '}
+                      {errMessage}, check your internet connection and{' '}
+                      <span
+                        onClick={() => {
+                          route.refresh();
+                        }}>
+                        reload
+                      </span>{' '}
                       <FontAwesomeIcon icon={faWifi} />
                     </p>
                   </div>
@@ -252,7 +291,7 @@ export default function Rent() {
                           },
                           {
                             header: 'Price',
-                            value: `N${Number(brief.price).toLocaleString()}`,
+                            value: `₦${Number(brief.price).toLocaleString()}`,
                           },
                           {
                             header: 'Bedrooms',

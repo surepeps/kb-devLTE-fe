@@ -44,8 +44,11 @@ export default function Rent() {
           'filter brightness-[30%] transition-all duration-500'
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
-          <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-epilogue'>
-            Submit Your <span className='text-[#8DDB90] font-display'>Rental Reference</span>
+          <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
+            Submit Your{' '}
+            <span className='text-[#8DDB90] font-display'>
+              Rental Reference
+            </span>
           </h2>
           <RentalReference
             rentalReferenceData={propertyReferenceDataWithoutUsageOption}

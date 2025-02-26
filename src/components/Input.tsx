@@ -36,6 +36,8 @@ interface InputProps {
   setSelectedCity?: (type: Option | null) => void;
   isDisabled?: boolean;
   setIsDisabled?: (type: boolean) => void;
+  minNumber?: number;
+  maxNumber?: number;
 }
 
 const defaultCountry = { value: 'NG', label: 'Nigeria' };
@@ -59,6 +61,8 @@ const Input: FC<InputProps> = ({
   setSelectedCountry,
   setSelectedState,
   isDisabled,
+  minNumber,
+  maxNumber,
   // setIsDisabled
 }) => {
   // const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
@@ -149,6 +153,8 @@ const Input: FC<InputProps> = ({
             onChange={isDisabled ? undefined : onChange}
             onBlur={onBlur}
             disabled={isDisabled}
+            min={type === 'number' ? minNumber : undefined}
+            max={type === 'number' ? maxNumber : undefined}
             placeholder={placeholder ?? 'This is placeholder'}
             className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
           />

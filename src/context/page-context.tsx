@@ -54,6 +54,9 @@ export const PageContextProvider = ({
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] =
     useState<boolean>(false);
 
+  //Buy page - property referenece
+  const [propertyReference, setPropertyReference] = useState({});
+
   return (
     <PageContext.Provider
       value={{
@@ -73,6 +76,8 @@ export const PageContextProvider = ({
         setIsSubmittedSuccessfully,
         propertyDetails,
         setPropertyDetails,
+        propertyReference,
+        setPropertyReference,
       }}>
       {children}
     </PageContext.Provider>
