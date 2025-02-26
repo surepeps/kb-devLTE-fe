@@ -26,7 +26,7 @@ export const propertyReferenceData: {
   },
   {
     heading: 'Land Size',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['1500 square meter', '2500 square meter', '3000 square meter'],
   },
   {
     heading: 'Document Type',

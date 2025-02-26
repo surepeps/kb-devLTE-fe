@@ -19,13 +19,21 @@ import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWifi } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
+import { BriefType } from '@/types';
 
 //type CardData = { header: string; value: string }[];
 
 export default function Rent() {
   const isLoading = useLoading();
-  const { isContactUsClicked, rentPage, setRentPage, isModalOpened } =
-    usePageContext();
+  const {
+    isContactUsClicked,
+    rentPage,
+    setRentPage,
+    isModalOpened,
+    selectedBriefs,
+    removeBrief,
+    addBrief,
+  } = usePageContext();
   const [found, setFound] = useState({
     isFound: false,
     count: 0,
@@ -33,9 +41,8 @@ export default function Rent() {
   const [isSelectedBriefClicked, setIsSelectedBriefClicked] =
     useState<boolean>(false);
   const [text, setText] = useState<string>('View selected Brief');
-  const [selectedBriefs, setSelectedBriefs] = useState<Set<any>>(new Set([]));
-  const [tracker, setTracker] = useState<number>(0);
-  const [briefIDs, setBriefIDs] = useState<Set<number>>(new Set([]));
+  // const [selectedBriefs, setSelectedBriefs] = useState<Set<any>>(new Set([]));
+  // const [briefIDs, setBriefIDs] = useState<Set<number>>(new Set([]));
   //const [allCards, setAllCards] = useState(cardDataArray);
   const [properties, setProperties] = useState<any[]>([]);
   const [isFetchingData, setFetchingData] = useState<boolean>(false);
@@ -111,7 +118,22 @@ export default function Rent() {
     return () => {
       controller.abort(); // Cleanup to prevent memory leaks
     };
-  }, []); // Add dependencies if necessary
+  }, []);
+
+  useEffect(() => {
+    const data = localStorage.getItem('selectedBriefs');
+
+    if (!data) return;
+    try {
+      const parsedData: BriefType[] = JSON.parse(data);
+
+      if (!Array.isArray(parsedData) || parsedData.length === 0) return;
+
+      parsedData.forEach((item) => addBrief(item));
+    } catch (error) {
+      console.error('Error parsing selectedBriefs from localStorage:', error);
+    }
+  }, []);
 
   if (isLoading) return <Loading />;
   return (
@@ -200,10 +222,7 @@ export default function Rent() {
                     <Card
                       images={Array(12).fill(imgSample)}
                       onClick={() => {
-                        setBriefIDs((prevItems) => new Set(prevItems).add(idx));
-                        setSelectedBriefs((prevItems) =>
-                          new Set(prevItems).add(property)
-                        );
+                        addBrief(property);
                         if (selectedBriefs.has(property)) {
                           return toast.success('Already added for inspection');
                         }
@@ -273,38 +292,32 @@ export default function Rent() {
                       <Card
                         images={Array(12).fill(imgSample)}
                         onClick={() => {
-                          setTracker(idx);
-                          console.log(idx, briefIDs);
-                          const filteredIDx = briefIDs.has(tracker);
-                          console.log(filteredIDx);
-                          setSelectedBriefs((prevBriefs) => {
-                            const newSet = new Set(prevBriefs);
-                            newSet.delete(brief);
-                            return newSet;
-                          });
+                          removeBrief(brief);
+
+                          localStorage.clear();
                           toast.success('Removed successfully');
                         }}
                         cardData={[
                           {
                             header: 'Property Type',
-                            value: brief.propertyType,
+                            value: brief?.propertyType,
                           },
                           {
                             header: 'Price',
-                            value: `₦${Number(brief.price).toLocaleString()}`,
+                            value: `₦${Number(brief?.price).toLocaleString()}`,
                           },
                           {
                             header: 'Bedrooms',
                             value:
-                              brief.propertyFeatures?.noOfBedrooms || 'N/A',
+                              brief?.propertyFeatures?.noOfBedrooms || 'N/A',
                           },
                           {
                             header: 'Location',
-                            value: `${brief.location.state}, ${brief.location.localGovernment}`,
+                            value: `${brief?.location.state}, ${brief?.location.localGovernment}`,
                           },
                           {
                             header: 'Documents',
-                            value: `<ol>${brief.docOnProperty.map(
+                            value: `<ol>${brief?.docOnProperty.map(
                               (item: { _id: string; docName: string }) =>
                                 `<li key={${item._id}>${item.docName}</li>`
                             )}<ol>`,

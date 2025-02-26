@@ -14,6 +14,8 @@ import Input from '@/components/Input';
 // import axios from 'axios';
 // import toast from 'react-hot-toast';
 import { usePageContext } from '@/context/page-context';
+//import { URLS } from '@/utils/URLS';
+//import axios from 'axios';
 
 interface valuesProps {
   propertyType: string;
@@ -51,8 +53,23 @@ const PropertyReference = ({
       bedroom: 0,
     },
     // validationSchema,
-    onSubmit: (values: valuesProps) => {
+    onSubmit: async (values: valuesProps) => {
       console.log(values);
+      // const payload = {
+      //   propertyType: values.propertyType,
+      //   state: values.state,
+      //   localGovernment: 'Egbeda', //assumption, no local govt input on the design
+      //   area: 'Iwo', //assumption, same,
+      //   minPrice: 0,
+      //   maxPrice: 1000000000,
+      // };
+      // try {
+      //   const response = await axios.post(
+      //     URLS.BASE + '/properties/buy/request/search'
+      //   );
+      // } catch (error) {
+      //   console.log(error);
+      // }
       setFound({
         isFound: !found.isFound,
         count: 6,
