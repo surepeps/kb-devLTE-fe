@@ -537,8 +537,8 @@ const Select: React.FC<SelectProps> = ({
   //   useState<SingleValue<OptionType>>(null);
 
   const opts = options.map((item) => ({
-    value: item.toLowerCase(),
-    label: item,
+    value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
+    label: typeof item === 'number' ? Number(item) : item,
   }));
   return (
     <label
@@ -552,7 +552,16 @@ const Select: React.FC<SelectProps> = ({
         isDisabled={isDisabled}
         name={heading}
         onChange={(selectedOption) =>
-          formik.setFieldValue(heading, selectedOption.label)
+          allowMultiple
+            ? formik.setFieldValue(
+                heading,
+                [
+                  ...(Array.isArray(selectedOption)
+                    ? selectedOption.map((opt: any) => opt.label)
+                    : []),
+                ].filter(Boolean) // Removes undefined values
+              )
+            : formik.setFieldValue(heading, selectedOption?.label ?? '')
         }
         onBlur={formik.handleBlur}
         value={formik.values[heading]}

@@ -81,8 +81,8 @@ body {
 
 .container {
   width: 100%; /* Full width by default */
-  padding-left: 1rem;
-  padding-right: 1rem;
+  /* padding-left: 1rem;
+  padding-right: 1rem; */
 }
 
 /* Phones (default: full width) */
