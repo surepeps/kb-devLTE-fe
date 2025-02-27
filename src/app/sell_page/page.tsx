@@ -393,12 +393,12 @@ const Sell = () => {
                       />
                       <Select
                         label='Additional Features'
-                        name='Additional Features'
+                        name='additionalFeatures'
                         heading='additionalFeatures'
                         allowMultiple={true}
                         options={
                           propertyReferenceData[
-                            propertyReferenceData.length - 1
+                            propertyReferenceData.length - 2
                           ].options
                         }
                         formik={formik}
@@ -579,20 +579,6 @@ const Select: React.FC<SelectProps> = ({
         }}
         placeholder='Select'
       />
-      {/* <select
-        onChange={(e) => {
-          setValueSelected(e.target.value);
-        }}
-        value={valueSelected}
-        className='min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FFFFFF00] border-[#D6DDEB]'
-        name='select'
-        id='select'>
-        {options.map((option: string, idx: number) => (
-          <option value={option} key={idx}>
-            {option}
-          </option>
-        ))}
-      </select> */}
     </label>
   );
 };
