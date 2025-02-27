@@ -6,7 +6,7 @@ import Loading from '@/components/loading';
 import { toast } from 'react-hot-toast';
 // import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import RadioCheck from '@/components/radioCheck';
 import Input from '@/components/Input';
 import { usePageContext } from '@/context/page-context';
@@ -18,21 +18,72 @@ import ReactSelect from 'react-select';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
+import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
 
 //import SubmitPopUp from '@/components/submit';
 //import Select from '@/components/select';
 
-// interface Option {
-//   value: string;
-//   label: string;
-// }
+interface Option {
+  value: string;
+  label: string;
+}
 const Sell = () => {
   // const { user } = useUserContext();
   const isLoading = useLoading();
   const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
   const { setIsSubmittedSuccessfully } = usePageContext();
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
+
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+
+  const [stateOptions, setStateOptions] = useState<Option[]>([]);
+  const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    // Load Nigerian states correctly
+    setStateOptions(
+      naijaStates.states().map((state: string) => ({
+        value: state,
+        label: state,
+      }))
+    );
+  }, []);
+
+  const handleLGAChange = (selected: Option | null) => {
+    formik.setFieldValue('selectedLGA', selected?.value);
+    console.log('Selected LGA:', formik.values); // Debugging
+    setSelectedLGA?.(selected);
+  };
+
+  const handleStateChange = (selected: Option | null) => {
+    console.log('Selected State:', selected);
+    formik.setFieldValue('selectedState', selected?.value);
+    setSelectedState?.(selected);
+
+    if (selected) {
+      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+
+      if (Array.isArray(lgas)) {
+        setLgaOptions(
+          lgas.map((lga: string) => ({
+            value: lga,
+            label: lga,
+          }))
+        );
+      } else {
+        console.error('LGAs not returned as an array:', lgas);
+        setLgaOptions([]);
+      }
+      setSelectedLGA?.(null);
+    } else {
+      console.log('Hey');
+      setLgaOptions([]);
+      setSelectedLGA?.(null);
+    }
+  };
 
   const docOfTheProperty: string[] = [
     'C of O',
@@ -270,37 +321,34 @@ const Sell = () => {
                       <Input
                         label='State'
                         name='selectedState'
-                        selectedState={{
-                          value: formik.values?.selectedState,
-                          label: formik.values?.selectedState,
-                        }}
-                        setSelectedState={(option) => {
-                          formik.setFieldValue('selectedState', option?.value);
-                        }}
                         forState={true}
+                        forLGA={false}
                         type='text'
                         placeholder='Select State'
+                        formik={formik}
+                        selectedState={selectedState}
+                        stateOptions={stateOptions}
+                        setSelectedState={handleStateChange}
                         isDisabled={areInputsDisabled}
                       />
                       <Input
                         label='Local Government'
                         name='selectedLGA'
                         type='text'
-                        value={formik.values?.selectedLGA}
-                        onChange={formik.handleChange}
+                        formik={formik}
+                        forLGA={true}
+                        forState={false}
+                        selectedLGA={selectedLGA}
+                        lgasOptions={lgaOptions}
+                        setSelectedLGA={handleLGAChange}
                         isDisabled={areInputsDisabled}
                       />
                       <Input
                         label='Area or Neighbourhood'
                         name='selectedCity'
-                        forCity={true}
-                        selectedState={{
-                          value: formik.values?.selectedState,
-                          label: formik.values?.selectedState,
-                        }} // Ensure city dropdown receives state
-                        setSelectedCity={(option) => {
-                          formik.setFieldValue('selectedCity', option?.value);
-                        }}
+                        forState={false}
+                        forLGA={false}
+                        onChange={formik.handleChange}
                         type='text'
                         isDisabled={areInputsDisabled}
                       />
