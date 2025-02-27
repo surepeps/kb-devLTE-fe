@@ -157,11 +157,11 @@ const Register = () => {
           if (response.error) {
             toast.error(response.error);
           }
-          // toast.error(response.message);
+          toast.error(response.message);
         }
       );
     },
-    onError: (errorResponse: any) => console.error(errorResponse),
+    onError: (errorResponse: any) => toast.error(errorResponse.message),
   });
 
   if (isLoading) return <Loading />;
