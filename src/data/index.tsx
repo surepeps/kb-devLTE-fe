@@ -28,14 +28,12 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Rent',
-    // url: '/rent_page',
-    url: '',
+    url: '/rent_page',
     isClicked: false,
   },
   {
     name: 'Landlord',
-    // url: '/landlord_page',
-    url: '',
+    url: '/landlord_page',
     isClicked: false,
   },
   {
