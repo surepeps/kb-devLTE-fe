@@ -7,15 +7,12 @@ import ReactSelect from 'react-select';
 import { useFormik } from 'formik';
 //import * as Yup from 'yup';
 //import { cardDataArray } from '@/data';
-// import toast from 'react-hot-toast';
-// import { URLS } from '@/utils/URLS';
 // import { POST_REQUEST } from '@/utils/requests';
 import Input from '@/components/Input';
-// import axios from 'axios';
-// import toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { usePageContext } from '@/context/page-context';
-//import { URLS } from '@/utils/URLS';
-//import axios from 'axios';
+import { URLS } from '@/utils/URLS';
+import axios from 'axios';
 
 interface valuesProps {
   propertyType: string;
@@ -39,8 +36,10 @@ const PropertyReference = ({
   propertyReferenceData,
   found,
   setFound,
+  setAllCards,
 }: PropertyReferenceDataProps) => {
   const { setPropertyReference, setRentPage, rentPage } = usePageContext();
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const formik = useFormik({
     initialValues: {
       propertyType: '',
@@ -55,25 +54,55 @@ const PropertyReference = ({
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
       console.log(values);
-      // const payload = {
-      //   propertyType: values.propertyType,
-      //   state: values.state,
-      //   localGovernment: 'Egbeda', //assumption, no local govt input on the design
-      //   area: 'Iwo', //assumption, same,
-      //   minPrice: 0,
-      //   maxPrice: 1000000000,
-      // };
-      // try {
-      //   const response = await axios.post(
-      //     URLS.BASE + '/properties/buy/request/search'
-      //   );
-      // } catch (error) {
-      //   console.log(error);
-      // }
-      setFound({
-        isFound: !found.isFound,
-        count: 6,
-      });
+      const payload = {
+        propertyType: values.propertyType,
+        state: values.state,
+        localGovernment: 'Egbeda', //assumption, no local govt input on the design
+        area: 'Iwo', //assumption, same,
+        minPrice: 0,
+        maxPrice: 1000000000,
+        usageOptions: formik.values.usageOption,
+        additionalFeatures: formik.values.desireFeatures,
+        minBedrooms: 1,
+        maxBedrooms: formik.values.bedroom,
+      };
+      //check if it has vvalues otherwise don't run
+      if (
+        !values.bedroom ||
+        !values.propertyType ||
+        !values.state ||
+        !values.usageOption ||
+        !values.budgetRange ||
+        !values.desireFeatures ||
+        !values.docOnProperty ||
+        !values.landSize
+      ) {
+        toast.error('Please fill all fields');
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          URLS.BASE + '/properties/buy/request/search',
+          payload
+        );
+        if (response.status === 200) {
+          setFound({ isFound: true, count: response.data.length });
+          setAllCards(response.data);
+          setIsSubmitting(false);
+          toast.success('' + response.data.length + ' properties found');
+        } else {
+          setFound({ isFound: false, count: 0 });
+          setIsSubmitting(false);
+        }
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+        setIsSubmitting(false);
+        toast.error('An error occured');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 
@@ -199,8 +228,9 @@ const PropertyReference = ({
             />
 
             <Button
-              value='Search'
+              value={isSubmitting ? 'Searching...' : 'Search'}
               green={true}
+              isDisabled={isSubmitting}
               type='submit'
               className='bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold h-[50px] py-[12px] px-[24px] lg:w-[243.25px] w-full'
             />
