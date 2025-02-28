@@ -4,15 +4,16 @@ export const featuresData: string[] = [
   'POP Ceilings',
   'Chandeliers',
   'Parking',
-  'Security',
-  'Security Estate',
+  // 'Security',
+  'Secure Estate',
   'Spacious Compound',
-  'Closet',
+  'Closets',
   'Water Heaters',
   'CCTV',
   'Bath Tub',
   'Balconies',
   'Spacious Dining Area',
+  'Eletricity',
 ];
 
 export const tenantCriteriaData: string[] = [
