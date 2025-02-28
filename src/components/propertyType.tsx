@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import AttachFile from '@/components/attach_file';
 import Button from '@/components/button';
@@ -12,10 +12,66 @@ import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/context/user-context';
+import { useEffect, useState } from 'react';
+import naijaStates from 'naija-state-local-government';
 // import Cookies from 'js-cookie';
 
+interface Option {
+  value: string;
+  label: string;
+}
 const PropertyType = () => {
-  const { user } = useUserContext(); 
+  const { user } = useUserContext();
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+
+  const [stateOptions, setStateOptions] = useState<Option[]>([]);
+  const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    // Load Nigerian states correctly
+    setStateOptions(
+      naijaStates.states().map((state: string) => ({
+        value: state,
+        label: state,
+      }))
+    );
+  }, []);
+
+  const handleLGAChange = (selected: Option | null) => {
+    formik.setFieldValue('selectedLGA', selected?.value);
+    console.log('Selected LGA:', formik.values); // Debugging
+    setSelectedLGA?.(selected);
+  };
+
+  const handleStateChange = (selected: Option | null) => {
+    console.log(formik.values);
+    formik.setFieldValue('selectedState', selected?.value);
+    setSelectedState?.(selected);
+
+    if (selected) {
+      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+
+      if (Array.isArray(lgas)) {
+        setLgaOptions(
+          lgas.map((lga: string) => ({
+            value: lga,
+            label: lga,
+          }))
+        );
+      } else {
+        console.error('LGAs not returned as an array:', lgas);
+        setLgaOptions([]);
+      }
+      setSelectedLGA?.(null);
+    } else {
+      console.log('Hey');
+      setLgaOptions([]);
+      setSelectedLGA?.(null);
+    }
+  };
+
   const docOfTheProperty: string[] = [
     'Survey Document',
     'Deed of Assignment',
@@ -36,7 +92,7 @@ const PropertyType = () => {
       selectedLGA: '',
       ownerFullName: user?.firstName + ' ' + user?.lastName,
       ownerPhoneNumber: user?.phoneNumber,
-      ownerEmail: user?.email, 
+      ownerEmail: user?.email,
       areYouTheOwner: false,
     },
     validationSchema: Yup.object({
@@ -45,13 +101,17 @@ const PropertyType = () => {
       price: Yup.string().required('Price is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
       noOfBedroom: Yup.string().required('Number of bedrooms is required'),
-      additionalFeatures: Yup.array().of(Yup.string()).min(1, 'At least one additional feature is required'), 
+      additionalFeatures: Yup.array()
+        .of(Yup.string())
+        .min(1, 'At least one additional feature is required'),
       selectedState: Yup.string().required('State is required'),
       selectedCity: Yup.string().required('City is required'),
       selectedLGA: Yup.string().required('LGA is required'),
       ownerFullName: Yup.string().required('Owner full name is required'),
       ownerPhoneNumber: Yup.string().required('Owner phone number is required'),
-      ownerEmail: Yup.string().email('Invalid email').required('Owner email is required'),
+      ownerEmail: Yup.string()
+        .email('Invalid email')
+        .required('Owner email is required'),
     }),
     onSubmit: async (values) => {
       console.log(values);
@@ -92,7 +152,8 @@ const PropertyType = () => {
               // router.push('/success');
               return 'Brief submitted successfully';
             } else {
-              const errorMessage = (response as any).error || 'Submission failed';
+              const errorMessage =
+                (response as any).error || 'Submission failed';
               toast.error(errorMessage);
               throw new Error(errorMessage);
             }
@@ -111,18 +172,26 @@ const PropertyType = () => {
   });
 
   return (
-    <form onSubmit={formik.handleSubmit} className='lg:w-[805px] bg-white p-[20px] lg:py-[50px] lg:px-[100px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[30px] lg:mt-[60px]'>
+    <form
+      onSubmit={formik.handleSubmit}
+      className='lg:w-[805px] bg-white p-[20px] lg:py-[50px] lg:px-[100px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[30px] lg:mt-[60px]'>
       <div className='flex flex-col gap-[35px] w-full'>
         {/** Display Formik validation errors for owner's information */}
         <div className='w-full flex flex-col gap-[15px]'>
           {formik.errors.ownerFullName && (
-            <span className='text-red-600 text-sm'>{formik.errors.ownerFullName}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.ownerFullName}
+            </span>
           )}
           {formik.errors.ownerPhoneNumber && (
-            <span className='text-red-600 text-sm'>{formik.errors.ownerPhoneNumber}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.ownerPhoneNumber}
+            </span>
           )}
           {formik.errors.ownerEmail && (
-            <span className='text-red-600 text-sm'>{formik.errors.ownerEmail}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.ownerEmail}
+            </span>
           )}
         </div>
         {/**Property Type */}
@@ -164,7 +233,9 @@ const PropertyType = () => {
             />
           </div>
           {formik.touched.propertyType && formik.errors.propertyType && (
-            <span className='text-red-600 text-sm'>{formik.errors.propertyType}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.propertyType}
+            </span>
           )}
         </div>
         {/**Usage Options */}
@@ -181,17 +252,23 @@ const PropertyType = () => {
                   key={idx}
                   name='Usage Options'
                   handleChange={() => {
-                      const usageOptions = formik.values.usageOptions.includes(item)
-                        ? formik.values.usageOptions.filter((option) => option !== item)
-                        : [...formik.values.usageOptions, item];
-                      formik.setFieldValue('usageOptions', usageOptions);
+                    const usageOptions = formik.values.usageOptions.includes(
+                      item
+                    )
+                      ? formik.values.usageOptions.filter(
+                          (option) => option !== item
+                        )
+                      : [...formik.values.usageOptions, item];
+                    formik.setFieldValue('usageOptions', usageOptions);
                   }}
                 />
               )
             )}
           </div>
           {formik.touched.usageOptions && formik.errors.usageOptions && (
-            <span className='text-red-600 text-sm'>{formik.errors.usageOptions}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.usageOptions}
+            </span>
           )}
         </div>
         {/**Location */}
@@ -201,41 +278,70 @@ const PropertyType = () => {
           </h2>
           {/**inputs */}
           <div className='min-h-[26px] w-full flex flex-col flex-wrap lg:grid lg:grid-cols-3 gap-[15px]'>
-            <Input
+            {/* <Input
               label='State'
               name='selectedState'
-              selectedState={{ value: formik.values?.selectedState, label: formik.values?.selectedState }}
+              selectedState={{
+                value: formik.values?.selectedState,
+                label: formik.values?.selectedState,
+              }}
               setSelectedState={(option) => {
                 formik.setFieldValue('selectedState', option?.value);
               }}
               forState={true}
               type='text'
               placeholder='Select State'
-            />
+            /> */}
             {/* <Input name='Local Government' type='text' /> */}
-            <Input
+            {/* <Input
               label='Local Government'
               name='selectedLGA'
               type='text'
               value={formik.values.selectedLGA}
               onChange={formik.handleChange}
+            /> */}
+            <Input
+              label='State'
+              name='selectedState'
+              forState={true}
+              forLGA={false}
+              type='text'
+              placeholder='Select State'
+              formik={formik}
+              selectedState={selectedState}
+              stateOptions={stateOptions}
+              setSelectedState={handleStateChange}
+              // isDisabled={areInputsDisabled}
+            />
+            <Input
+              label='Local Government'
+              name='selectedLGA'
+              type='text'
+              formik={formik}
+              forLGA={true}
+              forState={false}
+              selectedLGA={selectedLGA}
+              lgasOptions={lgaOptions}
+              setSelectedLGA={handleLGAChange}
+              // isDisabled={areInputsDisabled}
             />
             <Input
               label='City'
               name='selectedCity'
-              forCity={true}
-              selectedState={{ value: formik.values?.selectedState, label: formik.values?.selectedState }} // Ensure city dropdown receives state
-              setSelectedCity={(option) => {
-                formik.setFieldValue('selectedCity', option?.value);
-              }}
+              value={formik.values.selectedCity}
+              onChange={formik.handleChange}
               type='text'
             />
           </div>
           {formik.touched.selectedState && formik.errors.selectedState && (
-            <span className='text-red-600 text-sm'>{formik.errors.selectedState}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.selectedState}
+            </span>
           )}
           {formik.touched.selectedCity && formik.errors.selectedCity && (
-            <span className='text-red-600 text-sm'>{formik.errors.selectedCity}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.selectedCity}
+            </span>
           )}
         </div>
         {/**Price */}
@@ -282,7 +388,9 @@ const PropertyType = () => {
             ))}
           </div>
           {formik.touched.documents && formik.errors.documents && (
-            <span className='text-red-600 text-sm'>{formik.errors.documents}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.documents}
+            </span>
           )}
         </div>
         {/**Property Features */}
@@ -308,18 +416,25 @@ const PropertyType = () => {
               className='lg:w-1/2 w-full'
               value={formik.values?.additionalFeatures.join(', ')}
               onChange={(e) => {
-                const features = e.target.value.split(',').map((feature) => feature.trim());
+                const features = e.target.value
+                  .split(',')
+                  .map((feature) => feature.trim());
                 formik.setFieldValue('additionalFeatures', features);
               }}
             />
           </div>
-            <div className='w-full flex gap-[15px]'>
+          <div className='w-full flex gap-[15px]'>
             {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
-              <span className='text-red-600 text-sm'>{formik.errors.noOfBedroom}</span>
+              <span className='text-red-600 text-sm'>
+                {formik.errors.noOfBedroom}
+              </span>
             )}
-            {formik.touched.additionalFeatures && formik.errors.additionalFeatures && (
-              <span className='text-red-600 text-sm'>{formik.errors.additionalFeatures}</span>
-            )}
+            {formik.touched.additionalFeatures &&
+              formik.errors.additionalFeatures && (
+                <span className='text-red-600 text-sm'>
+                  {formik.errors.additionalFeatures}
+                </span>
+              )}
           </div>
         </div>
         {/**Upload Image | Documents */}
