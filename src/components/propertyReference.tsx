@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use clients';
-import React, { Fragment, MouseEvent } from 'react';
+import React, { Fragment, MouseEvent, useEffect, useState } from 'react';
 import Button from './button';
 import ReactSelect from 'react-select';
 import { useFormik } from 'formik';
@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import { usePageContext } from '@/context/page-context';
 import { URLS } from '@/utils/URLS';
 import axios from 'axios';
+import naijaStates from 'naija-state-local-government';
 
 interface valuesProps {
   propertyType: string;
@@ -144,6 +145,30 @@ const PropertyReference = ({
     setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
   };
 
+  interface Option {
+    value: string;
+    label: string;
+  }
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+
+  const [stateOptions, setStateOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    // Load Nigerian states correctly
+    setStateOptions(
+      naijaStates.states().map((state: string) => ({
+        value: state,
+        label: state,
+      }))
+    );
+  }, []);
+
+  const handleStateChange = (selected: Option | null) => {
+    //console.log('Selected State:', selected);
+    formik.setFieldValue('state', selected?.value);
+    setSelectedState?.(selected);
+  };
+
   return (
     <Fragment>
       <div className='min-h-[250px] lg:min-h-[250px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
@@ -179,7 +204,7 @@ const PropertyReference = ({
               placeholder='Select'
             />
             {/**Preferred Location */}
-            <Input
+            {/* <Input
               label='Preferred Location'
               name='selectedState'
               selectedState={{
@@ -192,6 +217,18 @@ const PropertyReference = ({
               forState={true}
               type='text'
               placeholder='Select State'
+            /> */}
+            <Input
+              label='Preferred Location'
+              name='selectedState'
+              forState={true}
+              forLGA={false}
+              type='text'
+              placeholder='Select State'
+              formik={formik}
+              selectedState={selectedState}
+              stateOptions={stateOptions}
+              setSelectedState={handleStateChange}
             />
             {/**Land Size */}
             <Select
