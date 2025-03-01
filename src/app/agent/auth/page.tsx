@@ -32,9 +32,10 @@ const Register = () => {
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
         if ((response as unknown as { id: string }).id) {
           Cookies.set('token', (response as unknown as { token: string }).token);
-          router.push('/auth/agent/form');
+
+          router.push('/agent/onboard');
         }
-        console.log("response", response);
+        console.log('response', response);
       });
     },
     onError: (errorResponse) => console.error(errorResponse),
@@ -62,7 +63,7 @@ const Register = () => {
               type='button'
               value='Register Via E-mails or phone'
               onClick={() => {
-                window.location.href = '/auth/agent/register';
+                window.location.href = '/agent/auth/register';
               }}
               className='bg-[#8DDB90] h-[65px] w-full py-[12px] px-[24px] text-[16px] leading-[25.6px] font-bold text-[#FAFAFA]'
             />
