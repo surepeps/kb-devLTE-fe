@@ -1,13 +1,6 @@
 /** @format */
 
-interface IResponse {
-  error: string;
-  success: boolean;
-  message: string;
-  data?: unknown;
-}
-
-export const GET_REQUEST = async (url: string, token?: string): Promise<IResponse> => {
+export const GET_REQUEST = async (url: string, token?: string) => {
   try {
     const request = await fetch(url, {
       headers: {
@@ -26,7 +19,7 @@ export const GET_REQUEST = async (url: string, token?: string): Promise<IRespons
   }
 };
 
-export const POST_REQUEST = async (url: string, data: unknown, token?: string): Promise<IResponse> => {
+export const POST_REQUEST = async (url: string, data: unknown, token?: string) => {
   try {
     const request = await fetch(url, {
       method: 'POST',
@@ -48,7 +41,7 @@ export const POST_REQUEST = async (url: string, data: unknown, token?: string): 
   }
 };
 
-export const POST_REQUEST_FILE_UPLOAD = async (url: string, data: FormData, token?: string): Promise<IResponse> => {
+export const POST_REQUEST_FILE_UPLOAD = async (url: string, data: FormData, token?: string) => {
   try {
     const request = await fetch(url, {
       method: 'POST',
@@ -69,7 +62,7 @@ export const POST_REQUEST_FILE_UPLOAD = async (url: string, data: FormData, toke
   }
 };
 
-export const PUT_REQUEST = async (url: string, data: unknown, token?: string): Promise<IResponse> => {
+export const PUT_REQUEST = async (url: string, data: unknown, token?: string) => {
   try {
     const request = await fetch(url, {
       method: 'PUT',
