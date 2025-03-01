@@ -4,14 +4,14 @@ import Button from '@/components/button';
 import Loading from '@/components/loading';
 import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
-import React, { Fragment, useState } from 'react';
+import React, { FC, Fragment, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const Policies = () => {
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const isLoading = useLoading();
   const [policiesButton, setPoliciesButton] = useState({
-    clientEngagementPolicyButton: false,
+    clientEngagementPolicyButton: true,
     agentEngagementPolicyButton: false,
     dataProductionPolicyButton: false,
   });
@@ -71,7 +71,7 @@ const Policies = () => {
             />
           ))}
         </div>
-        <div className='container border border-black border-dashed'>
+        <div className='container'>
           {policiesButton.dataProductionPolicyButton && DataProtectionPolicy()}
         </div>
       </div>
@@ -89,37 +89,6 @@ const DataProtectionPolicy = () => {
   return (
     <Fragment>
       <div className='container min-h-[800px] flex flex-col gap-[30px] '>
-        {/* <div className='min-w-[253px] min-h-[32px] flex items-center gap-[24px]'>
-          <Image
-            src={arrowRIcon}
-            alt=''
-            width={1000}
-            height={1000}
-            onClick={() => {
-              route.back();
-            }}
-            title='Go Back'
-            className='w-[24px] h-[24px] cursor-pointer'
-          />
-          <div className='min-w-[205px] min-h-[32px] flex items-center gap-[8px]'>
-            <Link
-              href={'/'}
-              className='text-[20px] leading-[32px] text-[#25324B] font-normal'>
-              Home
-            </Link>
-            <svg
-              width='4'
-              height='4'
-              viewBox='0 0 4 4'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'>
-              <circle cx='2' cy='2' r='2' fill='#25324B' />
-            </svg>
-            <span className='text-[20px] leading-[32px] font-medium text-[#09391C]'>
-              Joint Ventures
-            </span>
-          </div>
-        </div> */}
         <div className='w-full min-h-[200px] flex flex-col justify-center items-center gap-[20px]'>
           <motion.h2
             initial={{ y: 90, opacity: 0 }}
@@ -141,354 +110,358 @@ const DataProtectionPolicy = () => {
             sellers. This policy explains how we collect, store, use, and
             protect personal data across all interactions.
           </motion.span>
-          {/**Buttons */}
-          {/* <motion.div
-            initial={{ y: 90, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className='flex md:flex-row flex-col gap-[10px]'>
-            <Button
-              value='Submit Your Interest Now'
-              className='min-h-[50px] py-[12px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
-              green={true}
-            />
-            <Button
-              value='Share Your Property Brief Today'
-              className='min-h-[50px] py-[12px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
-              green={true}
-            />
-          </motion.div> */}
         </div>
         <div className='flex flex-col justify-center items-center w-full'>
-          <div className='lg:w-[1100px] md:border-[1px] md:border-[#C7CAD0] flex justify-center items-center'>
+          <div className='lg:w-[1100px] flex justify-center items-center'>
             <div className='lg:w-[870px] flex flex-col gap-[39px]'>
               {/**What is a Joint Venture (JV)? */}
               <div className='w-full flex flex-col gap-[15px]'>
-                <motion.h2
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  viewport={{ once: true }}
-                  className='text-[22px] leading-[25.78px] tracking-[0%] font-bold text-[#09391C]'>
-                  Personal Data Collection
-                </motion.h2>
-                <motion.p
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  viewport={{ once: true }}
-                  className='text-[20px] text-[#5A5D63] leading-[37.4px] tracking-[2%] font-normal'>
-                  We collect data necessary for delivering real estate services,
-                  including:
-                </motion.p>
-                <motion.ol
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  viewport={{ once: true }}
-                  className='list-disc list-inside'>
-                  <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                    <span className='text-black font-bold'>
-                      Contatct Information:&nbsp;
-                    </span>
-                    Names, email addresses, phone numbers.
-                  </motion.li>
-                  <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                    <span className='text-black font-bold'>
-                      Property Preferences and Transactions:&nbsp;
-                    </span>
-                    Search preferences (location, type, budget), property
-                    details, agreements, and payment information.
-                  </motion.li>
-                  <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                    <span className='text-black font-bold'>
-                      Business Information:&nbsp;
-                    </span>
-                    Certifications and addresses for agents and landlords.
-                  </motion.li>
-                </motion.ol>
-              </div>
-
-              {/**  Who Can Participate in a JV? */}
-              <div className='w-full flex flex-col gap-[15px]'>
-                <motion.h2
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className='text-[22px] leading-[25.78px] tracking-[0%] font-bold text-[#09391C]'>
-                  Who Can Participate in a JV?
-                </motion.h2>
-                <div className='flex flex-col'>
-                  <motion.p
-                    initial={{ y: 40, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className='text-[20px] text-[#5A5D63] leading-[37.4px] tracking-[2%] font-normal'>
-                    <span className='text-[#000000] font-semibold'>
-                      Property Owners:
-                    </span>{' '}
-                    With undeveloped land or assets looking to maximize value.
-                  </motion.p>
-                  <motion.p
-                    initial={{ y: 40, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className='text-[20px] text-[#5A5D63] leading-[37.4px] tracking-[2%] font-normal'>
-                    <span className='text-[#000000] font-semibold'>
-                      Developers:
-                    </span>{' '}
-                    Seeking verified assets for residential, commercial, or
-                    mixed-use projects.
-                  </motion.p>
-                </div>
-              </div>
-
-              {/**Why Joint Ventures Are Beneficial */}
-              <div className='w-full flex flex-col gap-[15px]'>
-                <motion.h2
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className='text-[22px] leading-[25.78px] tracking-[0%] font-bold text-[#09391C]'>
-                  Why Joint Ventures Are Beneficial
-                </motion.h2>
-                <div className='flex flex-col'>
-                  <div className='flex flex-col'>
-                    <motion.h4
-                      initial={{ y: 40, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                      className='text-[20px] leading-[37.4px] tracking-[2%] text-black font-semibold'>
-                      For Property Owners:
-                    </motion.h4>
-                    <motion.ol
-                      initial={{ y: 40, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className='list-disc list-inside'>
-                      <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                        Maximize property value without upfront investments.
-                      </motion.li>
-                      <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                        Earn profits through a fair profit-sharing model.
-                      </motion.li>
-                      <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                        Partner with skilled developers for professional
-                        execution.
-                      </motion.li>
-                    </motion.ol>
-                  </div>
-                  <div className='flex flex-col'>
-                    <motion.h4
-                      initial={{ y: 40, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                      className='text-[20px] leading-[37.4px] tracking-[2%] text-black font-semibold'>
-                      For Developers:
-                    </motion.h4>
-                    <motion.ul
-                      initial={{ y: 40, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className='list-disc list-inside'>
-                      <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                        Access prime properties for development.
-                      </motion.li>
-                      <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                        Lower upfront costs by sharing resources.
-                      </motion.li>
-                      <motion.li className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
-                        Mitigate risks through collaborative efforts
-                      </motion.li>
-                    </motion.ul>
-                  </div>
-                </div>
-              </div>
-
-              {/**How it Works */}
-              <div className='flex flex-col'>
-                <motion.h2 className='text-[24px] leading-[44.88px] tracking-[2%] font-semibold text-[#09391C]'>
-                  How It Works
-                </motion.h2>
-                <motion.ol
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className='list-decimal list-inside'>
-                  <motion.li className='leading-[37.4px] text-[20px] tracking-[2%]'>
-                    <span className='text-black font-semibold text-[20px] leading-[37.4px] tracking-[2%]'>
-                      Submit Property Brief:
-                    </span>
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Owners provide asset details, including JV availability
-                    </span>
-                  </motion.li>
-                  <motion.li className='leading-[37.4px] text-[20px] tracking-[2%]'>
-                    <span className='text-black font-semibold text-[20px] leading-[37.4px] tracking-[2%]'>
-                      Developer Matching:
-                    </span>
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Khabi-Teq connects owners with suitable developers.
-                    </span>
-                  </motion.li>
-                  <motion.li className='leading-[37.4px] text-[20px] tracking-[2%]'>
-                    <span className='text-black font-semibold text-[20px] leading-[37.4px] tracking-[2%]'>
-                      Agreement:
-                    </span>
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Both parties finalize profit-sharing and project terms.
-                    </span>
-                  </motion.li>
-                  <motion.li className='leading-[37.4px] text-[20px] tracking-[2%]'>
-                    <span className='text-black font-semibold text-[20px] leading-[37.4px] tracking-[2%]'>
-                      Development:
-                    </span>
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      The developer executes the project, with updates provided
-                      to the owner.
-                    </span>
-                  </motion.li>
-                  <motion.li className='leading-[37.4px] text-[20px] tracking-[2%]'>
-                    <span className='text-black font-semibold text-[20px] leading-[37.4px] tracking-[2%]'>
-                      Profit Sharing:
-                    </span>
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Upon completion, profits are distributed as agreed.
-                    </span>
-                  </motion.li>
-                </motion.ol>
-              </div>
-
-              {/**Why Partner with Khabi-Teq for JVs?*/}
-              <div className='flex flex-col'>
-                <motion.h2
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className='text-[24px] leading-[44.88px] tracking-[2%] font-semibold text-[#09391C]'>
-                  Why Partner with Khabi-Teq for JVs?
-                </motion.h2>
-
-                <motion.ul
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className='list-disc list-inside md:pl-[50px]'>
-                  <motion.li>
-                    <span className='text-[#000000] text-[24px] font-semibold leading-[44.8px] tracking-[2%]'>
-                      Seamless Matching:
-                    </span>{' '}
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      We connect verified property owners with reliable
-                      developers based on goals and project scope.
-                    </span>
-                  </motion.li>
-                  <motion.li>
-                    <span className='text-[#000000] text-[24px] font-semibold leading-[44.8px] tracking-[2%]'>
-                      Transparency:
-                    </span>{' '}
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Our platform ensures clear communication, profit-sharing
-                      agreements, and updates throughout the project
-                    </span>
-                  </motion.li>
-                  <motion.li>
-                    <span className='text-[#000000] text-[24px] font-semibold leading-[44.8px] tracking-[2%]'>
-                      Expert Support:
-                    </span>{' '}
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Khabi-Teq handles all the coordination, so you can focus
-                      on achieving success.
-                    </span>
-                  </motion.li>
-                  <motion.li>
-                    <span className='text-[#000000] text-[24px] font-semibold leading-[44.8px] tracking-[2%]'>
-                      Market Insights
-                    </span>{' '}
-                    <span className='text-[20px] font-normal leading-[37.4px] tracking-[2%] text-[#5A5D63]'>
-                      Leverage our local expertise to find high-demand areas for
-                      development.
-                    </span>
-                  </motion.li>
-                </motion.ul>
-              </div>
-              {/**Key Considerations */}
-              <div className='flex flex-col gap-[24px]'>
-                <motion.h2
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className='text-[#09391C] text-[25px] leading-[29.3px] tracking-[0%] font-semibold'>
-                  Key Considerations
-                </motion.h2>
-                <motion.div
-                  initial={{ y: 40, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className='flex flex-col'>
-                  <motion.p className='text-[20px] leading-[37.4px] tracking-[2%] '>
-                    <span className='text-black font-semibold'>
-                      Clear Agreements:
-                    </span>{' '}
-                    <span className='font-normal text-[#5A5D63]'>
-                      Define roles, profit-sharing ratios, and timelines.
-                    </span>
-                  </motion.p>
-                  <motion.p className='text-[20px] leading-[37.4px] tracking-[2%] '>
-                    <span className='text-black font-semibold'>
-                      Legal Verification:
-                    </span>{' '}
-                    <span className='font-normal text-[#5A5D63]'>
-                      Ensure ownership documents are valid.
-                    </span>
-                  </motion.p>
-                  <motion.p className='text-[20px] leading-[37.4px] tracking-[2%] '>
-                    <span className='text-black font-semibold'>
-                      Collaboration Commitment:
-                    </span>{' '}
-                    <span className='font-normal text-[#5A5D63]'>
-                      Maintain open communication throughout the project.
-                    </span>
-                  </motion.p>
-                </motion.div>
+                <ListingFormat data={data} />
               </div>
             </div>
-          </div>
-
-          {/** */}
-          <div className='min-h-[200px] w-full flex flex-col justify-center items-center mt-6 lg:mt-0'>
-            <motion.h2
-              initial={{ y: 40, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className='lg:w-[871px] text-[20px] leading-[26px] text-center tracking-[0%] font-semibold text-[#09391C]'>
-              Partner with Khabi-Teq to close deals faster, with transparency
-              and unmatched support. Together, we turn opportunities into
-              success
-            </motion.h2>
-            <motion.div
-              initial={{ y: 40, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className='flex gap-[24px] mt-8 md:flex-row flex-col'>
-              <Button
-                value='Submit Brief'
-                className='min-h-[50px] py-[12px] w-[220.5px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
-                green={true}
-                onClick={() => {}}
-              />
-              <Button
-                value='Submit Prefence'
-                className='min-h-[50px] py-[12px] w-[220.5px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
-                green={true}
-                onClick={() => {}}
-              />
-            </motion.div>
           </div>
         </div>
       </div>
     </Fragment>
   );
 };
+
+type SubData = {
+  subListing: { title: string; details: string }[];
+  paragraph: string;
+};
+
+type Data = {
+  heading: string;
+  subData: SubData[];
+};
+interface ListingFormatProps {
+  data: Data[];
+}
+
+const ListingFormat: FC<ListingFormatProps> = ({ data }) => {
+  return (
+    <motion.div className='w-full'>
+      <motion.ol className='list-decimal list-outside space-y-5'>
+        {data.map((item: Data, idx: number) => (
+          <motion.li
+            initial={{ y: 40, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            viewport={{ once: true }}
+            key={idx}
+            className='space-y-3 text-[22px]'>
+            <motion.h2
+              initial={{ y: 40, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              viewport={{ once: true }}
+              className='text-[22px] leading-[25.78px] tracking-[0%] font-bold text-[#09391C]'>
+              {item.heading}
+            </motion.h2>
+            {item.subData.map((subItem: SubData, idx: number) => {
+              return (
+                <motion.div className='flex flex-col gap-4' key={idx}>
+                  <motion.p
+                    initial={{ y: 40, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className='text-[20px] font-bold text-black leading-[37.4px] tracking-[2%]'>
+                    {subItem.paragraph}
+                  </motion.p>
+                  <motion.ul className='list-disc list-inside'>
+                    {subItem.subListing.map(
+                      (
+                        list: { title: string; details: string },
+                        idx: number
+                      ) => (
+                        <motion.li
+                          initial={{ y: 40, opacity: 0 }}
+                          whileInView={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                          viewport={{ once: true }}
+                          key={idx}
+                          className='text-[#5A5D63] text-[20px] leading-[37.4px] tracking-[2%]'>
+                          <span className='text-black font-bold'>
+                            {' '}
+                            {list.title}&nbsp;
+                          </span>
+                          {list.details}
+                        </motion.li>
+                      )
+                    )}
+                  </motion.ul>
+                </motion.div>
+              );
+            })}
+          </motion.li>
+        ))}
+      </motion.ol>
+    </motion.div>
+  );
+};
+
+const data: Data[] = [
+  {
+    heading: `Personal Data Collection`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: 'Contact Information:',
+            details: 'Names, email addresses, phone numbers.',
+          },
+          {
+            title: 'Property Preferences and Transactions:',
+            details: `Search preferences (location, type,
+budget), property details, agreements, and payment information.
+`,
+          },
+          {
+            title: `Business Information:`,
+            details: `Certifications and addresses for agents and landlords.`,
+          },
+        ],
+        paragraph:
+          'We collect data necessary for delivering real estate services, including:',
+      },
+      {
+        subListing: [
+          {
+            title: '',
+            details:
+              'Through online forms, website interactions, emails, and phone communications.',
+          },
+          {
+            title: ``,
+            details: `During onboarding processes for agents and clients`,
+          },
+        ],
+        paragraph: 'How We Collect Data:',
+      },
+    ],
+  },
+
+  {
+    heading: `Data Storage and Security`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: 'Digital Storage:',
+            details: 'Personal data is encrypted during storage and transit.',
+          },
+          {
+            title: 'Physical Records:',
+            details: `Hard copies, if any, are stored in secure, restricted-access
+locations.`,
+          },
+          {
+            title: `Backups:`,
+            details: `Regular backups are performed to safeguard against data loss`,
+          },
+          {
+            title: `System Security:`,
+            details: `Continuous updates and security patches are applied to
+protect against vulnerabilities.`,
+          },
+        ],
+        paragraph: 'We implement strict measures to ensure data protection:',
+      },
+    ],
+  },
+
+  {
+    heading: `Data Access`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: '',
+            details:
+              'Access is restricted to authorized personnel based on their roles.',
+          },
+          {
+            title: '',
+            details: `Third-party providers, such as payment processors, are given access only when
+necessary and under strict confidentiality agreements.
+`,
+          },
+          {
+            title: ``,
+            details: `All access is monitored to ensure compliance with data protection protocols.`,
+          },
+        ],
+        paragraph: 'We ensure limited and responsible access to data:',
+      },
+    ],
+  },
+
+  {
+    heading: `Data Usage`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: '',
+            details: `Providing services, such as property matching, rent collection, and transaction
+facilitation.`,
+          },
+          {
+            title: '',
+            details: `Communicating updates related to listings, inspections, or transactions.
+`,
+          },
+          {
+            title: ``,
+            details: `Marketing, but only with explicit consent from data owners.`,
+          },
+        ],
+        paragraph: 'Data is utilized solely for:',
+      },
+      {
+        subListing: [
+          {
+            title: ``,
+            details: `Data is never sold or shared with unauthorized third parties`,
+          },
+        ],
+        paragraph: 'Prohibited Uses:',
+      },
+    ],
+  },
+
+  {
+    heading: `Data Sharing`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: '',
+            details: `Data is shared only with trusted third parties under confidentiality agreements
+(e.g., payment processors or legal service providers).`,
+          },
+          {
+            title: '',
+            details: `When possible, data is anonymized before sharing to safeguard privacy.`,
+          },
+        ],
+        paragraph: '',
+      },
+    ],
+  },
+
+  {
+    heading: `Data Retention and Disposal`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: 'Retention Period:',
+            details: `Personal and transactional data is kept for up to five years or
+as required by law.`,
+          },
+          {
+            title: 'Secure Disposal:',
+            details: `Digital data is deleted using certified data-wiping software and Physical records are securely shredded before disposal`,
+          },
+        ],
+        paragraph: '',
+      },
+    ],
+  },
+
+  {
+    heading: `Breach Management`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: '',
+            details: `All affected parties will be notified within 72 hours`,
+          },
+          {
+            title: '',
+            details: `Authorities will be informed as required by law`,
+          },
+          {
+            title: '',
+            details: `An internal review will be conducted, and measures will be implemented to prevent future breaches.`,
+          },
+        ],
+        paragraph: 'In the event of a data breach:',
+      },
+    ],
+  },
+
+  {
+    heading: `Data Owner Rights`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: 'Access:',
+            details: `Request access to their personal data.`,
+          },
+          {
+            title: 'Correction:',
+            details: `Request corrections or updates to inaccurate data.`,
+          },
+          {
+            title: 'Erasure:',
+            details: `Request the deletion of personal data, subject to legal or contractual obligations.`,
+          },
+          {
+            title: 'Restriction:',
+            details: `Restrict how their data is processed.`,
+          },
+          {
+            title: 'Objection:',
+            details: `Object to specific types of data processing.`,
+          },
+          {
+            title: 'Portability:',
+            details: `Request a copy of their data in a machine-readable format.`,
+          },
+        ],
+        paragraph:
+          'All individuals whose data we process have the following rights:',
+      },
+    ],
+  },
+
+  {
+    heading: `Monitoring and Compliance`,
+    subData: [
+      {
+        subListing: [
+          {
+            title: '',
+            details: `Regular audits ensure adherence to this policy and compliance with data
+protection regulations.`,
+          },
+          {
+            title: '',
+            details: `Non-compliance by employees or third-party providers will result in corrective
+actions, including termination of agreements if necessary.`,
+          },
+        ],
+        paragraph: 'In the event of a data breach:',
+      },
+    ],
+  },
+
+  {
+    heading: `Policy Updates`,
+    subData: [
+      {
+        subListing: [],
+        paragraph: `This policy is reviewed regularly to reflect changes in regulations or company practices.
+Updates will be posted on our website and will take effect immediately`,
+      },
+    ],
+  },
+];
 
 export default Policies;

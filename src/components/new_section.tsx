@@ -22,7 +22,7 @@ const NewSection = () => {
   return (
     <section className='w-full flex items-center justify-center pt-[70px]'>
       <div className='container w-full flex md:flex-row justify-between flex-col min-h-[528px] gap-[64px] lg:pl-[20px] lg:pr-0 px-[20px]'>
-        <div className='lg:w-[483px] w-full md:w-1/2 min-h-[496px] flex flex-col gap-[31px]'>
+        <div className='lg:w-[483px] w-full md:w-1/2 min-h-[496px] flex flex-col gap-[31px] overflow-hidden'>
           <h2 className='leading-[41.02px] text-[35px] text-[#09391C] font-bold'>
             How Khabi-Teq Works for You
           </h2>
@@ -32,7 +32,7 @@ const NewSection = () => {
             ))}
           </div>
         </div>
-        <div className='lg:w-[773px] w-full min-h-[528px] bg-[#8DDB90] px-[20px] lg:px-0 flex flex-col gap-[20px] lg:gap-0 items-center justify-center overflow-hidden'>
+        <div className='lg:w-[773px] w-full h-[528px] bg-[#8DDB90] px-[20px] lg:px-0 flex flex-col gap-[20px] lg:gap-0 items-center justify-center overflow-hidden'>
           {/**first card and arrow */}
           <motion.div
             ref={ref}
@@ -252,7 +252,7 @@ const data = [
       },
       {
         value: 'Tenant Preference',
-        url: '/rent_page',
+        url: '#',
       },
     ],
   },
@@ -261,12 +261,12 @@ const data = [
     text: `Tell us what you're looking for! Submit your preferences below and let us find the perfect match for you`,
     buttons: [
       {
-        value: 'Seller Preference',
+        value: 'Seller Brief',
         url: '/sell_page',
       },
       {
-        value: 'Tenant Preference',
-        url: '#',
+        value: 'Landlords Brief',
+        url: '/landlord_page',
       },
     ],
   },
@@ -275,11 +275,7 @@ const data = [
     text: `Tell us what you're looking for! Submit your preferences below and let us find the perfect match for you`,
     buttons: [
       {
-        value: 'Buyer Preference',
-        url: '#',
-      },
-      {
-        value: 'Tenant Preference',
+        value: 'Submit Your Interest Now',
         url: '#',
       },
     ],

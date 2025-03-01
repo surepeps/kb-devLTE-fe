@@ -1,6 +1,7 @@
 /** @format */
+
 'use client';
-import { GlobalContextTypes } from '@/types';
+import { BriefType, GlobalContextTypes } from '@/types';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState } from 'react';
 
@@ -8,6 +9,7 @@ interface Option {
   value: string;
   label: string;
 }
+
 const PageContext = createContext<GlobalContextTypes | undefined>(undefined);
 
 export const PageContextProvider = ({
@@ -57,6 +59,30 @@ export const PageContextProvider = ({
   //Buy page - property referenece
   const [propertyReference, setPropertyReference] = useState({});
 
+  //all card data
+  const [cardData, setCardData] = useState<[]>([]);
+
+  //selecting cards for inspection
+  const [selectedBriefs, setSelectedBriefs] = useState<Set<BriefType>>(
+    new Set()
+  );
+
+  const addBrief = (brief: BriefType) => {
+    setSelectedBriefs((prev) => new Set([...prev, brief])); // Ensure immutability
+  };
+
+  const removeBrief = (briefId: BriefType) => {
+    setSelectedBriefs((prev) => {
+      const updatedSet = new Set(prev);
+      updatedSet.delete(briefId);
+      return updatedSet;
+    });
+  };
+
+  const clearBriefs = () => {
+    setSelectedBriefs(new Set());
+  };
+
   return (
     <PageContext.Provider
       value={{
@@ -78,6 +104,12 @@ export const PageContextProvider = ({
         setPropertyDetails,
         propertyReference,
         setPropertyReference,
+        cardData,
+        setCardData,
+        selectedBriefs,
+        addBrief,
+        clearBriefs,
+        removeBrief,
       }}>
       {children}
     </PageContext.Provider>

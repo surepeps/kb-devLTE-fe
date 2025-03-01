@@ -1,19 +1,19 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use clients';
-import React, { Fragment, MouseEvent } from 'react';
+import React, { Fragment, MouseEvent, useEffect, useState } from 'react';
 import Button from './button';
 import ReactSelect from 'react-select';
 import { useFormik } from 'formik';
 //import * as Yup from 'yup';
 //import { cardDataArray } from '@/data';
-// import toast from 'react-hot-toast';
-// import { URLS } from '@/utils/URLS';
 // import { POST_REQUEST } from '@/utils/requests';
 import Input from '@/components/Input';
-// import axios from 'axios';
-// import toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { usePageContext } from '@/context/page-context';
+import { URLS } from '@/utils/URLS';
+import axios from 'axios';
+import naijaStates from 'naija-state-local-government';
 
 interface valuesProps {
   propertyType: string;
@@ -31,18 +31,23 @@ interface PropertyReferenceDataProps {
   setFound: ({ isFound, count }: { isFound: boolean; count: number }) => void;
   found: { isFound: boolean; count: number };
   setAllCards: ([]: { header: string; value: string }[][]) => void;
+  usageOption?: string;
 }
 
 const PropertyReference = ({
   propertyReferenceData,
   found,
   setFound,
+  setAllCards,
+  usageOption,
 }: PropertyReferenceDataProps) => {
+  console.log('usageOption prop', usageOption);
   const { setPropertyReference, setRentPage, rentPage } = usePageContext();
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const formik = useFormik({
     initialValues: {
       propertyType: '',
-      usageOption: [],
+      usageOption: usageOption ?  [usageOption] : [],
       budgetRange: '',
       state: '',
       landSize: '',
@@ -51,12 +56,57 @@ const PropertyReference = ({
       bedroom: 0,
     },
     // validationSchema,
-    onSubmit: (values: valuesProps) => {
+    onSubmit: async (values: valuesProps) => {
       console.log(values);
-      setFound({
-        isFound: !found.isFound,
-        count: 6,
-      });
+      const payload = {
+        propertyType: values.propertyType,
+        state: values.state,
+        localGovernment: 'Egbeda', //assumption, no local govt input on the design
+        area: 'Iwo', //assumption, same,
+        minPrice: 0,
+        maxPrice: 1000000000,
+        usageOptions: formik.values.usageOption,
+        additionalFeatures: formik.values.desireFeatures,
+        minBedrooms: 1,
+        maxBedrooms: formik.values.bedroom,
+      };
+      //check if it has vvalues otherwise don't run
+      if (
+        !values.bedroom ||
+        !values.propertyType ||
+        !values.state ||
+        !values.usageOption ||
+        !values.budgetRange ||
+        !values.desireFeatures ||
+        !values.docOnProperty ||
+        !values.landSize
+      ) {
+        toast.error('Please fill all fields');
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          URLS.BASE + '/properties/buy/request/search',
+          payload
+        );
+        if (response.status === 200) {
+          setFound({ isFound: true, count: response.data.length });
+          setAllCards(response.data);
+          setIsSubmitting(false);
+          toast.success('' + response.data.length + ' properties found');
+        } else {
+          setFound({ isFound: false, count: 0 });
+          setIsSubmitting(false);
+        }
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+        setIsSubmitting(false);
+        toast.error('An error occured');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 
@@ -95,6 +145,30 @@ const PropertyReference = ({
     setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
   };
 
+  interface Option {
+    value: string;
+    label: string;
+  }
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+
+  const [stateOptions, setStateOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    // Load Nigerian states correctly
+    setStateOptions(
+      naijaStates.states().map((state: string) => ({
+        value: state,
+        label: state,
+      }))
+    );
+  }, []);
+
+  const handleStateChange = (selected: Option | null) => {
+    //console.log('Selected State:', selected);
+    formik.setFieldValue('state', selected?.value);
+    setSelectedState?.(selected);
+  };
+
   return (
     <Fragment>
       <div className='min-h-[250px] lg:min-h-[250px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
@@ -113,7 +187,7 @@ const PropertyReference = ({
             />
             {/**usage Option */}
             <Select
-              allowMultiple={true}
+              allowMultiple={!usageOption}
               heading={'usageOption'}
               formik={formik}
               name={propertyReferenceData[1].heading}
@@ -130,7 +204,7 @@ const PropertyReference = ({
               placeholder='Select'
             />
             {/**Preferred Location */}
-            <Input
+            {/* <Input
               label='Preferred Location'
               name='selectedState'
               selectedState={{
@@ -143,6 +217,18 @@ const PropertyReference = ({
               forState={true}
               type='text'
               placeholder='Select State'
+            /> */}
+            <Input
+              label='Preferred Location'
+              name='selectedState'
+              forState={true}
+              forLGA={false}
+              type='text'
+              placeholder='Select State'
+              formik={formik}
+              selectedState={selectedState}
+              stateOptions={stateOptions}
+              setSelectedState={handleStateChange}
             />
             {/**Land Size */}
             <Select
@@ -182,8 +268,9 @@ const PropertyReference = ({
             />
 
             <Button
-              value='Search'
+              value={isSubmitting ? 'Searching...' : 'Search'}
               green={true}
+              isDisabled={isSubmitting}
               type='submit'
               className='bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold h-[50px] py-[12px] px-[24px] lg:w-[243.25px] w-full'
             />
