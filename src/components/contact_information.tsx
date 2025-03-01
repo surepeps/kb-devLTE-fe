@@ -18,7 +18,8 @@ import axios from 'axios';
 const ContactUs = () => {
   const ref = useRef<HTMLFormElement | null>(null);
 
-  const { setRentPage, propertyReference } = usePageContext();
+  const { setRentPage, propertyReference, setPropertyReference } =
+    usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   const validationSchema = Yup.object({
@@ -38,38 +39,43 @@ const ContactUs = () => {
     validationSchema,
     onSubmit: async (values) => {
       console.log(values);
-      const payload = {
-        ...propertyReference,
-        owner: {
-          fullName: values.fullName,
-          phoneNumber: String(values.phoneNumber),
-          email: values.email,
-        },
-      };
+      if (!propertyReference) {
+        return;
+      } else {
+        const payload = {
+          ...propertyReference,
+          owner: {
+            fullName: values.fullName,
+            phoneNumber: String(values.phoneNumber),
+            email: values.email,
+          },
+        };
 
-      console.log(payload);
-      setIsSubmitting(true);
-      try {
-        const response = await axios.post(
-          URLS.BASE + '/properties/buy/request/new',
-          payload
-        );
-        if (response.status === 201) {
-          toast.success('Preference submitted');
-          setRentPage({
-            isSubmitForInspectionClicked: false,
-          });
+        console.log(payload);
+        setIsSubmitting(true);
+        try {
+          const response = await axios.post(
+            URLS.BASE + '/properties/buy/request/new',
+            payload
+          );
+          if (response.status === 201) {
+            toast.success('Preference submitted');
+            setRentPage({
+              isSubmitForInspectionClicked: false,
+            });
+            setIsSubmitting(false);
+            setPropertyReference({});
+          } else {
+            toast.error('Sorry, something went wrong');
+            setIsSubmitting(false);
+          }
+        } catch (error: any) {
+          toast.error(error?.message);
+          console.error(error);
           setIsSubmitting(false);
-        } else {
-          toast.error('Sorry, something went wrong');
+        } finally {
           setIsSubmitting(false);
         }
-      } catch (error: any) {
-        toast.error(error?.message);
-        console.error(error);
-        setIsSubmitting(false);
-      } finally {
-        setIsSubmitting(false);
       }
     },
   });

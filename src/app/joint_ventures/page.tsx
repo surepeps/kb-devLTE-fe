@@ -13,7 +13,15 @@ import { useRouter } from 'next/navigation'
 
 const JointVentures = () => {
   const isLoading = useLoading();
-  const route = useRouter()
+  const router = useRouter()
+
+  // sessionStorage.setItem('previousPage', 'joint_ventures');
+
+  const handleNavigation = (page: string) => {
+    sessionStorage.setItem('previousPage', '/joint_ventures');
+    router.push(page);
+  };
+
 
   if (isLoading) return <Loading />;
   return (
@@ -26,7 +34,7 @@ const JointVentures = () => {
             width={1000}
             height={1000}
             onClick={()=>{
-              route.back()
+              router.back()
             }}
             title='Go Back'
             className='w-[24px] h-[24px] cursor-pointer'
@@ -77,11 +85,13 @@ const JointVentures = () => {
               value='Submit Your Interest Now'
               className='min-h-[50px] py-[12px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
               green={true}
+              onClick={() => handleNavigation('/buy_page')}
             />
             <Button
               value='Share Your Property Brief Today'
               className='min-h-[50px] py-[12px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
               green={true}
+              onClick={() =>  router.push('/sell_page')}
             />
           </motion.div>
         </div>

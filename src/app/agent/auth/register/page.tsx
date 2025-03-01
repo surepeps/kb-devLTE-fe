@@ -146,7 +146,7 @@ const Register = () => {
         // toast.error(response.message);
       });
     },
-    onError: (errorResponse: any) => console.error(errorResponse),
+    onError: (errorResponse: any) => toast.error(errorResponse.message),
   });
 
   useEffect(() => {
