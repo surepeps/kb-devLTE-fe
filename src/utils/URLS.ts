@@ -10,5 +10,9 @@ export const URLS = {
   googleLogin: '/login/google',
   verifyEmail: '/verify-email',
   agentCreateBrief: '/properties/sell/new',
+  agentfetchTotalBriefs: '/agent/properties',
   landLordCreateBrief: '/properties/rents/rent/new',
-};
+  buyersFetchBriefs: '/properties/sell/all',
+  rentersFetchBriefs: '/properties/rents/all',
+  buyersSearchBrief: '/properties/buy/request/search',
+}

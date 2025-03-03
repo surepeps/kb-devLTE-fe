@@ -6,7 +6,7 @@ import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
 import Card from '@/components/card';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState, useRef } from 'react';
 import Button from '@/components/button';
 import ContactUs from '@/components/contact_information';
 import PropertyReference from '@/components/propertyReference';
@@ -27,6 +27,7 @@ export default function Rent() {
   const router = useRouter();
   const pathname = usePathname();
   const [usageOption, setUsageOption] = useState("");
+  const selectedBriefsRef = useRef<HTMLDivElement>(null); 
 
   const isLoading = useLoading();
   const {
@@ -59,8 +60,6 @@ export default function Rent() {
       setUsageOption("Joint Venture");
     }
     console.log("Previous page: ", previousPage);
-
-  
     // Update the previous page in sessionStorage
     // sessionStorage.setItem("previousPage", pathname);
   }, [pathname]);
@@ -79,28 +78,6 @@ export default function Rent() {
     console.log(selectedBriefs);
   }, [selectedBriefs]);
 
-  // useEffect(() => {
-  //   const fetchAllData = async () => {
-  //     setFetchingData(true);
-  //     try {
-  //       // const response = await GET_REQUEST(URLS.BASE + '/properties/sell/all');
-  //       const response = await fetch(URLS.BASE + '/properties/sell/all');
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         console.log(data);
-  //         setFetchingData(false);
-  //         setProperties(data);
-  //       } else {
-  //         setFetchingData(false);
-  //         setErrMessage('Failed to fetch data');
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //       setFetchingData(false);
-  //     }
-  //   };
-  //   fetchAllData();
-  // }, []);
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -108,7 +85,7 @@ export default function Rent() {
     const fetchAllData = async () => {
       setFetchingData(true);
       try {
-        const response = await fetch(URLS.BASE + '/properties/sell/all', {
+        const response = await fetch(URLS.BASE + URLS.buyersFetchBriefs, {
           signal,
         });
 
@@ -150,6 +127,13 @@ export default function Rent() {
       console.error('Error parsing selectedBriefs from localStorage:', error);
     }
   }, []);
+
+  // scroll to selectedBriefs section on mobile view
+  useEffect(() => {
+    if (window.innerWidth <= 768 && selectedBriefsRef.current) {
+      selectedBriefsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedBriefs]);
 
   if (isLoading) return <Loading />;
   return (
@@ -206,10 +190,19 @@ export default function Rent() {
                   } ${
                     isSelectedBriefClicked ? 'hidden lg:grid' : 'flex lg:grid'
                   }`}>
-                  {properties?.map((property, idx: number) => (
+                  {properties?.length !== 0 &&
+                    properties
+                      ?.slice(-10)
+                      .map((property, idx: number) => (
                     <Card
                       images={Array(12).fill(imgSample)}
                       onClick={() => {
+                        if (selectedBriefs.has(property)) {
+                          return toast.error('This property has already been added for inspection.');
+                        }
+                        if (selectedBriefs.size >= 3) {
+                          return toast.error('You can only submit up to 3 briefs for inspection.');
+                        }
                         addBrief(property);
                         if (selectedBriefs.has(property)) {
                           return toast.success('Already added for inspection');
@@ -269,8 +262,9 @@ export default function Rent() {
 
               {[...selectedBriefs].length !== 0 && (
                 <div
+                  ref={selectedBriefsRef}
                   className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] ${
-                    isSelectedBriefClicked ? 'flex lg:flex' : 'hidden lg:flex'
+                    isSelectedBriefClicked ? 'flex lg:flex' : 'lg:flex'
                   }`}>
                   <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
                     Submit for inspection
