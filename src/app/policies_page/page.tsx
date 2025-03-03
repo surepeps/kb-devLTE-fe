@@ -11,9 +11,9 @@ const Policies = () => {
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const isLoading = useLoading();
   const [policiesButton, setPoliciesButton] = useState({
-    clientEngagementPolicyButton: true,
+    clientEngagementPolicyButton: false,
     agentEngagementPolicyButton: false,
-    dataProductionPolicyButton: false,
+    dataProductionPolicyButton: true,
   });
 
   if (isLoading) return <Loading />;
