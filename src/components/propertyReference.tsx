@@ -41,7 +41,6 @@ const PropertyReference = ({
   setAllCards,
   usageOption,
 }: PropertyReferenceDataProps) => {
-  console.log('usageOption prop', usageOption);
   const { setPropertyReference, setRentPage, rentPage } = usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const formik = useFormik({
@@ -57,7 +56,7 @@ const PropertyReference = ({
     },
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
-      console.log(values);
+      // console.log(values);
       const payload = {
         propertyType: values.propertyType,
         state: values.state,
@@ -87,7 +86,7 @@ const PropertyReference = ({
       setIsSubmitting(true);
       try {
         const response = await axios.post(
-          URLS.BASE + '/properties/buy/request/search',
+          URLS.BASE + URLS.buyersSearchBrief,
           payload
         );
         if (response.status === 200) {
