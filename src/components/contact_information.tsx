@@ -18,7 +18,7 @@ import axios from 'axios';
 const ContactUs = () => {
   const ref = useRef<HTMLFormElement | null>(null);
 
-  const { setRentPage, propertyReference, setPropertyReference } =
+  const { setRentPage, rentPage, propertyReference, setPropertyReference } =
     usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
@@ -39,6 +39,7 @@ const ContactUs = () => {
     validationSchema,
     onSubmit: async (values) => {
       console.log(values);
+      console.log(rentPage);
       if (!propertyReference) {
         return;
       } else {
