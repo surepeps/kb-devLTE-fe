@@ -10,9 +10,9 @@ export const URLS = {
   googleLogin: '/login/google',
   verifyEmail: '/verify-email',
   agentCreateBrief: '/properties/sell/new',
-  agentfetchTotalBriefs: '/agent/properties',
+  agentfetchTotalBriefs: '/agent/properties', // for agent total briefs
   landLordCreateBrief: '/properties/rents/rent/new',
   buyersFetchBriefs: '/properties/sell/all',
-  rentersFetchBriefs: '/properties/rents/all',
+  rentersFetchBriefs: '/properties/rents/all', // to fetch rent briefs on the rent page
   buyersSearchBrief: '/properties/buy/request/search',
 }
