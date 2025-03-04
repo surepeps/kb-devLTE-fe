@@ -142,11 +142,10 @@ const PropertyType = () => {
           areYouTheOwner: values.areYouTheOwner,
         };
 
-        console.log('Payload:', payload);
+        // console.log('Payload:', payload);
 
         await toast.promise(
           POST_REQUEST(url, payload).then((response) => {
-            console.log('response from brief', response);
             if ((response as any).owner) {
               toast.success('Brief submitted successfully');
               // router.push('/success');
