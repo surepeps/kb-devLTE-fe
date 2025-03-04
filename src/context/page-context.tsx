@@ -23,7 +23,8 @@ export const PageContextProvider = ({
   });
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 
-  const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
+  // const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
+  const [selectedNav, setSelectedNav] = useState<string>('Overview'); //Agent Navigation
 
   /**Property Details */
   const [propertyDetails, setPropertyDetails] = useState<{
