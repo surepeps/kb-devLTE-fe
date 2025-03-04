@@ -5,7 +5,7 @@
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import mailIcon from '@/svgs/envelope.svg';
 import phoneIcon from '@/svgs/phone.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
@@ -30,7 +30,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 const Login = () => {
   const isLoading = useLoading();
   const { isContactUsClicked } = usePageContext();
-  const { setUser } = useUserContext();
+  const { setUser, user } = useUserContext();
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
 
@@ -57,7 +57,10 @@ const Login = () => {
               toast.success('Sign in successful');
               Cookies.set('token', (response as any).token);
               setUser((response as any).user);
-              router.push('/auth/agent/createBrief');
+
+              if (!response.user.phoneNumber) router.push('/agent/onboard');
+              else router.push('/agent/briefs');
+
               return 'Sign in successful';
             } else {
               throw new Error((response as any).error || 'Sign In failed');
@@ -86,7 +89,7 @@ const Login = () => {
       const url = URLS.BASE + URLS.agent + URLS.googleLogin;
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
-        if ((response as unknown as { id: string }).id) {
+        if (response.id) {
           toast.success('Sign in successful');
           Cookies.set('token', (response as unknown as { token: string }).token);
           console.log('response', response);
@@ -103,8 +106,8 @@ const Login = () => {
 
           setUser(user);
 
-          if ((response as unknown as { phoneNumber: string }).phoneNumber) router.push('/auth/agent/form');
-          else router.push('/auth/agent/createBrief');
+          if (!response.phoneNumber) router.push('/agent/onboard');
+          else router.push('/agent/briefs');
         }
         console.log('response', response);
         if (response.error) {
@@ -115,7 +118,18 @@ const Login = () => {
     onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
   });
 
+  useEffect(() => {
+    if (user) {
+      if (!user.agentType) {
+        router.push('/agent/onboard');
+      } else if (user.phoneNumber && user.agentType) {
+        router.push('/agent/briefs');
+      }
+    }
+  }, [user]);
+
   if (isLoading) return <Loading />;
+
   return (
     <section
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
@@ -159,7 +173,7 @@ const Login = () => {
           {/**Already have an account */}
           <span className='text-base leading-[25.6px] font-normal'>
             Don&apos;t have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/register'}>
+            <Link className='font-semibold text-[#09391C]' href={'/agent/auth/register'}>
               Sign Up
             </Link>
           </span>
