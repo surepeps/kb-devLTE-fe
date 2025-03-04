@@ -1,5 +1,11 @@
 'use client';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id?: string;
@@ -13,13 +19,17 @@ interface User {
     city: string;
     state: string;
     street: string;
-  },
+  };
   agentType?: string;
   doc?: string;
   individualAgent?: {
     idNumber: string;
     typeOfId: string;
-  }
+  };
+  companyAgent?: {
+    companyName: string;
+    companyRegNumber: string;
+  };
 }
 
 interface UserContextType {
@@ -32,13 +42,51 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  console.log('user', user);
+  const pathName = usePathname();
+  const router = useRouter();
+  // console.log('pathName', pathName);
 
-  return (
-    <UserContext.Provider value={{ user, setUser }}>
-      {children}
-    </UserContext.Provider>
-  );
+  // console.log('user', user);
+
+  const getAgent = async () => {
+    const url = URLS.BASE + URLS.agentProfile;
+    await GET_REQUEST(url, Cookies.get('token'))
+      .then((response) => {
+        if (response?.data?.id) {
+          setUser(response.data);
+        } else {
+          if (
+            response.message.toLowerCase().includes('unauthorized') ||
+            response.message.toLowerCase().includes('jwt') ||
+            response.message.toLowerCase().includes('expired') ||
+            response.message.toLowerCase().includes('valid') ||
+            response.message.toLowerCase().includes('not') ||
+            response.message.toLowerCase().includes('malformed')
+          ) {
+            Cookies.remove('token');
+            toast.error('Session expired, please login again');
+            if (pathName.includes('/agent')) {
+              if (!pathName.includes('/auth')) router.push('/agent/auth/login');
+            }
+          }
+        }
+      })
+      .catch((error) => {
+        console.log('Error', error);
+      });
+  };
+
+  useEffect(() => {
+    if (Cookies.get('token')) {
+      getAgent();
+    } else {
+      if (pathName.includes('/agent')) {
+        if (!pathName.includes('/auth')) router.push('/agent/auth/login');
+      }
+    }
+  }, []);
+
+  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
 
 export const useUserContext = () => {

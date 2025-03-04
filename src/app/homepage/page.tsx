@@ -58,7 +58,7 @@ const Homepage = () => {
             // };
 
             setUser(user);
-            router.push('/auth/agent/form');
+            router.push('/agent/onboard');
           }
         });
       })();

@@ -38,13 +38,12 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Agent',
-    url: '/agent_page',
+    url: '/agent',
     isClicked: false,
   },
   {
     name: 'Policies',
-    // url: '/policies_page',
-    url: '',
+    url: '/policies_page',
     isClicked: false,
   },
   {

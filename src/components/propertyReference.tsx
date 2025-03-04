@@ -31,6 +31,7 @@ interface PropertyReferenceDataProps {
   setFound: ({ isFound, count }: { isFound: boolean; count: number }) => void;
   found: { isFound: boolean; count: number };
   setAllCards: ([]: { header: string; value: string }[][]) => void;
+  usageOption?: string;
 }
 
 const PropertyReference = ({
@@ -38,13 +39,14 @@ const PropertyReference = ({
   found,
   setFound,
   setAllCards,
+  usageOption,
 }: PropertyReferenceDataProps) => {
   const { setPropertyReference, setRentPage, rentPage } = usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const formik = useFormik({
     initialValues: {
       propertyType: '',
-      usageOption: [],
+      usageOption: usageOption ?  [usageOption] : [],
       budgetRange: '',
       state: '',
       landSize: '',
@@ -54,7 +56,7 @@ const PropertyReference = ({
     },
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
-      console.log(values);
+      // console.log(values);
       const payload = {
         propertyType: values.propertyType,
         state: values.state,
@@ -84,7 +86,7 @@ const PropertyReference = ({
       setIsSubmitting(true);
       try {
         const response = await axios.post(
-          URLS.BASE + '/properties/buy/request/search',
+          URLS.BASE + URLS.buyersSearchBrief,
           payload
         );
         if (response.status === 200) {
@@ -184,7 +186,7 @@ const PropertyReference = ({
             />
             {/**usage Option */}
             <Select
-              allowMultiple={true}
+              allowMultiple={!usageOption}
               heading={'usageOption'}
               formik={formik}
               name={propertyReferenceData[1].heading}

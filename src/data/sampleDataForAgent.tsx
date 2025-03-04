@@ -227,6 +227,33 @@ export const briefData = [
   // Add more entries as needed
 ];
 
+// export const fetchTotalBrief = async () => {
+//   try {
+//     // const response = await fetch('API_ENDPOINT');
+//     const response = await fetch(URLS.BASE + URLS.agentfetchTotalBriefs, {
+//       signal,
+//     });
+//     const result = await response.json();
+
+//     if (result.success) {
+//       const combinedData = [...result.data.sellProperties, ...result.data.rentProperties];
+//       const formattedData = combinedData.map((property) => ({
+//         date: new Date(property.createdAt).toLocaleDateString(),
+//         propertyType: property.propertyType,
+//         location: `${property.location.state}, ${property.location.localGovernment}`,
+//         propertyPrice: property.price || property.rentalPrice,
+//         document: property.docOnProperty ? property.docOnProperty.map(doc => doc.docName).join(', ') : 'N/A',
+//       }));
+//       return { success: true, data: formattedData };
+//     } else {
+//       return { success: false, message: 'Failed to fetch data' };
+//     }
+//   } catch (error) {
+//     console.error('An error occurred while fetching data:', error);
+//     return { success: false, message: 'An error occurred while fetching data' };
+//   }
+// };
+
 // Updated completeTransactionData with actual locations
 export const completeTransactionData = [
   {
