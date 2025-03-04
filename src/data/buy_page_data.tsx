@@ -75,7 +75,7 @@ export const propertyReferenceDataWithoutUsageOption: {
 }[] = [
   {
     heading: 'Type of Property',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['Land', 'Residential', 'Commercial'],
   },
   // {
   //   heading: 'Usage Options',
@@ -83,22 +83,53 @@ export const propertyReferenceDataWithoutUsageOption: {
   // },
   {
     heading: 'Budget Range',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: [
+      'N50 Million - N100 Million',
+      ' N100 Million - N500 Million',
+      'N500 Million - N1 Billion',
+    ],
   },
   {
     heading: 'Preferred Location',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['Lagos Mainland', 'Lagos Island'],
   },
   {
     heading: 'Land Size',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['1500 square meter', '2500 square meter', '3000 square meter'],
   },
   {
     heading: 'Document Type',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: ['Governor Consent', 'C of O', 'Survey Document'],
   },
   {
     heading: 'Desires Features',
-    options: ['Sample 1', ' Sample 2', 'Sample 3'],
+    options: [
+      // '1 Bedroom',
+      // '2 Bedrooms',
+      // '3 Bedrooms',
+      // '4 Bedrooms and more',
+      'Contemporary Designs',
+      'Modern Interior Finishing',
+      'Guest Toilet',
+      'Parking for up to 5 Cars',
+      'All Rooms Ensuite',
+      'POP Ceilings',
+      'Fully Fitted Kitchen',
+      'Chandeliers',
+      'Bluetooth Speakers',
+      'Spacious Dining Area',
+      'Concrete Floors',
+      'Smart Switches',
+      'Roof Top Terrace',
+      'Spacious Compound',
+      'Security',
+      'Balconies',
+      'Closets',
+      'Walk in Closet',
+      'Walk in Showers',
+      'Bath Tub',
+      'CCTV',
+      'Swimming Pool',
+    ],
   },
 ];
