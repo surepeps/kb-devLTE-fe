@@ -25,14 +25,23 @@ import PhoneInput, {
   isValidPhoneNumber,
 } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 import { useParams, usePathname, useRouter } from 'next/navigation';
+import axios from 'axios';
+import { URLS } from '@/utils/URLS';
 
 interface DetailsProps {
   price: number;
   propertyType: string;
   bedRoom: number;
   propertyStatus: string;
+  location: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
+  tenantCriteria: { _id: string; criteria: string }[];
+  pictures: string[];
 }
 
 interface FormProps {
@@ -42,6 +51,19 @@ interface FormProps {
   gender: string;
   message: string;
 }
+
+type HouseFrameProps = {
+  propertyType: string;
+  pictures: string[];
+  features: { featureName: string; id: string }[];
+  location: {
+    state: string;
+    area: string;
+    localGovernment: string;
+  };
+  noOfBedrooms: number;
+  _id: string;
+};
 
 const Buy = () => {
   const [point, setPoint] = useState<string>('Details');
@@ -53,11 +75,22 @@ const Buy = () => {
     propertyType: '',
     bedRoom: 0,
     propertyStatus: '',
+    location: {
+      state: '',
+      localGovernment: '',
+      area: '',
+    },
+    tenantCriteria: [],
+    pictures: [],
   });
-  const [featureData, setFeatureData] = useState<string[]>([]);
+  const [featureData, setFeatureData] = useState<
+    { _id: string; featureName: string }[]
+  >([]);
   const path = usePathname();
   const { id } = useParams();
   const router = useRouter();
+  const [isDataLoading, setDataLoading] = useState<boolean>(false);
+  const [data, setData] = useState([]);
 
   const handlePreviousSlide = () => {
     const scrollableElement = document.getElementById(
@@ -114,19 +147,18 @@ const Buy = () => {
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string().required(),
+    name: Yup.string().required('Name is required'),
     email: Yup.string()
       .email()
       .required()
       .matches(/^[^\s@]+@[^\s@]+\.com$/, 'Invalid email address'),
     phoneNumber: Yup.string()
       .required()
-      .matches(/0\d{10}$/, 'Invalid phone number')
       .required('Contact number is required')
       .test('isValidPhoneNumber', 'Invalid phone number', (value) =>
         isValidPhoneNumber(value || '')
       ),
-    gender: Yup.string().required(),
+    gender: Yup.string().required('Gender is required'),
     message: Yup.string().required(),
   });
 
@@ -139,8 +171,31 @@ const Buy = () => {
       message: '',
     },
     validationSchema,
-    onSubmit: (values: FormProps) => {
-      console.log(values);
+    onSubmit: async (values: FormProps) => {
+      console.log(values, details, featureData);
+      const payload = {
+        propertyType: details.propertyType,
+        propertyCondition: details.propertyStatus,
+        location: { ...details.location },
+        rentalPrice: details.price,
+        noOfBedrooms: details.bedRoom,
+        features: featureData.map(
+          ({ featureName }: { featureName: string }) => ({ featureName })
+        ),
+        tenantCriteria: details.tenantCriteria.map(
+          ({ criteria }: { criteria: string }) => ({ criteria })
+        ),
+        areYouTheOwner: true,
+      };
+      try {
+        const response = await axios.post(
+          URLS.BASE + '/properties/rents/rent/new',
+          payload
+        ); /**"Cannot read properties of undefined (reading 'email')" */
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     },
   });
 
@@ -156,13 +211,48 @@ const Buy = () => {
 
   //simulate render for now
   useEffect(() => {
-    setDetails({
-      price: 1000000000,
-      propertyType: 'Residential',
-      bedRoom: 5,
-      propertyStatus: 'For Sale',
-    });
-    setFeatureData(featuresData);
+    const getProductDetails = async () => {
+      try {
+        const res = await axios.get(URLS.BASE + `/properties/rents/rent/${id}`);
+        console.log(res);
+        if (res.status === 200) {
+          setDetails({
+            price: res.data.rentalPrice,
+            propertyType: res.data.propertyType,
+            bedRoom: res.data.noOfBedrooms,
+            propertyStatus: res.data.propertyCondition,
+            location: res.data.location,
+            tenantCriteria: res.data.tenantCriteria,
+            pictures: res.data.pictures,
+          });
+          setFeatureData(res.data.features);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProductDetails();
+  }, [id]);
+
+  useEffect(() => {
+    const getAllRentProperties = async () => {
+      setDataLoading(true);
+      try {
+        const resposne = await axios.get(URLS.BASE + '/properties/rents/all');
+        console.log(resposne);
+        if (resposne.status === 200) {
+          setData(resposne.data.slice(0, 6));
+          setDataLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setDataLoading(false);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    getAllRentProperties();
   }, []);
 
   if (isLoading) return <Loading />;
@@ -184,6 +274,9 @@ const Buy = () => {
                   width={24}
                   height={24}
                   className='w-[24px] h-[24px]'
+                  onClick={() => {
+                    router.back();
+                  }}
                 />
                 <div className='flex gap-2 items-center justify-center align-middle'>
                   <Link
@@ -208,6 +301,16 @@ const Buy = () => {
                   {/* {idx} */}
                 </div>
               ))}
+              {/** {details.pictures.map((img: string, idx: number) => (
+                <Image
+                  src={img !== '' ? img : imgSample}
+                  alt=''
+                  key={idx}
+                  width={500}
+                  height={400}
+                  className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0'
+                />
+              ))} */}
             </div>
             <div className='flex gap-[18px]'>
               {/**Previous */}
@@ -301,22 +404,26 @@ const Buy = () => {
                   </h2>
 
                   <div className='w-full grid grid-cols-2 mt-[10px] gap-[8px]'>
-                    {featureData.map((item: string, idx: number) => {
-                      return (
-                        <div key={idx} className='flex items-center gap-[8px]'>
-                          <Image
-                            src={checkIcon}
-                            width={20}
-                            height={20}
-                            className='w-[20px] h-[20px]'
-                            alt=''
-                          />
-                          <span className='text-base leading-[25.6px] font-normal text-[#5A5D63]'>
-                            {item}
-                          </span>
-                        </div>
-                      );
-                    })}
+                    {featureData.map(
+                      (item: { _id: string; featureName: string }) => {
+                        return (
+                          <div
+                            key={item._id}
+                            className='flex items-center gap-[8px]'>
+                            <Image
+                              src={checkIcon}
+                              width={20}
+                              height={20}
+                              className='w-[20px] h-[20px]'
+                              alt=''
+                            />
+                            <span className='text-base leading-[25.6px] font-normal text-[#5A5D63]'>
+                              {item.featureName}
+                            </span>
+                          </div>
+                        );
+                      }
+                    )}
                   </div>
                 </div>
 
@@ -333,6 +440,7 @@ const Buy = () => {
                     className='w-full min-h-[270px] mt-[10px] flex flex-col gap-[15px]'>
                     <section className='md:grid md:grid-cols-2 gap-[15px] flex flex-col'>
                       <Input
+                        label='name'
                         name='
                   Name'
                         placeholder='This is a placeholder'
@@ -340,6 +448,7 @@ const Buy = () => {
                         formik={formik}
                       />
                       <Input
+                        label='phoneNumber'
                         name='
                   Phone Number'
                         placeholder='This is a placeholder'
@@ -347,6 +456,7 @@ const Buy = () => {
                         formik={formik}
                       />
                       <Input
+                        label='email'
                         name='
                   Email'
                         placeholder='This is a placeholder'
@@ -385,6 +495,24 @@ const Buy = () => {
                               label: 'Prefer not to say',
                             },
                           ]}
+                          value={
+                            formik.values.gender
+                              ? {
+                                  value: formik.values.gender,
+                                  label: formik.values.gender,
+                                }
+                              : null
+                          }
+                          onChange={(
+                            option: SingleValue<{
+                              value: string;
+                              label: string;
+                            }>
+                          ) => {
+                            formik.setFieldValue('gender', option?.value || '');
+                          }}
+                          onBlur={() => formik.setFieldTouched('gender', true)}
+                          isClearable
                         />
                       </label>
                     </section>
@@ -396,7 +524,10 @@ const Buy = () => {
                         Message
                       </h2>
                       <textarea
+                        value={formik.values.message}
+                        onBlur={formik.handleBlur}
                         id='message'
+                        onChange={formik.handleChange}
                         placeholder={'Enter your message here'}
                         className='min-h-[93px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] resize-none py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'></textarea>
                     </label>
@@ -464,18 +595,18 @@ const Buy = () => {
                 </div>
               </div>
               <div className='md:w-[30%] hidden h-full md:flex md:flex-col gap-[10px]'>
-                {Array.from({ length: 6 }).map((__, idx: number) => {
+                {data.map((item: HouseFrameProps, idx: number) => {
                   return (
                     <HouseFrame
                       key={idx}
-                      image={houseImage}
-                      title='Contemporary Bedroom Home'
-                      location='Ikoyi'
-                      bedroom={5}
+                      images={item.pictures}
+                      title={item.propertyType}
+                      location={`${item.location.state}, ${item.location.area}, ${item.location.localGovernment}`}
+                      bedroom={item.noOfBedrooms}
                       bathroom={2}
                       carPark={3}
                       onClick={() => {
-                        router.push(`/buy_page/details/${idx}`);
+                        router.push(`/buy_page/details/${item._id}`);
                       }}
                     />
                   );
@@ -516,12 +647,14 @@ const Input = ({
   type,
   formik,
   onChange,
+  label,
 }: {
   name: string;
   placeholder: string;
   type: string;
   formik: any;
   onChange?: (name: string, value: string) => void;
+  label: string;
 }) => {
   return (
     <label
@@ -545,18 +678,18 @@ const Input = ({
       ) : (
         <input
           type={type}
-          id={name}
-          value={formik.values[name]}
+          id={label}
+          value={formik.values[label]}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
-          name={name}
+          name={label}
           placeholder={placeholder}
           className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
         />
       )}
 
-      {(formik.touched[name] || formik.errors[name]) && (
-        <span className='text-sm text-red-500'>{formik.errors[name]}</span>
+      {(formik.touched[label] || formik.errors[label]) && (
+        <span className='text-sm text-red-500'>{formik.errors[label]}</span>
       )}
     </label>
   );
