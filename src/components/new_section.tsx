@@ -1,13 +1,36 @@
 /** @format */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import '@/styles/newsection.css';
 import arrowIcon from '@/svgs/curvedArrow.svg';
 import reverseArrowIcon from '@/svgs/reverseArrow.svg';
+import whiteArrowIcon from '@/svgs/whiteArrowIcon.svg';
+import greenArrowIcon from '@/svgs/greenArrowIcon.svg';
+import reverseWhiteArrowIcon from '@/svgs/reverseWhiteArrowIcon.svg';
+import reverseGreenArrowIcon from '@/svgs/reverseGreenArrowIcon.svg';
 import Image from 'next/image';
 import { motion, useInView } from 'framer-motion';
 import icon from '@/svgs/icon.svg';
 import arrowRight from '@/svgs/arrowRight.svg';
+
+type DisplayProps = {
+  backgroundColor: string;
+  heading: string;
+  secondHeading: string;
+  thirdHeading: string;
+  description: string;
+  secondDescription: string;
+  thirdDescription: string;
+  cardBg: string;
+  secondCardBg: string;
+  thirdCardBg: string;
+  headingColor: string;
+  secondHeadingColor: string;
+  descriptionColor: string;
+};
 
 const NewSection = () => {
   const ref = useRef(null);
@@ -19,6 +42,119 @@ const NewSection = () => {
   const isInView2 = useInView(ref2, { once: false });
   const isInView3 = useInView(ref3, { once: false });
 
+  const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
+  const [src, setSrc] = useState<any>(arrowIcon);
+  const [reverseSrc, setReverseSrc] = useState<any>(reverseArrowIcon);
+  const [display, setDisplay] = useState<DisplayProps>({
+    backgroundColor: '#8DDB90',
+    heading: 'Submit Your Preference',
+    secondHeading: 'Match with Properties',
+    thirdHeading: 'Inspect and Decide',
+    description: 'Share details like location, budget, and desired feature',
+    secondDescription: 'Our platform finds options that meet your criteria',
+    thirdDescription: 'Choose the perfect property with ease',
+    cardBg: '#F2FCF3',
+    secondCardBg: '#073563',
+    thirdCardBg: '#09391C',
+    headingColor: '#000000',
+    secondHeadingColor: '#8DDB90',
+    descriptionColor: '#596066',
+  });
+
+  const handleModalToggle = (idx: number) => {
+    setOpenModalIndex((prevIndex) => (prevIndex === idx ? null : idx));
+  };
+
+  useEffect(() => {
+    switch (openModalIndex) {
+      case 0:
+        setSrc(arrowIcon);
+        setDisplay({
+          backgroundColor: '#8DDB90',
+          heading: 'Submit Your Preference',
+          secondHeading: 'Match with Properties',
+          thirdHeading: 'Inspect and Decide',
+          description:
+            'Share details like location, budget, and desired feature',
+          secondDescription:
+            'Our platform finds options that meet your criteria',
+          thirdDescription: 'Choose the perfect property with ease',
+          cardBg: '#F2FCF3',
+          secondCardBg: '#073563',
+          thirdCardBg: '#09391C',
+          headingColor: '#000000',
+          secondHeadingColor: '#8DDB90',
+          descriptionColor: '#596066',
+        });
+        setReverseSrc(reverseArrowIcon);
+        break;
+      case 1:
+        setSrc(whiteArrowIcon);
+        setDisplay({
+          backgroundColor: '#09391C',
+          heading: 'Submit Your Brief',
+          secondHeading: 'Get Matched',
+          thirdHeading: 'Close the Deal',
+          description:
+            'Add property details, usage options (JV, lease, or sale), and your contact information.',
+          secondDescription:
+            'We connect you with buyers, tenants, or developers.',
+          thirdDescription:
+            'Seamlessly finalize your transaction with our team’s support',
+          cardBg: '#F2FCF3',
+          secondCardBg: '#073563',
+          thirdCardBg: '#8DDB90',
+          headingColor: '#000000',
+          secondHeadingColor: '#8DDB90',
+          descriptionColor: '#596066',
+        });
+        setReverseSrc(reverseWhiteArrowIcon);
+        break;
+      case 2:
+        setSrc(greenArrowIcon);
+        setDisplay({
+          backgroundColor: '#073563',
+          heading: 'Browse Properties Open for JV',
+          secondHeading: 'Connect with Sellers',
+          thirdHeading: 'Build Success Together',
+          description: 'Filter by location and potential project scope',
+          secondDescription:
+            'Start meaningful discussions about joint development',
+          thirdDescription:
+            'Partner on profitable projects with verified property owners',
+          cardBg: '#F2FCF3',
+          secondCardBg: '#8DDB90',
+          thirdCardBg: '#09391C',
+          headingColor: '#000000',
+          secondHeadingColor: '#000000',
+          descriptionColor: '#596066',
+        });
+        setReverseSrc(reverseGreenArrowIcon);
+        break;
+      default:
+        setSrc(arrowIcon);
+        setReverseSrc(reverseArrowIcon);
+        setDisplay({
+          backgroundColor: '#8DDB90',
+          heading: 'Submit Your Preference',
+          secondHeading: 'Match with Properties',
+          thirdHeading: 'Inspect and Decide',
+          description:
+            'Share details like location, budget, and desired feature',
+          secondDescription:
+            'Our platform finds options that meet your criteria',
+          thirdDescription: 'Choose the perfect property with ease',
+          cardBg: '#F2FCF3',
+          secondCardBg: '#073563',
+          thirdCardBg: '#09391C',
+          headingColor: '#000000',
+          secondHeadingColor: '#8DDB90',
+          descriptionColor: '#596066',
+        });
+        break;
+    }
+  }, [openModalIndex]);
+
   return (
     <section className='w-full flex items-center justify-center pt-[70px]'>
       <div className='container w-full flex md:flex-row justify-between flex-col min-h-[528px] gap-[64px] lg:pl-[20px] lg:pr-0 px-[20px]'>
@@ -28,11 +164,18 @@ const NewSection = () => {
           </h2>
           <div className='w-full flex flex-col gap-[25px]'>
             {data.map((item, idx: number) => (
-              <Container key={idx} {...item} />
+              <Container
+                isModalOpened={openModalIndex === idx}
+                onToggle={() => handleModalToggle(idx)}
+                key={idx}
+                {...item}
+              />
             ))}
           </div>
         </div>
-        <div className='lg:w-[773px] w-full h-[528px] bg-[#8DDB90] px-[20px] lg:px-0 flex flex-col gap-[20px] lg:gap-0 items-center justify-center overflow-hidden'>
+        <div
+          style={{ backgroundColor: `${display.backgroundColor}` }}
+          className={`lg:w-[773px] w-full h-[528px] px-[20px] lg:px-0 flex flex-col gap-[20px] lg:gap-0 items-center justify-center overflow-hidden transition duration-500`}>
           {/**first card and arrow */}
           <motion.div
             ref={ref}
@@ -41,14 +184,14 @@ const NewSection = () => {
             transition={{ delay: 0.3 }}
             className='flex z-10 items-center'>
             <Card
-              heading='Submit Your Preference'
-              desc='Share details like location, budget, and desired feature'
-              backgroundColor='#F2FCF3'
-              headingColor='#000000'
-              descColor='#596066'
+              heading={display.heading}
+              desc={display.description}
+              backgroundColor={display.cardBg}
+              headingColor={display.headingColor}
+              descColor={display.descriptionColor}
             />
             <Image
-              src={arrowIcon}
+              src={src}
               width={129}
               height={103}
               alt=''
@@ -63,14 +206,19 @@ const NewSection = () => {
             transition={{ delay: 0.3 }}
             className='flex flex-row-reverse z-10 items-center lg:ml-[200px] -mt-[45px]'>
             <Card
-              heading='Match with Properties'
-              desc='Our platform finds options that meet your criteria'
-              backgroundColor='#073563'
-              headingColor='#8DDB90'
-              descColor='#FFFFFF'
+              heading={display.secondHeading}
+              desc={display.secondDescription}
+              backgroundColor={display.secondCardBg} /** */
+              headingColor={display.secondHeadingColor} /** */
+              descColor={`${openModalIndex === 2 ? '#000000' : '#ffffff'}`}
             />
             <Image
-              src={reverseArrowIcon}
+              src={reverseSrc}
+              /**${
+                openModalIndex === 1 ? reverseWhiteArrowIcon : reverseArrowIcon
+              } ${
+                openModalIndex === 2 ? reverseGreenArrowIcon : reverseArrowIcon
+              } */
               width={129}
               height={103}
               alt=''
@@ -85,15 +233,24 @@ const NewSection = () => {
             transition={{ delay: 0.3 }}
             className='flex flex-row-reverse z-10 items-center lg:-ml-[100px]'>
             <Card
-              heading='Inspect and Decide'
-              desc='Choose the perfect property with ease'
-              backgroundColor='#09391C'
-              headingColor='#8DDB90'
-              descColor='#FFFFFF'
+              heading={display.thirdHeading}
+              desc={display.thirdDescription} /** */ /** */
+              backgroundColor={display.thirdCardBg}
+              headingColor={`${
+                openModalIndex === 1 ? '#000000' : '#8DDB90'
+              }`} /**000000 */
+              descColor={`${
+                openModalIndex === 1 ? '#000000' : '#FFFFFF'
+              }`} /**#FFFFFF */ /* */
             />
           </motion.div>
           {/**Logo */}
-          <div className='newsec-image absolute lg:w-[583px] lg:h-[500px] w-full lg:ml-[140px] lg:mt-[30px]'></div>
+          <div
+            className={`${
+              openModalIndex === 0 && 'newsec-image'
+            } newsec-image ${openModalIndex === 1 && 'newsec-image-dark'} ${
+              openModalIndex === 2 && 'newsec-image-blue'
+            } absolute lg:w-[583px] lg:h-[500px] w-full lg:ml-[140px] lg:mt-[30px] transition duration-500`}></div>
         </div>
       </div>
     </section>
@@ -145,10 +302,18 @@ type ContainerProps = {
   heading: string;
   text: string;
   buttons: { value: string; url: string }[];
+  isModalOpened: boolean;
+  onToggle: () => void;
 };
 
-const Container: FC<ContainerProps> = ({ heading, text, buttons }) => {
-  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
+const Container: FC<ContainerProps> = ({
+  heading,
+  text,
+  buttons,
+  isModalOpened,
+  onToggle,
+}) => {
+  const [isModalOpeneds, setIsModalOpened] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isContainerInView = useInView(containerRef, { once: false });
 
@@ -187,7 +352,8 @@ const Container: FC<ContainerProps> = ({ heading, text, buttons }) => {
           width={24}
           height={24}
           onClick={() => {
-            setIsModalOpened(!isModalOpened);
+            setIsModalOpened(isModalOpened);
+            onToggle();
           }}
           className={`w-[24px] h-[24px] cursor-pointer ${
             isModalOpened ? 'transform rotate-90' : 'transform rotate-0'
