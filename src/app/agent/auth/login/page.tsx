@@ -34,6 +34,8 @@ const Login = () => {
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
 
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
   const validationSchema = Yup.object({
     email: Yup.string().required('enter email'),
     password: Yup.string().required(),
@@ -45,39 +47,67 @@ const Login = () => {
     },
     // validationSchema,
     onSubmit: async (values) => {
-      try {
-        const url = URLS.BASE + URLS.agentLogin;
-        const payload = { ...values };
+      if (showForgotPassword) {
+        try {
+          const url = URLS.BASE + URLS.agent + URLS.requestPasswordReset;
+          const payload = { ...values };
 
-        await toast.promise(
-          POST_REQUEST(url, payload).then((response) => {
-            console.log('response from signin', response);
-
-            if ((response as any)?.user?.id) {
-              toast.success('Sign in successful');
-              Cookies.set('token', (response as any).token);
-              setUser((response as any).user);
-
-              if (!response.user.phoneNumber) router.push('/agent/onboard');
-              else router.push('/agent/briefs');
-
-              return 'Sign in successful';
-            } else {
-              throw new Error((response as any).error || 'Sign In failed');
+          await toast.promise(
+            POST_REQUEST(url, { email: values.email }).then((response) => {
+              if (response.success) {
+                return 'Password reset link sent to your email';
+              } else {
+                throw new Error((response as any).error || 'An error occured');
+              }
+            }),
+            {
+              loading: 'Requesting Reset Link...',
+              success: 'Password reset link sent to your email',
+              error: (error: { message: any }) => {
+                console.log('error', error);
+                return error.message || 'An error occured while requesting reset link';
+              },
             }
-          }),
-          {
-            loading: 'Logging in...',
-            success: 'Welcome Back!',
-            error: (error: { message: any }) => {
-              console.log('error', error);
-              return error.message || 'Sign In failed, please try again!';
-            },
-          }
-        );
-      } catch (error) {
-        console.log('Unexpected error:', error);
-        // toast.error('Sign In failed, please try again!');
+          );
+        } catch (error) {
+          console.log('Unexpected error:', error);
+          // toast.error('Sign In failed, please try again!');
+        }
+      } else {
+        try {
+          const url = URLS.BASE + URLS.agentLogin;
+          const payload = { ...values };
+
+          await toast.promise(
+            POST_REQUEST(url, payload).then((response) => {
+              console.log('response from signin', response);
+
+              if ((response as any)?.user?.id) {
+                toast.success('Sign in successful');
+                Cookies.set('token', (response as any).token);
+                setUser((response as any).user);
+
+                if (!response.user.phoneNumber) router.push('/agent/onboard');
+                else router.push('/agent/briefs');
+
+                return 'Sign in successful';
+              } else {
+                throw new Error((response as any).error || 'Sign In failed');
+              }
+            }),
+            {
+              loading: 'Logging in...',
+              success: 'Welcome Back!',
+              error: (error: { message: any }) => {
+                console.log('error', error);
+                return error.message || 'Sign In failed, please try again!';
+              },
+            }
+          );
+        } catch (error) {
+          console.log('Unexpected error:', error);
+          // toast.error('Sign In failed, please try again!');
+        }
       }
     },
   });
@@ -137,52 +167,94 @@ const Login = () => {
       } transition-all duration-500`}
     >
       <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
-        <form
-          onSubmit={formik.handleSubmit}
-          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
-        >
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
-            Sign In To Your Account
-          </h2>
-          <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
-            <Input
-              formik={formik}
-              title='Email'
-              id='email'
-              icon={mailIcon}
-              type='email'
-              placeholder='Enter your email'
-            />
-            <Input
-              formik={formik}
-              title='Password'
-              id='password'
-              icon={''}
-              type='password'
-              placeholder='Enter your password'
-            />
-          </div>
-          {/**Button */}
-          <Button
-            value='Sign In'
-            className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
-            type='submit'
+        {!showForgotPassword ? (
+          <form
             onSubmit={formik.handleSubmit}
-            green={true}
-          />
-          {/**Already have an account */}
-          <span className='text-base leading-[25.6px] font-normal'>
-            Don&apos;t have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'/agent/auth/register'}>
-              Sign Up
-            </Link>
-          </span>
-          {/**Google | Facebook */}
-          <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
-            <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
-          </div>
-        </form>
+            className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
+          >
+            <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+              Sign In To Your Account
+            </h2>
+            <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
+              <Input
+                formik={formik}
+                title='Email'
+                id='email'
+                icon={mailIcon}
+                type='email'
+                placeholder='Enter your email'
+              />
+              <Input
+                formik={formik}
+                title='Password'
+                id='password'
+                icon={''}
+                type='password'
+                placeholder='Enter your password'
+              />
+            </div>
+            {/**Button */}
+            <Button
+              value='Sign In'
+              className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
+              type='submit'
+              onSubmit={formik.handleSubmit}
+              green={true}
+            />
+            {/**Already have an account */}
+
+            <p className='text-base leading-[25.6px] font-normal'>
+              Don&apos;t have an account?{' '}
+              <Link className='font-semibold text-[#09391C]' href={'/agent/auth/register'}>
+                Sign Up
+              </Link>
+            </p>
+
+            <p className='text-base leading-[25.6px] font-normal'>
+              Forgot your password?{' '}
+              <button className='font-semibold text-[#09391C]' onClick={() => setShowForgotPassword(true)}>
+                Reset
+              </button>
+            </p>
+            {/**Google | Facebook */}
+            <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
+              <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
+              <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
+            </div>
+          </form>
+        ) : (
+          <form
+            onSubmit={formik.handleSubmit}
+            className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
+          >
+            <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Forgot Password</h2>
+            <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
+              <Input
+                formik={formik}
+                title='Email linked to your account'
+                id='email'
+                icon={mailIcon}
+                type='email'
+                placeholder='Enter your email'
+              />
+            </div>
+            {/**Button */}
+            <Button
+              value='Send Reset Link'
+              className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
+              type='submit'
+              onSubmit={formik.handleSubmit}
+              green={true}
+            />
+            {/**Already have an account */}
+            <p className='text-base leading-[25.6px] font-normal'>
+              Remembered your password?{' '}
+              <button className='font-semibold text-[#09391C]' onClick={() => setShowForgotPassword(false)}>
+                Signin
+              </button>
+            </p>
+          </form>
+        )}
       </div>
     </section>
   );

@@ -15,4 +15,8 @@ export const URLS = {
   buyersFetchBriefs: '/properties/sell/all',
   rentersFetchBriefs: '/properties/rents/all', // to fetch rent briefs on the rent page
   buyersSearchBrief: '/properties/buy/request/search',
-}
+  resetPassword: '/reset-password',
+  requestPasswordReset: '/request-password-reset',
+  allAvailableSLots: '/all/inspection-slots',
+  scheduleInspection: '/property/schedule-inspection',
+};
