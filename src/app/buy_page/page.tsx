@@ -19,15 +19,16 @@ import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWifi } from '@fortawesome/free-solid-svg-icons';
 import { BriefType } from '@/types';
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from 'next/navigation';
 
 //type CardData = { header: string; value: string }[];
 
 export default function Rent() {
   const router = useRouter();
   const pathname = usePathname();
-  const [usageOption, setUsageOption] = useState("");
-  const selectedBriefsRef = useRef<HTMLDivElement>(null); 
+  const [usageOption, setUsageOption] = useState('');
+  const selectedBriefsRef = useRef<HTMLDivElement>(null);
+  const { setPropertyRefSelectedBriefs } = usePageContext();
 
   const isLoading = useLoading();
   const {
@@ -51,15 +52,14 @@ export default function Rent() {
   const [isFetchingData, setFetchingData] = useState<boolean>(false);
   const [errMessage, setErrMessage] = useState<string>('');
 
-
   useEffect(() => {
     // Check sessionStorage for the previous page
-    const previousPage = sessionStorage.getItem("previousPage");
-  
-    if (previousPage === "/joint_ventures") {
-      setUsageOption("Joint Venture");
+    const previousPage = sessionStorage.getItem('previousPage');
+
+    if (previousPage === '/joint_ventures') {
+      setUsageOption('Joint Venture');
     }
-    console.log("Previous page: ", previousPage);
+    console.log('Previous page: ', previousPage);
     // Update the previous page in sessionStorage
     // sessionStorage.setItem("previousPage", pathname);
   }, [pathname]);
@@ -191,53 +191,59 @@ export default function Rent() {
                     isSelectedBriefClicked ? 'hidden lg:grid' : 'flex lg:grid'
                   }`}>
                   {properties?.length !== 0 &&
-                    properties
-                      ?.slice(-10)
-                      .map((property, idx: number) => (
-                    <Card
-                      images={Array(12).fill(imgSample)}
-                      onClick={() => {
-                        if (selectedBriefs.has(property)) {
-                          return toast.error('This property has already been added for inspection.');
-                        }
-                        if (selectedBriefs.size >= 3) {
-                          return toast.error('You can only submit up to 3 briefs for inspection.');
-                        }
-                        addBrief(property);
-                        if (selectedBriefs.has(property)) {
-                          return toast.success('Already added for inspection');
-                        }
-                        toast.success('Successfully added for inspection');
-                      }}
-                      cardData={[
-                        {
-                          header: 'Property Type',
-                          value: property.propertyType,
-                        },
-                        {
-                          header: 'Price',
-                          value: `₦${Number(property.price).toLocaleString()}`,
-                        },
-                        {
-                          header: 'Bedrooms',
-                          value:
-                            property.propertyFeatures?.noOfBedrooms || 'N/A',
-                        },
-                        {
-                          header: 'Location',
-                          value: `${property.location.state}, ${property.location.localGovernment}`,
-                        },
-                        {
-                          header: 'Documents',
-                          value: `<ol class='' style='list-style: 'dics';'>${property.docOnProperty.map(
-                            (item: { _id: string; docName: string }) =>
-                              `<li key={${item._id}>${item.docName}</li>`
-                          )}<ol>`,
-                        },
-                      ]}
-                      key={idx}
-                    />
-                  ))}
+                    properties?.slice(-10).map((property, idx: number) => (
+                      <Card
+                        images={Array(12).fill(imgSample)}
+                        onClick={() => {
+                          if (selectedBriefs.has(property)) {
+                            return toast.error(
+                              'This property has already been added for inspection.'
+                            );
+                          }
+                          if (selectedBriefs.size >= 3) {
+                            return toast.error(
+                              'You can only submit up to 3 briefs for inspection.'
+                            );
+                          }
+                          addBrief(property);
+                          if (selectedBriefs.has(property)) {
+                            return toast.success(
+                              'Already added for inspection'
+                            );
+                          }
+                          toast.success('Successfully added for inspection');
+                        }}
+                        cardData={[
+                          {
+                            header: 'Property Type',
+                            value: property.propertyType,
+                          },
+                          {
+                            header: 'Price',
+                            value: `₦${Number(
+                              property.price
+                            ).toLocaleString()}`,
+                          },
+                          {
+                            header: 'Bedrooms',
+                            value:
+                              property.propertyFeatures?.noOfBedrooms || 'N/A',
+                          },
+                          {
+                            header: 'Location',
+                            value: `${property.location.state}, ${property.location.localGovernment}`,
+                          },
+                          {
+                            header: 'Documents',
+                            value: `<ol class='' style='list-style: 'dics';'>${property.docOnProperty.map(
+                              (item: { _id: string; docName: string }) =>
+                                `<li key={${item._id}>${item.docName}</li>`
+                            )}<ol>`,
+                          },
+                        ]}
+                        key={idx}
+                      />
+                    ))}
                 </div>
                 {isFetchingData && (
                   <div className='container min-h-[300px] flex items-center justify-center'>
@@ -315,6 +321,8 @@ export default function Rent() {
                     value='Submit'
                     onClick={() => {
                       setRentPage({ isSubmitForInspectionClicked: true });
+                      // setPropertyRefSelectedBriefs([...selectedBriefs])
+                      setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
                     }}
                     className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
                   />

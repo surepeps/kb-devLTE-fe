@@ -18,8 +18,14 @@ import axios from 'axios';
 const ContactUs = () => {
   const ref = useRef<HTMLFormElement | null>(null);
 
-  const { setRentPage, rentPage, propertyReference, setPropertyReference } =
-    usePageContext();
+  const {
+    setRentPage,
+    rentPage,
+    propertyReference,
+    setPropertyReference,
+    propertyRefSelectedBriefs,
+    setPropertyRefSelectedBriefs,
+  } = usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   const validationSchema = Yup.object({
@@ -40,9 +46,83 @@ const ContactUs = () => {
     onSubmit: async (values) => {
       console.log(values);
       console.log(rentPage);
-      if (!propertyReference) {
-        return;
-      } else {
+      if (propertyRefSelectedBriefs) {
+        console.log(propertyRefSelectedBriefs);
+
+        const payloads = propertyRefSelectedBriefs.map((propertyData) => {
+          const filteredPropertyData = propertyData.docOnProperty.map(
+            ({ docName }) => {
+              return { docName, isProvided: true };
+            }
+          );
+
+          return {
+            location: propertyData.location,
+            propertyFeatures: propertyData.propertyFeatures,
+            propertyType: propertyData.propertyType,
+            areYouTheOwner: true,
+            budgetRange: propertyData.price.toLocaleString(),
+            price: propertyData.price,
+            docOnProperty: filteredPropertyData,
+            usageOptions: ['All', 'Lease'],
+            owner: {
+              fullName: values.fullName,
+              phoneNumber: String(values.phoneNumber),
+              email: values.email,
+            },
+          };
+          // ...propertyData,
+          // owner: {
+          //   fullName: values.fullName,
+          //   phoneNumber: String(values.phoneNumber),
+          //   email: values.email,
+          // },
+        });
+
+        // const payloads = propertyRefSelectedBriefs.map((propertyData) => {
+        //   // Clone propertyData to avoid mutating the original object
+        //   const filteredPropertyData = { ...propertyData };
+
+        //   // Check if docOfProperty exists and is an array
+        //   if (Array.isArray(filteredPropertyData.docOfProperty)) {
+        //     filteredPropertyData.docOfProperty =
+        //       filteredPropertyData.docOfProperty.map(({ id, ...rest }) => rest);
+        //   }
+
+        //   return {
+        //     ...filteredPropertyData,
+        //     owner: {
+        //       fullName: values.fullName,
+        //       phoneNumber: String(values.phoneNumber),
+        //       email: values.email,
+        //     },
+        //   };
+        // });
+
+        setIsSubmitting(true);
+        try {
+          // Send all requests in parallel
+          const responses = await Promise.all(
+            payloads.map((payload) =>
+              axios.post(URLS.BASE + '/properties/buy/request/new', payload)
+            )
+          );
+
+          // Check if all requests were successful
+          if (responses.every((response) => response.status === 201)) {
+            toast.success('All preferences submitted successfully');
+            setRentPage({ isSubmitForInspectionClicked: false });
+            setPropertyRefSelectedBriefs([]);
+          } else {
+            toast.error('Some requests failed. Please try again.');
+          }
+        } catch (error: any) {
+          toast.error(error?.message);
+          console.error(error);
+        } finally {
+          setIsSubmitting(false);
+        }
+      } else if (propertyReference) {
         const payload = {
           ...propertyReference,
           owner: {
