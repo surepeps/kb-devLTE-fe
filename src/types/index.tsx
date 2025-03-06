@@ -62,6 +62,8 @@ export interface GlobalContextTypes {
   addBrief: (brief: BriefType) => void;
   removeBrief: (briefId: BriefType) => void;
   clearBriefs: () => void;
+  propertyRefSelectedBriefs: BriefType[];
+  setPropertyRefSelectedBriefs: ([]: BriefType[]) => void;
 }
 
 export type BriefType = {
