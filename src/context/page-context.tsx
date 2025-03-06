@@ -60,6 +60,11 @@ export const PageContextProvider = ({
   //Buy page - property referenece
   const [propertyReference, setPropertyReference] = useState({});
 
+  /**Selected Briefs for Buy Page - property reference */
+  const [propertyRefSelectedBriefs, setPropertyRefSelectedBriefs] = useState<
+    BriefType[]
+  >([]);
+
   //all card data
   const [cardData, setCardData] = useState<[]>([]);
 
@@ -111,6 +116,8 @@ export const PageContextProvider = ({
         addBrief,
         clearBriefs,
         removeBrief,
+        propertyRefSelectedBriefs,
+        setPropertyRefSelectedBriefs,
       }}>
       {children}
     </PageContext.Provider>
