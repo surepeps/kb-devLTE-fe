@@ -18,7 +18,7 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='min-h-[57px] pt-[25px] px-[20px] pb-[10px]'
         name={'Date'}
-        value={item.date}
+        value={item.date.split('T')[0]}
       />
 
       <UniformStyling
@@ -30,19 +30,23 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='py-[10px] px-[20px] min-h-[42px]'
         name='Location'
-        value={item.location}
+        value={`${item.actualLocation?.state}`}
       />
 
       <UniformStyling
         className='py-[10px] px-[20px] min-h-[42px]'
         name='Property price'
-        value={`N ${Number(item.propertyPrice).toLocaleString()}`}
+        value={`\u20A6${Number(item.propertyPrice).toLocaleString()}`}
       />
 
       <UniformStyling
         className='py-[10px] px-[20px] min-h-[42px]'
         name='Documents'
-        value={item.document}
+        value={
+          item.docOnProperty !== undefined
+            ? item.docOnProperty[0].docName.split('').splice(0, 6).join('')
+            : ''
+        }
       />
 
       <button

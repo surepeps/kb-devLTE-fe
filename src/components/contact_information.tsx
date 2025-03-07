@@ -46,7 +46,7 @@ const ContactUs = () => {
     onSubmit: async (values) => {
       console.log(values);
       console.log(rentPage);
-      if (propertyRefSelectedBriefs) {
+      if (propertyRefSelectedBriefs.length !== 0) {
         console.log(propertyRefSelectedBriefs);
 
         const payloads = propertyRefSelectedBriefs.map((propertyData) => {
@@ -64,7 +64,7 @@ const ContactUs = () => {
             budgetRange: propertyData.price.toLocaleString(),
             price: propertyData.price,
             docOnProperty: filteredPropertyData,
-            usageOptions: ['All', 'Lease'],
+            usageOptions: propertyData.usageOptions ?? ['All', 'Lease'],
             owner: {
               fullName: values.fullName,
               phoneNumber: String(values.phoneNumber),
@@ -79,26 +79,6 @@ const ContactUs = () => {
           // },
         });
 
-        // const payloads = propertyRefSelectedBriefs.map((propertyData) => {
-        //   // Clone propertyData to avoid mutating the original object
-        //   const filteredPropertyData = { ...propertyData };
-
-        //   // Check if docOfProperty exists and is an array
-        //   if (Array.isArray(filteredPropertyData.docOfProperty)) {
-        //     filteredPropertyData.docOfProperty =
-        //       filteredPropertyData.docOfProperty.map(({ id, ...rest }) => rest);
-        //   }
-
-        //   return {
-        //     ...filteredPropertyData,
-        //     owner: {
-        //       fullName: values.fullName,
-        //       phoneNumber: String(values.phoneNumber),
-        //       email: values.email,
-        //     },
-        //   };
-        // });
-
         setIsSubmitting(true);
         try {
           // Send all requests in parallel
@@ -111,6 +91,7 @@ const ContactUs = () => {
           // Check if all requests were successful
           if (responses.every((response) => response.status === 201)) {
             toast.success('All preferences submitted successfully');
+            console.log(responses);
             setRentPage({ isSubmitForInspectionClicked: false });
             setPropertyRefSelectedBriefs([]);
           } else {
@@ -122,7 +103,8 @@ const ContactUs = () => {
         } finally {
           setIsSubmitting(false);
         }
-      } else if (propertyReference) {
+      }
+      if (Object.keys(propertyReference).length > 0) {
         const payload = {
           ...propertyReference,
           owner: {
@@ -145,6 +127,7 @@ const ContactUs = () => {
               isSubmitForInspectionClicked: false,
             });
             setIsSubmitting(false);
+            console.log(response.data);
             setPropertyReference({});
           } else {
             toast.error('Sorry, something went wrong');
