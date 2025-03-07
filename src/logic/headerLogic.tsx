@@ -10,7 +10,7 @@ const HeaderLogic = () => {
   const pathname = usePathname();
   return (
     <Fragment>
-      {pathname.includes('form') || pathname.includes('createBrief') ? (
+      {pathname.includes('agent') && pathname.includes('briefs') ? (
         <AgentHeader />
       ) : (
         <Header />
