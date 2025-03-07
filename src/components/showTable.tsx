@@ -33,27 +33,36 @@ const ShowTable: React.FC<ShowTableProps> = ({
           {data.map((item, idx: number) => (
             <tr className='w-full flex' key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.date}
+                {item.date.split('T')[0]}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.propertyType}
               </td>
               <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.location}
+                {item.actualLocation?.state},
+                {item.actualLocation?.localGovernment}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 N {Number(item.propertyPrice).toLocaleString()}
               </td>
-              {item.document ? (
+              {item.document?.length !== 0 ? (
+                // <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+                //   {item.document.split('').splice(0, 14).join('') + '...'}
+                // </td>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item.document.split('').splice(0, 14).join('') + '...'}
+                  {item?.docOnProperty !== undefined &&
+                    item.docOnProperty[0].docName
+                      .split('')
+                      .splice(0, 14)
+                      .join('')}
+                  {'...'}
                 </td>
               ) : null}
-              {item.amountSold ? (
+              {/* {item.amountSold ? (
                 <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
                   N {Number(item.amountSold).toLocaleString()}
                 </td>
-              ) : null}
+              ) : null} */}
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 <FontAwesomeIcon
                   onClick={() => {
