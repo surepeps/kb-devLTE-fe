@@ -1,7 +1,15 @@
+/** @format */
+
 'use client';
 import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { usePathname } from 'next/navigation';
@@ -86,7 +94,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUserContext = () => {
