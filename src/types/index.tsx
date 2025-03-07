@@ -77,6 +77,7 @@ export type BriefType = {
     localGovernment: string;
   };
   docOnProperty: { _id: string; docName: string }[];
+  usageOptions?: [];
 }; // Adjust fields as needed
 
 // type BriefsContextType = {
