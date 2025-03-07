@@ -15,12 +15,67 @@ import Cookies from 'js-cookie';
 import { PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useUserContext } from '@/context/user-context';
+import naijaStates from 'naija-state-local-government';
 
+interface Option {
+  value: string;
+  label: string;
+}
 const AgentData = () => {
   const router = useRouter();
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const { user } = useUserContext();
-  const [selectedAgentType, setSelectedAgentType] = useState<string>('Individual Agent');
+  const [selectedAgentType, setSelectedAgentType] =
+    useState<string>('Individual Agent');
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+
+  const [stateOptions, setStateOptions] = useState<Option[]>([]);
+  const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    // Load Nigerian states correctly
+    setStateOptions(
+      naijaStates.states().map((state: string) => ({
+        value: state,
+        label: state,
+      }))
+    );
+  }, []);
+
+  const handleLGAChange = (selected: Option | null) => {
+    formik.setFieldValue('localGovtArea', selected?.value);
+    console.log('Selected LGA:', formik.values); // Debugging
+    setSelectedLGA?.(selected);
+  };
+
+  const handleStateChange = (selected: Option | null) => {
+    console.log(formik.values);
+    formik.setFieldValue('state', selected?.value);
+    setSelectedState?.(selected);
+
+    if (selected) {
+      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+
+      if (Array.isArray(lgas)) {
+        setLgaOptions(
+          lgas.map((lga: string) => ({
+            value: lga,
+            label: lga,
+          }))
+        );
+      } else {
+        console.error('LGAs not returned as an array:', lgas);
+        setLgaOptions([]);
+      }
+      setSelectedLGA?.(null);
+    } else {
+      console.log('Hey');
+      setLgaOptions([]);
+      setSelectedLGA?.(null);
+    }
+  };
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
@@ -51,7 +106,8 @@ const AgentData = () => {
           localGovtArea: formik.values.localGovtArea,
         },
         regionOfOperation: formik.values.regionOfOperation,
-        agentType: selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
+        agentType:
+          selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
         ...(selectedAgentType === 'Individual Agent'
           ? {
               individualAgent: {
@@ -71,16 +127,24 @@ const AgentData = () => {
         lastName: formik.values.lastName,
       };
       await toast.promise(
-        PUT_REQUEST(URLS.BASE + URLS.agentOnboarding, payload, Cookies.get('token'))
+        PUT_REQUEST(
+          URLS.BASE + URLS.agentOnboarding,
+          payload,
+          Cookies.get('token')
+        )
           .then((response) => {
             if (response.success) {
               console.log('response from form', response);
               toast.success('Agent data submitted successfully');
-              Cookies.set('token', (response as unknown as { token: string }).token);
+              Cookies.set(
+                'token',
+                (response as unknown as { token: string }).token
+              );
               router.push('/agent/briefs');
               return 'Agent data submitted successfully';
             } else {
-              const errorMessage = (response as any).error || 'Submission failed';
+              const errorMessage =
+                (response as any).error || 'Submission failed';
               toast.error(errorMessage);
               throw new Error(errorMessage);
             }
@@ -106,10 +170,22 @@ const AgentData = () => {
         state: user?.address?.state || '',
         localGovtArea: user.address?.localGovtArea || '',
         regionOfOperation: user.regionOfOperation || '',
-        typeOfID: user.agentType === 'Individual' ? user.individualAgent?.typeOfId || '' : '',
-        companyName: user.agentType === 'Company' ? user?.companyAgent?.companyName || '' : '',
-        idNumber: user.agentType === 'Individual' ? user.individualAgent?.idNumber || '' : '',
-        registrationNumber: user.agentType === 'Company' ? user.companyAgent?.companyRegNumber || '' : '',
+        typeOfID:
+          user.agentType === 'Individual'
+            ? user.individualAgent?.typeOfId || ''
+            : '',
+        companyName:
+          user.agentType === 'Company'
+            ? user?.companyAgent?.companyName || ''
+            : '',
+        idNumber:
+          user.agentType === 'Individual'
+            ? user.individualAgent?.idNumber || ''
+            : '',
+        registrationNumber:
+          user.agentType === 'Company'
+            ? user.companyAgent?.companyRegNumber || ''
+            : '',
         firstName: user.firstName,
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
@@ -120,25 +196,28 @@ const AgentData = () => {
     <section
       className={`flex items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
         (isContactUsClicked || isModalOpened) && 'brightness-[30%]'
-      }`}
-    >
+      }`}>
       <form
         onSubmit={formik.handleSubmit}
-        className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full px-[20px]'
-      >
+        className='lg:w-[870px] flex flex-col justify-center items-center gap-[40px] w-full px-[20px]'>
         <div className='w-full min-h-[137px] flex flex-col gap-[24px] justify-center items-center'>
           <h2 className='text-center text-[40px] leading-[49.2px] font-display font-bold text-[#09391C]'>
-            Welcome to <span className='text-[#8DDB90] font-display'>Khabi-teq</span> realty
+            Welcome to{' '}
+            <span className='text-[#8DDB90] font-display'>Khabi-teq</span>{' '}
+            realty
           </h2>
           <p className='text-[#5A5D63] text-[20px] leading-[32px] text-center tracking-[5%]'>
-            Lorem ipsum dolor sit amet consectetur. Ornare feugiat suspendisse tincidunt erat scelerisque. Tortor aenean
-            a urna metus cursus dui commodo velit. Tellus mattis quam.
+            Lorem ipsum dolor sit amet consectetur. Ornare feugiat suspendisse
+            tincidunt erat scelerisque. Tortor aenean a urna metus cursus dui
+            commodo velit. Tellus mattis quam.
           </p>
         </div>
 
         <div className='lg:w-[602px] min-h-[654px] flex flex-col gap-[40px]'>
           <div className='flex flex-col w-full gap-[20px]'>
-            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Address Information</h2>
+            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
+              Address Information
+            </h2>
             <div className='w-full flex flex-col gap-[20px] min-h-[181px]'>
               <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                 <Input
@@ -151,7 +230,7 @@ const AgentData = () => {
                   onBlur={formik.handleBlur}
                   placeholder='This is a placeholder'
                 />
-                <Input
+                {/* <Input
                   label='State'
                   name='state'
                   type='text'
@@ -170,6 +249,31 @@ const AgentData = () => {
                   onBlur={formik.handleBlur}
                   id='localGovtArea'
                   placeholder='This is a placeholder'
+                /> */}
+                <Input
+                  label='State'
+                  name='selectedState'
+                  forState={true}
+                  forLGA={false}
+                  type='text'
+                  placeholder='Select State'
+                  formik={formik}
+                  selectedState={selectedState}
+                  stateOptions={stateOptions}
+                  setSelectedState={handleStateChange}
+                  // isDisabled={areInputsDisabled}
+                />
+                <Input
+                  label='Local Government'
+                  name='selectedLGA'
+                  type='text'
+                  formik={formik}
+                  forLGA={true}
+                  forState={false}
+                  selectedLGA={selectedLGA}
+                  lgasOptions={lgaOptions}
+                  setSelectedLGA={handleLGAChange}
+                  // isDisabled={areInputsDisabled}
                 />
               </div>
               <Input
@@ -185,7 +289,9 @@ const AgentData = () => {
               />
             </div>
             {/**Agent Type */}
-            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Agent Type</h2>
+            <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
+              Agent Type
+            </h2>
             <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
               <Select
                 value={selectedAgentType}
@@ -249,8 +355,13 @@ const AgentData = () => {
                   />
                 )}
               </div>
-              <AttachFile heading='Upload your document' setFileUrl={setFileUrl} />
-              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>Contact Information</h2>
+              <AttachFile
+                heading='Upload your document'
+                setFileUrl={setFileUrl}
+              />
+              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
+                Contact Information
+              </h2>
               <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
                 <Input
                   label='First Name'

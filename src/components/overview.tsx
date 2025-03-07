@@ -7,6 +7,9 @@ import { DataProps, DataPropsArray } from '@/types/agent_data_props';
 import DetailsToCheck from '@/components/detailsToCheck';
 import { briefData } from '@/data/sampleDataForAgent';
 import Briefs from './mobileBrief';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
 
 const Overview = () => {
   const [briefs, setBriefs] = useState({
@@ -24,16 +27,23 @@ const Overview = () => {
 
   const [isFullDetailsClicked, setIsFullDetailsClicked] =
     useState<boolean>(false);
+  /**
+     * const combinedProperties = [
+          ...(data?.sellProperties || []),
+          ...(data?.rentProperties || []),
+        ]
+     */
 
-  useEffect(() => {
-    setBriefs({
-      totalBrief: 80,
-      draftBrief: 2,
-      referredAgent: 2,
-      completeTransaction: 35,
-      totalAmount: 3000000000.0,
-    });
-  }, []);
+  // useEffect(() => {
+
+  //   setBriefs({
+  //     totalBrief: 80,
+  //     draftBrief: 2,
+  //     referredAgent: 2,
+  //     completeTransaction: 35,
+  //     totalAmount: 3000000000.0,
+  //   });
+  // }, []);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
     date: '12/12/2024',
@@ -50,6 +60,30 @@ const Overview = () => {
       setSubmitBrief(false);
     }
   }, [selectedOption]);
+
+  useEffect(() => {
+    const getBriefsData = async () => {
+      try {
+        const response = await GET_REQUEST(
+          URLS.BASE + '/agent/properties',
+          Cookies.get('token')
+        );
+        const data = response.data;
+        console.log(data);
+        const combinedProperties = [
+          ...(data?.sellProperties || []),
+          ...(data?.rentProperties || []),
+        ];
+        setBriefs({
+          ...briefs,
+          totalBrief: combinedProperties.length,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getBriefsData();
+  }, []);
 
   return (
     <Fragment>
