@@ -5,7 +5,7 @@
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, Suspense } from 'react';
 import mailIcon from '@/svgs/envelope.svg';
 import phoneIcon from '@/svgs/phone.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
@@ -219,4 +219,10 @@ const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, 
   );
 };
 
-export default ResetPassword;
+export default function Page() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ResetPassword />
+    </Suspense>
+  );
+}
