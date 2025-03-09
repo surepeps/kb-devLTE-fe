@@ -10,6 +10,7 @@ import Briefs from './mobileBrief';
 import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 
 const Overview = () => {
   const [briefs, setBriefs] = useState({
@@ -24,7 +25,10 @@ const Overview = () => {
     useState<string>('recently publish');
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(false);
-
+  const [isLoadingDetails, setIsLoadingDetails] = useState({
+    isLoading: false,
+    message: '',
+  });
   const [isFullDetailsClicked, setIsFullDetailsClicked] =
     useState<boolean>(false);
   /**
@@ -63,23 +67,48 @@ const Overview = () => {
 
   useEffect(() => {
     const getBriefsData = async () => {
+      setIsLoadingDetails({
+        isLoading: true,
+        message: 'Loading...',
+      });
       try {
         const response = await GET_REQUEST(
           URLS.BASE + '/agent/properties',
           Cookies.get('token')
         );
+
+        if (response?.success === false) {
+          toast.error('Failed to get data');
+          return setIsLoadingDetails({
+            isLoading: false,
+            message: 'Failed to get data',
+          });
+        }
         const data = response.data;
         console.log(data);
         const combinedProperties = [
           ...(data?.sellProperties || []),
           ...(data?.rentProperties || []),
         ];
+        setIsLoadingDetails({
+          isLoading: false,
+          message: 'Data Loaded',
+        });
         setBriefs({
           ...briefs,
           totalBrief: combinedProperties.length,
         });
       } catch (error) {
         console.log(error);
+        setIsLoadingDetails({
+          isLoading: false,
+          message: 'Failed to get data',
+        });
+      } finally {
+        setIsLoadingDetails({
+          isLoading: false,
+          message: '',
+        });
       }
     };
     getBriefsData();
@@ -105,7 +134,11 @@ const Overview = () => {
                 Total Brief
               </h4>
               <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
-                {briefs.totalBrief}
+                {isLoadingDetails.isLoading ? (
+                  <i className='text-sm'>{isLoadingDetails.message}</i>
+                ) : (
+                  briefs.totalBrief
+                )}
               </h2>
             </div>
             {/**Draft Brief */}
