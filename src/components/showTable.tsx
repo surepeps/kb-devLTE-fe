@@ -12,11 +12,11 @@ const ShowTable: React.FC<ShowTableProps> = ({
   setDetailsToCheck,
 }) => {
   return (
-    <div className='w-full border-[1px] border-[#E4DFDF] min-h-[558px] rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
+    <div className='w-full border-[1px] border-[#E4DFDF] min-h-fit rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
       <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
         {heading}
       </h1>
-      <table className='w-full h-[446px] flex flex-col gap-[15px]'>
+      <table className='w-full flex flex-col gap-[15px]'>
         <thead className='min-h-[54px] p-[16px] bg-[#FAFAFA]'>
           {''}
           <tr className='w-full flex'>
