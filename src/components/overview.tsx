@@ -11,6 +11,7 @@ import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import RequestsTable from './RquestsTable';
+import toast from 'react-hot-toast';
 
 interface RequestData {
   _id: string;
@@ -44,31 +45,41 @@ const Overview = () => {
   const [selectedOption, setSelectedOption] = useState<string>('recently publish');
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(false);
-
+  const [isLoadingDetails, setIsLoadingDetails] = useState({
+    isLoading: false,
+    message: '',
+  });
   const [allRequests, setAllRequests] = useState<RequestData[]>([]);
 
   const [isFullDetailsClicked, setIsFullDetailsClicked] = useState<boolean>(false);
+  /**
+     * const combinedProperties = [
+          ...(data?.sellProperties || []),
+          ...(data?.rentProperties || []),
+        ]
+     */
 
-  useEffect(() => {
-    setBriefs({
-      totalBrief: 80,
-      draftBrief: 2,
-      referredAgent: 2,
-      completeTransaction: 35,
-      totalAmount: 3000000000.0,
+  // useEffect(() => {
+
+  //   setBriefs({
+  //     totalBrief: 80,
+  //     draftBrief: 2,
+  //     referredAgent: 2,
+  //     completeTransaction: 35,
+  //     totalAmount: 3000000000.0,
+  //   });
+
+  (async () => {
+    const url = URLS.BASE + URLS.agent + URLS.getAllRequests;
+    await GET_REQUEST(url, Cookies.get('token')).then((data) => {
+      if (data.success) {
+        setAllRequests(data.data);
+      } else {
+        setAllRequests([]);
+      }
     });
-
-    (async () => {
-      const url = URLS.BASE + URLS.agent + URLS.getAllRequests;
-      await GET_REQUEST(url, Cookies.get('token')).then((data) => {
-        if (data.success) {
-          setAllRequests(data.data);
-        } else {
-          setAllRequests([]);
-        }
-      });
-    })();
-  }, []);
+  })();
+  // }, []);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
     date: '12/12/2024',
@@ -85,6 +96,49 @@ const Overview = () => {
       setSubmitBrief(false);
     }
   }, [selectedOption]);
+
+  useEffect(() => {
+    const getBriefsData = async () => {
+      setIsLoadingDetails({
+        isLoading: true,
+        message: 'Loading...',
+      });
+      try {
+        const response = await GET_REQUEST(URLS.BASE + '/agent/properties', Cookies.get('token'));
+
+        if (response?.success === false) {
+          toast.error('Failed to get data');
+          return setIsLoadingDetails({
+            isLoading: false,
+            message: 'Failed to get data',
+          });
+        }
+        const data = response.data;
+        console.log(data);
+        const combinedProperties = [...(data?.sellProperties || []), ...(data?.rentProperties || [])];
+        setIsLoadingDetails({
+          isLoading: false,
+          message: 'Data Loaded',
+        });
+        setBriefs({
+          ...briefs,
+          totalBrief: combinedProperties.length,
+        });
+      } catch (error) {
+        console.log(error);
+        setIsLoadingDetails({
+          isLoading: false,
+          message: 'Failed to get data',
+        });
+      } finally {
+        setIsLoadingDetails({
+          isLoading: false,
+          message: '',
+        });
+      }
+    };
+    getBriefsData();
+  }, []);
 
   return (
     <Fragment>
@@ -106,7 +160,7 @@ const Overview = () => {
                 Total Brief
               </h4>
               <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
-                {briefs.totalBrief}
+                {isLoadingDetails.isLoading ? <i className='text-sm'>{isLoadingDetails.message}</i> : briefs.totalBrief}
               </h2>
             </div>
             {/**Draft Brief */}
