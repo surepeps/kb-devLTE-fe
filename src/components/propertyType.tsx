@@ -14,7 +14,9 @@ import * as Yup from 'yup';
 import { useUserContext } from '@/context/user-context';
 import { useEffect, useState } from 'react';
 import naijaStates from 'naija-state-local-government';
+import { propertyReferenceData } from '@/data/buy_page_data';
 // import Cookies from 'js-cookie';
+import ReactSelect from 'react-select';
 
 interface Option {
   value: string;
@@ -408,7 +410,7 @@ const PropertyType = () => {
               value={formik.values?.noOfBedroom}
               onChange={formik.handleChange}
             />
-            <Input
+            {/* <Input
               label='Additional Features'
               name='additionalFeatures'
               type='text'
@@ -420,6 +422,14 @@ const PropertyType = () => {
                   .map((feature) => feature.trim());
                 formik.setFieldValue('additionalFeatures', features);
               }}
+            /> */}
+            <Select
+              allowMultiple={true}
+              heading={'additionalFeatures'}
+              formik={formik}
+              name={propertyReferenceData[6].heading}
+              options={propertyReferenceData[6].options}
+              placeholder='Select'
             />
           </div>
           <div className='w-full flex gap-[15px]'>
@@ -453,3 +463,84 @@ const PropertyType = () => {
 };
 
 export default PropertyType;
+
+interface SelectProps {
+  heading: string;
+  placeholder?: string;
+  options: any[];
+  formik: any;
+  allowMultiple?: boolean;
+  name: string;
+}
+
+const Select: React.FC<SelectProps> = ({
+  heading,
+  options,
+  formik,
+  allowMultiple,
+  name,
+}) => {
+  // const [valueSelected, setValueSelected] =
+  //   useState<SingleValue<OptionType>>(null);
+
+  const opts = options.map((item) => ({
+    value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
+    label: typeof item === 'number' ? Number(item) : item,
+  }));
+  return (
+    <label
+      htmlFor='select'
+      className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
+      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
+        {name}
+      </h2>
+      <ReactSelect
+        isMulti={allowMultiple}
+        name={name}
+        onChange={(selectedOption) =>
+          allowMultiple
+            ? formik.setFieldValue(
+                heading,
+                [
+                  ...(Array.isArray(selectedOption)
+                    ? selectedOption.map((opt: any) => opt.label)
+                    : []),
+                ].filter(Boolean) // Removes undefined values
+              )
+            : formik.setFieldValue(heading, selectedOption?.label ?? '')
+        }
+        /** const selectedLabels = selectedOption ? selectedOption.map(opt => opt.label) : [];
+    formik.setFieldValue(heading, selectedLabels); */
+        onBlur={formik.handleBlur}
+        value={formik.values[heading]?.label}
+        options={opts}
+        className={`w-full`}
+        styles={{
+          control: (base) => ({
+            ...base,
+            height: '50px',
+            background: '#FFFFFF00',
+            overflow: 'hidden',
+            display: 'flex',
+            width: '100%',
+          }),
+        }}
+        placeholder='Select'
+      />
+      {/* <select
+        onChange={(e) => {
+          setValueSelected(e.target.value);
+        }}
+        value={valueSelected}
+        className='min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FFFFFF00] border-[#D6DDEB]'
+        name='select'
+        id='select'>
+        {options.map((option: string, idx: number) => (
+          <option value={option} key={idx}>
+            {option}
+          </option>
+        ))}
+      </select> */}
+    </label>
+  );
+};

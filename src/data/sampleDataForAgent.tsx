@@ -1,198 +1,49 @@
 /** @format */
-
-// /** @format */
-
-// import { DataPropsArray } from '@/types/agent_data_props';
-
-// export const briefData: DataPropsArray = [
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '09/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Badagry',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'Lorem ipsum dolor sit amet consectetur. Quis',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'Lorem ipsum dolor sit amet consectetur. Quis',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, Lorem ipsum dolor sit amet consectetur. Quis,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'Lorem ipsum dolor sit amet consectetur. Quis',
-//   },
-//   {
-//     date: '12/12/2025',
-//     propertyType: 'Residential',
-//     location: 'Abuja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     document: 'C of o, recepit,...',
-//   },
-// ];
-
-// export const completeTransactionData = [
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '09/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Badagry',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2025',
-//     propertyType: 'Residential',
-//     location: 'Abuja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-//   {
-//     date: '12/12/2024',
-//     propertyType: 'Residential',
-//     location: 'Lagos, Ikeja',
-//     propertyPrice: 200000000,
-//     amountSold: 200000000,
-//   },
-// ];
-
-import { City } from 'country-state-city';
+import { City, State } from 'country-state-city';
+import sampleImg from '@/assets/assets.png';
 
 // Define valid states and cities for Nigeria (country code: NG)
-// const nigeriaStates = State.getStatesOfCountry('NG');
+const nigeriaStates = State.getStatesOfCountry('NG');
+
 // const lagosCities = City.getCitiesOfState('NG', 'LA'); // Lagos state code: LA
 // const abujaCities = City.getCitiesOfState('NG', 'FC'); // Abuja (Federal Capital Territory) code: FC
 const badagryCity = City.getCitiesOfState('NG', 'LA').find(
   (city) => city.name === 'Badagry'
 );
 
+//Helper function to get a random state
+const getRandomState = () => {
+  const states = nigeriaStates;
+  return states[Math.floor(Math.random() * states.length)].name;
+};
+
 // Helper function to get a random city from a state
 const getRandomCity = (stateCode: string) => {
   const cities = City.getCitiesOfState('NG', stateCode);
   return cities[Math.floor(Math.random() * cities.length)].name;
 };
+
+/**
+ * export interface DataProps {
+  date: string;
+  propertyType: string;
+  location: string;
+  propertyPrice: string | number;
+  document?: string;
+  amountSold?: string | number;
+  propertyFeatures?: {
+    additionalFeatures: string[];
+    noOfBedrooms: number;
+  };
+  docOnProperty?: { _id: string; isProvided: boolean; docName: string }[];
+  actualLocation?: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
+  pictures?: string[];
+}
+ */
 
 // Updated briefData with actual locations
 export const briefData = [
@@ -202,27 +53,99 @@ export const briefData = [
     location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
     propertyPrice: 200000000,
     document: 'C of o, receipt,...',
-  },
-  {
-    date: '09/12/2024',
-    propertyType: 'Residential',
-    location: `Lagos, ${badagryCity?.name || 'Badagry'}`, // Badagry city in Lagos
-    propertyPrice: 200000000,
-    document: 'C of o, receipt,...',
+    amountSold: 2000000,
+    propertyFeatures: {
+      additionalFeatures: ['CCTV'],
+      noOfBedrooms: 26,
+    },
+    docOnProperty: [
+      {
+        _id: 'xxxaaaddd2345lkfg',
+        isProvided: true,
+        docName: 'C of O',
+      },
+    ],
+    actualLocation: {
+      state: getRandomState(),
+      localGovernment: getRandomCity('LA'),
+      area: '',
+    },
+    pictures: [sampleImg.src],
   },
   {
     date: '12/12/2024',
     propertyType: 'Residential',
     location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
     propertyPrice: 200000000,
-    document: 'Lorem ipsum dolor sit amet consectetur. Quis',
+    document: 'C of o, receipt,...',
+    amountSold: 2000000,
+    propertyFeatures: {
+      additionalFeatures: ['CCTV'],
+      noOfBedrooms: 26,
+    },
+    docOnProperty: [
+      {
+        _id: 'xxxaaaddd2345lkfg',
+        isProvided: true,
+        docName: 'C of O',
+      },
+    ],
+    actualLocation: {
+      state: getRandomState(),
+      localGovernment: getRandomCity('LA'),
+      area: '',
+    },
+    pictures: [sampleImg.src],
   },
   {
     date: '12/12/2024',
     propertyType: 'Residential',
-    location: `Abuja, ${getRandomCity('FC')}`, // Random city in Abuja
+    location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
     propertyPrice: 200000000,
     document: 'C of o, receipt,...',
+    amountSold: 2000000,
+    propertyFeatures: {
+      additionalFeatures: ['CCTV'],
+      noOfBedrooms: 26,
+    },
+    docOnProperty: [
+      {
+        _id: 'xxxaaaddd2345lkfg',
+        isProvided: true,
+        docName: 'C of O',
+      },
+    ],
+    actualLocation: {
+      state: getRandomState(),
+      localGovernment: getRandomCity('LA'),
+      area: '',
+    },
+    pictures: [sampleImg.src],
+  },
+  {
+    date: '12/12/2024',
+    propertyType: 'Residential',
+    location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
+    propertyPrice: 200000000,
+    document: 'C of o, receipt,...',
+    amountSold: 2000000,
+    propertyFeatures: {
+      additionalFeatures: ['CCTV'],
+      noOfBedrooms: 26,
+    },
+    docOnProperty: [
+      {
+        _id: 'xxxaaaddd2345lkfg',
+        isProvided: true,
+        docName: 'C of O',
+      },
+    ],
+    actualLocation: {
+      state: getRandomState(),
+      localGovernment: getRandomCity('LA'),
+      area: '',
+    },
+    pictures: [sampleImg.src],
   },
   // Add more entries as needed
 ];
