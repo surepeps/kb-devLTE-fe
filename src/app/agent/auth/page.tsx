@@ -70,7 +70,7 @@ const Register = () => {
           </div>
           <span className='text-base text-center leading-[25.6px] font-normal'>
             Already have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'/auth/agent/login'}>
+            <Link className='font-semibold text-[#09391C]' href={'/agent/auth/login'}>
               Sign In
             </Link>
           </span>
