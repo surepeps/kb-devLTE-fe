@@ -7,6 +7,30 @@ import { DataProps, DataPropsArray } from '@/types/agent_data_props';
 import DetailsToCheck from '@/components/detailsToCheck';
 import { briefData } from '@/data/sampleDataForAgent';
 import Briefs from './mobileBrief';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
+import RequestsTable from './RquestsTable';
+
+interface RequestData {
+  _id: string;
+  requestFrom: {
+    fullName: string;
+    email: string;
+  };
+  propertyId: {
+    propertyType: string;
+    location: {
+      state: string;
+      localGovernment: string;
+      area: string;
+    };
+    price: number;
+  };
+  status: string;
+  inspectionDate: string;
+  inspectionTime: string;
+}
 
 const Overview = () => {
   const [briefs, setBriefs] = useState({
@@ -17,13 +41,13 @@ const Overview = () => {
     totalAmount: 3000000000.0,
   });
 
-  const [selectedOption, setSelectedOption] =
-    useState<string>('recently publish');
+  const [selectedOption, setSelectedOption] = useState<string>('recently publish');
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(false);
 
-  const [isFullDetailsClicked, setIsFullDetailsClicked] =
-    useState<boolean>(false);
+  const [allRequests, setAllRequests] = useState<RequestData[]>([]);
+
+  const [isFullDetailsClicked, setIsFullDetailsClicked] = useState<boolean>(false);
 
   useEffect(() => {
     setBriefs({
@@ -33,6 +57,17 @@ const Overview = () => {
       completeTransaction: 35,
       totalAmount: 3000000000.0,
     });
+
+    (async () => {
+      const url = URLS.BASE + URLS.agent + URLS.getAllRequests;
+      await GET_REQUEST(url, Cookies.get('token')).then((data) => {
+        if (data.success) {
+          setAllRequests(data.data);
+        } else {
+          setAllRequests([]);
+        }
+      });
+    })();
   }, []);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
@@ -126,9 +161,7 @@ const Overview = () => {
                   setHeading(item);
                 }}
                 className={`${
-                  selectedOption === item
-                    ? 'bg-[#8DDB9033] text-[#09391C] font-bold'
-                    : 'font-normal text-[#5A5D63]'
+                  selectedOption === item ? 'bg-[#8DDB9033] text-[#09391C] font-bold' : 'font-normal text-[#5A5D63]'
                 }`}
                 key={idx}
                 text={item}
@@ -154,6 +187,7 @@ const Overview = () => {
                 data={briefData}
               />
             )}
+            {selectedOption === 'Inspection Requests' && <RequestsTable data={allRequests} />}
             {selectedOption === '3 month ago Brief' && (
               <Table
                 headingColor='black'
@@ -189,14 +223,7 @@ const Overview = () => {
   );
 };
 
-const headerData: string[] = [
-  'Date',
-  'Property Type',
-  'Location',
-  'Property price',
-  'Document',
-  'Full details',
-];
+const headerData: string[] = ['Date', 'Property Type', 'Location', 'Property price', 'Document', 'Full details'];
 
 interface OptionType {
   className: string;
@@ -209,7 +236,8 @@ const Options: FC<OptionType> = ({ text, onClick, className }) => {
     <button
       onClick={onClick}
       type='button'
-      className={`min-h-[51px] min-w-[162px] border-[1px] py-[15px] px-[20px] text-[18px] leading-[21.09px] tracking-[0%] border-[#C7CAD0] ${className} transition-all duration-500`}>
+      className={`min-h-[51px] min-w-[162px] border-[1px] py-[15px] px-[20px] text-[18px] leading-[21.09px] tracking-[0%] border-[#C7CAD0] ${className} transition-all duration-500`}
+    >
       {text}
     </button>
   );
@@ -220,6 +248,7 @@ const OptionData: string[] = [
   'recently publish',
   'Total referred Agent',
   '3 month ago Brief',
+  'Inspection Requests',
 ];
 
 interface TableProps {
@@ -233,26 +262,18 @@ interface TableProps {
   headingColor: string;
 }
 
-const Table: FC<TableProps> = ({
-  data,
-  setShowFullDetails,
-  setDetailsToCheck,
-  description,
-  heading,
-  headingColor,
-}) => {
+const Table: FC<TableProps> = ({ data, setShowFullDetails, setDetailsToCheck, description, heading, headingColor }) => {
   return (
     <section className='lg:w-[1184px] flex flex-col'>
       <div className='lg:w-[1184px] min-h-fit py-[43.9px] px-[41.16px] bg-white flex flex-col gap-[41.6px]'>
         <div className='min-h-[99px] flex flex-col gap-[10px]'>
           <h2
             style={{ color: headingColor }}
-            className={`font-archivo text-[24.7px] font-semibold leading-[24.7px] tracking-[0%]`}>
+            className={`font-archivo text-[24.7px] font-semibold leading-[24.7px] tracking-[0%]`}
+          >
             {heading}
           </h2>
-          <span className='text-[20px] leading-[32px] tracking-[5%] font-normal text-[#000000]'>
-            {description}
-          </span>
+          <span className='text-[20px] leading-[32px] tracking-[5%] font-normal text-[#000000]'>{description}</span>
         </div>
         {/**table */}
         <table className='w-full flex flex-col gap-[15px]'>
@@ -260,9 +281,7 @@ const Table: FC<TableProps> = ({
             {''}
             <tr className='w-full flex'>
               {headerData?.map((item: string, idx: number) => (
-                <td
-                  key={idx}
-                  className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
+                <td key={idx} className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
                   {item}
                 </td>
               ))}
@@ -271,9 +290,7 @@ const Table: FC<TableProps> = ({
           <tbody className='space-y-6 flex flex-col justify-start overflow-y-scroll hide-scrollbar px-[8px]'>
             {data.map((item, idx: number) => (
               <tr className='w-full flex' key={idx}>
-                <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item.date}
-                </td>
+                <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>{item.date}</td>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   {item.propertyType}
                 </td>
@@ -301,7 +318,8 @@ const Table: FC<TableProps> = ({
                       setShowFullDetails(true);
                       setDetailsToCheck(item);
                     }}
-                    className='bg-[#8DDB90] min-h-[50px] py-[12px] px-[24px] text-base leading-[25.6px] font-bold tracking-[0%] text-center text-[#FAFAFA]'>
+                    className='bg-[#8DDB90] min-h-[50px] py-[12px] px-[24px] text-base leading-[25.6px] font-bold tracking-[0%] text-center text-[#FAFAFA]'
+                  >
                     Submit brief
                   </button>
                   {/* <FontAwesomeIcon
