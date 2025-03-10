@@ -12,11 +12,11 @@ const ShowTable: React.FC<ShowTableProps> = ({
   setDetailsToCheck,
 }) => {
   return (
-    <div className='w-full border-[1px] border-[#E4DFDF] min-h-[558px] rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
+    <div className='w-full border-[1px] border-[#E4DFDF] min-h-fit rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
       <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
         {heading}
       </h1>
-      <table className='w-full h-[446px] flex flex-col gap-[15px]'>
+      <table className='w-full flex flex-col gap-[15px]'>
         <thead className='min-h-[54px] p-[16px] bg-[#FAFAFA]'>
           {''}
           <tr className='w-full flex'>
@@ -33,27 +33,36 @@ const ShowTable: React.FC<ShowTableProps> = ({
           {data.map((item, idx: number) => (
             <tr className='w-full flex' key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.date}
+                {item.date.split('T')[0]}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.propertyType}
               </td>
               <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.location}
+                {item.actualLocation?.state},
+                {item.actualLocation?.localGovernment}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 N {Number(item.propertyPrice).toLocaleString()}
               </td>
-              {item.document ? (
+              {item.document?.length !== 0 ? (
+                // <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+                //   {item.document.split('').splice(0, 14).join('') + '...'}
+                // </td>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item.document.split('').splice(0, 14).join('') + '...'}
+                  {item?.docOnProperty !== undefined &&
+                    item.docOnProperty[0].docName
+                      .split('')
+                      .splice(0, 14)
+                      .join('')}
+                  {'...'}
                 </td>
               ) : null}
-              {item.amountSold ? (
+              {/* {item.amountSold ? (
                 <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
                   N {Number(item.amountSold).toLocaleString()}
                 </td>
-              ) : null}
+              ) : null} */}
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 <FontAwesomeIcon
                   onClick={() => {

@@ -64,8 +64,8 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
         </div>
       </div>
 
-      <div className='w-full min-h-[310px] border-[1px] py-[30px] flex flex-row flex-wrap items-center gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[60px]'>
-        <div className='w-full flex flex-wrap gap-[20px] items-end'>
+      <div className='w-full min-h-[310px] border-[1px] py-[30px] flex flex-row flex-wrap items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[60px]'>
+        <div className='w-full flex flex-wrap gap-[20px] items-start'>
           {/**Property Type and Property Price */}
           <Container
             heading='Property Type'
@@ -77,16 +77,30 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           />
 
           {/**Location and Property Features */}
-          <Container heading='Location' title={detailsToCheck.location} />
+          <Container
+            heading='Location'
+            title={`${detailsToCheck.actualLocation?.state}, ${detailsToCheck.actualLocation?.localGovernment}, ${detailsToCheck.actualLocation?.area}`}
+          />
           <Container
             heading='Property Features'
-            title={detailsToCheck.location}
             containsList={true}
+            mapData={detailsToCheck.propertyFeatures?.additionalFeatures}
+          />
+          {/**Bedroom */}
+          <Container
+            heading='Bedroom'
+            title={detailsToCheck.propertyFeatures?.noOfBedrooms.toLocaleString()}
           />
 
           {/**Date Created and Document  */}
           <Container heading='Date Created' title={detailsToCheck.date} />
-          <Container heading='Document' title={detailsToCheck.document} />
+          <Container
+            heading='Document'
+            containsList={true}
+            mapData={detailsToCheck.docOnProperty?.map(
+              ({ docName }) => docName
+            )}
+          />
 
           {/**Images */}
           <div className='flex flex-col gap-[10px]'>
@@ -94,10 +108,15 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
               Upload Image
             </h2>
             <div className='flex flex-wrap gap-[10px] w-full'>
-              {Array.from({ length: 5 }).map((__, idx: number) => (
-                <div
+              {detailsToCheck?.pictures?.map((picture, idx: number) => (
+                <Image
                   key={idx}
-                  className='w-[131px] h-[98px] bg-[#D9D9D9]'></div>
+                  src={picture}
+                  alt=''
+                  width={200}
+                  height={200}
+                  className='w-[131px] h-[98px] bg-[#D9D9D9]'
+                />
               ))}
             </div>
           </div>
@@ -140,23 +159,28 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
 
 interface ContainerProps {
   heading: string;
-  title: string | undefined;
+  title?: string | undefined;
   containsList?: boolean;
+  mapData?: string[];
 }
 
-const Container: FC<ContainerProps> = ({ heading, title, containsList }) => {
+const Container: FC<ContainerProps> = ({
+  heading,
+  title,
+  containsList,
+  mapData,
+}) => {
   return (
     <div className='min-w-fit h-fit bg-[#FAFAFA] p-[20px] gap-[6px] flex flex-col'>
       <h3 className='text-[#585B6C] font-ubuntu text-[14px] font-normal leading-[22.4px] tracking-[0.1px]'>
         {heading}
       </h3>
       {containsList ? (
-        <ol
-          className='text-[14px] list-disc list-inside leading-[22.4px] tracking-[0.1px] font-medium text-[#141A16]'
-          dangerouslySetInnerHTML={{
-            __html: `<li>Sample</li>`,
-          }}
-        />
+        <ol className='text-[14px] list-disc list-inside leading-[22.4px] tracking-[0.1px] font-medium text-[#141A16]'>
+          {mapData?.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ol>
       ) : (
         <h2 className='text-[#141A16] font-ubuntu text-[14px] font-medium leading-[22.4px] tracking-[0.1px]'>
           {title}

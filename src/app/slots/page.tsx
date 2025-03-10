@@ -3,8 +3,9 @@ import Button from '@/components/button';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import toast from 'react-hot-toast';
+import Loading from '@/components/loading';
 
 interface Slot {
   _id: string;
@@ -15,7 +16,7 @@ interface Slot {
   slotStatus: string;
 }
 
-const InspectionSlots = () => {
+const SlotsPage = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
@@ -147,4 +148,10 @@ const InspectionSlots = () => {
   );
 };
 
-export default InspectionSlots;
+export default function Page() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SlotsPage />
+    </Suspense>
+  );
+}
