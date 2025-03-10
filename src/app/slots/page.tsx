@@ -42,8 +42,12 @@ const InspectionSlots = () => {
     setSelectedSlot(slot);
   };
 
+  const [booking, setBooking] = useState(false);
+
   const handleBookSlot = async () => {
     console.log('Slot Booked!', selectedSlot);
+    if (!selectedSlot) return;
+    setBooking(true);
 
     const url = URLS.BASE + URLS.scheduleInspection;
     const payload = {
@@ -62,6 +66,9 @@ const InspectionSlots = () => {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setBooking(false);
       });
   };
 
@@ -123,8 +130,8 @@ const InspectionSlots = () => {
                   </p>
                   <Button
                     className='min-h-[50px] mt-4 w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
-                    title='Book Slot'
-                    value='Book Slot'
+                    title={booking ? 'Booking...' : 'Book Slot'}
+                    value={booking ? 'Booking...' : 'Book Slot'}
                     onClick={() => handleBookSlot()}
                     // disabled={selectedSlot.slotStatus !== 'available'}
                   />
