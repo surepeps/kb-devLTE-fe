@@ -170,12 +170,16 @@ export default function Rent() {
           {
             <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px] overflow-hidden'>
               <div className='flex flex-col gap-2 w-full'>
-                {found.isFound && (
+                {
                   <div className='flex justify-between'>
                     {' '}
-                    <h2 className='text-[18px] leading-[28.8px] text-[#1976D2] font-semibold'>
-                      {found.count} match Found
-                    </h2>
+                    {found.isFound ? (
+                      <h2 className='text-[18px] leading-[28.8px] text-[#1976D2] font-semibold'>
+                        {found.count} match Found
+                      </h2>
+                    ) : (
+                      <div></div>
+                    )}
                     <h2 className='flex gap-[5px] lg:hidden cursor-pointer'>
                       <span
                         onClick={viewSelectedBrief}
@@ -184,7 +188,7 @@ export default function Rent() {
                       </span>
                     </h2>
                   </div>
-                )}
+                }
                 <div
                   className={`${
                     [...selectedBriefs].length !== 0
