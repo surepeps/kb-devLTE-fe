@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
