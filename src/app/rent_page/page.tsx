@@ -8,13 +8,13 @@ import { usePageContext } from '@/context/page-context';
 //import Card from '@/components/card';
 import { Fragment, useEffect, useState } from 'react';
 //import Button from '@/components/button';
-import ContactUs from '@/components/contact_information';
 import RentalReference from '@/components/rentalReference';
 import HouseFrame from '@/components/house-frame';
 //import imgSample from '@/assets/assets.png';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
+import Buyer_Contact from '@/components/buyer_contact';
 
 type HouseFrameProps = {
   propertyType: string;
@@ -61,19 +61,14 @@ export default function Rent() {
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
-          rentPage.isSubmitForInspectionClicked &&
-          'filter brightness-[30%] transition-all duration-500'
-        }`}>
+          rentPage.isSubmitForInspectionClicked && 'filter brightness-[30%] transition-all duration-500'
+        }`}
+      >
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
-            Submit Your{' '}
-            <span className='text-[#8DDB90] font-display'>
-              Rental Reference
-            </span>
+            Submit Your <span className='text-[#8DDB90] font-display'>Rental Reference</span>
           </h2>
-          <RentalReference
-            rentalReferenceData={propertyReferenceDataWithoutUsageOption}
-          />
+          <RentalReference rentalReferenceData={propertyReferenceDataWithoutUsageOption} />
           <div className='w-full px-[20px] flex flex-col lg:w-[1153px]'>
             <div className='flex flex-col justify-center items-center md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
               {isDataLoading ? (
@@ -97,7 +92,9 @@ export default function Rent() {
           </div>
         </div>
       </section>
-      {rentPage.isSubmitForInspectionClicked && <ContactUs />}
+      {/* {rentPage.isSubmitForInspectionClicked && (
+        <Buyer_Contact propertyId={Array.from(selectedBriefs)[0].id} propertyType='PropertyRent' />
+      )} */}
     </Fragment>
   );
 }
