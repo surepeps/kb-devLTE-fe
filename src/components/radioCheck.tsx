@@ -14,7 +14,7 @@ interface RadioCheckProps {
   // isChecked?: boolean | undefined;
   // setIsChecked?: (type: boolean) => void;
   handleChange?: ChangeEventHandler<HTMLInputElement> | undefined;
-  selectedValue?: string | undefined;
+  selectedValue?: string | boolean | undefined;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
