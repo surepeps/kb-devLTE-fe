@@ -202,16 +202,22 @@ export default function Rent() {
                       <Card
                         images={Array(12).fill(imgSample)}
                         onClick={() => {
-                          // if (selectedBriefs.has(property)) {
-                          //   return toast.error('This property has already been added for inspection.');
-                          // }
-                          // if (selectedBriefs.size >= 3) {
-                          //   return toast.error('You can only submit up to 3 briefs for inspection.');
-                          // }
-                          // addBrief(property);
-                          // if (selectedBriefs.has(property)) {
-                          //   return toast.success('Already added for inspection');
-                          // }
+                          if (selectedBriefs.has(property)) {
+                            return toast.error(
+                              'This property has already been added for inspection.'
+                            );
+                          }
+                          if (selectedBriefs.size >= 3) {
+                            return toast.error(
+                              'You can only submit up to 3 briefs for inspection.'
+                            );
+                          }
+                          addBrief(property);
+                          if (selectedBriefs.has(property)) {
+                            return toast.success(
+                              'Already added for inspection'
+                            );
+                          }
                           toast.success('Successfully added for inspection');
                           setSelectedBrief(property);
                           console.log(property);
@@ -268,69 +274,69 @@ export default function Rent() {
                   </div>
                 )}
               </div>
+              {[...selectedBriefs].length !== 0 && (
+                <div
+                  ref={selectedBriefsRef}
+                  className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] ${
+                    isSelectedBriefClicked ? 'flex lg:flex' : 'lg:flex hidden'
+                  }`}>
+                  <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
+                    Submit for inspection
+                  </h2>
+                  <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
+                    {[...selectedBriefs].map((brief, idx: number) => (
+                      <Card
+                        key={idx}
+                        images={Array(12).fill(imgSample)}
+                        onClick={() => {
+                          removeBrief(brief);
+                          localStorage.clear();
+                          toast.success('Removed successfully');
+                        }}
+                        cardData={[
+                          {
+                            header: 'Property Type',
+                            value: brief?.propertyType,
+                          },
+                          {
+                            header: 'Price',
+                            value: `₦${Number(brief?.price).toLocaleString()}`,
+                          },
+                          {
+                            header: 'Bedrooms',
+                            value:
+                              brief?.propertyFeatures?.noOfBedrooms || 'N/A',
+                          },
+                          {
+                            header: 'Location',
+                            value: `${brief?.location.state}, ${brief?.location.localGovernment}`,
+                          },
+                          {
+                            header: 'Documents',
+                            value: `<ol>${brief?.docOnProperty.map(
+                              (item: { _id: string; docName: string }) =>
+                                `<li key={${item._id}>${item.docName}</li>`
+                            )}<ol>`,
+                          },
+                        ]}
+                        isRed={true}
+                      />
+                    ))}
+                  </div>
+                  <Button
+                    green={true}
+                    value='Submit'
+                    onClick={() => {
+                      setRentPage({ isSubmitForInspectionClicked: true });
+                      // setPropertyRefSelectedBriefs([...selectedBriefs])
+                      setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
+                    }}
+                    className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
+                  />
+                </div>
+              )}
             </div>
           }
-          {selectedBrief && (
-            <div
-              // ref={selectedBriefsRef}
-              className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
-              <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
-                Submit for inspection
-              </h2>
-              <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
-                {selectedBrief && (
-                  <Card
-                    images={Array(12).fill(imgSample)}
-                    onClick={() => {
-                      removeBrief(selectedBrief);
-                      localStorage.clear();
-                      toast.success('Removed successfully');
-                    }}
-                    cardData={[
-                      {
-                        header: 'Property Type',
-                        value: selectedBrief?.propertyType,
-                      },
-                      {
-                        header: 'Price',
-                        value: `₦${Number(
-                          selectedBrief?.price
-                        ).toLocaleString()}`,
-                      },
-                      {
-                        header: 'Bedrooms',
-                        value:
-                          selectedBrief?.propertyFeatures?.noOfBedrooms ||
-                          'N/A',
-                      },
-                      {
-                        header: 'Location',
-                        value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
-                      },
-                      {
-                        header: 'Documents',
-                        value: `<ol>${selectedBrief?.docOnProperty.map(
-                          (item: { _id: string; docName: string }) =>
-                            `<li key={${item._id}>${item.docName}</li>`
-                        )}<ol>`,
-                      },
-                    ]}
-                    isRed={true}
-                  />
-                )}
-              </div>
-              <Button
-                green={true}
-                value='Submit'
-                onClick={() => {
-                  setRentPage({ isSubmitForInspectionClicked: true });
-                  // setPropertyRefSelectedBriefs([...selectedBriefs])
-                  setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
-                }}
-                className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
-              />
-            </div>
-          )}
         </div>
       </section>
       {rentPage.isSubmitForInspectionClicked && (
