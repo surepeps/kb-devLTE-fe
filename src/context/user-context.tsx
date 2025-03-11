@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /** @format */
 
 'use client';
@@ -12,8 +13,7 @@ import React, {
 } from 'react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface User {
   id?: string;
@@ -43,6 +43,7 @@ interface User {
 interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  logout: (callback?: () => void) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -52,9 +53,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const pathName = usePathname();
   const router = useRouter();
-  // console.log('pathName', pathName);
-
-  // console.log('user', user);
 
   const getAgent = async () => {
     const url = URLS.BASE + URLS.agentProfile;
@@ -84,6 +82,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
+  const logout = (callback?: () => void) => {
+    Cookies.remove('token');
+    setUser(null);
+    router.push('/agent/auth/login');
+    if (callback) callback();
+  };
+
   useEffect(() => {
     if (Cookies.get('token')) {
       getAgent();
@@ -95,7 +100,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, logout }}>
       {children}
     </UserContext.Provider>
   );
