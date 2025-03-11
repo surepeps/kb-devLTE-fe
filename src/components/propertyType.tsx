@@ -203,7 +203,7 @@ const PropertyType = () => {
           {/**options */}
           <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
             <RadioCheck
-              isDisabled={formik.values?.propertyType ? true : false}
+              // isDisabled={formik.values?.propertyType ? true : false}
               selectedValue={formik.values?.propertyType}
               handleChange={() => {
                 formik.setFieldValue('propertyType', 'Residential');
@@ -213,7 +213,7 @@ const PropertyType = () => {
               value='Residential'
             />
             <RadioCheck
-              isDisabled={formik.values?.propertyType ? true : false}
+              // isDisabled={formik.values?.propertyType ? true : false}
               selectedValue={formik.values?.propertyType}
               handleChange={() => {
                 formik.setFieldValue('propertyType', 'Commercial');
@@ -223,7 +223,7 @@ const PropertyType = () => {
               value='Commercial'
             />
             <RadioCheck
-              isDisabled={formik.values?.propertyType ? true : false}
+              // isDisabled={formik.values?.propertyType ? true : false}
               selectedValue={formik.values?.propertyType}
               handleChange={() => {
                 formik.setFieldValue('propertyType', 'Land');
@@ -431,6 +431,31 @@ const PropertyType = () => {
               options={propertyReferenceData[6].options}
               placeholder='Select'
             />
+          </div>
+          <div className='w-full flex flex-col'>
+            <h3 className='text-[#1E1E1E] text-[19.67] font-medium'>
+              Are you a mandate on this property
+            </h3>
+            <div className='flex gap-[20px]'>
+              <RadioCheck
+                selectedValue={formik.values?.areYouTheOwner}
+                handleChange={() => {
+                  formik.setFieldValue('areYouTheOwner', true);
+                }}
+                type='radio'
+                name='mandate'
+                value='Yes'
+              />
+              <RadioCheck
+                selectedValue={formik.values?.areYouTheOwner}
+                handleChange={() => {
+                  formik.setFieldValue('areYouTheOwner', false);
+                }}
+                type='radio'
+                name='mandate'
+                value='No'
+              />
+            </div>
           </div>
           <div className='w-full flex gap-[15px]'>
             {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
