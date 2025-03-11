@@ -5,16 +5,12 @@ import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceDataWithoutUsageOption } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
-//import Card from '@/components/card';
 import { Fragment, useEffect, useState } from 'react';
-//import Button from '@/components/button';
 import RentalReference from '@/components/rentalReference';
 import HouseFrame from '@/components/house-frame';
-//import imgSample from '@/assets/assets.png';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
-import Buyer_Contact from '@/components/buyer_contact';
 
 type HouseFrameProps = {
   propertyType: string;
