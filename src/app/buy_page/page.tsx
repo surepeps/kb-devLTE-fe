@@ -169,7 +169,7 @@ export default function Rent() {
                     <h2 className='text-[18px] leading-[28.8px] text-[#1976D2] font-semibold'>
                       {found.count} match Found
                     </h2>
-                    <h2 className='flex gap-[5px] lg:hidden'>
+                    <h2 className='flex gap-[5px] lg:hidden cursor-pointer'>
                       <span
                         onClick={viewSelectedBrief}
                         className='text-base leading-[25.6px] font-medium text-[#FF3D00]'>
@@ -270,7 +270,7 @@ export default function Rent() {
                 <div
                   ref={selectedBriefsRef}
                   className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] ${
-                    isSelectedBriefClicked ? 'flex lg:flex' : 'lg:flex'
+                    isSelectedBriefClicked ? 'flex lg:flex' : 'lg:flex hidden'
                   }`}>
                   <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
                     Submit for inspection

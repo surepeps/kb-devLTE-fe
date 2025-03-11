@@ -103,23 +103,25 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           />
 
           {/**Images */}
-          <div className='flex flex-col gap-[10px]'>
-            <h2 className='text-[#585B6C] text-[14px] leading-[22.4px] tracking-[0.1px] font-normal'>
-              Upload Image
-            </h2>
-            <div className='flex flex-wrap gap-[10px] w-full'>
-              {detailsToCheck?.pictures?.map((picture, idx: number) => (
-                <Image
-                  key={idx}
-                  src={picture}
-                  alt=''
-                  width={200}
-                  height={200}
-                  className='w-[131px] h-[98px] bg-[#D9D9D9]'
-                />
-              ))}
+          {detailsToCheck.pictures?.length !== 0 && (
+            <div className='flex flex-col gap-[10px]'>
+              <h2 className='text-[#585B6C] text-[14px] leading-[22.4px] tracking-[0.1px] font-normal'>
+                Upload Image
+              </h2>
+              <div className='flex flex-wrap gap-[10px] w-full'>
+                {detailsToCheck?.pictures?.map((picture, idx: number) => (
+                  <Image
+                    key={idx}
+                    src={picture}
+                    alt=''
+                    width={200}
+                    height={200}
+                    className='w-[131px] h-[98px] bg-[#D9D9D9]'
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/**Submit Brief */}
           {submitBrief && (
