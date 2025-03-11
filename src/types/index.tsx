@@ -13,11 +13,7 @@ export interface GlobalContextTypes {
   rentPage: {
     isSubmitForInspectionClicked: boolean;
   };
-  setRentPage: ({
-    isSubmitForInspectionClicked,
-  }: {
-    isSubmitForInspectionClicked: boolean;
-  }) => void;
+  setRentPage: ({ isSubmitForInspectionClicked }: { isSubmitForInspectionClicked: boolean }) => void;
   //router: ReturnType<typeof useRouter> | null;
   selectedNav: string;
   setSelectedNav: (type: string) => void;
@@ -68,6 +64,7 @@ export interface GlobalContextTypes {
 
 export type BriefType = {
   id: string;
+  _id: string;
   name: string;
   propertyType: string;
   price: number;
