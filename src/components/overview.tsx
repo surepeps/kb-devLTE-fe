@@ -69,16 +69,6 @@ const Overview = () => {
   //     totalAmount: 3000000000.0,
   //   });
 
-  (async () => {
-    const url = URLS.BASE + URLS.agent + URLS.getAllRequests;
-    await GET_REQUEST(url, Cookies.get('token')).then((data) => {
-      if (data.success) {
-        setAllRequests(data.data);
-      } else {
-        setAllRequests([]);
-      }
-    });
-  })();
   // }, []);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
@@ -95,6 +85,21 @@ const Overview = () => {
     } else {
       setSubmitBrief(false);
     }
+  }, [selectedOption]);
+
+  useEffect(() => {
+   if(selectedOption === 'Inspection Requests'){
+     (async () => {
+       const url = URLS.BASE + URLS.agent + URLS.getAllRequests;
+       await GET_REQUEST(url, Cookies.get('token')).then((data) => {
+         if (data.success) {
+           setAllRequests(data.data);
+         } else {
+           setAllRequests([]);
+         }
+       });
+     })();
+   }
   }, [selectedOption]);
 
   useEffect(() => {
