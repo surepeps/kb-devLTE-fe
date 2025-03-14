@@ -20,6 +20,7 @@ export const PageContextProvider = ({
   const [isContactUsClicked, setIsContactUsClicked] = useState<boolean>(false);
   const [rentPage, setRentPage] = useState({
     isSubmitForInspectionClicked: false,
+    submitPreference: false,
   });
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 
