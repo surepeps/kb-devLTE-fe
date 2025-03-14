@@ -78,10 +78,10 @@ export const PageContextProvider = ({
     setSelectedBriefs((prev) => new Set([...prev, brief])); // Ensure immutability
   };
 
-  const removeBrief = (briefId: BriefType) => {
+  const removeBrief = (brief: BriefType) => {
     setSelectedBriefs((prev) => {
       const updatedSet = new Set(prev);
-      updatedSet.delete(briefId);
+      updatedSet.delete(brief);
       return updatedSet;
     });
   };
