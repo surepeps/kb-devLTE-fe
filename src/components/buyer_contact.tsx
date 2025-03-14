@@ -47,6 +47,10 @@ const Buyer_Contact = ({ propertyId, propertyType }: { propertyId: string; prope
           toast.success('Property inspection request sent successfully');
 
           setIsSubmitting(false);
+          setRentPage({
+            submitPreference: false,
+            isSubmitForInspectionClicked: false,
+          });
           console.log(response.data);
         } else {
           toast.error('Sorry, something went wrong');
@@ -64,11 +68,12 @@ const Buyer_Contact = ({ propertyId, propertyType }: { propertyId: string; prope
 
   const closeModal = () => {
     setRentPage({
+      submitPreference: false,
       isSubmitForInspectionClicked: false,
     });
   };
 
-  useClickOutside(ref, () => setRentPage({ isSubmitForInspectionClicked: false }));
+  useClickOutside(ref, () => setRentPage({ submitPreference: false, isSubmitForInspectionClicked: false }));
 
   return (
     <section className='fixed z-20 top-0 h-screen w-full justify-center items-center flex px-[20px]'>
