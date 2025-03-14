@@ -47,6 +47,10 @@ const Buyer_Contact = ({ propertyId, propertyType }: { propertyId: string; prope
           toast.success('Property inspection request sent successfully');
 
           setIsSubmitting(false);
+          setRentPage({
+            submitPreference: false,
+            isSubmitForInspectionClicked: false,
+          });
           console.log(response.data);
         } else {
           toast.error('Sorry, something went wrong');
