@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWifi } from '@fortawesome/free-solid-svg-icons';
 import { BriefType } from '@/types';
 import { usePathname, useRouter } from 'next/navigation';
+import ContactUs from '@/components/contact_information';
 
 //type CardData = { header: string; value: string }[];
 
@@ -133,7 +134,7 @@ export default function Rent() {
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
-          (isContactUsClicked || rentPage.isSubmitForInspectionClicked || isModalOpened) &&
+          (isContactUsClicked || rentPage.isSubmitForInspectionClicked || isModalOpened || rentPage.submitPreference) &&
           'filter brightness-[30%] transition-all duration-500'
         }`}
       >
@@ -294,7 +295,7 @@ export default function Rent() {
                 green={true}
                 value='Submit'
                 onClick={() => {
-                  setRentPage({ isSubmitForInspectionClicked: true });
+                  setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
                   // setPropertyRefSelectedBriefs([...selectedBriefs])
                   setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
                 }}
@@ -307,6 +308,8 @@ export default function Rent() {
       {rentPage.isSubmitForInspectionClicked && (
         <Buyer_Contact propertyId={selectedBrief?._id || ''} propertyType='PropertySell' />
       )}
+
+      {rentPage.submitPreference && <ContactUs />}
     </Fragment>
   );
 }
