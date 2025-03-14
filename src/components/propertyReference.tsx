@@ -41,7 +41,7 @@ const PropertyReference = ({
   setAllCards,
   usageOption,
 }: PropertyReferenceDataProps) => {
-  const { setPropertyReference, setRentPage, rentPage } = usePageContext();
+  const { setPropertyReference, setRentPage } = usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const formik = useFormik({
     initialValues: {
