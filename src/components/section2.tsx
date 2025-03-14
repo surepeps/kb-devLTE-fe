@@ -1,4 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -18,6 +23,8 @@ import toast from 'react-hot-toast';
 import imgSample from '@/assets/assets.png';
 import { URLS } from '@/utils/URLS';
 import { usePageContext } from '@/context/page-context';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -25,7 +32,7 @@ const Section2 = () => {
     button2: false,
     button3: false,
   });
-  const { setCardData, addBrief, selectedBriefs } = usePageContext();
+  const { setCardData } = usePageContext();
   //const [fetchingData, setFetchingData] = useState(false);
   const [properties, setProperties] = useState([]);
   //const [errMessage, setErrMessage] = useState('');
@@ -36,32 +43,43 @@ const Section2 = () => {
   const areButtonsVisible = useVisibility(buttonsRef);
   const areHousesVisible = useInView(housesRef, { once: false });
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
     const fetchAllData = async () => {
       // setFetchingData(true);
+      setIsLoading(true);
       try {
         const response = await fetch(URLS.BASE + '/properties/sell/all', {
           signal,
         });
 
         if (!response.ok) {
+          setIsLoading(false);
           // setErrMessage('Failed to fetch data');
           throw new Error('Failed to fetch data');
         }
 
         const data = await response.json();
-        setProperties(data);
+        // console.log(data);
+        //cut a section of the array data randomly, that the objects in the array are only four
+        const randomIndex = Math.floor(Math.random() * (data.length - 4 + 1));
+        const randomData = data.slice(randomIndex, randomIndex + 4);
+        setProperties(randomData);
         setCardData(data);
+        setIsLoading(false);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error(err);
           // setErrMessage(err.message || 'An error occurred');
+          setIsLoading(false);
         }
       } finally {
         // setFetchingData(false);
+        setIsLoading(false);
       }
     };
 
@@ -141,45 +159,57 @@ const Section2 = () => {
           animate={areHousesVisible ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.3 }}
           className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px]`}>
-          {/* {cardDataArray.map((item, idx: number) => {
-            if (idx <= 3) {
-              return (
-                <Card
-                  images={Array(19).fill(imgSample)}
-                  cardData={item}
-                  key={idx}
-                />
-              );
-            }
-          })} */}
-          {properties?.map((property: any, idx: number) => {
-            if (idx <= 3) {
+          {isLoading ? (
+            <div className='w-[inherit] flex justify-center items-center'>
+              <FontAwesomeIcon
+                icon={faSpinner}
+                width={25}
+                height={25}
+                color='teal'
+                spin
+                className='w-[30px] h-[30px]'
+              />
+            </div>
+          ) : (
+            properties?.map((property: any, idx: number) => {
               return (
                 <Card
                   images={Array(12).fill(imgSample)}
                   onClick={() => {
-                    addBrief(property);
-                    // Retrieve existing selectedBriefs from localStorage
+                    //Retrieve existing selectedBriefs from localStorage
                     const existingBriefs = JSON.parse(
                       localStorage.getItem('selectedBriefs') || '[]'
                     );
 
-                    // Ensure it's an array and add the new property
+                    //check if the new property exists
+                    const isPropertyExisting = existingBriefs.find(
+                      (brief: any) => brief._id === property._id
+                    );
+
+                    if (isPropertyExisting) {
+                      //apply toast warning
+                      toast.error('Property already selected');
+                      return;
+                    }
+
+                    //check if the properties selected has exceeded 3
+                    if (existingBriefs.length >= 3) {
+                      //apply toast warning
+                      toast.error('Maximum properties selected');
+                      return;
+                    }
+
+                    //Ensure it's an array and add the new property
                     const updatedBriefs = Array.isArray(existingBriefs)
                       ? [...existingBriefs, property]
                       : [property];
 
-                    // Save back to localStorage
+                    //Save back to localStorage
                     localStorage.setItem(
                       'selectedBriefs',
                       JSON.stringify(updatedBriefs)
                     );
-
-                    if (selectedBriefs.has(property)) {
-                      return toast.success('Already added for inspection');
-                    } else {
-                      toast.success('Successfully added for inspection');
-                    }
+                    toast.success('Successfully added for inspection');
                   }}
                   cardData={[
                     {
@@ -209,8 +239,8 @@ const Section2 = () => {
                   key={idx}
                 />
               );
-            }
-          })}
+            })
+          )}
         </motion.div>
         <div className='flex justify-center items-center mt-6'>
           <button
