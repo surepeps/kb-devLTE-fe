@@ -1,3 +1,9 @@
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
@@ -159,7 +165,7 @@ export default function Rent() {
                     <h2 className='text-[18px] leading-[28.8px] text-[#1976D2] font-semibold'>
                       {found.count} match Found
                     </h2>
-                    <h2 className='flex gap-[5px] lg:hidden'>
+                    <h2 className='flex gap-[5px] lg:hidden cursor-pointer'>
                       <span
                         onClick={viewSelectedBrief}
                         className='text-base leading-[25.6px] font-medium text-[#FF3D00]'
@@ -181,16 +187,16 @@ export default function Rent() {
                       <Card
                         images={Array(12).fill(imgSample)}
                         onClick={() => {
-                          // if (selectedBriefs.has(property)) {
-                          //   return toast.error('This property has already been added for inspection.');
-                          // }
-                          // if (selectedBriefs.size >= 3) {
-                          //   return toast.error('You can only submit up to 3 briefs for inspection.');
-                          // }
-                          // addBrief(property);
-                          // if (selectedBriefs.has(property)) {
-                          //   return toast.success('Already added for inspection');
-                          // }
+                          if (selectedBriefs.has(property)) {
+                            return toast.error('This property has already been added for inspection.');
+                          }
+                          if (selectedBriefs.size >= 3) {
+                            return toast.error('You can only submit up to 3 briefs for inspection.');
+                          }
+                          addBrief(property);
+                          if (selectedBriefs.has(property)) {
+                            return toast.success('Already added for inspection');
+                          }
                           toast.success('Successfully added for inspection');
                           setSelectedBrief(property);
                           console.log(property);
