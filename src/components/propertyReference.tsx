@@ -46,7 +46,7 @@ const PropertyReference = ({
   const formik = useFormik({
     initialValues: {
       propertyType: '',
-      usageOption: usageOption ?  [usageOption] : [],
+      usageOption: usageOption ? [usageOption] : [],
       budgetRange: '',
       state: '',
       landSize: '',
@@ -85,10 +85,7 @@ const PropertyReference = ({
       }
       setIsSubmitting(true);
       try {
-        const response = await axios.post(
-          URLS.BASE + URLS.buyersSearchBrief,
-          payload
-        );
+        const response = await axios.post(URLS.BASE + URLS.buyersSearchBrief, payload);
         if (response.status === 200) {
           setFound({ isFound: true, count: response.data.length });
           setAllCards(response.data);
@@ -141,7 +138,7 @@ const PropertyReference = ({
     };
 
     setPropertyReference(payload);
-    setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
+    setRentPage({ submitPreference: true, isSubmitForInspectionClicked: false });
   };
 
   interface Option {
@@ -171,9 +168,7 @@ const PropertyReference = ({
   return (
     <Fragment>
       <div className='min-h-[250px] lg:min-h-[250px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
-        <form
-          onSubmit={formik.handleSubmit}
-          className='w-full flex flex-col gap-[37px]'>
+        <form onSubmit={formik.handleSubmit} className='w-full flex flex-col gap-[37px]'>
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
             {/**Type of Property */}
             <Select
@@ -282,8 +277,8 @@ const PropertyReference = ({
           <div className='w-full min-h-[60px] flex md:flex-row flex-col gap-[20px] justify-between md:gap-0'>
             <div className='flex flex-col'>
               <h2 className='text-[18px] text-[#09391C] leading-[28.8px] font-medium'>
-                Can&apos;t find the brief you&apos;re looking for? Don&apos;t
-                worry! We&apos;ll provide a reference brief for you
+                Can&apos;t find the brief you&apos;re looking for? Don&apos;t worry! We&apos;ll provide a reference
+                brief for you
               </h2>
               <div className='flex gap-[5px] flex-wrap'>
                 <Crumb text={formik.values.propertyType} />
@@ -292,15 +287,14 @@ const PropertyReference = ({
                 <Crumb text={formik.values.state} />
                 <Crumb text={formik.values.landSize} />
                 <Crumb text={formik.values.docOnProperty.map((item) => item)} />
-                <Crumb
-                  text={formik.values.desireFeatures?.map((item) => item)}
-                />
+                <Crumb text={formik.values.desireFeatures?.map((item) => item)} />
               </div>
             </div>
             <button
               type='button'
               onClick={submitReference}
-              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:min-w-[245px] h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'>
+              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:min-w-[245px] h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'
+            >
               Submit your preferences
             </button>
           </div>
@@ -321,13 +315,7 @@ interface SelectProps {
   name: string;
 }
 
-const Select: React.FC<SelectProps> = ({
-  heading,
-  options,
-  formik,
-  allowMultiple,
-  name,
-}) => {
+const Select: React.FC<SelectProps> = ({ heading, options, formik, allowMultiple, name }) => {
   // const [valueSelected, setValueSelected] =
   //   useState<SingleValue<OptionType>>(null);
 
@@ -336,12 +324,8 @@ const Select: React.FC<SelectProps> = ({
     label: typeof item === 'number' ? Number(item) : item,
   }));
   return (
-    <label
-      htmlFor='select'
-      className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
-      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
-        {name}
-      </h2>
+    <label htmlFor='select' className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
+      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>{name}</h2>
       <ReactSelect
         isMulti={allowMultiple}
         name={name}
@@ -349,11 +333,7 @@ const Select: React.FC<SelectProps> = ({
           allowMultiple
             ? formik.setFieldValue(
                 heading,
-                [
-                  ...(Array.isArray(selectedOption)
-                    ? selectedOption.map((opt: any) => opt.label)
-                    : []),
-                ].filter(Boolean) // Removes undefined values
+                [...(Array.isArray(selectedOption) ? selectedOption.map((opt: any) => opt.label) : [])].filter(Boolean) // Removes undefined values
               )
             : formik.setFieldValue(heading, selectedOption?.label ?? '')
         }

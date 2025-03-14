@@ -12,8 +12,15 @@ export interface GlobalContextTypes {
   setIsContactUsClicked: (type: boolean) => void;
   rentPage: {
     isSubmitForInspectionClicked: boolean;
+    submitPreference: boolean;
   };
-  setRentPage: ({ isSubmitForInspectionClicked }: { isSubmitForInspectionClicked: boolean }) => void;
+  setRentPage: ({
+    isSubmitForInspectionClicked,
+    submitPreference,
+  }: {
+    isSubmitForInspectionClicked: boolean;
+    submitPreference: boolean;
+  }) => void;
   //router: ReturnType<typeof useRouter> | null;
   selectedNav: string;
   setSelectedNav: (type: string) => void;

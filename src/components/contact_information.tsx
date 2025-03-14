@@ -31,9 +31,7 @@ const ContactUs = () => {
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Fullname is required'),
     phoneNumber: Yup.string().required('Phone number is required'),
-    email: Yup.string()
-      .email('Email is required')
-      .required('Email is required'),
+    email: Yup.string().email('Email is required').required('Email is required'),
   });
 
   const formik = useFormik({
@@ -50,11 +48,9 @@ const ContactUs = () => {
         console.log(propertyRefSelectedBriefs);
 
         const payloads = propertyRefSelectedBriefs.map((propertyData) => {
-          const filteredPropertyData = propertyData.docOnProperty.map(
-            ({ docName }) => {
-              return { docName, isProvided: true };
-            }
-          );
+          const filteredPropertyData = propertyData.docOnProperty.map(({ docName }) => {
+            return { docName, isProvided: true };
+          });
 
           return {
             location: propertyData.location,
@@ -83,16 +79,14 @@ const ContactUs = () => {
         try {
           // Send all requests in parallel
           const responses = await Promise.all(
-            payloads.map((payload) =>
-              axios.post(URLS.BASE + '/properties/buy/request/new', payload)
-            )
+            payloads.map((payload) => axios.post(URLS.BASE + '/properties/buy/request/new', payload))
           );
 
           // Check if all requests were successful
           if (responses.every((response) => response.status === 201)) {
             toast.success('All preferences submitted successfully');
             console.log(responses);
-            setRentPage({ isSubmitForInspectionClicked: false });
+            setRentPage({ ...rentPage, isSubmitForInspectionClicked: false });
             setPropertyRefSelectedBriefs([]);
           } else {
             toast.error('Some requests failed. Please try again.');
@@ -117,14 +111,13 @@ const ContactUs = () => {
         console.log(payload);
         setIsSubmitting(true);
         try {
-          const response = await axios.post(
-            URLS.BASE + '/properties/buy/request/new',
-            payload
-          );
+          const response = await axios.post(URLS.BASE + '/properties/buy/request/new', payload);
           if (response.status === 201) {
             toast.success('Preference submitted');
             setRentPage({
+              ...rentPage,
               isSubmitForInspectionClicked: false,
+              submitPreference: false,
             });
             setIsSubmitting(false);
             console.log(response.data);
@@ -146,13 +139,13 @@ const ContactUs = () => {
 
   const closeModal = () => {
     setRentPage({
+      ...rentPage,
       isSubmitForInspectionClicked: false,
+      submitPreference: false,
     });
   };
 
-  useClickOutside(ref, () =>
-    setRentPage({ isSubmitForInspectionClicked: false })
-  );
+  useClickOutside(ref, () => setRentPage({ ...rentPage, submitPreference: false }));
 
   return (
     <section className='fixed z-20 top-0 h-screen w-full justify-center items-center flex px-[20px]'>
@@ -163,19 +156,16 @@ const ContactUs = () => {
         viewport={{ once: true }}
         onSubmit={formik.handleSubmit}
         ref={ref}
-        className={`md:w-[550px] min-h-[550px] w-full flex flex-col slide-from-bottom`}>
+        className={`md:w-[550px] min-h-[550px] w-full flex flex-col slide-from-bottom`}
+      >
         <div className='h-[60px] bg-transparent flex justify-end'>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={closeModal}
-            className='w-[51px] h-[51px] bg-white shadow-md flex justify-center items-center rounded-full'>
-            <FontAwesomeIcon
-              icon={faClose}
-              width={24}
-              height={24}
-              className='w-[24px] h-[24px]'
-            />
+            className='w-[51px] h-[51px] bg-white shadow-md flex justify-center items-center rounded-full'
+          >
+            <FontAwesomeIcon icon={faClose} width={24} height={24} className='w-[24px] h-[24px]' />
           </motion.button>
         </div>
         <div className='bg-white rounded-[4px] md:py-[80px] md:px-[40px] py-[40px] px-[24px] flex items-center justify-center gap-[25px]'>
@@ -185,8 +175,8 @@ const ContactUs = () => {
                 Contact Information
               </h2>
               <p className='font-normal text-base leading-[25px] md:text-[18px] md:leading-[25px] text-[#515B6F] text-center tracking-[0.15px]'>
-                Lorem ipsum dolor sit amet consectetur. Aliquam scelerisque duis
-                mollis ullamcorper ac felis. Commodo duis metus facilisi.
+                Lorem ipsum dolor sit amet consectetur. Aliquam scelerisque duis mollis ullamcorper ac felis. Commodo
+                duis metus facilisi.
               </p>
             </div>
             {/* <div className='h-[310px] flex flex-col gap-[20px]'>
@@ -257,19 +247,10 @@ interface InputProps {
   isDisabled?: boolean;
 }
 
-const Input: FC<InputProps> = ({
-  title,
-  placeholder,
-  type,
-  formik,
-  formikValues,
-  isDisabled,
-}) => {
+const Input: FC<InputProps> = ({ title, placeholder, type, formik, formikValues, isDisabled }) => {
   return (
     <label htmlFor={title} className='min-h-[80px] flex flex-col gap-[4px]'>
-      <span className='text-base font-archivo leading-[25.6px] font-medium text-[#24272C]'>
-        {title}
-      </span>
+      <span className='text-base font-archivo leading-[25.6px] font-medium text-[#24272C]'>{title}</span>
       <input
         value={formik.values[formikValues]}
         onBlur={formik.handleBlur}

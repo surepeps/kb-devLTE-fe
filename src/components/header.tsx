@@ -22,7 +22,7 @@ const Header = () => {
     setIsModalOpened,
     viewImage,
     isSubmittedSuccessfully,
-    setIsContactUsClicked
+    setIsContactUsClicked,
   } = usePageContext();
   const [state, dispatch] = useReducer(reducer, navData);
   const pathName = usePathname();
@@ -37,9 +37,12 @@ const Header = () => {
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||
-            viewImage || isSubmittedSuccessfully) &&
+            viewImage ||
+            isSubmittedSuccessfully ||
+            rentPage.submitPreference) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
-        } ${'slide-from-top'}`}>
+        } ${'slide-from-top'}`}
+      >
         <nav className='h-[50px] container flex justify-between items-center'>
           <Image
             src={khabiteqIcon}
@@ -49,38 +52,32 @@ const Header = () => {
             alt=''
           />
           <div className='lg:flex gap-[27px] hidden'>
-            {state.map(
-              (
-                item: { name: string; url: string; isClicked: boolean },
-                idx: number
-              ) => {
-                return (
-                  <Link
-                    key={idx}
-                    href={item.url}
-                    onClick={() => {
-                      // e.preventDefault();
-                      dispatch({
-                        type: item.name,
-                        name: item.name,
-                      });
-                    }}
-                    className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                      item.url === pathName
-                        ? 'text-[#8DDB90]'
-                        : 'text-[#000000]'
-                    }`}>
-                    {item.name}
-                  </Link>
-                );
-              }
-            )}
+            {state.map((item: { name: string; url: string; isClicked: boolean }, idx: number) => {
+              return (
+                <Link
+                  key={idx}
+                  href={item.url}
+                  onClick={() => {
+                    // e.preventDefault();
+                    dispatch({
+                      type: item.name,
+                      name: item.name,
+                    });
+                  }}
+                  className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                    item.url === pathName ? 'text-[#8DDB90]' : 'text-[#000000]'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
           <Button
             value="Let's talk"
             green={true}
-            onClick={()=>{
-              setIsContactUsClicked(true)
+            onClick={() => {
+              setIsContactUsClicked(true);
             }}
             className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px] hidden lg:inline'
           />
@@ -96,10 +93,7 @@ const Header = () => {
           />
         </nav>
       </header>
-      <SideBar
-        isModalOpened={isModalOpened}
-        setIsModalOpened={setIsModalOpened}
-      />
+      <SideBar isModalOpened={isModalOpened} setIsModalOpened={setIsModalOpened} />
     </Fragment>
   );
 };

@@ -15,14 +15,8 @@ const Footer = () => {
   // const footerRef = React.useRef<HTMLElement>(null);
 
   // const isFooterVisible = useVisibility(footerRef);
-  const {
-    isContactUsClicked,
-    setIsContactUsClicked,
-    rentPage,
-    isModalOpened,
-    viewImage,
-    isSubmittedSuccessfully,
-  } = usePageContext();
+  const { isContactUsClicked, setIsContactUsClicked, rentPage, isModalOpened, viewImage, isSubmittedSuccessfully } =
+    usePageContext();
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event?.preventDefault();
@@ -36,9 +30,11 @@ const Footer = () => {
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||
             viewImage ||
-            isSubmittedSuccessfully) &&
+            isSubmittedSuccessfully ||
+            rentPage.submitPreference) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
-        } ${'slide-from-left'}`}>
+        } ${'slide-from-left'}`}
+      >
         <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[20px]'>
           <div className='w-full flex lg:flex-row flex-col justify-between gap-[30px] md:gap-[120px]'>
             {/**Logo with some texts */}
@@ -51,80 +47,67 @@ const Footer = () => {
                 className='lg:w-[169px] lg:h-[35px] w-[144px] h-[30px]'
               />
               <p className='font-normal lg:text-base text-[14px] leading-[25px] text-[#D6DDEB]'>
-                Simplifying real estate transactions in Lagos. Buy, sell, rent,
-                and manage properties with ease through Khabi-Teq&apos;s trusted
-                platform
+                Simplifying real estate transactions in Lagos. Buy, sell, rent, and manage properties with ease through
+                Khabi-Teq&apos;s trusted platform
               </p>
             </div>
             <div className='min-h-[241px] lg:w-[806px] lg:flex lg:justify-between grid grid-cols-2 gap-[50px]'>
               {/**Explore */}
               <div className='flex flex-col gap-[10px]'>
-                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>
-                  Explore
-                </h2>
+                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>Explore</h2>
                 <div className='flex flex-col gap-[16px]'>
-                  {state.map(
-                    (
-                      item: { name: string; url: string; isClicked: boolean },
-                      idx: number
-                    ) => (
-                      <Link
-                        onClick={() => {
-                          dispatch({
-                            type: item.name,
-                            name: item.name,
-                          });
-                        }}
-                        className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
-                        key={idx}
-                        href={item.url}>
-                        {item.name}
-                      </Link>
-                    )
-                  )}
+                  {state.map((item: { name: string; url: string; isClicked: boolean }, idx: number) => (
+                    <Link
+                      onClick={() => {
+                        dispatch({
+                          type: item.name,
+                          name: item.name,
+                        });
+                      }}
+                      className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
+                      key={idx}
+                      href={item.url}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
               {/**Services */}
               <div className='flex flex-col gap-[10px]'>
-                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>
-                  Services
-                </h2>
+                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>Services</h2>
                 <div className='flex flex-col gap-[16px]'>
-                  {servicesData.map(
-                    (item: { name: string; url: string }, idx: number) => (
-                      <Link
-                        className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
-                        key={idx}
-                        onClick={handleClick}
-                        href={item.url}>
-                        {item.name}
-                      </Link>
-                    )
-                  )}
+                  {servicesData.map((item: { name: string; url: string }, idx: number) => (
+                    <Link
+                      className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
+                      key={idx}
+                      onClick={handleClick}
+                      href={item.url}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
               {/**Support */}
               <div className='flex flex-col gap-[10px]'>
-                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>
-                  Support
-                </h2>
+                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>Support</h2>
                 <div className='flex flex-col gap-[16px]'>
-                  {supportData.map(
-                    (item: { name: string; url: string }, idx: number) => (
-                      <Link
-                        className='text-base leading-[25px] text-[#D6DDEB] font-normal'
-                        key={idx}
-                        onClick={(e) => {
-                          handleClick(e);
-                          if (item.name === 'Contact us') {
-                            setIsContactUsClicked(true);
-                          }
-                        }}
-                        href={item.url}>
-                        {item.name}
-                      </Link>
-                    )
-                  )}
+                  {supportData.map((item: { name: string; url: string }, idx: number) => (
+                    <Link
+                      className='text-base leading-[25px] text-[#D6DDEB] font-normal'
+                      key={idx}
+                      onClick={(e) => {
+                        handleClick(e);
+                        if (item.name === 'Contact us') {
+                          setIsContactUsClicked(true);
+                        }
+                      }}
+                      href={item.url}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
@@ -141,13 +124,7 @@ const Footer = () => {
                 const { image, url } = icon;
                 return (
                   <Link href={url} target='_blank' key={idx}>
-                    <Image
-                      src={image}
-                      width={1000}
-                      height={1000}
-                      alt=''
-                      className='w-[32px] h-[32px]'
-                    />
+                    <Image src={image} width={1000} height={1000} alt='' className='w-[32px] h-[32px]' />
                   </Link>
                 );
               })}
