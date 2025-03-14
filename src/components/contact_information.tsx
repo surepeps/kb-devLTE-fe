@@ -86,7 +86,8 @@ const ContactUs = () => {
           if (responses.every((response) => response.status === 201)) {
             toast.success('All preferences submitted successfully');
             console.log(responses);
-            setRentPage({ ...rentPage, isSubmitForInspectionClicked: false });
+            setRentPage({ ...rentPage, isSubmitForInspectionClicked: false, submitPreference: false });
+            setPropertyReference({});
             setPropertyRefSelectedBriefs([]);
           } else {
             toast.error('Some requests failed. Please try again.');
@@ -122,6 +123,7 @@ const ContactUs = () => {
             setIsSubmitting(false);
             console.log(response.data);
             setPropertyReference({});
+            setRentPage({ ...rentPage, isSubmitForInspectionClicked: false, submitPreference: false });
           } else {
             toast.error('Sorry, something went wrong');
             setIsSubmitting(false);

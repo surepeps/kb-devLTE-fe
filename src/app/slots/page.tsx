@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import Button from '@/components/button';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
