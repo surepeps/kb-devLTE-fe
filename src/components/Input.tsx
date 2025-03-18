@@ -216,15 +216,17 @@ interface InputProps {
   onBlur?: FocusEventHandler<HTMLInputElement>;
   forState?: boolean;
   forLGA?: boolean;
+  forRegion?: boolean;
   selectedState?: Option | null;
   setSelectedState?: (option: Option | null) => void;
   selectedLGA?: Option | null;
   setSelectedLGA?: (option: Option | null) => void;
+  selectedRegion?: Option | null;
+  setSelectedRegion?: (option: Option | null) => void;
   isDisabled?: boolean;
   minNumber?: number;
   maxNumber?: number;
   formik?: any;
-
   stateOptions?: Option[];
   lgasOptions?: Option[];
 }
@@ -242,16 +244,19 @@ const Input: FC<InputProps> = memo(
     onBlur,
     forState,
     forLGA,
+    forRegion,
     isDisabled,
     minNumber,
     maxNumber,
     stateOptions,
     lgasOptions,
-
     selectedLGA,
     setSelectedLGA,
     selectedState,
     setSelectedState,
+    selectedRegion,
+    setSelectedRegion,
+    formik,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -280,41 +285,82 @@ const Input: FC<InputProps> = memo(
           </span>
 
           {forState && (
-            <Select
-              options={stateOptions}
-              value={selectedState}
-              onChange={setSelectedState}
-              placeholder='Select State'
-              styles={customStyle}
-              isDisabled={isDisabled}
-            />
+            <div className='flex flex-col'>
+              <Select
+                options={stateOptions}
+                value={selectedState}
+                onChange={setSelectedState}
+                placeholder='Select State'
+                styles={customStyle}
+                isDisabled={isDisabled}
+              />
+              {(formik.errors.selectedState ||
+                formik.touched.selectedState) && (
+                <span className='text-red-600 text-xs'>
+                  {formik.errors.selectedState}
+                </span>
+              )}
+            </div>
           )}
 
           {forLGA && (
-            <Select
-              options={lgasOptions}
-              value={selectedLGA}
-              onChange={setSelectedLGA}
-              placeholder='Select LGA'
-              styles={customStyle}
-              isDisabled={lgasOptions?.length === 0}
-            />
+            <div className='flex flex-col'>
+              <Select
+                options={lgasOptions}
+                value={selectedLGA}
+                onChange={setSelectedLGA}
+                placeholder='Select LGA'
+                styles={customStyle}
+                isDisabled={lgasOptions?.length === 0}
+              />
+              {(formik.errors.selectedLGA || formik.touched.selectedLGA) && (
+                <span className='text-red-600 text-xs'>
+                  {formik.errors.selectedLGA}
+                </span>
+              )}
+            </div>
           )}
 
-          {!forLGA && !forState && (
-            <input
-              id={id}
-              name={name}
-              type={type}
-              value={value}
-              onChange={isDisabled ? undefined : onChange}
-              onBlur={onBlur}
-              disabled={isDisabled}
-              min={type === 'number' ? minNumber : undefined}
-              max={type === 'number' ? maxNumber : undefined}
-              placeholder={placeholder ?? 'This is placeholder'}
-              className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
-            />
+          {forRegion && (
+            <div className='flex flex-col'>
+              <Select
+                options={stateOptions}
+                value={selectedRegion}
+                onChange={setSelectedRegion}
+                placeholder='Select Region of Operation'
+                styles={customStyle}
+                isDisabled={isDisabled}
+              />
+              {(formik.errors.selectedRegion ||
+                formik.touched.selectedRegion) && (
+                <span className='text-red-600 text-xs'>
+                  {formik.errors.selectedRegion}
+                </span>
+              )}
+            </div>
+          )}
+
+          {!forLGA && !forState && !forRegion && (
+            <div className='flex flex-col'>
+              <input
+                id={id}
+                name={name}
+                type={type}
+                value={value}
+                onChange={isDisabled ? undefined : onChange}
+                onBlur={onBlur}
+                disabled={isDisabled}
+                min={type === 'number' ? minNumber : undefined}
+                max={type === 'number' ? maxNumber : undefined}
+                placeholder={placeholder ?? 'This is placeholder'}
+                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
+              />
+              {(formik?.errors?.[name] || formik?.touched?.[name]) && (
+                <span className='text-red-600 text-xs'>
+                  {formik?.errors?.[name]}
+                </span>
+              )}
+            </div>
           )}
         </label>
       </Fragment>
