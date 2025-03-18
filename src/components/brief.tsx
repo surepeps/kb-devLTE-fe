@@ -33,13 +33,27 @@ const Brief: FC<TotalBriefProps> = ({
   isLoading,
 }) => {
   return (
-    <div className='lg:w-[863px] w-full mt-[60px] flex items-center justify-center'>
+    <div className=' w-full mt-[60px] flex items-center justify-center px-[20px]'>
       {showFullDetails ? (
-        <DetailsToCheck
-          heading={heading}
-          setIsFullDetailsClicked={setShowFullDetails}
-          detailsToCheck={detailsToCheck}
-        />
+        <div>
+          <DetailsToCheck
+            heading={heading}
+            setIsFullDetailsClicked={setShowFullDetails}
+            detailsToCheck={detailsToCheck}
+          />
+          <div className='flex flex-col gap-[10px] bg-[#FFFFFF] '>
+            <button
+              type='button'
+              className='w-[90%] ml-[5%] min-h-[50px] flex justify-center items-center border-[1px] border-blue-500 text-blue-500 rounded-[8px] font-ubuntu'>
+              Edit
+            </button>
+            <button
+              type='button'
+              className='w-[90%] ml-[5%] min-h-[50px] flex justify-center items-center border-[1px] border-red-500 text-red-500 rounded-[8px] font-ubuntu'>
+              Delete
+            </button>
+          </div>
+        </div>
       ) : (
         <div className='container'>
           {isLoading ? (

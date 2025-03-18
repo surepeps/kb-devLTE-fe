@@ -9,12 +9,12 @@ export default function AttentionOverview() {
   const [active, setActive] = useState("pending");
   return (
     <Fragment>
-      <div className="bg-white flex flex-col border h-auto rounded-md mt-6 mr-3">
-        <div className=" border-b flex justify-between items-center px-6 py-2">
-          <h3 className="text-[#2E2C34] text-xl font-medium ">
+      <div className="bg-white flex flex-col border h-auto rounded-md mt-6 w-full">
+        <div className="border-b flex justify-between items-center px-6 py-2">
+          <h3 className="text-[#2E2C34] text-xl font-medium">
             Admins Activities
           </h3>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
             <div className="flex gap-2 border p-2 rounded-md">
               <FontAwesomeIcon
                 icon={faBars}
@@ -30,18 +30,18 @@ export default function AttentionOverview() {
         </div>
         <ActivitiesScroll />
       </div>
-      <div className="pt-6">
-        <div className="flex border-b text-lg gap-8 ">
+      <div className="pt-6 w-full">
+        <div className="flex border-b text-lg gap-8 flex-wrap">
           <button
             onClick={() => setActive("pending")}
             className={`relative rounded-sm py-3 ${
               active === "pending"
-                ? "border-b-4 border-[#8DDB90]  text-[#181336] font-semibold"
+                ? "border-b-4 border-[#8DDB90] text-[#181336] font-semibold"
                 : "text-[#515B6F]"
             }`}
           >
             Pending Briefs
-            <span className="absolute top-0  bg-[#FF4F4F] text-white rounded-full px-2 py-0.5 ">
+            <span className="absolute top-0 bg-[#FF4F4F] text-white rounded-full px-2 py-0.5">
               5
             </span>
           </button>
@@ -49,12 +49,12 @@ export default function AttentionOverview() {
             onClick={() => setActive("overdue")}
             className={`relative rounded-sm py-3 ${
               active === "overdue"
-                ? "border-b-4 border-[#8DDB90]  text-[#181336] font-semibold"
+                ? "border-b-4 border-[#8DDB90] text-[#181336] font-semibold"
                 : "text-[#515B6F]"
             }`}
           >
             Overdues Briefs
-            <span className="absolute top-0  bg-[#e51313] text-white rounded-full px-2 py-0.5">
+            <span className="absolute top-0 bg-[#e51313] text-white rounded-full px-2 py-0.5">
               25
             </span>
           </button>
