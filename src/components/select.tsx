@@ -15,6 +15,7 @@ interface SelectProps {
   options: string[];
   value?: string;
   onChange?: (selectedOption: SelectOption | null) => void;
+  placeholder?: string;
 }
 
 const Select: FC<SelectProps> = ({
@@ -24,6 +25,7 @@ const Select: FC<SelectProps> = ({
   options,
   value,
   onChange,
+  placeholder,
 }) => {
   // Convert string array to ReactSelect option format
   const formattedOptions = options.map((option) => ({
@@ -52,6 +54,7 @@ const Select: FC<SelectProps> = ({
         onChange={onChange}
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
         name=''
+        placeholder={placeholder}
         id=''
       />
       {/* {options.map((item: string, idx: number) => (
