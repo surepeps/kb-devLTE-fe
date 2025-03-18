@@ -67,6 +67,25 @@ export interface GlobalContextTypes {
   clearBriefs: () => void;
   propertyRefSelectedBriefs: BriefType[];
   setPropertyRefSelectedBriefs: ([]: BriefType[]) => void;
+  /**Agent Brief Settings */
+  settings: {
+    selectedNav: string;
+    isUpgradeButtonClicked: boolean;
+    upgradeStatus: {
+      isYetToUpgrade: boolean;
+      isAwatingUpgrade: boolean;
+      isUpgraded: boolean;
+    };
+  };
+  setSettings: ({}: {
+    selectedNav: string;
+    isUpgradeButtonClicked: boolean;
+    upgradeStatus: {
+      isYetToUpgrade: boolean;
+      isAwatingUpgrade: boolean;
+      isUpgraded: boolean;
+    };
+  }) => void;
 }
 
 export type BriefType = {

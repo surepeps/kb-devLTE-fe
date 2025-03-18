@@ -77,7 +77,7 @@ const Briefs: FC<BriefsProps> = ({
 }) => {
   return (
     <div className='flex md:hidden'>
-      <div className='w-full border-[1px] border-[#E4DFDF] min-h-[558px] rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
+      <div className='w-full border-[1px] border-[#E4DFDF] rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
         <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
           {header}
         </h1>
