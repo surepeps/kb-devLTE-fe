@@ -19,6 +19,7 @@ import toast from 'react-hot-toast';
 // import { useUserContext } from '@/context/user-context';
 import Cookies from 'js-cookie';
 import { briefData } from '@/data/sampleDataForAgent';
+import Settings from '@/components/settings-components/settings';
 
 type BriefDataProps = {
   docOnProperty: { _id: string; isProvided: boolean; docName: string }[];
@@ -182,6 +183,7 @@ const Form2 = () => {
             data={completeTransactionData}
           />
         )}
+        {selectedNav === AgentNavData.SETTINGS && <Settings />}
       </div>
     </section>
   );

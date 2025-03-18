@@ -90,6 +90,19 @@ export const PageContextProvider = ({
     setSelectedBriefs(new Set());
   };
 
+  /**
+   * Agent Brief Settings
+   */
+  const [settings, setSettings] = useState({
+    selectedNav: 'Change Password',
+    isUpgradeButtonClicked: false,
+    upgradeStatus: {
+      isYetToUpgrade: true,
+      isAwatingUpgrade: false,
+      isUpgraded: false,
+    },
+  });
+
   return (
     <PageContext.Provider
       value={{
@@ -119,6 +132,8 @@ export const PageContextProvider = ({
         removeBrief,
         propertyRefSelectedBriefs,
         setPropertyRefSelectedBriefs,
+        settings,
+        setSettings,
       }}>
       {children}
     </PageContext.Provider>
