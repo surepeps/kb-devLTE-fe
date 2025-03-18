@@ -34,12 +34,12 @@ const data = [
 
 export default function PendingBriefs() {
   return (
-    <div className="mt-6 p-4 border rounded-md bg-white px-8">
-      <h3 className="text-[#2E2C34] text-xl font-semibold  py-6">
+    <div className="mt-6 p-4 border rounded-md bg-white w-full">
+      <h3 className="text-[#2E2C34] text-xl font-semibold py-6">
         Approve Briefs
       </h3>
-      <div className="flex justify-between">
-        <select className="w-1/6 border border-gray-300 bg-transparent rounded-md p-3">
+      <div className="flex justify-between flex-wrap gap-4">
+        <select className="w-full sm:w-1/3 border border-gray-300 bg-transparent rounded-md p-3">
           <option value="1">Type</option>
           <option value="2">Pending</option>
           <option value="3">Overdue</option>
@@ -49,7 +49,7 @@ export default function PendingBriefs() {
           <span className="text-[#2E2C34]">Filter</span>
         </div>
       </div>
-      <table className="w-full mt-6">
+      <table className="w-full mt-6 table-auto">
         <thead>
           <tr className="border-b bg-[#fafafa] text-left text-sm font-medium text-gray-600">
             <th className="p-3">
