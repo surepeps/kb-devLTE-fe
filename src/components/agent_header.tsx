@@ -1,7 +1,13 @@
 /** @format */
 
 'use client';
-import React, { Fragment, useReducer, useState, useEffect, useRef } from 'react';
+import React, {
+  Fragment,
+  useReducer,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import khabiteqIcon from '@/svgs/khabi-teq.svg';
 // import Button from '@/components/button';
 import Image from 'next/image';
@@ -22,6 +28,7 @@ const AgentHeader = () => {
     isModalOpened,
     setIsModalOpened,
     viewImage,
+    settings,
   } = usePageContext();
   const { logout } = useUserContext();
   const [state, dispatch] = useReducer(reducer, navData);
@@ -39,7 +46,10 @@ const AgentHeader = () => {
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setIsDropdownOpen(false);
     }
   };
@@ -62,10 +72,11 @@ const AgentHeader = () => {
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||
-            viewImage) &&
+            viewImage ||
+            settings.isUpgradeButtonClicked) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-top'}`}>
-        <nav className='h-[50px] container flex justify-between items-center lg:px-16'>
+        <nav className='h-[50px] container flex justify-between items-center'>
           <Image
             src={khabiteqIcon}
             width={1000}
