@@ -41,7 +41,7 @@ const Brief: FC<TotalBriefProps> = ({
             setIsFullDetailsClicked={setShowFullDetails}
             detailsToCheck={detailsToCheck}
           />
-          <div className='flex flex-col gap-[10px] bg-[#FFFFFF] '>
+          <div className='flex flex-col gap-[10px] bg-[#FFFFFF] md:hidden'>
             <button
               type='button'
               className='w-[90%] ml-[5%] min-h-[50px] flex justify-center items-center border-[1px] border-blue-500 text-blue-500 rounded-[8px] font-ubuntu'>
