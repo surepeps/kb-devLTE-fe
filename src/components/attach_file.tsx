@@ -8,10 +8,17 @@ import toast from 'react-hot-toast';
 interface AttachFileProps {
   heading: string;
   setFileUrl?: React.Dispatch<React.SetStateAction<string | null>>;
+  className?: string;
 }
 
-const AttachFile: React.FC<AttachFileProps> = ({ heading, setFileUrl }) => {
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+const AttachFile: React.FC<AttachFileProps> = ({
+  heading,
+  setFileUrl,
+  className,
+}) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     const fromData = new FormData();
     fromData.append('file', file as Blob);
@@ -39,7 +46,9 @@ const AttachFile: React.FC<AttachFileProps> = ({ heading, setFileUrl }) => {
   };
   return (
     <div className='min-h-[58px] w-full flex lg:flex-row flex-col justify-between lg:items-center items-start'>
-      <span className='text-base leading-[25.6px] text-[#202430] font-semibold'>{heading}</span>
+      <span className='text-base leading-[25.6px] text-[#202430] font-semibold'>
+        {heading}
+      </span>
       <input
         type='file'
         name=''
@@ -60,9 +69,8 @@ const AttachFile: React.FC<AttachFileProps> = ({ heading, setFileUrl }) => {
         height='58'
         viewBox='0 0 367 58'
         fill='none'
-        className='cursor-pointer w-full lg:w-[367px]'
-        xmlns='http://www.w3.org/2000/svg'
-      >
+        className={`cursor-pointer w-full lg:w-[367px] ${className}`}
+        xmlns='http://www.w3.org/2000/svg'>
         <rect x='0.5' y='0.5' width='366' height='57' rx='3.5' fill='#F8F8FD' />
         <rect
           x='0.5'
@@ -89,7 +97,12 @@ const AttachFile: React.FC<AttachFileProps> = ({ heading, setFileUrl }) => {
         />
         <defs>
           <clipPath id='clip0_704_10046'>
-            <rect width='24' height='24' fill='white' transform='translate(110.5 17)' />
+            <rect
+              width='24'
+              height='24'
+              fill='white'
+              transform='translate(110.5 17)'
+            />
           </clipPath>
         </defs>
       </svg>
