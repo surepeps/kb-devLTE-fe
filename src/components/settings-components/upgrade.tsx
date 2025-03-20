@@ -46,7 +46,7 @@ const Upgrade = () => {
         viewport={{ once: true }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className='w-full h-[407px] flex flex-col gap-[20px] p-[30px] bg-[#FFFFFF] border-[1px] border-[#C7CAD0]'>
+        className='w-full lg:h-[407px] flex flex-col gap-[20px] p-[30px] bg-[#FFFFFF] border-[1px] border-[#C7CAD0]'>
         <h2 className='text-[20px] font-semibold text-[#09391C] leading-[160%]'>
           Agent Type
         </h2>
