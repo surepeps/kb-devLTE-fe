@@ -42,14 +42,14 @@ const OnUpgradeNotification = () => {
     },
   });
   return (
-    <motion.section className='w-full h-screen fixed z-50 top-0 flex justify-center items-center'>
+    <motion.section className='w-full h-screen fixed z-50 top-0 px-[20px] flex justify-center items-center'>
       <motion.form
         initial={{ y: 80, opacity: 0 }}
         viewport={{ once: true }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3 }}
         onSubmit={formik.handleSubmit}
-        className='lg:w-[662px] flex flex-col'>
+        className='lg:w-[662px] w-full flex flex-col'>
         <div className='h-[90px] flex justify-end items-start'>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -67,9 +67,9 @@ const OnUpgradeNotification = () => {
             />
           </motion.button>
         </div>
-        <div className='w-full min-h-[389.47px] p-[30px] gap-[40px] bg-[#FFFFFF] border-[1px] border-[#C7CAD0] flex flex-col'>
+        <div className='w-full min-h-[389.47px] p-[20px] md:p-[30px] gap-[40px] bg-[#FFFFFF] border-[1px] border-[#C7CAD0] flex flex-col'>
           {/**First div */}
-          <div className='h-[239.47px] w-full flex flex-col gap-[20px]'>
+          <div className='lg:h-[239.47px] w-full flex flex-col gap-[20px]'>
             {/**Heading div */}
             <div className='w-full h-[63px] flex flex-col gap-[5px]'>
               <h2 className='text-[#09391C] text-[20px] font-medium leading-[160%]'>
@@ -80,7 +80,7 @@ const OnUpgradeNotification = () => {
               </h3>
             </div>
             {/**Input */}
-            <div className='w-full h-[156.47px] lg:grid lg:grid-cols-2 gap-[20px]'>
+            <div className='w-full lg:h-[156.47px] flex flex-col md:grid md:grid-cols-2 gap-[20px]'>
               <Input
                 name='companyName'
                 onChange={formik.handleChange}

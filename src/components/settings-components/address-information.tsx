@@ -105,14 +105,14 @@ const AddressInformation = () => {
       viewport={{ once: true }}
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3 }}
-      className='lg:w-[662px] h-[383px] bg-[#FFFFFF] border-[#C7CAD0] border-[1px] p-[30px] flex flex-col gap-[40px]'>
-      <div className='flex flex-col h-[233px] gap-[20px]'>
+      className='lg:w-[662px] lg:h-[383px] bg-[#FFFFFF] border-[#C7CAD0] border-[1px] p-[30px] flex flex-col gap-[40px]'>
+      <div className='flex flex-col lg:h-[233px] gap-[20px]'>
         <h2 className='text-[20px] font-semibold leading-[160%] text-[#09391C]'>
           Address Information
         </h2>
-        <div className='w-full h-[181px] flex flex-col gap-[20px]'>
+        <div className='w-full lg:h-[181px] flex flex-col gap-[20px]'>
           {/**Inputs - Street, state, and Local Govt area */}
-          <div className='w-full lg:grid lg:grid-cols-3 flex gap-[15px]'>
+          <div className='w-full md:grid md:grid-cols-3 flex flex-col gap-[15px]'>
             {/**Street */}
             <Input
               label='Street'
