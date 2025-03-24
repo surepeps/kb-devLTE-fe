@@ -18,6 +18,7 @@ import {
   faUserShield,
 } from '@fortawesome/free-solid-svg-icons';
 import khabiteqIcon from '@/svgs/khabi-teq.svg';
+import { archivo } from '@/styles/font';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard Overview', icon: faBorderAll },
@@ -80,7 +81,9 @@ export default function AdminNavbar() {
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center p-4 rounded-md transition-all duration-200 text-base font-medium ${
+                className={`flex items-center ${
+                  archivo.className
+                } p-4 rounded-md transition-all duration-200 text-base font-medium ${
                   isActive
                     ? 'text-[#8DDB90]'
                     : 'text-[#515B6F] hover:bg-gray-200'

@@ -110,27 +110,27 @@ export default function AdminHome() {
         <button
           type='button'
           onClick={() => setActiveTab('attention')}
-          className={`w-fit md:min-w-fit ${
+          className={`w-fit md:min-w-fit transition-all duration-500 ${
             archivo.className
           } lg:max-w-[226px] py-2 px-[7px] rounded-lg ${
             activeTab === 'attention'
-              ? 'bg-[#8DDB90] text-white'
+              ? 'bg-[#45D884] text-white'
               : 'bg-gray-200 text-black'
           }`}>
-          <h3 className='text-lg font-bold'>Attention Require Overview</h3>
+          <h3 className='text-base font-bold'>Attention Require Overview</h3>
         </button>
 
         <button
           type='button'
           onClick={() => setActiveTab('analysis')}
-          className={`w-fit md:min-w-fit px-[17px] ${
+          className={`w-fit transition-all duration-500 md:min-w-fit px-[17px] ${
             archivo.className
           } lg:max-w-[226px] py-2 rounded-lg ${
             activeTab === 'analysis'
-              ? 'bg-[#8DDB90] text-white'
+              ? 'bg-[#45D884] text-white'
               : 'bg-gray-200 text-black'
           }`}>
-          <h3 className='text-lg font-bold'>Analysis Overview</h3>
+          <h3 className='text-base font-bold'>Analysis Overview</h3>
         </button>
       </div>
 
