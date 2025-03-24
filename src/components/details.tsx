@@ -3,6 +3,7 @@
 import React, { FC, useState } from 'react';
 import arrowRight from '@/svgs/arrowRight.svg';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface DetailsProps {
   heading: string;
@@ -13,7 +14,11 @@ interface DetailsProps {
 const Details: FC<DetailsProps> = ({ heading, text, isHomepage }) => {
   const [isViewed, setIsViewed] = useState<boolean>(false);
   return (
-    <div
+    <motion.div
+      initial={{ y: 90, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}
       className={`md:py-[24px] md:px-[55px] p-[24px] flex flex-col gap-[21px] overflow-hidden ${
         isHomepage ? 'bg-[#E4EFE7]' : 'bg-[#1976D21A]'
       } transition-all duration-500`}>
@@ -40,7 +45,7 @@ const Details: FC<DetailsProps> = ({ heading, text, isHomepage }) => {
         } lg:text-[21px] text-[14px] leading-[22px] tracking-[4%] md:leading-[28px] text-[#5A5D63]`}>
         {text}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
