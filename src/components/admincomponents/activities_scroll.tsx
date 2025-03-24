@@ -61,14 +61,14 @@ export default function ActivitiesScroll() {
   };
 
   return (
-    <div className='relative w-full py-8 px-20 bg-white rounded-lg'>
+    <div className='relative w-full py-8 px-[10px] md:px-20 bg-white rounded-lg'>
       {/* Carousel Wrapper */}
       <div className='overflow-hidden' ref={emblaRef}>
-        <div className='flex gap-4'>
+        <div className='flex md:flex-row flex-col gap-4'>
           {activities.map((activity) => (
             <div
               key={activity.id}
-              className='min-w-[350px] h-40 bg-[#FBFBFF] rounded-[10px] p-4 shadow-sm cursor-pointer'
+              className='w-full md:min-w-[350px] h-40 bg-[#FBFBFF] rounded-[10px] p-4 shadow-sm cursor-pointer'
               onClick={() => openModal(activity)}>
               <div className='flex justify-between text-[#7C88B1] text-sm'>
                 <p>Admin Attendant</p>
@@ -93,14 +93,14 @@ export default function ActivitiesScroll() {
       </div>
 
       {/* Navigation Buttons */}
-      <div className='absolute top-1/2 -translate-y-1/2 left-2'>
+      <div className='absolute top-1/2 -translate-y-1/2 left-2 hidden md:inline-block'>
         <div
           className='bg-white w-[50px] h-[50px] flex justify-center items-center border rounded-full px-5 py-4 cursor-pointer hover:bg-[#8DDB90] text-gray-600 hover:text-white'
           onClick={() => emblaApi && emblaApi.scrollPrev()}>
           <FontAwesomeIcon icon={faChevronLeft} size='lg' />
         </div>
       </div>
-      <div className='absolute top-1/2 -translate-y-1/2 right-2 '>
+      <div className='absolute top-1/2 -translate-y-1/2 right-2 hidden md:inline'>
         <div
           className='bg-white w-[50px] h-[50px] flex justify-center items-center border rounded-full p-3 cursor-pointer px-5 py-4 hover:bg-[#8DDB90] text-gray-600 hover:text-white'
           onClick={() => emblaApi && emblaApi.scrollNext()}>
@@ -110,7 +110,7 @@ export default function ActivitiesScroll() {
 
       {/* Modal */}
       {isModalOpen && selectedActivity && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-[10px]'>
           <motion.div
             initial={{ y: 90, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -121,7 +121,11 @@ export default function ActivitiesScroll() {
               <h2 className='text-lg font-semibold text-gray-800'>
                 Admins Activities
               </h2>
-              <button type='button' title='Close' onClick={closeModal}>
+              <button
+                type='button'
+                className='cursor-pointer'
+                title='Close'
+                onClick={closeModal}>
                 {''}
                 <FontAwesomeIcon icon={faTimes} />
               </button>
@@ -142,7 +146,7 @@ export default function ActivitiesScroll() {
 
             <button
               type='button'
-              className='px-6 py-2 mt-4 w-[95%] bg-green-500 text-white rounded-md hover:bg-green-600'
+              className='px-6 py-2 mt-4 w-full bg-[#45D884] text-white rounded-md hover:bg-green-600'
               onClick={closeModal}>
               Cancel
             </button>
