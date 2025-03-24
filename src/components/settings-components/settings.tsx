@@ -7,7 +7,7 @@ import Mainbar from './main-bar';
 const Settings = () => {
   return (
     <section className='w-full flex justify-center flex-col'>
-      <div className='container lg:w-[1180px] mt-[40px] flex justify-between overflow-hidden'>
+      <div className='container lg:w-[1180px] mt-[40px] flex lg:flex-row flex-col gap-[20px] justify-between overflow-hidden'>
         <Sidebar />
         <Mainbar />
       </div>

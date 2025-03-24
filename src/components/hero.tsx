@@ -32,13 +32,21 @@ const HeroSection: FC<HeroSectionProps> = ({
       <div className='container h-full flex md:flex-row flex-col px-[10px] md:px-[20px] slide-from-bottom'>
         <div
           style={{ backgroundColor: bgColor }}
-          className={`md:w-[50%] lg:w-[40%] w-full lg:h-[536px] flex flex-col gap-[20px] flex-grow-1 px-[20px] lg:px-[40px] py-[20px] lg:py-[40px] border-[${borderColor}`}
-        >
+          className={`md:w-[50%] lg:w-[40%] w-full lg:h-[536px] flex flex-col gap-[20px] flex-grow-1 px-[20px] lg:px-[40px] py-[20px] lg:py-[40px] border-[${borderColor}`}>
           <h2 className='lg:text-[60px] font-semibold text-[50px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF]'>
-            {headingText} <span className='text-[#8DDB90] font-display'>Khabiteq</span>
+            {headingText}{' '}
+            <span className='text-[#8DDB90] font-display'>Khabiteq</span>
           </h2>
-          <Image src={lineStyle} width={1000} height={1000} alt='' className='w-[455px] h-[40px]' />
-          <p className='font-normal text-[20px] lg:leading-[32px] leading-[25px] text-[#FFFFFF]'>{description}</p>
+          <Image
+            src={lineStyle}
+            width={1000}
+            height={1000}
+            alt=''
+            className='w-[455px] h-[40px]'
+          />
+          <p className='font-normal text-[20px] lg:leading-[32px] leading-[25px] text-[#FFFFFF]'>
+            {description}
+          </p>
           <div className='flex md:flex-row flex-col gap-5'>
             <Button
               green={true}
