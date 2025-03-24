@@ -1,66 +1,115 @@
-"use client";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ActivitiesScroll from "@/components/admincomponents/activities_scroll";
-import { useState, Fragment } from "react";
-import PendingBriefs from "@/components/admincomponents/pending_briefs";
-import OverdueBriefs from "@/components/admincomponents/overdue_brief";
+/** @format */
+
+'use client';
+// import { faBars } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ActivitiesScroll from '@/components/admincomponents/activities_scroll';
+import { useState } from 'react';
+import PendingBriefs from '@/components/admincomponents/pending_briefs';
+import OverdueBriefs from '@/components/admincomponents/overdue_brief';
+import { motion } from 'framer-motion';
+import filterIcon from '@/svgs/filterIcon.svg';
+import Image from 'next/image';
+import { manrope } from '@/styles/font';
+
 export default function AttentionOverview() {
-  const [active, setActive] = useState("pending");
+  const [active, setActive] = useState('Pending Briefs');
+
+  const renderDynamicComponent = () => {
+    switch (active) {
+      case 'Pending Briefs':
+        return <PendingBriefs />;
+      case 'Overdues Briefs':
+        return <OverdueBriefs />;
+      default:
+        return <PendingBriefs />;
+    }
+  };
   return (
-    <Fragment>
-      <div className="bg-white flex flex-col border h-auto rounded-md mt-6 w-full">
-        <div className="border-b flex justify-between items-center px-6 py-2">
-          <h3 className="text-[#2E2C34] text-xl font-medium">
+    <motion.div
+      initial={{ y: 90, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}>
+      <div className='bg-white lg:max-w-[1128px] flex flex-col border h-auto rounded-md mt-6 mr-3'>
+        <div className='border-b flex justify-between items-center px-6 py-2'>
+          <h3
+            className={`text-[#25324B] text-xl font-semibold lg:text-[20px] ${manrope.className}`}>
             Admins Activities
           </h3>
-          <div className="flex gap-4 flex-wrap">
-            <div className="flex gap-2 border p-2 rounded-md">
-              <FontAwesomeIcon
-                icon={faBars}
-                size="lg"
-                className="text-[#2E2C34]"
+          <div className='flex gap-4'>
+            <div className='flex items-center gap-2 border p-2 rounded-md'>
+              <Image
+                src={filterIcon}
+                alt='filter icon'
+                width={24}
+                height={24}
+                className='w-[24px] h-[24px]'
               />
-              <span className="text-[#2E2C34]">Filter</span>
+              <span className='text-[#25324B]'>Filter</span>
             </div>
-            <div className="flex gap-2 border p-2 rounded-md">
-              <p className="text-[#0B423D]">View admin activities</p>
+            <div className='flex lg:w-[205px] items-center justify-center gap-2 border p-2 rounded-md'>
+              <p className='text-[#0B423D]'>View admin activities</p>
             </div>
           </div>
         </div>
         <ActivitiesScroll />
       </div>
-      <div className="pt-6 w-full">
-        <div className="flex border-b text-lg gap-8 flex-wrap">
-          <button
-            onClick={() => setActive("pending")}
-            className={`relative rounded-sm py-3 ${
-              active === "pending"
-                ? "border-b-4 border-[#8DDB90] text-[#181336] font-semibold"
-                : "text-[#515B6F]"
-            }`}
-          >
-            Pending Briefs
-            <span className="absolute top-0 bg-[#FF4F4F] text-white rounded-full px-2 py-0.5">
-              5
-            </span>
-          </button>
-          <button
-            onClick={() => setActive("overdue")}
-            className={`relative rounded-sm py-3 ${
-              active === "overdue"
-                ? "border-b-4 border-[#8DDB90] text-[#181336] font-semibold"
-                : "text-[#515B6F]"
-            }`}
-          >
-            Overdues Briefs
-            <span className="absolute top-0 bg-[#e51313] text-white rounded-full px-2 py-0.5">
-              25
-            </span>
-          </button>
+      <div className=''>
+        <div className='flex text-lg w-fit gap-8 mt-6'>
+          {texts.map((item, index) => (
+            <TextNotification
+              key={index}
+              text={item.text}
+              onClick={() => setActive(item.text)}
+              active={active}
+              count={item.count}
+            />
+          ))}
         </div>
-        {active === "pending" ? <PendingBriefs /> : <OverdueBriefs />}
+        {active && renderDynamicComponent()}
       </div>
-    </Fragment>
+    </motion.div>
   );
 }
+
+const TextNotification = ({
+  text,
+  onClick,
+  active,
+  count,
+}: {
+  text: string;
+  onClick: () => void;
+  active: string;
+  count: number;
+}) => {
+  return (
+    <div className='flex'>
+      <button
+        type='button'
+        onClick={onClick}
+        className={`relative rounded-sm  ${
+          active === text
+            ? 'border-b-4 border-[#8DDB90]  text-[#181336] font-semibold'
+            : 'text-[#515B6F]'
+        }`}>
+        {text}
+      </button>
+      <span className=' text-center w-[26px] h-[26px] z-10 -mt-[10px] bg-[#e51313] text-white rounded-full text-base flex justify-center items-center'>
+        {count}
+      </span>
+    </div>
+  );
+};
+
+const texts = [
+  {
+    text: 'Pending Briefs',
+    count: 5,
+  },
+  {
+    text: 'Overdues Briefs',
+    count: 25,
+  },
+];

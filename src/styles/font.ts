@@ -8,6 +8,7 @@ import {
   Archivo,
   Ubuntu,
   PT_Sans,
+  Manrope,
 } from 'next/font/google';
 
 export const roboto = Roboto({
@@ -48,4 +49,11 @@ export const product_sans = PT_Sans({
   weight: ['400', '700'],
   style: ['normal', 'italic'],
   variable: '--font-pt-sans',
+});
+
+export const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal'],
+  variable: '--font-manrope',
 });
