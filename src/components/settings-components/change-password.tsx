@@ -33,7 +33,7 @@ const ChangePassword = () => {
       transition={{ delay: 0.3 }}
       onSubmit={formik.handleSubmit}
       className='w-full lg:h-[211px] bg-[#FFFFFF] p-[26px] border-[#D6DDEB] border-[1px] flex flex-col items-center justify-center gap-[29px]'>
-      <div className='w-full min-h-[80px] flex justify-between gap-[28px]'>
+      <div className='w-full min-h-[80px] flex md:flex-row flex-col justify-between gap-[28px]'>
         <InputPassword
           formik={formik}
           name='Current Password'
