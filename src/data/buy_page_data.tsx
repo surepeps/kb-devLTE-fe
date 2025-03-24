@@ -18,6 +18,7 @@ export const propertyReferenceData: {
       'N50 Million - N100 Million',
       ' N100 Million - N500 Million',
       'N500 Million - N1 Billion',
+      'Above N1 Billion',
     ],
   },
   {
