@@ -32,8 +32,8 @@ export default function AttentionOverview() {
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}>
-      <div className='bg-white w-full lg:max-w-[1128px] flex flex-col border h-auto rounded-md mt-6 mr-3'>
-        <div className='border-b flex md:flex-row flex-col gap-2 justify-between items-start md:items-center px-2 md:px-6 py-2'>
+      <div className='bg-white w-full lg:max-w-[1128px] flex flex-col border rounded-md mt-6 mr-3'>
+        <div className='border-b flex md:flex-row flex-col gap-2 justify-between items-start md:items-center px-4 md:px-6 py-2'>
           <h3
             className={`text-[#25324B] text-xl font-semibold lg:text-[20px] ${manrope.className}`}>
             Admins Activities

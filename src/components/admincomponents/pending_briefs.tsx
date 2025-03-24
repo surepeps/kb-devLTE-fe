@@ -79,7 +79,7 @@ export default function PendingBriefs() {
               outline: 'none',
               backgroundColor: '#F9FAFB',
               border: '1px solid #D6DDEB',
-              // minWidth: '160px',
+              minWidth: '160px',
               //options background color
               // '&:hover': {
               //   borderColor: '#D6DDEB',
@@ -96,7 +96,7 @@ export default function PendingBriefs() {
           }}
         />
 
-        <div className='flex md:w-[initial] w-fit gap-3 cursor-pointer border px-3 justify-center items-center rounded-md'>
+        <div className='flex md:w-[initial] w-fit gap-3 cursor-pointer border px-3 justify-center items-center rounded-md h-[40px] md:h-[initial]'>
           <Image
             src={filterIcon}
             alt='filter icon'
