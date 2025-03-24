@@ -64,7 +64,7 @@ export default function AdminNavbar() {
       </button> */}
 
       <div
-        className={`relative z-50 min-h-screen w-[270px] bg-white shadow-lg transition-transform duration-300`}>
+        className={`relative z-50 min-h-screen w-[270px] bg-white transition-transform duration-300 md:flex flex-col hidden`}>
         <Image
           src={khabiteqIcon}
           width={1000}

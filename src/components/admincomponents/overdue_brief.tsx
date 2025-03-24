@@ -3,6 +3,9 @@
 'use client';
 import { faBars, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useFormik } from 'formik';
+import { motion } from 'framer-motion';
+import Select from 'react-select';
 
 const data = [
   {
@@ -35,19 +38,62 @@ const data = [
 ];
 
 export default function OverdueBriefs() {
+  const formik = useFormik({
+    initialValues: {
+      selectedStat: {
+        value: '1',
+        label: 'Type',
+      },
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
   return (
-    <div className='mt-6 p-4 border rounded-md bg-white px-8'>
+    <motion.div
+      initial={{ y: 90, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.3 }}
+      className='mt-6 p-4 border rounded-md bg-white px-8'>
       <h3 className='text-[#2E2C34] text-xl font-semibold  py-6'>
         Overdues Briefs
       </h3>
       <div className='flex justify-between'>
-        <select
+        {/* <select
           title='select'
           className='w-1/6 border border-gray-300 bg-transparent rounded-md p-3'>
           <option value='1'>Type</option>
           <option value='2'>Pending</option>
           <option value='3'>Overdue</option>
-        </select>
+        </select> */}
+        <Select
+          className='text-[#2E2C34] text-sm ml-1'
+          styles={{
+            control: (styles) => ({
+              ...styles,
+              boxShadow: 'none',
+              cursor: 'pointer',
+              outline: 'none',
+              backgroundColor: '#F9FAFB',
+              border: '1px solid #D6DDEB',
+              minWidth: '160px',
+              //options background color
+              // '&:hover': {
+              //   borderColor: '#D6DDEB',
+              //   backgroundColor: '#F9FAFB',
+              // },
+            }),
+            // indicatorSeparator: (styles) => ({ display: 'none' }),
+          }}
+          options={statsOptions}
+          defaultValue={statsOptions}
+          value={formik.values.selectedStat}
+          onChange={(options) => {
+            formik.setFieldValue('selectedStat', options);
+          }}
+        />
         <div className='flex gap-3 border px-3 justify-center items-center rounded-md'>
           <FontAwesomeIcon icon={faBars} size='lg' className='text-[#2E2C34]' />
           <span className='text-[#2E2C34]'>Filter</span>
@@ -98,6 +144,12 @@ export default function OverdueBriefs() {
           ))}
         </tbody>
       </table>
-    </div>
+    </motion.div>
   );
 }
+
+const statsOptions = [
+  { value: '1', label: 'Type' },
+  { value: '2', label: 'Pending' },
+  { value: '3', label: 'Overdue' },
+];
