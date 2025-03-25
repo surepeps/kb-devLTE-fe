@@ -32,6 +32,8 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGoogleLogin } from '@react-oauth/google';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
   const isLoading = useLoading();
@@ -41,6 +43,7 @@ const Login = () => {
   const [agreed, setAgreed] = useState(false);
 
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const validationSchema = Yup.object({
     email: Yup.string().required('enter email'),
@@ -201,6 +204,8 @@ const Login = () => {
                 formik={formik}
                 title='Password'
                 id='password'
+                seePassword={setShowPassword}
+                isSeePassword={showPassword}
                 icon={''}
                 type='password'
                 placeholder='Enter your password'
@@ -228,6 +233,7 @@ const Login = () => {
             <p className='text-base leading-[25.6px] font-normal'>
               Forgot your password?{' '}
               <button
+                type='button'
                 className='font-semibold text-[#09391C]'
                 onClick={() => setShowForgotPassword(true)}>
                 Reset
@@ -292,6 +298,8 @@ interface InputProps {
   id?: string;
   icon: StaticImport | string;
   formik: any;
+  seePassword?: (type: boolean) => void;
+  isSeePassword?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -302,6 +310,8 @@ const Input: FC<InputProps> = ({
   placeholder,
   icon,
   formik,
+  seePassword,
+  isSeePassword,
 }) => {
   return (
     <label
@@ -310,10 +320,12 @@ const Input: FC<InputProps> = ({
       <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
         {title}
       </span>
-      <div className='flex'>
+      <div className='flex items-center'>
         <input
           name={id}
-          type={type}
+          type={
+            type === 'password' ? (isSeePassword ? 'text' : 'password') : type
+          }
           value={formik.values[title]}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
@@ -329,6 +341,20 @@ const Input: FC<InputProps> = ({
             className='w-[20px] h-[20px] absolute ml-[330px] lg:ml-[440px] z-20 mt-[15px]'
           />
         ) : null} */}
+        {type === 'password' && (
+          <div className='bg-[#FAFAFA] w-[50px] h-[50px] flex items-center justify-center'>
+            <FontAwesomeIcon
+              title={isSeePassword ? 'Hide password' : 'See password'}
+              className='cursor-pointer transition duration-500'
+              icon={isSeePassword ? faEye : faEyeSlash}
+              size='sm'
+              color='black'
+              onClick={() => {
+                seePassword?.(!isSeePassword);
+              }}
+            />
+          </div>
+        )}
       </div>
       {formik.touched[title] ||
         (formik.errors[title] && (
