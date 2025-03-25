@@ -41,7 +41,7 @@ const Section2 = () => {
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areButtonsVisible = useVisibility(buttonsRef);
-  const areHousesVisible = useInView(housesRef, { once: false });
+  const areHousesVisible = useInView(housesRef, { once: true });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

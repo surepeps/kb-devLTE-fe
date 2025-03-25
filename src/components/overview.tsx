@@ -6,6 +6,7 @@ import { FC, Fragment, useEffect, useState } from 'react';
 import ShowTable from '@/components/showTable';
 import { DataProps, DataPropsArray } from '@/types/agent_data_props';
 import DetailsToCheck from '@/components/detailsToCheck';
+import { formatDate } from '@/utils/helpers';
 import { briefData } from '@/data/sampleDataForAgent';
 import Briefs from './mobileBrief';
 import { GET_REQUEST } from '@/utils/requests';
@@ -15,6 +16,14 @@ import RequestsTable from './RquestsTable';
 import toast from 'react-hot-toast';
 
 interface RequestData {
+  createdAt: string;
+  propertyType: string;
+  location: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
+  price: string;
   _id: string;
   requestFrom: {
     fullName: string;
@@ -51,6 +60,7 @@ const Overview = () => {
     message: '',
   });
   const [allRequests, setAllRequests] = useState<RequestData[]>([]);
+  const [buyerPreferences, setBuyerPreferences] = useState<RequestData[]>([]);
 
   const [isFullDetailsClicked, setIsFullDetailsClicked] = useState<boolean>(false);
   /**
@@ -82,6 +92,16 @@ const Overview = () => {
 
   useEffect(() => {
     if (selectedOption === 'Require Attention') {
+      (async () => {
+        const url = URLS.BASE + URLS.agentGetUserPreferences;
+        await GET_REQUEST(url, Cookies.get('token')).then((data) => {
+          if (data.success) {
+            setBuyerPreferences(data.sellPreferences);
+          } else {
+            setBuyerPreferences([]);
+          }
+        });
+      })();
       setSubmitBrief(true);
     } else {
       setSubmitBrief(false);
@@ -120,7 +140,6 @@ const Overview = () => {
           });
         }
         const data = response.data;
-        console.log(data);
         const combinedProperties = [...(data?.sellProperties || []), ...(data?.rentProperties || [])];
         setIsLoadingDetails({
           isLoading: false,
@@ -145,6 +164,8 @@ const Overview = () => {
     };
     getBriefsData();
   }, []);
+
+
 
   return (
     <Fragment>
@@ -244,10 +265,16 @@ const Overview = () => {
             match it with available property briefs. Upload suitable options to
             the preference form as soon as possible to ensure a fast and
             seamless transaction`}
-                data={briefData}
+                data={buyerPreferences.map((item) => ({
+                  date: formatDate(item.createdAt),
+                  propertyType: item.propertyType,
+                  location: `${item.location.state}, ${item.location.localGovernment}, ${item.location.area}`,
+                  propertyPrice: item.price.toString(),
+                  document: '', // Add appropriate value if available
+                }))}
               />
             )}
-            {selectedOption === 'Inspection Requests' && <RequestsTable data={allRequests} />}
+            {selectedOption === 'Inspection Requests' &&               <RequestsTable                 data={allRequests} />}
             {selectedOption === '3 month ago Brief' && (
               <Table
                 headingColor='black'

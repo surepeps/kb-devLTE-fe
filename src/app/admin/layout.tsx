@@ -7,10 +7,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   // const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
   return (
-    <main className='w-full min-h-screen flex'>
+    <main className='w-full flex'>
       <AdminNavbar />
       {/* Content */}
-      <section className='flex-1 p-4 lg:w-1/2'>{children}</section>
+      <section className='md:flex-1 w-full p-4 lg:w-1/2'>{children}</section>
     </main>
   );
 }

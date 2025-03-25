@@ -228,7 +228,7 @@ const Landlord = () => {
                     </h2>
                     <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                       <RadioCheck
-                        isDisabled={formik.values?.propertyType ? true : false}
+                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Residential');
@@ -238,7 +238,7 @@ const Landlord = () => {
                         name='propertyType'
                       />
                       <RadioCheck
-                        isDisabled={formik.values?.propertyType ? true : false}
+                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Commercial');
@@ -256,9 +256,9 @@ const Landlord = () => {
                     </h2>
                     <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                       <RadioCheck
-                        isDisabled={
-                          formik.values?.propertyCondition ? true : false
-                        }
+                        // isDisabled={
+                        //   formik.values?.propertyCondition ? true : false
+                        // }
                         selectedValue={formik.values?.propertyCondition}
                         handleChange={() => {
                           formik.setFieldValue(
@@ -271,9 +271,9 @@ const Landlord = () => {
                         value='New Building'
                       />
                       <RadioCheck
-                        isDisabled={
-                          formik.values?.propertyCondition ? true : false
-                        }
+                        // isDisabled={
+                        //   formik.values?.propertyCondition ? true : false
+                        // }
                         selectedValue={formik.values?.propertyCondition}
                         handleChange={() => {
                           formik.setFieldValue(
