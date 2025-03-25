@@ -16,6 +16,7 @@ import RequestsTable from './RquestsTable';
 import toast from 'react-hot-toast';
 
 interface RequestData {
+  docOnProperty: { docName: string }[];
   createdAt: string;
   propertyType: string;
   location: {
@@ -96,6 +97,7 @@ const Overview = () => {
         const url = URLS.BASE + URLS.agentGetUserPreferences;
         await GET_REQUEST(url, Cookies.get('token')).then((data) => {
           if (data.success) {
+            // console.log(data.sellPreferences);
             setBuyerPreferences(data.sellPreferences);
           } else {
             setBuyerPreferences([]);
@@ -270,7 +272,9 @@ const Overview = () => {
                   propertyType: item.propertyType,
                   location: `${item.location.state}, ${item.location.localGovernment}, ${item.location.area}`,
                   propertyPrice: item.price.toString(),
-                  document: '', // Add appropriate value if available
+                  document: item.docOnProperty
+                    ? item.docOnProperty.map((doc) => doc.docName).join(', ')
+                    : '', // Join docName values or leave empty if not provided
                 }))}
               />
             )}
