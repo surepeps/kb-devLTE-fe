@@ -1,10 +1,9 @@
 /** @format */
 'use client';
-import React, { useRef } from 'react';
+import React from 'react';
 import bookIcon from '@/svgs/book.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import Card from './home_card';
-import { useVisibility } from '@/hooks/useVisibility';
 import { motion } from 'framer-motion';
 
 interface CardProps {
@@ -14,18 +13,14 @@ interface CardProps {
 }
 
 const Section2 = () => {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-
-  const isHeadingVisible = useVisibility(headingRef);
-
   return (
     <section className='w-full flex items-center justify-center py-[30px]'>
       <div className='flex flex-col gap-[37px] container min-h-[490px] px-[20px] overflow-hidden'>
         <motion.h2
-          ref={headingRef}
           initial={{ opacity: 0, x: 40 }}
-          animate={isHeadingVisible ? { opacity: 1, x: 0 } : {}}
+          whileInView={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
+          viewport={{ once: true }}
           className='text-[35px] text-[#09391C] lg:leading-[41.02px] text-center font-bold'>
           Why Khabi-Teq Is Your Trusted Real Estate Partner
         </motion.h2>

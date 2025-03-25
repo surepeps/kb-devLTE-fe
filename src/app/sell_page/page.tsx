@@ -40,6 +40,18 @@ const Sell = () => {
 
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  const [formattedValue, setFormattedValue] = useState<string>('');
+
+  const formatNumber = (val: string) => {
+    const containsLetters = /[A-Za-z]/.test(val);
+    if (containsLetters) {
+      // setFormattedValue('');
+      return;
+    }
+    const numericValue = val.replace(/,/g, ''); //to remove commas;
+
+    return numericValue ? Number(numericValue).toLocaleString() : '';
+  };
 
   useEffect(() => {
     // Load Nigerian states correctly
@@ -378,11 +390,19 @@ const Sell = () => {
                       label='Price'
                       placeholder='Enter property price'
                       name='price'
-                      type='number'
+                      type='text'
                       className='w-full'
                       minNumber={0}
-                      value={formik.values?.price}
-                      onChange={formik.handleChange}
+                      value={formattedValue}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const rawValue = e.target.value;
+
+                        setFormattedValue(formatNumber?.(rawValue) ?? '');
+                        formik.setFieldValue(
+                          'price',
+                          rawValue.replace(/,/g, '')
+                        );
+                      }}
                       isDisabled={areInputsDisabled}
                     />
                   </div>
@@ -441,7 +461,7 @@ const Sell = () => {
                       />
                       <Select
                         label='Additional Features'
-                        name='additionalFeatures'
+                        name='Additional Features'
                         heading='additionalFeatures'
                         allowMultiple={true}
                         options={
@@ -612,7 +632,7 @@ const Select: React.FC<SelectProps> = ({
             : formik.setFieldValue(heading, selectedOption?.label ?? '')
         }
         onBlur={formik.handleBlur}
-        value={formik.values[heading]}
+        value={formik.values[heading]?.label}
         options={opts}
         className={`w-full`}
         styles={{

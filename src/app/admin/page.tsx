@@ -32,10 +32,10 @@ export default function AdminHome() {
   });
 
   return (
-    <section className='flex flex-col'>
+    <section className='flex flex-col w-full md:w-[initial]'>
       {/* Search & Help Button */}
       <div className='flex justify-between items-center'>
-        <div className='w-3/5 mt-2 h-12 flex relative items-center'>
+        <div className='md:w-3/5 mt-2 h-12 flex relative items-center'>
           <FontAwesomeIcon
             icon={faMagnifyingGlass}
             size='lg'
@@ -49,20 +49,22 @@ export default function AdminHome() {
             className='w-full h-full pl-12 border border-gray-300 bg-transparent rounded-md'
           />
         </div>
-        <button type='button' className='bg-black px-1 rounded-full shadow-md'>
+        <button
+          type='button'
+          className='bg-black w-[30px] h-[30px] flex items-center justify-center rounded-full shadow-md'>
           {''}
           <FontAwesomeIcon
             icon={faQuestion}
             color='#fff'
-            size='lg'
-            className='bg-[#000] p-2 rounded-full shadow-md'
+            size='sm'
+            className='bg-[#000] rounded-full shadow-md'
           />
         </button>
       </div>
 
       {/* Dashboard Header */}
-      <div className='flex justify-between mt-6 mr-6'>
-        <div className='flex flex-col'>
+      <div className='flex md:flex-row flex-col justify-between mt-6 md:mr-6 w-full md:w-[initial] gap-2 md:gap-0'>
+        <div className='flex flex-col gap-1 md:gap-0'>
           <h2
             className={`text-3xl font-bold text-[#2E2C34] ${archivo.className}`}>
             Dashboard
@@ -72,7 +74,7 @@ export default function AdminHome() {
             <span>1st Jan 2021 to 31st Jan 2021</span>
           </p>
         </div>
-        <div className='flex h-[48px] items-center bg-white px-4 rounded-lg'>
+        <div className='flex h-[48px] w-fit md:w-[initial] items-center bg-white px-4 rounded-lg'>
           <div className='text-[#84818A] flex items-center text-sm'>
             Show stats:
             {/* <select title='Show stats' className='text-[#2E2C34] text-sm ml-1'>
@@ -104,36 +106,42 @@ export default function AdminHome() {
       </div>
 
       {/* Overview Tabs */}
-      <div className='flex gap-4 mt-6'>
+      <div className='flex md:flex-row flex-col gap-4 mt-6'>
         <button
           type='button'
           onClick={() => setActiveTab('attention')}
-          className={`min-w-fit ${
+          className={`w-fit md:min-w-fit transition-all duration-500 ${
             archivo.className
           } lg:max-w-[226px] py-2 px-[7px] rounded-lg ${
             activeTab === 'attention'
-              ? 'bg-[#8DDB90] text-white'
+              ? 'bg-[#45D884] text-white'
               : 'bg-gray-200 text-black'
           }`}>
-          <h3 className='text-lg font-bold'>Attention Require Overview</h3>
+          <h3 className='text-base font-bold'>Attention Require Overview</h3>
         </button>
 
         <button
           type='button'
           onClick={() => setActiveTab('analysis')}
-          className={`min-w-fit px-[17px] ${
+          className={`w-fit transition-all duration-500 md:min-w-fit px-[17px] ${
             archivo.className
           } lg:max-w-[226px] py-2 rounded-lg ${
             activeTab === 'analysis'
-              ? 'bg-[#8DDB90] text-white'
+              ? 'bg-[#45D884] text-white'
               : 'bg-gray-200 text-black'
           }`}>
-          <h3 className='text-lg font-bold'>Analysis Overview</h3>
+          <h3 className='text-base font-bold'>Analysis Overview</h3>
         </button>
       </div>
 
       {/* Conditional Rendering of Overviews */}
-      {activeTab === 'attention' ? <AttentionOverview /> : <AnalysisOverview />}
+      <div className='w-full'>
+        {activeTab === 'attention' ? (
+          <AttentionOverview />
+        ) : (
+          <AnalysisOverview />
+        )}
+      </div>
     </section>
   );
 }
