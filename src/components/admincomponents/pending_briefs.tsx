@@ -8,6 +8,9 @@ import filterIcon from '@/svgs/filterIcon.svg';
 import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import EllipsisOptions from './ellipsisOptions';
+import { usePageContext } from '@/context/page-context';
 
 const data = [
   {
@@ -51,6 +54,10 @@ export default function PendingBriefs() {
       console.log(values);
     },
   });
+
+  const [openRow, setOpenRow] = useState<number | null>(null);
+  const { dashboard, setDashboard } = usePageContext();
+
   return (
     <motion.div
       initial={{ y: 90, opacity: 0 }}
@@ -192,7 +199,50 @@ export default function PendingBriefs() {
                 <td className='p-3 font-bold'>{item.amount}</td>
                 <td className='p-3'>{item.document}</td>
                 <td className='p-3 cursor-pointer text-2xl'>
-                  <FontAwesomeIcon icon={faEllipsis} />
+                  <FontAwesomeIcon
+                    onClick={() => {
+                      setOpenRow(openRow === index ? null : index);
+                    }}
+                    icon={faEllipsis}
+                  />
+                  {openRow === index && (
+                    <EllipsisOptions
+                      onApproveBrief={() => {
+                        setDashboard({
+                          ...dashboard,
+                          approveBriefsTable: {
+                            ...dashboard.approveBriefsTable,
+                            isApproveClicked: true,
+                            isRejectClicked: false,
+                            isDeleteClicked: false,
+                          },
+                        });
+                      }}
+                      onDeleteBrief={() => {
+                        setDashboard({
+                          ...dashboard,
+                          approveBriefsTable: {
+                            ...dashboard.approveBriefsTable,
+                            isApproveClicked: false,
+                            isRejectClicked: false,
+                            isDeleteClicked: true,
+                          },
+                        });
+                      }}
+                      onRejectBrief={() => {
+                        setDashboard({
+                          ...dashboard,
+                          approveBriefsTable: {
+                            ...dashboard.approveBriefsTable,
+                            isApproveClicked: false,
+                            isRejectClicked: true,
+                            isDeleteClicked: false,
+                          },
+                        });
+                      }}
+                      closeMenu={setOpenRow}
+                    />
+                  )}
                 </td>
               </tr>
             ))}
