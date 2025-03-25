@@ -1,4 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -66,7 +71,10 @@ const Login = () => {
               success: 'Password reset link sent to your email',
               error: (error: { message: any }) => {
                 console.log('error', error);
-                return error.message || 'An error occured while requesting reset link';
+                return (
+                  error.message ||
+                  'An error occured while requesting reset link'
+                );
               },
             }
           );
@@ -119,34 +127,40 @@ const Login = () => {
       // console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleLogin;
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
-        if (response.id) {
-          toast.success('Sign in successful');
-          Cookies.set('token', (response as unknown as { token: string }).token);
+      await POST_REQUEST(url, { code: codeResponse.code }).then(
+        async (response) => {
+          if (response.id) {
+            toast.success('Sign in successful');
+            Cookies.set(
+              'token',
+              (response as unknown as { token: string }).token
+            );
+            console.log('response', response);
+            console.log('response Data', response.data);
+
+            const user = response as unknown as {
+              id: string;
+              email: string;
+              password: string;
+              lastName: string;
+              firstName: string;
+              phoneNumber: string;
+            };
+
+            setUser(user);
+
+            if (!response.phoneNumber) router.push('/agent/onboard');
+            else router.push('/agent/briefs');
+          }
           console.log('response', response);
-          console.log('response Data', response.data);
-
-          const user = response as unknown as {
-            id: string;
-            email: string;
-            password: string;
-            lastName: string;
-            firstName: string;
-            phoneNumber: string;
-          };
-
-          setUser(user);
-
-          if (!response.phoneNumber) router.push('/agent/onboard');
-          else router.push('/agent/briefs');
+          if (response.error) {
+            toast.error(response.error);
+          }
         }
-        console.log('response', response);
-        if (response.error) {
-          toast.error(response.error);
-        }
-      });
+      );
     },
-    onError: (errorResponse) => toast.error('Sign In failed, please try again!'),
+    onError: (errorResponse) =>
+      toast.error('Sign In failed, please try again!'),
   });
 
   useEffect(() => {
@@ -165,14 +179,12 @@ const Login = () => {
     <section
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
-      } transition-all duration-500`}
-    >
-      <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
+      } transition-all duration-500`}>
+      <div className='container flex items-center justify-center py-[30px] mt-[20px] px-[25px] lg:px-0'>
         {!showForgotPassword ? (
           <form
             onSubmit={formik.handleSubmit}
-            className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
-          >
+            className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
             <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
               Sign In To Your Account
             </h2>
@@ -197,7 +209,7 @@ const Login = () => {
             {/**Button */}
             <Button
               value='Sign In'
-              className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
+              className=' w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6'
               type='submit'
               onSubmit={formik.handleSubmit}
               green={true}
@@ -206,29 +218,38 @@ const Login = () => {
 
             <p className='text-base leading-[25.6px] font-normal'>
               Don&apos;t have an account?{' '}
-              <Link className='font-semibold text-[#09391C]' href={'/agent/auth/register'}>
+              <Link
+                className='font-semibold text-[#09391C]'
+                href={'/agent/auth/register'}>
                 Sign Up
               </Link>
             </p>
 
             <p className='text-base leading-[25.6px] font-normal'>
               Forgot your password?{' '}
-              <button className='font-semibold text-[#09391C]' onClick={() => setShowForgotPassword(true)}>
+              <button
+                className='font-semibold text-[#09391C]'
+                onClick={() => setShowForgotPassword(true)}>
                 Reset
               </button>
             </p>
             {/**Google | Facebook */}
             <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
-              <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
+              <RegisterWith
+                icon={googleIcon}
+                text='Continue with Google'
+                onClick={googleLogin}
+              />
               <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
             </div>
           </form>
         ) : (
           <form
             onSubmit={formik.handleSubmit}
-            className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
-          >
-            <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Forgot Password</h2>
+            className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
+            <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+              Forgot Password
+            </h2>
             <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
               <Input
                 formik={formik}
@@ -250,8 +271,10 @@ const Login = () => {
             {/**Already have an account */}
             <p className='text-base leading-[25.6px] font-normal'>
               Remembered your password?{' '}
-              <button className='font-semibold text-[#09391C]' onClick={() => setShowForgotPassword(false)}>
-                Signin
+              <button
+                className='font-semibold text-[#09391C]'
+                onClick={() => setShowForgotPassword(false)}>
+                Sign in
               </button>
             </p>
           </form>
@@ -271,10 +294,22 @@ interface InputProps {
   formik: any;
 }
 
-const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, formik }) => {
+const Input: FC<InputProps> = ({
+  className,
+  id,
+  title,
+  type,
+  placeholder,
+  icon,
+  formik,
+}) => {
   return (
-    <label htmlFor={id} className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
-      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>{title}</span>
+    <label
+      htmlFor={id}
+      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+        {title}
+      </span>
       <div className='flex'>
         <input
           name={id}
@@ -296,7 +331,9 @@ const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, 
         ) : null} */}
       </div>
       {formik.touched[title] ||
-        (formik.errors[title] && <span className='text-red-600 text-sm'>{formik.errors[title]}</span>)}
+        (formik.errors[title] && (
+          <span className='text-red-600 text-sm'>{formik.errors[title]}</span>
+        ))}
     </label>
   );
 };
