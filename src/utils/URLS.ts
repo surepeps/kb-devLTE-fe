@@ -21,4 +21,5 @@ export const URLS = {
   scheduleInspection: '/property/schedule-inspection',
   getAllRequests: '/requests',
   confirmAvailability: '/confirm-property',
+  agentGetUserPreferences: '/agent/preferences',
 };
