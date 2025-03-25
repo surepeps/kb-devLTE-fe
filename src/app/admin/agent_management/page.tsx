@@ -1,9 +1,10 @@
-export default function AgentManagement () {
-    return (
-        <section>
-            <h1>Agent Management</h1>
-            
-        </section>
-    )
-}
+/** @format */
 
+'use client';
+export default function AgentManagement() {
+  return (
+    <section>
+      <h1>Agent Management</h1>
+    </section>
+  );
+}
