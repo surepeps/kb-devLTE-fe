@@ -38,9 +38,9 @@ const NewSection = () => {
   const ref3 = useRef(null);
   // const [tracker, setTracker] = useState();
 
-  const isInView = useInView(ref, { once: false });
-  const isInView2 = useInView(ref2, { once: false });
-  const isInView3 = useInView(ref3, { once: false });
+  const isInView = useInView(ref, { once: true });
+  const isInView2 = useInView(ref2, { once: true });
+  const isInView3 = useInView(ref3, { once: true });
 
   const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
   const [src, setSrc] = useState<any>(arrowIcon);
@@ -315,7 +315,7 @@ const Container: FC<ContainerProps> = ({
 }) => {
   const [isModalOpeneds, setIsModalOpened] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const isContainerInView = useInView(containerRef, { once: false });
+  const isContainerInView = useInView(containerRef, { once: true });
 
   return (
     <motion.div

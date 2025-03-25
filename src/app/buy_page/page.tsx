@@ -103,7 +103,10 @@ export default function Rent() {
         }
 
         const data = await response.json();
-        setProperties(data);
+        const randomIndex = Math.floor(Math.random() * (data.length - 10 + 1));
+        const randomData = data.slice(randomIndex, randomIndex + 10);
+
+        setProperties(randomData);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error(err);
@@ -205,7 +208,7 @@ export default function Rent() {
                   isSelectedBriefClicked ? 'hidden lg:grid' : 'flex lg:grid'
                 }`}>
                 {properties?.length !== 0 &&
-                  properties?.slice(-10).map((property, idx: number) => (
+                  properties?.map((property, idx: number) => (
                     <Card
                       images={Array(12).fill(imgSample)}
                       onClick={() => {
@@ -276,7 +279,7 @@ export default function Rent() {
                 </div>
               )}
             </div>
-            {[...selectedBriefs].length !== 0 && (
+            {[...selectedBriefs].length !== 0 && isSelectedBriefClicked && (
               <div
                 // ref={selectedBriefsRef}
                 className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>

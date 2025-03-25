@@ -27,12 +27,13 @@ export default function AttentionOverview() {
   };
   return (
     <motion.div
+      className='w-full overflow-hidden'
       initial={{ y: 90, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}>
-      <div className='bg-white lg:max-w-[1128px] flex flex-col border h-auto rounded-md mt-6 mr-3'>
-        <div className='border-b flex justify-between items-center px-6 py-2'>
+      <div className='bg-white w-full lg:max-w-[1128px] flex flex-col border rounded-md mt-6 mr-3'>
+        <div className='border-b flex md:flex-row flex-col gap-2 justify-between items-start md:items-center px-4 md:px-6 py-2'>
           <h3
             className={`text-[#25324B] text-xl font-semibold lg:text-[20px] ${manrope.className}`}>
             Admins Activities
@@ -49,14 +50,16 @@ export default function AttentionOverview() {
               <span className='text-[#25324B]'>Filter</span>
             </div>
             <div className='flex lg:w-[205px] items-center justify-center gap-2 border p-2 rounded-md'>
-              <p className='text-[#0B423D]'>View admin activities</p>
+              <p className='text-[#0B423D] md:text-base text-sm'>
+                View admin activities
+              </p>
             </div>
           </div>
         </div>
         <ActivitiesScroll />
       </div>
-      <div className=''>
-        <div className='flex text-lg w-fit gap-8 mt-6'>
+      <div className='flex flex-col w-full'>
+        <div className='flex text-lg w-fit gap-4 md:gap-8 mt-6'>
           {texts.map((item, index) => (
             <TextNotification
               key={index}
@@ -67,7 +70,7 @@ export default function AttentionOverview() {
             />
           ))}
         </div>
-        {active && renderDynamicComponent()}
+        <div className='w-full'>{active && renderDynamicComponent()}</div>
       </div>
     </motion.div>
   );
