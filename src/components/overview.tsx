@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /** @format */
 
@@ -64,24 +65,6 @@ const Overview = () => {
   const [buyerPreferences, setBuyerPreferences] = useState<RequestData[]>([]);
 
   const [isFullDetailsClicked, setIsFullDetailsClicked] = useState<boolean>(false);
-  /**
-     * const combinedProperties = [
-          ...(data?.sellProperties || []),
-          ...(data?.rentProperties || []),
-        ]
-     */
-
-  // useEffect(() => {
-
-  //   setBriefs({
-  //     totalBrief: 80,
-  //     draftBrief: 2,
-  //     referredAgent: 2,
-  //     completeTransaction: 35,
-  //     totalAmount: 3000000000.0,
-  //   });
-
-  // }, []);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
     date: '12/12/2024',
@@ -93,21 +76,30 @@ const Overview = () => {
 
   useEffect(() => {
     if (selectedOption === 'Require Attention') {
+      setIsLoadingDetails({
+        isLoading: true,
+        message: 'Loading...',
+      });
       (async () => {
         const url = URLS.BASE + URLS.agentGetUserPreferences;
         await GET_REQUEST(url, Cookies.get('token')).then((data) => {
           if (data.success) {
             // console.log(data.sellPreferences);
             setBuyerPreferences(data.sellPreferences);
+            setIsLoadingDetails({
+              isLoading: false,
+              message: 'Data Loaded',
+            });
           } else {
             setBuyerPreferences([]);
+            setIsLoadingDetails({
+              isLoading: false,
+              message: 'Failed to get data',
+            });
           }
         });
       })();
-      setSubmitBrief(true);
-    } else {
-      setSubmitBrief(false);
-    }
+    } 
   }, [selectedOption]);
 
   useEffect(() => {
