@@ -1,4 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 
 'use client';
@@ -21,7 +26,7 @@ interface User {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
-  regionOfOperation?: string;
+  selectedRegion?: string[];
   address?: {
     localGovtArea: string;
     city: string;
