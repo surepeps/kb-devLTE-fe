@@ -86,6 +86,23 @@ export interface GlobalContextTypes {
       isUpgraded: boolean;
     };
   }) => void;
+
+  /**Dashboard Types */
+  dashboard: {
+    approveBriefsTable: {
+      isApproveClicked: boolean;
+      isRejectClicked: boolean;
+      isDeleteClicked: boolean;
+    };
+  };
+
+  setDashboard: ({}: {
+    approveBriefsTable: {
+      isApproveClicked: boolean;
+      isRejectClicked: boolean;
+      isDeleteClicked: boolean;
+    };
+  }) => void;
 }
 
 export type BriefType = {

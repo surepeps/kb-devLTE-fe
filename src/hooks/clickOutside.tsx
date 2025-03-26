@@ -6,6 +6,9 @@ import { useEffect, RefObject } from 'react';
  * Hook to handle clicks outside of a referenced element.
  * @param ref - The ref of the element to detect outside clicks for.
  * @param callback - The function to execute when an outside click is detected.
+ *
+ * @usage - useClickOutside(ref, () => closeMenu?.(null));
+ * @returns void
  */
 const useClickOutside = (
   ref: RefObject<HTMLElement | null>,

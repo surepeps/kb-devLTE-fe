@@ -33,7 +33,7 @@ const Brief: FC<TotalBriefProps> = ({
   isLoading,
 }) => {
   return (
-    <div className=' w-full mt-[60px] flex items-center justify-center px-[20px]'>
+    <div className=' w-full mt-[60px] flex items-center justify-center'>
       {showFullDetails ? (
         <div>
           <DetailsToCheck
