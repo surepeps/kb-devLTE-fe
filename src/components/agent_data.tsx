@@ -1,9 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { usePageContext } from '@/context/page-context';
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Button from './button';
 import Input from './Input';
 import Select from './select';
@@ -17,6 +22,7 @@ import { PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useUserContext } from '@/context/user-context';
 import naijaStates from 'naija-state-local-government';
+import ReactSelect from 'react-select';
 
 interface Option {
   value: string;
@@ -54,6 +60,7 @@ const AgentData = () => {
     console.log(formik.values);
     formik.setFieldValue('state', selected?.value);
     setSelectedState?.(selected);
+    // console.log(lgaOptions, regionOptions);
 
     if (selected) {
       const lgas = naijaStates.lgas(selected.value)?.lgas;
@@ -72,7 +79,7 @@ const AgentData = () => {
       }
       setSelectedLGA?.(null);
     } else {
-      console.log('Hey');
+      // console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
@@ -85,7 +92,7 @@ const AgentData = () => {
       street: '',
       state: '',
       localGovtArea: '',
-      regionOfOperation: '',
+      selectedRegion: [''],
       typeOfID: '',
       companyName: '',
       idNumber: '',
@@ -106,7 +113,7 @@ const AgentData = () => {
           state: formik.values.state,
           localGovtArea: formik.values.localGovtArea,
         },
-        regionOfOperation: formik.values.regionOfOperation,
+        regionOfOperation: formik.values.selectedRegion,
         agentType:
           selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
         ...(selectedAgentType === 'Individual Agent'
@@ -170,7 +177,7 @@ const AgentData = () => {
         street: user?.address?.street || '',
         state: user?.address?.state || '',
         localGovtArea: user.address?.localGovtArea || '',
-        regionOfOperation: user.regionOfOperation || '',
+        selectedRegion: user.selectedRegion || [],
         typeOfID:
           user.agentType === 'Individual'
             ? user.individualAgent?.typeOfId || ''
@@ -277,16 +284,27 @@ const AgentData = () => {
                   // isDisabled={areInputsDisabled}
                 />
               </div>
-              <Input
+              {/* <Input
                 label='Region of Operation'
-                name='regionOfOperation'
+                name='selectedRegion'
                 className='w-full'
                 type='text'
-                value={formik.values.regionOfOperation}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                forRegion={true}
+                // value={formik.values.regionOfOperation}
+                // onChange={formik.handleChange}
+                // onBlur={formik.handleBlur}
+                stateOptions={regionOptions}
+                selectedRegion={selectedRegion}
+                setSelectedRegion={handleRegionChange}
                 id='regionOfOperation'
                 placeholder='This is a placeholder'
+              /> */}
+              <RegionMultipleInput
+                name='Region of Operation'
+                formik={formik}
+                allowMultiple={true}
+                heading='selectedRegion'
+                options={lgaOptions}
               />
             </div>
             {/**Agent Type */}
@@ -412,4 +430,64 @@ const AgentData = () => {
   );
 };
 
+interface SelectProps {
+  heading: string;
+  placeholder?: string;
+  options: any[];
+  formik: any;
+  allowMultiple?: boolean;
+  name: string;
+}
+
+const RegionMultipleInput: FC<SelectProps> = ({
+  name,
+  formik,
+  allowMultiple,
+  heading,
+  options,
+}) => {
+  useEffect(() => {
+    console.log(`options: ${options} \n length: ${options.length}`);
+  }, [options]);
+  return (
+    <label
+      htmlFor='select'
+      className='min-h-[80px] w-full flex flex-col gap-[4px]'>
+      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
+        {name}
+      </h2>
+      <ReactSelect
+        isMulti={allowMultiple}
+        name={name}
+        onChange={(selectedOption) =>
+          allowMultiple
+            ? formik.setFieldValue(
+                heading,
+                [
+                  ...(Array.isArray(selectedOption)
+                    ? selectedOption.map((opt: any) => opt.label)
+                    : []),
+                ].filter(Boolean) // Removes undefined values
+              )
+            : formik.setFieldValue(heading, selectedOption?.label ?? '')
+        }
+        onBlur={formik.handleBlur}
+        value={options.length !== 0 ? formik.values[heading]?.label : null}
+        options={options.length !== 0 ? options : []}
+        className={`w-full bg-white`}
+        styles={{
+          control: (base) => ({
+            ...base,
+            height: '50px',
+            background: '#FFFFFF',
+            overflow: 'hidden',
+            display: 'flex',
+            width: '100%',
+          }),
+        }}
+        placeholder='Select'
+      />
+    </label>
+  );
+};
 export default AgentData;
