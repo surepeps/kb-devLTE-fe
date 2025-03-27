@@ -279,13 +279,13 @@ const Input: FC<InputProps> = memo(
       <Fragment>
         <label
           htmlFor={id}
-          className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+          className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}>
           <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
             {label}
           </span>
 
           {forState && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <Select
                 options={stateOptions}
                 value={selectedState}
@@ -304,7 +304,7 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forLGA && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <Select
                 options={lgasOptions}
                 value={selectedLGA}
@@ -322,7 +322,7 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forRegion && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <Select
                 options={stateOptions}
                 value={selectedRegion}
@@ -331,17 +331,17 @@ const Input: FC<InputProps> = memo(
                 styles={customStyle}
                 isDisabled={isDisabled}
               />
-              {(formik.errors.selectedRegion ||
-                formik.touched.selectedRegion) && (
+              {(formik?.errors?.selectedRegion ||
+                formik?.touched?.selectedRegion) && (
                 <span className='text-red-600 text-xs'>
-                  {formik.errors.selectedRegion}
+                  {formik?.errors?.selectedRegion}
                 </span>
               )}
             </div>
           )}
 
           {!forLGA && !forState && !forRegion && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <input
                 id={id}
                 name={name}

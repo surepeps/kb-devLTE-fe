@@ -16,6 +16,7 @@ interface SelectProps {
   value?: string;
   onChange?: (selectedOption: SelectOption | null) => void;
   placeholder?: string;
+  disable?: boolean;
 }
 
 const Select: FC<SelectProps> = ({
@@ -26,6 +27,7 @@ const Select: FC<SelectProps> = ({
   value,
   onChange,
   placeholder,
+  disable,
 }) => {
   // Convert string array to ReactSelect option format
   const formattedOptions = options.map((option) => ({
@@ -49,6 +51,7 @@ const Select: FC<SelectProps> = ({
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
       /> */}
       <ReactSelect
+        isDisabled={disable}
         options={formattedOptions}
         value={selectedOption}
         onChange={onChange}
