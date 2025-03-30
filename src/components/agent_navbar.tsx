@@ -5,11 +5,13 @@ import { usePageContext } from '@/context/page-context';
 import { AgentNavData } from '@/enums';
 import React, { Fragment } from 'react';
 
-const AgentNav = () => {
+const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
   const { selectedNav, setSelectedNav } = usePageContext();
 
   const handleSelect = (text: string) => {
-    setSelectedNav(text);
+    if (!isDisabled) {
+      setSelectedNav(text);
+    }
   };
 
   return (
@@ -23,6 +25,7 @@ const AgentNav = () => {
             }}
             key={idx}
             name={item}
+            isDisabled={isDisabled}
           />
         ))}
       </div>
@@ -34,6 +37,7 @@ const AgentNav = () => {
             handleSelect('Create Brief');
           }}
           name={'Create Brief'}
+          isDisabled={isDisabled}
         />
         <div className='flex gap-[10px] overflow-x-scroll w-full hide-scrollbar'>
           {navData.map((item: string, idx: number) => {
@@ -47,6 +51,7 @@ const AgentNav = () => {
                   }}
                   key={idx}
                   name={item}
+                  isDisabled={isDisabled}
                 />
               );
             }
@@ -61,8 +66,8 @@ const {
   CREATE_BRIEF,
   OVERVIEW,
   TOTAL_BRIEF,
-  DRAFT_BRIEF,
-  TRANSACTION_HISTORY,
+  // DRAFT_BRIEF,
+  // TRANSACTION_HISTORY,
   SETTINGS,
 } = AgentNavData;
 
@@ -70,8 +75,8 @@ const navData: string[] = [
   CREATE_BRIEF,
   OVERVIEW,
   TOTAL_BRIEF,
-  DRAFT_BRIEF,
-  TRANSACTION_HISTORY,
+  // DRAFT_BRIEF,
+  // TRANSACTION_HISTORY,
   SETTINGS,
 ];
 
@@ -95,7 +100,9 @@ const Box: React.FC<BoxProps> = ({
       type='button'
       onClick={isDisabled ? undefined : onClick}
       className={`${className} ${
-        selectedText === name
+        isDisabled
+          ? 'opacity-40 cursor-not-allowed'
+          : selectedText === name
           ? 'bg-[#09391C] text-[#8DDB90] shadow-md'
           : 'text-[#5A5D63] bg-transparent'
       } text-[18px] leading-[21.09px] transition-all duration-500 font-semibold py-[15px] px-[20px] gap-[10px] border-[1px] border-[#C7CAD0] border-sm lg:min-w-[202px] hover:bg-[#8DDB90] hover:text-[#FFFFFF]`}>

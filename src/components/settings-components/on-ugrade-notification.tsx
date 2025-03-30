@@ -101,7 +101,7 @@ const OnUpgradeNotification = () => {
                 <h2 className='text-nowrap text-[#202430] text-base font-semibold'>
                   Upload image
                 </h2>
-                <AttachFile heading='' />
+                <AttachFile heading=''  id="image-upload"/>
               </div>
             </div>
           </div>

@@ -54,6 +54,7 @@ const Upgrade = () => {
           <Select
             value={selectedAgentType}
             placeholder='Select Agent Type'
+            disable={true}
             onChange={(option: SelectOption | null) =>
               setSelectedAgentType(option?.value ?? '')
             }
@@ -65,9 +66,10 @@ const Upgrade = () => {
             label='ID Number'
             placeholder='3i458568686787'
             type='number'
+            isDisabled={true}
           />
           <div className='w-full h-[89px] flex justify-between items-center'>
-            <h2 className='text-[202430] text-base font-semibold'>
+            <h2 className='text-[#202430] text-base font-semibold'>
               Uploaded document
             </h2>
             <Image

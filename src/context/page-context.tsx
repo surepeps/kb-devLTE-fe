@@ -103,6 +103,17 @@ export const PageContextProvider = ({
     },
   });
 
+  /**
+   * Dashboard
+   */
+  const [dashboard, setDashboard] = useState({
+    approveBriefsTable: {
+      isApproveClicked: false,
+      isRejectClicked: false,
+      isDeleteClicked: false,
+    },
+  });
+
   return (
     <PageContext.Provider
       value={{
@@ -134,6 +145,8 @@ export const PageContextProvider = ({
         setPropertyRefSelectedBriefs,
         settings,
         setSettings,
+        dashboard,
+        setDashboard,
       }}>
       {children}
     </PageContext.Provider>
