@@ -58,7 +58,7 @@ export default function OverdueBriefs() {
       transition={{ delay: 0.3 }}
       className='mt-6 p-4 border rounded-md bg-white px-8'>
       <h3 className='text-[#2E2C34] text-xl font-semibold  py-6'>
-        Overdues Briefs
+        Incoming Briefs
       </h3>
       <div className='flex md:flex-row flex-col gap-2 justify-between'>
         {/* <select

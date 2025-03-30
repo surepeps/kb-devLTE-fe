@@ -9,12 +9,14 @@ interface AttachFileProps {
   heading: string;
   setFileUrl?: React.Dispatch<React.SetStateAction<string | null>>;
   className?: string;
+  id: string; // Add id prop
 }
 
 const AttachFile: React.FC<AttachFileProps> = ({
   heading,
   setFileUrl,
   className,
+  id, // Destructure id prop
 }) => {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -53,7 +55,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
         type='file'
         name=''
         className='peer hidden'
-        id='file'
+        id={id} // Use dynamic id
         title='file'
         onChange={(event) => {
           handleFileChange(event);
@@ -62,7 +64,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
 
       <svg
         onClick={() => {
-          const file: HTMLElement | null = document.getElementById('file');
+          const file: HTMLElement | null = document.getElementById(id); // Use dynamic id
           file?.click();
         }}
         width='367'

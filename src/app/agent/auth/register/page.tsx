@@ -46,13 +46,8 @@ const Register = () => {
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Enter email'),
-
     password: Yup.string()
       .min(8, 'Password must be at least 8 characters')
-      // .matches(
-      //   /^(.*[A-Z]){2,}/,
-      //   'Password must contain at least two uppercase letters'
-      // ) // At least two uppercase letters
       .matches(/[a-z]/, 'Password must contain at least one lowercase letter') // At least one lowercase letter
       // .matches(/\d/, 'Password must contain at least one number') // At least one number
       .matches(
@@ -60,15 +55,12 @@ const Register = () => {
         'Password must contain at least two special character'
       ) // At least two special character
       .required('Password is required'),
-
     firstName: Yup.string()
       .matches(/^[a-zA-Z]+$/, 'First name must only contain letters') // Only letters
       .required('Firstname is required'),
-
     lastName: Yup.string()
       .matches(/^[a-zA-Z]+$/, 'Last name must only contain letters') // Only letters
       .required('Lastname is required'),
-
     phone: Yup.string()
       .matches(/^[0-9]+$/, 'Phone number must only contain digits') // Only digits
       .min(10, 'Phone number must be at least 10 digits')
@@ -103,7 +95,7 @@ const Register = () => {
                 'fullname',
                 `${formik.values.firstName} ${formik.values.lastName}`
               );
-              localStorage.setItem('email', `${formik.values.email}`);
+              localStorage.setItem('email', `${formik.values.email}`); // Save email to local storage
               localStorage.setItem(
                 'phoneNumber',
                 `${String(formik.values.phone)}`
@@ -117,7 +109,6 @@ const Register = () => {
                 );
               }, 2000);
               setIsDisabled(false);
-              // router.push('/auth/agent/form');
               router.push('/verify-email');
               return 'Registration successful';
             } else {
@@ -155,7 +146,6 @@ const Register = () => {
               'token',
               (response as unknown as { token: string }).token
             );
-            console.log('response', response);
             setUser((response as any).user);
             toast.success('Registration successful');
             router.push('/agent/onboard');
