@@ -66,7 +66,7 @@ export default function PendingBriefs() {
       transition={{ delay: 0.3 }}
       className='mt-6 p-4 border rounded-md bg-white w-full lg:max-w-[1128px] px-8 mr-2 overflow-hidden md:overflow-x-auto'>
       <h3 className='text-[#2E2C34] text-xl font-semibold  py-6'>
-        Approve Briefs
+        Buyers Inspections
       </h3>
       <div className='flex md:flex-row flex-col gap-2 justify-between'>
         {/* <select

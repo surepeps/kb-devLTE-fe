@@ -8,7 +8,7 @@ import emailIcon from '@/svgs/emaiIcon.svg';
 const VerifyEmail = () => {
   return (
     <div className='w-full flex justify-center items-center'>
-      <div className='container min-h-[400px] flex flex-col justify-center items-center gap-[20px]'>
+      <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px]'>
         <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full px-[20px]'>
           <div className='w-[81px] h-[81px] rounded-full bg-[#8DDB90] flex items-center justify-center'>
             <Image

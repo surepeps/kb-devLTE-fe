@@ -94,13 +94,20 @@ const Login = () => {
             POST_REQUEST(url, payload).then((response) => {
               console.log('response from signin', response);
 
-              if ((response as any)?.user?.id) {
+              if ((response as any)?.user?._id) {
+
+                if (response.user.accountApproved === false) {
+                  router.push('/agent/under-review');
+                } else if (!response.user.phoneNumber) {
+                  router.push('/agent/onboard');
+                } else {
+                  router.push('/agent/under-review');
+                }
+
                 toast.success('Sign in successful');
                 Cookies.set('token', (response as any).token);
                 setUser((response as any).user);
 
-                if (!response.user.phoneNumber) router.push('/agent/onboard');
-                else router.push('/agent/briefs');
 
                 return 'Sign in successful';
               } else {
@@ -148,12 +155,19 @@ const Login = () => {
               lastName: string;
               firstName: string;
               phoneNumber: string;
+              accountApproved: boolean;
             };
 
             setUser(user);
 
-            if (!response.phoneNumber) router.push('/agent/onboard');
-            else router.push('/agent/briefs');
+            if (response.accountApproved === false) {
+              router.push('/agent/under-review');
+            } else if (!response.phoneNumber) {
+              router.push('/agent/onboard');
+            } else {
+              router.push('/agent/briefs');
+            }
+
           }
           console.log('response', response);
           if (response.error) {
@@ -170,6 +184,8 @@ const Login = () => {
     if (user) {
       if (!user.agentType) {
         router.push('/agent/onboard');
+      } else if (!user.accountApproved) {
+        router.push('/agent/under-review');
       } else if (user.phoneNumber && user.agentType) {
         router.push('/agent/briefs');
       }

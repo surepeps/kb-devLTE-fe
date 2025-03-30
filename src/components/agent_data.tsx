@@ -36,9 +36,13 @@ const AgentData = () => {
     useState<string>('Individual Agent');
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+  const [selectedIdType, setSelectedIdType] = useState<Option | null>(null);
 
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+
+  const [idFileUrl, setIdFileUrl] = useState<string | null>(null); // For ID upload
+  const [utilityBillFileUrl, setUtilityBillFileUrl] = useState<string | null>(null); // For utility bill upload
 
   useEffect(() => {
     // Load Nigerian states correctly
@@ -52,7 +56,7 @@ const AgentData = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('localGovtArea', selected?.value);
-    console.log('Selected LGA:', formik.values); // Debugging
+    console.log('Selected LGA:', formik.values); 
     setSelectedLGA?.(selected);
   };
 
@@ -60,11 +64,10 @@ const AgentData = () => {
     console.log(formik.values);
     formik.setFieldValue('state', selected?.value);
     setSelectedState?.(selected);
-    // console.log(lgaOptions, regionOptions);
 
     if (selected) {
       const lgas = naijaStates.lgas(selected.value)?.lgas;
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+      console.log('Raw LGA Data:', lgas);
 
       if (Array.isArray(lgas)) {
         setLgaOptions(
@@ -85,7 +88,10 @@ const AgentData = () => {
     }
   };
 
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const handleIdTypeChange = (selected: Option | null) => {
+    formik.setFieldValue('typeOfID', selected?.value);
+    setSelectedIdType(selected);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -101,15 +107,19 @@ const AgentData = () => {
       lastName: user?.lastName,
       phoneNumber: user?.phoneNumber,
     },
-    onSubmit: async (values) => {
-      console.log(values);
-
-      if (fileUrl === null) return toast.error('Please upload your document');
+    onSubmit: async () => {
+    
+      if (!idFileUrl) {
+        return toast.error('Please upload your government-issued ID');
+      }
+      if (!utilityBillFileUrl) {
+        return toast.error('Please upload your utility bill for address verification');
+      }
+    
       const payload = {
         token: Cookies.get('token'),
         address: {
           street: formik.values.street,
-          city: 'Anytown',
           state: formik.values.state,
           localGovtArea: formik.values.localGovtArea,
         },
@@ -120,20 +130,28 @@ const AgentData = () => {
           ? {
               individualAgent: {
                 typeOfId: formik.values.typeOfID,
-                idNumber: formik.values.idNumber,
               },
             }
           : {
               companyAgent: {
                 companyName: formik.values.companyName,
-                regNumber: String(formik.values.registrationNumber),
               },
             }),
-        doc: fileUrl, // Assuming doc is a static value or should be handled separately
-        phoneNumber: formik.values.phoneNumber,
         firstName: formik.values.firstName,
         lastName: formik.values.lastName,
+        phoneNumber: formik.values.phoneNumber,
+        meansOfId: [
+          {
+            name: selectedAgentType === 'Individual Agent' ? selectedIdType?.value : 'cac',
+            docImg: [idFileUrl], // Use idFileUrl for the ID document
+          },
+          {
+            name: 'utility bill',
+            docImg: [utilityBillFileUrl], // Use utilityBillFileUrl for the utility bill
+          },
+        ],
       };
+      console.log('Payload:', payload);
       await toast.promise(
         PUT_REQUEST(
           URLS.BASE + URLS.agentOnboarding,
@@ -148,7 +166,7 @@ const AgentData = () => {
                 'token',
                 (response as unknown as { token: string }).token
               );
-              router.push('/agent/briefs');
+              router.push('/agent/under-review');
               return 'Agent data submitted successfully';
             } else {
               const errorMessage =
@@ -163,8 +181,7 @@ const AgentData = () => {
           }),
         {
           loading: 'Submitting...',
-          success: 'Agent data submitted successfully',
-          // error: 'An error occurred, please try again',
+          // success: 'Agent data submitted successfully',
         }
       );
     },
@@ -174,7 +191,7 @@ const AgentData = () => {
     // if(!user) router.push('/auth/agent/login')
     if (user) {
       formik.setValues({
-        street: user?.address?.street || '',
+        street:  '',
         state: user?.address?.state || '',
         localGovtArea: user.address?.localGovtArea || '',
         selectedRegion: user.selectedRegion || [],
@@ -200,6 +217,7 @@ const AgentData = () => {
       });
     }
   }, [user]);
+  
   return (
     <section
       className={`flex items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
@@ -215,9 +233,7 @@ const AgentData = () => {
             realty
           </h2>
           <p className='text-[#5A5D63] text-[20px] leading-[32px] text-center tracking-[5%]'>
-            Lorem ipsum dolor sit amet consectetur. Ornare feugiat suspendisse
-            tincidunt erat scelerisque. Tortor aenean a urna metus cursus dui
-            commodo velit. Tellus mattis quam.
+          To complete your registration, please upload your government-issued ID, company registration number, and a recent utility bill for address verification
           </p>
         </div>
 
@@ -234,30 +250,10 @@ const AgentData = () => {
                   type='text'
                   value={formik.values.street}
                   id='street'
-                  onChange={formik.handleChange}
+                  onChange={formik.handleChange} // Ensure this is present to make the field editable
                   onBlur={formik.handleBlur}
                   placeholder='This is a placeholder'
                 />
-                {/* <Input
-                  label='State'
-                  name='state'
-                  type='text'
-                  value={formik.values.state}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  id='state'
-                  placeholder='This is a placeholder'
-                />
-                <Input
-                  label='Local Government Area'
-                  name='localGovtArea'
-                  type='text'
-                  value={formik.values.localGovtArea}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  id='localGovtArea'
-                  placeholder='This is a placeholder'
-                /> */}
                 <Input
                   label='State'
                   name='selectedState'
@@ -284,21 +280,6 @@ const AgentData = () => {
                   // isDisabled={areInputsDisabled}
                 />
               </div>
-              {/* <Input
-                label='Region of Operation'
-                name='selectedRegion'
-                className='w-full'
-                type='text'
-                forRegion={true}
-                // value={formik.values.regionOfOperation}
-                // onChange={formik.handleChange}
-                // onBlur={formik.handleBlur}
-                stateOptions={regionOptions}
-                selectedRegion={selectedRegion}
-                setSelectedRegion={handleRegionChange}
-                id='regionOfOperation'
-                placeholder='This is a placeholder'
-              /> */}
               <RegionMultipleInput
                 name='Region of Operation'
                 formik={formik}
@@ -327,19 +308,24 @@ const AgentData = () => {
                   <Input
                     label='Type of ID'
                     name='typeOfID'
-                    className='md:w-1/2 w-full'
                     type='text'
-                    value={formik.values.typeOfID}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    id='typeOfID'
-                    placeholder='This is a placeholder'
+                    formik={formik}
+                    forIdtype={true}
+                    selectedIdType={selectedIdType}
+                    idTypeOptions={[
+                      { value: 'international passport', label: 'International Passport' },
+                      { value: 'nin', label: 'NIN' },
+                      { value: 'driver license', label: 'Driver License' },
+                      { value: 'voter card', label: 'Voter Card' },
+                    ]}
+                    setSelectedIdType={handleIdTypeChange}
+                    // isDisabled={areInputsDisabled}
                   />
                 ) : (
                   <Input
                     label='Business/Company Name'
                     name='companyName'
-                    className='md:w-1/2 w-full'
+                    className='md:w-full w-full'
                     type='text'
                     value={formik.values.companyName}
                     onChange={formik.handleChange}
@@ -348,35 +334,31 @@ const AgentData = () => {
                     placeholder='This is a placeholder'
                   />
                 )}
-                {selectedAgentType === 'Individual Agent' ? (
-                  <Input
-                    label='ID Number'
-                    name='idNumber'
-                    className='md:w-1/2 w-full'
-                    type='text'
-                    value={formik.values.idNumber}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    id='idNumber'
-                    placeholder='This is a placeholder'
-                  />
-                ) : (
-                  <Input
-                    label='Registration Number'
-                    name='registrationNumber'
-                    className='md:w-1/2 w-full'
-                    type='number'
-                    value={formik.values.registrationNumber}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    id='registrationNumber'
-                    placeholder='This is a placeholder'
-                  />
-                )}
               </div>
+
+              {/**Agent Type */}
+              <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold mb-[10px]'>
+                Upload for verification
+              </h2>
+
+              {selectedAgentType === 'Individual Agent' ? (
+                <AttachFile
+                  heading={`Upload your ${selectedIdType?.label || 'ID'}`}
+                  setFileUrl={setIdFileUrl} // Set ID file URL
+                  id="id-upload" // Unique ID for ID upload
+                />
+              ) : (
+                <AttachFile
+                  heading='Upload your CAC'
+                  setFileUrl={setIdFileUrl} // Set CAC file URL
+                  id="cac-upload" // Unique ID for CAC upload
+                />
+              )}
+
               <AttachFile
-                heading='Upload your document'
-                setFileUrl={setFileUrl}
+                heading='Upload your utility bill to verify your address'
+                setFileUrl={setUtilityBillFileUrl} // Set utility bill file URL
+                id="utility-bill-upload" // Unique ID for utility bill upload
               />
               <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
                 Contact Information
