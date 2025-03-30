@@ -353,8 +353,37 @@ const PropertyType = () => {
           {/**input */}
           <div className='min-h-[26px] w-full flex gap-[50px]'>
             <Input
-              label='Price'
+              label='Enter property price'
               placeholder='Enter property price'
+              name='price'
+              type='number'
+              className='w-full'
+              value={formik.values?.price}
+              onChange={formik.handleChange}
+            />
+          </div>
+          {formik.touched.price && formik.errors.price && (
+            <span className='text-red-600 text-sm'>{formik.errors.price}</span>
+          )}
+        </div>
+        {/**Land Size */}
+        <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
+          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+            Land Size
+          </h2>
+          {/**input */}
+          <div className='min-h-[26px] w-full flex gap-[20px]'>
+            <Select
+              allowMultiple={true}
+              heading={''}
+              formik={formik}
+              name={propertyReferenceData[5].heading}
+              options={propertyReferenceData[5].options}
+              placeholder='Select'
+            />
+            <Input
+              label='Enter land size'
+              placeholder=''
               name='price'
               type='number'
               className='w-full'
@@ -472,7 +501,7 @@ const PropertyType = () => {
           </div>
         </div>
         {/**Upload Image | Documents */}
-        <AttachFile heading='Upload image(optional)' />
+        <AttachFile heading='Upload image(optional)'  id="image-upload" />
 
         {/**Button */}
         <div className='min-h-[50px] w-full flex justify-end items-center'>

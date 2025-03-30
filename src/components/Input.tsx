@@ -216,7 +216,10 @@ interface InputProps {
   onBlur?: FocusEventHandler<HTMLInputElement>;
   forState?: boolean;
   forLGA?: boolean;
+  forIdtype?: boolean;
   forRegion?: boolean;
+  selectedIdType?: Option | null;
+  setSelectedIdType?: (option: Option | null) => void;
   selectedState?: Option | null;
   setSelectedState?: (option: Option | null) => void;
   selectedLGA?: Option | null;
@@ -229,6 +232,7 @@ interface InputProps {
   formik?: any;
   stateOptions?: Option[];
   lgasOptions?: Option[];
+  idTypeOptions?: Option[];
 }
 
 const Input: FC<InputProps> = memo(
@@ -245,11 +249,15 @@ const Input: FC<InputProps> = memo(
     forState,
     forLGA,
     forRegion,
+    forIdtype,
     isDisabled,
     minNumber,
     maxNumber,
     stateOptions,
     lgasOptions,
+    idTypeOptions,
+    selectedIdType,
+    setSelectedIdType,
     selectedLGA,
     setSelectedLGA,
     selectedState,
@@ -279,13 +287,13 @@ const Input: FC<InputProps> = memo(
       <Fragment>
         <label
           htmlFor={id}
-          className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+          className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}>
           <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
             {label}
           </span>
 
           {forState && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <Select
                 options={stateOptions}
                 value={selectedState}
@@ -304,7 +312,7 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forLGA && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <Select
                 options={lgasOptions}
                 value={selectedLGA}
@@ -322,7 +330,7 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forRegion && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col w-full'>
               <Select
                 options={stateOptions}
                 value={selectedRegion}
@@ -331,17 +339,36 @@ const Input: FC<InputProps> = memo(
                 styles={customStyle}
                 isDisabled={isDisabled}
               />
-              {(formik.errors.selectedRegion ||
-                formik.touched.selectedRegion) && (
+              {(formik?.errors?.selectedRegion ||
+                formik?.touched?.selectedRegion) && (
                 <span className='text-red-600 text-xs'>
-                  {formik.errors.selectedRegion}
+                  {formik?.errors?.selectedRegion}
+                </span>
+              )}
+            </div>
+          )}
+          
+          {forIdtype && (
+            <div className='flex flex-col w-full'>
+              <Select
+                options={idTypeOptions}
+                value={selectedIdType}
+                onChange={setSelectedIdType}
+                placeholder='Select Type if ID'
+                styles={customStyle}
+                isDisabled={isDisabled}
+              />
+              {(formik?.errors?.selectedIdType ||
+                formik?.touched?.selectedIdType) && (
+                <span className='text-red-600 text-xs'>
+                  {formik?.errors?.selectedIdType}
                 </span>
               )}
             </div>
           )}
 
-          {!forLGA && !forState && !forRegion && (
-            <div className='flex flex-col'>
+          {!forLGA && !forState && !forRegion && !forIdtype && (
+            <div className='flex flex-col w-full'>
               <input
                 id={id}
                 name={name}

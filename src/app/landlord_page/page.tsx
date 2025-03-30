@@ -446,7 +446,7 @@ const Landlord = () => {
                   </div>
 
                   {/**Upload Image | Documents */}
-                  <AttachFile heading='Upload image(optional)' />
+                  <AttachFile heading='Upload image(optional)' id="image-upload"/>
                   {/**end */}
                 </div>
               </div>

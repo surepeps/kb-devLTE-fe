@@ -30,6 +30,10 @@ export const propertyReferenceData: {
     options: ['1500 square meter', '2500 square meter', '3000 square meter'],
   },
   {
+    heading: 'Type of Measurement',
+    options: ['Plot', 'Square Meter', 'Acres'],
+  },
+  {
     heading: 'Document Type',
     options: ['Governor Consent', 'C of O', 'Survey Document'],
   },

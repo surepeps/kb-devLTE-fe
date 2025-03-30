@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -159,7 +160,7 @@ const Form2 = () => {
             data={totalBriefData}
           />
         )}
-        {selectedNav === AgentNavData.DRAFT_BRIEF && (
+        {/* {selectedNav === AgentNavData.DRAFT_BRIEF && (
           <Brief
             headerData={headerData}
             detailsToCheck={detailsToCheckForDraftBrief}
@@ -170,8 +171,8 @@ const Form2 = () => {
             isLoading={isLoading}
             data={briefData}
           />
-        )}
-        {selectedNav === AgentNavData.TRANSACTION_HISTORY && (
+        )} */}
+        {/* {selectedNav === AgentNavData.TRANSACTION_HISTORY && (
           <Brief
             headerData={transactionHeaderData}
             detailsToCheck={detailsToCheckForTransactionHistory}
@@ -182,7 +183,7 @@ const Form2 = () => {
             isLoading={isLoading}
             data={completeTransactionData}
           />
-        )}
+        )} */}
         {selectedNav === AgentNavData.SETTINGS && <Settings />}
       </div>
     </section>
