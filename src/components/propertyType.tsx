@@ -501,7 +501,7 @@ const PropertyType = () => {
           </div>
         </div>
         {/**Upload Image | Documents */}
-        <AttachFile heading='Upload image(optional)' />
+        <AttachFile heading='Upload image(optional)'  id="image-upload" />
 
         {/**Button */}
         <div className='min-h-[50px] w-full flex justify-end items-center'>
