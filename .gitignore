@@ -11,6 +11,9 @@
 !.yarn/releases
 !.yarn/versions
 
+email_templates.html
+
+
 # testing
 /coverage
 
