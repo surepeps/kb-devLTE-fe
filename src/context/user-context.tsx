@@ -1,4 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 
 'use client';
@@ -16,12 +21,13 @@ import toast from 'react-hot-toast';
 import { usePathname, useRouter } from 'next/navigation';
 
 interface User {
+  accountApproved: boolean;
   id?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
-  regionOfOperation?: string;
+  selectedRegion?: string[];
   address?: {
     localGovtArea: string;
     city: string;

@@ -20,6 +20,7 @@ interface valuesProps {
   usageOption: any[];
   budgetRange: string;
   state: string;
+  selectedLGA: string;
   landSize: string;
   docOnProperty: [];
   desireFeatures: [];
@@ -49,6 +50,7 @@ const PropertyReference = ({
       usageOption: usageOption ? [usageOption] : [],
       budgetRange: '',
       state: '',
+      selectedLGA: '',
       landSize: '',
       docOnProperty: [],
       desireFeatures: [],
@@ -60,8 +62,8 @@ const PropertyReference = ({
       const payload = {
         propertyType: values.propertyType,
         state: values.state,
-        localGovernment: 'Egbeda', //assumption, no local govt input on the design
-        area: 'Iwo', //assumption, same,
+        localGovernment: values.selectedLGA, //assumption, no local govt input on the design
+        area: 'N/A', //assumption, same,
         minPrice: 0,
         maxPrice: 1000000000,
         usageOptions: formik.values.usageOption,
@@ -70,19 +72,19 @@ const PropertyReference = ({
         maxBedrooms: formik.values.bedroom,
       };
       //check if it has vvalues otherwise don't run
-      if (
-        !values.bedroom ||
-        !values.propertyType ||
-        !values.state ||
-        !values.usageOption ||
-        !values.budgetRange ||
-        !values.desireFeatures ||
-        !values.docOnProperty ||
-        !values.landSize
-      ) {
-        toast.error('Please fill all fields');
-        return;
-      }
+      // if (
+      //   !values.bedroom ||
+      //   !values.propertyType ||
+      //   !values.state ||
+      //   !values.usageOption ||
+      //   !values.budgetRange ||
+      //   !values.desireFeatures ||
+      //   !values.docOnProperty ||
+      //   !values.landSize
+      // ) {
+      //   toast.error('Please fill all fields');
+      //   return;
+      // } //now updated - All fields must be optional
       setIsSubmitting(true);
       try {
         const response = await axios.post(
@@ -129,8 +131,8 @@ const PropertyReference = ({
       budgetRange: formik.values.budgetRange,
       location: {
         state: formik.values.state,
-        localGovernment: 'Egbeda', //assumption, no local govt input on the design
-        area: 'Iwo', //assumption, same,
+        localGovernment: formik.values.selectedLGA, //assumption, no local govt input on the design
+        area: 'N/A', //assumption, same,
       },
       price: 2048344930, //assumption, supposing we are using the budget range instead
       docOnProperty: propertyDoc,
@@ -152,8 +154,15 @@ const PropertyReference = ({
     label: string;
   }
   const [selectedState, setSelectedState] = useState<Option | null>(null);
-
+  const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+  const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
+
+  const handleLGAChange = (selected: Option | null) => {
+    formik.setFieldValue('selectedLGA', selected?.value);
+    console.log('Selected LGA:', formik.values); // Debugging
+    setSelectedLGA?.(selected);
+  };
 
   useEffect(() => {
     // Load Nigerian states correctly
@@ -169,6 +178,28 @@ const PropertyReference = ({
     //console.log('Selected State:', selected);
     formik.setFieldValue('state', selected?.value);
     setSelectedState?.(selected);
+
+    if (selected) {
+      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+
+      if (Array.isArray(lgas)) {
+        setLgaOptions(
+          lgas.map((lga: string) => ({
+            value: lga,
+            label: lga,
+          }))
+        );
+      } else {
+        console.error('LGAs not returned as an array:', lgas);
+        setLgaOptions([]);
+      }
+      setSelectedLGA?.(null);
+    } else {
+      console.log('Hey');
+      setLgaOptions([]);
+      setSelectedLGA?.(null);
+    }
   };
 
   return (
@@ -231,6 +262,20 @@ const PropertyReference = ({
               selectedState={selectedState}
               stateOptions={stateOptions}
               setSelectedState={handleStateChange}
+            />
+            {/**Local Government Area */}
+            <Input
+              label='LGA'
+              name='selectedLGA'
+              type='text'
+              placeholder='Select Local govt area'
+              formik={formik}
+              forLGA={true}
+              forState={false}
+              selectedLGA={selectedLGA}
+              lgasOptions={lgaOptions}
+              setSelectedLGA={handleLGAChange}
+              // setSelectedState={handleStateChange}
             />
             {/**Land Size */}
             <Select

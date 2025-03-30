@@ -48,6 +48,7 @@ const Homepage = () => {
               lastName: string;
               firstName: string;
               phoneNumber: string;
+              accountApproved: boolean;
             };
             // const user = {
             //   id: (response as any).id,
