@@ -1,3 +1,4 @@
+
 export const URLS = {
   BASE: `${process.env.NEXT_PUBLIC_API_URL}`,
   agent: '/agent',
@@ -22,4 +23,6 @@ export const URLS = {
   getAllRequests: '/requests',
   confirmAvailability: '/confirm-property',
   agentGetUserPreferences: '/agent/preferences',
+  agentApproval: '/admin/approve-agent',
+  getAllAgents: '/admin/all-agents',
 };
