@@ -6,7 +6,6 @@ import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
 import { toast } from 'react-hot-toast';
-// import { useRouter } from 'next/navigation';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
@@ -15,7 +14,6 @@ import { useUserContext } from '@/context/user-context';
 import { useEffect, useState } from 'react';
 import naijaStates from 'naija-state-local-government';
 import { propertyReferenceData } from '@/data/buy_page_data';
-// import Cookies from 'js-cookie';
 import ReactSelect from 'react-select';
 
 interface Option {
@@ -42,18 +40,15 @@ const PropertyType = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
-    console.log('Selected LGA:', formik.values); // Debugging
     setSelectedLGA?.(selected);
   };
 
   const handleStateChange = (selected: Option | null) => {
-    console.log(formik.values);
     formik.setFieldValue('selectedState', selected?.value);
     setSelectedState?.(selected);
 
     if (selected) {
       const lgas = naijaStates.lgas(selected.value)?.lgas;
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setLgaOptions(
@@ -63,12 +58,10 @@ const PropertyType = () => {
           }))
         );
       } else {
-        console.error('LGAs not returned as an array:', lgas);
         setLgaOptions([]);
       }
       setSelectedLGA?.(null);
     } else {
-      console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
