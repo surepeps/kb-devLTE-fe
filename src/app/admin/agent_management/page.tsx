@@ -1,7 +1,6 @@
 /** @format */
 'use client';
 
-// import { useState } from 'react';
 import {
   faMagnifyingGlass,
   faQuestion,
@@ -9,15 +8,13 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AgentManagements from '@/components/admincomponents/agent_management-tabs';
 import { archivo } from '@/styles/font';
+import { useLoading } from '@/hooks/useLoading';
 import Select from 'react-select';
+import Loading from '@/components/loading';
 import { useFormik } from 'formik';
-//import * as Yup from 'yup';
 
-// type OptionType = {
-//   value: string;
-//   label: string;
-// }
 export default function AgentManagement() {
+   const isLoading = useLoading();
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -32,6 +29,8 @@ export default function AgentManagement() {
       console.log(values);
     },
   });
+
+  if (isLoading) return <Loading />;
 
   return (
     <section className='flex flex-col w-full md:w-[initial]'>

@@ -87,7 +87,7 @@ const Register = () => {
             ...payload,
             phoneNumber: String(values.phone),
           }).then((response) => {
-            console.log('response from signup', response);
+            // console.log('response from signup', response);
             if ((response as any).id) {
               toast.success('Registration successful');
               setUser((response as any).user);
@@ -136,7 +136,6 @@ const Register = () => {
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse: any) => {
-      console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleSignup;
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(

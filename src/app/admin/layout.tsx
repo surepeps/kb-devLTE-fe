@@ -9,7 +9,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <main className='w-full flex'>
       <AdminNavbar />
-      {/* Content */}
       <section className='md:flex-1 w-full p-4 lg:w-1/2'>{children}</section>
     </main>
   );
