@@ -116,7 +116,6 @@ const PropertyType = () => {
         .required('Owner email is required'),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       try {
         const url = URLS.BASE + URLS.agentCreateBrief;
         const payload = {
@@ -143,8 +142,6 @@ const PropertyType = () => {
           },
           areYouTheOwner: values.areYouTheOwner,
         };
-
-        // console.log('Payload:', payload);
 
         await toast.promise(
           POST_REQUEST(url, payload).then((response) => {
