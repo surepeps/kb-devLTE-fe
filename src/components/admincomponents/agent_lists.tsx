@@ -15,13 +15,14 @@ import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
+import Loading from '@/components/loading';
 
-// Define the interface for agent data
 interface Agent {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
+  fullName: string;
   phoneNumber: string;
   address: {
     street: string;
@@ -41,55 +42,66 @@ interface Agent {
   isInActive: boolean;
   isDeleted: boolean;
   accountApproved: boolean;
+  profile_picture: string;
 }
 
 export default function AgentLists() {
   const [active, setActive] = useState('All Agents');
-  const [selectedUser, setSelectedUser] = useState<any | null>(null); 
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
     isLoading: false,
     message: '',
   });
-  const [agents, setAgents] = useState<Agent[]>([]); 
+  const [agents, setAgents] = useState<Agent[]>([]);
 
-  useEffect(() => {
-    const getAgentsData = async () => {
-      setIsLoadingDetails({
-        isLoading: true,
-        message: 'Loading...',
-      });
-      try {
-        const response = await GET_REQUEST(
-          URLS.BASE + '/admin/all-agents',
-          Cookies.get('token')
-        );
+  const getAgentsData = async () => {
+    setIsLoadingDetails({
+      isLoading: true,
+      message: 'Loading...',
+    });
+    try {
+      const response = await GET_REQUEST(
+        URLS.BASE + URLS.getAllAgents,
+        Cookies.get('token')
+      );
 
-        if (response?.success === false) {
-          toast.error('Failed to get data');
-          return setIsLoadingDetails({
-            isLoading: false,
-            message: 'Failed to get data',
-          });
-        }
-        const data = response.agents.data;
-        setIsLoadingDetails({
-          isLoading: false,
-          message: 'Data Loaded',
-        });
-        setAgents(data);
-      } catch (error: any) {
-        setIsLoadingDetails({
+      if (response?.success === false) {
+        toast.error('Failed to get data');
+        return setIsLoadingDetails({
           isLoading: false,
           message: 'Failed to get data',
         });
-      } finally {
-        setIsLoadingDetails({
-          isLoading: false,
-          message: '',
-        });
       }
+      const data = response.agents.data;
+      setIsLoadingDetails({
+        isLoading: false,
+        message: 'Data Loaded',
+      });
+      setAgents(data);
+    } catch (error: any) {
+      setIsLoadingDetails({
+        isLoading: false,
+        message: 'Failed to get data',
+      });
+    } finally {
+      setIsLoadingDetails({
+        isLoading: false,
+        message: '',
+      });
+    }
+  };
+
+  useEffect(() => {
+    getAgentsData(); // Initial data fetch
+
+    const handleFocus = () => {
+      getAgentsData(); // Fetch updates when the page gains focus
     };
-    getAgentsData();
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const filteredAgents = agents.filter((agent) => {
@@ -178,17 +190,23 @@ export default function AgentLists() {
                     <input title='checkbox' type='checkbox' />
                   </td>
                   <td className='p-3'>{item.id}</td>
-                  <td className='p-3'>{`${item.firstName} ${item.lastName}`}</td>
+                  <td className='p-3'>
+                    {item.fullName ? item.fullName : `${item.firstName} ${item.lastName}`}
+                  </td>
                   <td className='p-3'>{item.email}</td>
                   <td
                     className={`p-3 font-semibold ${
-                      item.agentType.toLowerCase() === 'individual'
+                      item.agentType?.toLowerCase() === 'individual' // Added optional chaining
                         ? 'text-red-500'
                         : 'text-green-500'
                     }`}>
-                    {item.agentType}
+                    {item.agentType || 'N/A'} {/* Fallback to 'N/A' if agentType is undefined */}
                   </td>
-                  <td className='p-3'>{`${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`}</td>
+                  <td className='p-3'>
+                    {item.address
+                      ? `${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`
+                      : 'N/A'} {/* Fallback to 'N/A' if address is undefined */}
+                  </td>
                   <td className='p-3 cursor-pointer text-2xl'>
                     <FontAwesomeIcon
                       onClick={() => handleActionClick(item)}
@@ -220,6 +238,7 @@ export default function AgentLists() {
 
   return (
     <Fragment>
+      {isLoadingDetails.isLoading && <Loading />} {/* Show loading component */}
       <div>
         <div className='flex text-lg w-full gap-4 md:gap-8 mt-6'>
           {tabs.map((item, index) => (
