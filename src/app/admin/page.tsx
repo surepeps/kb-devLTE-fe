@@ -13,12 +13,7 @@ import AnalysisOverview from '@/components/admincomponents/analysis_overview';
 import { archivo } from '@/styles/font';
 import Select from 'react-select';
 import { useFormik } from 'formik';
-//import * as Yup from 'yup';
 
-// type OptionType = {
-//   value: string;
-//   label: string;
-// }
 export default function AdminHome() {
   const [activeTab, setActiveTab] = useState('attention');
 
