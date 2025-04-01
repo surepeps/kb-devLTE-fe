@@ -38,7 +38,7 @@ export default function Rent() {
         const resposne = await axios.get(URLS.BASE + '/properties/rents/all');
         console.log(resposne);
         if (resposne.status === 200) {
-          setData(resposne.data.slice(0, 8));
+          setData(resposne.data.data.slice(0, 8));
           setDataLoading(false);
         }
       } catch (error) {

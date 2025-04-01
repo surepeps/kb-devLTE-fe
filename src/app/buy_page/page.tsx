@@ -103,8 +103,9 @@ export default function Rent() {
         }
 
         const data = await response.json();
-        const randomIndex = Math.floor(Math.random() * (data.length - 10 + 1));
-        const randomData = data.slice(randomIndex, randomIndex + 10);
+        console.log(data)
+        const randomIndex = Math.floor(Math.random() * (data.data.length - 10 + 1));
+        const randomData = data.data.slice(randomIndex, randomIndex + 10);
 
         setProperties(randomData);
       } catch (err: any) {
