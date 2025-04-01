@@ -25,6 +25,7 @@ interface valuesProps {
   docOnProperty: [];
   desireFeatures: [];
   bedroom: number;
+  typeOfMeasurement: []
 }
 
 interface PropertyReferenceDataProps {
@@ -55,6 +56,7 @@ const PropertyReference = ({
       docOnProperty: [],
       desireFeatures: [],
       bedroom: 0,
+      typeOfMeasurement: []
     },
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
@@ -70,6 +72,7 @@ const PropertyReference = ({
         additionalFeatures: formik.values.desireFeatures,
         minBedrooms: 1,
         maxBedrooms: formik.values.bedroom,
+        // typeOfMeasurement: formik.values.typeOfMeasurement
       };
       //check if it has vvalues otherwise don't run
       // if (
@@ -140,6 +143,7 @@ const PropertyReference = ({
         additionalFeatures: formik.values.desireFeatures,
         noOfBedrooms: formik.values.bedroom,
       },
+      // typeOfMeasurment: formik.values.typeOfMeasurement
     };
 
     setPropertyReference(payload);
@@ -286,6 +290,15 @@ const PropertyReference = ({
               options={propertyReferenceData[4].options}
               placeholder='Select'
             />
+            {/**Measurment */}
+             <Select
+              allowMultiple={false}
+              heading={'typeOfMeasurement'}
+              formik={formik}
+              name={propertyReferenceData[8].heading}
+              options={propertyReferenceData[8].options}
+              placeholder='Select'
+            />
             {/**Document Type */}
             <Select
               allowMultiple={true}
@@ -305,14 +318,7 @@ const PropertyReference = ({
               placeholder='Select'
             />
             {/**Bedroom */}
-            {/* <Select
-              allowMultiple={false}
-              heading={'bedroom'}
-              formik={formik}
-              name={propertyReferenceData[7].heading}
-              options={propertyReferenceData[7].options}
-              placeholder='Select'
-            /> */}
+           
             <Input
               label='Bedroom'
               name='bedroom'
