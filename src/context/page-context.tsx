@@ -12,14 +12,11 @@ interface Option {
 
 const PageContext = createContext<GlobalContextTypes | undefined>(undefined);
 
-export const PageContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const PageContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [isContactUsClicked, setIsContactUsClicked] = useState<boolean>(false);
   const [rentPage, setRentPage] = useState({
     isSubmitForInspectionClicked: false,
+    submitPreference: false,
   });
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 
@@ -54,24 +51,19 @@ export const PageContextProvider = ({
   const [imageData, setImageData] = useState<StaticImport[]>([]);
 
   //Submitted successfully context logic.
-  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] =
-    useState<boolean>(false);
+  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState<boolean>(false);
 
   //Buy page - property referenece
   const [propertyReference, setPropertyReference] = useState({});
 
   /**Selected Briefs for Buy Page - property reference */
-  const [propertyRefSelectedBriefs, setPropertyRefSelectedBriefs] = useState<
-    BriefType[]
-  >([]);
+  const [propertyRefSelectedBriefs, setPropertyRefSelectedBriefs] = useState<BriefType[]>([]);
 
   //all card data
   const [cardData, setCardData] = useState<[]>([]);
 
   //selecting cards for inspection
-  const [selectedBriefs, setSelectedBriefs] = useState<Set<BriefType>>(
-    new Set()
-  );
+  const [selectedBriefs, setSelectedBriefs] = useState<Set<BriefType>>(new Set());
 
   const addBrief = (brief: BriefType) => {
     setSelectedBriefs((prev) => new Set([...prev, brief])); // Ensure immutability
@@ -118,7 +110,8 @@ export const PageContextProvider = ({
         removeBrief,
         propertyRefSelectedBriefs,
         setPropertyRefSelectedBriefs,
-      }}>
+      }}
+    >
       {children}
     </PageContext.Provider>
   );
