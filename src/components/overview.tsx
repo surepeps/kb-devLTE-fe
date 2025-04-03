@@ -179,7 +179,7 @@ const Overview = () => {
         </div>
       ) : (
         <div className='lg:w-[1184px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[60px] flex flex-col'>
-          <div className='w-full min-h-[140px] grid md:grid-cols-2 lg:grid-cols-4 items-center gap-[20px]'>
+          <div className='w-full m-auto min-h-[140px] grid md:grid-cols-2 lg:grid-cols-3 items-center gap-[40px] '>
             {/**Total Brief */}
             <div className='w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
               <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
@@ -189,7 +189,7 @@ const Overview = () => {
                 {isLoadingDetails.isLoading ? (
                   <i className='text-sm'>{isLoadingDetails.message}</i>
                 ) : (
-                  briefs.totalBrief
+                  briefs.totalBrief   
                 )}
               </h2>
             </div>
@@ -208,11 +208,12 @@ const Overview = () => {
                 Total referred agent
               </h4>
               <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
-                {briefs.referredAgent}
+                {/* {briefs.referredAgent}  */} Coming soon
               </h2>
             </div>
-            {/**Complete Transaction */}
-            <div className='w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
+            {/* Complete Transaction */}
+            
+            {/* <div className='w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
               <div className='flex justify-between min-h-[24px] border-b-[1px] border-[#E4DFDF] pb-1 w-full'>
                 <span className='text-base leading-[18px] text-[#2CAF67] tracking-[0.25px] font-archivo'>
                   Complete Transaction
@@ -221,7 +222,6 @@ const Overview = () => {
                   {briefs.completeTransaction}
                 </h2>
               </div>
-              {/**Total Amount */}
               <div className='min-h-[44px] flex flex-col gap-[4px]'>
                 <span className='text-[14px] leading-[18px] text-[#181336] tracking-[0.25px] font-archivo'>
                   Total Amount made with us
@@ -234,7 +234,7 @@ const Overview = () => {
                   })}
                 </h2>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className='w-full min-h-[51px] md:flex flex-wrap gap-[25px] hidden'>
@@ -348,8 +348,8 @@ const Options: FC<OptionType> = ({ text, onClick, className }) => {
 const OptionData: string[] = [
   'Require Attention',
   'recently publish',
-  'Total referred Agent',
-  '3 month ago Brief',
+  // 'Total referred Agent',
+  // '3 month ago Brief',
   'Inspection Requests',
 ];
 
