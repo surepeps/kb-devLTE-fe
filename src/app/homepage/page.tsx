@@ -37,7 +37,6 @@ const Homepage = () => {
 
       (async () => {
         await GET_REQUEST(url).then((response) => {
-          // console.log('response from email verification', response);
           if ((response as unknown as { id: string; token: string }).id) {
             Cookies.set('token', (response as unknown as { token: string }).token);
 
@@ -70,7 +69,7 @@ const Homepage = () => {
   return (
     <Fragment>
       <section className={`w-full`}>
-        <main className='w-full bg-[#EEF1F1]'>
+        <main className="w-full bg-[#EEF1F1]">
           <HeroSection />
           <Section1 />
           <Section2 />
@@ -79,8 +78,8 @@ const Homepage = () => {
           <Section3
             isHomepage={true}
             isAgentPage={false}
-            heading='Highlight of Our Real Estate Expertise'
-            headingColor='#09391C'
+            heading="Highlight of Our Real Estate Expertise"
+            headingColor="#09391C"
           />
           <FAQs isHomePage={true} />
           <Feedback />
