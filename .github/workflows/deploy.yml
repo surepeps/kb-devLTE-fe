@@ -1,4 +1,4 @@
-name: Deploy to Vercel (Prod)
+name: deploy website
 on:
   push:
     branches:
@@ -7,15 +7,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
+      # your build commands
       - run: |
-          npm install  
+          npm install
           npm run build
-      - uses: vercel/action@v3
+      - uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID }}
-          scope: ${{ secrets.ORG_ID }}
-          production: true # Deploys to production
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.ORG_ID}}
+          vercel-project-id: ${{ secrets.PROJECT_ID}}
+          comment-on-pull-request: false
+          auto-comment: false
