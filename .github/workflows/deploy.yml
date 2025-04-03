@@ -1,23 +1,26 @@
-name: deploy website
+name: Vercel Production Deployment
 on:
   push:
     branches:
-      - dev
+      - main
 jobs:
-  deploy:
+  Deploy-Production:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # your build commands
-      - run: |
-          npm install
-          npm run build
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prod'
-          vercel-org-id: ${{ secrets.ORG_ID}}
-          vercel-project-id: ${{ secrets.PROJECT_ID}}
-          comment-on-pull-request: false
-          auto-comment: false
+
+      # Install Vercel CLI with your token
+      - name: Setup Vercel
+        run: |
+          npm install --global vercel@latest
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} \
+          --scope ${{ secrets.ORG_ID }} \
+          --yes
+
+      # Build and deploy with your exact secrets
+      - name: Build and Deploy
+        run: |
+          vercel deploy --prebuilt --prod \
+          --token=${{ secrets.VERCEL_TOKEN }} \
+          --scope ${{ secrets.ORG_ID }} \
+          --project ${{ secrets.PROJECT_ID }}
