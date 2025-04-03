@@ -31,8 +31,8 @@ export interface GlobalContextTypes {
   viewImage: boolean;
   setViewImage: (type: boolean) => void;
   //image data
-  imageData: StaticImport[];
-  setImageData: ([]: StaticImport[]) => void;
+  imageData: StaticImport[] | string[];
+  setImageData: ([]: StaticImport[] | string[]) => void;
   //submitted successfully type
   isSubmittedSuccessfully: boolean;
   setIsSubmittedSuccessfully: (type: boolean) => void;
