@@ -68,19 +68,12 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
               {data.map((item) => (
                 <tr key={item._id} className='text-sm text-gray-900'>
                   <td className='p-3'>{item._id}</td>
-                  <td className='p-3'>{item.requestFrom.email}</td>
-                  <td className='p-3'>{item.propertyId.propertyType}</td>
                   <td className='p-3'>
                     {item.propertyId.location.state}, {item.propertyId.location.localGovernment},{' '}
                     {item.propertyId.location.area}
                   </td>
                   <td className='p-3'>{Number(item.propertyId.price).toLocaleString()}</td>
-                  {/* <td className={`p-3 font-semibold ${item.status === 'Accepted' ? 'text-green-600' : 'text-red-600'}`}>
-                    {item.status}
-                  </td>
-                  <td className='p-3'>
-                    {new Date(item.inspectionDate).toLocaleDateString()} - {item.inspectionTime}
-                  </td> */}
+                  <td className='p-3'>{item.requestFrom.email}</td>
                   <td className='p-3 flex gap-2'>
                     <button
                       className='px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600'

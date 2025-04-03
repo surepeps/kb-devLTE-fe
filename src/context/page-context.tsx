@@ -52,7 +52,7 @@ export const PageContextProvider = ({
    * View image
    */
   const [viewImage, setViewImage] = useState<boolean>(false);
-  const [imageData, setImageData] = useState<StaticImport[]>([]);
+  const [imageData, setImageData] = useState<StaticImport[] | string[]>([]);
 
   //Submitted successfully context logic.
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] =
