@@ -79,6 +79,7 @@ const PropertyType = () => {
       propertyType: '',
       usageOptions: [] as string[],
       price: '',
+      landSize: '',
       documents: [] as string[],
       noOfBedroom: '',
       additionalFeatures: [] as string[],
@@ -94,6 +95,7 @@ const PropertyType = () => {
       propertyType: Yup.string().required('Property type is required'),
       usageOptions: Yup.array().min(1, 'At least one usage option is required'),
       price: Yup.string().required('Price is required'),
+      landSize: Yup.string().required('Land Size is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
       noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       additionalFeatures: Yup.array()
@@ -128,6 +130,7 @@ const PropertyType = () => {
             area: values.selectedCity,
           },
           price: values.price,
+          landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`, // Concatenate size and measurement type
           owner: {
             fullName: values.ownerFullName,
             phoneNumber: values.ownerPhoneNumber,
@@ -235,7 +238,7 @@ const PropertyType = () => {
             Usage Options
           </h2>
           <div className='flex flex-wrap gap-[30px]'>
-            {['All', 'Lease', 'Joint Venture', 'Outright Sale'].map(
+            {['All', 'Lease', 'Joint Venture (JV)', 'Outright Sale'].map(
               (item: string, idx: number) => (
                 <RadioCheck
                   type='checkbox'
@@ -269,28 +272,6 @@ const PropertyType = () => {
           </h2>
           {/**inputs */}
           <div className='min-h-[26px] w-full flex flex-col flex-wrap lg:grid lg:grid-cols-3 gap-[15px]'>
-            {/* <Input
-              label='State'
-              name='selectedState'
-              selectedState={{
-                value: formik.values?.selectedState,
-                label: formik.values?.selectedState,
-              }}
-              setSelectedState={(option) => {
-                formik.setFieldValue('selectedState', option?.value);
-              }}
-              forState={true}
-              type='text'
-              placeholder='Select State'
-            /> */}
-            {/* <Input name='Local Government' type='text' /> */}
-            {/* <Input
-              label='Local Government'
-              name='selectedLGA'
-              type='text'
-              value={formik.values.selectedLGA}
-              onChange={formik.handleChange}
-            /> */}
             <Input
               label='State'
               name='selectedState'
@@ -317,7 +298,7 @@ const PropertyType = () => {
               // isDisabled={areInputsDisabled}
             />
             <Input
-              label='City'
+              label='Area'
               name='selectedCity'
               value={formik.values.selectedCity}
               onChange={formik.handleChange}
@@ -364,25 +345,25 @@ const PropertyType = () => {
           {/**input */}
           <div className='min-h-[26px] w-full flex gap-[20px]'>
             <Select
-              allowMultiple={true}
+              allowMultiple={false}
               heading={''}
               formik={formik}
-              name={propertyReferenceData[5].heading}
-              options={propertyReferenceData[5].options}
+              name={propertyReferenceData[8].heading}
+              options={propertyReferenceData[8].options}
               placeholder='Select'
             />
             <Input
               label='Enter land size'
               placeholder=''
-              name='price'
+              name='landSize'
               type='number'
               className='w-full'
-              value={formik.values?.price}
+              value={formik.values?.landSize}
               onChange={formik.handleChange}
             />
           </div>
-          {formik.touched.price && formik.errors.price && (
-            <span className='text-red-600 text-sm'>{formik.errors.price}</span>
+          {formik.touched.landSize && formik.errors.landSize && (
+            <span className='text-red-600 text-sm'>{formik.errors.landSize}</span>
           )}
         </div>
         {/**Document on the property */}
@@ -429,19 +410,6 @@ const PropertyType = () => {
               value={formik.values?.noOfBedroom}
               onChange={formik.handleChange}
             />
-            {/* <Input
-              label='Additional Features'
-              name='additionalFeatures'
-              type='text'
-              className='lg:w-1/2 w-full'
-              value={formik.values?.additionalFeatures.join(', ')}
-              onChange={(e) => {
-                const features = e.target.value
-                  .split(',')
-                  .map((feature) => feature.trim());
-                formik.setFieldValue('additionalFeatures', features);
-              }}
-            /> */}
             <Select
               allowMultiple={true}
               heading={'additionalFeatures'}
@@ -451,11 +419,11 @@ const PropertyType = () => {
               placeholder='Select'
             />
           </div>
-          <div className='w-full flex flex-col'>
-            <h3 className='text-[#1E1E1E] text-[19.67] font-medium'>
+          <div className='w-full flex flex-col mt-4'>
+            <h3 className='text-[#1E1E1E] text-[20px] leading-[32px] font-medium'>
               Are you a mandate on this property
             </h3>
-            <div className='flex gap-[20px]'>
+            <div className='flex gap-[20px] mt-2'>
               <RadioCheck
                 selectedValue={formik.values?.areYouTheOwner}
                 handleChange={() => {
