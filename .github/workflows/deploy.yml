@@ -1,4 +1,7 @@
 name: Vercel Production Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.PROJECT_ID }}
 on:
   push:
     branches:
@@ -8,18 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      # Install Vercel CLI with your token
-      - name: Configure Vercel
-        run: |
-          npm install --global vercel@latest
-          vercel pull --yes --environment=production \
-          --token=${{ secrets.VERCEL_TOKEN }} \
-          --scope=${{ secrets.ORG_ID }}
-
-      - name: Deploy to Production
-        run: |
-          vercel deploy --prebuilt --prod \
-          --token=${{ secrets.VERCEL_TOKEN }} \
-          --scope=${{ secrets.ORG_ID }} \
-          --project=${{ secrets.PROJECT_ID }}
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
