@@ -15,13 +15,11 @@ jobs:
           npm install --global vercel@latest
           vercel pull --yes --environment=production \
           --token=${{ secrets.VERCEL_TOKEN }} \
-          --scope=${{ secrets.ORG_ID }} \
-          --confirm
+          --scope=${{ secrets.ORG_ID }}
 
       - name: Deploy to Production
         run: |
           vercel deploy --prebuilt --prod \
           --token=${{ secrets.VERCEL_TOKEN }} \
           --scope=${{ secrets.ORG_ID }} \
-          --project=${{ secrets.PROJECT_ID }} \
-          --confirm
+          --project=${{ secrets.PROJECT_ID }}
