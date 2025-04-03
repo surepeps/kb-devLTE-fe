@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import AttachFile from '@/components/attach_file';
+import AttachFile from '@/components/multipleAttachFile';
 import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
@@ -11,11 +11,19 @@ import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/context/user-context';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import naijaStates from 'naija-state-local-government';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import ReactSelect from 'react-select';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+// import Image from 'next/image';
+// import sampleImage from '@/assets/Agentpic.png';
+// import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { motion } from 'framer-motion';
+import { usePageContext } from '@/context/page-context';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+//import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 interface Option {
   value: string;
   label: string;
@@ -27,7 +35,12 @@ const PropertyType = () => {
 
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
+  const { setViewImage, setImageData } = usePageContext();
 
+  useEffect(() => {
+    console.log(fileUrl);
+  }, [fileUrl]);
   useEffect(() => {
     // Load Nigerian states correctly
     setStateOptions(
@@ -90,6 +103,7 @@ const PropertyType = () => {
       ownerPhoneNumber: user?.phoneNumber,
       ownerEmail: user?.email,
       areYouTheOwner: false,
+      typeOfMeasurement: '',
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
@@ -109,6 +123,9 @@ const PropertyType = () => {
       ownerEmail: Yup.string()
         .email('Invalid email')
         .required('Owner email is required'),
+      typeOfMeasurement: Yup.string().required(
+        'Type of measurement is required'
+      ),
     }),
     onSubmit: async (values) => {
       try {
@@ -164,6 +181,10 @@ const PropertyType = () => {
       }
     },
   });
+
+  useEffect(() => {
+    console.log(formik.values);
+  }, [formik.values]);
 
   return (
     <form
@@ -343,7 +364,7 @@ const PropertyType = () => {
             Land Size
           </h2>
           {/**input */}
-          <div className='min-h-[26px] w-full flex gap-[20px]'>
+          <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[20px]'>
             <Select
               allowMultiple={false}
               heading={''}
@@ -358,12 +379,12 @@ const PropertyType = () => {
               name='landSize'
               type='number'
               className='w-full'
-              value={formik.values?.landSize}
+              value={formik.values?.price}
               onChange={formik.handleChange}
             />
           </div>
-          {formik.touched.landSize && formik.errors.landSize && (
-            <span className='text-red-600 text-sm'>{formik.errors.landSize}</span>
+          {formik.touched.price && formik.errors.price && (
+            <span className='text-red-600 text-sm'>{formik.errors.price}</span>
           )}
         </div>
         {/**Document on the property */}
@@ -400,7 +421,7 @@ const PropertyType = () => {
             Property Features
           </h2>
           {/**options */}
-          <div className='min-h-[26px] w-full flex gap-[15px]'>
+          <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[15px]'>
             <Input
               label='Number of Bedrooms'
               name='noOfBedroom'
@@ -459,7 +480,29 @@ const PropertyType = () => {
           </div>
         </div>
         {/**Upload Image | Documents */}
-        <AttachFile heading='Upload image(optional)'  id="image-upload" />
+        <AttachFile
+          setFileUrl={setFileUrl}
+          heading='Upload image(optional)'
+          id='image-upload'
+        />
+        {/**Images selected */}
+        <div className='flex justify-end items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
+          {typeof fileUrl === 'object' &&
+            fileUrl.map((image) => (
+              <ImageContainer
+                setViewImage={setViewImage}
+                setImageData={setImageData}
+                removeImage={() => {
+                  setFileUrl(fileUrl.filter((img) => img.id !== image.id));
+                }}
+                image={image.image}
+                alt=''
+                heading=''
+                key={image.id}
+                id={image.id}
+              />
+            ))}
+        </div>
 
         {/**Button */}
         <div className='min-h-[50px] w-full flex justify-end items-center'>
@@ -554,5 +597,50 @@ const Select: React.FC<SelectProps> = ({
         ))}
       </select> */}
     </label>
+  );
+};
+
+type ImageContainerProps = {
+  image: string;
+  alt: string;
+  heading: string;
+  removeImage: () => void;
+  id: string;
+  setViewImage: (type: boolean) => void;
+  setImageData: (type: StaticImport[] | string[]) => void;
+};
+
+const ImageContainer: FC<ImageContainerProps> = ({
+  image,
+  removeImage,
+  id,
+  setViewImage,
+  setImageData,
+}) => {
+  return (
+    <div
+      title={image}
+      id={id}
+      className='w-[64px] h-[84px] flex flex-col shrink-0 gap-[4px] justify-end items-end'>
+      <FontAwesomeIcon
+        icon={faTrashCan}
+        size='sm'
+        color='#FF2539'
+        className='cursor-pointer'
+        title='delete'
+        onClick={removeImage}
+      />
+      <motion.img
+        onClick={() => {
+          setViewImage(true);
+          setImageData([image]);
+        }}
+        src={image}
+        alt=''
+        width={100}
+        height={70}
+        className='w-full h-[62px] filter brightness-75 hover:brightness-100 transition duration-500 border-[1px] rounded-[4px] bg-gray-100 object-cover'
+      />
+    </div>
   );
 };

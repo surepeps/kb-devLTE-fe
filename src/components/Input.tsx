@@ -301,6 +301,7 @@ const Input: FC<InputProps> = memo(
                 placeholder='Select State'
                 styles={customStyle}
                 isDisabled={isDisabled}
+                className='disabled:cursor-not-allowed'
               />
               {(formik.errors.selectedState ||
                 formik.touched.selectedState) && (
@@ -320,6 +321,7 @@ const Input: FC<InputProps> = memo(
                 placeholder='Select LGA'
                 styles={customStyle}
                 isDisabled={lgasOptions?.length === 0}
+                className='disabled:cursor-not-allowed'
               />
               {(formik.errors.selectedLGA || formik.touched.selectedLGA) && (
                 <span className='text-red-600 text-xs'>
@@ -338,6 +340,7 @@ const Input: FC<InputProps> = memo(
                 placeholder='Select Region of Operation'
                 styles={customStyle}
                 isDisabled={isDisabled}
+                className='disabled:cursor-not-allowed'
               />
               {(formik?.errors?.selectedRegion ||
                 formik?.touched?.selectedRegion) && (
@@ -347,7 +350,7 @@ const Input: FC<InputProps> = memo(
               )}
             </div>
           )}
-          
+
           {forIdtype && (
             <div className='flex flex-col w-full'>
               <Select
@@ -357,6 +360,7 @@ const Input: FC<InputProps> = memo(
                 placeholder='Select Type if ID'
                 styles={customStyle}
                 isDisabled={isDisabled}
+                className='disabled:cursor-not-allowed'
               />
               {(formik?.errors?.selectedIdType ||
                 formik?.touched?.selectedIdType) && (
@@ -380,7 +384,7 @@ const Input: FC<InputProps> = memo(
                 min={type === 'number' ? minNumber : undefined}
                 max={type === 'number' ? maxNumber : undefined}
                 placeholder={placeholder ?? 'This is placeholder'}
-                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
+                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed'
               />
               {(formik?.errors?.[name] || formik?.touched?.[name]) && (
                 <span className='text-red-600 text-xs'>
