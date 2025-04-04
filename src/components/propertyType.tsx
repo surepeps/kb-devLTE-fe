@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import AttachFile from '@/components/attach_file';
+import AttachFile from '@/components/multipleAttachFile';
 import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
@@ -11,11 +11,19 @@ import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/context/user-context';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import naijaStates from 'naija-state-local-government';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import ReactSelect from 'react-select';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+// import Image from 'next/image';
+// import sampleImage from '@/assets/Agentpic.png';
+// import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { motion } from 'framer-motion';
+import { usePageContext } from '@/context/page-context';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+//import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 interface Option {
   value: string;
   label: string;
@@ -27,7 +35,12 @@ const PropertyType = () => {
 
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
+  const { setViewImage, setImageData } = usePageContext();
 
+  useEffect(() => {
+    console.log(fileUrl);
+  }, [fileUrl]);
   useEffect(() => {
     // Load Nigerian states correctly
     setStateOptions(
@@ -79,6 +92,7 @@ const PropertyType = () => {
       propertyType: '',
       usageOptions: [] as string[],
       price: '',
+      landSize: '',
       documents: [] as string[],
       noOfBedroom: '',
       additionalFeatures: [] as string[],
@@ -89,11 +103,13 @@ const PropertyType = () => {
       ownerPhoneNumber: user?.phoneNumber,
       ownerEmail: user?.email,
       areYouTheOwner: false,
+      typeOfMeasurement: '',
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
       usageOptions: Yup.array().min(1, 'At least one usage option is required'),
       price: Yup.string().required('Price is required'),
+      landSize: Yup.string().required('Land Size is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
       noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       additionalFeatures: Yup.array()
@@ -107,6 +123,9 @@ const PropertyType = () => {
       ownerEmail: Yup.string()
         .email('Invalid email')
         .required('Owner email is required'),
+      typeOfMeasurement: Yup.string().required(
+        'Type of measurement is required'
+      ),
     }),
     onSubmit: async (values) => {
       try {
@@ -128,6 +147,7 @@ const PropertyType = () => {
             area: values.selectedCity,
           },
           price: values.price,
+          landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`, // Concatenate size and measurement type
           owner: {
             fullName: values.ownerFullName,
             phoneNumber: values.ownerPhoneNumber,
@@ -161,6 +181,10 @@ const PropertyType = () => {
       }
     },
   });
+
+  useEffect(() => {
+    console.log(formik.values);
+  }, [formik.values]);
 
   return (
     <form
@@ -235,7 +259,7 @@ const PropertyType = () => {
             Usage Options
           </h2>
           <div className='flex flex-wrap gap-[30px]'>
-            {['All', 'Lease', 'Joint Venture', 'Outright Sale'].map(
+            {['All', 'Lease', 'Joint Venture (JV)', 'Outright Sale'].map(
               (item: string, idx: number) => (
                 <RadioCheck
                   type='checkbox'
@@ -269,28 +293,6 @@ const PropertyType = () => {
           </h2>
           {/**inputs */}
           <div className='min-h-[26px] w-full flex flex-col flex-wrap lg:grid lg:grid-cols-3 gap-[15px]'>
-            {/* <Input
-              label='State'
-              name='selectedState'
-              selectedState={{
-                value: formik.values?.selectedState,
-                label: formik.values?.selectedState,
-              }}
-              setSelectedState={(option) => {
-                formik.setFieldValue('selectedState', option?.value);
-              }}
-              forState={true}
-              type='text'
-              placeholder='Select State'
-            /> */}
-            {/* <Input name='Local Government' type='text' /> */}
-            {/* <Input
-              label='Local Government'
-              name='selectedLGA'
-              type='text'
-              value={formik.values.selectedLGA}
-              onChange={formik.handleChange}
-            /> */}
             <Input
               label='State'
               name='selectedState'
@@ -317,7 +319,7 @@ const PropertyType = () => {
               // isDisabled={areInputsDisabled}
             />
             <Input
-              label='City'
+              label='Area'
               name='selectedCity'
               value={formik.values.selectedCity}
               onChange={formik.handleChange}
@@ -362,19 +364,19 @@ const PropertyType = () => {
             Land Size
           </h2>
           {/**input */}
-          <div className='min-h-[26px] w-full flex gap-[20px]'>
+          <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[20px]'>
             <Select
-              allowMultiple={true}
+              allowMultiple={false}
               heading={''}
               formik={formik}
-              name={propertyReferenceData[5].heading}
-              options={propertyReferenceData[5].options}
+              name={propertyReferenceData[8].heading}
+              options={propertyReferenceData[8].options}
               placeholder='Select'
             />
             <Input
               label='Enter land size'
               placeholder=''
-              name='price'
+              name='landSize'
               type='number'
               className='w-full'
               value={formik.values?.price}
@@ -419,7 +421,7 @@ const PropertyType = () => {
             Property Features
           </h2>
           {/**options */}
-          <div className='min-h-[26px] w-full flex gap-[15px]'>
+          <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[15px]'>
             <Input
               label='Number of Bedrooms'
               name='noOfBedroom'
@@ -429,19 +431,6 @@ const PropertyType = () => {
               value={formik.values?.noOfBedroom}
               onChange={formik.handleChange}
             />
-            {/* <Input
-              label='Additional Features'
-              name='additionalFeatures'
-              type='text'
-              className='lg:w-1/2 w-full'
-              value={formik.values?.additionalFeatures.join(', ')}
-              onChange={(e) => {
-                const features = e.target.value
-                  .split(',')
-                  .map((feature) => feature.trim());
-                formik.setFieldValue('additionalFeatures', features);
-              }}
-            /> */}
             <Select
               allowMultiple={true}
               heading={'additionalFeatures'}
@@ -451,11 +440,11 @@ const PropertyType = () => {
               placeholder='Select'
             />
           </div>
-          <div className='w-full flex flex-col'>
-            <h3 className='text-[#1E1E1E] text-[19.67] font-medium'>
+          <div className='w-full flex flex-col mt-4'>
+            <h3 className='text-[#1E1E1E] text-[20px] leading-[32px] font-medium'>
               Are you a mandate on this property
             </h3>
-            <div className='flex gap-[20px]'>
+            <div className='flex gap-[20px] mt-2'>
               <RadioCheck
                 selectedValue={formik.values?.areYouTheOwner}
                 handleChange={() => {
@@ -491,7 +480,29 @@ const PropertyType = () => {
           </div>
         </div>
         {/**Upload Image | Documents */}
-        <AttachFile heading='Upload image(optional)'  id="image-upload" />
+        <AttachFile
+          setFileUrl={setFileUrl}
+          heading='Upload image(optional)'
+          id='image-upload'
+        />
+        {/**Images selected */}
+        <div className='flex justify-end items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
+          {typeof fileUrl === 'object' &&
+            fileUrl.map((image) => (
+              <ImageContainer
+                setViewImage={setViewImage}
+                setImageData={setImageData}
+                removeImage={() => {
+                  setFileUrl(fileUrl.filter((img) => img.id !== image.id));
+                }}
+                image={image.image}
+                alt=''
+                heading=''
+                key={image.id}
+                id={image.id}
+              />
+            ))}
+        </div>
 
         {/**Button */}
         <div className='min-h-[50px] w-full flex justify-end items-center'>
@@ -586,5 +597,50 @@ const Select: React.FC<SelectProps> = ({
         ))}
       </select> */}
     </label>
+  );
+};
+
+type ImageContainerProps = {
+  image: string;
+  alt: string;
+  heading: string;
+  removeImage: () => void;
+  id: string;
+  setViewImage: (type: boolean) => void;
+  setImageData: (type: StaticImport[] | string[]) => void;
+};
+
+const ImageContainer: FC<ImageContainerProps> = ({
+  image,
+  removeImage,
+  id,
+  setViewImage,
+  setImageData,
+}) => {
+  return (
+    <div
+      title={image}
+      id={id}
+      className='w-[64px] h-[84px] flex flex-col shrink-0 gap-[4px] justify-end items-end'>
+      <FontAwesomeIcon
+        icon={faTrashCan}
+        size='sm'
+        color='#FF2539'
+        className='cursor-pointer'
+        title='delete'
+        onClick={removeImage}
+      />
+      <motion.img
+        onClick={() => {
+          setViewImage(true);
+          setImageData([image]);
+        }}
+        src={image}
+        alt=''
+        width={100}
+        height={70}
+        className='w-full h-[62px] filter brightness-75 hover:brightness-100 transition duration-500 border-[1px] rounded-[4px] bg-gray-100 object-cover'
+      />
+    </div>
   );
 };

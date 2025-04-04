@@ -189,7 +189,7 @@ export default function AgentDetailsBar({
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            handleImageClick(doc.docImg[0]); // Pass the correct image URL
+                            handleImageClick(doc.docImg[0]);
                           }}
                           className='text-blue-500 underline'>
                           {doc.name}
