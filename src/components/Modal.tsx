@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useRef } from 'react';
 
 interface ModalProps {
@@ -21,7 +23,10 @@ const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -54,15 +59,13 @@ const Modal: React.FC<ModalProps> = ({
         width: `${modalWidth}px`,
         zIndex: 1000,
       }}
-      className='flex flex-col gap-2'
-    >
+      className='flex flex-col gap-2'>
       <button
         onClick={() => {
           onViewBrief();
           onClose();
         }}
-        className='text-[14px] text-[#181336] font-archivo'
-      >
+        className='text-[14px] text-[#181336] font-archivo'>
         View Brief
       </button>
       <button
@@ -70,8 +73,7 @@ const Modal: React.FC<ModalProps> = ({
           onEditBrief();
           onClose();
         }}
-        className='text-[14px] text-[#181336] font-archivo'
-      >
+        className='text-[14px] text-[#181336] font-archivo'>
         Edit Brief
       </button>
       <button
@@ -79,8 +81,7 @@ const Modal: React.FC<ModalProps> = ({
           onDeleteBrief();
           onClose();
         }}
-        className='text-[14px] text-[#FF0000] font-archivo'
-      >
+        className='text-[14px] text-[#FF0000] font-archivo'>
         Delete Brief
       </button>
     </div>
