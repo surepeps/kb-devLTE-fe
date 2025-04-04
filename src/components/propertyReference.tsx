@@ -25,7 +25,7 @@ interface valuesProps {
   docOnProperty: [];
   desireFeatures: [];
   bedroom: number;
-  typeOfMeasurement: []
+  typeOfMeasurement: '';
 }
 
 interface PropertyReferenceDataProps {
@@ -56,7 +56,7 @@ const PropertyReference = ({
       docOnProperty: [],
       desireFeatures: [],
       bedroom: 0,
-      typeOfMeasurement: []
+      typeOfMeasurement: '',
     },
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
@@ -206,13 +206,17 @@ const PropertyReference = ({
     }
   };
 
+  React.useEffect(() => {
+    console.log(formik.values);
+  }, [formik.values]);
+
   return (
     <Fragment>
       <div className='min-h-[250px] lg:min-h-[250px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
         <form
           onSubmit={formik.handleSubmit}
           className='w-full flex flex-col gap-[37px]'>
-          <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
             {/**Type of Property */}
             <Select
               allowMultiple={false}
@@ -281,23 +285,26 @@ const PropertyReference = ({
               setSelectedLGA={handleLGAChange}
               // setSelectedState={handleStateChange}
             />
-            {/**Land Size */}
-            <Select
-              allowMultiple={false}
-              heading={'landSize'}
-              formik={formik}
-              name={propertyReferenceData[4].heading}
-              options={propertyReferenceData[4].options}
-              placeholder='Select'
-            />
             {/**Measurment */}
-             <Select
+            <Select
               allowMultiple={false}
               heading={'typeOfMeasurement'}
               formik={formik}
               name={propertyReferenceData[8].heading}
               options={propertyReferenceData[8].options}
               placeholder='Select'
+            />
+            {/**Land Size */}
+            <Input
+              value={formik.values.landSize}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder=''
+              name='landSize'
+              type='number'
+              id='landSize'
+              isDisabled={formik.values.typeOfMeasurement === ''}
+              label={propertyReferenceData[4].heading}
             />
             {/**Document Type */}
             <Select
@@ -318,7 +325,7 @@ const PropertyReference = ({
               placeholder='Select'
             />
             {/**Bedroom */}
-           
+
             <Input
               label='Bedroom'
               name='bedroom'
@@ -349,16 +356,19 @@ const PropertyReference = ({
                 worry! We&apos;ll provide a reference brief for you
               </h2>
               <div className='flex gap-[5px] flex-wrap'>
-                <Crumb text={formik.values.propertyType} />
-                <Crumb text={formik.values.usageOption.map((item) => item)} />
-                <Crumb text={formik.values.budgetRange} />
-                <Crumb text={formik.values.state} />
-                <Crumb text={formik.values.landSize} />
-                <Crumb text={formik.values.docOnProperty.map((item) => item)} />
-                <Crumb
-                  text={formik.values.desireFeatures?.map((item) => item)}
-                />
-                <Crumb text={formik.values.bedroom} />
+                {Object.entries(formik.values).map(([, items], idx: number) => {
+                  if (typeof items === 'object') {
+                    return (
+                      <Crumb
+                        key={idx}
+                        text={Object.values(items)
+                          .map((item) => item)
+                          .join(', ')}
+                      />
+                    );
+                  }
+                  return <Crumb key={idx} text={items} />;
+                })}
               </div>
             </div>
             <button
@@ -463,56 +473,9 @@ const Crumb = ({ text }: { text: any }) => {
       {text ? (
         <div
           dangerouslySetInnerHTML={{ __html: text }}
-          className='bg-[#F7F7F8] min-h-[28px] min-w-fit py-[3px] px-[6px] text-[14px] text-[#0B0D0C] leading-[22.4px] font-normal tracking-[0.1px] font-ubuntu'
+          className='bg-[#F7F7F8] min-h-[28px] min-w-fit py-[3px] px-[6px] text-[14px] text-[#0B0D0C] leading-[22.4px] font-normal tracking-[0.1px] cursor-not-allowed font-ubuntu rounded-[5px] hover:bg-[#e1e1e1] transition-all duration-300'
         />
       ) : null}
     </Fragment>
   );
 };
-
-/**
- * const samplePayload = {
-      propertyFeatures: {
-        additionalFeatures: [],
-        noOfBedrooms: 12,
-      },
-      areYouTheOwner: true,
-      usageOptions: ['Lease', 'Outright Sale'],
-      pictures: [],
-      propertyType: 'Land',
-      location: {
-        state: 'Oyo',
-        localGovernment: 'Egbeda',
-        area: 'Iwo',
-      },
-      price: 2048344930,
-      docOnProperty: [
-        {
-          docName: 'Survey Document',
-          isProvided: true,
-        },
-        {
-          docName: 'C of O',
-          isProvided: true,
-        },
-        {
-          docName: 'Governor Consent',
-          isProvided: false,
-        },
-      ],
-      owner: {
-        fullName: 'John Doe',
-        phoneNumber: '09012345678',
-        email: 'akanjiabayomi2@gmail.com',
-      },
-      budgetRange: '1000-3000',
-    };
-    const propertyDoc = formik.values.docOnProperty.reduce(
-      (acc: { docName: string; isProvided: boolean }[], item: string) => {
-        acc.push({ docName: item, isProvided: true });
-        console.log(acc);
-        return acc;
-      },
-      []
-    );
- */
