@@ -11,8 +11,8 @@ import { motion } from 'framer-motion';
 const Section1 = () => {
   return (
     <section className='flex items-center justify-center pb-10'>
-      <div className='container flex flex-col gap-[20px] items-center justify-center px-[20px] overflow-hidden'>
-        <div className='px-[10px] mt-4 w-full flex flex-col gap-[24px] justify-center items-center '>
+      <div className='container flex flex-col gap-[20px] items-center justify-center px-[10px] md:px-[20px] overflow-hidden'>
+        <div className='md:px-[10px] mt-4 w-full flex flex-col gap-[24px] justify-center items-center '>
           <motion.span
             initial={{ x: -100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -31,7 +31,7 @@ const Section1 = () => {
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className={`min-h-[49px] py-2 lg:h-[72px] w-full md:px-0 lg:w-[518px] flex gap-[24px] items-center justify-between`}>
+            className={`min-h-[49px] py-2 lg:h-[72px] w-full md:px-0 lg:w-[518px] flex  items-center justify-center`}>
             <Counts />
           </motion.div>
         }
