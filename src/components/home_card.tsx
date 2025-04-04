@@ -18,7 +18,7 @@ const Card: FC<CardProps> = ({ heading, image, paragraphs }) => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}
-      className='card lg:w-[356.33px] min-h-[412px] flex flex-col gap-[10px] border-[1px] border-[#C7CAD0] bg-[#F2FFF8] p-[30px]'>
+      className='card w-[356.33px] shrink-0 min-h-[412px] flex flex-col gap-[10px] border-[1px] border-[#C7CAD0] bg-[#F2FFF8] p-[30px]'>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
