@@ -61,13 +61,14 @@ const Section2 = () => {
           setIsLoading(false);
           // setErrMessage('Failed to fetch data');
           throw new Error('Failed to fetch data');
+          
         }
 
         const data = await response.json();
-        // console.log(data);
+        console.log(data);
         //cut a section of the array data randomly, that the objects in the array are only four
-        const randomIndex = Math.floor(Math.random() * (data.length - 4 + 1));
-        const randomData = data.slice(randomIndex, randomIndex + 4);
+        const randomIndex = Math.floor(Math.random() * (data.data.length - 4 + 1));
+        const randomData = data.data.slice(randomIndex, randomIndex + 4);
         setProperties(randomData);
         setCardData(data);
         setIsLoading(false);
