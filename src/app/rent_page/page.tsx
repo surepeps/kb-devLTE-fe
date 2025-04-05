@@ -11,6 +11,7 @@ import HouseFrame from '@/components/house-frame';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
+import { epilogue } from '@/styles/font';
 
 type HouseFrameProps = {
   propertyType: string;
@@ -57,15 +58,24 @@ export default function Rent() {
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
-          rentPage.isSubmitForInspectionClicked && 'filter brightness-[30%] transition-all duration-500'
-        }`}
-      >
+          rentPage.isSubmitForInspectionClicked &&
+          'filter brightness-[30%] transition-all duration-500'
+        }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
-            Submit Your <span className='text-[#8DDB90] font-display'>Rental Reference</span>
+            Submit Your{' '}
+            <span className='text-[#8DDB90] font-display'>
+              Rental Reference
+            </span>
           </h2>
-          <RentalReference rentalReferenceData={propertyReferenceDataWithoutUsageOption} />
-          <div className='w-full px-[20px] flex flex-col lg:w-[1153px]'>
+          <RentalReference
+            rentalReferenceData={propertyReferenceDataWithoutUsageOption}
+          />
+          <div className='w-full px-[20px] flex flex-col gap-[15px] lg:w-[1153px]'>
+            <h2
+              className={`text-[#09391C] ${epilogue.className} text-lg font-semibold`}>
+              Choose the property you want to rent
+            </h2>
             <div className='flex flex-col justify-center items-center md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
               {isDataLoading ? (
                 <p>Failed to fetch data</p>

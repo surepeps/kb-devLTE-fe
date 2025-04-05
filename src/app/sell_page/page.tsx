@@ -126,7 +126,7 @@ const Sell = () => {
       usageOptions: Yup.array().min(1, 'At least one usage option is required'),
       price: Yup.string().required('Price is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
-      noOfBedroom: Yup.string().required('Number of bedrooms is required'),
+      // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       // additionalFeatures: Yup.array()
       //   .of(Yup.string())
       //   .min(1, 'At least one additional feature is required'), // now updated - Property features is optional
