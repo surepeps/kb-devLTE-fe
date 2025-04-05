@@ -379,12 +379,12 @@ const PropertyType = () => {
               name='landSize'
               type='number'
               className='w-full'
-              value={formik.values?.price}
+              value={formik.values?.landSize}
               onChange={formik.handleChange}
             />
           </div>
-          {formik.touched.price && formik.errors.price && (
-            <span className='text-red-600 text-sm'>{formik.errors.price}</span>
+          {formik.touched.price && formik.errors.landSize && (
+            <span className='text-red-600 text-sm'>{formik.errors.landSize}</span>
           )}
         </div>
         {/**Document on the property */}
