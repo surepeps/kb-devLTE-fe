@@ -1,193 +1,8 @@
 /** @format */
-
-// /** @format */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-
-// import React, {
-//   ChangeEventHandler,
-//   FC,
-//   FocusEventHandler,
-//   Fragment,
-//   useEffect,
-// } from 'react';
-// import { Country, State, City } from 'country-state-city';
-// import Select from 'react-select';
-
-// interface Option {
-//   value: string;
-//   label: string;
-// }
-// interface InputProps {
-//   name: string;
-//   label: string;
-//   placeholder?: string;
-//   type: string;
-//   className?: string;
-//   id?: string;
-//   value?: string | number | undefined;
-//   onChange?: ChangeEventHandler<HTMLInputElement>;
-//   onBlur?: FocusEventHandler<HTMLInputElement>;
-//   forState?: boolean;
-//   forCountry?: boolean;
-//   forCity?: boolean;
-//   selectedCountry?: Option | null;
-//   setSelectedCountry?: (type: Option | null) => void;
-//   selectedState?: Option | null;
-//   setSelectedState?: (type: Option | null) => void;
-//   selectedCity?: Option | null;
-//   setSelectedCity?: (type: Option | null) => void;
-//   isDisabled?: boolean;
-//   setIsDisabled?: (type: boolean) => void;
-//   minNumber?: number;
-//   maxNumber?: number;
-// }
-
-// const defaultCountry = { value: 'NG', label: 'Nigeria' };
-// const Input: FC<InputProps> = ({
-//   className,
-//   id,
-//   name,
-//   label,
-//   type,
-//   placeholder,
-//   value,
-//   onChange,
-//   onBlur,
-//   forState,
-//   forCountry,
-//   forCity,
-//   selectedCity,
-//   selectedCountry = defaultCountry,
-//   selectedState,
-//   setSelectedCity,
-//   setSelectedCountry,
-//   setSelectedState,
-//   isDisabled,
-//   minNumber,
-//   maxNumber,
-//   // setIsDisabled
-// }) => {
-//   // const [selectedCountry, setSelectedCountry] = useState<Option | null>(null);
-//   // const [selectedState, setSelectedState] = useState<Option | null>(null);
-//   // const [selectedCity, setSelectedCity] = useState<Option | null>(null);
-
-//   const countryOptions = Country.getAllCountries().map((country) => ({
-//     value: country.isoCode,
-//     label: country.name,
-//   }));
-
-//   // Get states based on selected country
-//   const stateOptions = selectedCountry
-//     ? State.getStatesOfCountry(selectedCountry.value).map((state) => ({
-//         value: state.isoCode,
-//         label: state.name,
-//       }))
-//     : [];
-
-//   // Get cities based on selected state
-//   const cityOptions =
-//     selectedCountry && selectedState
-//       ? City.getCitiesOfState(selectedCountry.value, selectedState.value).map(
-//           (city) => ({
-//             value: city.name,
-//             label: city.name,
-//           })
-//         )
-//       : [];
-
-//   useEffect(() => {
-//     console.log(isDisabled);
-//   }, [isDisabled]);
-
-//   return (
-//     <Fragment>
-//       <label
-//         htmlFor={id}
-//         className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
-//         <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
-//           {label}
-//         </span>
-//         {forCountry && (
-//           <>
-//             {/* Country Dropdown */}
-//             <Select
-//               options={countryOptions}
-//               value={selectedCountry}
-//               onChange={setSelectedCountry}
-//               placeholder='Select Country'
-//               className=''
-//               styles={customStyle}
-//             />
-//           </>
-//         )}
-//         {forState && (
-//           <>
-//             {/* State Dropdown (Disabled until a country is selected) */}
-//             <Select
-//               options={stateOptions}
-//               value={selectedState}
-//               onChange={setSelectedState}
-//               placeholder='Select State'
-//               styles={customStyle}
-//               isDisabled={!selectedCountry}
-//             />
-//           </>
-//         )}
-//         {forCity && (
-//           <>
-//             {/* City Dropdown (Disabled until a state is selected) */}
-//             <Select
-//               options={cityOptions}
-//               value={selectedCity}
-//               onChange={setSelectedCity}
-//               placeholder='Select City'
-//               styles={customStyle}
-//               isDisabled={!selectedState}
-//             />
-//           </>
-//         )}
-//         {!(forCountry || forState || forCity) && (
-//           <input
-//             id={id}
-//             name={name}
-//             type={type}
-//             value={value}
-//             onChange={isDisabled ? undefined : onChange}
-//             onBlur={onBlur}
-//             disabled={isDisabled}
-//             min={type === 'number' ? minNumber : undefined}
-//             max={type === 'number' ? maxNumber : undefined}
-//             placeholder={placeholder ?? 'This is placeholder'}
-//             className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
-//           />
-//         )}
-
-//         <span></span>
-//       </label>
-//     </Fragment>
-//   );
-// };
-
-// const customStyle = {
-//   control: (base: any) => ({
-//     ...base,
-//     minHeight: '50px',
-//     border: '1px solid #D6DDEB',
-//     color: 'black',
-//     fontSize: '16px',
-//     lineHeight: '25.6px',
-//     paddingTop: '6px',
-//     paddingBottom: '6px',
-//     paddingLeft: '10px',
-//     paddingRight: '10px',
-//     width: '100%',
-//   }),
-// };
-// export default Input;
-
-/** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {
   ChangeEventHandler,
   FC,
@@ -196,7 +11,7 @@ import React, {
   memo,
 } from 'react';
 //import naijaStates from 'naija-state-local-government';
-import Select from 'react-select';
+import Select, { components, MenuListProps } from 'react-select';
 //import { useCallback } from 'react';
 
 interface Option {
@@ -233,6 +48,7 @@ interface InputProps {
   stateOptions?: Option[];
   lgasOptions?: Option[];
   idTypeOptions?: Option[];
+  stateValue?: string;
 }
 
 const Input: FC<InputProps> = memo(
@@ -265,6 +81,7 @@ const Input: FC<InputProps> = memo(
     selectedRegion,
     setSelectedRegion,
     formik,
+    stateValue,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -295,6 +112,9 @@ const Input: FC<InputProps> = memo(
           {forState && (
             <div className='flex flex-col w-full'>
               <Select
+                components={{
+                  MenuList: ComponentMenuList('Filter by Location'),
+                }}
                 options={stateOptions}
                 value={selectedState}
                 onChange={setSelectedState}
@@ -317,6 +137,11 @@ const Input: FC<InputProps> = memo(
               <Select
                 options={lgasOptions}
                 value={selectedLGA}
+                components={{
+                  MenuList: ComponentMenuList(
+                    `Filter by ${stateValue?.normalize()} state`
+                  ),
+                }}
                 onChange={setSelectedLGA}
                 placeholder='Select LGA'
                 styles={customStyle}
@@ -336,6 +161,7 @@ const Input: FC<InputProps> = memo(
               <Select
                 options={stateOptions}
                 value={selectedRegion}
+                components={{ MenuList: ComponentMenuList('Filter by Region') }}
                 onChange={setSelectedRegion}
                 placeholder='Select Region of Operation'
                 styles={customStyle}
@@ -357,6 +183,7 @@ const Input: FC<InputProps> = memo(
                 options={idTypeOptions}
                 value={selectedIdType}
                 onChange={setSelectedIdType}
+                components={{ MenuList: ComponentMenuList('Type of ID') }}
                 placeholder='Select Type if ID'
                 styles={customStyle}
                 isDisabled={isDisabled}
@@ -416,5 +243,43 @@ const customStyle = {
 };
 
 Input.displayName = 'Input';
+
+type OptionType = {
+  label: string;
+  value: string;
+};
+
+// type CustomMenuListProps = MenuListProps<
+//   OptionType,
+//   false,
+//   GroupBase<OptionType>
+// > & {
+//   heading?: string;
+// };
+
+const ComponentMenuList = (heading: string) => {
+  const WrappedMenuList = (props: MenuListProps<OptionType, false>) => (
+    <components.MenuList {...props}>
+      {heading && (
+        <div
+          className='flex gap-[10px] justify-start items-center border-[#8D9096] border-b-[1px] w-[95%] mx-auto'
+          style={{ padding: '8px 12px', fontWeight: 'bold', color: '#555' }}>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size='sm'
+            color='black'
+            className='cursor-pointer'
+          />
+          <span className='text-[#000000] text-sm font-medium'>{heading}</span>
+        </div>
+      )}
+      {props.children}
+    </components.MenuList>
+  );
+
+  WrappedMenuList.displayName = 'ComponentMenuList';
+
+  return WrappedMenuList;
+};
 
 export default Input;
