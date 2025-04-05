@@ -132,7 +132,7 @@ const AgentHeader = () => {
               </svg>
             </button>
             {isDropdownOpen && (
-              <div className='absolute left-6 transform -translate-x-1/2 mt-2 w-40 max-w-xs bg-white border border-gray-200 rounded-md shadow-lg'>
+              <div className='absolute left-6 transform -translate-x-1/2 mt-2 w-40 max-w-xs bg-white border border-gray-200 rounded-md shadow-lg md:-ml-[40px]'>
                 <ul>
                   <li
                     className='px-4 py-2 hover:bg-gray-100 cursor-pointer'

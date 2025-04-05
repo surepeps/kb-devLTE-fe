@@ -241,7 +241,7 @@ const Buy = () => {
         const resposne = await axios.get(URLS.BASE + '/properties/rents/all');
         console.log(resposne);
         if (resposne.status === 200) {
-          setData(resposne.data.slice(0, 6));
+          setData(resposne.data.data.slice(0, 6));
           setDataLoading(false);
         }
       } catch (error) {

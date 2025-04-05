@@ -14,7 +14,6 @@ import Button from '@/components/button';
 // import houseImage from '@/assets/assets.png';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
-import { useVisibility } from '@/hooks/useVisibility';
 import Card from './card';
 import { motion, useInView } from 'framer-motion';
 //import { cardDataArray } from '@/data';
@@ -37,10 +36,8 @@ const Section2 = () => {
   const [properties, setProperties] = useState([]);
   //const [errMessage, setErrMessage] = useState('');
 
-  const buttonsRef = useRef<HTMLDivElement>(null);
   const housesRef = useRef<HTMLDivElement>(null);
 
-  const areButtonsVisible = useVisibility(buttonsRef);
   const areHousesVisible = useInView(housesRef, { once: true });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -61,13 +58,14 @@ const Section2 = () => {
           setIsLoading(false);
           // setErrMessage('Failed to fetch data');
           throw new Error('Failed to fetch data');
-          
         }
 
         const data = await response.json();
         console.log(data);
         //cut a section of the array data randomly, that the objects in the array are only four
-        const randomIndex = Math.floor(Math.random() * (data.data.length - 4 + 1));
+        const randomIndex = Math.floor(
+          Math.random() * (data.data.length - 4 + 1)
+        );
         const randomData = data.data.slice(randomIndex, randomIndex + 4);
         setProperties(randomData);
         setCardData(data);
@@ -98,19 +96,23 @@ const Section2 = () => {
           <h2 className='text-[24px] leading-[28.13px] lg:text-[36px] lg:leading-[57.6px] md:leading-[32px] text-[#09391C] text-center font-semibold'>
             See What Other Buyers Are Exploring
           </h2>
-          <p className='text-[#5A5D63] text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
-            Your trusted partner in Lagos&apos; real estate market. Since 2020,
+          <p className='text-[#5A5D63] text-base md:text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
+            {/* Your trusted partner in Lagos&apos; real estate market. Since 2020,
             we&apos;ve been delivering expert solutions with integrity and
             personalized service, helping you navigate property sales, rentals,
-            and more. Let us help you find your perfect property today
+            and more. Let us help you find your perfect property today */}
+            Discover properties recently viewed by buyers like you. Stay
+            inspired by trending options and explore opportunities you might
+            have missed
           </p>
         </div>
 
-        <div
-          ref={buttonsRef}
-          className={`w-[344px] md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex ${
-            areButtonsVisible && 'slide-from-top'
-          }`}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className={`w-[344px] md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex`}>
           <Button
             value='Property insight'
             green={buttons.button1}
@@ -121,7 +123,7 @@ const Section2 = () => {
                 button3: false,
               });
             }}
-            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
+            className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button1 ? '' : 'text-[#5A5D63]'
             }`}
           />
@@ -135,7 +137,7 @@ const Section2 = () => {
                 button3: false,
               });
             }}
-            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
+            className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button2 ? '' : 'text-[#5A5D63]'
             }`}
           />
@@ -149,11 +151,11 @@ const Section2 = () => {
                 button3: true,
               });
             }}
-            className={`border-[1px] py-[12px] md:px-[24px] px-[15px] text-[12px] md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
+            className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button3 ? '' : 'text-[#5A5D63] '
             }`}
           />
-        </div>
+        </motion.div>
         <motion.div
           ref={housesRef}
           initial={{ opacity: 0, x: 20 }}

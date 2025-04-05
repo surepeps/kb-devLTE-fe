@@ -84,16 +84,19 @@ const SideBar = ({
           {user && (
             <div className='flex flex-col gap-[5px]'>
               <button
+                type='button'
                 className='w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md'
                 onClick={() => handleItemClick('/agent/briefs')}>
                 Create Brief
               </button>
               <button
+                type='button'
                 className='w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md'
                 onClick={() => handleItemClick('/agent/briefs')}>
                 Dashboard
               </button>
               <button
+                type='button'
                 className='w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md text-[#FF3D00]'
                 onClick={() => logout(() => setIsModalOpened(false))}>
                 Log out
