@@ -4,11 +4,14 @@
 import React, { MouseEventHandler, useEffect, useState } from 'react';
 import Button from './button';
 import { useFormik } from 'formik';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 import Input from './Input';
 import naijaStates from 'naija-state-local-government';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import MultiSelectionProcess from './multiSelectionProcess';
 
 interface RentalReferenceDataProps {
   rentalReferenceData: { heading: string; options: string[] }[];
@@ -25,6 +28,8 @@ interface valuesProps {
   landSize: string;
   docOnProperty: [];
   desireFeatures: [];
+  selectedLGA: '';
+  selectedState: '';
 }
 
 interface Option {
@@ -37,8 +42,8 @@ const RentalReference = ({
   isDisabled,
   onClick,
 }: RentalReferenceDataProps) => {
-  const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
+  const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
 
   const formik = useFormik({
     initialValues: {
@@ -48,24 +53,27 @@ const RentalReference = ({
       landSize: '',
       docOnProperty: [],
       desireFeatures: [],
+      selectedState: '',
+      selectedLGA: '',
     },
     onSubmit: async (values: valuesProps) => {
       console.log(values);
       const payload = {
         location: {
-          state: values.state,
-          localGovernment: 'Iwo',
-          area: 'Ibadan',
+          state: values.selectedState,
+          localGovernment: values.selectedLGA.split(',')[1].trimStart(),
+          area: 'N/A',
         },
         propertyCondition: 'New Building',
         propertyType: values.propertyType,
-        budgetRange: values.budgetRange,
+        budgetRange: values.budgetRange.trimStart(),
         docOnProperty: values.docOnProperty,
         desireFeatures: values.desireFeatures,
         rentalPrice: 4000000,
       };
+      console.log(payload);
       try {
-        const response = axios.post(
+        const response = await axios.post(
           URLS.BASE + '/properties/rents/rent/new',
           payload
         );
@@ -76,15 +84,15 @@ const RentalReference = ({
     },
   });
 
-  const handleStateChange = (selected: Option | null) => {
-    //console.log('Selected State:', selected);
-    formik.setFieldValue('state', selected?.value);
-    setSelectedState?.(selected);
-  };
+  // const handleStateChange = (selected: Option | null) => {
+  //   //console.log('Selected State:', selected);
+  //   formik.setFieldValue('state', selected?.value);
+  //   setSelectedState?.(selected);
+  // };
 
-  useEffect(() => {
-    console.log(formik.values);
-  }, [formik.values]);
+  // useEffect(() => {
+  //   console.log(formik.values);
+  // }, [formik.values]);
 
   useEffect(() => {
     // Load Nigerian states correctly
@@ -100,13 +108,13 @@ const RentalReference = ({
       onSubmit={formik.handleSubmit}
       className='min-h-[398px] lg:min-h-[344px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
       <div className='w-full min-h-[284px] flex flex-col gap-[37px]'>
-        <div className='grid grid-cols-2 lg:grid-cols-3 gap-[30px] lg:gap-[37px]'>
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px]'>
           {/**Type of Property */}
           <Select
             allowMultiple={false}
             heading={'propertyType'}
             formik={formik}
-            name={rentalReferenceData[0].heading}
+            name={'Type of Home'}
             options={rentalReferenceData[0].options}
             placeholder='Select'
           />
@@ -120,29 +128,71 @@ const RentalReference = ({
             options={rentalReferenceData[1].options}
             placeholder='Select'
           />
+          {/**Home Condition */}
+          <Input
+            label='Home condition'
+            name='homeCondition'
+            type='text'
+            placeholder='This is place holder'
+            formik={formik}
+            // selectedState={selectedState}
+            // stateOptions={stateOptions}
+            // setSelectedState={handleStateChange}
+          />
           {/**Preferred Location */}
 
-          <Input
-            label='Preferred Location'
-            name='selectedState'
-            forState={true}
-            forLGA={false}
-            type='text'
-            placeholder='Select State'
-            formik={formik}
-            selectedState={selectedState}
-            stateOptions={stateOptions}
-            setSelectedState={handleStateChange}
-          />
-          {/**Land Size */}
-          <Select
+          <div className='flex flex-col gap-[10px]'>
+            <label htmlFor='selectedLGA' className='flex flex-col gap-[4px]'>
+              <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+                Preferred Location
+              </span>{' '}
+              <input
+                id='selectedLGA'
+                placeholder='select location'
+                onClick={() => {
+                  setShowLocationModal(!showLocationModal);
+                }}
+                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed cursor-pointer'
+                readOnly
+                value={
+                  formik.values.selectedLGA
+                    ? `${formik.values.selectedLGA}`
+                    : ''
+                }
+              />
+            </label>
+            {showLocationModal && (
+              <MultiSelectionProcess
+                name='selectedState'
+                formik={formik}
+                options={stateOptions}
+                closeModalFunction={setShowLocationModal}
+                heading='location'
+                type='Preferred Location'
+              />
+            )}
+          </div>
+
+          {/**Number of Bedrooms */}
+          {/* <Select
             allowMultiple={false}
             heading={'landSize'}
             formik={formik}
             name={rentalReferenceData[3].heading}
             options={rentalReferenceData[3].options}
             placeholder='Select'
+          /> */}
+          <Input
+            label='Number of Bedroom'
+            name='bedroom'
+            type='number'
+            placeholder='This is placeholder'
+            formik={formik}
+            // selectedState={selectedState}
+            // stateOptions={stateOptions}
+            // setSelectedState={handleStateChange}
           />
+
           {/**Document Type */}
           <Select
             allowMultiple={true}
@@ -256,6 +306,7 @@ const Select: React.FC<SelectProps> = ({
       <ReactSelect
         isMulti={allowMultiple}
         name={name}
+        components={{ MenuList: ComponentMenuList(`Filter by ${name}`) }}
         onChange={(selectedOption) =>
           allowMultiple
             ? formik.setFieldValue(
@@ -302,4 +353,33 @@ const Select: React.FC<SelectProps> = ({
       </select> */}
     </label>
   );
+};
+
+/**
+ * Component Menu List
+ */
+
+const ComponentMenuList = (heading: string) => {
+  const WrappedMenuList = (props: any) => (
+    <components.MenuList {...props}>
+      {heading && (
+        <div
+          className='flex gap-[10px] justify-start items-center border-[#8D9096] border-b-[1px] w-[95%] mx-auto'
+          style={{ padding: '8px 12px', fontWeight: 'bold', color: '#555' }}>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size='sm'
+            color='black'
+            className='cursor-pointer'
+          />
+          <span className='text-[#000000] text-sm font-medium'>{heading}</span>
+        </div>
+      )}
+      {props.children}
+    </components.MenuList>
+  );
+
+  WrappedMenuList.displayName = 'ComponentMenuList';
+
+  return WrappedMenuList;
 };
