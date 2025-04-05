@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import useClickOutside from '@/hooks/clickOutside';
 import arrowIcon from '@/svgs/arrowDown.svg';
 import Image from 'next/image';
@@ -28,6 +28,7 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
   options,
   formik,
   name,
+  type,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -39,13 +40,16 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
   const [specifiedName, setSpecifiedName] = useState<string>(name);
   const [modifyHeading, setModifyHeading] = useState<string>(heading);
 
+  useEffect(() => {});
+
   return (
     <div
       ref={ref}
       className='w-[241px] min-h-fit absolute z-30 mt-[100px] flex flex-col p-[19px] gap-[13px] shadow-md bg-[#FFFFFF]'>
       <div className='py-[2px] flex items-center'>
         <h2 className='text-sm font-medium text-[#000000] flex gap-3'>
-          {modifyHeading !== 'location' ? (
+          {modifyHeading !== 'location' &&
+          !modifyHeading.includes('Land size') ? (
             <Image
               src={arrowIcon}
               width={20}
@@ -54,14 +58,15 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
               alt='arrow icon'
               onClick={() => {
                 setDataOptions(options);
-                if (modifyHeading === 'Preferred Location') {
+                if (type === 'Preferred Location') {
                   setModifyHeading('location');
+                  formik.setFieldValue('selectedState', '');
+                  setSpecifiedName('selectedState');
                 }
-                if (modifyHeading === 'Land Size') {
+                if (type === 'Land Size') {
                   setModifyHeading('Land size');
                 }
-                formik.setFieldValue('selectedState', '');
-                setSpecifiedName('selectedState');
+
                 console.log(formik.values);
               }}
             />
@@ -99,7 +104,10 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
                     setDataOptions(options);
                   }
                 } else if (specifiedName === 'selectedLGA') {
-                  formik.setFieldValue('selectedLGA', option.label);
+                  formik.setFieldValue(
+                    'selectedLGA',
+                    `${formik.values.selectedState}, ${option.label}`
+                  );
                   console.log(specifiedName, formik.values);
                   closeModalFunction(false);
                 }
@@ -142,9 +150,7 @@ const InputValue: FC<InputValueProps> = ({ heading, formik }) => {
       <input
         onChange={(e) => {
           formik.setFieldValue('landType', heading);
-          if (heading === 'Plot') {
-            formik.setFieldValue('landSize', e.target.value);
-          }
+          formik.setFieldValue('landSize', `${e.target.value} ${heading}`);
         }}
         className='h-[56px] bg-[#FFFFFF] border-[1px] border-[#D6DDEB] px-[12px]'
         placeholder='This is placeholder'
