@@ -15,7 +15,7 @@ interface CardProps {
 const Section2 = () => {
   return (
     <section className='w-full flex items-center justify-center py-[30px]'>
-      <div className='flex flex-col gap-[37px] container min-h-[490px] px-[20px] overflow-hidden'>
+      <div className='flex flex-col gap-[37px] container md:min-h-[490px] px-[20px] overflow-hidden'>
         <motion.h2
           initial={{ opacity: 0, x: 40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -24,7 +24,7 @@ const Section2 = () => {
           className='text-[35px] text-[#09391C] lg:leading-[41.02px] text-center font-bold'>
           Why Khabi-Teq Is Your Trusted Real Estate Partner
         </motion.h2>
-        <div className='w-full min-h-[412px] flex justify-center items-center md:grid md:grid-cols-2 lg:flex lg:flex-row gap-[25px] flex-col'>
+        <div className='overflow-y-clip hide-scrollbar md:w-full md:min-h-[412px] flex md:justify-center items-center md:grid md:grid-cols-2 lg:flex lg:flex-row gap-[25px] overflow-x-auto whitespace-normal'>
           {cardData.map((item: CardProps, idx: number) => (
             <Card key={idx} {...item} />
           ))}
