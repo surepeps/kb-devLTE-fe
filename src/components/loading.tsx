@@ -2,21 +2,13 @@
 
 'use client';
 import React from 'react';
-import '@/styles/loading.css';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import 'ldrs/react/Trio.css';
+import { Trio } from 'ldrs/react';
 
 const Loading = () => {
   return (
     <section className='h-screen w-full flex items-center justify-center'>
-      {/* <FontAwesomeIcon
-        icon={faSpinner}
-        spin
-        width={30}
-        height={30}
-        className='w-[50px] h-[50px]'
-      /> */}
-      <div className='loading'></div>
+      <Trio size={50} speed={1.3} color='#09391C' />
     </section>
   );
 };
