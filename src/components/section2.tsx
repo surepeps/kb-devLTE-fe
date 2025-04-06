@@ -22,8 +22,11 @@ import toast from 'react-hot-toast';
 import imgSample from '@/assets/assets.png';
 import { URLS } from '@/utils/URLS';
 import { usePageContext } from '@/context/page-context';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import 'ldrs/react/Trio.css';
+import { Trio } from 'ldrs/react';
+import { epilogue } from '@/styles/font';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -76,9 +79,6 @@ const Section2 = () => {
           // setErrMessage(err.message || 'An error occurred');
           setIsLoading(false);
         }
-      } finally {
-        // setFetchingData(false);
-        setIsLoading(false);
       }
     };
 
@@ -87,7 +87,7 @@ const Section2 = () => {
     return () => {
       controller.abort(); // Cleanup to prevent memory leaks
     };
-  }, []);
+  }, [setCardData]);
 
   return (
     <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
@@ -164,16 +164,9 @@ const Section2 = () => {
           className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px]`}>
           {isLoading ? (
             <div className='w-[inherit] flex justify-center items-center'>
-              <FontAwesomeIcon
-                icon={faSpinner}
-                width={25}
-                height={25}
-                color='teal'
-                spin
-                className='w-[30px] h-[30px]'
-              />
+              <Trio size={50} speed={1.3} color='#09391C' />
             </div>
-          ) : (
+          ) : properties.length !== 0 ? (
             properties?.map((property: any, idx: number) => {
               return (
                 <Card
@@ -243,6 +236,13 @@ const Section2 = () => {
                 />
               );
             })
+          ) : (
+            <div className='w-[inherit] flex justify-center items-center'>
+              <p
+                className={`text-[#09391C] text-base font-semibold ${epilogue.className}`}>
+                No properties available at the moment
+              </p>
+            </div>
           )}
         </motion.div>
         <div className='flex justify-center items-center mt-6'>

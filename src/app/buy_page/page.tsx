@@ -12,7 +12,7 @@ import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
 import Card from '@/components/card';
-import { Fragment, useEffect, useState, useRef } from 'react';
+import { Fragment, useEffect, useState, useRef, FC } from 'react';
 import Button from '@/components/button';
 import Buyer_Contact from '@/components/buyer_contact';
 import PropertyReference from '@/components/propertyReference';
@@ -27,6 +27,7 @@ import { faWifi } from '@fortawesome/free-solid-svg-icons';
 import { BriefType } from '@/types';
 import { usePathname, useRouter } from 'next/navigation';
 import ContactUs from '@/components/contact_information';
+import { IsMobile } from '@/hooks/isMobile';
 
 //type CardData = { header: string; value: string }[];
 
@@ -141,7 +142,7 @@ export default function Rent() {
     } catch (error) {
       console.error('Error parsing selectedBriefs from localStorage:', error);
     }
-  }, []);
+  }, [addBrief]);
 
   // scroll to selectedBriefs section on mobile view
   useEffect(() => {
@@ -282,131 +283,17 @@ export default function Rent() {
                 </div>
               )}
             </div>
-            {[...selectedBriefs].length !== 0 && isSelectedBriefClicked && (
-              <div
-                // ref={selectedBriefsRef}
-                className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
-                <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
-                  Submit for inspection
-                </h2>
-                <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
-                  {[...selectedBriefs].map(
-                    (selectedBrief: BriefType, idx: number) => (
-                      <Card
-                        key={idx}
-                        images={Array(12).fill(imgSample)}
-                        onClick={() => {
-                          removeBrief(selectedBrief);
-                          localStorage.clear();
-                          toast.success('Removed successfully');
-                        }}
-                        cardData={[
-                          {
-                            header: 'Property Type',
-                            value: selectedBrief?.propertyType,
-                          },
-                          {
-                            header: 'Price',
-                            value: `₦${Number(
-                              selectedBrief?.price
-                            ).toLocaleString()}`,
-                          },
-                          {
-                            header: 'Bedrooms',
-                            value:
-                              selectedBrief?.propertyFeatures?.noOfBedrooms ||
-                              'N/A',
-                          },
-                          {
-                            header: 'Location',
-                            value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
-                          },
-                          {
-                            header: 'Documents',
-                            value: `<ol>${selectedBrief?.docOnProperty.map(
-                              (item: { _id: string; docName: string }) =>
-                                `<li key={${item._id}>${item.docName}</li>`
-                            )}<ol>`,
-                          },
-                        ]}
-                        isRed={true}
-                      />
-                    )
-                  )}
-                </div>
-                <Button
-                  green={true}
-                  value='Submit'
-                  onClick={() => {
-                    setRentPage({
-                      ...rentPage,
-                      isSubmitForInspectionClicked: true,
-                    });
-                    // setPropertyRefSelectedBriefs([...selectedBriefs])
-                    setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
-                  }}
-                  className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
-                />
-              </div>
+            {[...selectedBriefs].length !== 0 && (
+              <SubmitForInspectionComponents
+                removeBrief={removeBrief}
+                setPropertyRefSelectedBriefs={setPropertyRefSelectedBriefs}
+                setRentPage={setRentPage}
+                rentPage={rentPage}
+                data={selectedBriefs}
+                isViewBriefClicked={isSelectedBriefClicked}
+              />
             )}
           </div>
-          {/* {selectedBrief && (
-            <div
-              // ref={selectedBriefsRef}
-              className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}
-            >
-              <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
-                Submit for inspection
-              </h2>
-              <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
-                {selectedBrief && (
-                  <Card
-                    images={Array(12).fill(imgSample)}
-                    onClick={() => {
-                      removeBrief(selectedBrief);
-                      localStorage.clear();
-                      toast.success('Removed successfully');
-                    }}
-                    cardData={[
-                      {
-                        header: 'Property Type',
-                        value: selectedBrief?.propertyType,
-                      },
-                      {
-                        header: 'Price',
-                        value: `₦${Number(selectedBrief?.price).toLocaleString()}`,
-                      },
-                      {
-                        header: 'Bedrooms',
-                        value: selectedBrief?.propertyFeatures?.noOfBedrooms || 'N/A',
-                      },
-                      {
-                        header: 'Location',
-                        value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
-                      },
-                      {
-                        header: 'Documents',
-                        value: `<ol>${selectedBrief?.docOnProperty.map(
-                          (item: { _id: string; docName: string }) => `<li key={${item._id}>${item.docName}</li>`
-                        )}<ol>`,
-                      },
-                    ]}
-                    isRed={true}
-                  />
-                )}
-              </div>
-              <Button
-                green={true}
-                value='Submit'
-                onClick={() => {
-                  setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
-                  // setPropertyRefSelectedBriefs([...selectedBriefs])
-                  setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
-                }}
-                className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
-              />
-            </div>
-          )} */}
         </div>
       </section>
       {rentPage.isSubmitForInspectionClicked && (
@@ -420,3 +307,98 @@ export default function Rent() {
     </Fragment>
   );
 }
+
+/**
+ * Section for Inspection
+ */
+
+type SubmitForInspectionComponentsProps = {
+  data: Set<BriefType>;
+  removeBrief: (type: BriefType) => void;
+  setRentPage: (args: {
+    isSubmitForInspectionClicked: boolean;
+    submitPreference: boolean;
+  }) => void;
+  rentPage: {
+    isSubmitForInspectionClicked: boolean;
+    submitPreference: boolean;
+  };
+  setPropertyRefSelectedBriefs: (type: BriefType[]) => void;
+  isViewBriefClicked: boolean;
+};
+const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
+  data,
+  removeBrief,
+  setRentPage,
+  rentPage,
+  setPropertyRefSelectedBriefs,
+  isViewBriefClicked,
+}) => {
+  const isMobile = IsMobile();
+  return (
+    <div
+      // ref={selectedBriefsRef}
+      className={`lg:flex ${
+        isMobile && isViewBriefClicked ? 'flex' : 'hidden'
+      } flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
+      <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
+        Submit for inspection
+      </h2>
+      <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
+        {[...data].map((selectedBrief: BriefType, idx: number) => (
+          <Card
+            key={idx}
+            images={Array(12).fill(imgSample)}
+            onClick={() => {
+              removeBrief(selectedBrief);
+              localStorage.clear();
+              toast.success('Removed successfully');
+            }}
+            cardData={[
+              {
+                header: 'Property Type',
+                value: selectedBrief?.propertyType,
+              },
+              {
+                header: 'Price',
+                value: `₦${Number(selectedBrief?.price).toLocaleString()}`,
+              },
+              {
+                header: 'Bedrooms',
+                value: selectedBrief?.propertyFeatures?.noOfBedrooms || 'N/A',
+              },
+              {
+                header: 'Location',
+                value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
+              },
+              {
+                header: 'Documents',
+                value: `<ol>${selectedBrief?.docOnProperty.map(
+                  (item: { _id: string; docName: string }) =>
+                    `<li key={${item._id}>${item.docName}</li>`
+                )}<ol>`,
+              },
+            ]}
+            isRed={true}
+          />
+        ))}
+      </div>
+      <Button
+        green={true}
+        value='Submit'
+        onClick={() => {
+          setRentPage({
+            ...rentPage,
+            isSubmitForInspectionClicked: true,
+          });
+          setPropertyRefSelectedBriefs(Array.from(data));
+        }}
+        className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
+      />
+    </div>
+  );
+};
+
+/**
+ * --turbopack
+ */

@@ -1,9 +1,3 @@
-/**
- * eslint-disable react-hooks/exhaustive-deps
- *
- * @format
- */
-
 /** @format */
 
 'use client';
