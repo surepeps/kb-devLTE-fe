@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * eslint-disable react-hooks/exhaustive-deps
  *
@@ -30,6 +31,10 @@ import ContactUs from '@/components/contact_information';
 import { IsMobile } from '@/hooks/isMobile';
 
 //type CardData = { header: string; value: string }[];
+
+import Image from 'next/image';
+import React from 'react';
+import comingSoon from '@/assets/cominsoon.png';
 
 export default function Rent() {
   const router = useRouter();
@@ -154,7 +159,27 @@ export default function Rent() {
   if (isLoading) return <Loading />;
   return (
     <Fragment>
-      <section
+        <div className='w-full flex justify-center items-center'>
+          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+              <div className='w-full flex justify-center'>
+                <Image
+                  src={comingSoon}
+                  width={400}
+                  height={50}
+                  alt='Coming Soon Icon'
+                  className='w-full max-w-[400px] h-auto'
+                />
+              </div>
+              <div className='flex flex-col justify-center items-center gap-[10px]'>
+                <p className='text-2xl md:text-lg text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+                  We are working hard to bring you an amazing experience. Stay tuned for updates!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/* <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
@@ -176,10 +201,8 @@ export default function Rent() {
             usageOption={usageOption}
             propertyReferenceData={propertyReferenceData}
           />
-          {/**All cards for isnpection */}
           <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px] overflow-hidden'>
             <div className='flex flex-col gap-2 w-full'>
-              {/** briefs found and hide or show briefs */}
               <div className='flex justify-between'>
                 {' '}
                 {found.isFound ? (
@@ -295,13 +318,13 @@ export default function Rent() {
             )}
           </div>
         </div>
-      </section>
-      {rentPage.isSubmitForInspectionClicked && (
+      </section> */}
+      {/* {rentPage.isSubmitForInspectionClicked && (
         <Buyer_Contact
           propertyId={selectedBrief?._id || ''}
           propertyType='PropertySell'
         />
-      )}
+      )} */}
 
       {rentPage.submitPreference && <ContactUs />}
     </Fragment>
