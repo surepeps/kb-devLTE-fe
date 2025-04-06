@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
@@ -21,8 +22,8 @@ import 'react-phone-number-input/style.css';
 import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
 
-//import SubmitPopUp from '@/components/submit';
-//import Select from '@/components/select';
+import Image from 'next/image';
+import comingSoon from '@/assets/cominsoon.png';
 
 interface Option {
   value: string;
@@ -213,7 +214,27 @@ const Sell = () => {
   if (isLoading) return <Loading />;
   return (
     <Fragment>
-      <section
+        <div className='w-full flex justify-center items-center'>
+          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+              <div className='w-full flex justify-center'>
+                <Image
+                  src={comingSoon}
+                  width={400}
+                  height={50}
+                  alt='Coming Soon Icon'
+                  className='w-full max-w-[400px] h-auto'
+                />
+              </div>
+              <div className='flex flex-col justify-center items-center gap-[10px]'>
+                <p className='text-2xl md:text-lg text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+                  We are working hard to bring you an amazing experience. Stay tuned for updates!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/* <section
         className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
         <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
           <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
@@ -236,7 +257,6 @@ const Sell = () => {
               className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
               <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
                 <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
-                  {/**Property Type */}
                   <div className='min-h-[73px] gap-[15px] flex flex-col lg:w-[535px] w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property Type
@@ -280,7 +300,6 @@ const Sell = () => {
                         </span>
                       )}
                   </div>
-                  {/**Usage Options */}
                   <div className='min-h-[73px] flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Usage Options
@@ -317,19 +336,11 @@ const Sell = () => {
                         </span>
                       )}
                   </div>
-                  {/**Location */}
                   <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Location
                     </h2>
                     <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
-                      {/* <Input
-                        name='selectedAddress'
-                        label='Address'
-                        type='text'
-                        value={formik.values.selectedAddress}
-                        onChange={formik.handleChange}
-                      /> */}
                       <Input
                         label='State'
                         name='selectedState'
@@ -384,7 +395,6 @@ const Sell = () => {
                         </span>
                       )}
                   </div>
-                  {/**Price */}
                   <div className='min-h-[50px] flex flex-col gap-[15px]'>
                     <Input
                       label='Price'
@@ -411,7 +421,6 @@ const Sell = () => {
                       {formik.errors.documents}
                     </span>
                   )}
-                  {/**Document of the property */}
                   <div className='min-h-[50px] flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Document on the property
@@ -443,7 +452,6 @@ const Sell = () => {
                       </span>
                     )}
                   </div>
-                  {/**Property Features */}
                   <div className='min-h-[129px] gap-[15px] flex flex-col w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property Features
@@ -454,7 +462,6 @@ const Sell = () => {
                         name='noOfBedroom'
                         type='number'
                         className='w-full'
-                        // isDisabled={formik.values?.noOfBedroom ? true : false}
                         value={formik.values?.noOfBedroom}
                         onChange={formik.handleChange}
                         isDisabled={areInputsDisabled}
@@ -486,10 +493,8 @@ const Sell = () => {
                         </span>
                       )}
                   </div>
-                  {/**end */}
                 </div>
               </div>
-              {/**contact detail */}
               <div className='min-h-[348px] py-[40px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
                 <div className='w-full min-h-[348px] flex flex-col gap-[20px]'>
                   <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold'>
@@ -505,7 +510,6 @@ const Sell = () => {
                       type='checkbox'
                       onClick={() => {
                         setIsLegalOwner(!isLegalOwner);
-                        //console.log(isLegalOwner)
                       }}
                       isDisabled={areInputsDisabled}
                       value='I confirm that I am the legal owner of this property or authorized to submit this brief'
@@ -520,15 +524,6 @@ const Sell = () => {
                         className='lg:w-1/2 w-full'
                         type='text'
                       />
-                      {/* <Input
-                        label='Phone Number'
-                        isDisabled={isLegalOwner}
-                        name='ownerPhoneNumber'
-                        value={formik.values?.ownerPhoneNumber}
-                        onChange={formik.handleChange}
-                        className='lg:w-1/2 w-full'
-                        type='text'
-                      /> */}
                       <div className='flex flex-col gap-2'>
                         <label className='block text-sm font-medium'>
                           Phone Number:
@@ -566,7 +561,6 @@ const Sell = () => {
                 </div>
               </div>
 
-              {/**Button */}
               <div className='w-full flex justify-center items-center mt-8'>
                 <Button
                   value='Submit Brief'
@@ -577,7 +571,7 @@ const Sell = () => {
             </form>
           </div>
         </div>
-      </section>
+      </section> */}
     </Fragment>
   );
 };
