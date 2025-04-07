@@ -21,17 +21,24 @@ interface RequestData {
   createdAt: string;
   propertyType: string;
   location: {
+    localGovernment: any;
     state: string;
-    localGovernment: string;
     area: string;
+  };
+  propertyId: {
+    propertyType: string;
+    location: {
+      state: string;
+      localGovernment: string;
+      area: string;
+    };
+    price: number;
   };
   price: string;
   _id: string;
   requestFrom: {
     fullName: string;
     email: string;
-  };
-  propertyId: {
     propertyType: string;
     location: {
       state: string;
