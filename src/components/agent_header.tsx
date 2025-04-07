@@ -17,7 +17,7 @@ import barIcon from '@/svgs/bars.svg';
 import { usePageContext } from '@/context/page-context';
 import { reducer } from '@/hooks/reducer';
 import SideBar from './sideBar';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 // import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
 
@@ -34,6 +34,7 @@ const AgentHeader = () => {
   const [state, dispatch] = useReducer(reducer, navData);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleDropdownClick = () => {
@@ -134,16 +135,20 @@ const AgentHeader = () => {
             {isDropdownOpen && (
               <div className='absolute left-6 transform -translate-x-1/2 mt-2 w-40 max-w-xs bg-white border border-gray-200 rounded-md shadow-lg md:-ml-[40px]'>
                 <ul>
-                  <li
-                    className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
-                    onClick={() => handleItemClick('/agent/briefs')}>
-                    Create Brief
-                  </li>
-                  <li
-                    className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
-                    onClick={() => handleItemClick('/agent/briefs')}>
-                    Dashboard
-                  </li>
+                  { pathname !== '/agent/under-review' && (
+                    <>
+                      <li
+                        className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
+                        onClick={() => handleItemClick('/agent/briefs')}>
+                        Create Brief
+                      </li>
+                      <li
+                        className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
+                        onClick={() => handleItemClick('/agent/briefs')}>
+                        Dashboard
+                      </li>
+                    </>
+                  )}
                   <li
                     className='px-4 py-2 hover:bg-gray-100 cursor-pointer text-[#FF3D00]'
                     onClick={() => logout()}>
