@@ -5,7 +5,7 @@ import React, { Fragment, Suspense, useEffect } from 'react';
 //import HeroSection from '@/components/hero';
 import Loading from '@/components/loading';
 //import Section1 from '@/components/section1';
-import Section2 from '@/components/home_section2';
+// import Section2 from '@/components/home_section2';
 import SeeWhatOthers from '@/components/section2';
 import Section3 from '@/components/section3';
 import FAQs from '@/components/FAQs';

@@ -21,8 +21,8 @@ interface RequestData {
   createdAt: string;
   propertyType: string;
   location: {
+    localGovernment: any;
     state: string;
-    localGovernment: string;
     area: string;
   };
   price: string;
@@ -30,8 +30,6 @@ interface RequestData {
   requestFrom: {
     fullName: string;
     email: string;
-  };
-  propertyId: {
     propertyType: string;
     location: {
       state: string;

@@ -15,7 +15,7 @@ import { usePageContext } from '@/context/page-context';
 import Card from '@/components/card';
 import { Fragment, useEffect, useState, useRef, FC } from 'react';
 import Button from '@/components/button';
-import Buyer_Contact from '@/components/buyer_contact';
+// import Buyer_Contact from '@/components/buyer_contact';
 import PropertyReference from '@/components/propertyReference';
 //import HouseFrame from '@/components/house-frame';
 import imgSample from '@/assets/assets.png';
