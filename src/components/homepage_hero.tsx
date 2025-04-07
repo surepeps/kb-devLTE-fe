@@ -10,15 +10,6 @@ import Button from './button';
 import '@/styles/hero.css';
 import { motion } from 'framer-motion';
 
-// interface HeroSectionProps {
-//   image: StaticImageData;
-//   headingText: string;
-//   description: string;
-//   buttonText: string;
-//   bgColor: string;
-//   borderColor: string;
-// }
-
 const HeroSection = () => {
   return (
     /**#0A3E72 */
@@ -33,7 +24,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className='lg:text-[50px] font-semibold text-[40px] leading-[55px] font-display lg:leading-[66px] text-[#FFFFFF] text-center lg:text-center md:inline hidden'>
+            className='lg:text-[50px] font-semibold text-[40px] leading-[55px] font-display lg:leading-[130%] text-[#FFFFFF] text-center lg:text-center md:inline hidden tracking-[2%]'>
             Find the Perfect{' '}
             <span className='text-[#8DDB90] font-display'>Match</span> for Your
             Property <br className='hidden md:flex' />
@@ -95,13 +86,6 @@ const HeroSection = () => {
             />
           </motion.div>
         </motion.div>
-        {/* <Image
-          src={image}
-          className='md:w-[50%] lg:w-[60%] w-full h-[294px] md:h-[536px] object-cover'
-          alt=''
-          width={1000}
-          height={1000}
-        /> */}
       </div>
     </section>
   );
