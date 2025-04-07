@@ -227,7 +227,7 @@ const Sell = () => {
                 />
               </div>
               <div className='flex flex-col justify-center items-center gap-[10px]'>
-                <p className='text-2xl md:text-lg text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+                <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
                   We are working hard to bring you an amazing experience. Stay tuned for updates!
                 </p>
               </div>
