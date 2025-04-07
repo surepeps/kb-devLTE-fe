@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * eslint-disable react-hooks/exhaustive-deps
  *
@@ -12,7 +13,7 @@ import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
 import Card from '@/components/card';
-import { Fragment, useEffect, useState, useRef } from 'react';
+import { Fragment, useEffect, useState, useRef, FC } from 'react';
 import Button from '@/components/button';
 import Buyer_Contact from '@/components/buyer_contact';
 import PropertyReference from '@/components/propertyReference';
@@ -27,8 +28,13 @@ import { faWifi } from '@fortawesome/free-solid-svg-icons';
 import { BriefType } from '@/types';
 import { usePathname, useRouter } from 'next/navigation';
 import ContactUs from '@/components/contact_information';
+import { IsMobile } from '@/hooks/isMobile';
 
 //type CardData = { header: string; value: string }[];
+
+import Image from 'next/image';
+import React from 'react';
+import comingSoon from '@/assets/cominsoon.png';
 
 export default function Rent() {
   const router = useRouter();
@@ -141,7 +147,7 @@ export default function Rent() {
     } catch (error) {
       console.error('Error parsing selectedBriefs from localStorage:', error);
     }
-  }, []);
+  }, [addBrief]);
 
   // scroll to selectedBriefs section on mobile view
   useEffect(() => {
@@ -153,7 +159,27 @@ export default function Rent() {
   if (isLoading) return <Loading />;
   return (
     <Fragment>
-      <section
+        <div className='w-full flex justify-center items-center'>
+          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+              <div className='w-full flex justify-center'>
+                <Image
+                  src={comingSoon}
+                  width={400}
+                  height={50}
+                  alt='Coming Soon Icon'
+                  className='w-full max-w-[400px] h-auto'
+                />
+              </div>
+              <div className='flex flex-col justify-center items-center gap-[10px]'>
+                <p className='text-2xl md:text-lg text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+                  We are working hard to bring you an amazing experience. Stay tuned for updates!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/* <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
@@ -175,10 +201,8 @@ export default function Rent() {
             usageOption={usageOption}
             propertyReferenceData={propertyReferenceData}
           />
-          {/**All cards for isnpection */}
           <div className='w-full flex lg:flex-row flex-col lg:w-[1154px] gap-[15px] overflow-hidden'>
             <div className='flex flex-col gap-2 w-full'>
-              {/** briefs found and hide or show briefs */}
               <div className='flex justify-between'>
                 {' '}
                 {found.isFound ? (
@@ -282,141 +306,122 @@ export default function Rent() {
                 </div>
               )}
             </div>
-            {[...selectedBriefs].length !== 0 && isSelectedBriefClicked && (
-              <div
-                // ref={selectedBriefsRef}
-                className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
-                <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
-                  Submit for inspection
-                </h2>
-                <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
-                  {[...selectedBriefs].map(
-                    (selectedBrief: BriefType, idx: number) => (
-                      <Card
-                        key={idx}
-                        images={Array(12).fill(imgSample)}
-                        onClick={() => {
-                          removeBrief(selectedBrief);
-                          localStorage.clear();
-                          toast.success('Removed successfully');
-                        }}
-                        cardData={[
-                          {
-                            header: 'Property Type',
-                            value: selectedBrief?.propertyType,
-                          },
-                          {
-                            header: 'Price',
-                            value: `₦${Number(
-                              selectedBrief?.price
-                            ).toLocaleString()}`,
-                          },
-                          {
-                            header: 'Bedrooms',
-                            value:
-                              selectedBrief?.propertyFeatures?.noOfBedrooms ||
-                              'N/A',
-                          },
-                          {
-                            header: 'Location',
-                            value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
-                          },
-                          {
-                            header: 'Documents',
-                            value: `<ol>${selectedBrief?.docOnProperty.map(
-                              (item: { _id: string; docName: string }) =>
-                                `<li key={${item._id}>${item.docName}</li>`
-                            )}<ol>`,
-                          },
-                        ]}
-                        isRed={true}
-                      />
-                    )
-                  )}
-                </div>
-                <Button
-                  green={true}
-                  value='Submit'
-                  onClick={() => {
-                    setRentPage({
-                      ...rentPage,
-                      isSubmitForInspectionClicked: true,
-                    });
-                    // setPropertyRefSelectedBriefs([...selectedBriefs])
-                    setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
-                  }}
-                  className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
-                />
-              </div>
+            {[...selectedBriefs].length !== 0 && (
+              <SubmitForInspectionComponents
+                removeBrief={removeBrief}
+                setPropertyRefSelectedBriefs={setPropertyRefSelectedBriefs}
+                setRentPage={setRentPage}
+                rentPage={rentPage}
+                data={selectedBriefs}
+                isViewBriefClicked={isSelectedBriefClicked}
+              />
             )}
           </div>
-          {/* {selectedBrief && (
-            <div
-              // ref={selectedBriefsRef}
-              className={`lg:flex flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}
-            >
-              <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
-                Submit for inspection
-              </h2>
-              <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
-                {selectedBrief && (
-                  <Card
-                    images={Array(12).fill(imgSample)}
-                    onClick={() => {
-                      removeBrief(selectedBrief);
-                      localStorage.clear();
-                      toast.success('Removed successfully');
-                    }}
-                    cardData={[
-                      {
-                        header: 'Property Type',
-                        value: selectedBrief?.propertyType,
-                      },
-                      {
-                        header: 'Price',
-                        value: `₦${Number(selectedBrief?.price).toLocaleString()}`,
-                      },
-                      {
-                        header: 'Bedrooms',
-                        value: selectedBrief?.propertyFeatures?.noOfBedrooms || 'N/A',
-                      },
-                      {
-                        header: 'Location',
-                        value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
-                      },
-                      {
-                        header: 'Documents',
-                        value: `<ol>${selectedBrief?.docOnProperty.map(
-                          (item: { _id: string; docName: string }) => `<li key={${item._id}>${item.docName}</li>`
-                        )}<ol>`,
-                      },
-                    ]}
-                    isRed={true}
-                  />
-                )}
-              </div>
-              <Button
-                green={true}
-                value='Submit'
-                onClick={() => {
-                  setRentPage({ ...rentPage, isSubmitForInspectionClicked: true });
-                  // setPropertyRefSelectedBriefs([...selectedBriefs])
-                  setPropertyRefSelectedBriefs(Array.from(selectedBriefs));
-                }}
-                className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
-              />
-            </div>
-          )} */}
         </div>
-      </section>
-      {rentPage.isSubmitForInspectionClicked && (
+      </section> */}
+      {/* {rentPage.isSubmitForInspectionClicked && (
         <Buyer_Contact
           propertyId={selectedBrief?._id || ''}
           propertyType='PropertySell'
         />
-      )}
+      )} */}
 
       {rentPage.submitPreference && <ContactUs />}
     </Fragment>
   );
 }
+
+/**
+ * Section for Inspection
+ */
+
+type SubmitForInspectionComponentsProps = {
+  data: Set<BriefType>;
+  removeBrief: (type: BriefType) => void;
+  setRentPage: (args: {
+    isSubmitForInspectionClicked: boolean;
+    submitPreference: boolean;
+  }) => void;
+  rentPage: {
+    isSubmitForInspectionClicked: boolean;
+    submitPreference: boolean;
+  };
+  setPropertyRefSelectedBriefs: (type: BriefType[]) => void;
+  isViewBriefClicked: boolean;
+};
+const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
+  data,
+  removeBrief,
+  setRentPage,
+  rentPage,
+  setPropertyRefSelectedBriefs,
+  isViewBriefClicked,
+}) => {
+  const isMobile = IsMobile();
+  return (
+    <div
+      // ref={selectedBriefsRef}
+      className={`lg:flex ${
+        isMobile && isViewBriefClicked ? 'flex' : 'hidden'
+      } flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
+      <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
+        Submit for inspection
+      </h2>
+      <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
+        {[...data].map((selectedBrief: BriefType, idx: number) => (
+          <Card
+            key={idx}
+            images={Array(12).fill(imgSample)}
+            onClick={() => {
+              removeBrief(selectedBrief);
+              localStorage.clear();
+              toast.success('Removed successfully');
+            }}
+            cardData={[
+              {
+                header: 'Property Type',
+                value: selectedBrief?.propertyType,
+              },
+              {
+                header: 'Price',
+                value: `₦${Number(selectedBrief?.price).toLocaleString()}`,
+              },
+              {
+                header: 'Bedrooms',
+                value: selectedBrief?.propertyFeatures?.noOfBedrooms || 'N/A',
+              },
+              {
+                header: 'Location',
+                value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
+              },
+              {
+                header: 'Documents',
+                value: `<ol>${selectedBrief?.docOnProperty.map(
+                  (item: { _id: string; docName: string }) =>
+                    `<li key={${item._id}>${item.docName}</li>`
+                )}<ol>`,
+              },
+            ]}
+            isRed={true}
+          />
+        ))}
+      </div>
+      <Button
+        green={true}
+        value='Submit'
+        onClick={() => {
+          setRentPage({
+            ...rentPage,
+            isSubmitForInspectionClicked: true,
+          });
+          setPropertyRefSelectedBriefs(Array.from(data));
+        }}
+        className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
+      />
+    </div>
+  );
+};
+
+/**
+ * --turbopack
+ */
