@@ -15,7 +15,7 @@ import { usePageContext } from '@/context/page-context';
 import Card from '@/components/card';
 import { Fragment, useEffect, useState, useRef, FC } from 'react';
 import Button from '@/components/button';
-import Buyer_Contact from '@/components/buyer_contact';
+// import Buyer_Contact from '@/components/buyer_contact';
 import PropertyReference from '@/components/propertyReference';
 //import HouseFrame from '@/components/house-frame';
 import imgSample from '@/assets/assets.png';
@@ -160,7 +160,7 @@ export default function Rent() {
   return (
     <Fragment>
         <div className='w-full flex justify-center items-center'>
-          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[10px] px-4 md:px-8'>
             <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
               <div className='w-full flex justify-center'>
                 <Image
@@ -172,7 +172,7 @@ export default function Rent() {
                 />
               </div>
               <div className='flex flex-col justify-center items-center gap-[10px]'>
-                <p className='text-2xl md:text-lg text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+                <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
                   We are working hard to bring you an amazing experience. Stay tuned for updates!
                 </p>
               </div>
