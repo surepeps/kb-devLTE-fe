@@ -23,23 +23,45 @@ import { GET_REQUEST } from '@/utils/requests';
 import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
 
+/**
+ * @Homepage - A function that returns the web homepage
+ * @param - no parameters
+ *
+ * @returns - Homepage contents
+ */
 const Homepage = () => {
   //Simulating the loading page
   const isLoading = useLoading();
+
   const searchParams = useSearchParams();
+
+  /**
+   * using the useRouter from the next/navigation to simulate between pages
+   */
   const router = useRouter();
 
+  /**
+   * UserContextAPI to store users information that could be accessed
+   * globally in all the pages
+   */
   const { setUser } = useUserContext();
 
   useEffect(() => {
     if (searchParams.get('access_token')) {
-      const url = URLS.BASE + URLS.agent + URLS.verifyEmail + `?access_token=${searchParams.get('access_token')}`;
+      const url =
+        URLS.BASE +
+        URLS.agent +
+        URLS.verifyEmail +
+        `?access_token=${searchParams.get('access_token')}`;
 
       (async () => {
         await GET_REQUEST(url).then((response) => {
           // console.log('response from email verification', response);
           if ((response as unknown as { id: string; token: string }).id) {
-            Cookies.set('token', (response as unknown as { token: string }).token);
+            Cookies.set(
+              'token',
+              (response as unknown as { token: string }).token
+            );
 
             const user = response as unknown as {
               id: string;
@@ -66,14 +88,25 @@ const Homepage = () => {
     }
   }, [router, searchParams, setUser]);
 
+  /**
+   * if else statement to simulate the loading page for 3 secs then return the actual homepage
+   */
   if (isLoading) return <Loading />;
 
   return (
     <Fragment>
       <section className={`w-full`}>
         <main className='w-full bg-[#EEF1F1]'>
+          {/**
+           * Hero Section Component ~ Takes no props
+           */}
           <HeroSection />
+          {/**Details About website Componet ~ Takes no props */}
           <Section1 />
+          {/**
+           * Why Khabi-Teq Is Your Trusted Real Estate Partner Component
+           * Takes no props
+           */}
           <Section2 />
           <NewSection />
           <SeeWhatOthers />

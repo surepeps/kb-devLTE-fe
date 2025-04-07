@@ -68,7 +68,7 @@ const PropertyReference = ({
       // console.log(values);
       const payload = {
         propertyType: values.propertyType,
-        state: values.state,
+        state: formik.values.selectedLGA.split(',')[0].trimStart(),
         localGovernment: values.selectedLGA, //assumption, no local govt input on the design
         area: 'N/A', //assumption, same,
         minPrice: 0,
@@ -138,7 +138,7 @@ const PropertyReference = ({
       pictures: [], //no pictures required in the design,
       budgetRange: formik.values.budgetRange,
       location: {
-        state: formik.values.state,
+        state: formik.values.selectedLGA.split(',')[0].trimStart(),
         localGovernment: formik.values.selectedLGA, //assumption, no local govt input on the design
         area: 'N/A', //assumption, same,
       },
@@ -151,6 +151,7 @@ const PropertyReference = ({
       // typeOfMeasurment: formik.values.typeOfMeasurement
     };
 
+    console.log(payload);
     setPropertyReference(payload);
     setRentPage({
       submitPreference: true,

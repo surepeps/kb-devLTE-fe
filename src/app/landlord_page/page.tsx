@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
@@ -19,6 +20,9 @@ import { usePageContext } from '@/context/page-context';
 import AttachFile from '@/components/attach_file';
 import 'react-phone-number-input/style.css';
 import naijaStates from 'naija-state-local-government';
+
+import Image from 'next/image';
+import comingSoon from '@/assets/cominsoon.png';
 
 interface Option {
   value: string;
@@ -197,7 +201,27 @@ const Landlord = () => {
   if (isLoading) return <Loading />;
   return (
     <Fragment>
-      <section
+              <div className='w-full flex justify-center items-center'>
+          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+              <div className='w-full flex justify-center'>
+                <Image
+                  src={comingSoon}
+                  width={400}
+                  height={50}
+                  alt='Coming Soon Icon'
+                  className='w-full max-w-[400px] h-auto'
+                />
+              </div>
+              <div className='flex flex-col justify-center items-center gap-[10px]'>
+                <p className='text-2xl md:text-lg text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+                  We are working hard to bring you an amazing experience. Stay tuned for updates!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/* <section
         className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
         <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
           <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
@@ -218,17 +242,14 @@ const Landlord = () => {
             <form
               onSubmit={formik.handleSubmit}
               className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
-              {/* <div className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'> */}
               <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
                 <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
-                  {/**Property Type */}
                   <div className='min-h-[73px] gap-[15px] flex flex-col lg:w-[535px] w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property Type
                     </h2>
                     <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                       <RadioCheck
-                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Residential');
@@ -238,7 +259,6 @@ const Landlord = () => {
                         name='propertyType'
                       />
                       <RadioCheck
-                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Commercial');
@@ -249,16 +269,12 @@ const Landlord = () => {
                       />
                     </div>
                   </div>
-                  {/**Property condition */}
                   <div className='min-h-[73px] gap-[15px] flex flex-col lg:w-[535px] w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property condition
                     </h2>
                     <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                       <RadioCheck
-                        // isDisabled={
-                        //   formik.values?.propertyCondition ? true : false
-                        // }
                         selectedValue={formik.values?.propertyCondition}
                         handleChange={() => {
                           formik.setFieldValue(
@@ -271,9 +287,6 @@ const Landlord = () => {
                         value='New Building'
                       />
                       <RadioCheck
-                        // isDisabled={
-                        //   formik.values?.propertyCondition ? true : false
-                        // }
                         selectedValue={formik.values?.propertyCondition}
                         handleChange={() => {
                           formik.setFieldValue(
@@ -287,35 +300,11 @@ const Landlord = () => {
                       />
                     </div>
                   </div>
-                  {/**Location */}
                   <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Location
                     </h2>
                     <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
-                      {/* <Input
-                        label='State'
-                        name='selectedState'
-                        selectedState={{
-                          value: formik.values?.selectedState,
-                          label: formik.values?.selectedState,
-                        }}
-                        setSelectedState={(option) => {
-                          formik.setFieldValue('selectedState', option?.value);
-                        }}
-                        forState={true}
-                        type='text'
-                        placeholder='Select State'
-                        isDisabled={areInputsDisabled}
-                      />
-                      <Input
-                        label='Local Government'
-                        name='selectedLGA'
-                        type='text'
-                        value={formik.values?.selectedLGA}
-                        onChange={formik.handleChange}
-                        isDisabled={areInputsDisabled}
-                      /> */}
                       <Input
                         label='State'
                         name='selectedState'
@@ -364,7 +353,6 @@ const Landlord = () => {
                         )}
                     </div>
                   </div>
-                  {/**Other section (Rental Price | no of Bedroom) */}
                   <div className='w-full flex flex-col gap-[15px]'>
                     <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                       <Input
@@ -384,14 +372,12 @@ const Landlord = () => {
                         type='number'
                         className='w-full'
                         minNumber={0}
-                        // isDisabled={formik.values?.noOfBedroom ? true : false}
                         value={formik.values?.noOfBedroom}
                         onChange={formik.handleChange}
                         isDisabled={areInputsDisabled}
                       />
                     </div>
                   </div>
-                  {/**Features */}
                   <div className='min-h-[73px] flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Features
@@ -418,7 +404,6 @@ const Landlord = () => {
                       ))}
                     </div>
                   </div>
-                  {/**Tenant Criteria */}
                   <div className='min-h-[73px] flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Tenant Criteria
@@ -444,13 +429,9 @@ const Landlord = () => {
                       ))}
                     </div>
                   </div>
-
-                  {/**Upload Image | Documents */}
                   <AttachFile heading='Upload image(optional)' id="image-upload"/>
-                  {/**end */}
                 </div>
               </div>
-              {/**contact detail */}
               <div className='min-h-[348px] py-[40px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
                 <div className='w-full min-h-[348px] flex flex-col gap-[20px]'>
                   <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold'>
@@ -517,7 +498,6 @@ const Landlord = () => {
                 </div>
               </div>
 
-              {/**Button */}
               <div className='w-full flex justify-center items-center mt-8'>
                 <Button
                   value='Submit Brief'
@@ -525,11 +505,10 @@ const Landlord = () => {
                   className='bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px]'
                 />
               </div>
-              {/* </div> */}
             </form>
           </div>
         </div>
-      </section>
+      </section> */}
     </Fragment>
   );
 };
