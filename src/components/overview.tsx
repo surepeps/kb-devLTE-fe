@@ -25,6 +25,15 @@ interface RequestData {
     state: string;
     area: string;
   };
+  propertyId: {
+    propertyType: string;
+    location: {
+      state: string;
+      localGovernment: string;
+      area: string;
+    };
+    price: number;
+  };
   price: string;
   _id: string;
   requestFrom: {
