@@ -22,6 +22,7 @@ import naijaStates from 'naija-state-local-government';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
+import { epilogue } from '@/styles/font';
 
 interface Option {
   value: string;
@@ -32,6 +33,8 @@ const Landlord = () => {
   const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
   const { setIsSubmittedSuccessfully } = usePageContext();
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
+
+  const [isComingSoon, setIsComingSoon] = useState<boolean>(true);
 
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
@@ -202,6 +205,7 @@ const Landlord = () => {
   }, [isLegalOwner]);
 
   if (isLoading) return <Loading />;
+  if (isComingSoon) return <UseIsComingPage />;
   return (
     <Fragment>
       <section
@@ -522,7 +526,8 @@ const UseIsComingPage = () => {
             />
           </div>
           <div className='flex flex-col justify-center items-center gap-[10px]'>
-            <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+            <p
+              className={`text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%] ${epilogue.className}`}>
               We are working hard to bring you an amazing experience. Stay tuned
               for updates!
             </p>
