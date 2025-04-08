@@ -16,6 +16,8 @@ import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
+import { calculateAgentCounts } from '@/utils/agentUtils';
+import { truncateId } from '@/utils/stringUtils';
 
 interface Agent {
   id: string;
@@ -40,6 +42,7 @@ interface Agent {
   }[];
   regionOfOperation: string[];
   isInActive: boolean;
+  isFlagged: boolean;
   isDeleted: boolean;
   accountApproved: boolean;
   profile_picture: string;
@@ -114,7 +117,10 @@ export default function AgentLists() {
     if (active === 'Inactive Agents') {
       return agent.accountStatus.toLowerCase() === 'inactive';
     }
-    return true; // For 'All Agents' or other tabs
+    if (active === 'Banned Agents') {
+      return false;
+    }
+    return true;
   });
 
   const handleActionClick = (user: any) => {
@@ -124,6 +130,8 @@ export default function AgentLists() {
   const closeSidebar = () => {
     setSelectedUser(null);
   };
+
+  const agentCounts = calculateAgentCounts(agents);
 
   const renderDynamicComponent = () => {
     const tableContent = (
@@ -189,7 +197,7 @@ export default function AgentLists() {
                   <td className='p-3'>
                     <input title='checkbox' type='checkbox' />
                   </td>
-                  <td className='p-3'>{item.id}</td>
+                  <td className='p-3'>{truncateId(item.id)}</td>
                   <td className='p-3'>
                     {item.fullName ? item.fullName : `${item.firstName} ${item.lastName}`}
                   </td>

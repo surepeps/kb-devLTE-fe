@@ -177,9 +177,10 @@ const PendingTransactionCard = ({
 interface RegularCardProps {
   title: string;
   amount: number;
+  titleColor?: string; // Optional prop for title color
 }
 
-const RegularCard = ({ title, amount }: RegularCardProps) => {
+export const RegularCard = ({ title, amount, titleColor }: RegularCardProps) => {
   return (
     <motion.div
       initial={{ y: 90, opacity: 0 }}
@@ -187,7 +188,9 @@ const RegularCard = ({ title, amount }: RegularCardProps) => {
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}
       className='w-full flex flex-col justify-between gap-[35px] py-[23px] px-[25px] rounded-[4px] bg-[#FFFFFF] border-[1px] boorder-[#E4DFDF]'>
-      <h4 className={`text-[#181336] text-base ${archivo.className}`}>
+      <h4
+        className={`text-base ${archivo.className}`}
+        style={{ color: titleColor || '#181336' }}>
         {title}
       </h4>
       <h2
