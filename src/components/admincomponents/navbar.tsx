@@ -20,16 +20,16 @@ import { archivo } from '@/styles/font';
 
 const navItems = [
   {
+    href: '/admin',
+    label: 'Dashboard Overview',
+    icon: faBorderAll,
+    disabled: true,
+  },
+  {
     href: '/admin/agent_management',
     label: 'Agent Management',
     icon: faUserGroup,
     disabled: false,
-  },
-  {
-    href: '/admin/agent_management',
-    label: 'Dashboard Overview',
-    icon: faBorderAll,
-    disabled: true,
   },
   {
     href: '/admin/brief_management',

@@ -206,7 +206,8 @@ export default function AgentDetailsBar({
           <div className='mt-14'>
             <button
               onClick={!user.accountApproved ? onSubmit : undefined} // Call onSubmit when approving
-              disabled={user.accountApproved}
+              // disabled={user.accountApproved}
+              disabled={true}
               className={`w-full bg-white border ${
                 user.accountApproved ? 'border-gray-500 text-gray-500' : 'border-green-500 text-green-500'
               } py-4 rounded-md ${
