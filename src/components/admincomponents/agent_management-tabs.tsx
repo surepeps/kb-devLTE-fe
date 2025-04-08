@@ -24,7 +24,8 @@ export default function AgentManagementTabs() {
       viewport={{ once: true }}>
       <div className='flex flex-col w-full'>
         <div className='w-full'>
-            <AgentLists />
+          {/* Ensure AgentLists renders updated cards */}
+          <AgentLists />
         </div>
       </div>
     </motion.div>
