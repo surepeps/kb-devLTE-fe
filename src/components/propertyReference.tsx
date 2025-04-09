@@ -17,6 +17,7 @@ import naijaStates from 'naija-state-local-government';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import MultiSelectionProcess from './multiSelectionProcess';
+import customStyles from '@/styles/inputStyle';
 
 interface valuesProps {
   propertyType: string;
@@ -24,7 +25,7 @@ interface valuesProps {
   budgetRange: string;
   state: string;
   selectedLGA: string;
-  landSize: number;
+  landSize: '';
   landType: string;
   docOnProperty: [];
   desireFeatures: [];
@@ -56,7 +57,7 @@ const PropertyReference = ({
       budgetRange: '',
       state: '',
       selectedLGA: '',
-      landSize: 0,
+      landSize: '',
       landType: '',
       docOnProperty: [],
       desireFeatures: [],
@@ -147,6 +148,10 @@ const PropertyReference = ({
       propertyFeatures: {
         additionalFeatures: formik.values.desireFeatures,
         noOfBedrooms: formik.values.bedroom,
+      },
+      landSize: {
+        measurementType: formik.values.landSize.split(' ')[1],
+        size: Number(formik.values.landSize.split(' ')[0]),
       },
       // typeOfMeasurment: formik.values.typeOfMeasurement
     };
@@ -433,16 +438,7 @@ const Select: React.FC<SelectProps> = ({
         value={formik.values[heading]?.label}
         options={opts}
         className={`w-full`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF00',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
       {/* <select
