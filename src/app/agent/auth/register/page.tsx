@@ -146,10 +146,11 @@ const Register = () => {
               (response as unknown as { token: string }).token
             );
             setUser((response as any).user);
+            localStorage.setItem('email', `${formik.values.email}`); // Save email to local storage
             toast.success('Registration successful');
             router.push('/agent/onboard');
           }
-          console.log(response);
+          // console.log(response);
           if (response.error) {
             toast.error(response.error);
           }
