@@ -105,7 +105,10 @@ const Input: FC<InputProps> = memo(
         <label
           htmlFor={id}
           className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}>
-          <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+          <span
+            className={`text-base leading-[25.6px] font-medium text-[#1E1E1E] ${
+              isDisabled && 'text-[#847F7F]'
+            }`}>
             {label}
           </span>
 
@@ -211,7 +214,7 @@ const Input: FC<InputProps> = memo(
                 min={type === 'number' ? minNumber : undefined}
                 max={type === 'number' ? maxNumber : undefined}
                 placeholder={placeholder ?? 'This is placeholder'}
-                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed'
+                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed'
               />
               {(formik?.errors?.[name] || formik?.touched?.[name]) && (
                 <span className='text-red-600 text-xs'>
