@@ -35,7 +35,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
       htmlFor={id}
       onClick={isDisabled ? undefined : onClick}
       className={`flex gap-[17px] cursor-pointer ${className}`}>
-      <input
+      {/* <input
         title={title ?? value}
         type={type}
         name={name}
@@ -65,7 +65,23 @@ const RadioCheck: FC<RadioCheckProps> = ({
             strokeLinejoin='round'
           />
         </svg>
-      )}
+      )} */}
+      <input
+        style={{
+          accentColor: '#8DDB90',
+          width: '24px',
+          height: '24px',
+          backgroundColor: 'transparent',
+        }}
+        title={title ?? value}
+        type={type}
+        name={name}
+        id={id}
+        disabled={isDisabled}
+        className='w-[24px] h-[24px] flex items-center justify-center rounded-full border-[#5A5D63] peer-checked:bg-[#8DDB90] border-[2px]'
+        onChange={handleChange}
+        //checked={selectedValue === value}
+      />
       <span
         dangerouslySetInnerHTML={{ __html: value }}
         className='text-base leading-[25.6px] font-normal text-[#000000]'
@@ -74,4 +90,22 @@ const RadioCheck: FC<RadioCheckProps> = ({
   );
 };
 
+/**
+ *  <input
+        style={{
+          accentColor: '#8DDB90',
+          width: '24px',
+          height: '24px',
+          backgroundColor: 'transparent',
+        }}
+        title={title ?? value}
+        type={type}
+        name={name}
+        id={id}
+        disabled={isDisabled}
+        className='w-[24px] h-[24px] flex items-center justify-center rounded-full border-[#5A5D63] peer-checked:bg-[#8DDB90] border-[2px]'
+        onChange={handleChange}
+        //checked={selectedValue === value}
+      />
+ */
 export default RadioCheck;

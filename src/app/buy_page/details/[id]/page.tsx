@@ -29,6 +29,8 @@ import Select, { SingleValue } from 'react-select';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
+import customStyles from '@/styles/inputStyle';
+import RadioCheck from '@/components/radioCheck';
 
 interface DetailsProps {
   price: number;
@@ -91,6 +93,7 @@ const Buy = () => {
   const router = useRouter();
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState([]);
+  const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
 
   const handlePreviousSlide = () => {
     const scrollableElement = document.getElementById(
@@ -469,24 +472,9 @@ const Buy = () => {
                         <h2 className='text-base leading-[25.6px] text-[#1E1E1E] font-medium'>
                           I am
                         </h2>
-                        {/* <select
-                      className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
-                      name='gender'
-                      id='gender'>
-                      <option value='Male'>Male</option>
-                      <option value='Female'>Female</option>
-                      <option value='Prefer not to say'>
-                        Prefer not to say
-                      </option>
-                    </select> */}
                         <Select
                           name='gender'
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              height: '50px',
-                            }),
-                          }}
+                          styles={customStyles}
                           options={[
                             { value: 'Male', label: 'Male' },
                             { value: 'Female', label: 'Female' },
@@ -512,6 +500,7 @@ const Buy = () => {
                             formik.setFieldValue('gender', option?.value || '');
                           }}
                           onBlur={() => formik.setFieldTouched('gender', true)}
+                          className='bg-white'
                           isClearable
                         />
                       </label>
@@ -529,54 +518,24 @@ const Buy = () => {
                         id='message'
                         onChange={formik.handleChange}
                         placeholder={'Enter your message here'}
-                        className='min-h-[93px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] resize-none py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'></textarea>
+                        className='min-h-[93px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] resize-none py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'></textarea>
                     </label>
 
                     {/** */}
-                    <div className='flex items-center gap-[16px] mt-[10px]'>
-                      <svg
-                        width='24'
-                        height='24'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        xmlns='http://www.w3.org/2000/svg'>
-                        <rect
-                          x='0.75'
-                          y='0.75'
-                          width='22.5'
-                          height='22.5'
-                          rx='3.25'
-                          fill='#8DDB90'
-                        />
-                        <rect
-                          x='0.75'
-                          y='0.75'
-                          width='22.5'
-                          height='22.5'
-                          rx='3.25'
-                          stroke='#8DDB90'
-                          strokeWidth='1.5'
-                        />
-                        <g clipPath='url(#clip0_660_17763)'>
-                          <path
-                            d='M7.3335 12.0003L10.6668 15.3337L17.3335 8.66699'
-                            stroke='#E9EBFD'
-                            strokeWidth='1.5'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                        </g>
-                        <defs>
-                          <clipPath id='clip0_660_17763'>
-                            <rect
-                              width='16'
-                              height='16'
-                              fill='white'
-                              transform='translate(4 4)'
-                            />
-                          </clipPath>
-                        </defs>
-                      </svg>
+                    <div className='flex items-center gap-[10px] mt-[10px]'>
+                      <input
+                        title='checkbox'
+                        style={{
+                          accentColor: '#8DDB90',
+                          backgroundColor: 'transparent',
+                          width: '24px',
+                          height: '24px',
+                        }}
+                        type='checkbox'
+                        onChange={() => {
+                          setAgreedToTermsUse(!agreedToTermsOfUse);
+                        }}
+                      />
                       <p className='text-base leading-[25.6px] text-[#0B423D] font-semibold'>
                         By submitting this form I agree to Terms of Use
                       </p>
@@ -684,7 +643,7 @@ const Input = ({
           onChange={formik.handleChange}
           name={label}
           placeholder={placeholder}
-          className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
+          className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]  disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
         />
       )}
 

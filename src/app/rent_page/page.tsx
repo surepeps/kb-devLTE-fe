@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
@@ -35,6 +34,7 @@ export default function Rent() {
   const router = useRouter();
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
+  const [isComingSoon, setIsComingSoon] = useState<boolean>(true);
 
   useEffect(() => {
     const getAllRentProperties = async () => {
@@ -58,29 +58,10 @@ export default function Rent() {
   }, []);
 
   if (isLoading) return <Loading />;
+  if (isComingSoon) return <UseIsComingPage />;
   return (
     <Fragment>
-        <div className='w-full flex justify-center items-center'>
-          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
-            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
-              <div className='w-full flex justify-center'>
-                <Image
-                  src={comingSoon}
-                  width={400}
-                  height={50}
-                  alt='Coming Soon Icon'
-                  className='w-full max-w-[400px] h-auto'
-                />
-              </div>
-              <div className='flex flex-col justify-center items-center gap-[10px]'>
-                <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
-                  We are working hard to bring you an amazing experience. Stay tuned for updates!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      {/* <section
+      <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
           rentPage.isSubmitForInspectionClicked &&
           'filter brightness-[30%] transition-all duration-500'
@@ -95,14 +76,16 @@ export default function Rent() {
           <RentalReference
             rentalReferenceData={propertyReferenceDataWithoutUsageOption}
           />
-          <div className='w-full px-[20px] flex flex-col gap-[15px] lg:w-[1153px]'>
+          <div className='w-full flex flex-col gap-[15px] lg:w-[1153px]'>
             <h2
-              className={`text-[#09391C] ${epilogue.className} text-lg font-semibold`}>
-              Choose the property you want to rent
+              className={`text-[#09391C] ${epilogue.className} text-base md:text-lg font-semibold`}>
+              {data.length !== 0
+                ? 'Choose the property you want to rent'
+                : 'No property available at the moment!'}
             </h2>
             <div className='flex flex-col justify-center items-center md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
               {isDataLoading ? (
-                <p>Failed to fetch data</p>
+                <Loading />
               ) : (
                 data?.map((item: HouseFrameProps, idx: number) => (
                   <HouseFrame
@@ -121,7 +104,33 @@ export default function Rent() {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
     </Fragment>
   );
 }
+
+const UseIsComingPage = () => {
+  return (
+    <div className='w-full flex justify-center items-center'>
+      <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+        <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+          <div className='w-full flex justify-center'>
+            <Image
+              src={comingSoon}
+              width={400}
+              height={50}
+              alt='Coming Soon Icon'
+              className='w-full max-w-[400px] h-auto'
+            />
+          </div>
+          <div className='flex flex-col justify-center items-center gap-[10px]'>
+            <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
+              We are working hard to bring you an amazing experience. Stay tuned
+              for updates!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

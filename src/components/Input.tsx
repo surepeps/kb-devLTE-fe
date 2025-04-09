@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {
   ChangeEventHandler,
@@ -13,6 +13,7 @@ import React, {
 //import naijaStates from 'naija-state-local-government';
 import Select, { components, MenuListProps } from 'react-select';
 //import { useCallback } from 'react';
+import customStyles from '@/styles/inputStyle';
 
 interface Option {
   value: string;
@@ -122,7 +123,7 @@ const Input: FC<InputProps> = memo(
                 value={selectedState}
                 onChange={setSelectedState}
                 placeholder='Select State'
-                styles={customStyle}
+                styles={customStyles}
                 isDisabled={isDisabled}
                 className='disabled:cursor-not-allowed'
               />
@@ -147,7 +148,7 @@ const Input: FC<InputProps> = memo(
                 }}
                 onChange={setSelectedLGA}
                 placeholder='Select LGA'
-                styles={customStyle}
+                styles={customStyles}
                 isDisabled={lgasOptions?.length === 0}
                 className='disabled:cursor-not-allowed'
               />
@@ -167,7 +168,7 @@ const Input: FC<InputProps> = memo(
                 components={{ MenuList: ComponentMenuList('Filter by Region') }}
                 onChange={setSelectedRegion}
                 placeholder='Select Region of Operation'
-                styles={customStyle}
+                styles={customStyles}
                 isDisabled={isDisabled}
                 className='disabled:cursor-not-allowed'
               />
@@ -188,7 +189,7 @@ const Input: FC<InputProps> = memo(
                 onChange={setSelectedIdType}
                 components={{ MenuList: ComponentMenuList('Type of ID') }}
                 placeholder='Select Type if ID'
-                styles={customStyle}
+                styles={customStyles}
                 isDisabled={isDisabled}
                 className='disabled:cursor-not-allowed'
               />
@@ -203,19 +204,21 @@ const Input: FC<InputProps> = memo(
 
           {!forLGA && !forState && !forRegion && !forIdtype && (
             <div className='flex flex-col w-full'>
-              <input
-                id={id}
-                name={name}
-                type={type}
-                value={value}
-                onChange={isDisabled ? undefined : onChange}
-                onBlur={onBlur}
-                disabled={isDisabled}
-                min={type === 'number' ? minNumber : undefined}
-                max={type === 'number' ? maxNumber : undefined}
-                placeholder={placeholder ?? 'This is placeholder'}
-                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed'
-              />
+              <div className='flex items-center'>
+                <input
+                  id={id}
+                  name={name}
+                  type={type}
+                  value={value}
+                  onChange={isDisabled ? undefined : onChange}
+                  onBlur={onBlur}
+                  disabled={isDisabled}
+                  min={type === 'number' ? minNumber : undefined}
+                  max={type === 'number' ? maxNumber : undefined}
+                  placeholder={placeholder ?? 'This is placeholder'}
+                  className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
+                />
+              </div>
               {(formik?.errors?.[name] || formik?.touched?.[name]) && (
                 <span className='text-red-600 text-xs'>
                   {formik?.errors?.[name]}
@@ -228,22 +231,6 @@ const Input: FC<InputProps> = memo(
     );
   }
 );
-
-const customStyle = {
-  control: (base: any) => ({
-    ...base,
-    minHeight: '50px',
-    border: '1px solid #D6DDEB',
-    color: 'black',
-    fontSize: '16px',
-    lineHeight: '25.6px',
-    paddingTop: '6px',
-    paddingBottom: '6px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
-    width: '100%',
-  }),
-};
 
 Input.displayName = 'Input';
 

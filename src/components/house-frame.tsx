@@ -1,9 +1,10 @@
 /** @format */
-
+'use client';
 import Image from 'next/image';
 import React, { FC } from 'react';
 import locationIcon from '@/svgs/location.svg';
 import imgSample from '@/assets/assets.png';
+import { motion } from 'framer-motion';
 
 interface HouseFrameProps {
   images: string[];
@@ -28,15 +29,16 @@ const HouseFrame: FC<HouseFrameProps> = ({
     <div
       onClick={onClick}
       className='w-full min-h-[342px] flex flex-col gap-[11px] cursor-pointer'>
-      <Image
-        // src={
-        //   images?.length !== 0 && images !== undefined ? images[0] : imgSample
-        // }
-        src={imgSample}
+      <motion.img
+        initial={{ opacity: 0, scale: 1 }}
+        animate={{ opacity: 1 }}
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.4 }}
+        src={imgSample.src}
         width={1000}
         height={1000}
         alt=''
-        className='lg:w-[343px] h-[222px] object-cover'
+        className={`lg:w-[343px] h-[222px] object-cover`}
       />
       <div className='flex flex-col min-h-[109px] gap-[7px]'>
         <h2 className='lg:text-[18px] leading-[29px] font-medium text-[#000000]'>
@@ -50,7 +52,7 @@ const HouseFrame: FC<HouseFrameProps> = ({
             className='w-[16px] h-[16px]'
             alt=''
           />
-          <span>{location}</span>
+          <span title={location}>{location.slice(0, 20)}...</span>
         </span>
         <div className='min-h-[44px] flex gap-[17px]'>
           <div className='flex flex-col border-r-[1px] pr-[10px] border-[#C7CAD0]'>
