@@ -74,7 +74,7 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
           <span>Filter by {modifyHeading}</span>
         </h2>
       </div>
-      <div className='w-full h-[166px] overflow-y-auto flex flex-col gap-[20px] border-t-[1px] py-[15px] hide-scrollbar border-[#1E1E1E]'>
+      <div className='w-full h-[166px] overflow-y-auto flex flex-col gap-[5px] border-t-[1px] py-[15px] hide-scrollbar border-[#1E1E1E]'>
         {dataOptions.length !== 0 ? (
           dataOptions.map((option: OptionType, idx: number) => (
             <div
@@ -118,7 +118,7 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
                   setDataOptions([]);
                 }
               }}
-              className='w-full flex items-center justify-between cursor-pointer'>
+              className={`w-full flex items-center justify-between cursor-pointer hover:bg-[#8DDB90] py-[8px] px-[5px] rounded-[5px]`}>
               <span className='text-base font-normal text-[#000000]'>
                 {option.label}
               </span>

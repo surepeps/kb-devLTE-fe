@@ -10,8 +10,14 @@ import naijaStates from 'naija-state-local-government';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDown,
+  faArrowDownUpLock,
+  faArrowLeft,
+  faCaretDown,
+} from '@fortawesome/free-solid-svg-icons';
 import MultiSelectionProcess from './multiSelectionProcess';
+import customStyles from '@/styles/inputStyle';
 
 interface RentalReferenceDataProps {
   rentalReferenceData: { heading: string; options: string[] }[];
@@ -28,7 +34,7 @@ interface valuesProps {
   landSize: string;
   docOnProperty: [];
   desireFeatures: [];
-  selectedLGA: '';
+  selectedLGA: string | null;
   selectedState: '';
 }
 
@@ -44,6 +50,9 @@ const RentalReference = ({
 }: RentalReferenceDataProps) => {
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
+  const [formStatus, setFormStatus] = useState<
+    'idle' | 'pending' | 'success' | 'error'
+  >('idle');
 
   const formik = useFormik({
     initialValues: {
@@ -57,30 +66,35 @@ const RentalReference = ({
       selectedLGA: '',
     },
     onSubmit: async (values: valuesProps) => {
-      console.log(values);
       const payload = {
         location: {
           state: values.selectedState,
-          localGovernment: values.selectedLGA.split(',')[1].trimStart(),
+          localGovernment: values.selectedLGA
+            ? values.selectedLGA.split(',')[1]?.trimStart() ?? ''
+            : '',
           area: 'N/A',
         },
         propertyCondition: 'New Building',
         propertyType: values.propertyType,
-        budgetRange: values.budgetRange.trimStart(),
+        budgetRange: values.budgetRange.trimStart() || '',
         docOnProperty: values.docOnProperty,
         desireFeatures: values.desireFeatures,
         rentalPrice: 4000000,
       };
       console.log(payload);
+      setFormStatus('pending');
       try {
         const response = await axios.post(
           URLS.BASE + '/properties/rents/rent/new',
           payload
         );
         console.log(response);
+        setFormStatus('success');
       } catch (error) {
         console.log(error);
+        setFormStatus('error');
       }
+      console.log(values);
     },
   });
 
@@ -106,17 +120,42 @@ const RentalReference = ({
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className='min-h-[398px] lg:min-h-[344px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
-      <div className='w-full min-h-[284px] flex flex-col gap-[37px]'>
-        <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px]'>
+      className='min-h-[398px] lg:min-h-[257px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
+      <div className='w-full flex flex-col gap-[37px]'>
+        <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
           {/**Type of Property */}
           <Select
             allowMultiple={false}
             heading={'propertyType'}
             formik={formik}
             name={'Type of Home'}
-            options={rentalReferenceData[0].options}
+            options={[
+              'Residential',
+              'Duplex',
+              'Commercial Spaces (Office, Shop)',
+            ]}
             placeholder='Select'
+            isDisabled={formStatus === 'pending'}
+          />
+
+          {/**Home Condition */}
+          <Select
+            allowMultiple={false}
+            heading={'homeCondition'}
+            formik={formik}
+            name='Home Condition'
+            options={[
+              'Brand New',
+              'Good Condition',
+              'Fairly Used',
+              'Needs Renovation',
+            ]}
+            placeholder='Select'
+            isDisabled={formStatus === 'pending'}
+
+            // selectedState={selectedState}
+            // stateOptions={stateOptions}
+            // setSelectedState={handleStateChange}
           />
 
           {/**Budget Range */}
@@ -125,20 +164,15 @@ const RentalReference = ({
             heading={'budgetRange'}
             formik={formik}
             name={rentalReferenceData[1].heading}
-            options={rentalReferenceData[1].options}
+            options={[
+              `₦2.5 Million - ₦5 Million/year`,
+              `₦5 Million - ₦10 Million/year`,
+              `Above ₦10 Million/year`,
+            ]}
             placeholder='Select'
+            isDisabled={formStatus === 'pending'}
           />
-          {/**Home Condition */}
-          <Input
-            label='Home condition'
-            name='homeCondition'
-            type='text'
-            placeholder='This is place holder'
-            formik={formik}
-            // selectedState={selectedState}
-            // stateOptions={stateOptions}
-            // setSelectedState={handleStateChange}
-          />
+
           {/**Preferred Location */}
 
           <div className='flex flex-col gap-[10px]'>
@@ -146,20 +180,32 @@ const RentalReference = ({
               <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
                 Preferred Location
               </span>{' '}
-              <input
-                id='selectedLGA'
-                placeholder='select location'
-                onClick={() => {
-                  setShowLocationModal(!showLocationModal);
-                }}
-                className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed cursor-pointer'
-                readOnly
-                value={
-                  formik.values.selectedLGA
-                    ? `${formik.values.selectedLGA}`
-                    : ''
-                }
-              />
+              <div className='flex items-center'>
+                <input
+                  id='selectedLGA'
+                  placeholder='select location'
+                  disabled={formStatus === 'pending'}
+                  onClick={() => {
+                    setShowLocationModal(!showLocationModal);
+                  }}
+                  className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed cursor-pointer rounded-[5px] ${
+                    showLocationModal &&
+                    'focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0'
+                  }`}
+                  readOnly
+                  value={
+                    formik.values.selectedLGA
+                      ? `${formik.values.selectedLGA}`
+                      : ''
+                  }
+                />
+                {/* <FontAwesomeIcon
+                  icon={faCaretDown}
+                  size='lg'
+                  color={`${showLocationModal ? '#8DDB90' : 'gray'}`}
+                  className={`absolute ml-[210px] hover:text-[#09391C] cursor-pointer transition-all duration-500`}
+                /> */}
+              </div>
             </label>
             {showLocationModal && (
               <MultiSelectionProcess
@@ -188,20 +234,21 @@ const RentalReference = ({
             type='number'
             placeholder='This is placeholder'
             formik={formik}
+            isDisabled={formStatus === 'pending'}
             // selectedState={selectedState}
             // stateOptions={stateOptions}
             // setSelectedState={handleStateChange}
           />
 
           {/**Document Type */}
-          <Select
+          {/* <Select
             allowMultiple={true}
             heading={'docOnProperty'}
             formik={formik}
             name={rentalReferenceData[4].heading}
             options={rentalReferenceData[4].options}
             placeholder='Select'
-          />
+          /> */}
           {/**Desires Features */}
           <Select
             allowMultiple={true}
@@ -210,6 +257,30 @@ const RentalReference = ({
             name={rentalReferenceData[5].heading}
             options={rentalReferenceData[5].options}
             placeholder='Select'
+            isDisabled={formStatus === 'pending'}
+          />
+
+          {/**Tenant Criteria */}
+          <Select
+            allowMultiple={true}
+            heading={'tenantCriteria'}
+            formik={formik}
+            name='Tenant Criteria'
+            options={[
+              'Self Employed',
+              'Employee',
+              'Families',
+              'Corporate Tenants',
+              'Students',
+              'No Pets Allowed',
+              'Male',
+              'Female',
+              'Both Genders',
+              'Individual Tenant',
+              'Must Provide Credit Report',
+              'Tenant Responsible for Basic Maintenance',
+            ]}
+            isDisabled={formStatus === 'pending'}
           />
 
           {/* {rentalReferenceData.map((item, idx: number) => (
@@ -223,14 +294,14 @@ const RentalReference = ({
             //   placeholder='Select'
             // />
           ))} */}
-        </div>
-        <div className='w-full justify-end items-end flex'>
+
           <Button
-            value='Search'
-            green={true}
+            value={`${formStatus === 'pending' ? 'Searching...' : 'Search'}`}
             type='submit'
             onClick={isDisabled ? undefined : onClick}
-            className='bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] lg:w-[334px] w-full'
+            className={`hover:bg-[#09391C] text-[#FFFFFF] text-base leading-[25.6px] font-bold h-[50px] py-[12px] px-[24px] w-full ${
+              formStatus === 'pending' ? 'bg-[#09391C]' : 'bg-[#8DDB90]'
+            }`}
           />
         </div>
       </div>
@@ -240,39 +311,6 @@ const RentalReference = ({
 
 export default RentalReference;
 
-// interface SelectProps {
-//   heading: string;
-//   placeholder?: string;
-//   options: string[];
-//   formik: any;
-// }
-
-// const Select: React.FC<SelectProps> = ({ heading, options, formik }) => {
-//   // const [valueSelected, setValueSelected] = useState<string>('');
-//   return (
-//     <label
-//       htmlFor='select'
-//       className='min-h-[80px] lg:w-[334.33px] w-full flex flex-col gap-[4px]'>
-//       <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
-//         {heading}
-//       </h2>
-//       <select
-//         onChange={formik.handleChange}
-//         value={formik.values[heading]}
-//         onBlur={formik.handleBlur}
-//         className='min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FFFFFF00] border-[#D6DDEB]'
-//         name={heading}
-//         id={heading}>
-//         {options.map((option: string, idx: number) => (
-//           <option value={option} key={idx}>
-//             {option}
-//           </option>
-//         ))}
-//       </select>
-//     </label>
-//   );
-// };
-
 interface SelectProps {
   heading: string;
   placeholder?: string;
@@ -280,6 +318,7 @@ interface SelectProps {
   formik: any;
   allowMultiple?: boolean;
   name: string;
+  isDisabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -288,10 +327,8 @@ const Select: React.FC<SelectProps> = ({
   formik,
   allowMultiple,
   name,
+  isDisabled,
 }) => {
-  // const [valueSelected, setValueSelected] =
-  //   useState<SingleValue<OptionType>>(null);
-
   const opts = options.map((item) => ({
     value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
     label: typeof item === 'number' ? Number(item) : item,
@@ -305,6 +342,7 @@ const Select: React.FC<SelectProps> = ({
       </h2>
       <ReactSelect
         isMulti={allowMultiple}
+        isDisabled={isDisabled}
         name={name}
         components={{ MenuList: ComponentMenuList(`Filter by ${name}`) }}
         onChange={(selectedOption) =>
@@ -325,16 +363,7 @@ const Select: React.FC<SelectProps> = ({
         value={formik.values[heading]?.label}
         options={opts}
         className={`w-full`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF00',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
       {/* <select
