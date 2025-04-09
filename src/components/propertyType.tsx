@@ -147,7 +147,11 @@ const PropertyType = () => {
             area: values.selectedCity,
           },
           price: values.price,
-          landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`, // Concatenate size and measurement type
+          // landSize: `${values.landSize} ${
+          //   formik.values[
+          //     propertyReferenceData[8].heading as keyof typeof formik.values
+          //   ]
+          // }`, // Concatenate size and measurement type
           owner: {
             fullName: values.ownerFullName,
             phoneNumber: values.ownerPhoneNumber,
@@ -259,7 +263,7 @@ const PropertyType = () => {
             Usage Options
           </h2>
           <div className='flex flex-wrap gap-[30px]'>
-            {['All', 'Lease', 'Joint Venture (JV)', 'Outright Sale'].map(
+            {['All', 'Lease', 'Joint Venture', 'Outright Sale'].map(
               (item: string, idx: number) => (
                 <RadioCheck
                   type='checkbox'
@@ -315,6 +319,7 @@ const PropertyType = () => {
               forState={false}
               selectedLGA={selectedLGA}
               lgasOptions={lgaOptions}
+              stateValue={selectedState?.label}
               setSelectedLGA={handleLGAChange}
               // isDisabled={areInputsDisabled}
             />
@@ -367,7 +372,7 @@ const PropertyType = () => {
           <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[20px]'>
             <Select
               allowMultiple={false}
-              heading={''}
+              heading={'typeOfMeasurement'}
               formik={formik}
               name={propertyReferenceData[8].heading}
               options={propertyReferenceData[8].options}
@@ -384,7 +389,9 @@ const PropertyType = () => {
             />
           </div>
           {formik.touched.price && formik.errors.landSize && (
-            <span className='text-red-600 text-sm'>{formik.errors.landSize}</span>
+            <span className='text-red-600 text-sm'>
+              {formik.errors.landSize}
+            </span>
           )}
         </div>
         {/**Document on the property */}
