@@ -26,8 +26,9 @@ const Agent = () => {
     //Redirecting to the login page if the user is not logged in
     if (!user) {
       return;
+    } else if (!user.accountApproved) {
+      router.push('/agent/under-review');
     } else {
-      //Redirecting to the dashboard if the user is logged in
       router.push('/agent/briefs');
     }
   }, [user, router]);
