@@ -1,7 +1,7 @@
 /** @format */
 'use client';
 import { usePageContext } from '@/context/page-context';
-import React, { Fragment, ReactNode } from 'react';
+import React, { Fragment, ReactNode, useState } from 'react';
 import SubmitPopUp from './submit';
 import OnUpgradeNotification from './settings-components/on-ugrade-notification';
 import ApproveBriefs from './admincomponents/approveBriefs';
@@ -10,11 +10,13 @@ import DeleteBriefs from './admincomponents/deleteBriefs';
 //import SubmitPopUp from './submit';
 
 const Body = ({ children }: { children: ReactNode }) => {
+    const [ isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
+
   const {
     isContactUsClicked,
     isModalOpened,
     viewImage,
-    isSubmittedSuccessfully,
+    // isSubmittedSuccessfully,
     settings,
     dashboard,
   } = usePageContext();
@@ -34,7 +36,7 @@ const Body = ({ children }: { children: ReactNode }) => {
         } w-[100%]`}>
         {children}
       </section>
-      {isSubmittedSuccessfully && <SubmitPopUp />}
+      {isSubmittedSuccessfully && <SubmitPopUp onClick={() => setIsSubmittedSuccessfully(false)}  />}
       {settings.isUpgradeButtonClicked && <OnUpgradeNotification />}
       {dashboard.approveBriefsTable.isApproveClicked && <ApproveBriefs />}
       {dashboard.approveBriefsTable.isRejectClicked && <RejectBriefs />}
