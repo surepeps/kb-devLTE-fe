@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -90,6 +95,7 @@ const Form2 = () => {
   useEffect(() => {
     const getTotalBriefs = async () => {
       setIsLoading(true);
+
       try {
         const response = await GET_REQUEST(
           URLS.BASE + URLS.agentfetchTotalBriefs,

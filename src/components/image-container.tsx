@@ -13,8 +13,8 @@ type ImageContainerProps = {
   heading: string;
   removeImage: () => void;
   id: string;
-  setViewImage: (type: boolean) => void;
-  setImageData: (type: StaticImport[] | string[]) => void;
+  setViewImage?: (type: boolean) => void;
+  setImageData?: (type: StaticImport[] | string[]) => void;
 };
 
 const ImageContainer: FC<ImageContainerProps> = ({
@@ -39,8 +39,8 @@ const ImageContainer: FC<ImageContainerProps> = ({
       />
       <motion.img
         onClick={() => {
-          setViewImage(true);
-          setImageData([image]);
+          setViewImage?.(true);
+          setImageData?.([image]);
         }}
         src={image}
         alt=''
