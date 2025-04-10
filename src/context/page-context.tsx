@@ -101,6 +101,11 @@ export const PageContextProvider = ({
       isAwatingUpgrade: false,
       isUpgraded: false,
     },
+    onUpgradeData: {
+      companyName: '',
+      regNo: 0,
+      image: [''],
+    },
   });
 
   /**

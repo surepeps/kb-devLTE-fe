@@ -1,9 +1,12 @@
 /** @format */
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { usePageContext } from '@/context/page-context';
-
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 interface UpgradeNotificationProps {
   isYetToUpgrade?: boolean;
   isAwaitingUpgrade?: boolean;
@@ -15,6 +18,39 @@ const UpgradeNotification = ({
   isUpgraded = false,
   isYetToUpgrade = true,
 }: UpgradeNotificationProps) => {
+  const { setSettings, settings } = usePageContext();
+  useEffect(() => {
+    const getUserAccount = async () => {
+      console.log('Processing...');
+      try {
+        const response = await axios.get(URLS.BASE + URLS.userAccount, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+        console.log(response);
+        if (response.status === 200) {
+          const userAccount = response.data;
+          console.log(userAccount.user);
+          if (userAccount.user.isInUpgrade) {
+            setSettings({
+              ...settings,
+              upgradeStatus: {
+                ...settings.upgradeStatus,
+                isUpgraded: userAccount.user.isInUpgrade,
+                isAwatingUpgrade: false,
+                isYetToUpgrade: false,
+              },
+            });
+            console.log('upgraded');
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserAccount();
+  }, []);
   return (
     <div className='w-full'>
       {isYetToUpgrade && <YetToUpgrade />}
@@ -25,6 +61,7 @@ const UpgradeNotification = ({
 
 const YetToUpgrade = () => {
   const { settings, setSettings } = usePageContext();
+
   return (
     <motion.form
       className='border-[1px] border-[#FBBC05] bg-[#FFFDF9] p-[20px] flex flex-col gap-[24px]'
