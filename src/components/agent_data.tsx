@@ -23,6 +23,7 @@ import { URLS } from '@/utils/URLS';
 import { useUserContext } from '@/context/user-context';
 import naijaStates from 'naija-state-local-government';
 import ReactSelect from 'react-select';
+import customStyles from '@/styles/inputStyle';
 
 interface Option {
   value: string;
@@ -42,7 +43,9 @@ const AgentData = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
 
   const [idFileUrl, setIdFileUrl] = useState<string | null>(null); // For ID upload
-  const [utilityBillFileUrl, setUtilityBillFileUrl] = useState<string | null>(null); // For utility bill upload
+  const [utilityBillFileUrl, setUtilityBillFileUrl] = useState<string | null>(
+    null
+  ); // For utility bill upload
 
   useEffect(() => {
     // Load Nigerian states correctly
@@ -56,7 +59,7 @@ const AgentData = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('localGovtArea', selected?.value);
-    console.log('Selected LGA:', formik.values); 
+    console.log('Selected LGA:', formik.values);
     setSelectedLGA?.(selected);
   };
 
@@ -108,14 +111,15 @@ const AgentData = () => {
       phoneNumber: user?.phoneNumber,
     },
     onSubmit: async () => {
-    
       if (!idFileUrl) {
         return toast.error('Please upload your government-issued ID');
       }
       if (!utilityBillFileUrl) {
-        return toast.error('Please upload your utility bill for address verification');
+        return toast.error(
+          'Please upload your utility bill for address verification'
+        );
       }
-    
+
       const payload = {
         token: Cookies.get('token'),
         address: {
@@ -142,7 +146,10 @@ const AgentData = () => {
         phoneNumber: formik.values.phoneNumber,
         meansOfId: [
           {
-            name: selectedAgentType === 'Individual Agent' ? selectedIdType?.value : 'cac',
+            name:
+              selectedAgentType === 'Individual Agent'
+                ? selectedIdType?.value
+                : 'cac',
             docImg: [idFileUrl], // Use idFileUrl for the ID document
           },
           {
@@ -191,7 +198,7 @@ const AgentData = () => {
     // if(!user) router.push('/auth/agent/login')
     if (user) {
       formik.setValues({
-        street:  '',
+        street: '',
         state: user?.address?.state || '',
         localGovtArea: user.address?.localGovtArea || '',
         selectedRegion: user.selectedRegion || [],
@@ -217,7 +224,7 @@ const AgentData = () => {
       });
     }
   }, [user]);
-  
+
   return (
     <section
       className={`flex items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
@@ -233,7 +240,9 @@ const AgentData = () => {
             realty
           </h2>
           <p className='text-[#5A5D63] text-[20px] leading-[32px] text-center tracking-[5%]'>
-          To complete your registration, please upload your government-issued ID, company registration number, and a recent utility bill for address verification
+            To complete your registration, please upload your government-issued
+            ID, company registration number, and a recent utility bill for
+            address verification
           </p>
         </div>
 
@@ -274,6 +283,7 @@ const AgentData = () => {
                   formik={formik}
                   forLGA={true}
                   forState={false}
+                  stateValue={selectedState?.label}
                   selectedLGA={selectedLGA}
                   lgasOptions={lgaOptions}
                   setSelectedLGA={handleLGAChange}
@@ -313,7 +323,10 @@ const AgentData = () => {
                     forIdtype={true}
                     selectedIdType={selectedIdType}
                     idTypeOptions={[
-                      { value: 'international passport', label: 'International Passport' },
+                      {
+                        value: 'international passport',
+                        label: 'International Passport',
+                      },
                       { value: 'nin', label: 'NIN' },
                       { value: 'driver license', label: 'Driver License' },
                       { value: 'voter card', label: 'Voter Card' },
@@ -345,20 +358,20 @@ const AgentData = () => {
                 <AttachFile
                   heading={`Upload your ${selectedIdType?.label || 'ID'}`}
                   setFileUrl={setIdFileUrl} // Set ID file URL
-                  id="id-upload" // Unique ID for ID upload
+                  id='id-upload' // Unique ID for ID upload
                 />
               ) : (
                 <AttachFile
                   heading='Upload your CAC'
                   setFileUrl={setIdFileUrl} // Set CAC file URL
-                  id="cac-upload" // Unique ID for CAC upload
+                  id='cac-upload' // Unique ID for CAC upload
                 />
               )}
 
               <AttachFile
                 heading='Upload your utility bill to verify your address'
                 setFileUrl={setUtilityBillFileUrl} // Set utility bill file URL
-                id="utility-bill-upload" // Unique ID for utility bill upload
+                id='utility-bill-upload' // Unique ID for utility bill upload
               />
               <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
                 Contact Information
@@ -457,16 +470,7 @@ const RegionMultipleInput: FC<SelectProps> = ({
         value={options.length !== 0 ? formik.values[heading]?.label : null}
         options={options.length !== 0 ? options : []}
         className={`w-full bg-white`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
     </label>
