@@ -117,6 +117,11 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
                   setModifyHeading(option.label);
                   setDataOptions([]);
                 }
+                if (specifiedName === 'bedroom') {
+                  formik.setFieldValue(specifiedName, option.label);
+                  setModifyHeading(option.label);
+                  setDataOptions([]);
+                }
               }}
               className={`w-full flex items-center justify-between cursor-pointer hover:bg-[#8DDB90] py-[8px] px-[5px] rounded-[5px]`}>
               <span className='text-base font-normal text-[#000000]'>
@@ -149,8 +154,13 @@ const InputValue: FC<InputValueProps> = ({ heading, formik }) => {
       <span className='text-sm text-[#1E1E1E] font-normal'>{heading}</span>
       <input
         onChange={(e) => {
-          formik.setFieldValue('landType', heading);
-          formik.setFieldValue('landSize', `${e.target.value} ${heading}`);
+          if (heading === 'Land size') {
+            formik.setFieldValue('landType', heading);
+            formik.setFieldValue('landSize', `${e.target.value} ${heading}`);
+          }
+          if (heading === 'Bedroom') {
+            formik.setFieldValue('bedroom', `${e.target.value} ${heading}`);
+          }
         }}
         className='h-[56px] bg-[#FFFFFF] border-[1px] border-[#D6DDEB] px-[12px]'
         placeholder='This is placeholder'
