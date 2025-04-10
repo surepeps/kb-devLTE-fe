@@ -34,7 +34,7 @@ export default function Rent() {
   const router = useRouter();
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
-  const [isComingSoon, setIsComingSoon] = useState<boolean>(true);
+  const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
 
   useEffect(() => {
     const getAllRentProperties = async () => {
