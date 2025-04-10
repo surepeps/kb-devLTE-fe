@@ -25,6 +25,7 @@ import comingSoon from '@/assets/cominsoon.png';
 import { epilogue } from '@/styles/font';
 import MultiSelectionProcess from '@/components/multiSelectionProcess';
 import ImageContainer from '@/components/image-container';
+import axios from 'axios';
 
 interface Option {
   value: string;
@@ -96,7 +97,7 @@ const Landlord = () => {
       }
       setSelectedLGA?.(null);
     } else {
-      console.log('Hey');
+      // console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
@@ -174,7 +175,7 @@ const Landlord = () => {
             featureName: feature,
           })),
           tenantCriteria: values.tenantCriteria.map((criterium) => ({
-            criterium: criterium,
+            criteria: criterium,
           })),
           owner: {
             fullName: values.ownerFullName,
@@ -187,9 +188,9 @@ const Landlord = () => {
         console.log('Payload:', payload);
 
         await toast.promise(
-          POST_REQUEST(url, payload).then((response) => {
+          axios.post(url, payload).then((response) => {
             console.log('response from brief', response);
-            if ((response as any).owner) {
+            if ((response as any).data.owner) {
               toast.success('Property submitted successfully');
               // router.push('/success');
               setIsSubmittedSuccessfully(true);
