@@ -139,8 +139,8 @@ const Sell = () => {
       usageOptions: Yup.array().min(1, 'At least one usage option is required'),
       price: Yup.string().required('Price is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
-      landSize: Yup.string().required('Land size is required'),
-      measurementType: Yup.string().required('Measurement type is required'),
+      landSize: Yup.string(),
+      measurementType: Yup.string(),
       // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       // additionalFeatures: Yup.array()
       //   .of(Yup.string())
@@ -450,6 +450,12 @@ const Sell = () => {
                         isDisabled={areInputsDisabled}
                       />
                     </div>
+                    {formik.touched.landSize &&
+                      formik.errors.landSize && (
+                        <span className='text-red-600 text-sm'>
+                          {formik.errors.landSize}
+                        </span>
+                      )}
                   </div>
                   {formik.touched.documents && formik.errors.documents && (
                     <span className='text-red-600 text-sm'>
