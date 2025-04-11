@@ -19,11 +19,16 @@ import {
 import MultiSelectionProcess from './multiSelectionProcess';
 import customStyles from '@/styles/inputStyle';
 import { useUserContext } from '@/context/user-context';
+import toast from 'react-hot-toast';
+import { shuffleArray } from '@/utils/shuffleArray';
 
 interface RentalReferenceDataProps {
   rentalReferenceData: { heading: string; options: string[] }[];
   isDisabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  data?: any[];
+  setData?: (type: any[]) => void;
+  setDataLoading?: (type: boolean) => void;
   // setFound: ({ isFound, count }: { isFound: boolean; count: number }) => void;
   // found: { isFound: boolean; count: number };
 }
@@ -38,6 +43,7 @@ interface valuesProps {
   selectedLGA: string | null;
   selectedState: '';
   bedroom: number | undefined | string;
+  homeCondition: string;
 }
 
 interface Option {
@@ -49,6 +55,8 @@ const RentalReference = ({
   rentalReferenceData,
   isDisabled,
   onClick,
+  setData,
+  setDataLoading,
 }: RentalReferenceDataProps) => {
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
@@ -68,6 +76,7 @@ const RentalReference = ({
       selectedState: '',
       selectedLGA: '',
       bedroom: '',
+      homeCondition: '',
     },
     onSubmit: async (values: valuesProps) => {
       const payload = {
@@ -78,8 +87,8 @@ const RentalReference = ({
             : '',
           area: 'N/A',
         },
-        propertyCondition: 'New Building',
-        propertyType: 'Residential', // values.propertyType
+        propertyCondition: values.homeCondition,
+        propertyType: values.propertyType, // values.propertyType
         budgetRange: values.budgetRange.trimStart() || '',
         // docOnProperty: values.docOnProperty,
         // desireFeatures: values.desireFeatures,
@@ -94,16 +103,25 @@ const RentalReference = ({
       };
       console.log(payload);
       setFormStatus('pending');
+      setDataLoading?.(true);
       try {
         const response = await axios.post(
-          URLS.BASE + '/properties/rents/rent/new',
+          URLS.BASE + '/properties/rent/request/rent/search',
           payload
         );
         console.log(response);
+        if (response.status === 200) {
+          // toast.success('')
+          const shuffled = shuffleArray(response.data);
+          setData?.(shuffled);
+          setDataLoading?.(false);
+        }
+
         setFormStatus('success');
       } catch (error) {
         console.log(error);
         setFormStatus('error');
+        setDataLoading?.(false);
       }
       console.log(values);
     },
