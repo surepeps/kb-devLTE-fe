@@ -116,7 +116,40 @@ export const PageContextProvider = ({
       state: '',
       street: '',
     },
-    regionsOfOperation: [''],
+    regionOfOperation: [''],
+    accountApproved: false,
+    accountStatus: '',
+    agentType: '',
+    firstName: '',
+    lastName: '',
+    id: '',
+    individualAgent: {
+      typeOfId: '',
+    },
+    isAccountVerified: false,
+    isInUpgrade: false,
+    meansOfId: [
+      {
+        docImg: [''],
+        name: '',
+        _id: '',
+      },
+    ],
+    phoneNumber: '',
+    upgradeData: {
+      companyAgent: {
+        companyName: '',
+      },
+      meansOfId: [
+        {
+          docImg: [''],
+          name: '',
+          _id: '',
+        },
+      ],
+      requestDate: '',
+    },
+    _id: '',
   });
 
   /**

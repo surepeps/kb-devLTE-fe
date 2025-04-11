@@ -27,7 +27,7 @@ const AddressInformation = () => {
   const [regionOptions, setRegionOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
 
-  const { userDetails, setUserDetails } = usePageContext();
+  const { userDetails } = usePageContext();
 
   const validationSchema = Yup.object({
     selectedLGA: Yup.string().required('LGA is required'),
@@ -99,37 +99,37 @@ const AddressInformation = () => {
   };
 
   /**Handle Region Change */
-  const handleRegionChange = (selected: Option | null) => {
-    console.log(formik.values);
-    formik.setFieldValue('selectedRegion', selected?.value);
-    setSelectedRegion?.(selected);
-  };
+  // const handleRegionChange = (selected: Option | null) => {
+  //   console.log(formik.values);
+  //   formik.setFieldValue('selectedRegion', selected?.value);
+  //   setSelectedRegion?.(selected);
+  // };
 
-  useEffect(() => {
-    const getUserAccount = async () => {
-      console.log('Processing...');
-      try {
-        const response = await axios.get(URLS.BASE + URLS.userAccount, {
-          headers: {
-            Authorization: `Bearer ${Cookies.get('token')}`,
-          },
-        });
-        console.log(response);
-        if (response.status === 200) {
-          const userAccount = response.data;
-          setUserDetails({
-            ...userDetails,
-            address: userAccount.user.address,
-            regionsOfOperation: userAccount.user.regionOfOperation,
-          });
-          console.log(userAccount.user);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getUserAccount();
-  }, []);
+  // useEffect(() => {
+  //   const getUserAccount = async () => {
+  //     console.log('Processing...');
+  //     try {
+  //       const response = await axios.get(URLS.BASE + URLS.userAccount, {
+  //         headers: {
+  //           Authorization: `Bearer ${Cookies.get('token')}`,
+  //         },
+  //       });
+  //       console.log(response);
+  //       if (response.status === 200) {
+  //         const userAccount = response.data;
+  //         setUserDetails({
+  //           ...userDetails,
+  //           address: userAccount.user.address,
+  //           regionOfOperation: userDetails.regionOfOperation,
+  //         });
+  //         console.log(userAccount.user);
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   getUserAccount();
+  // }, []);
 
   return (
     <motion.form
@@ -203,7 +203,7 @@ const AddressInformation = () => {
             // isDisabled={areInputsDisabled}
           /> */}
           <ReactSelect
-            value={userDetails?.regionsOfOperation?.map((region) => ({
+            value={userDetails?.regionOfOperation?.map((region) => ({
               label: region,
               value: region,
             }))}
