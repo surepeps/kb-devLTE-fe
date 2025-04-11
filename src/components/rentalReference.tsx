@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import MultiSelectionProcess from './multiSelectionProcess';
 import customStyles from '@/styles/inputStyle';
+import { useUserContext } from '@/context/user-context';
 
 interface RentalReferenceDataProps {
   rentalReferenceData: { heading: string; options: string[] }[];
@@ -36,6 +37,7 @@ interface valuesProps {
   desireFeatures: [];
   selectedLGA: string | null;
   selectedState: '';
+  bedroom: number | undefined | string;
 }
 
 interface Option {
@@ -53,6 +55,7 @@ const RentalReference = ({
   const [formStatus, setFormStatus] = useState<
     'idle' | 'pending' | 'success' | 'error'
   >('idle');
+  const { user } = useUserContext();
 
   const formik = useFormik({
     initialValues: {
@@ -64,6 +67,7 @@ const RentalReference = ({
       desireFeatures: [],
       selectedState: '',
       selectedLGA: '',
+      bedroom: '',
     },
     onSubmit: async (values: valuesProps) => {
       const payload = {
@@ -75,11 +79,18 @@ const RentalReference = ({
           area: 'N/A',
         },
         propertyCondition: 'New Building',
-        propertyType: values.propertyType,
+        propertyType: 'Residential', // values.propertyType
         budgetRange: values.budgetRange.trimStart() || '',
-        docOnProperty: values.docOnProperty,
-        desireFeatures: values.desireFeatures,
+        // docOnProperty: values.docOnProperty,
+        // desireFeatures: values.desireFeatures,
         rentalPrice: 4000000,
+        noOfBedrooms: Number(values.bedroom),
+        areYouTheOwner: true,
+        owner: {
+          fullName: user?.firstName + ' ' + user?.lastName,
+          phoneNumber: user?.phoneNumber,
+          email: user?.email,
+        },
       };
       console.log(payload);
       setFormStatus('pending');
@@ -232,8 +243,11 @@ const RentalReference = ({
             label='Number of Bedroom'
             name='bedroom'
             type='number'
+            onChange={() => {
+              formik.setFieldValue('bedroom', formik.values.bedroom);
+            }}
             placeholder='This is placeholder'
-            formik={formik}
+            // formik={formik}
             isDisabled={formStatus === 'pending'}
             // selectedState={selectedState}
             // stateOptions={stateOptions}
