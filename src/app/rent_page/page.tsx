@@ -15,6 +15,7 @@ import { epilogue } from '@/styles/font';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
+import { shuffleArray } from '@/utils/shuffleArray';
 
 type HouseFrameProps = {
   propertyType: string;
@@ -36,24 +37,25 @@ export default function Rent() {
   const [data, setData] = useState<any[]>([]);
   const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
 
-  useEffect(() => {
-    const getAllRentProperties = async () => {
-      setDataLoading(true);
-      try {
-        const resposne = await axios.get(URLS.BASE + '/properties/rents/all');
-        console.log(resposne);
-        if (resposne.status === 200) {
-          setData(resposne.data.data.slice(0, 8));
-          setDataLoading(false);
-        }
-      } catch (error) {
-        console.log(error);
-        setDataLoading(false);
-      } finally {
+  const getAllRentProperties = async () => {
+    setDataLoading(true);
+    try {
+      const response = await axios.get(URLS.BASE + '/properties/rents/all');
+      console.log(response);
+      if (response.status === 200) {
+        const shuffled = shuffleArray(response.data.data);
+        setData(shuffled.slice(0, 8));
         setDataLoading(false);
       }
-    };
+    } catch (error) {
+      console.log(error);
+      setDataLoading(false);
+    } finally {
+      setDataLoading(false);
+    }
+  };
 
+  useEffect(() => {
     getAllRentProperties();
   }, []);
 
@@ -74,18 +76,35 @@ export default function Rent() {
             </span>
           </h2>
           <RentalReference
+            setData={setData}
+            setDataLoading={setDataLoading}
             rentalReferenceData={propertyReferenceDataWithoutUsageOption}
           />
           <div className='w-full flex flex-col gap-[15px] lg:w-[1153px]'>
             <h2
               className={`text-[#09391C] ${epilogue.className} text-base md:text-lg font-semibold`}>
-              {data.length !== 0
-                ? 'Choose the property you want to rent'
-                : 'No property available at the moment!'}
-            </h2>
-            <div className='flex flex-col justify-center items-center md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]'>
               {isDataLoading ? (
-                <Loading />
+                'Loading...'
+              ) : data.length !== 0 ? (
+                'Choose the property you want to rent'
+              ) : (
+                <span
+                  className={`text-[#09391C] ${epilogue.className} text-base md:text-lg font-semibold`}>
+                  No property available at the moment!,{' '}
+                  <span
+                    className={`text-[#09391C] ${epilogue.className} underline-offset-4 underline text-base md:text-lg font-semibold`}
+                    onClick={getAllRentProperties}>
+                    See available?
+                  </span>
+                </span>
+              )}
+            </h2>
+            <div
+              className={`flex flex-col justify-center items-center md:grid md:grid-cols-2 lg:grid-cols-3 gap-[20px]`}>
+              {isDataLoading ? (
+                <div className='flex w-full justify-center items-center md:col-span-2 lg:col-span-3'>
+                  <Loading />
+                </div>
               ) : (
                 data?.map((item: HouseFrameProps, idx: number) => (
                   <HouseFrame

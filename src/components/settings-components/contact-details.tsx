@@ -1,11 +1,14 @@
 /** @format */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import 'react-phone-number-input/style.css';
 import Input from '../Input';
+import axios from 'axios';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
 
 const ContactDetails = () => {
   const validationSchema = Yup.object({
@@ -26,6 +29,29 @@ const ContactDetails = () => {
       console.log(values);
     },
   });
+
+  useEffect(() => {
+    const getUserAccount = async () => {
+      console.log('Processing...');
+      try {
+        const response = await axios.get(URLS.BASE + URLS.userAccount, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+        console.log(response);
+        if (response.status === 200) {
+          const userAccount = response.data;
+          formik.setFieldValue('emailAddress', userAccount.user.email);
+          formik.setFieldValue('phoneNumber', userAccount.user.phoneNumber);
+          console.log(userAccount.user);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserAccount();
+  }, []);
   return (
     <motion.form
       initial={{ y: 80, opacity: 0 }}
@@ -45,13 +71,17 @@ const ContactDetails = () => {
             className='bg-white'
             type='email'
             onChange={formik.handleChange}
+            value={formik.values.emailAddress}
+            isDisabled
           />
           <Input
             name='phoneNumber'
             label='Phone number'
             className='bg-white'
             type='number'
+            value={formik.values.phoneNumber}
             onChange={formik.handleChange}
+            isDisabled
           />
         </div>
       </div>
