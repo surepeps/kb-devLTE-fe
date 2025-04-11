@@ -76,6 +76,11 @@ export interface GlobalContextTypes {
       isAwatingUpgrade: boolean;
       isUpgraded: boolean;
     };
+    onUpgradeData: {
+      companyName: string;
+      regNo: number;
+      image: string[];
+    };
   };
   setSettings: ({}: {
     selectedNav: string;
@@ -84,6 +89,11 @@ export interface GlobalContextTypes {
       isYetToUpgrade: boolean;
       isAwatingUpgrade: boolean;
       isUpgraded: boolean;
+    };
+    onUpgradeData: {
+      companyName: string;
+      regNo: number;
+      image: string[];
     };
   }) => void;
 

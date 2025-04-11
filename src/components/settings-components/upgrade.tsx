@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UpgradeNotification from './upgrade-notification';
 import { motion } from 'framer-motion';
 import Select from '../select';
@@ -10,6 +10,10 @@ import { usePageContext } from '@/context/page-context';
 import Image from 'next/image';
 //import axios from 'axios';
 import sampleImage from '@/assets/bgImg.jpg';
+import axios from 'axios';
+import { URLS } from '@/utils/URLS';
+import { POST_REQUEST } from '@/utils/requests';
+import Cookies from 'js-cookie';
 
 interface SelectOption {
   value: string;
@@ -20,20 +24,6 @@ const Upgrade = () => {
   const [selectedAgentType, setSelectedAgentType] =
     useState<string>('Individual Agent');
 
-  /**use Effect */
-  // React.useEffect(()=>{
-  //   const getStatus = async() => {
-  //     try {
-  //       const response = await axios.get('');
-  //       if(response.status === 200){
-  //         console.log(response)
-  //       }
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  //   getStatus()
-  // }, [])
   return (
     <section className='flex flex-col gap-[20px] lg:w-[662px] min-h-[400px]'>
       <UpgradeNotification

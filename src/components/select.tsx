@@ -1,5 +1,6 @@
 /** @format */
 
+import customStyles from '@/styles/inputStyle';
 import React, { FC } from 'react';
 import ReactSelect from 'react-select';
 
@@ -55,6 +56,7 @@ const Select: FC<SelectProps> = ({
         options={formattedOptions}
         value={selectedOption}
         onChange={onChange}
+        styles={customStyles}
         className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px]'
         name=''
         placeholder={placeholder}

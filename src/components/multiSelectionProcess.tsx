@@ -154,11 +154,13 @@ const InputValue: FC<InputValueProps> = ({ heading, formik }) => {
       <span className='text-sm text-[#1E1E1E] font-normal'>{heading}</span>
       <input
         onChange={(e) => {
-          if (heading === 'Land size') {
-            formik.setFieldValue('landType', heading);
-            formik.setFieldValue('landSize', `${e.target.value} ${heading}`);
-          }
+          console.log(heading, e.target.value);
+
+          formik.setFieldValue('landType', heading);
+          formik.setFieldValue('landSize', `${e.target.value} ${heading}`);
+          console.log(heading, e.target.value);
           if (heading === 'Bedroom') {
+            formik.setFieldValue('landType', heading);
             formik.setFieldValue('bedroom', `${e.target.value} ${heading}`);
           }
         }}
