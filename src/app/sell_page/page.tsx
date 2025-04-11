@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
@@ -24,6 +29,8 @@ import naijaStates from 'naija-state-local-government';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
+import { epilogue } from '@/styles/font';
+import customStyles from '@/styles/inputStyle';
 
 interface Option {
   value: string;
@@ -42,6 +49,7 @@ const Sell = () => {
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [formattedValue, setFormattedValue] = useState<string>('');
+  const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
 
   const formatNumber = (val: string) => {
     const containsLetters = /[A-Za-z]/.test(val);
@@ -104,6 +112,8 @@ const Sell = () => {
     'Receipt',
     'Governor Consent',
     'Deed of Assignment',
+    'Land Certificate',
+    'Registered deed of conveyance',
   ];
   const formik = useFormik({
     initialValues: {
@@ -121,12 +131,16 @@ const Sell = () => {
       ownerPhoneNumber: '',
       ownerEmail: '',
       areYouTheOwner: true,
+      landSize: '',
+      measurementType: '',
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
       usageOptions: Yup.array().min(1, 'At least one usage option is required'),
       price: Yup.string().required('Price is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
+      landSize: Yup.string(),
+      measurementType: Yup.string(),
       // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       // additionalFeatures: Yup.array()
       //   .of(Yup.string())
@@ -153,6 +167,10 @@ const Sell = () => {
         const payload = {
           propertyType: values.propertyType,
           usageOptions: values.usageOptions,
+          landSize: {
+            measurementType: values.measurementType,
+            size: values.landSize,
+          },
           propertyFeatures: {
             noOfBedrooms: values.noOfBedroom,
             additionalFeatures: values.additionalFeatures,
@@ -211,37 +229,22 @@ const Sell = () => {
     },
   });
 
+  useEffect(() => {
+    console.log(isLegalOwner);
+  }, [isLegalOwner]);
+
   if (isLoading) return <Loading />;
+  if (isComingSoon) return <UseIsComingPage />;
   return (
     <Fragment>
-        <div className='w-full flex justify-center items-center'>
-          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
-            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
-              <div className='w-full flex justify-center'>
-                <Image
-                  src={comingSoon}
-                  width={400}
-                  height={50}
-                  alt='Coming Soon Icon'
-                  className='w-full max-w-[400px] h-auto'
-                />
-              </div>
-              <div className='flex flex-col justify-center items-center gap-[10px]'>
-                <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
-                  We are working hard to bring you an amazing experience. Stay tuned for updates!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      {/* <section
+      <section
         className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
-        <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
+        <div className='container flex flex-col justify-center items-center gap-[10px] my-[30px] px-[20px]'>
           <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
             Submit Your{' '}
             <span className='text-[#8DDB90] font-display'>Property Brief</span>
           </h2>
-          <div className='lg:w-[953px] w-full text-[24px] leading-[38.4px] text-[#5A5D63] font-normal text-center'>
+          <div className='lg:w-[953px] w-full text-xl text-[#5A5D63] font-normal text-center'>
             Khabi-Teq helps you reach a wide network of potential buyers and
             simplifies the property selling process. Our platform ensures your
             property is showcased effectively, connects you with verified
@@ -263,7 +266,7 @@ const Sell = () => {
                     </h2>
                     <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                       <RadioCheck
-                        isDisabled={formik.values?.propertyType ? true : false}
+                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Residential');
@@ -273,7 +276,7 @@ const Sell = () => {
                         name='propertyType'
                       />
                       <RadioCheck
-                        isDisabled={formik.values?.propertyType ? true : false}
+                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Commercial');
@@ -283,7 +286,7 @@ const Sell = () => {
                         value='Commercial'
                       />
                       <RadioCheck
-                        isDisabled={formik.values?.propertyType ? true : false}
+                        // isDisabled={formik.values?.propertyType ? true : false}
                         selectedValue={formik.values?.propertyType}
                         handleChange={() => {
                           formik.setFieldValue('propertyType', 'Land');
@@ -342,6 +345,15 @@ const Sell = () => {
                     </h2>
                     <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
                       <Input
+                        label='Address'
+                        name='address'
+                        forState={false}
+                        forLGA={false}
+                        onChange={formik.handleChange}
+                        type='text'
+                        isDisabled={areInputsDisabled}
+                      />
+                      <Input
                         label='State'
                         name='selectedState'
                         forState={true}
@@ -362,6 +374,7 @@ const Sell = () => {
                         forLGA={true}
                         forState={false}
                         selectedLGA={selectedLGA}
+                        stateValue={selectedState?.label}
                         lgasOptions={lgaOptions}
                         setSelectedLGA={handleLGAChange}
                         isDisabled={areInputsDisabled}
@@ -415,6 +428,34 @@ const Sell = () => {
                       }}
                       isDisabled={areInputsDisabled}
                     />
+                  </div>
+                  <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
+                    <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                      Land Size
+                    </h2>
+                    <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                      <Select
+                        name='Type of Measurement'
+                        heading='measurementType'
+                        options={['Plot', 'Acres', 'Square Meter']}
+                        formik={formik}
+                      />
+                      <Input
+                        label='Enter Land Size'
+                        name='landSize'
+                        forState={false}
+                        forLGA={false}
+                        onChange={formik.handleChange}
+                        type='number'
+                        isDisabled={areInputsDisabled}
+                      />
+                    </div>
+                    {formik.touched.landSize &&
+                      formik.errors.landSize && (
+                        <span className='text-red-600 text-sm'>
+                          {formik.errors.landSize}
+                        </span>
+                      )}
                   </div>
                   {formik.touched.documents && formik.errors.documents && (
                     <span className='text-red-600 text-sm'>
@@ -473,7 +514,7 @@ const Sell = () => {
                         allowMultiple={true}
                         options={
                           propertyReferenceData[
-                            propertyReferenceData.length - 2
+                            propertyReferenceData.length - 3
                           ].options
                         }
                         formik={formik}
@@ -517,7 +558,7 @@ const Sell = () => {
                     <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                       <Input
                         label='Full name'
-                        isDisabled={isLegalOwner}
+                        isDisabled={!isLegalOwner}
                         name='ownerFullName'
                         value={formik.values?.ownerFullName}
                         onChange={formik.handleChange}
@@ -531,7 +572,7 @@ const Sell = () => {
                         <PhoneInput
                           international
                           defaultCountry='NG'
-                          disabled={areInputsDisabled}
+                          disabled={!isLegalOwner}
                           value={formik.values?.ownerPhoneNumber}
                           style={{ outline: 'none' }}
                           onChange={(value) =>
@@ -551,7 +592,7 @@ const Sell = () => {
                     <Input
                       label='Email'
                       name='ownerEmail'
-                      isDisabled={isLegalOwner}
+                      isDisabled={!isLegalOwner}
                       className='w-full'
                       value={formik.values?.ownerEmail}
                       onChange={formik.handleChange}
@@ -564,14 +605,15 @@ const Sell = () => {
               <div className='w-full flex justify-center items-center mt-8'>
                 <Button
                   value='Submit Brief'
+                  isDisabled={!isLegalOwner}
                   type='submit'
-                  className='bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px]'
+                  className={`bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                 />
               </div>
             </form>
           </div>
         </div>
-      </section> */}
+      </section>
     </Fragment>
   );
 };
@@ -605,7 +647,7 @@ const Select: React.FC<SelectProps> = ({
   return (
     <label
       htmlFor='select'
-      className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
+      className='min-h-[80px] w-full flex flex-col gap-[4px]'>
       <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
         {name}
       </h2>
@@ -629,20 +671,37 @@ const Select: React.FC<SelectProps> = ({
         value={formik.values[heading]?.label}
         options={opts}
         className={`w-full`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF00',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
     </label>
   );
 };
 
+const UseIsComingPage = () => {
+  return (
+    <div className='w-full flex justify-center items-center'>
+      <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+        <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+          <div className='w-full flex justify-center'>
+            <Image
+              src={comingSoon}
+              width={400}
+              height={50}
+              alt='Coming Soon Icon'
+              className='w-full max-w-[400px] h-auto'
+            />
+          </div>
+          <div className='flex flex-col justify-center items-center gap-[10px]'>
+            <p
+              className={`text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%] ${epilogue.className}`}>
+              We are working hard to bring you an amazing experience. Stay tuned
+              for updates!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 export default Sell;

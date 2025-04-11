@@ -101,6 +101,55 @@ export const PageContextProvider = ({
       isAwatingUpgrade: false,
       isUpgraded: false,
     },
+    onUpgradeData: {
+      companyName: '',
+      regNo: 0,
+      image: [''],
+    },
+  });
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    email: '',
+    profile_picture: '',
+    address: {
+      localGovtArea: '',
+      state: '',
+      street: '',
+    },
+    regionOfOperation: [''],
+    accountApproved: false,
+    accountStatus: '',
+    agentType: '',
+    firstName: '',
+    lastName: '',
+    id: '',
+    individualAgent: {
+      typeOfId: '',
+    },
+    isAccountVerified: false,
+    isInUpgrade: false,
+    meansOfId: [
+      {
+        docImg: [''],
+        name: '',
+        _id: '',
+      },
+    ],
+    phoneNumber: '',
+    upgradeData: {
+      companyAgent: {
+        companyName: '',
+      },
+      meansOfId: [
+        {
+          docImg: [''],
+          name: '',
+          _id: '',
+        },
+      ],
+      requestDate: '',
+    },
+    _id: '',
   });
 
   /**
@@ -147,6 +196,8 @@ export const PageContextProvider = ({
         setSettings,
         dashboard,
         setDashboard,
+        userDetails,
+        setUserDetails,
       }}>
       {children}
     </PageContext.Provider>

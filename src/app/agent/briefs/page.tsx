@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -90,6 +95,7 @@ const Form2 = () => {
   useEffect(() => {
     const getTotalBriefs = async () => {
       setIsLoading(true);
+
       try {
         const response = await GET_REQUEST(
           URLS.BASE + URLS.agentfetchTotalBriefs,
@@ -100,11 +106,11 @@ const Form2 = () => {
           toast.error('Failed to get data');
           return setIsLoading(false);
         }
-        const data = response.data;
-        console.log(data);
+        const data = response;
+        console.log("data", data);
         const combinedProperties = [
-          ...(data?.sellProperties || []),
-          ...(data?.rentProperties || []),
+          ...(data?.properties.sellProperties || []),
+          ...(data?.properties.rentProperties || []),
         ].map(
           ({
             docOnProperty,

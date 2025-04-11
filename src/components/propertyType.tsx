@@ -109,10 +109,9 @@ const PropertyType = () => {
       price: Yup.string().required('Price is required'),
       landSize: Yup.string().required('Land Size is required'),
       documents: Yup.array().min(1, 'At least one document is required'),
-      noOfBedroom: Yup.string().required('Number of bedrooms is required'),
+      noOfBedroom: Yup.string(),
       additionalFeatures: Yup.array()
-        .of(Yup.string())
-        .min(1, 'At least one additional feature is required'),
+        .of(Yup.string()),
       selectedState: Yup.string().required('State is required'),
       selectedCity: Yup.string().required('City is required'),
       selectedLGA: Yup.string().required('LGA is required'),
@@ -139,7 +138,7 @@ const PropertyType = () => {
             docName: doc,
             isProvided: true, // Assuming all selected documents are provided
           })),
-          // landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`,
+          // landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`, 
           location: {
             state: values.selectedState,
             localGovernment: values.selectedLGA,
