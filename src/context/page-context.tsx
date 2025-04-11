@@ -107,6 +107,17 @@ export const PageContextProvider = ({
       image: [''],
     },
   });
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    email: '',
+    profile_picture: '',
+    address: {
+      localGovtArea: '',
+      state: '',
+      street: '',
+    },
+    regionsOfOperation: [''],
+  });
 
   /**
    * Dashboard
@@ -152,6 +163,8 @@ export const PageContextProvider = ({
         setSettings,
         dashboard,
         setDashboard,
+        userDetails,
+        setUserDetails,
       }}>
       {children}
     </PageContext.Provider>
