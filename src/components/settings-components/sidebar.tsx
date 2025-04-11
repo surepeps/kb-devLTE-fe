@@ -2,14 +2,131 @@
 
 'use client';
 import Image from 'next/image';
-import React from 'react';
-import randomImage from '@/assets/Agentpic.png';
+import React, { useEffect, useState } from 'react';
+import randomImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { product_sans } from '@/styles/font';
 import { usePageContext } from '@/context/page-context';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
+import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 
 const Sidebar = () => {
-  const { setSettings, settings } = usePageContext();
+  const { setSettings, settings, userDetails, setUserDetails } =
+    usePageContext();
+  const [uploading, setUploading] = useState(false);
+
+  // const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   console.log(file);
+  //   if (!file) return;
+
+  //   const fromData = new FormData();
+  //   fromData.append('file', file as Blob);
+
+  //   const url = URLS.BASE + '/agent/upload-profile-pic';
+  //   const payload = {
+  //     file: fromData.get('file'),
+  //   };
+
+  //   await toast.promise(
+  //     POST_REQUEST(url, payload).then((response) => {
+  //       if (response) {
+  //         // if (setFileUrl) {
+  //         //   setFileUrl(
+  //         //     (response as unknown as { url: string }).url as string
+  //         //   );
+  //         // }
+  //         setUserDetails({
+  //           ...userDetails,
+  //           profile_picture: response.data.url,
+  //         });
+  //         console.log('Image uploaded successfully', response);
+  //         return 'Image uploaded successfully';
+  //       } else {
+  //         toast.error('Image upload failed');
+  //         throw new Error('Image upload failed');
+  //       }
+  //     }),
+  //     {
+  //       loading: 'Uploading...',
+  //       success: 'Image  uploaded successfully',
+  //       error: 'Image upload failed',
+  //     }
+  //   );
+  // };
+
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return; // Return early if no file is selected
+
+    const formData = new FormData();
+    formData.append('file', file as Blob); // Append the file to the FormData object
+    const url = URLS.BASE + '/agent/upload-profile-pic';
+    console.log(formData);
+
+    try {
+      setUploading(true); // Show loading state while uploading
+      await toast.promise(
+        POST_REQUEST(url, { file: file.name }, Cookies.get('token')).then(
+          (response) => {
+            console.log(response);
+            if (response?.data?.url) {
+              setUserDetails({
+                ...userDetails,
+                profile_picture: response.data.url,
+              });
+              console.log('Image uploaded successfully', response);
+              return 'Image uploaded successfully';
+            } else {
+              throw new Error('Failed to get image URL');
+            }
+          }
+        ),
+        {
+          loading: 'Uploading...',
+          success: 'Image uploaded successfully!',
+          error: 'Image upload failed',
+        }
+      );
+    } catch (err) {
+      toast.error('Image upload failed');
+      console.error('Upload error: ', err);
+    } finally {
+      setUploading(false); // Reset uploading state after completion
+    }
+  };
+
+  useEffect(() => {
+    const getUserAccount = async () => {
+      console.log('Processing...');
+      try {
+        const response = await axios.get(URLS.BASE + URLS.userAccount, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+        console.log(response);
+        if (response.status === 200) {
+          const userAccount = response.data;
+          setUserDetails({
+            ...userDetails,
+            name: `${userAccount.user.lastName} ${userAccount.user.firstName}`,
+            email: userAccount.user.email,
+            profile_picture: userAccount.user.profile_picture,
+          });
+          console.log(userAccount.user);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUserAccount();
+  }, []);
   return (
     <motion.div
       initial={{ x: -80, opacity: 0 }}
@@ -19,21 +136,37 @@ const Sidebar = () => {
       className='lg:w-[361px] flex flex-col gap-[8px]'>
       {/**First div - showing image and texts */}
       <div className='w-full h-[240px] bg-[#FFFFFF] rounded-[5px] flex flex-col gap-[8px] justify-center items-center'>
-        <Image
-          src={randomImage}
-          alt='user image'
-          className='w-[120px] h-[120px] bg-[#D9D9D9] rounded-full object-cover'
-          width={120}
-          height={120}
-        />
-        <div className='flex flex-col justify-center items-center lg:w-[155px] lg:h-[58px]'>
+        <div>
+          {' '}
+          <Image
+            src={userDetails.profile_picture ?? randomImage}
+            alt='user image'
+            className='w-[120px] h-[120px] bg-[#D9D9D9] rounded-full object-cover'
+            width={120}
+            height={120}
+          />
+          <input
+            title='upload image'
+            type='file'
+            accept='image/*'
+            onChange={uploadImage}
+            id='upload'
+            className='hidden'
+          />
+          <label
+            htmlFor='upload'
+            className='absolute cursor-pointer -mt-[30px] ml-[80px] w-[30px] h-[30px] border-[2px] border-gray-300 flex items-center justify-center bg-white rounded-full'>
+            <FontAwesomeIcon icon={faPlus} size='sm' />
+          </label>
+        </div>
+        <div className='flex flex-col justify-center items-center lg:h-[58px]'>
           <h2
             className={`text-[#000000] font-bold text-[20px] ${product_sans.className}`}>
-            John Does
+            {userDetails.name}
           </h2>
           <p
             className={`text-[#000000] font-normal text-base ${product_sans.className}`}>
-            Johndoes@gmail.com
+            {userDetails.email}
           </p>
         </div>
       </div>

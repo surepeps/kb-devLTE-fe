@@ -30,6 +30,7 @@ import React from 'react';
 import comingSoon from '@/assets/cominsoon.png';
 import Buyer_Contact from '@/components/buyer_contact';
 import { epilogue } from '@/styles/font';
+import { shuffleArray } from '@/utils/shuffleArray';
 
 export default function Rent() {
   const router = useRouter();
@@ -110,8 +111,8 @@ export default function Rent() {
         //   Math.random() * (data.data.length - 10 + 1)
         // );
         // const randomData = data.data.slice(randomIndex, randomIndex + 10);
-
-        setProperties(data.data.slice(0, 10));
+        const shuffledData = shuffleArray(data.data);
+        setProperties(shuffledData.slice(0, 10));
         console.log(data);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
