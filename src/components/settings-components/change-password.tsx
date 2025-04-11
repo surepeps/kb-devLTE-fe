@@ -3,10 +3,14 @@
 
 'use client';
 import { archivo } from '@/styles/font';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { motion } from 'framer-motion';
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 
 const ChangePassword = () => {
   const validationSchema = Yup.object({
@@ -20,8 +24,28 @@ const ChangePassword = () => {
       newPassword: '',
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
+      try {
+        const response = await POST_REQUEST(
+          URLS.BASE + URLS.changePassword,
+          {
+            oldPassword: formik.values.currentPassword,
+            newPassword: formik.values.newPassword,
+          },
+          Cookies.get('token')
+        );
+        console.log(response);
+        if (response.success) {
+          toast.success('Password changed successfully');
+          formik.values.currentPassword = ''; // Clear currentPassword field
+          formik.values.newPassword = ''; // Clear newPassword field
+        } else {
+          toast.error(response.error);
+        }
+      } catch (err) {
+        console.log(err);
+      }
     },
   });
 

@@ -12,17 +12,20 @@ import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Input from '@/components/Input';
 import { useFormik } from 'formik';
-//import * as Yup from 'yup';
+import * as Yup from 'yup';
 import { featuresData, tenantCriteriaData } from '@/data/landlord';
-import PhoneInput from 'react-phone-number-input';
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { usePageContext } from '@/context/page-context';
-import AttachFile from '@/components/attach_file';
+import AttachFile from '@/components/multipleAttachFile';
 import 'react-phone-number-input/style.css';
 import naijaStates from 'naija-state-local-government';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
 import { epilogue } from '@/styles/font';
+import MultiSelectionProcess from '@/components/multiSelectionProcess';
+import ImageContainer from '@/components/image-container';
+import axios from 'axios';
 
 interface Option {
   value: string;
@@ -34,13 +37,27 @@ const Landlord = () => {
   const { setIsSubmittedSuccessfully } = usePageContext();
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
 
-  const [isComingSoon, setIsComingSoon] = useState<boolean>(true);
+  const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
 
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
 
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  const [showBedroom, setShowBedroom] = useState<boolean>(false);
+  const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
+  const { setViewImage, setImageData } = usePageContext();
+
+  useEffect(() => {
+    const filteredArray: string[] = [];
+    if (fileUrl.length !== 0) {
+      for (let i = 0; i < fileUrl.length; i++) {
+        filteredArray.push(fileUrl[i].image);
+      }
+    }
+    formik.setFieldValue('images', filteredArray);
+    console.log(formik.values);
+  }, [fileUrl]);
 
   useEffect(() => {
     // Load Nigerian states correctly
@@ -54,18 +71,18 @@ const Landlord = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
-    console.log('Selected LGA:', formik.values); // Debugging
+    // console.log('Selected LGA:', formik.values); // Debugging
     setSelectedLGA?.(selected);
   };
 
   const handleStateChange = (selected: Option | null) => {
-    console.log('Selected State:', selected);
+    // console.log('Selected State:', selected);
     formik.setFieldValue('selectedState', selected?.value);
     setSelectedState?.(selected);
 
     if (selected) {
       const lgas = naijaStates.lgas(selected.value)?.lgas;
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+      // console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setLgaOptions(
@@ -75,12 +92,12 @@ const Landlord = () => {
           }))
         );
       } else {
-        console.error('LGAs not returned as an array:', lgas);
+        // console.error('LGAs not returned as an array:', lgas);
         setLgaOptions([]);
       }
       setSelectedLGA?.(null);
     } else {
-      console.log('Hey');
+      // console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
@@ -105,36 +122,42 @@ const Landlord = () => {
       ownerPhoneNumber: '',
       ownerEmail: '',
       areYouTheOwner: true,
+      rentalPrice: undefined as number | undefined,
+      bedroom: undefined as string | undefined,
+      images: [],
     },
-    // validationSchema: Yup.object({
-    //   propertyType: Yup.string().required('Property type is required'),
-    //   propertyCondition: Yup.string().required(
-    //     'Property condition is required'
-    //   ),
-    //   area: Yup.string().required('Area is required'),
-    //   price: Yup.string().required('Price is required'),
-    //   features: Yup.array().min(1, 'At least one feature is required'),
-    //   tenantCriteria: Yup.array().min(
-    //     1,
-    //     'At least one tenant criteria is required'
-    //   ),
-    //   noOfBedroom: Yup.string().required('Number of bedrooms is required'),
-    //   // additionalFeatures: Yup.array()
-    //   //   .of(Yup.string())
-    //   //   .min(1, 'At least one additional feature is required'),
-    //   selectedState: Yup.string().required('State is required'),
-    //   // selectedCity: Yup.string().required('City is required'),
-    //   selectedLGA: Yup.string().required('LGA is required'),
-    //   ownerFullName: Yup.string().required('Owner full name is required'),
-    //   ownerPhoneNumber: Yup.string()
-    //     .required('Owner phone number is required')
-    //     .test('is-valid-phone', 'Invalid phone number', (value) =>
-    //       value ? isValidPhoneNumber(value) : false
-    //     ),
-    //   ownerEmail: Yup.string()
-    //     .email('Invalid email')
-    //     .required('Owner email is required'),
-    // }),
+    validationSchema: Yup.object({
+      propertyType: Yup.string().required('Property type is required'),
+      propertyCondition: Yup.string().required(
+        'Property condition is required'
+      ),
+      // area: Yup.string().required('Area is required'),
+      rentalPrice: Yup.string().required('Rental price is required'),
+      features: Yup.array().min(1, 'At least one feature is required'),
+      tenantCriteria: Yup.array().min(
+        1,
+        'At least one tenant criteria is required'
+      ),
+      noOfBedroom: Yup.string(),
+      bedroom: Yup.string().required('Number of bedrooms is required'),
+      // additionalFeatures: Yup.array()
+      //   .of(Yup.string())
+      //   .min(1, 'At least one additional feature is required'),
+      selectedState: Yup.string().required('State is required'),
+      // selectedCity: Yup.string().required('City is required'),
+      selectedLGA: Yup.string().required('LGA is required'),
+      ownerFullName: Yup.string().required('Owner full name is required'),
+      ownerPhoneNumber: Yup.string()
+        .required('Owner phone number is required')
+        .test('is-valid-phone', 'Invalid phone number', (value) =>
+          value ? isValidPhoneNumber(value) : false
+        ),
+      ownerEmail: Yup.string()
+        .email('Invalid email')
+        .required('Owner email is required'),
+    }),
+    validateOnBlur: true, // Enable validation on blur
+    validateOnChange: true, // Enable validation on change
     onSubmit: async (values) => {
       console.log(values);
       setAreInputsDisabled(true);
@@ -146,16 +169,16 @@ const Landlord = () => {
           location: {
             state: values.selectedState,
             localGovernment: values.selectedLGA,
-            area: values.area,
+            // area: values.area,
           },
-          // price: values.price,
-          rentalPrice: values.price,
-          noOfBedrooms: values.noOfBedroom,
+          bedroom: values.bedroom,
+          rentalPrice: values.rentalPrice,
+          noOfBedrooms: Number(values?.bedroom?.split(' ')[0].trimStart()),
           features: values.features.map((feature) => ({
             featureName: feature,
           })),
           tenantCriteria: values.tenantCriteria.map((criterium) => ({
-            criterium: criterium,
+            criteria: criterium,
           })),
           owner: {
             fullName: values.ownerFullName,
@@ -165,12 +188,12 @@ const Landlord = () => {
           areYouTheOwner: values.areYouTheOwner,
         };
 
-        console.log('Payload:', payload);
+        // console.log('Payload:', payload);
 
         await toast.promise(
-          POST_REQUEST(url, payload).then((response) => {
+          axios.post(url, payload).then((response) => {
             console.log('response from brief', response);
-            if ((response as any).owner) {
+            if ((response as any).data.owner) {
               toast.success('Property submitted successfully');
               // router.push('/success');
               setIsSubmittedSuccessfully(true);
@@ -210,12 +233,12 @@ const Landlord = () => {
     <Fragment>
       <section
         className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
-        <div className='container flex flex-col justify-center items-center gap-[30px] my-[60px] px-[20px]'>
+        <div className='container flex flex-col justify-center items-center gap-[10px] my-[20px] px-[20px]'>
           <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
             Submit Your&nbsp;
             <span className='text-[#8DDB90] font-display'>Landlord Brief</span>
           </h2>
-          <div className='lg:w-[953px] w-full text-[24px] leading-[38.4px] text-[#5A5D63] font-normal text-center'>
+          <div className='lg:w-[953px] w-full text-base md:text-xl text-[#5A5D63] font-normal text-center'>
             Khabi-Teq connects you with{' '}
             <span className='text-[#8DDB90]'>verified tenants</span> and
             simplifies property management. From tenant onboarding to rent
@@ -227,11 +250,20 @@ const Landlord = () => {
               Brief Details
             </h3>
             <form
-              onSubmit={formik.handleSubmit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                formik.handleSubmit();
+                if (!formik.isValid) {
+                  window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth',
+                  });
+                }
+              }}
               className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
               <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
                 <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
-                  <div className='min-h-[73px] gap-[15px] flex flex-col lg:w-[535px] w-full'>
+                  <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property Type
                     </h2>
@@ -254,36 +286,69 @@ const Landlord = () => {
                         name='propertyType'
                         value='Commercial'
                       />
+                      <RadioCheck
+                        selectedValue={formik.values?.propertyType}
+                        handleChange={() => {
+                          formik.setFieldValue('propertyType', 'Duplex');
+                        }}
+                        type='radio'
+                        name='propertyType'
+                        value='Duplex'
+                      />
                     </div>
                   </div>
-                  <div className='min-h-[73px] gap-[15px] flex flex-col lg:w-[535px] w-full'>
+                  <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property condition
                     </h2>
-                    <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
+                    <div className='w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap'>
                       <RadioCheck
                         selectedValue={formik.values?.propertyCondition}
                         handleChange={() => {
                           formik.setFieldValue(
                             'propertyCondition',
-                            'New Building'
+                            'Brand New'
                           );
                         }}
                         type='radio'
                         name='propertyCondition'
-                        value='New Building'
+                        value='Brand New'
                       />
                       <RadioCheck
                         selectedValue={formik.values?.propertyCondition}
                         handleChange={() => {
                           formik.setFieldValue(
                             'propertyCondition',
-                            'Old Building'
+                            'Good Condition'
                           );
                         }}
                         type='radio'
                         name='propertyCondition'
-                        value='Old Building'
+                        value='Good Condition'
+                      />
+                      <RadioCheck
+                        selectedValue={formik.values?.propertyCondition}
+                        handleChange={() => {
+                          formik.setFieldValue(
+                            'propertyCondition',
+                            'Fairly Used'
+                          );
+                        }}
+                        type='radio'
+                        name='propertyCondition'
+                        value='Fairly Used'
+                      />
+                      <RadioCheck
+                        selectedValue={formik.values?.propertyCondition}
+                        handleChange={() => {
+                          formik.setFieldValue(
+                            'propertyCondition',
+                            'Needs Renovation'
+                          );
+                        }}
+                        type='radio'
+                        name='propertyCondition'
+                        value='Needs Renovation'
                       />
                     </div>
                   </div>
@@ -318,14 +383,46 @@ const Landlord = () => {
                         isDisabled={areInputsDisabled}
                       />
                       <Input
-                        label='Area'
-                        name='area'
-                        type='text'
+                        label='Rental Price'
+                        name='rentalPrice'
+                        type='number'
                         formik={formik}
-                        value={formik.values.area}
+                        value={formik.values.rentalPrice}
                         onChange={formik.handleChange}
                         isDisabled={areInputsDisabled}
                       />
+                      <div className='flex flex-col gap-[10px]'>
+                        <label
+                          htmlFor='landSize'
+                          className='flex flex-col gap-[4px]'>
+                          <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+                            Number of Bedroom
+                          </span>{' '}
+                          <input
+                            id='landSize'
+                            placeholder='select land size'
+                            onClick={() => {
+                              setShowBedroom(!showBedroom);
+                            }}
+                            className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed cursor-pointer'
+                            readOnly
+                            value={
+                              formik.values.bedroom ? formik.values.bedroom : ''
+                            }
+                          />
+                        </label>
+                        {showBedroom && (
+                          <MultiSelectionProcess
+                            name='bedroom'
+                            formik={formik}
+                            options={[{ label: 'Bedroom', value: 'Bedroom' }]}
+                            closeModalFunction={setShowBedroom}
+                            heading='Bedroom'
+                            type='Bedroom'
+                          />
+                        )}
+                      </div>
+
                       {formik.touched.selectedState &&
                         formik.errors.selectedState && (
                           <span className='text-red-600 text-sm'>
@@ -340,7 +437,7 @@ const Landlord = () => {
                         )}
                     </div>
                   </div>
-                  <div className='w-full flex flex-col gap-[15px]'>
+                  {/* <div className='w-full flex flex-col gap-[15px]'>
                     <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
                       <Input
                         label='Price'
@@ -364,7 +461,7 @@ const Landlord = () => {
                         isDisabled={areInputsDisabled}
                       />
                     </div>
-                  </div>
+                  </div> */}
                   <div className='min-h-[73px] flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Features
@@ -409,17 +506,49 @@ const Landlord = () => {
                                     (doc) => doc !== item
                                   )
                                 : [...formik.values.tenantCriteria, item];
-                            formik.setFieldValue('documents', tenantCriteria);
+                            formik.setFieldValue(
+                              'tenantCriteria',
+                              tenantCriteria
+                            );
                           }}
                           isDisabled={areInputsDisabled}
                         />
                       ))}
                     </div>
                   </div>
+                  {/* <AttachFile
+                    heading='Upload image(optional)'
+                    id='image-upload'
+                    setFileUrl={setAddFileUrl}
+                  /> */}
+                  {/**Upload Image | Documents */}
                   <AttachFile
+                    setFileUrl={setFileUrl}
                     heading='Upload image(optional)'
                     id='image-upload'
                   />
+                  {/**Images selected */}
+                  {fileUrl.length !== 0 ? (
+                    <div className='flex justify-start items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
+                      {typeof fileUrl === 'object' &&
+                        fileUrl.map((image) => (
+                          <ImageContainer
+                            setViewImage={setViewImage}
+                            setImageData={setImageData}
+                            removeImage={() => {
+                              setFileUrl(
+                                fileUrl.filter((img) => img.id !== image.id)
+                              );
+                            }}
+                            image={image.image}
+                            alt=''
+                            heading=''
+                            key={image.id}
+                            id={image.id}
+                          />
+                        ))}
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <div className='min-h-[348px] py-[40px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
@@ -496,8 +625,23 @@ const Landlord = () => {
                 </div>
               </div>
 
-              <div className='w-full flex justify-center items-center mt-8'>
+              <div className='w-full flex flex-col items-center mt-8'>
+                {Object.keys(formik.errors).length > 0 && (
+                  <div className='bg-red-100 text-red-600 p-4 rounded-md w-full max-w-[877px]'>
+                    <h3 className='font-bold mb-2'>
+                      Please enter the following information:
+                    </h3>
+                    <ul className='list-disc pl-5'>
+                      {Object.entries(formik.errors).map(([field, error]) => (
+                        <li key={field} className='text-sm'>
+                          {error}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <Button
+                  isDisabled={!isLegalOwner}
                   value='Submit Brief'
                   type='submit'
                   className='bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px]'

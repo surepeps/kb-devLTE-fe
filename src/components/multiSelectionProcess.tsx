@@ -74,7 +74,7 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
           <span>Filter by {modifyHeading}</span>
         </h2>
       </div>
-      <div className='w-full h-[166px] overflow-y-auto flex flex-col gap-[20px] border-t-[1px] py-[15px] hide-scrollbar border-[#1E1E1E]'>
+      <div className='w-full h-[166px] overflow-y-auto flex flex-col gap-[5px] border-t-[1px] py-[15px] hide-scrollbar border-[#1E1E1E]'>
         {dataOptions.length !== 0 ? (
           dataOptions.map((option: OptionType, idx: number) => (
             <div
@@ -117,8 +117,13 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
                   setModifyHeading(option.label);
                   setDataOptions([]);
                 }
+                if (specifiedName === 'bedroom') {
+                  formik.setFieldValue(specifiedName, option.label);
+                  setModifyHeading(option.label);
+                  setDataOptions([]);
+                }
               }}
-              className='w-full flex items-center justify-between cursor-pointer'>
+              className={`w-full flex items-center justify-between cursor-pointer hover:bg-[#8DDB90] py-[8px] px-[5px] rounded-[5px]`}>
               <span className='text-base font-normal text-[#000000]'>
                 {option.label}
               </span>
@@ -149,8 +154,15 @@ const InputValue: FC<InputValueProps> = ({ heading, formik }) => {
       <span className='text-sm text-[#1E1E1E] font-normal'>{heading}</span>
       <input
         onChange={(e) => {
+          console.log(heading, e.target.value);
+
           formik.setFieldValue('landType', heading);
           formik.setFieldValue('landSize', `${e.target.value} ${heading}`);
+          console.log(heading, e.target.value);
+          if (heading === 'Bedroom') {
+            formik.setFieldValue('landType', heading);
+            formik.setFieldValue('bedroom', `${e.target.value} ${heading}`);
+          }
         }}
         className='h-[56px] bg-[#FFFFFF] border-[1px] border-[#D6DDEB] px-[12px]'
         placeholder='This is placeholder'

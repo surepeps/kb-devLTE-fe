@@ -17,6 +17,7 @@ import naijaStates from 'naija-state-local-government';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import MultiSelectionProcess from './multiSelectionProcess';
+import customStyles from '@/styles/inputStyle';
 
 interface valuesProps {
   propertyType: string;
@@ -24,7 +25,7 @@ interface valuesProps {
   budgetRange: string;
   state: string;
   selectedLGA: string;
-  landSize: number;
+  landSize: '';
   landType: string;
   docOnProperty: [];
   desireFeatures: [];
@@ -56,7 +57,7 @@ const PropertyReference = ({
       budgetRange: '',
       state: '',
       selectedLGA: '',
-      landSize: 0,
+      landSize: '',
       landType: '',
       docOnProperty: [],
       desireFeatures: [],
@@ -65,12 +66,22 @@ const PropertyReference = ({
     },
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
-      // console.log(values);
+      // Check if the preferred location and property type fields have values
+      if (!formik.values.propertyType) {
+        toast.error('Please select a property type');
+        return;
+      }
+      if (!formik.values.selectedLGA) {
+        toast.error('Please select a preferred location');
+        return;
+      }
+
+
       const payload = {
         propertyType: values.propertyType,
         state: formik.values.selectedLGA.split(',')[0].trimStart(),
-        localGovernment: values.selectedLGA, //assumption, no local govt input on the design
-        area: 'N/A', //assumption, same,
+        localGovernment: values.selectedLGA, // assumption, no local govt input on the design
+        area: 'N/A', // assumption, same
         minPrice: 0,
         maxPrice: 1000000000,
         usageOptions: formik.values.usageOption,
@@ -79,20 +90,7 @@ const PropertyReference = ({
         maxBedrooms: formik.values.bedroom,
         // typeOfMeasurement: formik.values.typeOfMeasurement
       };
-      //check if it has vvalues otherwise don't run
-      // if (
-      //   !values.bedroom ||
-      //   !values.propertyType ||
-      //   !values.state ||
-      //   !values.usageOption ||
-      //   !values.budgetRange ||
-      //   !values.desireFeatures ||
-      //   !values.docOnProperty ||
-      //   !values.landSize
-      // ) {
-      //   toast.error('Please fill all fields');
-      //   return;
-      // } //now updated - All fields must be optional
+
       setIsSubmitting(true);
       try {
         const response = await axios.post(
@@ -147,6 +145,10 @@ const PropertyReference = ({
       propertyFeatures: {
         additionalFeatures: formik.values.desireFeatures,
         noOfBedrooms: formik.values.bedroom,
+      },
+      landSize: {
+        measurementType: formik.values.landSize.split(' ')[1],
+        size: Number(formik.values.landSize.split(' ')[0]),
       },
       // typeOfMeasurment: formik.values.typeOfMeasurement
     };
@@ -433,16 +435,7 @@ const Select: React.FC<SelectProps> = ({
         value={formik.values[heading]?.label}
         options={opts}
         className={`w-full`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF00',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
       {/* <select

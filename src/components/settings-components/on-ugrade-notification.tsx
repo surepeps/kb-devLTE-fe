@@ -1,18 +1,24 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import closeModalIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
 import Input from '../Input';
-import AttachFile from '../attach_file';
+import AttachFile from '../multipleAttachFile';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
+import ImageContainer from '../image-container';
+import axios from 'axios';
 
 const OnUpgradeNotification = () => {
-  const { settings, setSettings } = usePageContext();
+  const { settings, setSettings, setViewImage, setImageData } =
+    usePageContext();
 
   const validationSchema = Yup.object({
     companyName: Yup.string().required('Company name is required'),
@@ -20,6 +26,13 @@ const OnUpgradeNotification = () => {
       'Registration number is required'
     ),
   });
+  const [fileUrls, setFileUrls] = React.useState<
+    { id: string; image: string }[]
+  >([]);
+
+  const upgradeAccount = async () => {
+    console.log('Processing...');
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -27,20 +40,44 @@ const OnUpgradeNotification = () => {
       registrationNumber: 0,
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
-      //simulating
-      setSettings({
-        ...settings,
-        isUpgradeButtonClicked: false,
-        upgradeStatus: {
-          isAwatingUpgrade: true,
-          isUpgraded: false,
-          isYetToUpgrade: false,
-        },
-      });
+      try {
+        const payload = {
+          companyAgent: {
+            companyName: formik.values.companyName,
+          },
+          meansOfId: [
+            {
+              name: 'N/A',
+              docImg: fileUrls.map((fileUrl) => fileUrl.image),
+            },
+          ],
+        };
+        const res = await POST_REQUEST(
+          URLS.BASE + URLS.upgradeAccount,
+          payload,
+          Cookies.get('token')
+        );
+        if (res.success) {
+          setSettings({
+            ...settings,
+            isUpgradeButtonClicked: false,
+            upgradeStatus: {
+              isAwatingUpgrade: true,
+              isUpgraded: false,
+              isYetToUpgrade: false,
+            },
+          });
+        }
+        console.log(res);
+        console.log(payload);
+      } catch (err) {
+        console.log(err);
+      }
     },
   });
+
   return (
     <motion.section className='w-full h-screen fixed z-50 top-0 px-[20px] flex justify-center items-center'>
       <motion.form
@@ -69,7 +106,7 @@ const OnUpgradeNotification = () => {
         </div>
         <div className='w-full min-h-[389.47px] p-[20px] md:p-[30px] gap-[40px] bg-[#FFFFFF] border-[1px] border-[#C7CAD0] flex flex-col'>
           {/**First div */}
-          <div className='lg:h-[239.47px] w-full flex flex-col gap-[20px]'>
+          <div className='lg:min-h-[239.47px] w-full flex flex-col gap-[20px]'>
             {/**Heading div */}
             <div className='w-full h-[63px] flex flex-col gap-[5px]'>
               <h2 className='text-[#09391C] text-[20px] font-medium leading-[160%]'>
@@ -80,7 +117,7 @@ const OnUpgradeNotification = () => {
               </h3>
             </div>
             {/**Input */}
-            <div className='w-full lg:h-[156.47px] flex flex-col md:grid md:grid-cols-2 gap-[20px]'>
+            <div className='w-full lg:min-h-[156.47px] flex flex-col md:grid md:grid-cols-2 gap-[20px]'>
               <Input
                 name='companyName'
                 onChange={formik.handleChange}
@@ -97,17 +134,45 @@ const OnUpgradeNotification = () => {
                 label='Registration Number'
                 type='number'
               />
-              <div className='col-span-2 flex justify-between items-center w-full'>
-                <h2 className='text-nowrap text-[#202430] text-base font-semibold'>
-                  Upload image
-                </h2>
-                <AttachFile heading=''  id="image-upload"/>
+              <div className='flex flex-col col-span-2 w-full'>
+                <div className='flex justify-between items-center w-full'>
+                  <h2 className='text-nowrap text-[#202430] text-base font-semibold'>
+                    Upload image
+                  </h2>
+                  <AttachFile
+                    setFileUrl={setFileUrls}
+                    heading=''
+                    id='image-upload'
+                  />
+                </div>
+                {/**Image preview */}
+                {fileUrls.length !== 0 && (
+                  <div className='flex items-center justify-start w-full h-[100px] gap-[15px]'>
+                    {fileUrls.map(
+                      (fileUrl: { id: string; image: string }, idx: number) => (
+                        <ImageContainer
+                          key={idx}
+                          image={fileUrl.image}
+                          alt=''
+                          heading=''
+                          removeImage={() => {
+                            setFileUrls(
+                              fileUrls.filter((img) => img.id !== fileUrl.id)
+                            );
+                          }}
+                          id={fileUrl.id}
+                        />
+                      )
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
           {/**Button to submit */}
           <div className='flex flex-col'>
             <button
+              onClick={upgradeAccount}
               type='submit'
               className={`bg-[#8DDB90] gap-[10px] h-[50px] w-full text-base font-bold text-[#FAFAFA]`}>
               Submit

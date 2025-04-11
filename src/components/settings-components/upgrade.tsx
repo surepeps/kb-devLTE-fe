@@ -1,14 +1,12 @@
 /** @format */
 
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import UpgradeNotification from './upgrade-notification';
 import { motion } from 'framer-motion';
-import Select from '../select';
 import Input from '../Input';
 import { usePageContext } from '@/context/page-context';
 import Image from 'next/image';
-//import axios from 'axios';
 import sampleImage from '@/assets/bgImg.jpg';
 
 interface SelectOption {
@@ -16,24 +14,8 @@ interface SelectOption {
   label: string;
 }
 const Upgrade = () => {
-  const { settings } = usePageContext();
-  const [selectedAgentType, setSelectedAgentType] =
-    useState<string>('Individual Agent');
+  const { settings, userDetails } = usePageContext();
 
-  /**use Effect */
-  // React.useEffect(()=>{
-  //   const getStatus = async() => {
-  //     try {
-  //       const response = await axios.get('');
-  //       if(response.status === 200){
-  //         console.log(response)
-  //       }
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  //   getStatus()
-  // }, [])
   return (
     <section className='flex flex-col gap-[20px] lg:w-[662px] min-h-[400px]'>
       <UpgradeNotification
@@ -51,20 +33,17 @@ const Upgrade = () => {
           Agent Type
         </h2>
         <div className='flex flex-col gap-[20px]'>
-          <Select
-            value={selectedAgentType}
-            placeholder='Select Agent Type'
-            disable={true}
-            onChange={(option: SelectOption | null) =>
-              setSelectedAgentType(option?.value ?? '')
-            }
-            name='Are you an Individual Agent or Corporate Agent?'
-            options={['Individual Agent', 'Corporate Agent']}
+          <Input
+            value={userDetails.agentType}
+            name='Are you an Individual agent or Corporate Agent'
+            isDisabled
+            label='Agent Type'
+            type='text'
           />
           <Input
             name='IDNumber'
             label='ID Number'
-            placeholder='3i458568686787'
+            placeholder={userDetails.id ?? '3i458568686787'}
             type='number'
             isDisabled={true}
           />

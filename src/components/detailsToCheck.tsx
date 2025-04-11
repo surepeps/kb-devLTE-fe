@@ -89,7 +89,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           {/**Bedroom */}
           <Container
             heading='Bedroom'
-            title={detailsToCheck.propertyFeatures?.noOfBedrooms.toLocaleString()}
+            title={detailsToCheck.propertyFeatures?.noOfBedrooms?.toLocaleString()}
           />
 
           {/**Date Created and Document  */}

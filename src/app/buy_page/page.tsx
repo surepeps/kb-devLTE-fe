@@ -1,10 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/**
- * eslint-disable react-hooks/exhaustive-deps
- *
- * @format
- */
-
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
@@ -35,6 +28,9 @@ import { IsMobile } from '@/hooks/isMobile';
 import Image from 'next/image';
 import React from 'react';
 import comingSoon from '@/assets/cominsoon.png';
+import Buyer_Contact from '@/components/buyer_contact';
+import { epilogue } from '@/styles/font';
+import { shuffleArray } from '@/utils/shuffleArray';
 
 export default function Rent() {
   const router = useRouter();
@@ -42,6 +38,7 @@ export default function Rent() {
   const [usageOption, setUsageOption] = useState('');
   const selectedBriefsRef = useRef<HTMLDivElement>(null);
   const { setPropertyRefSelectedBriefs } = usePageContext();
+  const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
 
   const isLoading = useLoading();
   const {
@@ -110,12 +107,13 @@ export default function Rent() {
 
         const data = await response.json();
         console.log(data);
-        const randomIndex = Math.floor(
-          Math.random() * (data.data.length - 10 + 1)
-        );
-        const randomData = data.data.slice(randomIndex, randomIndex + 10);
-
-        setProperties(randomData);
+        // const randomIndex = Math.floor(
+        //   Math.random() * (data.data.length - 10 + 1)
+        // );
+        // const randomData = data.data.slice(randomIndex, randomIndex + 10);
+        const shuffledData = shuffleArray(data.data);
+        setProperties(shuffledData.slice(0, 10));
+        console.log(data);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error(err);
@@ -147,7 +145,7 @@ export default function Rent() {
     } catch (error) {
       console.error('Error parsing selectedBriefs from localStorage:', error);
     }
-  }, [addBrief]);
+  }, []);
 
   // scroll to selectedBriefs section on mobile view
   useEffect(() => {
@@ -157,29 +155,10 @@ export default function Rent() {
   }, [selectedBriefs]);
 
   if (isLoading) return <Loading />;
+  if (isComingSoon) return <UseIsLoading />;
   return (
     <Fragment>
-        <div className='w-full flex justify-center items-center'>
-          <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[10px] px-4 md:px-8'>
-            <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
-              <div className='w-full flex justify-center'>
-                <Image
-                  src={comingSoon}
-                  width={400}
-                  height={50}
-                  alt='Coming Soon Icon'
-                  className='w-full max-w-[400px] h-auto'
-                />
-              </div>
-              <div className='flex flex-col justify-center items-center gap-[10px]'>
-                <p className='text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%]'>
-                  We are working hard to bring you an amazing experience. Stay tuned for updates!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      {/* <section
+      <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
@@ -318,13 +297,13 @@ export default function Rent() {
             )}
           </div>
         </div>
-      </section> */}
-      {/* {rentPage.isSubmitForInspectionClicked && (
+      </section>
+      {rentPage.isSubmitForInspectionClicked && (
         <Buyer_Contact
           propertyId={selectedBrief?._id || ''}
           propertyType='PropertySell'
         />
-      )} */}
+      )}
 
       {rentPage.submitPreference && <ContactUs />}
     </Fragment>
@@ -422,6 +401,29 @@ const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
   );
 };
 
-/**
- * --turbopack
- */
+const UseIsLoading = () => {
+  return (
+    <div className='w-full flex justify-center items-center'>
+      <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[10px] px-4 md:px-8'>
+        <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+          <div className='w-full flex justify-center'>
+            <Image
+              src={comingSoon}
+              width={400}
+              height={50}
+              alt='Coming Soon Icon'
+              className='w-full max-w-[400px] h-auto'
+            />
+          </div>
+          <div className='flex flex-col justify-center items-center gap-[10px]'>
+            <p
+              className={`text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%] ${epilogue.className}`}>
+              We are working hard to bring you an amazing experience. Stay tuned
+              for updates!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

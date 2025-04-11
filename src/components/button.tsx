@@ -36,9 +36,11 @@ const Button: FC<ButtonProps> = ({
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
       className={`${className} ${
-        green && 'bg-[#8DDB90] disabled:bg-[#273a28] text-white'
+        green &&
+        'bg-[#8DDB90] disabled:bg-[#273a28] disabled:cursor-not-allowed text-white'
       } ${
-        red && 'bg-[#FF3D00] disabled:bg-[#562617] text-white'
+        red &&
+        'bg-[#FF3D00] disabled:bg-[#562617] disabled:cursor-not-allowed text-white'
       } transition-all duration-500`}
       type={type ? type : 'button'}>
       {value}
