@@ -127,8 +127,8 @@ const Buyer_Contact = ({
                 Contact Information
               </h2>
               <p className='font-normal text-base leading-[25px] md:text-[18px] md:leading-[25px] text-[#515B6F] text-center tracking-[0.15px]'>
-                Lorem ipsum dolor sit amet consectetur. Aliquam scelerisque duis
-                mollis ullamcorper ac felis. Commodo duis metus facilisi.
+                {/* Lorem ipsum dolor sit amet consectetur. Aliquam scelerisque duis
+                mollis ullamcorper ac felis. Commodo duis metus facilisi. */}
               </p>
             </div>
             {/* <div className='h-[310px] flex flex-col gap-[20px]'>

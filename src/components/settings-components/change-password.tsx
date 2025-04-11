@@ -38,7 +38,8 @@ const ChangePassword = () => {
         console.log(response);
         if (response.success) {
           toast.success('Password changed successfully');
-          formik.resetForm();
+          formik.values.currentPassword = ''; // Clear currentPassword field
+          formik.values.newPassword = ''; // Clear newPassword field
         } else {
           toast.error(response.error);
         }
