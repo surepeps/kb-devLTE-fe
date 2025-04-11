@@ -27,6 +27,7 @@ import { usePageContext } from '@/context/page-context';
 import 'ldrs/react/Trio.css';
 import { Trio } from 'ldrs/react';
 import { epilogue } from '@/styles/font';
+import { shuffleArray } from '@/utils/shuffleArray';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -36,7 +37,7 @@ const Section2 = () => {
   });
   const { setCardData } = usePageContext();
   //const [fetchingData, setFetchingData] = useState(false);
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<any[]>([]);
   //const [errMessage, setErrMessage] = useState('');
 
   const housesRef = useRef<HTMLDivElement>(null);
@@ -66,11 +67,12 @@ const Section2 = () => {
         const data = await response.json();
         console.log(data);
         //cut a section of the array data randomly, that the objects in the array are only four
-        const randomIndex = Math.floor(
-          Math.random() * (data.data.length - 4 + 1)
-        );
-        const randomData = data.data.slice(randomIndex, randomIndex + 4);
-        setProperties(randomData);
+        // const randomIndex = Math.floor(
+        //   Math.random() * (data.data.length - 4 + 1)
+        // );
+        // const randomData = data.data.slice(randomIndex, randomIndex + 4);
+        const shuffled = shuffleArray(data.data);
+        setProperties(shuffled.slice(0, 4));
         setCardData(data);
         setIsLoading(false);
       } catch (err: any) {

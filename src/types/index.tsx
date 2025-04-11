@@ -97,6 +97,30 @@ export interface GlobalContextTypes {
     };
   }) => void;
 
+  userDetails: {
+    name: string;
+    email: string;
+    profile_picture: string;
+    address: {
+      localGovtArea: string;
+      state: string;
+      street: string;
+    };
+    regionsOfOperation: string[];
+  };
+
+  setUserDetails: ({}: {
+    name: string;
+    email: string;
+    profile_picture: string;
+    address: {
+      localGovtArea: string;
+      state: string;
+      street: string;
+    };
+    regionsOfOperation: string[];
+  }) => void;
+
   /**Dashboard Types */
   dashboard: {
     approveBriefsTable: {
