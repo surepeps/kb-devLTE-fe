@@ -14,11 +14,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import toast from 'react-hot-toast';
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
+import { useUserContext } from '@/context/user-context';
 
 const Sidebar = () => {
   const { setSettings, settings, userDetails, setUserDetails } =
     usePageContext();
   const [uploading, setUploading] = useState(false);
+  const { logout } = useUserContext();
 
   // const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = event.target.files?.[0];
@@ -101,32 +103,32 @@ const Sidebar = () => {
     }
   };
 
-  useEffect(() => {
-    const getUserAccount = async () => {
-      console.log('Processing...');
-      try {
-        const response = await axios.get(URLS.BASE + URLS.userAccount, {
-          headers: {
-            Authorization: `Bearer ${Cookies.get('token')}`,
-          },
-        });
-        console.log(response);
-        if (response.status === 200) {
-          const userAccount = response.data;
-          setUserDetails({
-            ...userDetails,
-            name: `${userAccount.user.lastName} ${userAccount.user.firstName}`,
-            email: userAccount.user.email,
-            profile_picture: userAccount.user.profile_picture,
-          });
-          console.log(userAccount.user);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getUserAccount();
-  }, []);
+  // useEffect(() => {
+  //   const getUserAccount = async () => {
+  //     console.log('Processing...');
+  //     try {
+  //       const response = await axios.get(URLS.BASE + URLS.userAccount, {
+  //         headers: {
+  //           Authorization: `Bearer ${Cookies.get('token')}`,
+  //         },
+  //       });
+  //       console.log(response);
+  //       if (response.status === 200) {
+  //         const userAccount = response.data;
+  //         setUserDetails({
+  //           ...userDetails,
+  //           name: `${userAccount.user.lastName} ${userAccount.user.firstName}`,
+  //           email: userAccount.user.email,
+  //           profile_picture: userAccount.user.profile_picture,
+  //         });
+  //         console.log(userAccount.user);
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   getUserAccount();
+  // }, []);
   return (
     <motion.div
       initial={{ x: -80, opacity: 0 }}
@@ -139,7 +141,11 @@ const Sidebar = () => {
         <div>
           {' '}
           <Image
-            src={userDetails.profile_picture ?? randomImage}
+            src={
+              userDetails.profile_picture
+                ? userDetails.profile_picture
+                : randomImage
+            }
             alt='user image'
             className='w-[120px] h-[120px] bg-[#D9D9D9] rounded-full object-cover'
             width={120}
@@ -215,6 +221,9 @@ const Sidebar = () => {
       {/**Sign Out */}
       <button
         type='button'
+        onClick={() => {
+          logout();
+        }}
         className={`w-full bg-transparent h-[70px] py-[26px] px-[22px] rounded-[5px] border-[#FF3D00] text-[#FF3D00] border-[1px]`}>
         Sign out
       </button>
