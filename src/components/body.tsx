@@ -10,13 +10,13 @@ import DeleteBriefs from './admincomponents/deleteBriefs';
 //import SubmitPopUp from './submit';
 
 const Body = ({ children }: { children: ReactNode }) => {
-    const [ isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
+  // const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
 
   const {
     isContactUsClicked,
     isModalOpened,
     viewImage,
-    // isSubmittedSuccessfully,
+    isSubmittedSuccessfully,
     settings,
     dashboard,
   } = usePageContext();
@@ -36,7 +36,7 @@ const Body = ({ children }: { children: ReactNode }) => {
         } w-[100%]`}>
         {children}
       </section>
-      {isSubmittedSuccessfully && <SubmitPopUp onClick={() => setIsSubmittedSuccessfully(false)}  />}
+      {isSubmittedSuccessfully && <SubmitPopUp />}
       {settings.isUpgradeButtonClicked && <OnUpgradeNotification />}
       {dashboard.approveBriefsTable.isApproveClicked && <ApproveBriefs />}
       {dashboard.approveBriefsTable.isRejectClicked && <RejectBriefs />}
