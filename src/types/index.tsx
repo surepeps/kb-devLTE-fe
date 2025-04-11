@@ -97,29 +97,8 @@ export interface GlobalContextTypes {
     };
   }) => void;
 
-  userDetails: {
-    name: string;
-    email: string;
-    profile_picture: string;
-    address: {
-      localGovtArea: string;
-      state: string;
-      street: string;
-    };
-    regionsOfOperation: string[];
-  };
-
-  setUserDetails: ({}: {
-    name: string;
-    email: string;
-    profile_picture: string;
-    address: {
-      localGovtArea: string;
-      state: string;
-      street: string;
-    };
-    regionsOfOperation: string[];
-  }) => void;
+  userDetails: userDetailsProperties;
+  setUserDetails: ({}: userDetailsProperties) => void;
 
   /**Dashboard Types */
   dashboard: {
@@ -160,3 +139,40 @@ export type BriefType = {
 //   removeBrief: (briefId: string) => void;
 //   clearBriefs: () => void;
 // };
+
+/**
+ * Settings - User Details
+ */
+
+export type userDetailsProperties = {
+  name: string;
+  email: string;
+  profile_picture: string;
+  address: {
+    localGovtArea: string;
+    state: string;
+    street: string;
+  };
+  regionOfOperation: string[];
+  accountApproved: boolean;
+  accountStatus: string;
+  agentType: string;
+  firstName: string;
+  lastName: string;
+  id: string;
+  individualAgent: {
+    typeOfId: string;
+  };
+  isAccountVerified: boolean;
+  isInUpgrade: boolean;
+  meansOfId: { docImg: string[]; name: string; _id: string }[];
+  phoneNumber: string;
+  upgradeData: {
+    companyAgent: {
+      companyName: string;
+    };
+    meansOfId: { docImg: string[]; name: string; _id: string }[];
+    requestDate: string;
+  };
+  _id: string;
+};
