@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import AttachFile from '@/components/multipleAttachFile';
+//import AttachFile from '@/components/multipleAttachFile';
 import Button from '@/components/button';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
@@ -11,7 +11,7 @@ import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUserContext } from '@/context/user-context';
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import naijaStates from 'naija-state-local-government';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import ReactSelect from 'react-select';
@@ -21,62 +21,132 @@ import { motion } from 'framer-motion';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import SubmitPopUp from '@/components/submit';
+import {
+  createBriefProps,
+  useCreateBriefContext,
+} from '@/context/create-brief-context';
+import AttachFile from './create_brief_image_upload';
+import customStyles from '@/styles/inputStyle';
 
 interface Option {
   value: string;
   label: string;
 }
 const PropertyType = () => {
+  const { createBrief, setCreateBrief } = useCreateBriefContext();
   const { user } = useUserContext();
-  const [selectedState, setSelectedState] = useState<Option | null>(null);
-  const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
-  const [stateOptions, setStateOptions] = useState<Option[]>([]);
-  const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
-  const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
+  useEffect(() => {
+    console.log(user);
+  }, []);
+  const attachRef = useRef<{ triggerUpload: () => void }>(null);
+  // const [selectedState, setSelectedState] = useState<Option | null>(null);
+  // const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+  // const [stateOptions, setStateOptions] = useState<Option[]>([]);
+  // const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  // const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
   const { setViewImage, setImageData } = usePageContext();
-  const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
+  // const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] = useState(false);
 
   useEffect(() => {
-    console.log(fileUrl);
-  }, [fileUrl]);
-  useEffect(() => {
     // Load Nigerian states correctly
-    setStateOptions(
-      naijaStates.states().map((state: string) => ({
+    setCreateBrief({
+      ...createBrief,
+      stateOptions: naijaStates.states().map((state: string) => ({
         value: state,
         label: state,
-      }))
-    );
+      })),
+    });
   }, []);
 
   const handleLGAChange = (selected: Option | null) => {
-    formik.setFieldValue('selectedLGA', selected?.value);
-    setSelectedLGA?.(selected);
+    // formik.setFieldValue('selectedLGA', selected?.value);
+    setCreateBrief({
+      ...createBrief,
+      selectedLGA: selected,
+    });
   };
 
   const handleStateChange = (selected: Option | null) => {
-    formik.setFieldValue('selectedState', selected?.value);
-    setSelectedState?.(selected);
-
+    // formik.setFieldValue('selectedState', selected?.value);
+    // setSelectedState(selected);
+    console.log(selected);
+    setCreateBrief({
+      ...createBrief,
+      selectedState: selected,
+    });
+    console.log('Selected state: ' + createBrief.selectedState);
     if (selected) {
       const lgas = naijaStates.lgas(selected.value)?.lgas;
-
       if (Array.isArray(lgas)) {
-        setLgaOptions(
-          lgas.map((lga: string) => ({
+        console.log(lgas);
+        setCreateBrief({
+          ...createBrief,
+          selectedState: selected,
+          lgaOptions: lgas.map((lga: string) => ({
             value: lga,
             label: lga,
-          }))
-        );
+          })),
+        });
       } else {
-        setLgaOptions([]);
+        setCreateBrief({
+          ...createBrief,
+          lgaOptions: [],
+        });
+        console.log(lgas);
       }
-      setSelectedLGA?.(null);
-    } else {
-      setLgaOptions([]);
-      setSelectedLGA?.(null);
+
+      // setCreateBrief({
+      //   ...createBrief,
+      //   selectedLGA: null,
+      // });
     }
   };
+
+  useEffect(() => {
+    console.log(createBrief);
+  }, [createBrief]);
+
+  // useEffect(() => {
+  //   console.log(fileUrl);
+  // }, [fileUrl]);
+  // useEffect(() => {
+  //   // Load Nigerian states correctly
+  //   setStateOptions(
+  //     naijaStates.states().map((state: string) => ({
+  //       value: state,
+  //       label: state,
+  //     }))
+  //   );
+  // }, []);
+
+  // const handleLGAChange = (selected: Option | null) => {
+  //   formik.setFieldValue('selectedLGA', selected?.value);
+  //   setSelectedLGA?.(selected);
+  // };
+
+  // const handleStateChange = (selected: Option | null) => {
+  //   formik.setFieldValue('selectedState', selected?.value);
+  //   setSelectedState?.(selected);
+
+  //   if (selected) {
+  //     const lgas = naijaStates.lgas(selected.value)?.lgas;
+
+  //     if (Array.isArray(lgas)) {
+  //       setLgaOptions(
+  //         lgas.map((lga: string) => ({
+  //           value: lga,
+  //           label: lga,
+  //         }))
+  //       );
+  //     } else {
+  //       setLgaOptions([]);
+  //     }
+  //     setSelectedLGA?.(null);
+  //   } else {
+  //     setLgaOptions([]);
+  //     setSelectedLGA?.(null);
+  //   }
+  // };
 
   const docOfTheProperty: string[] = [
     'Survey Document',
@@ -85,123 +155,135 @@ const PropertyType = () => {
     'C of O',
   ];
 
-  const formik = useFormik({
-    initialValues: {
-      propertyType: '',
-      usageOptions: [] as string[],
-      price: '',
-      landSize: '',
-      documents: [] as string[],
-      noOfBedroom: '',
-      additionalFeatures: [] as string[],
-      selectedState: '',
-      selectedCity: '',
-      selectedLGA: '',
-      ownerFullName: user?.firstName + ' ' + user?.lastName,
-      ownerPhoneNumber: user?.phoneNumber,
-      ownerEmail: user?.email,
-      areYouTheOwner: false,
-      typeOfMeasurement: '',
-    },
-    validationSchema: Yup.object({
-      propertyType: Yup.string().required('Property type is required'),
-      usageOptions: Yup.array().min(1, 'At least one usage option is required'),
-      price: Yup.string().required('Price is required'),
-      landSize: Yup.string().required('Land Size is required'),
-      documents: Yup.array().min(1, 'At least one document is required'),
-      noOfBedroom: Yup.string(),
-      additionalFeatures: Yup.array()
-        .of(Yup.string()),
-      selectedState: Yup.string().required('State is required'),
-      selectedCity: Yup.string().required('City is required'),
-      selectedLGA: Yup.string().required('LGA is required'),
-      ownerFullName: Yup.string().required('Owner full name is required'),
-      ownerPhoneNumber: Yup.string().required('Owner phone number is required'),
-      ownerEmail: Yup.string()
-        .email('Invalid email')
-        .required('Owner email is required'),
-      typeOfMeasurement: Yup.string().required(
-        'Type of measurement is required'
-      ),
-    }),
-    onSubmit: async (values) => {
-      try {
-        const url = URLS.BASE + URLS.agentCreateBrief;
-        const payload = {
-          propertyType: values.propertyType,
-          usageOptions: values.usageOptions,
-          propertyFeatures: {
-            noOfBedrooms: values.noOfBedroom,
-            additionalFeatures: values.additionalFeatures,
-          },
-          docOnProperty: values.documents.map((doc) => ({
-            docName: doc,
-            isProvided: true, // Assuming all selected documents are provided
-          })),
-          // landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`, 
-          location: {
-            state: values.selectedState,
-            localGovernment: values.selectedLGA,
-            area: values.selectedCity,
-          },
-          price: values.price,
-          owner: {
-            fullName: values.ownerFullName,
-            phoneNumber: values.ownerPhoneNumber,
-            email: values.ownerEmail,
-          },
-          areYouTheOwner: values.areYouTheOwner,
-        };
+  // const formik = useFormik({
+  //   initialValues: {
+  //     propertyType: '',
+  //     usageOptions: [] as string[],
+  //     price: '',
+  //     landSize: '',
+  //     documents: [] as string[],
+  //     noOfBedroom: '',
+  //     additionalFeatures: [] as string[],
+  //     selectedState: '',
+  //     selectedCity: '',
+  //     selectedLGA: '',
+  //     ownerFullName: user?.firstName + ' ' + user?.lastName,
+  //     ownerPhoneNumber: user?.phoneNumber,
+  //     ownerEmail: user?.email,
+  //     areYouTheOwner: false,
+  //     typeOfMeasurement: '',
+  //   },
+  //   validationSchema: Yup.object({
+  //     propertyType: Yup.string().required('Property type is required'),
+  //     usageOptions: Yup.array().min(1, 'At least one usage option is required'),
+  //     price: Yup.string().required('Price is required'),
+  //     landSize: Yup.string().required('Land Size is required'),
+  //     documents: Yup.array().min(1, 'At least one document is required'),
+  //     noOfBedroom: Yup.string(),
+  //     additionalFeatures: Yup.array()
+  //       .of(Yup.string()),
+  //     selectedState: Yup.string().required('State is required'),
+  //     selectedCity: Yup.string().required('City is required'),
+  //     selectedLGA: Yup.string().required('LGA is required'),
+  //     ownerFullName: Yup.string().required('Owner full name is required'),
+  //     ownerPhoneNumber: Yup.string().required('Owner phone number is required'),
+  //     ownerEmail: Yup.string()
+  //       .email('Invalid email')
+  //       .required('Owner email is required'),
+  //     typeOfMeasurement: Yup.string().required(
+  //       'Type of measurement is required'
+  //     ),
+  //   }),
+  //   onSubmit: async (values) => {
 
-        await toast.promise(
-          POST_REQUEST(url, payload).then((response) => {
-            if ((response as any).owner) {
-              toast.success('Brief submitted successfully');
-              formik.resetForm(); // Clear the form fields
-              setSelectedState(null); // Reset selectedState
-              setSelectedLGA(null); // Reset selectedLGA
-              setFileUrl([]); // Clear uploaded files
-              setIsSubmittedSuccessfully(true); // Show the submit popup
-              return 'Brief submitted successfully';
-            } else {
-              const errorMessage =
-                (response as any).error || 'Submission failed';
-              toast.error(errorMessage);
-              throw new Error(errorMessage);
-            }
-          }),
-          {
-            loading: 'Submitting...',
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   console.log(formik.values);
+  // }, [formik.values]);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const url = URLS.BASE + URLS.agentCreateBrief;
+      const payload = {
+        propertyType: createBrief.propertyType,
+        usageOptions: createBrief.usageOptions,
+        propertyFeatures: {
+          noOfBedrooms: createBrief.noOfBedroom,
+          additionalFeatures: createBrief.additionalFeatures,
+        },
+        docOnProperty: createBrief.documents.map((doc: string) => ({
+          docName: doc,
+          isProvided: true, // Assuming all selected documents are provided
+        })),
+        // landSize: `${values.landSize} ${formik.values[propertyReferenceData[8].heading as keyof typeof formik.values]}`,
+        location: {
+          state: createBrief.selectedState?.label,
+          localGovernment: createBrief.selectedLGA?.label,
+          area: createBrief.selectedCity,
+        },
+        price: createBrief.price,
+        owner: {
+          fullName: `${user?.lastName} + ${user?.firstName}`,
+          phoneNumber: user?.phoneNumber,
+          email: user?.email,
+        },
+        areYouTheOwner: createBrief.areYouTheOwner,
+      };
+      console.warn(payload);
+
+      await toast.promise(
+        POST_REQUEST(url, payload).then((response) => {
+          if ((response as any).owner) {
+            toast.success('Brief submitted successfully');
+            setCreateBrief({
+              ...createBrief,
+              selectedState: null,
+              selectedLGA: null,
+              fileUrl: [],
+              isSubmittedSuccessfully: true,
+            });
+            return 'Brief submitted successfully';
+          } else {
+            const errorMessage = (response as any).error || 'Submission failed';
+            toast.error(errorMessage);
+            throw new Error(errorMessage);
           }
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    },
-  });
-
-  useEffect(() => {
-    console.log(formik.values);
-  }, [formik.values]);
+        }),
+        {
+          loading: 'Submitting...',
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
-      {isSubmittedSuccessfully && 
-        <SubmitPopUp 
+      {createBrief.isSubmittedSuccessfully && (
+        <SubmitPopUp
           title='Brief Successfully Submitted'
           subheader='Brief will be approved before uploading'
           buttonText='OVERVIEW'
           href={'/agent/briefs'}
-          onClick={() => setIsSubmittedSuccessfully(false)} // Ensure modal closes
+          onClick={() =>
+            setCreateBrief({
+              ...createBrief,
+              isSubmittedSuccessfully: true,
+            })
+          } // Ensure modal closes
         />
-      }
+      )}
       <form
-        onSubmit={formik.handleSubmit}
+        onSubmit={handleSubmit}
+        // onSubmit={formik.handleSubmit}
         className='lg:w-[805px] bg-white p-[20px] lg:py-[50px] lg:px-[100px] w-full min-h-[797px] gap-[30px] md:px-[30px] mt-[30px] lg:mt-[60px]'>
         <div className='flex flex-col gap-[35px] w-full'>
           {/** Display Formik validation errors for owner's information */}
           <div className='w-full flex flex-col gap-[15px]'>
-            {formik.errors.ownerFullName && (
+            {/* {formik.errors.ownerFullName && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.ownerFullName}
               </span>
@@ -215,7 +297,7 @@ const PropertyType = () => {
               <span className='text-red-600 text-sm'>
                 {formik.errors.ownerEmail}
               </span>
-            )}
+            )} */}
           </div>
           {/**Property Type */}
           <div className='lg:w-[535px] min-h-[73px] flex flex-col gap-[15px]'>
@@ -225,38 +307,50 @@ const PropertyType = () => {
             {/**options */}
             <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
               <RadioCheck
-                selectedValue={formik.values?.propertyType}
+                selectedValue={createBrief?.propertyType}
                 handleChange={() => {
-                  formik.setFieldValue('propertyType', 'Residential');
+                  // formik.setFieldValue('propertyType', 'Residential');
+                  setCreateBrief({
+                    ...createBrief,
+                    propertyType: 'Residential',
+                  });
                 }}
                 type='radio'
                 name='propertyType'
                 value='Residential'
               />
               <RadioCheck
-                selectedValue={formik.values?.propertyType}
+                selectedValue={createBrief?.propertyType}
                 handleChange={() => {
-                  formik.setFieldValue('propertyType', 'Commercial');
+                  // formik.setFieldValue('propertyType', 'Commercial');
+                  setCreateBrief({
+                    ...createBrief,
+                    propertyType: 'Commercial',
+                  });
                 }}
                 type='radio'
                 name='propertyType'
                 value='Commercial'
               />
               <RadioCheck
-                selectedValue={formik.values?.propertyType}
+                selectedValue={createBrief?.propertyType}
                 handleChange={() => {
-                  formik.setFieldValue('propertyType', 'Land');
+                  // formik.setFieldValue('propertyType', 'Land');
+                  setCreateBrief({
+                    ...createBrief,
+                    propertyType: 'Land',
+                  });
                 }}
                 type='radio'
                 name='propertyType'
                 value='Land'
               />
             </div>
-            {formik.touched.propertyType && formik.errors.propertyType && (
+            {/* {formik.touched.propertyType && formik.errors.propertyType && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.propertyType}
               </span>
-            )}
+            )} */}
           </div>
           {/**Usage Options */}
           <div className='min-h-[73px] flex flex-col gap-[15px]'>
@@ -272,24 +366,28 @@ const PropertyType = () => {
                     key={idx}
                     name='Usage Options'
                     handleChange={() => {
-                      const usageOptions = formik.values.usageOptions.includes(
+                      const usageOptions = createBrief?.usageOptions?.includes(
                         item
                       )
-                        ? formik.values.usageOptions.filter(
+                        ? createBrief?.usageOptions?.filter(
                             (option) => option !== item
                           )
-                        : [...formik.values.usageOptions, item];
-                      formik.setFieldValue('usageOptions', usageOptions);
+                        : [...createBrief?.usageOptions, item];
+                      // formik.setFieldValue('usageOptions', usageOptions);
+                      setCreateBrief({
+                        ...createBrief,
+                        usageOptions: usageOptions,
+                      });
                     }}
                   />
                 )
               )}
             </div>
-            {formik.touched.usageOptions && formik.errors.usageOptions && (
+            {/* {formik.touched.usageOptions && formik.errors.usageOptions && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.usageOptions}
               </span>
-            )}
+            )} */}
           </div>
           {/**Location */}
           <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
@@ -305,32 +403,37 @@ const PropertyType = () => {
                 forLGA={false}
                 type='text'
                 placeholder='Select State'
-                formik={formik}
-                selectedState={selectedState}
-                stateOptions={stateOptions}
+                // formik={formik}
+                selectedState={createBrief?.selectedState}
+                stateOptions={createBrief?.stateOptions}
                 setSelectedState={handleStateChange}
               />
               <Input
                 label='Local Government'
                 name='selectedLGA'
                 type='text'
-                formik={formik}
+                // formik={formik}
                 forLGA={true}
                 forState={false}
-                selectedLGA={selectedLGA}
-                lgasOptions={lgaOptions}
-                stateValue={selectedState?.label}
+                selectedLGA={createBrief?.selectedLGA}
+                lgasOptions={createBrief?.lgaOptions}
+                stateValue={createBrief?.selectedState?.label}
                 setSelectedLGA={handleLGAChange}
               />
               <Input
                 label='Area'
                 name='selectedCity'
-                value={formik.values.selectedCity}
-                onChange={formik.handleChange}
+                value={createBrief?.selectedCity}
+                onChange={(event) => {
+                  setCreateBrief({
+                    ...createBrief,
+                    selectedCity: event.target.value,
+                  });
+                }}
                 type='text'
               />
             </div>
-            {formik.touched.selectedState && formik.errors.selectedState && (
+            {/* {formik.touched.selectedState && formik.errors.selectedState && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.selectedState}
               </span>
@@ -339,7 +442,7 @@ const PropertyType = () => {
               <span className='text-red-600 text-sm'>
                 {formik.errors.selectedCity}
               </span>
-            )}
+            )} */}
           </div>
           {/**Price */}
           <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
@@ -354,15 +457,20 @@ const PropertyType = () => {
                 name='price'
                 type='number'
                 className='w-full'
-                value={formik.values?.price}
-                onChange={formik.handleChange}
+                value={createBrief?.price}
+                onChange={(event) => {
+                  setCreateBrief({
+                    ...createBrief,
+                    price: event.target.value,
+                  });
+                }}
               />
             </div>
-            {formik.touched.price && formik.errors.price && (
+            {/* {formik.touched.price && formik.errors.price && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.price}
               </span>
-            )}
+            )} */}
           </div>
           {/**Land Size */}
           <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
@@ -374,10 +482,13 @@ const PropertyType = () => {
               <Select
                 allowMultiple={false}
                 heading={'typeOfMeasurement'}
-                formik={formik}
+                // formik={formik}
                 name={propertyReferenceData[8].heading}
                 options={propertyReferenceData[8].options}
+                createBrief={createBrief}
+                setCreateBrief={setCreateBrief}
                 placeholder='Select'
+                values={[createBrief.typeOfMeasurement]}
               />
               <Input
                 label='Enter land size'
@@ -385,15 +496,20 @@ const PropertyType = () => {
                 name='landSize'
                 type='number'
                 className='w-full'
-                value={formik.values?.landSize}
-                onChange={formik.handleChange}
+                value={createBrief?.landSize}
+                onChange={(event) => {
+                  setCreateBrief({
+                    ...createBrief,
+                    landSize: event.target.value,
+                  });
+                }}
               />
             </div>
-            {formik.touched.price && formik.errors.landSize && (
+            {/* {formik.touched.price && formik.errors.landSize && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.landSize}
               </span>
-            )}
+            )} */}
           </div>
           {/**Document on the property */}
           <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
@@ -409,19 +525,23 @@ const PropertyType = () => {
                   value={item}
                   name='documents'
                   handleChange={() => {
-                    const documents = formik.values.documents.includes(item)
-                      ? formik.values.documents.filter((doc) => doc !== item)
-                      : [...formik.values.documents, item];
-                    formik.setFieldValue('documents', documents);
+                    const documents = createBrief?.documents?.includes(item)
+                      ? createBrief?.documents?.filter((doc) => doc !== item)
+                      : [...createBrief?.documents, item];
+                    // formik.setFieldValue('documents', documents);
+                    setCreateBrief({
+                      ...createBrief,
+                      documents: documents,
+                    });
                   }}
                 />
               ))}
             </div>
-            {formik.touched.documents && formik.errors.documents && (
+            {/* {formik.touched.documents && formik.errors.documents && (
               <span className='text-red-600 text-sm'>
                 {formik.errors.documents}
               </span>
-            )}
+            )} */}
           </div>
           {/**Property Features */}
           <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
@@ -435,16 +555,24 @@ const PropertyType = () => {
                 name='noOfBedroom'
                 type='number'
                 className='lg:w-1/2 w-full'
-                value={formik.values?.noOfBedroom}
-                onChange={formik.handleChange}
+                value={createBrief?.noOfBedroom}
+                onChange={(event) => {
+                  setCreateBrief({
+                    ...createBrief,
+                    noOfBedroom: Number(event.target.value),
+                  });
+                }}
               />
               <Select
                 allowMultiple={true}
                 heading={'additionalFeatures'}
-                formik={formik}
+                // formik={formik}
                 name={propertyReferenceData[6].heading}
                 options={propertyReferenceData[6].options}
                 placeholder='Select'
+                createBrief={createBrief}
+                setCreateBrief={setCreateBrief}
+                values={createBrief.additionalFeatures}
               />
             </div>
             <div className='w-full flex flex-col mt-4'>
@@ -453,18 +581,26 @@ const PropertyType = () => {
               </h3>
               <div className='flex gap-[20px] mt-2'>
                 <RadioCheck
-                  selectedValue={formik.values?.areYouTheOwner}
+                  selectedValue={createBrief?.areYouTheOwner}
                   handleChange={() => {
-                    formik.setFieldValue('areYouTheOwner', true);
+                    // formik.setFieldValue('areYouTheOwner', true);
+                    setCreateBrief({
+                      ...createBrief,
+                      areYouTheOwner: true,
+                    });
                   }}
                   type='radio'
                   name='mandate'
                   value='Yes'
                 />
                 <RadioCheck
-                  selectedValue={formik.values?.areYouTheOwner}
+                  selectedValue={createBrief?.areYouTheOwner}
                   handleChange={() => {
-                    formik.setFieldValue('areYouTheOwner', false);
+                    // formik.setFieldValue('areYouTheOwner', false);
+                    setCreateBrief({
+                      ...createBrief,
+                      areYouTheOwner: false,
+                    });
                   }}
                   type='radio'
                   name='mandate'
@@ -473,7 +609,7 @@ const PropertyType = () => {
               </div>
             </div>
             <div className='w-full flex gap-[15px]'>
-              {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
+              {/* {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
                 <span className='text-red-600 text-sm'>
                   {formik.errors.noOfBedroom}
                 </span>
@@ -483,24 +619,40 @@ const PropertyType = () => {
                   <span className='text-red-600 text-sm'>
                     {formik.errors.additionalFeatures}
                   </span>
-                )}
+                )} */}
             </div>
           </div>
           {/**Upload Image | Documents */}
-          <AttachFile
-            setFileUrl={setFileUrl}
+          {/* <AttachFile
+            setFileUrl={() => {
+              setCreateBrief({
+                ...createBrief,
+                fileUrl: [],
+              });
+            }}
             heading='Upload image(optional)'
             id='image-upload'
+          /> */}
+          <AttachFile
+            ref={attachRef}
+            heading='Upload image(optional)'
+            id='my-upload'
           />
           {/**Images selected */}
           <div className='flex justify-end items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
-            {typeof fileUrl === 'object' &&
-              fileUrl.map((image) => (
+            {typeof createBrief?.fileUrl === 'object' &&
+              createBrief?.fileUrl.map((image) => (
                 <ImageContainer
                   setViewImage={setViewImage}
                   setImageData={setImageData}
                   removeImage={() => {
-                    setFileUrl(fileUrl.filter((img) => img.id !== image.id));
+                    // setFileUrl(fileUrl.filter((img) => img.id !== image.id));
+                    setCreateBrief({
+                      ...createBrief,
+                      fileUrl: createBrief?.fileUrl.filter(
+                        (img) => img.id !== image.id
+                      ),
+                    });
                   }}
                   image={image.image}
                   alt=''
@@ -531,9 +683,12 @@ interface SelectProps {
   heading: string;
   placeholder?: string;
   options: any[];
-  formik: any;
+  formik?: any;
   allowMultiple?: boolean;
   name: string;
+  setCreateBrief?: (type: createBriefProps) => void;
+  createBrief: createBriefProps;
+  values?: string[];
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -542,6 +697,9 @@ const Select: React.FC<SelectProps> = ({
   formik,
   allowMultiple,
   name,
+  setCreateBrief,
+  createBrief,
+  values,
 }) => {
   const opts = options.map((item) => ({
     value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
@@ -557,32 +715,37 @@ const Select: React.FC<SelectProps> = ({
       <ReactSelect
         isMulti={allowMultiple}
         name={name}
-        onChange={(selectedOption) =>
+        onChange={(selectedOption: any) =>
           allowMultiple
-            ? formik.setFieldValue(
-                heading,
-                [
+            ? // ? formik.setFieldValue(
+              //     heading,
+              //     [
+              //       ...(Array.isArray(selectedOption)
+              //         ? selectedOption.map((opt: any) => opt.label)
+              //         : []),
+              //     ].filter(Boolean)
+              //   )
+              setCreateBrief?.({
+                ...createBrief,
+                [heading]: [
                   ...(Array.isArray(selectedOption)
-                    ? selectedOption.map((opt: any) => opt.label)
+                    ? selectedOption.map(
+                        (opt: { value: string; label: string }) => opt.label
+                      )
                     : []),
-                ].filter(Boolean)
-              )
-            : formik.setFieldValue(heading, selectedOption?.label ?? '')
+                ].filter(Boolean),
+              })
+            : // : formik.setFieldValue(heading, selectedOption?.label ?? '')
+              setCreateBrief?.({
+                ...createBrief,
+                [heading]: selectedOption?.label,
+              })
         }
-        onBlur={formik.handleBlur}
-        value={formik.values[heading]?.label}
+        onBlur={formik?.handleBlur}
+        value={values?.map((item: string) => ({ label: item, value: item }))}
         options={opts}
         className={`w-full`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF00',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
     </label>

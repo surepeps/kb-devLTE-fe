@@ -16,6 +16,7 @@ import { epilogue } from '@/styles/font';
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
 import { shuffleArray } from '@/utils/shuffleArray';
+import ContactUs from '@/components/contact_information';
 
 type HouseFrameProps = {
   propertyType: string;
@@ -36,6 +37,10 @@ export default function Rent() {
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
+  const [found, setFound] = useState({
+    isFound: false,
+    count: 0,
+  });
 
   const getAllRentProperties = async () => {
     setDataLoading(true);
@@ -61,12 +66,22 @@ export default function Rent() {
 
   if (isLoading) return <Loading />;
   if (isComingSoon) return <UseIsComingPage />;
+  {
+    /**${
+          (isContactUsClicked ||
+            rentPage.isSubmitForInspectionClicked ||
+            isModalOpened ||
+            rentPage.submitPreference) &&
+          'filter brightness-[30%] transition-all duration-500'
+        } */
+  }
   return (
     <Fragment>
       <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
-          rentPage.isSubmitForInspectionClicked &&
-          'filter brightness-[30%] transition-all duration-500'
+          rentPage.isSubmitForInspectionClicked ||
+          (rentPage.submitPreference &&
+            'filter brightness-[30%] transition-all duration-500')
         }`}>
         <div className='container min-h-[800px] py-[48px] px-[20px] lg:px-[0px] flex flex-col items-center gap-[40px]'>
           <h2 className='lg:text-[40px] lg:leading-[64px] text-[30px] leading-[41px] text-center text-[#09391C]  font-semibold font-display'>
@@ -76,6 +91,8 @@ export default function Rent() {
             </span>
           </h2>
           <RentalReference
+            found={found}
+            setFound={setFound}
             setData={setData}
             setDataLoading={setDataLoading}
             rentalReferenceData={propertyReferenceDataWithoutUsageOption}
@@ -124,6 +141,7 @@ export default function Rent() {
           </div>
         </div>
       </section>
+      {rentPage.submitPreference && <ContactUs />}
     </Fragment>
   );
 }
