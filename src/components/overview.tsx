@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /* eslint-disable react-hooks/exhaustive-deps */
 /** @format */
 
@@ -50,6 +55,22 @@ interface RequestData {
   status: string;
   inspectionDate: string;
   inspectionTime: string;
+
+  date: string;
+  propertyPrice: string | number;
+  document?: string;
+  amountSold?: string | number;
+  propertyFeatures?: {
+    additionalFeatures: string[];
+    noOfBedrooms: number;
+  };
+
+  actualLocation?: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
+  pictures?: string[];
 }
 
 const Overview = () => {
@@ -64,7 +85,7 @@ const Overview = () => {
   const [selectedOption, setSelectedOption] =
     useState<string>('recently publish');
   const [heading, setHeading] = useState<string>(selectedOption);
-  const [submitBrief, setSubmitBrief] = useState<boolean>(false);
+  const [submitBrief, setSubmitBrief] = useState<boolean>(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
     isLoading: false,
     message: '',
@@ -72,7 +93,8 @@ const Overview = () => {
   const [allRequests, setAllRequests] = useState<RequestData[]>([]);
   const [buyerPreferences, setBuyerPreferences] = useState<RequestData[]>([]);
 
-  const [isFullDetailsClicked, setIsFullDetailsClicked] = useState<boolean>(false);
+  const [isFullDetailsClicked, setIsFullDetailsClicked] =
+    useState<boolean>(false);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
     date: '12/12/2024',
@@ -80,6 +102,10 @@ const Overview = () => {
     location: 'Lagos, Ikeja',
     propertyPrice: '200,000,000',
     document: 'C of o, recepit,...',
+    propertyFeatures: {
+      additionalFeatures: [],
+      noOfBedrooms: 0,
+    },
   });
 
   useEffect(() => {
@@ -92,7 +118,7 @@ const Overview = () => {
         const url = URLS.BASE + URLS.agentGetUserPreferences;
         await GET_REQUEST(url, Cookies.get('token')).then((data) => {
           if (data.success) {
-            // console.log(data.sellPreferences);
+            console.log(data.sellPreferences);
             setBuyerPreferences(data.sellPreferences);
             setIsLoadingDetails({
               isLoading: false,
@@ -107,7 +133,7 @@ const Overview = () => {
           }
         });
       })();
-    } 
+    }
   }, [selectedOption]);
 
   useEffect(() => {
@@ -175,6 +201,67 @@ const Overview = () => {
     getBriefsData();
   }, []);
 
+  const dynamicContent = () => {
+    switch (selectedOption) {
+      case SELECTED_OPTIONS.REQUIRE_ATTENTION:
+        return (
+          <Table
+            headingColor='#FF3D00'
+            headerData={headerData}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
+            heading='Urgent Property Request'
+            description={`A new buyer preference has been submitted! Review the details and
+            match it with available property briefs. Upload suitable options to
+            the preference form as soon as possible to ensure a fast and
+            seamless transaction`}
+            data={buyerPreferences.map((item) => ({
+              ...item,
+              docOnProperty: item.docOnProperty.map(({ docName }) => ({
+                docName,
+                isProvided: true,
+                _id: '',
+              })),
+              date: formatDate(item.createdAt),
+              propertyType: item.propertyType,
+              location: `${item.location.localGovernment}`,
+              propertyPrice: item.price.toString(),
+              document: item.docOnProperty
+                ? item.docOnProperty.map((doc) => doc.docName).join(', ')
+                : '', // Join docName values or leave empty if not provided
+            }))}
+          />
+        );
+
+      case SELECTED_OPTIONS.INSPECTION_REQUESTS:
+        return <RequestsTable data={allRequests} />;
+      case SELECTED_OPTIONS.THREE_MONTHS_AGO_BRIEF:
+        return (
+          <Table
+            headingColor='black'
+            headerData={headerData}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
+            heading='3 month ago Brief'
+            description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
+            data={briefData}
+          />
+        );
+      case SELECTED_OPTIONS.RECENTLY_PUBLISH:
+        return (
+          <ShowTable
+            headerData={headerData}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
+            heading='Publish Brief'
+            data={briefData}
+          />
+        );
+      default:
+        break;
+    }
+  };
+
   return (
     <Fragment>
       {isFullDetailsClicked ? (
@@ -198,7 +285,7 @@ const Overview = () => {
                 {isLoadingDetails.isLoading ? (
                   <i className='text-sm'>{isLoadingDetails.message}</i>
                 ) : (
-                  briefs.totalBrief   
+                  briefs.totalBrief
                 )}
               </h2>
             </div>
@@ -221,7 +308,7 @@ const Overview = () => {
               </h2>
             </div>
             {/* Complete Transaction */}
-            
+
             {/* <div className='w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
               <div className='flex justify-between min-h-[24px] border-b-[1px] border-[#E4DFDF] pb-1 w-full'>
                 <span className='text-base leading-[18px] text-[#2CAF67] tracking-[0.25px] font-archivo'>
@@ -267,52 +354,7 @@ const Overview = () => {
           {/**Second section */}
           {/**PC View */}
           <div className='hidden md:flex'>
-            {' '}
-            {selectedOption === 'Require Attention' && (
-              <Table
-                headingColor='#FF3D00'
-                headerData={headerData}
-                setDetailsToCheck={setDetailsToCheck}
-                setShowFullDetails={setIsFullDetailsClicked}
-                heading='Urgent Property Request'
-                description={`A new buyer preference has been submitted! Review the details and
-            match it with available property briefs. Upload suitable options to
-            the preference form as soon as possible to ensure a fast and
-            seamless transaction`}
-                data={buyerPreferences.map((item) => ({
-                  date: formatDate(item.createdAt),
-                  propertyType: item.propertyType,
-                  location: `${item.location.state}, ${item.location.localGovernment}, ${item.location.area}`,
-                  propertyPrice: item.price.toString(),
-                  document: item.docOnProperty
-                    ? item.docOnProperty.map((doc) => doc.docName).join(', ')
-                    : '', // Join docName values or leave empty if not provided
-                }))}
-              />
-            )}
-            {selectedOption === 'Inspection Requests' && (
-              <RequestsTable data={allRequests} />
-            )}
-            {selectedOption === '3 month ago Brief' && (
-              <Table
-                headingColor='black'
-                headerData={headerData}
-                setDetailsToCheck={setDetailsToCheck}
-                setShowFullDetails={setIsFullDetailsClicked}
-                heading='3 month ago Brief'
-                description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
-                data={briefData}
-              />
-            )}
-            {selectedOption === 'recently publish' && (
-              <ShowTable
-                headerData={headerData}
-                setDetailsToCheck={setDetailsToCheck}
-                setShowFullDetails={setIsFullDetailsClicked}
-                heading='Publish Brief'
-                data={briefData}
-              />
-            )}
+            {selectedOption && dynamicContent()}
           </div>
 
           {/**Mobile View */}
@@ -382,8 +424,8 @@ const Table: FC<TableProps> = ({
   headingColor,
 }) => {
   return (
-    <section className='lg:w-[1184px] flex flex-col'>
-      <div className='lg:w-[1184px] min-h-fit py-[43.9px] px-[41.16px] bg-white flex flex-col gap-[41.6px]'>
+    <section className='w-full flex flex-col'>
+      <div className='container min-h-fit py-[43.9px] px-[41.16px] bg-white flex flex-col gap-[41.6px]'>
         <div className='min-h-[99px] flex flex-col gap-[10px]'>
           <h2
             style={{ color: headingColor }}
@@ -395,8 +437,8 @@ const Table: FC<TableProps> = ({
           </span>
         </div>
         {/**table */}
-        <table className='w-full flex flex-col gap-[15px]'>
-          <thead className='min-h-[54px] p-[16px] bg-[#FAFAFA]'>
+        <table cellPadding={10} className='w-full flex flex-col gap-[15px]'>
+          <thead className='min-h-[54px] py-[6px] px-[8px] bg-[#FAFAFA]'>
             {''}
             <tr className='w-full flex'>
               {headerData?.map((item: string, idx: number) => (
@@ -408,9 +450,9 @@ const Table: FC<TableProps> = ({
               ))}
             </tr>
           </thead>
-          <tbody className='space-y-6 flex flex-col justify-start overflow-y-scroll hide-scrollbar px-[8px]'>
+          <tbody className='space-y-96 overflow-y-scroll hide-scrollbar px-[8px]'>
             {data.map((item, idx: number) => (
-              <tr className='w-full flex' key={idx}>
+              <tr className='w-full' key={idx}>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   {item.date}
                 </td>
@@ -420,14 +462,18 @@ const Table: FC<TableProps> = ({
                 <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   {item.location}
                 </td>
-                <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+                <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
                   N {Number(item.propertyPrice).toLocaleString()}
                 </td>
                 {item.document ? (
                   <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
                     {item.document.split('').splice(0, 14).join('') + '...'}
                   </td>
-                ) : null}
+                ) : (
+                  <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
+                    No document
+                  </td>
+                )}
                 {item.amountSold ? (
                   <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
                     N {Number(item.amountSold).toLocaleString()}
@@ -442,10 +488,11 @@ const Table: FC<TableProps> = ({
                       setDetailsToCheck({
                         ...item,
                         actualLocation: {
-                          state: item.location,
-                          localGovernment: '',
+                          state: item.location.split(',')[0],
+                          localGovernment: item.location.split(',')[1],
                           area: '',
                         },
+                        propertyFeatures: item.propertyFeatures,
                       });
                     }}
                     className='bg-[#8DDB90] min-h-[50px] py-[12px] px-[24px] text-base leading-[25.6px] font-bold tracking-[0%] text-center text-[#FAFAFA]'>
@@ -473,4 +520,11 @@ const Table: FC<TableProps> = ({
     </section>
   );
 };
+
+enum SELECTED_OPTIONS {
+  REQUIRE_ATTENTION = 'Require Attention',
+  RECENTLY_PUBLISH = 'recently publish',
+  INSPECTION_REQUESTS = 'Inspection Requests',
+  THREE_MONTHS_AGO_BRIEF = '3 month ago Brief',
+}
 export default Overview;
