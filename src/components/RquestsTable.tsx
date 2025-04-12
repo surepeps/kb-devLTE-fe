@@ -1,6 +1,6 @@
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 
@@ -29,6 +29,8 @@ interface TableProps {
 }
 
 const RequestsTable: FC<TableProps> = ({ data }) => {
+  const [availabilityStatus, setAvailabilityStatus] = useState<Record<string, boolean | null>>({});
+
   const handleAvailability = async (id: string, isAvailable: boolean) => {
     const url = URLS.BASE + URLS.agent + URLS.confirmAvailability;
 
@@ -36,6 +38,7 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
       .then((result) => {
         if (result.success) {
           toast.success(result.message);
+          setAvailabilityStatus((prev) => ({ ...prev, [id]: isAvailable }));
         } else {
           toast.error(result.error);
         }
@@ -76,14 +79,16 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
                   <td className='p-3'>{item.requestFrom.email}</td>
                   <td className='p-3 flex gap-2'>
                     <button
-                      className='px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600'
+                      className='px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-300'
                       onClick={() => handleAvailability(item._id, true)}
+                      disabled={availabilityStatus[item._id] === true}
                     >
                       Available
                     </button>
                     <button
-                      className='px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600'
+                      className='px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 disabled:bg-gray-300'
                       onClick={() => handleAvailability(item._id, false)}
+                      disabled={availabilityStatus[item._id] === false}
                     >
                       Not Available
                     </button>

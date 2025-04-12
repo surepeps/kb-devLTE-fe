@@ -420,7 +420,7 @@ const Buy = () => {
                   </h2>
 
                   <div className='w-full grid grid-cols-2 mt-[10px] gap-[8px]'>
-                    {featureData.map(
+                    {featureData?.map(
                       (item: { _id: string; featureName: string }) => {
                         return (
                           <div

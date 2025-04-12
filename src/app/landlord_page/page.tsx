@@ -12,9 +12,9 @@ import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Input from '@/components/Input';
 import { useFormik } from 'formik';
-//import * as Yup from 'yup';
+import * as Yup from 'yup';
 import { featuresData, tenantCriteriaData } from '@/data/landlord';
-import PhoneInput from 'react-phone-number-input';
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { usePageContext } from '@/context/page-context';
 import AttachFile from '@/components/multipleAttachFile';
 import 'react-phone-number-input/style.css';
@@ -71,18 +71,18 @@ const Landlord = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
-    console.log('Selected LGA:', formik.values); // Debugging
+    // console.log('Selected LGA:', formik.values); // Debugging
     setSelectedLGA?.(selected);
   };
 
   const handleStateChange = (selected: Option | null) => {
-    console.log('Selected State:', selected);
+    // console.log('Selected State:', selected);
     formik.setFieldValue('selectedState', selected?.value);
     setSelectedState?.(selected);
 
     if (selected) {
       const lgas = naijaStates.lgas(selected.value)?.lgas;
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
+      // console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setLgaOptions(
@@ -92,7 +92,7 @@ const Landlord = () => {
           }))
         );
       } else {
-        console.error('LGAs not returned as an array:', lgas);
+        // console.error('LGAs not returned as an array:', lgas);
         setLgaOptions([]);
       }
       setSelectedLGA?.(null);
@@ -126,35 +126,38 @@ const Landlord = () => {
       bedroom: undefined as string | undefined,
       images: [],
     },
-    // validationSchema: Yup.object({
-    //   propertyType: Yup.string().required('Property type is required'),
-    //   propertyCondition: Yup.string().required(
-    //     'Property condition is required'
-    //   ),
-    //   area: Yup.string().required('Area is required'),
-    //   price: Yup.string().required('Price is required'),
-    //   features: Yup.array().min(1, 'At least one feature is required'),
-    //   tenantCriteria: Yup.array().min(
-    //     1,
-    //     'At least one tenant criteria is required'
-    //   ),
-    //   noOfBedroom: Yup.string().required('Number of bedrooms is required'),
-    //   // additionalFeatures: Yup.array()
-    //   //   .of(Yup.string())
-    //   //   .min(1, 'At least one additional feature is required'),
-    //   selectedState: Yup.string().required('State is required'),
-    //   // selectedCity: Yup.string().required('City is required'),
-    //   selectedLGA: Yup.string().required('LGA is required'),
-    //   ownerFullName: Yup.string().required('Owner full name is required'),
-    //   ownerPhoneNumber: Yup.string()
-    //     .required('Owner phone number is required')
-    //     .test('is-valid-phone', 'Invalid phone number', (value) =>
-    //       value ? isValidPhoneNumber(value) : false
-    //     ),
-    //   ownerEmail: Yup.string()
-    //     .email('Invalid email')
-    //     .required('Owner email is required'),
-    // }),
+    validationSchema: Yup.object({
+      propertyType: Yup.string().required('Property type is required'),
+      propertyCondition: Yup.string().required(
+        'Property condition is required'
+      ),
+      // area: Yup.string().required('Area is required'),
+      rentalPrice: Yup.string().required('Rental price is required'),
+      features: Yup.array().min(1, 'At least one feature is required'),
+      tenantCriteria: Yup.array().min(
+        1,
+        'At least one tenant criteria is required'
+      ),
+      noOfBedroom: Yup.string(),
+      bedroom: Yup.string().required('Number of bedrooms is required'),
+      // additionalFeatures: Yup.array()
+      //   .of(Yup.string())
+      //   .min(1, 'At least one additional feature is required'),
+      selectedState: Yup.string().required('State is required'),
+      // selectedCity: Yup.string().required('City is required'),
+      selectedLGA: Yup.string().required('LGA is required'),
+      ownerFullName: Yup.string().required('Owner full name is required'),
+      ownerPhoneNumber: Yup.string()
+        .required('Owner phone number is required')
+        .test('is-valid-phone', 'Invalid phone number', (value) =>
+          value ? isValidPhoneNumber(value) : false
+        ),
+      ownerEmail: Yup.string()
+        .email('Invalid email')
+        .required('Owner email is required'),
+    }),
+    validateOnBlur: true, // Enable validation on blur
+    validateOnChange: true, // Enable validation on change
     onSubmit: async (values) => {
       console.log(values);
       setAreInputsDisabled(true);
@@ -166,9 +169,9 @@ const Landlord = () => {
           location: {
             state: values.selectedState,
             localGovernment: values.selectedLGA,
-            area: values.area,
+            // area: values.area,
           },
-          // price: values.price,
+          bedroom: values.bedroom,
           rentalPrice: values.rentalPrice,
           noOfBedrooms: Number(values?.bedroom?.split(' ')[0].trimStart()),
           features: values.features.map((feature) => ({
@@ -185,7 +188,7 @@ const Landlord = () => {
           areYouTheOwner: values.areYouTheOwner,
         };
 
-        console.log('Payload:', payload);
+        // console.log('Payload:', payload);
 
         await toast.promise(
           axios.post(url, payload).then((response) => {
@@ -247,7 +250,16 @@ const Landlord = () => {
               Brief Details
             </h3>
             <form
-              onSubmit={formik.handleSubmit}
+              onSubmit={(e) => {
+                e.preventDefault();
+                formik.handleSubmit();
+                if (!formik.isValid) {
+                  window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth',
+                  });
+                }
+              }}
               className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
               <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
                 <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
@@ -613,7 +625,21 @@ const Landlord = () => {
                 </div>
               </div>
 
-              <div className='w-full flex justify-center items-center mt-8'>
+              <div className='w-full flex flex-col items-center mt-8'>
+                {Object.keys(formik.errors).length > 0 && (
+                  <div className='bg-red-100 text-red-600 p-4 rounded-md w-full max-w-[877px]'>
+                    <h3 className='font-bold mb-2'>
+                      Please enter the following information:
+                    </h3>
+                    <ul className='list-disc pl-5'>
+                      {Object.entries(formik.errors).map(([field, error]) => (
+                        <li key={field} className='text-sm'>
+                          {error}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <Button
                   isDisabled={!isLegalOwner}
                   value='Submit Brief'
