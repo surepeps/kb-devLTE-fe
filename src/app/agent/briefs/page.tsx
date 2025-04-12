@@ -106,11 +106,11 @@ const Form2 = () => {
           toast.error('Failed to get data');
           return setIsLoading(false);
         }
-        const data = response.data;
-        console.log(data);
+        const data = response;
+        console.log("data", data);
         const combinedProperties = [
-          ...(data?.sellProperties || []),
-          ...(data?.rentProperties || []),
+          ...(data?.properties.sellProperties || []),
+          ...(data?.properties.rentProperties || []),
         ].map(
           ({
             docOnProperty,

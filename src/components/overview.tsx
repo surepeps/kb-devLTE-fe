@@ -144,11 +144,13 @@ const Overview = () => {
             message: 'Failed to get data',
           });
         }
-        const data = response.data;
+        const data = response;
+
         const combinedProperties = [
-          ...(data?.sellProperties || []),
-          ...(data?.rentProperties || []),
+          ...(data?.properties.sellProperties || []),
+          ...(data?.properties.rentProperties || []),
         ];
+
         setIsLoadingDetails({
           isLoading: false,
           message: 'Data Loaded',
