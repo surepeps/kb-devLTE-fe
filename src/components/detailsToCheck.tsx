@@ -130,7 +130,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           )}
 
           {/**Submit Brief */}
-          {submitBrief && (
+          {heading === 'Require Attention' && (
             <div className='w-[256px] min-h-[100px] flex flex-col gap-[6px]'>
               <span className='font-ubuntu text-[#000000] text-[14px] leading-[22.4px] tracking-[0.1px] font-normal'>
                 If you&apos;ve found a matching brief for this preference,
@@ -177,6 +177,13 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                             .map((item: string) => item.trimStart())
                         : [''],
                     price: detailsToCheck.propertyPrice.toString(),
+                    fileUrl:
+                      detailsToCheck.pictures !== undefined
+                        ? detailsToCheck.pictures.map((item: string) => ({
+                            id: item,
+                            image: item,
+                          }))
+                        : [],
                   });
                   setSelectedNav(AgentNavData.CREATE_BRIEF);
                   setPropertyDetails({
