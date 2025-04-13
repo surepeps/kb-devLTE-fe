@@ -1,6 +1,7 @@
 /** @format */
 
 export interface DataProps {
+  id?: string;
   date: string;
   propertyType: string;
   location: string;
