@@ -15,14 +15,11 @@ import { AgentNavData } from '@/enums';
 import { DataProps } from '@/types/agent_data_props';
 import PropertyType from '@/components/propertyType';
 import Overview from '@/components/overview';
-import { completeTransactionData } from '@/data/sampleDataForAgent';
+// import { completeTransactionData } from '@/data/sampleDataForAgent';
 import Brief from '@/components/brief';
 import { URLS } from '@/utils/URLS';
 import { GET_REQUEST } from '@/utils/requests';
 import toast from 'react-hot-toast';
-// import { GET_REQUEST } from '@/utils/requests';
-// import { URLS } from '@/utils/URLS';
-// import { useUserContext } from '@/context/user-context';
 import Cookies from 'js-cookie';
 import { briefData } from '@/data/sampleDataForAgent';
 import Settings from '@/components/settings-components/settings';
@@ -131,7 +128,6 @@ const Form2 = () => {
             propertyFeatures,
           })
         );
-
         setTotalBriefData(combinedProperties);
         setIsLoading(false);
       } catch (error) {
