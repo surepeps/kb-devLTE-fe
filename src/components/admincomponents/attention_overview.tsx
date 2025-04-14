@@ -39,60 +39,7 @@ export default function AttentionOverview() {
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(
       totalBriefData[0]
   );
-  
-  useEffect(() => {
-    const getTotalBriefs = async () => {
-      setIsLoading(true);
 
-      try {
-        const response = await GET_REQUEST(
-          URLS.BASE + URLS.agentfetchTotalBriefs,
-          Cookies.get('token')
-        );
-
-        if (response?.success === false) {
-          toast.error('Failed to get data');
-          return setIsLoading(false);
-        }
-        const data = response;
-        console.log("data", data);
-        const combinedProperties = [
-          ...(data?.properties.sellProperties || []),
-          ...(data?.properties.rentProperties || []),
-        ].map(
-          ({
-            id,
-            docOnProperty,
-            pictures,
-            propertyType,
-            price,
-            location,
-            propertyFeatures,
-            createdAt,
-          }: BriefDataProps) => ({
-            id,
-            date: createdAt,
-            propertyType,
-            actualLocation: location,
-            propertyPrice: price,
-            docOnProperty,
-            amountSold: price,
-            pictures,
-            propertyFeatures,
-          })
-        );
-        setTotalBriefData(combinedProperties);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-        setIsLoading(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getTotalBriefs();
-  }, []);
 
   const renderDynamicComponent = () => {
     switch (active) {
@@ -100,16 +47,6 @@ export default function AttentionOverview() {
         return <IncomingInspections />;
       case 'Incoming Briefs':
         return <OverdueBriefs />;
-        // return   <Brief
-        //             headerData={headerData}
-        //             detailsToCheck={detailsToCheck}
-        //             setShowFullDetails={setShowFullDetails}
-        //             setDetailsToCheck={setDetailsToCheck}
-        //             showFullDetails={showFullDetails}
-        //             heading='Total Brief'
-        //             isLoading={isLoading}
-        //             data={totalBriefData}
-        //           />;
       case 'Preference Requiring Attention':
         return <PreferenceAttention />;
       default:
