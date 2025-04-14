@@ -1,22 +1,19 @@
 /** @format */
 
-import React from 'react';
+import { useCreateBriefContext } from '@/context/create-brief-context';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 
-interface AttachFileProps {
-  heading: string;
-  setFileUrl: React.Dispatch<
-    React.SetStateAction<{ id: string; image: string }[]>
-  >;
-  className?: string;
-  id: string; // Add id prop
-}
+const AttachFile = forwardRef((props: any, ref) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { setCreateBrief, createBrief } = useCreateBriefContext();
 
-const AttachFile: React.FC<AttachFileProps> = ({
-  heading,
-  setFileUrl,
-  className,
-  id, // Destructure id prop
-}) => {
+  // Expose methods to parent
+  useImperativeHandle(ref, () => ({
+    triggerUpload: () => {
+      fileInputRef.current?.click();
+    },
+  }));
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -25,44 +22,45 @@ const AttachFile: React.FC<AttachFileProps> = ({
 
     const fileUrls = await Promise.all(
       Array.from(files).map(async (file) => {
-        // Simulate an upload to the server
-        const fileUrl = URL.createObjectURL(file); // This is a temporary URL
-        return { id: fileUrl, image: fileUrl }; // Return an object with id and image
+        const fileUrl = URL.createObjectURL(file);
+        return { id: fileUrl, image: fileUrl };
       })
     );
 
-    if (setFileUrl) {
-      setFileUrl((prevUrls) => [...prevUrls, ...fileUrls]); // Replace the array with objects containing id and image
-    }
+    // setUploadedFiles((prev) => [...prev, ...fileUrls]);
+    setCreateBrief({
+      ...createBrief,
+      fileUrl: [...createBrief.fileUrl, ...fileUrls],
+    });
   };
+
   return (
     <div className='min-h-[58px] w-full flex lg:flex-row flex-col justify-between lg:items-center items-start'>
       <span className='text-base leading-[25.6px] text-[#202430] font-semibold'>
-        {heading}
+        {props?.heading}
       </span>
       <input
+        title='fileupload'
+        id={props.id}
+        ref={fileInputRef}
         type='file'
+        onChange={handleFileChange}
         name=''
         className='peer hidden'
         accept='image/*'
-        multiple
-        id={id} // Use dynamic id
-        title='file'
-        onChange={(event) => {
-          handleFileChange(event);
-        }}
+        // id={id} // Use dynamic id
+        // onChange={(event) => {
+        //   handleFileChange(event);
+        // }}
       />
 
       <svg
-        onClick={() => {
-          const file: HTMLElement | null = document.getElementById(id); // Use dynamic id
-          file?.click();
-        }}
+        onClick={() => fileInputRef.current?.click()}
         width='367'
         height='58'
         viewBox='0 0 367 58'
         fill='none'
-        className={`cursor-pointer w-full lg:w-[367px] ${className}`}
+        className={`cursor-pointer w-full lg:w-[367px]`}
         xmlns='http://www.w3.org/2000/svg'>
         <rect x='0.5' y='0.5' width='366' height='57' rx='3.5' fill='#F8F8FD' />
         <rect
@@ -101,6 +99,18 @@ const AttachFile: React.FC<AttachFileProps> = ({
       </svg>
     </div>
   );
-};
+});
 
 export default AttachFile;
+
+/**
+ * <input
+        title='fileupload'
+        id={props.id}
+        ref={fileInputRef}
+        type='file'
+        className='hidden'
+        onChange={handleFileChange}
+      />
+      <svg onClick={() => fileInputRef.current?.click()} />
+ */

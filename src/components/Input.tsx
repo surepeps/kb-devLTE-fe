@@ -127,10 +127,10 @@ const Input: FC<InputProps> = memo(
                 isDisabled={isDisabled}
                 className='disabled:cursor-not-allowed'
               />
-              {(formik.errors.selectedState ||
-                formik.touched.selectedState) && (
+              {(formik?.errors?.selectedState ||
+                formik?.touched?.selectedState) && (
                 <span className='text-red-600 text-xs'>
-                  {formik.errors.selectedState}
+                  {formik?.errors?.selectedState}
                 </span>
               )}
             </div>
@@ -152,9 +152,10 @@ const Input: FC<InputProps> = memo(
                 isDisabled={lgasOptions?.length === 0}
                 className='disabled:cursor-not-allowed'
               />
-              {(formik.errors.selectedLGA || formik.touched.selectedLGA) && (
+              {(formik?.errors?.selectedLGA ||
+                formik?.touched?.selectedLGA) && (
                 <span className='text-red-600 text-xs'>
-                  {formik.errors.selectedLGA}
+                  {formik?.errors?.selectedLGA}
                 </span>
               )}
             </div>
