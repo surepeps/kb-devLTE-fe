@@ -38,9 +38,21 @@ const Body = ({ children }: { children: ReactNode }) => {
       </section>
       {isSubmittedSuccessfully && <SubmitPopUp />}
       {settings.isUpgradeButtonClicked && <OnUpgradeNotification />}
-      {dashboard.approveBriefsTable.isApproveClicked && <ApproveBriefs />}
-      {dashboard.approveBriefsTable.isRejectClicked && <RejectBriefs />}
-      {dashboard.approveBriefsTable.isDeleteClicked && <DeleteBriefs />}
+      {dashboard.approveBriefsTable.isApproveClicked && <ApproveBriefs brief={undefined} onConfirm={function (): void {
+        throw new Error('Function not implemented.');
+      } } onCancel={function (): void {
+        throw new Error('Function not implemented.');
+      } } />}
+      {dashboard.approveBriefsTable.isRejectClicked && <RejectBriefs brief={undefined} onConfirm={function (): void {
+        throw new Error('Function not implemented.');
+      } } onCancel={function (): void {
+        throw new Error('Function not implemented.');
+      } } />}
+      {dashboard.approveBriefsTable.isDeleteClicked && <DeleteBriefs brief={undefined} onConfirm={function (): void {
+        throw new Error('Function not implemented.');
+      } } onCancel={function (): void {
+        throw new Error('Function not implemented.');
+      } } />}
     </Fragment>
   );
 };
