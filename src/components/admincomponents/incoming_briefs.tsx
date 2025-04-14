@@ -8,43 +8,12 @@ import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import Select from 'react-select';
 import { URLS } from '@/utils/URLS';
-import { GET_REQUEST } from '@/utils/requests';
-import { DataProps } from '@/types/agent_data_props';
-import Cookies from 'js-cookie';
+import { POST_REQUEST } from '@/utils/requests';
 import toast from 'react-hot-toast';
 import EllipsisOptions from './ellipsisOptions';
+import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { usePageContext } from '@/context/page-context';
-
-
-const data = [
-  {
-    id: 'KA4556',
-    legalName: 'Samuel Woodfree',
-    agentType: 'individual',
-    location: 'Ifako Ijaye',
-    landSize: '5000m',
-    amount: 'N 200,000,000,000',
-    document: 'C of O, Receipt',
-  },
-  {
-    id: 'KA4556',
-    legalName: 'Samuel Woodfree',
-    agentType: 'incorporated',
-    location: 'Ifako Ijaye',
-    landSize: '5000m',
-    amount: 'N 200,000,000,000',
-    document: 'C of O, Receipt',
-  },
-  {
-    id: 'KA4556',
-    legalName: 'Samuel Woodfree',
-    agentType: 'individual',
-    location: 'Ifako Ijaye',
-    landSize: '5000m',
-    amount: 'N 200,000,000,000',
-    document: 'C of O, Receipt',
-  },
-];
+import AgentDetailsBar from './AgentDetailsBar';
 
 type BriefDataProps = {
   id: string;
@@ -62,16 +31,10 @@ export default function OverdueBriefs() {
   const [openRow, setOpenRow] = useState<number | null>(null);
   const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
   const [showFullDetails, setShowFullDetails] = useState<boolean>(false);
-  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(
-    totalBriefData[0]
-  );
-  // const [isModalOpen, setIsModalOpen] = useState<number | null>(null);
+  const [detailsToCheck, setDetailsToCheck] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(3);
   const { dashboard, setDashboard } = usePageContext();
-
-  const handleModalAction = (action: string) => {
-    console.log(action);
-    // setIsModalOpen(null); // Close the modal after an action
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -90,43 +53,73 @@ export default function OverdueBriefs() {
       setIsLoading(true);
 
       try {
-        const response = await GET_REQUEST(
-          URLS.BASE + URLS.agentfetchTotalBriefs,
-          Cookies.get('token')
+        const response = await POST_REQUEST(
+          URLS.BASE + URLS.adminGetAllBriefs,
+          {
+            propertyType: 'all',
+            ownerType: 'PropertyOwner',
+            page: currentPage,
+            limit: 10,
+          }
         );
 
         if (response?.success === false) {
           toast.error('Failed to get data');
           return setIsLoading(false);
         }
-        const data = response;
-        console.log('data', data);
-        const combinedProperties = [
-          ...(data?.properties.sellProperties || []),
-          ...(data?.properties.rentProperties || []),
-        ].map(
-          ({
-            id,
-            docOnProperty,
-            pictures,
-            propertyType,
-            price,
-            location,
-            propertyFeatures,
-            createdAt,
-          }: BriefDataProps) => ({
-            id,
-            date: createdAt,
-            propertyType,
-            actualLocation: location,
-            propertyPrice: price,
-            docOnProperty,
-            amountSold: price,
-            pictures,
-            propertyFeatures,
-          })
-        );
-        setTotalBriefData(combinedProperties);
+
+        const rents = response?.properties?.data?.rents || [];
+        const sells = response?.properties?.data?.sells || [];
+
+        const mappedRents = rents.map((item: any) => ({
+          id: item._id?.slice(0, 8) || 'N/A',
+          legalName: item.owner
+            ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || 'N/A'
+            : 'N/A',
+          email: item.owner?.email || 'N/A',
+          phoneNumber: item.owner?.phoneNumber || 'N/A',
+          agentType: item.ownerModel || 'N/A',
+          location: item.location
+            ? `${item.location.state || 'N/A'}, ${item.location.localGovernment || 'N/A'}`
+            : 'N/A',
+          landSize: item.landSize
+            ? `${item.landSize.size || 'N/A'} ${item.landSize.measurementType || 'N/A'}`
+            : 'N/A',
+          amount: item.rentalPrice ? `₦${item.rentalPrice.toLocaleString()}` : 'N/A',
+          document: 'N/A', 
+          createdAt: item.createdAt || 'N/A',
+          propertyId: item._id || 'N/A',
+          briefType: 'rent',
+          isApproved: item.isApproved || false,
+        }));
+
+        const mappedSells = sells.map((item: any) => ({
+          id: item._id?.slice(0, 8) || 'N/A',
+          legalName: item.owner
+            ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || 'N/A'
+            : 'N/A',
+          email: item.owner?.email || 'N/A',
+          phoneNumber: item.owner?.phoneNumber || 'N/A',
+          agentType: item.ownerModel || 'N/A',
+          location: item.location
+            ? `${item.location.state || 'N/A'}, ${item.location.localGovernment || 'N/A'}, ${item.location.area || 'N/A'}`
+            : 'N/A',
+          landSize: item.landSize
+            ? `${item.landSize.size || 'N/A'} ${item.landSize.measurementType || 'N/A'}`
+            : 'N/A',
+          amount: item.price ? `₦${item.price.toLocaleString()}` : 'N/A',
+          document: item.docOnProperty?.length
+            ? item.docOnProperty
+                .filter((doc: any) => doc?.isProvided)
+                .map((doc: any) => doc?.docName)
+                .join(', ') || 'N/A'
+            : 'N/A',
+          createdAt: item.createdAt || 'N/A',
+          propertyId: item._id || 'N/A',
+          briefType: 'sell',
+        }));
+
+        setTotalBriefData([...mappedRents, ...mappedSells]);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
@@ -135,9 +128,8 @@ export default function OverdueBriefs() {
         setIsLoading(false);
       }
     };
-
     getTotalBriefs();
-  }, []);
+  }, [currentPage]);
 
   return (
     <>
@@ -194,18 +186,18 @@ export default function OverdueBriefs() {
                 <th className='p-3'>Land Size</th>
                 <th className='p-3'>Amount</th>
                 <th className='p-3'>Document</th>
-                <th className='p-3'>Action</th>
+                <th className='p-3'>Full Details</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {totalBriefData.map((item, index) => (
                 <tr
                   key={index}
                   className='border-b text-sm text-gray-700 hover:bg-gray-50'>
                   <td className='p-3'>
                     <input title='checkbox' type='checkbox' />
                   </td>
-                  <td className='p-3'>{item.id}</td>
+                  <td className='p-3'>{item.id}</td> {/* Truncated ID */}
                   <td className='p-3'>{item.legalName}</td>
                   <td
                     className={`p-3 font-semibold ${
@@ -222,9 +214,7 @@ export default function OverdueBriefs() {
                   <td className='p-3 cursor-pointer text-2xl'>
                     <FontAwesomeIcon
                       icon={faEllipsis}
-                      onClick={() => {
-                        setOpenRow(openRow === index ? null : index);
-                      }}
+                      onClick={() => setDetailsToCheck(item)}
                     />
                     {openRow === index && (
                       <EllipsisOptions
@@ -270,7 +260,47 @@ export default function OverdueBriefs() {
             </tbody>
           </table>
         </div>
+        <div className='flex justify-end items-center mt-10 gap-1'>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className={`px-4 py-1 rounded-md ${
+              currentPage === 1
+                ? 'text-gray-300'
+                : 'text-black-500 hover:text-[#8DDB90]'
+            }`}
+            disabled={currentPage === 1}>
+            <FaChevronLeft />
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-3 py-1 rounded-md ${
+                currentPage === index + 1
+                  ? 'bg-[#8DDB90] text-white'
+                  : ' hover:bg-gray-300'
+              }`}>
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            className={`px-4 py-1 rounded-md ${
+              currentPage === totalPages
+                ? 'text-gray-300'
+                : 'text-black-500 hover:text-[#8DDB90]'
+            }`}
+            disabled={currentPage === totalPages}>
+            <FaChevronRight />
+          </button>
+        </div>
       </motion.div>
+      {detailsToCheck && (
+        <AgentDetailsBar
+          user={detailsToCheck}
+          onClose={() => setDetailsToCheck(null)}
+        />
+      )}
     </>
   );
 }

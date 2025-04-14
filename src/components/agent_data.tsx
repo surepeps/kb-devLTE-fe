@@ -158,7 +158,7 @@ const AgentData = () => {
           },
         ],
       };
-      console.log('Payload:', payload);
+      // console.log('Payload:', payload);
       await toast.promise(
         PUT_REQUEST(
           URLS.BASE + URLS.agentOnboarding,
