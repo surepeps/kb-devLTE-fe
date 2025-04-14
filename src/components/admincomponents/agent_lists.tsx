@@ -208,12 +208,12 @@ export default function AgentLists() {
                         ? 'text-red-500'
                         : 'text-green-500'
                     }`}>
-                    {item.agentType || 'N/A'} {/* Fallback to 'N/A' if agentType is undefined */}
+                    {item.agentType || 'N/A'}
                   </td>
                   <td className='p-3'>
                     {item.address
                       ? `${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`
-                      : 'N/A'} {/* Fallback to 'N/A' if address is undefined */}
+                      : 'N/A'}
                   </td>
                   <td className='p-3 cursor-pointer text-2xl'>
                     <FontAwesomeIcon

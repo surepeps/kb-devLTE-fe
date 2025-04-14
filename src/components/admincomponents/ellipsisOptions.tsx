@@ -65,7 +65,6 @@ const EllipsisOptions: FC<EllipsisOptionsProps> = ({
         (item: { name: string; onClick: () => void }, index) => (
           <span
             onClick={() => {
-              console.log('clicked');
               item?.onClick();
               closeMenu?.(null);
             }}
