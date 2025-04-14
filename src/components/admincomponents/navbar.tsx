@@ -23,7 +23,7 @@ const navItems = [
     href: '/admin',
     label: 'Dashboard Overview',
     icon: faBorderAll,
-    disabled: true,
+    disabled: false,
   },
   {
     href: '/admin/agent_management',

@@ -12,10 +12,10 @@ export const URLS = {
   googleLogin: '/login/google',
   verifyEmail: '/verify-email',
   agentCreateBrief: '/properties/sell/new',
-  agentfetchTotalBriefs: '/agent/properties', // for agent total briefs
+  agentfetchTotalBriefs: '/agent/properties',
   landLordCreateBrief: '/properties/rents/rent/new',
   buyersFetchBriefs: '/properties/sell/all',
-  rentersFetchBriefs: '/properties/rents/all', // to fetch rent briefs on the rent page
+  rentersFetchBriefs: '/properties/rents/all', 
   buyersSearchBrief: '/properties/buy/request/search',
   resetPassword: '/reset-password',
   requestPasswordReset: '/request-password-reset',
@@ -29,4 +29,9 @@ export const URLS = {
   changePassword: '/agent/change-password',
   upgradeAccount: '/agent/account-upgrade',
   userAccount: '/agent/account',
+  adminGetAllInspections: '/admin/request/all',
+  approveBrief: '/admin/approve-disapprove-property',
+  deleteBrief: '/api/briefs/delete',
+  rejectBrief: '/api/briefs/reject',
+  adminGetAllBriefs: '/admin/properties',
 };

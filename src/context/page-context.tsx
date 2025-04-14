@@ -58,8 +58,14 @@ export const PageContextProvider = ({
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] =
     useState<boolean>(false);
 
-  //Buy page - property referenece
-  const [propertyReference, setPropertyReference] = useState({});
+  //Buy page and rent page - property referenece
+  const [propertyReference, setPropertyReference] = useState<{
+    type: 'buy' | 'rental' | '';
+    payload: {};
+  }>({
+    type: '',
+    payload: {},
+  });
 
   /**Selected Briefs for Buy Page - property reference */
   const [propertyRefSelectedBriefs, setPropertyRefSelectedBriefs] = useState<
