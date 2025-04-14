@@ -6,6 +6,7 @@ import { DataProps } from '@/types/agent_data_props';
 import { FC, useEffect, useRef } from 'react';
 import { usePageContext } from '@/context/page-context';
 import { AgentNavData } from '@/enums';
+import { useCreateBriefContext } from '@/context/create-brief-context';
 
 interface DetailsToCheckProps {
   setIsFullDetailsClicked: (type: boolean) => void;
@@ -22,10 +23,15 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
 }) => {
   const topRef = useRef<HTMLDivElement>(null);
   const { setSelectedNav, setPropertyDetails } = usePageContext();
+  const { createBrief, setCreateBrief } = useCreateBriefContext();
 
   const scrollToTop = () => {
     topRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    console.log(detailsToCheck);
+  }, []);
 
   useEffect(() => {
     scrollToTop();
@@ -59,12 +65,12 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
             <circle cx='2' cy='2' r='2' fill='#25324B' />
           </svg>
           <span className='text-[20px] leading-[32px] text-[#25324B] font-semibold font-epilogue'>
-            Full Details
+            preference
           </span>
         </div>
       </div>
 
-      <div className='w-full min-h-[310px] border-[1px] py-[30px] flex flex-row flex-wrap items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[60px]'>
+      <div className='w-full container min-h-[310px] border-[1px] py-[30px] flex flex-row flex-wrap items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[60px]'>
         <div className='w-full flex flex-wrap gap-[20px] items-start'>
           {/**Property Type and Property Price */}
           <Container
@@ -124,7 +130,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           )}
 
           {/**Submit Brief */}
-          {submitBrief && (
+          {heading === 'Require Attention' && (
             <div className='w-[256px] min-h-[100px] flex flex-col gap-[6px]'>
               <span className='font-ubuntu text-[#000000] text-[14px] leading-[22.4px] tracking-[0.1px] font-normal'>
                 If you&apos;ve found a matching brief for this preference,
@@ -132,6 +138,53 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
               </span>
               <button
                 onClick={() => {
+                  setCreateBrief({
+                    ...createBrief,
+                    propertyType: detailsToCheck.propertyType,
+                    additionalFeatures:
+                      detailsToCheck.propertyFeatures?.additionalFeatures,
+                    noOfBedroom: detailsToCheck.propertyFeatures?.noOfBedrooms,
+                    selectedState: {
+                      value:
+                        detailsToCheck.actualLocation?.state !== undefined
+                          ? detailsToCheck.actualLocation.state
+                          : '',
+                      label:
+                        detailsToCheck.actualLocation?.state !== undefined
+                          ? detailsToCheck.actualLocation.state
+                          : '',
+                    },
+                    selectedLGA: {
+                      value:
+                        detailsToCheck.actualLocation?.localGovernment !==
+                        undefined
+                          ? detailsToCheck.actualLocation.localGovernment
+                          : '',
+                      label:
+                        detailsToCheck.actualLocation?.localGovernment !==
+                        undefined
+                          ? detailsToCheck.actualLocation.localGovernment
+                          : '',
+                    },
+                    selectedCity:
+                      detailsToCheck.actualLocation?.area !== undefined
+                        ? detailsToCheck.actualLocation.area
+                        : '',
+                    documents:
+                      detailsToCheck.document !== undefined
+                        ? detailsToCheck.document
+                            .split(',')
+                            .map((item: string) => item.trimStart())
+                        : [''],
+                    price: detailsToCheck.propertyPrice.toString(),
+                    fileUrl:
+                      detailsToCheck.pictures !== undefined
+                        ? detailsToCheck.pictures.map((item: string) => ({
+                            id: item,
+                            image: item,
+                          }))
+                        : [],
+                  });
                   setSelectedNav(AgentNavData.CREATE_BRIEF);
                   setPropertyDetails({
                     price: detailsToCheck.propertyPrice,

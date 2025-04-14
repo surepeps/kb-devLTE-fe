@@ -57,8 +57,14 @@ export interface GlobalContextTypes {
     selectedState: Option | null;
     selectedCity: Option | null;
   }) => void;
-  propertyReference: object;
-  setPropertyReference: ({}: object) => void;
+  propertyReference: {
+    type: 'buy' | 'rental' | '';
+    payload: {};
+  };
+  setPropertyReference: ({}: {
+    type: 'buy' | 'rental' | '';
+    payload: {};
+  }) => void;
   cardData: [];
   setCardData: ([]: []) => void;
   selectedBriefs: Set<BriefType>;
