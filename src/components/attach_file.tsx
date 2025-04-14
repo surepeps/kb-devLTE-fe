@@ -57,6 +57,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
         className='peer hidden'
         id={id} // Use dynamic id
         title='file'
+        accept='image/*'
         onChange={(event) => {
           handleFileChange(event);
         }}
