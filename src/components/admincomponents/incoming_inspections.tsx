@@ -1,5 +1,4 @@
 /** @format */
-
 'use client';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,82 +7,17 @@ import filterIcon from '@/svgs/filterIcon.svg';
 import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EllipsisOptions from './ellipsisOptions';
 import { usePageContext } from '@/context/page-context';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import ApproveBriefs from './approveBriefs';
+import DeleteBriefs from './deleteBriefs';
+import RejectBriefs from './rejectBriefs';
 
-const data = [
-  {
-    id: 'KA4556',
-    buyerContact: {
-      name: 'Samuel Woodfree',
-      email: 'samuel.woodfree@example.com',
-      phone: '08012345678',
-    },
-    agentInCharge: {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '08087654321',
-    },
-    propertyToInspect: {
-      address: '5000m land in Ifako Ijaye',
-      type: 'Residential',
-      size: '5000m²',
-    },
-    inspectionDate: '2023-10-01',
-    briefDetails: {
-      purpose: 'Inspection for property purchase',
-      notes: 'Buyer is interested in immediate purchase.',
-    },
-  },
-  {
-    id: 'KA4557',
-    buyerContact: {
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      phone: '08023456789',
-    },
-    agentInCharge: {
-      name: 'Alice Johnson',
-      email: 'alice.johnson@example.com',
-      phone: '08098765432',
-    },
-    propertyToInspect: {
-      address: '3000m land in Ikeja',
-      type: 'Commercial',
-      size: '3000m²',
-    },
-    inspectionDate: '2023-10-05',
-    briefDetails: {
-      purpose: 'Inspection for property lease',
-      notes: 'Lease duration is negotiable.',
-    },
-  },
-  {
-    id: 'KA4558',
-    buyerContact: {
-      name: 'Michael Brown',
-      email: 'michael.brown@example.com',
-      phone: '08034567890',
-    },
-    agentInCharge: {
-      name: 'Robert Wilson',
-      email: 'robert.wilson@example.com',
-      phone: '08065432109',
-    },
-    propertyToInspect: {
-      address: '2000m land in Yaba',
-      type: 'Industrial',
-      size: '2000m²',
-    },
-    inspectionDate: '2023-10-10',
-    briefDetails: {
-      purpose: 'Inspection for property sale',
-      notes: 'Property requires minor renovations.',
-    },
-  },
-];
+import { URLS } from '@/utils/URLS';
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
+import toast from 'react-hot-toast';
 
 export default function PendingBriefs() {
   const formik = useFormik({
@@ -102,13 +36,120 @@ export default function PendingBriefs() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Buyer Contact');
   const [selectedInspection, setSelectedInspection] = useState<any>(null);
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(3);
+  const [briefToApprove, setBriefToApprove] = useState<any>(null); 
+  const [briefToReject, setBriefToReject] = useState<any>(null);
+  const [briefToDelete, setBriefToDelete] = useState<any>(null);
   const { dashboard, setDashboard } = usePageContext();
 
   const toggleSidebar = (inspection: any) => {
     setSelectedInspection(inspection);
     setIsSidebarOpen(true);
   };
+
+  const confirmApproveBrief = async (briefId: string) => {
+    try {
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.approveBrief}`, { id: briefId });
+      if (response?.success) {
+        toast.success('Brief approved successfully');
+        setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
+      } else {
+        toast.error('Failed to approve brief');
+      }
+    } catch (error) {
+      toast.error('An error occurred while approving the brief');
+    } finally {
+      setBriefToApprove(null); // Close the modal after the action
+    }
+  };
+
+  const handleDeleteBrief = async (briefId: string) => {
+    try {
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.deleteBrief}`, { id: briefId });
+      if (response?.success) {
+        toast.success('Brief deleted successfully');
+        setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
+      } else {
+        toast.error('Failed to delete brief');
+      }
+    } catch (error) {
+      toast.error('An error occurred while deleting the brief');
+    }
+  };
+
+  const handleRejectBrief = async (briefId: string) => {
+    try {
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.rejectBrief}`, { id: briefId });
+      if (response?.success) {
+        toast.success('Brief rejected successfully');
+        setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
+      } else {
+        toast.error('Failed to reject brief');
+      }
+    } catch (error) {
+      toast.error('An error occurred while rejecting the brief');
+    }
+  };
+
+  useEffect(() => {
+    const getTotalBriefs = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await GET_REQUEST(
+          `${URLS.BASE + URLS.adminGetAllInspections}?page=${currentPage}&limit=10&propertyType=PropertySell`,
+        );
+
+        if (response?.success === false) {
+          toast.error('Failed to get data');
+          return setIsLoading(false);
+        }
+
+        const data = response?.requests?.data || [];
+        // setTotalPages(response?.requests?.total || 1);
+
+        const mappedData = data.map((item: any) => ({
+          id: item._id,
+          buyerContact: {
+            name: item.buyer?.fullName || 'N/A',
+            email: item.buyer?.email || 'N/A',
+            phone: item.buyer?.phoneNumber || 'N/A',
+          },
+          agentInCharge: {
+            name: item.property?.owner?.fullName || 'N/A',
+            email: item.property?.owner?.email || 'N/A',
+            phone: item.property?.owner?.phoneNumber || 'N/A',
+          },
+          propertyToInspect: {
+            address: `${item.property?.location?.state || 'N/A'}, ${item.property?.location?.localGovernment || 'N/A'}, ${item.property?.location?.area || 'N/A'}`,
+            type: item.property?.propertyType || 'N/A',
+            size: item.property?.propertyFeatures?.noOfBedrooms ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms` : 'N/A',
+          },
+          inspectionDate: item.pending || 'N/A',
+          inspectionStatus: item.status || 'N/A',
+          briefDetails: {
+            agentInCharge: item.property?.owner?.fullName || 'N/A',
+            type: item.property?.propertyType || 'N/A',
+            location: `${item.property?.location?.state || 'N/A'}, ${item.property?.location?.localGovernment || 'N/A'}, ${item.property?.location?.area || 'N/A'}`,
+            price: item.property?.price ? `₦${item.property.price.toLocaleString()}` : 'N/A',
+            usageOptions: item.property?.usageOptions?.length > 0 ? item.property.usageOptions.join(', ') : 'N/A',
+            documents: item.property?.docOnProperty?.map((doc: any) => doc.docName).join(', ') || 'N/A',
+          },
+        }));
+
+        setTotalBriefData(mappedData);
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getTotalBriefs();
+  }, [currentPage]);
 
   return (
     <>
@@ -161,16 +202,16 @@ export default function PendingBriefs() {
                 <th className='p-3'>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3'>Inpection ID</th>
-                <th className='p-3'>Buyer contact</th>
-                <th className='p-3'>Agent in charge</th>
-                <th className='p-3'>Property to inspect</th>
+                <th className='p-3'>Inspection ID</th>
+                <th className='p-3'>Buyer Contact</th>
+                <th className='p-3'>Agent in Charge</th>
+                <th className='p-3'>Property to Inspect</th>
                 <th className='p-3'>Inspection Date</th>
                 <th className='p-3'>Action</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {totalBriefData.map((item, index) => (
                 <tr
                   key={index}
                   className='border-b text-sm text-gray-700 hover:bg-gray-50'>
@@ -199,7 +240,9 @@ export default function PendingBriefs() {
                       View Details
                     </span>
                   </td>
-                  <td className='p-3'>{item.inspectionDate}</td>
+                  <td className='p-3'>
+                    {item.inspectionDate !== 'N/A' ? item.inspectionDate : item.inspectionStatus}
+                  </td>
                   <td className='p-3 cursor-pointer text-2xl'>
                     <FontAwesomeIcon
                       onClick={() => {
@@ -209,39 +252,9 @@ export default function PendingBriefs() {
                     />
                     {openRow === index && (
                       <EllipsisOptions
-                        onApproveBrief={() => {
-                          setDashboard({
-                            ...dashboard,
-                            approveBriefsTable: {
-                              ...dashboard.approveBriefsTable,
-                              isApproveClicked: true,
-                              isRejectClicked: false,
-                              isDeleteClicked: false,
-                            },
-                          });
-                        }}
-                        onDeleteBrief={() => {
-                          setDashboard({
-                            ...dashboard,
-                            approveBriefsTable: {
-                              ...dashboard.approveBriefsTable,
-                              isApproveClicked: false,
-                              isRejectClicked: false,
-                              isDeleteClicked: true,
-                            },
-                          });
-                        }}
-                        onRejectBrief={() => {
-                          setDashboard({
-                            ...dashboard,
-                            approveBriefsTable: {
-                              ...dashboard.approveBriefsTable,
-                              isApproveClicked: false,
-                              isRejectClicked: true,
-                              isDeleteClicked: false,
-                            },
-                          });
-                        }}
+                        onApproveBrief={() => setBriefToApprove(item)}
+                        onDeleteBrief={() => setBriefToReject(item)}
+                        onRejectBrief={() => setBriefToDelete(item)}
                         closeMenu={setOpenRow}
                       />
                     )}
@@ -251,6 +264,31 @@ export default function PendingBriefs() {
             </tbody>
           </table>
         </div>
+        <div className="flex justify-end items-center mt-10 gap-1">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className={`px-4 py-1 rounded-md ${currentPage === 1 ? 'text-gray-300' : 'text-black-500 hover:text-[#8DDB90]'}`}
+            disabled={currentPage === 1}
+          >
+            <FaChevronLeft />
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-[#8DDB90] text-white' : ' hover:bg-gray-300'}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            className={`px-4 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-300' : 'text-black-500 hover:text-[#8DDB90]'}`}
+            disabled={currentPage === totalPages}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
       </motion.div>
 
       {isSidebarOpen && (
@@ -258,7 +296,7 @@ export default function PendingBriefs() {
           <button
             onClick={() => setIsSidebarOpen(false)}
             className='left-4 text-black hover:bg-gray-300 p-2 rounded-full mt-8'>
-            <FaTimes size={25}/>
+            <FaTimes size={25} />
           </button>
           <div className='items-center p-4 border-b border-[#CFD0D5] mt-4'>
             <h4 className='text-lg font-semibold'>Inspection Details</h4>
@@ -269,7 +307,9 @@ export default function PendingBriefs() {
                 <button
                   key={tab}
                   className={`flex-1 py-3 text-center text-base ${
-                    activeTab === tab ? 'border-b-2 border-[#45D884] font-semibold' : ''
+                    activeTab === tab
+                      ? 'border-b-2 border-[#45D884] font-semibold'
+                      : ''
                   }`}
                   onClick={() => setActiveTab(tab)}>
                   {tab}
@@ -282,15 +322,21 @@ export default function PendingBriefs() {
               <div className='py-6'>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Name</p>
-                  <p><strong>{selectedInspection?.buyerContact.name}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.buyerContact.name}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Email</p>
-                  <p><strong>{selectedInspection?.buyerContact.email}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.buyerContact.email}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Phone</p>
-                  <p><strong>{selectedInspection?.buyerContact.phone}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.buyerContact.phone}</strong>
+                  </p>
                 </div>
               </div>
             )}
@@ -298,15 +344,21 @@ export default function PendingBriefs() {
               <div className='py-6'>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Name</p>
-                  <p><strong>{selectedInspection?.agentInCharge.name}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.agentInCharge.name}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Email</p>
-                  <p><strong>{selectedInspection?.agentInCharge.email}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.agentInCharge.email}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Phone</p>
-                  <p><strong>{selectedInspection?.agentInCharge.phone}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.agentInCharge.phone}</strong>
+                  </p>
                 </div>
               </div>
             )}
@@ -314,32 +366,90 @@ export default function PendingBriefs() {
               <div className='py-6'>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Address</p>
-                  <p><strong>{selectedInspection?.propertyToInspect.address}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.propertyToInspect.address}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Type</p>
-                  <p><strong>{selectedInspection?.propertyToInspect.type}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.propertyToInspect.type}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Size</p>
-                  <p><strong>{selectedInspection?.propertyToInspect.size}</strong></p>
+                  <p>
+                    <strong>{selectedInspection?.propertyToInspect.size}</strong>
+                  </p>
                 </div>
               </div>
             )}
             {activeTab === 'Brief' && (
               <div className='py-6'>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
-                  <p>Purpose</p>
-                  <p><strong>{selectedInspection?.briefDetails.purpose}</strong></p>
+                  <p>Agent in Charge</p>
+                  <p>
+                    <strong>{selectedInspection?.briefDetails.agentInCharge}</strong>
+                  </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
-                  <p>Notes</p>
-                  <p><strong>{selectedInspection?.briefDetails.notes}</strong></p>
+                  <p>Property Type</p>
+                  <p>
+                    <strong>{selectedInspection?.propertyToInspect.type}</strong>
+                  </p>
+                </div>
+                <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
+                  <p>Location</p>
+                  <p>
+                    <strong>{selectedInspection?.propertyToInspect.address}</strong>
+                  </p>
+                </div>
+                <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
+                  <p>Property Prices</p>
+                  <p>
+                    <strong>{selectedInspection?.briefDetails.price}</strong>
+                  </p>
+                </div>
+                <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
+                  <p>Usage Options</p>
+                  <p>
+                    <strong>{selectedInspection?.briefDetails.usageOptions}</strong>
+                  </p>
+                </div>
+                <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
+                  <p>Document</p>
+                  <p>
+                    <strong>{selectedInspection?.briefDetails.documents}</strong>
+                  </p>
                 </div>
               </div>
             )}
           </div>
         </div>
+      )}
+
+      {briefToApprove && (
+        <ApproveBriefs
+          brief={briefToApprove}
+          onConfirm={() => confirmApproveBrief(briefToApprove.id)}
+          onCancel={() => setBriefToApprove(null)}
+        />
+      )}
+
+      {briefToReject && (
+        <RejectBriefs
+          brief={briefToReject}
+          onConfirm={() => handleRejectBrief(briefToReject.id)}
+          onCancel={() => setBriefToReject(null)}
+        />
+      )} 
+
+      {briefToDelete && (
+        <DeleteBriefs
+          brief={briefToDelete}
+          onConfirm={() => handleDeleteBrief(briefToDelete.id)}
+          onCancel={() => setBriefToDelete(null)}
+        />
       )}
     </>
   );
