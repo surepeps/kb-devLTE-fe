@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * eslint-disable @typescript-eslint/no-explicit-any
+ *
+ * @format
+ */
+
 /** @format */
 import { ShowTableProps } from '@/types/show_table';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
@@ -6,6 +11,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@/styles/tables.css';
 import { useState } from 'react';
 import Modal from './Modal';
+import { usePageContext } from '@/context/page-context';
+import { useCreateBriefContext } from '@/context/create-brief-context';
+import { AgentNavData } from '@/enums';
 
 const ShowTable: React.FC<ShowTableProps> = ({
   data,
@@ -15,11 +23,20 @@ const ShowTable: React.FC<ShowTableProps> = ({
   setDetailsToCheck,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalPosition, setModalPosition] = useState<{ top: number; left: number } | null>(null);
+  const [editBriefDetails, setEditBriefDetails] = useState<any>({});
+  const [modalPosition, setModalPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const { setSelectedNav } = usePageContext();
+  const { createBrief, setCreateBrief } = useCreateBriefContext();
 
   const handleIconClick = (event: React.MouseEvent, item: any) => {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
-    setModalPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+    setModalPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+    });
     setDetailsToCheck(item);
     setModalVisible(true);
   };
@@ -31,33 +48,33 @@ const ShowTable: React.FC<ShowTableProps> = ({
       <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
         {heading}
       </h1>
-      <table className='w-full flex flex-col gap-[15px]'>
-        <thead className='min-h-[54px] p-[16px] bg-[#FAFAFA]'>
+      <table cellPadding={6} className='w-full flex flex-col gap-[15px]'>
+        <thead className='min-h-[54px] px-[8px] py-[6px] bg-[#FAFAFA]'>
           {''}
           <tr className='w-full flex'>
             {headerData?.map((item: string, idx: number) => (
               <td
                 key={idx}
-                className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493] flex justify-center items-center'>
+                className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
                 {item}
               </td>
             ))}
           </tr>
         </thead>
-        <tbody className='space-y-6 flex flex-col justify-start overflow-y-scroll hide-scrollbar px-[8px] '>
+        <tbody className='space-y-6 overflow-y-scroll hide-scrollbar px-[8px] '>
           {data.map((item, idx: number) => (
             <tr className='w-full flex' key={idx}>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336] flex justify-center items-center'>
+              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.date.split('T')[0]}
               </td>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336] flex justify-center items-center'>
+              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.propertyType}
               </td>
-              <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336] flex justify-center items-center'>
+              <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.actualLocation?.state},
                 {item.actualLocation?.localGovernment}
               </td>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336] flex justify-center items-center'>
+              <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
                 N {Number(item.propertyPrice).toLocaleString()}
               </td>
               {item.document?.length !== 0 ? (
@@ -78,9 +95,12 @@ const ShowTable: React.FC<ShowTableProps> = ({
                   N {Number(item.amountSold).toLocaleString()}
                 </td>
               ) : null} */}
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336] flex justify-center items-center'>
+              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 <FontAwesomeIcon
-                  onClick={(e) => handleIconClick(e, item)}
+                  onClick={(e) => {
+                    handleIconClick(e, item);
+                    setEditBriefDetails(item);
+                  }}
                   icon={faEllipsis}
                   width={24}
                   height={24}
@@ -98,7 +118,54 @@ const ShowTable: React.FC<ShowTableProps> = ({
         position={modalPosition}
         onClose={closeModal}
         onViewBrief={() => setShowFullDetails(true)}
-        onEditBrief={() => console.log('Edit Brief clicked')}
+        onEditBrief={() => {
+          setCreateBrief({
+            ...createBrief,
+            propertyType: editBriefDetails.propertyType,
+            additionalFeatures:
+              editBriefDetails.propertyFeatures?.additionalFeatures,
+            noOfBedroom: editBriefDetails.propertyFeatures?.noOfBedrooms,
+            selectedState: {
+              value:
+                editBriefDetails.actualLocation?.state !== undefined
+                  ? editBriefDetails.actualLocation.state
+                  : '',
+              label:
+                editBriefDetails.actualLocation?.state !== undefined
+                  ? editBriefDetails.actualLocation.state
+                  : '',
+            },
+            selectedLGA: {
+              value:
+                editBriefDetails.actualLocation?.localGovernment !== undefined
+                  ? editBriefDetails.actualLocation.localGovernment
+                  : '',
+              label:
+                editBriefDetails.actualLocation?.localGovernment !== undefined
+                  ? editBriefDetails.actualLocation.localGovernment
+                  : '',
+            },
+            selectedCity:
+              editBriefDetails.actualLocation?.area !== undefined
+                ? editBriefDetails.actualLocation.area
+                : '',
+            documents:
+              editBriefDetails.document !== undefined
+                ? editBriefDetails.document
+                    .split(',')
+                    .map((item: string) => item.trimStart())
+                : [''],
+            price: editBriefDetails.propertyPrice.toString(),
+            fileUrl:
+              editBriefDetails.pictures !== undefined
+                ? editBriefDetails.pictures.map((item: string) => ({
+                    id: item,
+                    image: item,
+                  }))
+                : [],
+          });
+          setSelectedNav(AgentNavData.CREATE_BRIEF);
+        }}
         onDeleteBrief={() => console.log('Delete Brief clicked')}
       />
     </div>

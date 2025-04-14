@@ -5,28 +5,52 @@
 // import { faBars } from '@fortawesome/free-solid-svg-icons';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ActivitiesScroll from '@/components/admincomponents/activities_scroll';
-import { useState } from 'react';
-import PendingBriefs from '@/components/admincomponents/incoming_inspections';
+import { useState, useEffect } from 'react';
+import IncomingInspections from '@/components/admincomponents/incoming_inspections';
+import { DataProps } from '@/types/agent_data_props';
 import OverdueBriefs from '@/components/admincomponents/incoming_briefs';
 import PreferenceAttention from '@/components/admincomponents/preference_requiring_attention';
 import { motion } from 'framer-motion';
+import Brief from '@/components/brief';
+import { URLS } from '@/utils/URLS';
+import { GET_REQUEST } from '@/utils/requests';
+import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
 import filterIcon from '@/svgs/filterIcon.svg';
 import Image from 'next/image';
 import { manrope } from '@/styles/font';
 
+type BriefDataProps = {
+  id: string;
+  docOnProperty: { _id: string; isProvided: boolean; docName: string }[];
+  pictures: any[];
+  propertyType: string;
+  price: number;
+  location: { state: string; localGovernment: string; area: string };
+  propertyFeatures: { additionalFeatures: string[]; noOfBedrooms: number };
+  createdAt: string;
+};
+
 export default function AttentionOverview() {
   const [active, setActive] = useState('Incoming Inspections');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
+  const [showFullDetails, setShowFullDetails] = useState<boolean>(false);
+  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(
+      totalBriefData[0]
+  );
+
 
   const renderDynamicComponent = () => {
     switch (active) {
       case 'Incoming Inspections':
-        return <PendingBriefs />;
+        return <IncomingInspections />;
       case 'Incoming Briefs':
         return <OverdueBriefs />;
       case 'Preference Requiring Attention':
         return <PreferenceAttention />;
       default:
-        return <PendingBriefs />;
+        return <IncomingInspections />;
     }
   };
   return (
@@ -123,4 +147,13 @@ const texts = [
     text: 'Preference Requiring Attention',
     count: 2,
   },
+];
+
+const headerData: string[] = [
+  'ID',
+  'Property Type',
+  'Location',
+  'Property price',
+  'Document',
+  'Full details',
 ];
