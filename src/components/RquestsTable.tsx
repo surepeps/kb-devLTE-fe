@@ -5,19 +5,19 @@ import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 
 interface Request {
-  _id: string;
+  _id?: string;
   requestFrom: {
-    fullName: string;
-    email: string;
+    fullName?: string;
+    email?: string;
   };
-  propertyId: {
-    propertyType: string;
-    location: {
-      state: string;
-      localGovernment: string;
-      area: string;
+  propertyId?: {
+    propertyType?: string;
+    location?: {
+      state?: string;
+      localGovernment?: string;
+      area?: string;
     };
-    price: number;
+    price?: number;
   };
   status: string;
   inspectionDate: string;
@@ -72,23 +72,23 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
                 <tr key={item._id} className='text-sm text-gray-900'>
                   <td className='p-3'>{item._id}</td>
                   <td className='p-3'>
-                    {item.propertyId.location.state}, {item.propertyId.location.localGovernment},{' '}
-                    {item.propertyId.location.area}
+                    {item.propertyId?.location?.state}, {item.propertyId?.location?.localGovernment},{' '}
+                    {item.propertyId?.location?.area}
                   </td>
-                  <td className='p-3'>{Number(item.propertyId.price).toLocaleString()}</td>
-                  <td className='p-3'>{item.requestFrom.email}</td>
+                  <td className='p-3'>{Number(item.propertyId?.price).toLocaleString()}</td>
+                  <td className='p-3'>{item.requestFrom?.email}</td>
                   <td className='p-3 flex gap-2'>
                     <button
                       className='px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-300'
-                      onClick={() => handleAvailability(item._id, true)}
-                      disabled={availabilityStatus[item._id] === true}
+                      onClick={() => item._id && handleAvailability(item._id, true)}
+                      disabled={item._id ? availabilityStatus[item._id] === true : false}
                     >
                       Available
                     </button>
                     <button
                       className='px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 disabled:bg-gray-300'
-                      onClick={() => handleAvailability(item._id, false)}
-                      disabled={availabilityStatus[item._id] === false}
+                      onClick={() => item._id && handleAvailability(item._id, false)}
+                      disabled={item._id ? availabilityStatus[item._id] === false : false}
                     >
                       Not Available
                     </button>
