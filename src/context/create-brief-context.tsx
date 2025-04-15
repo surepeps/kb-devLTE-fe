@@ -13,7 +13,7 @@ export type createBriefProps = {
   isSubmittedSuccessfully: boolean;
   propertyType: string;
   usageOptions: string[];
-  price: string;
+  price: string | number;
   landSize: string;
   documents: string[];
   noOfBedroom: number | undefined;

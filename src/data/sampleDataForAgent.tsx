@@ -46,7 +46,7 @@ const getRandomCity = (stateCode: string) => {
  */
 
 // Updated briefData with actual locations
-export const briefData = Array.from({ length: 40 }, (_, i) => ({
+export const briefData = Array.from({ length: 7 }, (_, i) => ({
   areYouTheOwner: true,
   createdAt: new Date().toISOString(),
   docOnProperty: [

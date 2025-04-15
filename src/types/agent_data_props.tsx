@@ -1,10 +1,10 @@
 /** @format */
 
-import { StaticImageData } from 'next/image';
-
 export interface DataProps {
   areYouTheOwner?: boolean;
+  features?: { featureName: string; _id: string }[];
   createdAt?: string;
+  rentalPrice?: number;
   docOnProperty: { docName: string; isProvided: boolean; _id: string }[];
   isApproved?: boolean;
   isAvailable?: boolean;
@@ -28,6 +28,13 @@ export interface DataProps {
   usageOptions?: string[];
   __v?: number;
   _id?: string;
+
+  noOfBedrooms?: number;
+  propertyCondition?: string;
+  tenantCriteria?: {
+    _id: string;
+    criteria: string;
+  }[];
 }
 
 export type DataPropsArray = DataProps[];

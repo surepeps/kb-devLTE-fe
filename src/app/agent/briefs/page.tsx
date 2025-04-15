@@ -47,9 +47,7 @@ const Form2 = () => {
   /**TotalBrief */
   const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
   const [showFullDetails, setShowFullDetails] = useState<boolean>(false);
-  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(
-    totalBriefData[0]
-  );
+  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(briefData[0]);
 
   /**Draft Brief */
   const [showDraftBriefFullDetails, setShowDraftBriefFullDetails] =
@@ -109,27 +107,23 @@ const Form2 = () => {
         const combinedProperties = [
           ...(data?.properties.sellProperties || []),
           ...(data?.properties.rentProperties || []),
-        ].map(
-          ({
-            docOnProperty,
-            pictures,
-            propertyType,
-            price,
-            location,
-            propertyFeatures,
-            createdAt,
-          }: BriefDataProps) => ({
-            date: createdAt,
-            propertyType,
-            actualLocation: location,
-            propertyPrice: price,
-            docOnProperty,
-            documents: docOnProperty.map((item) => ({ item })),
-            amountSold: price,
-            pictures,
-            propertyFeatures,
-          })
-        );
+        ].map((item: DataProps) => ({
+          ...item,
+          price: item.rentalPrice || item.price,
+          propertyFeatures: {
+            ...item.propertyFeatures,
+            additionalFeatures:
+              item?.features?.map(({ featureName }) => featureName) ||
+              item.propertyFeatures?.additionalFeatures,
+          },
+
+          features:
+            item?.features?.map(({ featureName }) => featureName) ||
+            item.propertyFeatures?.additionalFeatures,
+          noOfBedrooms:
+            item.noOfBedrooms || item.propertyFeatures?.noOfBedrooms,
+        }));
+        console.log(combinedProperties);
         setTotalBriefData(combinedProperties);
         setIsLoading(false);
       } catch (error) {
