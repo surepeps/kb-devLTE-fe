@@ -16,9 +16,10 @@ const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
 
   return (
     <Fragment>
-      <div className='min-h-[51px] hidden md:flex gap-[20px] flex-wrap flex-row justify-center items-center'>
+      <div className='min-h-[51px] w-full grid grid-cols-2 md:flex gap-[20px] flex-wrap flex-row justify-center items-center'>
         {navData.map((item: string, idx: number) => (
           <Box
+            className={`${idx === 0 ? 'col-span-2' : 'shrink-0'}`}
             selectedText={selectedNav}
             onClick={() => {
               handleSelect(item);
@@ -29,7 +30,7 @@ const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
           />
         ))}
       </div>
-      <div className='min-h-[51px] md:hidden flex gap-[20px] flex-col justify-center items-center w-full'>
+      {/* <div className='min-h-[51px] md:hidden flex gap-[20px] flex-col justify-center items-center w-full'>
         <Box
           selectedText={selectedNav}
           className='w-full bg-[#09391C] text-[#8DDB90]'
@@ -57,7 +58,7 @@ const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
             }
           })}
         </div>
-      </div>
+      </div> */}
     </Fragment>
   );
 };
