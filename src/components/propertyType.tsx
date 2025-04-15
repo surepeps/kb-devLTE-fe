@@ -207,11 +207,16 @@ const PropertyType = () => {
   const router = useRouter();
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (user === null) {
+    const parsedUserDetails = sessionStorage.getItem('user');
+
+    if (!parsedUserDetails) {
       toast.error('Please, login to proceed');
       router.push('/agent/auth/login');
       return;
     }
+    const retrieved = JSON.parse(parsedUserDetails ?? '');
+    console.log(retrieved);
+
     try {
       const url = URLS.BASE + URLS.agentCreateBrief;
       const payload = {
@@ -233,9 +238,9 @@ const PropertyType = () => {
         },
         price: createBrief.price,
         owner: {
-          fullName: `${user?.lastName} + ${user?.firstName}`,
-          phoneNumber: user?.phoneNumber,
-          email: user?.email,
+          fullName: `${retrieved?.lastName} + ${retrieved?.firstName}`,
+          phoneNumber: retrieved?.phoneNumber,
+          email: retrieved?.email,
         },
         areYouTheOwner: createBrief.areYouTheOwner,
       };
