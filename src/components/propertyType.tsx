@@ -260,6 +260,10 @@ const PropertyType = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(createBrief.fileUrl);
+  }, [createBrief]);
+
   return (
     <>
       {createBrief.isSubmittedSuccessfully && (
@@ -307,6 +311,7 @@ const PropertyType = () => {
             {/**options */}
             <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
               <RadioCheck
+                isChecked={createBrief.propertyType === 'Residential'}
                 selectedValue={createBrief?.propertyType}
                 handleChange={() => {
                   // formik.setFieldValue('propertyType', 'Residential');
@@ -331,6 +336,7 @@ const PropertyType = () => {
                 type='radio'
                 name='propertyType'
                 value='Commercial'
+                isChecked={createBrief.propertyType === 'Commercial'}
               />
               <RadioCheck
                 selectedValue={createBrief?.propertyType}
@@ -344,6 +350,7 @@ const PropertyType = () => {
                 type='radio'
                 name='propertyType'
                 value='Land'
+                isChecked={createBrief.propertyType === 'Land'}
               />
             </div>
             {/* {formik.touched.propertyType && formik.errors.propertyType && (
@@ -363,6 +370,7 @@ const PropertyType = () => {
                   <RadioCheck
                     type='checkbox'
                     value={item}
+                    isChecked={createBrief.usageOptions.includes(item)}
                     key={idx}
                     name='Usage Options'
                     handleChange={() => {
@@ -524,6 +532,7 @@ const PropertyType = () => {
                   key={idx}
                   value={item}
                   name='documents'
+                  isChecked={createBrief.documents.includes(item)}
                   handleChange={() => {
                     const documents = createBrief?.documents?.includes(item)
                       ? createBrief?.documents?.filter((doc) => doc !== item)
@@ -582,6 +591,7 @@ const PropertyType = () => {
               <div className='flex gap-[20px] mt-2'>
                 <RadioCheck
                   selectedValue={createBrief?.areYouTheOwner}
+                  isChecked={createBrief.areYouTheOwner === true}
                   handleChange={() => {
                     // formik.setFieldValue('areYouTheOwner', true);
                     setCreateBrief({
@@ -595,6 +605,7 @@ const PropertyType = () => {
                 />
                 <RadioCheck
                   selectedValue={createBrief?.areYouTheOwner}
+                  isChecked={createBrief.areYouTheOwner === false}
                   handleChange={() => {
                     // formik.setFieldValue('areYouTheOwner', false);
                     setCreateBrief({
