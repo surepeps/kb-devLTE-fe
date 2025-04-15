@@ -85,7 +85,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           {/**Location and Property Features */}
           <Container
             heading='Location'
-            title={`${detailsToCheck.actualLocation?.state}, ${detailsToCheck.actualLocation?.localGovernment}, ${detailsToCheck.actualLocation?.area}`}
+            title={`${detailsToCheck.location?.state}, ${detailsToCheck.location?.localGovernment}, ${detailsToCheck.location?.area}`}
           />
           <Container
             heading='Property Features'
@@ -99,7 +99,10 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           />
 
           {/**Date Created and Document  */}
-          <Container heading='Date Created' title={detailsToCheck.date} />
+          <Container
+            heading='Date Created'
+            title={detailsToCheck.createdAt?.split('T')[0]}
+          />
           <Container
             heading='Document'
             containsList={true}
@@ -140,41 +143,42 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                 onClick={() => {
                   setCreateBrief({
                     ...createBrief,
+                    areYouTheOwner:
+                      detailsToCheck.areYouTheOwner !== undefined &&
+                      detailsToCheck.areYouTheOwner,
                     propertyType: detailsToCheck.propertyType,
                     additionalFeatures:
                       detailsToCheck.propertyFeatures?.additionalFeatures,
                     noOfBedroom: detailsToCheck.propertyFeatures?.noOfBedrooms,
                     selectedState: {
                       value:
-                        detailsToCheck.actualLocation?.state !== undefined
-                          ? detailsToCheck.actualLocation.state
+                        detailsToCheck.location?.state !== undefined
+                          ? detailsToCheck.location.state
                           : '',
                       label:
-                        detailsToCheck.actualLocation?.state !== undefined
-                          ? detailsToCheck.actualLocation.state
+                        detailsToCheck.location?.state !== undefined
+                          ? detailsToCheck.location.state
                           : '',
                     },
                     selectedLGA: {
                       value:
-                        detailsToCheck.actualLocation?.localGovernment !==
-                        undefined
-                          ? detailsToCheck.actualLocation.localGovernment
+                        detailsToCheck.location?.localGovernment !== undefined
+                          ? detailsToCheck.location.localGovernment
                           : '',
                       label:
-                        detailsToCheck.actualLocation?.localGovernment !==
-                        undefined
-                          ? detailsToCheck.actualLocation.localGovernment
+                        detailsToCheck.location?.localGovernment !== undefined
+                          ? detailsToCheck.location.localGovernment
                           : '',
                     },
                     selectedCity:
-                      detailsToCheck.actualLocation?.area !== undefined
-                        ? detailsToCheck.actualLocation.area
+                      detailsToCheck.location?.area !== undefined
+                        ? detailsToCheck.location.area
                         : '',
                     documents:
-                      detailsToCheck.document !== undefined
-                        ? detailsToCheck.document
-                            .split(',')
-                            .map((item: string) => item.trimStart())
+                      detailsToCheck.docOnProperty !== undefined
+                        ? detailsToCheck.docOnProperty.map(
+                            ({ docName }) => docName
+                          )
                         : [''],
                     price: detailsToCheck.propertyPrice.toString(),
                     fileUrl:
@@ -184,13 +188,17 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                             image: item,
                           }))
                         : [],
+                    usageOptions:
+                      detailsToCheck.usageOptions !== undefined
+                        ? detailsToCheck.usageOptions
+                        : [],
                   });
                   setSelectedNav(AgentNavData.CREATE_BRIEF);
                   setPropertyDetails({
                     price: detailsToCheck.propertyPrice,
                     propertyType: detailsToCheck.propertyType,
                     selectedState: {
-                      value: detailsToCheck.location,
+                      value: detailsToCheck.location.state,
                       label: '',
                     },
                     selectedCity: { value: '', label: '' },

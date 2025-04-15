@@ -16,6 +16,9 @@ import { GET_REQUEST } from '@/utils/requests';
 // import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { useCreateBriefContext } from '@/context/create-brief-context';
+import { usePageContext } from '@/context/page-context';
+import { AgentNavData } from '@/enums';
 
 interface TotalBriefProps extends ShowTableProps {
   detailsToCheck: DataProps;
@@ -32,6 +35,61 @@ const Brief: FC<TotalBriefProps> = ({
   headerData,
   isLoading,
 }) => {
+  const { createBrief, setCreateBrief } = useCreateBriefContext();
+  const { setSelectedNav } = usePageContext();
+
+  const handleEditBrief = () => {
+    setCreateBrief({
+      ...createBrief,
+      areYouTheOwner:
+        detailsToCheck.areYouTheOwner !== undefined &&
+        detailsToCheck.areYouTheOwner,
+      propertyType: detailsToCheck.propertyType,
+      additionalFeatures: detailsToCheck.propertyFeatures?.additionalFeatures,
+      noOfBedroom: detailsToCheck.propertyFeatures?.noOfBedrooms,
+      selectedState: {
+        value:
+          detailsToCheck.location?.state !== undefined
+            ? detailsToCheck.location.state
+            : '',
+        label:
+          detailsToCheck.location?.state !== undefined
+            ? detailsToCheck.location.state
+            : '',
+      },
+      selectedLGA: {
+        value:
+          detailsToCheck.location?.localGovernment !== undefined
+            ? detailsToCheck.location.localGovernment
+            : '',
+        label:
+          detailsToCheck.location?.localGovernment !== undefined
+            ? detailsToCheck.location.localGovernment
+            : '',
+      },
+      selectedCity:
+        detailsToCheck.location?.area !== undefined
+          ? detailsToCheck.location.area
+          : '',
+      documents:
+        detailsToCheck.docOnProperty !== undefined
+          ? detailsToCheck.docOnProperty.map(({ docName }) => docName)
+          : [''],
+      price: detailsToCheck.propertyPrice.toString(),
+      fileUrl:
+        detailsToCheck.pictures !== undefined
+          ? detailsToCheck.pictures.map((item: string) => ({
+              id: item,
+              image: item,
+            }))
+          : [],
+      usageOptions:
+        detailsToCheck.usageOptions !== undefined
+          ? detailsToCheck.usageOptions
+          : [],
+    });
+    setSelectedNav(AgentNavData.CREATE_BRIEF);
+  };
   return (
     <div className=' w-full mt-[60px] flex items-center justify-center'>
       {showFullDetails ? (
@@ -44,6 +102,7 @@ const Brief: FC<TotalBriefProps> = ({
           <div className='flex flex-col gap-[10px] bg-[#FFFFFF] md:hidden'>
             <button
               type='button'
+              onClick={handleEditBrief}
               className='w-[90%] ml-[5%] min-h-[50px] flex justify-center items-center border-[1px] border-blue-500 text-blue-500 rounded-[8px] font-ubuntu'>
               Edit
             </button>

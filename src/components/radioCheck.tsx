@@ -15,6 +15,7 @@ interface RadioCheckProps {
   // setIsChecked?: (type: boolean) => void;
   handleChange?: ChangeEventHandler<HTMLInputElement> | undefined;
   selectedValue?: string | boolean | undefined;
+  isChecked?: boolean;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
@@ -28,6 +29,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
   className,
   handleChange,
   //selectedValue
+  isChecked,
 }) => {
   return (
     <label
@@ -73,6 +75,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
           height: '24px',
           backgroundColor: 'transparent',
         }}
+        checked={isChecked}
         title={title ?? value}
         type={type}
         name={name}
