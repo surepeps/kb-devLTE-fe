@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { DataProps } from '@/types/agent_data_props';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import DetailsToCheck from '@/components/detailsToCheck';
 import { ShowTableProps } from '@/types/show_table';
 import ShowTable from '@/components/showTable';
@@ -37,6 +37,10 @@ const Brief: FC<TotalBriefProps> = ({
 }) => {
   const { createBrief, setCreateBrief } = useCreateBriefContext();
   const { setSelectedNav } = usePageContext();
+
+  useEffect(() => {
+    console.log(data);
+  }, []);
 
   const handleEditBrief = () => {
     setCreateBrief({
@@ -75,7 +79,10 @@ const Brief: FC<TotalBriefProps> = ({
         detailsToCheck.docOnProperty !== undefined
           ? detailsToCheck.docOnProperty.map(({ docName }) => docName)
           : [''],
-      price: detailsToCheck.propertyPrice.toString(),
+      price:
+        detailsToCheck.price !== undefined
+          ? detailsToCheck.price.toString()
+          : '',
       fileUrl:
         detailsToCheck.pictures !== undefined
           ? detailsToCheck.pictures.map((item: string) => ({

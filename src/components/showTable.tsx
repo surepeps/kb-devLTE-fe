@@ -4,6 +4,7 @@
  * @format
  */
 
+'use client';
 /** @format */
 import { ShowTableProps } from '@/types/show_table';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
@@ -37,7 +38,11 @@ const ShowTable: React.FC<ShowTableProps> = ({
       top: rect.bottom + window.scrollY,
       left: rect.left + window.scrollX,
     });
-    setDetailsToCheck(item);
+    setDetailsToCheck({
+      ...item,
+      propertyPrice: item.price,
+      propertyFeatures: item.propertyFeatures,
+    });
     setModalVisible(true);
   };
 
@@ -63,7 +68,9 @@ const ShowTable: React.FC<ShowTableProps> = ({
         </thead>
         <tbody className='space-y-6 overflow-y-scroll hide-scrollbar px-[8px] '>
           {data.map((item, idx: number) => (
-            <tr className='w-full flex' key={idx}>
+            <tr
+              className='w-full flex hover:bg-gray-100 transition duration-500 py-2 items-center'
+              key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.createdAt?.split('T')[0]}
               </td>
@@ -74,7 +81,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
                 {item.location?.state},{item.location?.localGovernment}
               </td>
               <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
-                N {Number(item.propertyPrice).toLocaleString()}
+                N {Number(item.price).toLocaleString()}
               </td>
               {item.docOnProperty?.length !== 0 ? (
                 // <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
@@ -151,7 +158,9 @@ const ShowTable: React.FC<ShowTableProps> = ({
                     ({ docName }: { docName: string }) => docName
                   )
                 : [''],
-            price: editBriefDetails.propertyPrice,
+            price:
+              Number(editBriefDetails.price) ||
+              Number(editBriefDetails.propertyPrice),
             fileUrl:
               editBriefDetails.pictures !== undefined
                 ? editBriefDetails.pictures.map((item: string) => ({

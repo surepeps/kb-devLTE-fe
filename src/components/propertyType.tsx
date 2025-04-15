@@ -3,10 +3,11 @@
 'use client';
 //import AttachFile from '@/components/multipleAttachFile';
 import Button from '@/components/button';
+import Cookies from 'js-cookie';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
 import { toast } from 'react-hot-toast';
-import { POST_REQUEST } from '@/utils/requests';
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -27,6 +28,7 @@ import {
 } from '@/context/create-brief-context';
 import AttachFile from './create_brief_image_upload';
 import customStyles from '@/styles/inputStyle';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface Option {
   value: string;
@@ -202,8 +204,14 @@ const PropertyType = () => {
   // useEffect(() => {
   //   console.log(formik.values);
   // }, [formik.values]);
+  const router = useRouter();
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (user === null) {
+      toast.error('Please, login to proceed');
+      router.push('/agent/auth/login');
+      return;
+    }
     try {
       const url = URLS.BASE + URLS.agentCreateBrief;
       const payload = {

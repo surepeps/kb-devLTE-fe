@@ -79,7 +79,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           />
           <Container
             heading='Property price'
-            title={`N ${Number(detailsToCheck.propertyPrice).toLocaleString()}`}
+            title={`N${Number(detailsToCheck.price).toLocaleString()}`}
           />
 
           {/**Location and Property Features */}
@@ -95,7 +95,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
           {/**Bedroom */}
           <Container
             heading='Bedroom'
-            title={detailsToCheck.propertyFeatures?.noOfBedrooms?.toLocaleString()}
+            title={detailsToCheck.noOfBedrooms?.toLocaleString()}
           />
 
           {/**Date Created and Document  */}
@@ -109,6 +109,19 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
             mapData={detailsToCheck.docOnProperty?.map(
               ({ docName }) => docName
             )}
+          />
+
+          <Container
+            heading='Tenanat Criteria'
+            containsList
+            mapData={detailsToCheck.tenantCriteria?.map(
+              ({ criteria }) => criteria
+            )}
+          />
+
+          <Container
+            heading='Property Condition'
+            title={detailsToCheck.propertyCondition}
           />
 
           {/**Images */}
@@ -240,9 +253,11 @@ const Container: FC<ContainerProps> = ({
       </h3>
       {containsList ? (
         <ol className='text-[14px] list-disc list-inside leading-[22.4px] tracking-[0.1px] font-medium text-[#141A16]'>
-          {mapData?.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
+          {mapData?.length !== 0 ? (
+            mapData?.map((item, idx) => <li key={idx}>{item}</li>)
+          ) : (
+            <li>No data available</li>
+          )}
         </ol>
       ) : (
         <h2 className='text-[#141A16] font-ubuntu text-[14px] font-medium leading-[22.4px] tracking-[0.1px]'>

@@ -18,7 +18,7 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='min-h-[57px] pt-[25px] px-[20px] pb-[10px]'
         name={'Date'}
-        value={item.createdAt}
+        value={item.createdAt?.split('T')[0]}
       />
 
       <UniformStyling
@@ -36,7 +36,7 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='py-[10px] px-[20px] min-h-[42px]'
         name='Property price'
-        value={`\u20A6${Number(item.propertyPrice).toLocaleString()}`}
+        value={`\u20A6${Number(item.price).toLocaleString()}`}
       />
 
       <UniformStyling
