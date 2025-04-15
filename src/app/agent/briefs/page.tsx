@@ -32,6 +32,7 @@ type BriefDataProps = {
   location: { state: string; localGovernment: string; area: string };
   propertyFeatures: { additionalFeatures: string[]; noOfBedrooms: number };
   createdAt: string;
+  documents?: string[];
 };
 
 const Form2 = () => {
@@ -104,7 +105,7 @@ const Form2 = () => {
           return setIsLoading(false);
         }
         const data = response;
-        console.log("data", data);
+        console.log('data', data);
         const combinedProperties = [
           ...(data?.properties.sellProperties || []),
           ...(data?.properties.rentProperties || []),
@@ -123,6 +124,7 @@ const Form2 = () => {
             actualLocation: location,
             propertyPrice: price,
             docOnProperty,
+            documents: docOnProperty.map((item) => ({ item })),
             amountSold: price,
             pictures,
             propertyFeatures,

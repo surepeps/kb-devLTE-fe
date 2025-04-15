@@ -18,7 +18,7 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='min-h-[57px] pt-[25px] px-[20px] pb-[10px]'
         name={'Date'}
-        value={item.date.split('T')[0]}
+        value={item.createdAt}
       />
 
       <UniformStyling
@@ -30,7 +30,7 @@ const PublishMobileView: FC<PublishMobileViewProps> = ({
       <UniformStyling
         className='py-[10px] px-[20px] min-h-[42px]'
         name='Location'
-        value={`${item.actualLocation?.state}`}
+        value={`${item.location?.state}`}
       />
 
       <UniformStyling
