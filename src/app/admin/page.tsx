@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   faMagnifyingGlass,
   faQuestion,
@@ -29,6 +29,28 @@ export default function AdminHome() {
   });
 
   if (isLoading) return <Loading />;
+
+  /**
+   * must sign in before entering into the admin dashboard
+   */
+
+  // useEffect(() => {
+  //   const getAdminInfo = async () => {
+  //     const adminToken = Cookies.get('adminToken');
+  //     if (!adminToken) {
+  //       router.push('/admin/auth/login');
+  //     }
+  //     try {
+  //       const response = await GET_REQUEST(URLS.BASE + '/', adminToken);
+  //       if (response.status === 200) {
+  //         //do something
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   getAdminInfo();
+  // }, []);
 
   return (
     <section className='flex flex-col w-full md:w-[initial]'>

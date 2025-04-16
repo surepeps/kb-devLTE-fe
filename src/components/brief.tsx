@@ -43,6 +43,7 @@ const Brief: FC<TotalBriefProps> = ({
   }, []);
 
   const handleEditBrief = () => {
+    if (heading === 'Total Brief') return;
     setCreateBrief({
       ...createBrief,
       areYouTheOwner:
