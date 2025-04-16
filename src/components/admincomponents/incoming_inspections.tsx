@@ -318,6 +318,7 @@ export default function IncomingInspections({
         </div>
         <div className='flex justify-end items-center mt-10 gap-1'>
           <button
+            type='button'
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             className={`px-4 py-1 rounded-md ${
               currentPage === 1
@@ -326,9 +327,11 @@ export default function IncomingInspections({
             }`}
             disabled={currentPage === 1}>
             <FaChevronLeft />
+            {''}
           </button>
           {Array.from({ length: totalPages }, (_, index) => (
             <button
+              type='button'
               key={index + 1}
               onClick={() => setCurrentPage(index + 1)}
               className={`px-3 py-1 rounded-md ${
@@ -340,6 +343,7 @@ export default function IncomingInspections({
             </button>
           ))}
           <button
+            type='button'
             onClick={() =>
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
@@ -350,6 +354,7 @@ export default function IncomingInspections({
             }`}
             disabled={currentPage === totalPages}>
             <FaChevronRight />
+            {''}
           </button>
         </div>
       </motion.div>
@@ -357,9 +362,11 @@ export default function IncomingInspections({
       {isSidebarOpen && (
         <div className='fixed top-0 right-0 h-full w-[40%] bg-white shadow-lg z-50 px-8'>
           <button
+            type='button'
             onClick={() => setIsSidebarOpen(false)}
             className='left-4 text-black hover:bg-gray-300 p-2 rounded-full mt-8'>
             <FaTimes size={25} />
+            {''}
           </button>
           <div className='items-center p-4 border-b border-[#CFD0D5] mt-4'>
             <h4 className='text-lg font-semibold'>Inspection Details</h4>
@@ -368,6 +375,7 @@ export default function IncomingInspections({
             {['Buyer Contact', 'Agent in Charge', 'Property', 'Brief'].map(
               (tab) => (
                 <button
+                  type='button'
                   key={tab}
                   className={`flex-1 py-3 text-center text-base ${
                     activeTab === tab

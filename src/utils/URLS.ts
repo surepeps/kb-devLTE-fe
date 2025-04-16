@@ -5,6 +5,7 @@ export const URLS = {
   agent: '/agent',
   agentSignup: '/agent/signup',
   agentLogin: '/agent/login',
+  adminLogin: '/admin/login',
   uploadImg: '/upload-image',
   agentOnboarding: '/agent/onboard',
   agentProfile: '/agent/profile',
@@ -15,7 +16,7 @@ export const URLS = {
   agentfetchTotalBriefs: '/agent/properties',
   landLordCreateBrief: '/properties/rents/rent/new',
   buyersFetchBriefs: '/properties/sell/all',
-  rentersFetchBriefs: '/properties/rents/all', 
+  rentersFetchBriefs: '/properties/rents/all',
   buyersSearchBrief: '/properties/buy/request/search',
   resetPassword: '/reset-password',
   requestPasswordReset: '/request-password-reset',
@@ -34,4 +35,5 @@ export const URLS = {
   deleteBrief: '/api/briefs/delete',
   rejectBrief: '/api/briefs/reject',
   adminGetAllBriefs: '/admin/properties',
+  deleteSellBrief: '/properties/sell/delete/',
 };
