@@ -83,17 +83,17 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
           <table className='min-w-[900px] md:w-full border-collapse'>
             <thead>
               <tr className='border-b bg-[#fafafa] text-center text-sm font-medium text-gray-600'>
-                <th className='p-3'>
+                <th className='p-3' style={{ width: '5%' }}>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3'>ID</th>
-                <th className='p-3'>Legal Name</th>
-                <th className='p-3'>Type of Agent</th>
-                <th className='p-3'>Location</th>
-                <th className='p-3'>Land Size</th>
-                <th className='p-3'>Amount</th>
-                <th className='p-3'>Document</th>
-                <th className='p-3'>Action</th>
+                <th className='p-3' style={{ width: '5%' }}>ID</th>
+                <th className='p-3' style={{ width: '10%' }}>Legal Name</th>
+                <th className='p-3' style={{ width: '10%' }}>Type of Agent</th>
+                <th className='p-3' style={{ width: '15%' }}>Location</th>
+                <th className='p-3' style={{ width: '5%' }}>Land Size</th>
+                <th className='p-3' style={{ width: '10%' }}>Amount</th>
+                <th className='p-3' style={{ width: '15%' }}>Document</th>
+                <th className='p-3' style={{ width: '5%' }}>Action</th>
               </tr>
             </thead>
             <tbody>

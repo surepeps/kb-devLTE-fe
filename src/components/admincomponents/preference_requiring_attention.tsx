@@ -79,12 +79,12 @@ export default function PreferenceAttention({ totalBriefData }: { totalBriefData
               <th className='p-3'>
                 <input title='checkbox' type='checkbox' />
               </th>
-              <th className='p-3'>Date</th>
-              <th className='p-3'>Property Type</th>
-              <th className='p-3'>Location</th>
-              <th className='p-3'>Property Price</th>
-              <th className='p-3'>Document</th>
-              <th className='p-3'>Full details</th>
+              <th className='p-3' style={{ width: '10%' }}>Date</th>
+              <th className='p-3' style={{ width: '15%' }}>Property Type</th>
+              <th className='p-3' style={{ width: '20%' }}>Location</th>
+              <th className='p-3' style={{ width: '15%' }}>Property Price</th>
+              <th className='p-3' style={{ width: '25%' }}>Document</th>
+              <th className='p-3' style={{ width: '15%' }}>Full details</th>
             </tr>
           </thead>
           <tbody>
@@ -100,15 +100,6 @@ export default function PreferenceAttention({ totalBriefData }: { totalBriefData
                 <td className='p-3'>{item.location}</td>
                 <td className='p-3 font-bold'>{item.amount}</td>
                 <td className='p-3'>{item.document}</td>
-                {/* <td
-                  className={`p-3 font-semibold ${
-                    item.agentType === 'individual'
-                      ? 'text-red-500'
-                      : 'text-green-500'
-                  }`}>
-                  {item.agentType}
-                </td> */}
-                {/* <td className='p-3'>{item.landSize}</td> */}
                 <td className='p-3 cursor-pointer text-2xl'>
                   <FontAwesomeIcon
                     // onClick={() => {

@@ -55,7 +55,7 @@ export default function AttentionOverview() {
           URLS.BASE + URLS.adminGetAllBriefs,
           {
             propertyType: 'all',
-            ownerType: 'PropertyOwner',
+            ownerType: 'BuyerOrRenter',
             page: currentPage,
             limit: 10,
           }

@@ -203,16 +203,16 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
           <table className='min-w-[900px] md:w-full border-collapse'>
             <thead className='bg-[#fafafa] text-center text-sm font-medium text-gray-600'>
               <tr className='border-b'>
-                <th className='p-3'>
+                <th className='p-3' style={{ width: '5%' }}>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3'>Inspection ID</th>
-                <th className='p-3'>Buyer Contact</th>
-                <th className='p-3'>Agent in Charge</th>
-                <th className='p-3'>Property to Inspect</th>
-                <th className='p-3'>Inspection Date</th>
-                <th className='p-3'>Status</th>
-                <th className='p-3'>Action</th>
+                <th className='p-3' style={{ width: '10%' }}>Inspection ID</th>
+                <th className='p-3' style={{ width: '10%' }}>Buyer Contact</th>
+                <th className='p-3' style={{ width: '10%' }}>Agent in Charge</th>
+                <th className='p-3' style={{ width: '15%' }}>Property to Inspect</th>
+                <th className='p-3' style={{ width: '10%' }}>Inspection Date</th>
+                <th className='p-3' style={{ width: '10%' }}>Status</th>
+                <th className='p-3' style={{ width: '5%' }}>Action</th>
               </tr>
             </thead>
             <tbody>
