@@ -131,16 +131,21 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                 Upload Image
               </h2>
               <div className='flex flex-wrap gap-[10px] w-full'>
-                {detailsToCheck?.pictures?.map((picture, idx: number) => (
-                  <Image
-                    key={idx}
-                    src={picture}
-                    alt=''
-                    width={200}
-                    height={200}
-                    className='w-[131px] h-[98px] bg-[#D9D9D9]'
-                  />
-                ))}
+                {detailsToCheck?.pictures?.map((picture: any, idx: number) => {
+                  // const isBlob = picture instanceof Blob;
+                  // const src = isBlob ? URL.createObjectURL(picture) : picture;
+                  return (
+                    <Image
+                      key={idx}
+                      src={picture}
+                      alt=''
+                      width={200}
+                      height={200}
+                      //onLoad={() => isBlob && URL.revokeObjectURL(src)}
+                      className='w-[131px] h-[98px] object-cover bg-[#D9D9D9]'
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
