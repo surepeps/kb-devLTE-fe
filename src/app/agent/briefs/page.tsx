@@ -116,7 +116,13 @@ const Form2 = () => {
               item?.features?.map(({ featureName }) => featureName) ||
               item.propertyFeatures?.additionalFeatures,
           },
-
+          fileUrl:
+            item?.pictures?.length !== 0
+              ? item.pictures?.map((image) => ({
+                  id: image,
+                  image: image,
+                }))
+              : [],
           features:
             item?.features?.map(({ featureName }) => featureName) ||
             item.propertyFeatures?.additionalFeatures,
@@ -139,7 +145,7 @@ const Form2 = () => {
 
   return (
     <section
-      className={`flex w-full items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
+      className={`flex w-full items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] md:py-[40px]  ${
         (isContactUsClicked || isModalOpened) && 'brightness-[30%]'
       }`}>
       <div className='container flex flex-col min-h-[700px] items-center p-[20px]'>
