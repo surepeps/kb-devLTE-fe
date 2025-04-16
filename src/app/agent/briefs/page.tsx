@@ -32,6 +32,7 @@ type BriefDataProps = {
   location: { state: string; localGovernment: string; area: string };
   propertyFeatures: { additionalFeatures: string[]; noOfBedrooms: number };
   createdAt: string;
+  documents?: string[];
 };
 
 const Form2 = () => {
@@ -46,9 +47,7 @@ const Form2 = () => {
   /**TotalBrief */
   const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
   const [showFullDetails, setShowFullDetails] = useState<boolean>(false);
-  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(
-    totalBriefData[0]
-  );
+  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(briefData[0]);
 
   /**Draft Brief */
   const [showDraftBriefFullDetails, setShowDraftBriefFullDetails] =
@@ -63,31 +62,6 @@ const Form2 = () => {
     detailsToCheckForTransactionHistory,
     setDetailsToCheckForTransactionHistory,
   ] = useState<DataProps>(briefData[0]);
-
-  // useEffect(() => {
-  //   const loadData = async () => {
-  //     const result = await fetch(URLS.BASE + URLS.agentfetchTotalBriefs);
-  //     if (result.success) {
-  //       const combinedData = [...result.data.sellProperties, ...result.data.rentProperties];
-  //       const formattedData = combinedData.map((property) => ({
-  //         date: new Date(property.createdAt).toLocaleDateString(),
-  //         propertyType: property.propertyType,
-  //         location: `${property.location.state}, ${property.location.localGovernment}`,
-  //         propertyPrice: property.price || property.rentalPrice,
-  //         document: property.docOnProperty ? property.docOnProperty.map(doc => doc.docName).join(', ') : 'N/A',
-  //       }));
-  //       setBriefData(formattedData);
-  //     } else {
-  //       setErrMessage(result.message);
-  //     }
-  //     setIsLoading(false);
-  //   };
-
-  //   loadData();
-  // }, []);
-
-  // if (isLoading) return <p>Loading...</p>;
-  // if (errMessage) return <p>{errMessage}</p>;
 
   useEffect(() => {
     const getTotalBriefs = async () => {
@@ -104,30 +78,32 @@ const Form2 = () => {
           return setIsLoading(false);
         }
         const data = response;
-        console.log("data", data);
+        // console.log('data', data);
         const combinedProperties = [
           ...(data?.properties.sellProperties || []),
           ...(data?.properties.rentProperties || []),
-        ].map(
-          ({
-            docOnProperty,
-            pictures,
-            propertyType,
-            price,
-            location,
-            propertyFeatures,
-            createdAt,
-          }: BriefDataProps) => ({
-            date: createdAt,
-            propertyType,
-            actualLocation: location,
-            propertyPrice: price,
-            docOnProperty,
-            amountSold: price,
-            pictures,
-            propertyFeatures,
-          })
-        );
+        ]
+          .map((item: DataProps) => ({
+            ...item,
+            price: item.rentalPrice || item.price,
+            propertyFeatures: {
+              ...item.propertyFeatures,
+              additionalFeatures:
+                item?.features?.map(({ featureName }) => featureName) ||
+                item.propertyFeatures?.additionalFeatures,
+            },
+
+            features:
+              item?.features?.map(({ featureName }) => featureName) ||
+              item.propertyFeatures?.additionalFeatures,
+            noOfBedrooms:
+              item.noOfBedrooms || item.propertyFeatures?.noOfBedrooms,
+          }))
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          ); // Sort by date in descending order
+        // console.log(combinedProperties);
         setTotalBriefData(combinedProperties);
         setIsLoading(false);
       } catch (error) {

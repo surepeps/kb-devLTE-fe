@@ -46,109 +46,39 @@ const getRandomCity = (stateCode: string) => {
  */
 
 // Updated briefData with actual locations
-export const briefData = [
-  {
-    date: '12/12/2024',
-    propertyType: 'Residential',
-    location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
-    propertyPrice: 200000000,
-    document: 'C of o, receipt,...',
-    amountSold: 2000000,
-    propertyFeatures: {
-      additionalFeatures: ['CCTV'],
-      noOfBedrooms: 26,
+export const briefData = Array.from({ length: 7 }, (_, i) => ({
+  areYouTheOwner: true,
+  createdAt: new Date().toISOString(),
+  docOnProperty: [
+    {
+      docName: 'C of O',
+      isProvided: true,
+      _id: '',
     },
-    docOnProperty: [
-      {
-        _id: 'xxxaaaddd2345lkfg',
-        isProvided: true,
-        docName: 'C of O',
-      },
-    ],
-    actualLocation: {
-      state: getRandomState(),
-      localGovernment: getRandomCity('LA'),
-      area: '',
-    },
-    pictures: [sampleImg.src],
+  ],
+  isApproved: false,
+  isAvailable: true,
+  isRejected: false,
+  location: {
+    state: 'Lagos',
+    localGovernment: 'Agege',
+    area: `Area ${i + 1}`,
   },
-  {
-    date: '12/12/2024',
-    propertyType: 'Residential',
-    location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
-    propertyPrice: 200000000,
-    document: 'C of o, receipt,...',
-    amountSold: 2000000,
-    propertyFeatures: {
-      additionalFeatures: ['CCTV'],
-      noOfBedrooms: 26,
-    },
-    docOnProperty: [
-      {
-        _id: 'xxxaaaddd2345lkfg',
-        isProvided: true,
-        docName: 'C of O',
-      },
-    ],
-    actualLocation: {
-      state: getRandomState(),
-      localGovernment: getRandomCity('LA'),
-      area: '',
-    },
-    pictures: [sampleImg.src],
+  owner: '67f7dbaa9a4c7c00654e69e8',
+  ownerModel: 'Agent',
+  pictures: [sampleImg.src],
+  price: 400000 + i * 5000,
+  propertyPrice: 4000000,
+  propertyFeatures: {
+    additionalFeatures: ['Guest Toilet', 'Swimming pool'],
+    noOfBedrooms: 45,
   },
-  {
-    date: '12/12/2024',
-    propertyType: 'Residential',
-    location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
-    propertyPrice: 200000000,
-    document: 'C of o, receipt,...',
-    amountSold: 2000000,
-    propertyFeatures: {
-      additionalFeatures: ['CCTV'],
-      noOfBedrooms: 26,
-    },
-    docOnProperty: [
-      {
-        _id: 'xxxaaaddd2345lkfg',
-        isProvided: true,
-        docName: 'C of O',
-      },
-    ],
-    actualLocation: {
-      state: getRandomState(),
-      localGovernment: getRandomCity('LA'),
-      area: '',
-    },
-    pictures: [sampleImg.src],
-  },
-  {
-    date: '12/12/2024',
-    propertyType: 'Residential',
-    location: `Lagos, ${getRandomCity('LA')}`, // Random city in Lagos
-    propertyPrice: 200000000,
-    document: 'C of o, receipt,...',
-    amountSold: 2000000,
-    propertyFeatures: {
-      additionalFeatures: ['CCTV'],
-      noOfBedrooms: 26,
-    },
-    docOnProperty: [
-      {
-        _id: 'xxxaaaddd2345lkfg',
-        isProvided: true,
-        docName: 'C of O',
-      },
-    ],
-    actualLocation: {
-      state: getRandomState(),
-      localGovernment: getRandomCity('LA'),
-      area: '',
-    },
-    pictures: [sampleImg.src],
-  },
-  // Add more entries as needed
-];
+  propertyType: 'Commercial',
+  updatedAt: new Date().toISOString(),
+  usageOptions: ['Joint Venture'],
+  __v: 0,
+  _id: `67f948841164d900648b21${String(i).padStart(2, '0')}`,
+}));
 
 // export const fetchTotalBrief = async () => {
 //   try {

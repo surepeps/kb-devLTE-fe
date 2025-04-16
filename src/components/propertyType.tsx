@@ -3,10 +3,11 @@
 'use client';
 //import AttachFile from '@/components/multipleAttachFile';
 import Button from '@/components/button';
+import Cookies from 'js-cookie';
 import Input from '@/components/Input';
 import RadioCheck from '@/components/radioCheck';
 import { toast } from 'react-hot-toast';
-import { POST_REQUEST } from '@/utils/requests';
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -27,6 +28,7 @@ import {
 } from '@/context/create-brief-context';
 import AttachFile from './create_brief_image_upload';
 import customStyles from '@/styles/inputStyle';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface Option {
   value: string;
@@ -202,8 +204,19 @@ const PropertyType = () => {
   // useEffect(() => {
   //   console.log(formik.values);
   // }, [formik.values]);
+  const router = useRouter();
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    const parsedUserDetails = sessionStorage.getItem('user');
+
+    if (!parsedUserDetails) {
+      toast.error('Please, login to proceed');
+      router.push('/agent/auth/login');
+      return;
+    }
+    const retrieved = JSON.parse(parsedUserDetails ?? '');
+    console.log(retrieved);
+
     try {
       const url = URLS.BASE + URLS.agentCreateBrief;
       const payload = {
@@ -225,9 +238,9 @@ const PropertyType = () => {
         },
         price: createBrief.price,
         owner: {
-          fullName: `${user?.lastName} + ${user?.firstName}`,
-          phoneNumber: user?.phoneNumber,
-          email: user?.email,
+          fullName: `${retrieved?.lastName} + ${retrieved?.firstName}`,
+          phoneNumber: retrieved?.phoneNumber,
+          email: retrieved?.email,
         },
         areYouTheOwner: createBrief.areYouTheOwner,
       };
@@ -259,6 +272,10 @@ const PropertyType = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    console.log(createBrief.fileUrl);
+  }, [createBrief]);
 
   return (
     <>
@@ -307,6 +324,7 @@ const PropertyType = () => {
             {/**options */}
             <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
               <RadioCheck
+                isChecked={createBrief.propertyType === 'Residential'}
                 selectedValue={createBrief?.propertyType}
                 handleChange={() => {
                   // formik.setFieldValue('propertyType', 'Residential');
@@ -331,6 +349,7 @@ const PropertyType = () => {
                 type='radio'
                 name='propertyType'
                 value='Commercial'
+                isChecked={createBrief.propertyType === 'Commercial'}
               />
               <RadioCheck
                 selectedValue={createBrief?.propertyType}
@@ -344,6 +363,7 @@ const PropertyType = () => {
                 type='radio'
                 name='propertyType'
                 value='Land'
+                isChecked={createBrief.propertyType === 'Land'}
               />
             </div>
             {/* {formik.touched.propertyType && formik.errors.propertyType && (
@@ -363,6 +383,7 @@ const PropertyType = () => {
                   <RadioCheck
                     type='checkbox'
                     value={item}
+                    isChecked={createBrief.usageOptions.includes(item)}
                     key={idx}
                     name='Usage Options'
                     handleChange={() => {
@@ -524,6 +545,7 @@ const PropertyType = () => {
                   key={idx}
                   value={item}
                   name='documents'
+                  isChecked={createBrief.documents.includes(item)}
                   handleChange={() => {
                     const documents = createBrief?.documents?.includes(item)
                       ? createBrief?.documents?.filter((doc) => doc !== item)
@@ -582,6 +604,7 @@ const PropertyType = () => {
               <div className='flex gap-[20px] mt-2'>
                 <RadioCheck
                   selectedValue={createBrief?.areYouTheOwner}
+                  isChecked={createBrief.areYouTheOwner === true}
                   handleChange={() => {
                     // formik.setFieldValue('areYouTheOwner', true);
                     setCreateBrief({
@@ -595,6 +618,7 @@ const PropertyType = () => {
                 />
                 <RadioCheck
                   selectedValue={createBrief?.areYouTheOwner}
+                  isChecked={createBrief.areYouTheOwner === false}
                   handleChange={() => {
                     // formik.setFieldValue('areYouTheOwner', false);
                     setCreateBrief({
