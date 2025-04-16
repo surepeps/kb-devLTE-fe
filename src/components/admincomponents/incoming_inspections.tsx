@@ -40,7 +40,7 @@ export default function PendingBriefs() {
   const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(3);
-  const [briefToApprove, setBriefToApprove] = useState<any>(null); 
+  const [briefToApprove, setBriefToApprove] = useState<any>(null);
   const [briefToReject, setBriefToReject] = useState<any>(null);
   const [briefToDelete, setBriefToDelete] = useState<any>(null);
   const { dashboard, setDashboard } = usePageContext();
@@ -52,7 +52,9 @@ export default function PendingBriefs() {
 
   const confirmApproveBrief = async (briefId: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE + URLS.approveBrief}`, { id: briefId });
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.approveBrief}`, {
+        id: briefId,
+      });
       if (response?.success) {
         toast.success('Brief approved successfully');
         setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
@@ -68,7 +70,9 @@ export default function PendingBriefs() {
 
   const handleDeleteBrief = async (briefId: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE + URLS.deleteBrief}`, { id: briefId });
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.deleteBrief}`, {
+        id: briefId,
+      });
       if (response?.success) {
         toast.success('Brief deleted successfully');
         setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
@@ -82,7 +86,9 @@ export default function PendingBriefs() {
 
   const handleRejectBrief = async (briefId: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE + URLS.rejectBrief}`, { id: briefId });
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.rejectBrief}`, {
+        id: briefId,
+      });
       if (response?.success) {
         toast.success('Brief rejected successfully');
         setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
@@ -100,7 +106,9 @@ export default function PendingBriefs() {
 
       try {
         const response = await GET_REQUEST(
-          `${URLS.BASE + URLS.adminGetAllInspections}?page=${currentPage}&limit=10&propertyType=PropertySell`,
+          `${
+            URLS.BASE + URLS.adminGetAllInspections
+          }?page=${currentPage}&limit=10&propertyType=PropertySell`
         );
 
         if (response?.success === false) {
@@ -124,19 +132,33 @@ export default function PendingBriefs() {
             phone: item.property?.owner?.phoneNumber || 'N/A',
           },
           propertyToInspect: {
-            address: `${item.property?.location?.state || 'N/A'}, ${item.property?.location?.localGovernment || 'N/A'}, ${item.property?.location?.area || 'N/A'}`,
+            address: `${item.property?.location?.state || 'N/A'}, ${
+              item.property?.location?.localGovernment || 'N/A'
+            }, ${item.property?.location?.area || 'N/A'}`,
             type: item.property?.propertyType || 'N/A',
-            size: item.property?.propertyFeatures?.noOfBedrooms ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms` : 'N/A',
+            size: item.property?.propertyFeatures?.noOfBedrooms
+              ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms`
+              : 'N/A',
           },
           inspectionDate: item.pending || 'N/A',
           inspectionStatus: item.status || 'N/A',
           briefDetails: {
             agentInCharge: item.property?.owner?.fullName || 'N/A',
             type: item.property?.propertyType || 'N/A',
-            location: `${item.property?.location?.state || 'N/A'}, ${item.property?.location?.localGovernment || 'N/A'}, ${item.property?.location?.area || 'N/A'}`,
-            price: item.property?.price ? `₦${item.property.price.toLocaleString()}` : 'N/A',
-            usageOptions: item.property?.usageOptions?.length > 0 ? item.property.usageOptions.join(', ') : 'N/A',
-            documents: item.property?.docOnProperty?.map((doc: any) => doc.docName).join(', ') || 'N/A',
+            location: `${item.property?.location?.state || 'N/A'}, ${
+              item.property?.location?.localGovernment || 'N/A'
+            }, ${item.property?.location?.area || 'N/A'}`,
+            price: item.property?.price
+              ? `₦${item.property.price.toLocaleString()}`
+              : 'N/A',
+            usageOptions:
+              item.property?.usageOptions?.length > 0
+                ? item.property.usageOptions.join(', ')
+                : 'N/A',
+            documents:
+              item.property?.docOnProperty
+                ?.map((doc: any) => doc.docName)
+                .join(', ') || 'N/A',
           },
         }));
 
@@ -241,7 +263,9 @@ export default function PendingBriefs() {
                     </span>
                   </td>
                   <td className='p-3'>
-                    {item.inspectionDate !== 'N/A' ? item.inspectionDate : item.inspectionStatus}
+                    {item.inspectionDate !== 'N/A'
+                      ? item.inspectionDate
+                      : item.inspectionStatus}
                   </td>
                   <td className='p-3 cursor-pointer text-2xl'>
                     <FontAwesomeIcon
@@ -252,7 +276,16 @@ export default function PendingBriefs() {
                     />
                     {openRow === index && (
                       <EllipsisOptions
-                        onApproveBrief={() => setBriefToApprove(item)}
+                        onApproveBrief={() => {
+                          setBriefToApprove(item);
+                          // setDashboard({
+                          //   ...dashboard,
+                          //   approveBriefsTable: {
+                          //     ...dashboard.approveBriefsTable,
+                          //     isApproveClicked: true,
+                          //   },
+                          // });
+                        }}
                         onDeleteBrief={() => setBriefToReject(item)}
                         onRejectBrief={() => setBriefToDelete(item)}
                         closeMenu={setOpenRow}
@@ -264,28 +297,39 @@ export default function PendingBriefs() {
             </tbody>
           </table>
         </div>
-        <div className="flex justify-end items-center mt-10 gap-1">
+        <div className='flex justify-end items-center mt-10 gap-1'>
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className={`px-4 py-1 rounded-md ${currentPage === 1 ? 'text-gray-300' : 'text-black-500 hover:text-[#8DDB90]'}`}
-            disabled={currentPage === 1}
-          >
+            className={`px-4 py-1 rounded-md ${
+              currentPage === 1
+                ? 'text-gray-300'
+                : 'text-black-500 hover:text-[#8DDB90]'
+            }`}
+            disabled={currentPage === 1}>
             <FaChevronLeft />
           </button>
           {Array.from({ length: totalPages }, (_, index) => (
             <button
               key={index + 1}
               onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-[#8DDB90] text-white' : ' hover:bg-gray-300'}`}
-            >
+              className={`px-3 py-1 rounded-md ${
+                currentPage === index + 1
+                  ? 'bg-[#8DDB90] text-white'
+                  : ' hover:bg-gray-300'
+              }`}>
               {index + 1}
             </button>
           ))}
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            className={`px-4 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-300' : 'text-black-500 hover:text-[#8DDB90]'}`}
-            disabled={currentPage === totalPages}
-          >
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className={`px-4 py-1 rounded-md ${
+              currentPage === totalPages
+                ? 'text-gray-300'
+                : 'text-black-500 hover:text-[#8DDB90]'
+            }`}
+            disabled={currentPage === totalPages}>
             <FaChevronRight />
           </button>
         </div>
@@ -367,19 +411,25 @@ export default function PendingBriefs() {
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Address</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.address}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.address}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Type</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.type}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.type}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Size</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.size}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.size}
+                    </strong>
                   </p>
                 </div>
               </div>
@@ -389,19 +439,25 @@ export default function PendingBriefs() {
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Agent in Charge</p>
                   <p>
-                    <strong>{selectedInspection?.briefDetails.agentInCharge}</strong>
+                    <strong>
+                      {selectedInspection?.briefDetails.agentInCharge}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Property Type</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.type}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.type}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Location</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.address}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.address}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
@@ -413,13 +469,17 @@ export default function PendingBriefs() {
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Usage Options</p>
                   <p>
-                    <strong>{selectedInspection?.briefDetails.usageOptions}</strong>
+                    <strong>
+                      {selectedInspection?.briefDetails.usageOptions}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Document</p>
                   <p>
-                    <strong>{selectedInspection?.briefDetails.documents}</strong>
+                    <strong>
+                      {selectedInspection?.briefDetails.documents}
+                    </strong>
                   </p>
                 </div>
               </div>
@@ -442,7 +502,7 @@ export default function PendingBriefs() {
           onConfirm={() => handleRejectBrief(briefToReject.id)}
           onCancel={() => setBriefToReject(null)}
         />
-      )} 
+      )}
 
       {briefToDelete && (
         <DeleteBriefs

@@ -42,8 +42,10 @@ const ShowTable: React.FC<ShowTableProps> = ({
       ...item,
       propertyPrice: item.price,
       propertyFeatures: item.propertyFeatures,
+      pictures: item.pictures.length !== 0 ? item.pictures : [],
     });
     setModalVisible(true);
+    console.log(data);
   };
 
   const closeModal = () => setModalVisible(false);
@@ -66,10 +68,10 @@ const ShowTable: React.FC<ShowTableProps> = ({
             ))}
           </tr>
         </thead>
-        <tbody className='space-y-6 overflow-y-scroll hide-scrollbar px-[8px] '>
+        <tbody className='space-y-2 overflow-y-scroll hide-scrollbar px-[8px] '>
           {data.map((item, idx: number) => (
             <tr
-              className='w-full flex hover:bg-gray-100 transition duration-500 py-2 items-center'
+              className='w-full flex hover:bg-gray-100 rounded-[5px] transition duration-500 py-2 items-center'
               key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.createdAt?.split('T')[0]}
@@ -122,6 +124,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
         onClose={closeModal}
         onViewBrief={() => setShowFullDetails(true)}
         onEditBrief={() => {
+          if (heading === 'Total Brief' || heading === 'Publish Brief') return;
           setCreateBrief({
             ...createBrief,
             propertyType: editBriefDetails.propertyType,
