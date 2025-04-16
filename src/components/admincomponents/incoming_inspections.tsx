@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import EllipsisOptions from './ellipsisOptions';
 import { usePageContext } from '@/context/page-context';
+import { formatDate } from '@/utils/helpers';
 import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ApproveBriefs from './approveBriefs';
 import DeleteBriefs from './deleteBriefs';
@@ -19,7 +20,11 @@ import { URLS } from '@/utils/URLS';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import toast from 'react-hot-toast';
 
-export default function PendingBriefs() {
+export default function IncomingInspections({
+  onPendingCount,
+}: {
+  onPendingCount?: (count: number) => void;
+}) {
   const formik = useFormik({
     initialValues: {
       selectedStat: {
@@ -28,7 +33,7 @@ export default function PendingBriefs() {
       },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
@@ -119,50 +124,55 @@ export default function PendingBriefs() {
         const data = response?.requests?.data || [];
         // setTotalPages(response?.requests?.total || 1);
 
-        const mappedData = data.map((item: any) => ({
-          id: item._id,
-          buyerContact: {
-            name: item.buyer?.fullName || 'N/A',
-            email: item.buyer?.email || 'N/A',
-            phone: item.buyer?.phoneNumber || 'N/A',
-          },
-          agentInCharge: {
-            name: item.property?.owner?.fullName || 'N/A',
-            email: item.property?.owner?.email || 'N/A',
-            phone: item.property?.owner?.phoneNumber || 'N/A',
-          },
-          propertyToInspect: {
-            address: `${item.property?.location?.state || 'N/A'}, ${
-              item.property?.location?.localGovernment || 'N/A'
-            }, ${item.property?.location?.area || 'N/A'}`,
-            type: item.property?.propertyType || 'N/A',
-            size: item.property?.propertyFeatures?.noOfBedrooms
-              ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms`
-              : 'N/A',
-          },
-          inspectionDate: item.pending || 'N/A',
-          inspectionStatus: item.status || 'N/A',
-          briefDetails: {
-            agentInCharge: item.property?.owner?.fullName || 'N/A',
-            type: item.property?.propertyType || 'N/A',
-            location: `${item.property?.location?.state || 'N/A'}, ${
-              item.property?.location?.localGovernment || 'N/A'
-            }, ${item.property?.location?.area || 'N/A'}`,
-            price: item.property?.price
-              ? `₦${item.property.price.toLocaleString()}`
-              : 'N/A',
-            usageOptions:
-              item.property?.usageOptions?.length > 0
-                ? item.property.usageOptions.join(', ')
+        const mappedData = data
+          .map((item: any) => ({
+            id: item._id,
+            buyerContact: {
+              name: item.buyer?.fullName || 'N/A',
+              email: item.buyer?.email || 'N/A',
+              phone: item.buyer?.phoneNumber || 'N/A',
+            },
+            agentInCharge: {
+              name: item.property?.owner?.fullName || 'N/A',
+              email: item.property?.owner?.email || 'N/A',
+              phone: item.property?.owner?.phoneNumber || 'N/A',
+            },
+            propertyToInspect: {
+              address: `${item.property?.location?.state || 'N/A'}, ${
+                item.property?.location?.localGovernment || 'N/A'
+              }, ${item.property?.location?.area || 'N/A'}`,
+              type: item.property?.propertyType || 'N/A',
+              size: item.property?.propertyFeatures?.noOfBedrooms
+                ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms`
                 : 'N/A',
-            documents:
-              item.property?.docOnProperty
-                ?.map((doc: any) => doc.docName)
-                .join(', ') || 'N/A',
-          },
-        }));
+            },
+            inspectionDate: item.inspectionDate
+              ? formatDate(item.inspectionDate)
+              : '-',
+            inspectionStatus: item.status || '-',
+            briefDetails: {
+              agentInCharge: item.property?.owner?.fullName || 'N/A',
+              type: item.property?.propertyType || 'N/A',
+              location: `${item.property?.location?.state || 'N/A'}, ${
+                item.property?.location?.localGovernment || 'N/A'
+              }, ${item.property?.location?.area || 'N/A'}`,
+              price: item.property?.price
+                ? `₦${item.property.price.toLocaleString()}`
+                : 'N/A',
+              usageOptions:
+                item.property?.usageOptions?.length > 0
+                  ? item.property.usageOptions.join(', ')
+                  : 'N/A',
+              documents:
+                item.property?.docOnProperty
+                  ?.map((doc: any) => doc.docName)
+                  .join(', ') || 'N/A',
+            },
+          }))
+          .filter((item: any) => item.inspectionStatus === 'Pending'); // Only include pending briefs
 
         setTotalBriefData(mappedData);
+        onPendingCount?.(mappedData.length);
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -171,7 +181,7 @@ export default function PendingBriefs() {
       }
     };
     getTotalBriefs();
-  }, [currentPage]);
+  }, [currentPage, onPendingCount]);
 
   return (
     <>
@@ -219,7 +229,7 @@ export default function PendingBriefs() {
         </div>
         <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
           <table className='min-w-[900px] md:w-full border-collapse'>
-            <thead className='bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
+            <thead className='bg-[#fafafa] text-center text-sm font-medium text-gray-600'>
               <tr className='border-b'>
                 <th className='p-3'>
                   <input title='checkbox' type='checkbox' />
@@ -229,6 +239,7 @@ export default function PendingBriefs() {
                 <th className='p-3'>Agent in Charge</th>
                 <th className='p-3'>Property to Inspect</th>
                 <th className='p-3'>Inspection Date</th>
+                <th className='p-3'>Status</th>
                 <th className='p-3'>Action</th>
               </tr>
             </thead>
@@ -236,7 +247,7 @@ export default function PendingBriefs() {
               {totalBriefData.map((item, index) => (
                 <tr
                   key={index}
-                  className='border-b text-sm text-gray-700 hover:bg-gray-50'>
+                  className='border-b text-sm text-center text-gray-700 hover:bg-gray-50'>
                   <td className='p-3'>
                     <input title='checkbox' type='checkbox' />
                   </td>
@@ -262,10 +273,18 @@ export default function PendingBriefs() {
                       View Details
                     </span>
                   </td>
+                  <td className='p-3'>{item.inspectionDate}</td>
                   <td className='p-3'>
-                    {item.inspectionDate !== 'N/A'
-                      ? item.inspectionDate
-                      : item.inspectionStatus}
+                    <span
+                      className={`${
+                        item.inspectionStatus === 'Pending'
+                          ? 'text-[#FF3D00]'
+                          : item.inspectionStatus === 'Accepted'
+                          ? 'text-green-500'
+                          : ''
+                      }`}>
+                      {item.inspectionStatus}
+                    </span>
                   </td>
                   <td className='p-3 cursor-pointer text-2xl'>
                     <FontAwesomeIcon
