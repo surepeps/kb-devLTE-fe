@@ -39,7 +39,7 @@ const Brief: FC<TotalBriefProps> = ({
   const { setSelectedNav } = usePageContext();
 
   useEffect(() => {
-    console.log(data);
+    // console.log(data);
   }, []);
 
   const handleEditBrief = () => {
@@ -110,7 +110,7 @@ const Brief: FC<TotalBriefProps> = ({
           <div className='flex flex-col gap-[10px] bg-[#FFFFFF] md:hidden'>
             <button
               type='button'
-              onClick={handleEditBrief}
+              // onClick={handleEditBrief}
               className='w-[90%] ml-[5%] min-h-[50px] flex justify-center items-center border-[1px] border-blue-500 text-blue-500 rounded-[8px] font-ubuntu'>
               Edit
             </button>
