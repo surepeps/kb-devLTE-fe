@@ -12,37 +12,7 @@ import { useState } from 'react';
 import EllipsisOptions from './ellipsisOptions';
 import { usePageContext } from '@/context/page-context';
 
-const data = [
-  {
-    id: 'KA4556',
-    legalName: 'Samuel Woodfree',
-    agentType: 'individual',
-    location: 'Ifako Ijaye',
-    landSize: '5000m',
-    amount: 'N 200,000,000,000',
-    document: 'C of O, Receipt',
-  },
-  {
-    id: 'KA4556',
-    legalName: 'Samuel Woodfree',
-    agentType: 'incorporated',
-    location: 'Ifako Ijaye',
-    landSize: '5000m',
-    amount: 'N 200,000,000,000',
-    document: 'C of O, Receipt',
-  },
-  {
-    id: 'KA4556',
-    legalName: 'Samuel Woodfree',
-    agentType: 'individual',
-    location: 'Ifako Ijaye',
-    landSize: '5000m',
-    amount: 'N 200,000,000,000',
-    document: 'C of O, Receipt',
-  },
-];
-
-export default function PreferenceAttention() {
+export default function PreferenceAttention({ totalBriefData }: { totalBriefData: any[] }) {
   const formik = useFormik({
     initialValues: {
       selectedStat: {
@@ -57,6 +27,7 @@ export default function PreferenceAttention() {
 
   const [openRow, setOpenRow] = useState<number | null>(null);
   const { dashboard, setDashboard } = usePageContext();
+  const data = totalBriefData;
 
   return (
     <motion.div
@@ -80,13 +51,7 @@ export default function PreferenceAttention() {
               backgroundColor: '#F9FAFB',
               border: '1px solid #D6DDEB',
               minWidth: '160px',
-              //options background color
-              // '&:hover': {
-              //   borderColor: '#D6DDEB',
-              //   backgroundColor: '#F9FAFB',
-              // },
             }),
-            // indicatorSeparator: (styles) => ({ display: 'none' }),
           }}
           options={statsOptions}
           defaultValue={statsOptions}
@@ -107,95 +72,48 @@ export default function PreferenceAttention() {
           <span className='text-[#2E2C34]'>Filter</span>
         </div>
       </div>
-      {/* <table className='md:w-full mt-6 overflow-x-scroll md:overflow-x-auto border-collapse border-black border-dashed border-[1px]'>
-        <thead className='w-fit overflow-x-scroll md:overflow-x-auto'>
-          <tr className='border-b bg-[#fafafa] text-left text-sm font-medium text-gray-600 w-full'>
-            <th className=''>
-              <input title='checkbox' type='checkbox' />
-            </th>
-            <th className='p-3'>ID</th>
-            <th className='p-3'>Legal Name</th>
-            <th className='p-3'>Type of Agent</th>
-            <th className='p-3'>Location</th>
-            <th className='p-3'>Land Size</th>
-            <th className='p-3'>Amount</th>
-            <th className='p-3'>Document</th>
-            <th className='p-3'>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr
-              key={index}
-              className='border-b text-sm text-gray-700 hover:bg-gray-50'>
-              <td className='p-3'>
-                <input title='checkbox' type='checkbox' />
-              </td>
-              <td className='p-3'>{item.id}</td>
-              <td className='p-3'>{item.legalName}</td>
-              <td
-                className={`p-3 font-semibold ${
-                  item.agentType === 'individual'
-                    ? 'text-red-500'
-                    : 'text-green-500'
-                }`}>
-                {item.agentType}
-              </td>
-              <td className='p-3'>{item.location}</td>
-              <td className='p-3'>{item.landSize}</td>
-              <td className='p-3 font-bold'>{item.amount}</td>
-              <td className='p-3'>{item.document}</td>
-              <td className='p-3 cursor-pointer text-2xl'>
-                <FontAwesomeIcon icon={faEllipsis} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
       <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
         <table className='min-w-[900px] md:w-full border-collapse'>
-          <thead className='bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
+          <thead className='bg-[#fafafa] text-center text-sm font-medium text-gray-600'>
             <tr className='border-b'>
               <th className='p-3'>
                 <input title='checkbox' type='checkbox' />
               </th>
-              <th className='p-3'>ID</th>
-              <th className='p-3'>Legal Name</th>
-              <th className='p-3'>Type of Agent</th>
+              <th className='p-3'>Date</th>
+              <th className='p-3'>Property Type</th>
               <th className='p-3'>Location</th>
-              <th className='p-3'>Land Size</th>
-              <th className='p-3'>Amount</th>
+              <th className='p-3'>Property Price</th>
               <th className='p-3'>Document</th>
-              <th className='p-3'>Action</th>
+              <th className='p-3'>Full details</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr
                 key={index}
-                className='border-b text-sm text-gray-700 hover:bg-gray-50'>
+                className='border-b text-sm text-center text-gray-700 hover:bg-gray-50'>
                 <td className='p-3'>
                   <input title='checkbox' type='checkbox' />
                 </td>
-                <td className='p-3'>{item.id}</td>
-                <td className='p-3'>{item.legalName}</td>
-                <td
+                <td className='p-3'>{item.createdAt}</td>
+                <td className='p-3'>{item.propertyType}</td>
+                <td className='p-3'>{item.location}</td>
+                <td className='p-3 font-bold'>{item.amount}</td>
+                <td className='p-3'>{item.document}</td>
+                {/* <td
                   className={`p-3 font-semibold ${
                     item.agentType === 'individual'
                       ? 'text-red-500'
                       : 'text-green-500'
                   }`}>
                   {item.agentType}
-                </td>
-                <td className='p-3'>{item.location}</td>
-                <td className='p-3'>{item.landSize}</td>
-                <td className='p-3 font-bold'>{item.amount}</td>
-                <td className='p-3'>{item.document}</td>
+                </td> */}
+                {/* <td className='p-3'>{item.landSize}</td> */}
                 <td className='p-3 cursor-pointer text-2xl'>
                   <FontAwesomeIcon
-                    onClick={() => {
-                      setOpenRow(openRow === index ? null : index);
-                    }}
+                    // onClick={() => {
+                    //   setOpenRow(openRow === index ? null : index);
+                    // }}
                     icon={faEllipsis}
                   />
                   {openRow === index && (

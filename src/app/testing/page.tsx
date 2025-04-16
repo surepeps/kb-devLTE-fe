@@ -1,10 +1,10 @@
 /** @format */
 
 import React from 'react';
-import AgentData from '@/components/agent_data';
+import Sell from '../sell_page/page';
 
 const page = () => {
-  return <AgentData />;
+  return <Sell />;
 };
 
 export default page;
