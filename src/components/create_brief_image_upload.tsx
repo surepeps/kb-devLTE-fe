@@ -1,7 +1,10 @@
 /** @format */
 
 import { useCreateBriefContext } from '@/context/create-brief-context';
+import { POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 import React, { useRef, useImperativeHandle, forwardRef } from 'react';
+import toast from 'react-hot-toast';
 
 const AttachFile = forwardRef((props: any, ref) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -17,21 +20,53 @@ const AttachFile = forwardRef((props: any, ref) => {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const files = event.target.files;
-    if (!files) return;
+    // const files = event.target.files;
+    // if (!files) return;
 
-    const fileUrls = await Promise.all(
-      Array.from(files).map(async (file) => {
-        const fileUrl = URL.createObjectURL(file);
-        return { id: fileUrl, image: fileUrl };
-      })
+    // const fileUrls = await Promise.all(
+    //   Array.from(files).map(async (file) => {
+    //     const fileUrl = URL.createObjectURL(file);
+    //     return { id: fileUrl, image: fileUrl };
+    //   })
+    // );
+    const file = event.target.files?.[0];
+    const fromData = new FormData();
+    fromData.append('file', file as Blob);
+
+    const url = URLS.BASE + URLS.uploadImg;
+    await toast.promise(
+      POST_REQUEST_FILE_UPLOAD(url, fromData).then((response) => {
+        if ((response as unknown as { url: string }).url) {
+          if (setCreateBrief) {
+            setCreateBrief({
+              ...createBrief,
+              fileUrl: [
+                ...createBrief.fileUrl,
+                {
+                  id: (response as unknown as { url: string }).url as string,
+                  image: (response as unknown as { url: string }).url as string,
+                },
+              ],
+            });
+          }
+          return 'Image uploaded successfully';
+        } else {
+          toast.error('Image upload failed');
+          throw new Error('Image upload failed');
+        }
+      }),
+      {
+        loading: 'Uploading...',
+        success: 'Image  uploaded successfully',
+        error: 'Image upload failed',
+      }
     );
 
     // setUploadedFiles((prev) => [...prev, ...fileUrls]);
-    setCreateBrief({
-      ...createBrief,
-      fileUrl: [...createBrief.fileUrl, ...fileUrls],
-    });
+    // setCreateBrief({
+    //   ...createBrief,
+    //   fileUrl: [...createBrief.fileUrl, ...fileUrls],
+    // });
   };
 
   return (
