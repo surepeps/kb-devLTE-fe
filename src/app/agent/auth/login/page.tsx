@@ -93,9 +93,15 @@ const Login = () => {
           await toast.promise(
             POST_REQUEST(url, payload).then((response) => {
               console.log('response from signin', response);
+              const user = {
+                firstName: response?.user?.firstName,
+                lastName: response?.user?.lastName,
+                phoneNumber: response?.user?.phoneNumber,
+                email: response?.user?.email,
+              };
+              sessionStorage.setItem('user', JSON.stringify(user));
 
               if ((response as any)?.user?._id) {
-
                 if (response.user.accountApproved === false) {
                   router.push('/agent/under-review');
                 } else if (!response.user.phoneNumber) {
@@ -107,7 +113,6 @@ const Login = () => {
                 toast.success('Sign in successful');
                 Cookies.set('token', (response as any).token);
                 setUser((response as any).user);
-
 
                 return 'Sign in successful';
               } else {
@@ -167,7 +172,6 @@ const Login = () => {
             } else {
               router.push('/agent/briefs');
             }
-
           }
           console.log('response', response);
           if (response.error) {

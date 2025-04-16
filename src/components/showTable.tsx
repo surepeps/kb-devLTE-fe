@@ -4,6 +4,7 @@
  * @format
  */
 
+'use client';
 /** @format */
 import { ShowTableProps } from '@/types/show_table';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
@@ -37,7 +38,11 @@ const ShowTable: React.FC<ShowTableProps> = ({
       top: rect.bottom + window.scrollY,
       left: rect.left + window.scrollX,
     });
-    setDetailsToCheck(item);
+    setDetailsToCheck({
+      ...item,
+      propertyPrice: item.price,
+      propertyFeatures: item.propertyFeatures,
+    });
     setModalVisible(true);
   };
 
@@ -63,30 +68,28 @@ const ShowTable: React.FC<ShowTableProps> = ({
         </thead>
         <tbody className='space-y-6 overflow-y-scroll hide-scrollbar px-[8px] '>
           {data.map((item, idx: number) => (
-            <tr className='w-full flex' key={idx}>
+            <tr
+              className='w-full flex hover:bg-gray-100 transition duration-500 py-2 items-center'
+              key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.date.split('T')[0]}
+                {item.createdAt?.split('T')[0]}
               </td>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.propertyType}
               </td>
               <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.actualLocation?.state},
-                {item.actualLocation?.localGovernment}
+                {item.location?.state},{item.location?.localGovernment}
               </td>
               <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
-                N {Number(item.propertyPrice).toLocaleString()}
+                N {Number(item.price).toLocaleString()}
               </td>
-              {item.document?.length !== 0 ? (
+              {item.docOnProperty?.length !== 0 ? (
                 // <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 //   {item.document.split('').splice(0, 14).join('') + '...'}
                 // </td>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   {item?.docOnProperty !== undefined &&
-                    item.docOnProperty[0].docName
-                      .split('')
-                      .splice(0, 14)
-                      .join('')}
+                    item.docOnProperty[0].docName}
                   {'...'}
                 </td>
               ) : null}
@@ -127,35 +130,37 @@ const ShowTable: React.FC<ShowTableProps> = ({
             noOfBedroom: editBriefDetails.propertyFeatures?.noOfBedrooms,
             selectedState: {
               value:
-                editBriefDetails.actualLocation?.state !== undefined
-                  ? editBriefDetails.actualLocation.state
+                editBriefDetails.location?.state !== undefined
+                  ? editBriefDetails.location.state
                   : '',
               label:
-                editBriefDetails.actualLocation?.state !== undefined
-                  ? editBriefDetails.actualLocation.state
+                editBriefDetails.location?.state !== undefined
+                  ? editBriefDetails.location.state
                   : '',
             },
             selectedLGA: {
               value:
-                editBriefDetails.actualLocation?.localGovernment !== undefined
-                  ? editBriefDetails.actualLocation.localGovernment
+                editBriefDetails.location?.localGovernment !== undefined
+                  ? editBriefDetails.location.localGovernment
                   : '',
               label:
-                editBriefDetails.actualLocation?.localGovernment !== undefined
-                  ? editBriefDetails.actualLocation.localGovernment
+                editBriefDetails.location?.localGovernment !== undefined
+                  ? editBriefDetails.location.localGovernment
                   : '',
             },
             selectedCity:
-              editBriefDetails.actualLocation?.area !== undefined
-                ? editBriefDetails.actualLocation.area
+              editBriefDetails.location?.area !== undefined
+                ? editBriefDetails.location.area
                 : '',
             documents:
-              editBriefDetails.document !== undefined
-                ? editBriefDetails.document
-                    .split(',')
-                    .map((item: string) => item.trimStart())
+              editBriefDetails.docOnProperty !== undefined
+                ? editBriefDetails.docOnProperty.map(
+                    ({ docName }: { docName: string }) => docName
+                  )
                 : [''],
-            price: editBriefDetails.propertyPrice.toString(),
+            price:
+              Number(editBriefDetails.price) ||
+              Number(editBriefDetails.propertyPrice),
             fileUrl:
               editBriefDetails.pictures !== undefined
                 ? editBriefDetails.pictures.map((item: string) => ({

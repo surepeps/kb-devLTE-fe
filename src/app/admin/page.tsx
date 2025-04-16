@@ -12,18 +12,23 @@ import AnalysisOverview from '@/components/admincomponents/analysis_overview';
 import { archivo } from '@/styles/font';
 import Select from 'react-select';
 import { useFormik } from 'formik';
+import Loading from '@/components/loading';
+import { useLoading } from '@/hooks/useLoading';
 
 export default function AdminHome() {
   const [activeTab, setActiveTab] = useState('attention');
+  const isLoading = useLoading();
 
   const formik = useFormik({
     initialValues: {
       selectedStat: { value: 'Today', label: 'Today' },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
+
+  if (isLoading) return <Loading />;
 
   return (
     <section className='flex flex-col w-full md:w-[initial]'>

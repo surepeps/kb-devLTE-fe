@@ -39,7 +39,7 @@ interface RequestData {
     };
     price: number;
   };
-  price: string;
+  price: string | number;
   _id: string;
   requestFrom: {
     fullName: string;
@@ -96,17 +96,7 @@ const Overview = () => {
   const [isFullDetailsClicked, setIsFullDetailsClicked] =
     useState<boolean>(false);
 
-  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>({
-    date: '12/12/2024',
-    propertyType: 'Residential',
-    location: 'Lagos, Ikeja',
-    propertyPrice: '200,000,000',
-    document: 'C of o, recepit,...',
-    propertyFeatures: {
-      additionalFeatures: [],
-      noOfBedrooms: 0,
-    },
-  });
+  const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(briefData[0]);
 
   useEffect(() => {
     if (selectedOption === 'Require Attention') {
@@ -224,8 +214,12 @@ const Overview = () => {
               })),
               date: formatDate(item.createdAt),
               propertyType: item.propertyType,
-              location: `${item.location.localGovernment}`,
-              propertyPrice: item.price.toString(),
+              location: {
+                localGovernment: item.location.localGovernment,
+                state: item.location.state,
+                area: item.location.area,
+              },
+              propertyPrice: item.price,
               document: item.docOnProperty
                 ? item.docOnProperty.map((doc) => doc.docName).join(', ')
                 : '', // Join docName values or leave empty if not provided
@@ -454,31 +448,31 @@ const Table: FC<TableProps> = ({
             {data.map((item, idx: number) => (
               <tr className='w-full' key={idx}>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item.date}
+                  {item.createdAt?.split('T')[0]}
                 </td>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   {item.propertyType}
                 </td>
                 <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item.location}
+                  {item.location.localGovernment}
                 </td>
                 <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
                   N {Number(item.propertyPrice).toLocaleString()}
                 </td>
-                {item.document ? (
+                {item.docOnProperty.length !== 0 ? (
                   <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
-                    {item.document.split('').splice(0, 14).join('') + '...'}
+                    {item.docOnProperty.map(({ docName }) => docName)}
                   </td>
                 ) : (
                   <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
                     No document
                   </td>
                 )}
-                {item.amountSold ? (
+                {/* {item.propertyPrice ? (
                   <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
-                    N {Number(item.amountSold).toLocaleString()}
+                    N {Number(item.propertyPrice).toLocaleString()}
                   </td>
-                ) : null}
+                ) : null} */}
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   <button
                     type='button'
@@ -487,11 +481,7 @@ const Table: FC<TableProps> = ({
                       setShowFullDetails(true);
                       setDetailsToCheck({
                         ...item,
-                        actualLocation: {
-                          state: item.location.split(',')[0],
-                          localGovernment: item.location.split(',')[1],
-                          area: '',
-                        },
+                        location: item.location,
                         propertyFeatures: item.propertyFeatures,
                       });
                     }}
