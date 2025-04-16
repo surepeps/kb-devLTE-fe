@@ -7,29 +7,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import Select from 'react-select';
-import { URLS } from '@/utils/URLS';
-import { POST_REQUEST } from '@/utils/requests';
-import toast from 'react-hot-toast';
-import EllipsisOptions from './ellipsisOptions';
-import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { usePageContext } from '@/context/page-context';
 import AgentDetailsBar from './AgentDetailsBar';
+import EllipsisOptions from './ellipsisOptions';
 
-type BriefDataProps = {
-  id: string;
-  docOnProperty: { _id: string; isProvided: boolean; docName: string }[];
-  pictures: any[];
-  propertyType: string;
-  price: number;
-  location: { state: string; localGovernment: string; area: string };
-  propertyFeatures: { additionalFeatures: string[]; noOfBedrooms: number };
-  createdAt: string;
-};
-
-export default function OverdueBriefs() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaitingApprovalCount?: (count: number) => void; data: any[] }) {
   const [openRow, setOpenRow] = useState<number | null>(null);
-  const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
   const [showFullDetails, setShowFullDetails] = useState<boolean>(false);
   const [detailsToCheck, setDetailsToCheck] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,87 +33,10 @@ export default function OverdueBriefs() {
   });
 
   useEffect(() => {
-    const getTotalBriefs = async () => {
-      setIsLoading(true);
-
-      try {
-        const response = await POST_REQUEST(
-          URLS.BASE + URLS.adminGetAllBriefs,
-          {
-            propertyType: 'all',
-            ownerType: 'PropertyOwner',
-            page: currentPage,
-            limit: 10,
-          }
-        );
-
-        if (response?.success === false) {
-          toast.error('Failed to get data');
-          return setIsLoading(false);
-        }
-
-        const rents = response?.properties?.data?.rents || [];
-        const sells = response?.properties?.data?.sells || [];
-
-        const mappedRents = rents.map((item: any) => ({
-          id: item._id?.slice(0, 8) || 'N/A',
-          legalName: item.owner
-            ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || 'N/A'
-            : 'N/A',
-          email: item.owner?.email || 'N/A',
-          phoneNumber: item.owner?.phoneNumber || 'N/A',
-          agentType: item.ownerModel || 'N/A',
-          location: item.location
-            ? `${item.location.state || 'N/A'}, ${item.location.localGovernment || 'N/A'}`
-            : 'N/A',
-          landSize: item.landSize
-            ? `${item.landSize.size || 'N/A'} ${item.landSize.measurementType || 'N/A'}`
-            : 'N/A',
-          amount: item.rentalPrice ? `₦${item.rentalPrice.toLocaleString()}` : 'N/A',
-          document: 'N/A', 
-          createdAt: item.createdAt || 'N/A',
-          propertyId: item._id || 'N/A',
-          briefType: 'rent',
-          isApproved: item.isApproved || false,
-        }));
-
-        const mappedSells = sells.map((item: any) => ({
-          id: item._id?.slice(0, 8) || 'N/A',
-          legalName: item.owner
-            ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || 'N/A'
-            : 'N/A',
-          email: item.owner?.email || 'N/A',
-          phoneNumber: item.owner?.phoneNumber || 'N/A',
-          agentType: item.ownerModel || 'N/A',
-          location: item.location
-            ? `${item.location.state || 'N/A'}, ${item.location.localGovernment || 'N/A'}, ${item.location.area || 'N/A'}`
-            : 'N/A',
-          landSize: item.landSize
-            ? `${item.landSize.size || 'N/A'} ${item.landSize.measurementType || 'N/A'}`
-            : 'N/A',
-          amount: item.price ? `₦${item.price.toLocaleString()}` : 'N/A',
-          document: item.docOnProperty?.length
-            ? item.docOnProperty
-                .filter((doc: any) => doc?.isProvided)
-                .map((doc: any) => doc?.docName)
-                .join(', ') || 'N/A'
-            : 'N/A',
-          createdAt: item.createdAt || 'N/A',
-          propertyId: item._id || 'N/A',
-          briefType: 'sell',
-        }));
-
-        setTotalBriefData([...mappedRents, ...mappedSells]);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-        setIsLoading(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getTotalBriefs();
-  }, [currentPage]);
+    if (awaitingApprovalCount) {
+      awaitingApprovalCount(data.length);
+    }
+  }, [data]);
 
   return (
     <>
@@ -175,7 +82,7 @@ export default function OverdueBriefs() {
         <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
           <table className='min-w-[900px] md:w-full border-collapse'>
             <thead>
-              <tr className='border-b bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
+              <tr className='border-b bg-[#fafafa] text-center text-sm font-medium text-gray-600'>
                 <th className='p-3'>
                   <input title='checkbox' type='checkbox' />
                 </th>
@@ -186,14 +93,14 @@ export default function OverdueBriefs() {
                 <th className='p-3'>Land Size</th>
                 <th className='p-3'>Amount</th>
                 <th className='p-3'>Document</th>
-                <th className='p-3'>Full Details</th>
+                <th className='p-3'>Action</th>
               </tr>
             </thead>
             <tbody>
-              {totalBriefData.map((item, index) => (
+              {data.map((item, index) => (
                 <tr
                   key={index}
-                  className='border-b text-sm text-gray-700 hover:bg-gray-50'>
+                  className='border-b text-sm text-center text-gray-700 hover:bg-gray-50'>
                   <td className='p-3'>
                     <input title='checkbox' type='checkbox' />
                   </td>
@@ -201,9 +108,11 @@ export default function OverdueBriefs() {
                   <td className='p-3'>{item.legalName}</td>
                   <td
                     className={`p-3 font-semibold ${
-                      item.agentType === 'individual'
+                      item.agentType === 'Individual'
                         ? 'text-red-500'
-                        : 'text-green-500'
+                        : item.agentType === 'Incoporated Agent'
+                        ? 'text-green-500'
+                        : 'text-blue-500'
                     }`}>
                     {item.agentType}
                   </td>

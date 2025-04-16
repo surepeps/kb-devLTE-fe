@@ -12,23 +12,23 @@ import AnalysisOverview from '@/components/admincomponents/analysis_overview';
 import { archivo } from '@/styles/font';
 import Select from 'react-select';
 import { useFormik } from 'formik';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { GET_REQUEST } from '@/utils/requests';
-import { URLS } from '@/utils/URLS';
+import Loading from '@/components/loading';
+import { useLoading } from '@/hooks/useLoading';
 
 export default function AdminHome() {
   const [activeTab, setActiveTab] = useState('attention');
-  const router = useRouter();
+  const isLoading = useLoading();
 
   const formik = useFormik({
     initialValues: {
       selectedStat: { value: 'Today', label: 'Today' },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
+
+  if (isLoading) return <Loading />;
 
   /**
    * must sign in before entering into the admin dashboard
