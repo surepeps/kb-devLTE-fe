@@ -209,7 +209,7 @@ const Login = () => {
             onSubmit={formik.handleSubmit}
             className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
             <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
-              Sign In To Your Account
+              Sign Into The Admin Account
             </h2>
             <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>
               <Input
