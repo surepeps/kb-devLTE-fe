@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
@@ -81,6 +86,7 @@ export default function AgentLists() {
         message: 'Data Loaded',
       });
       setAgents(data);
+      console.log(data);
     } catch (error: any) {
       setIsLoadingDetails({
         isLoading: false,
@@ -125,6 +131,7 @@ export default function AgentLists() {
 
   const handleActionClick = (user: any) => {
     setSelectedUser(user);
+    console.log(user)
   };
 
   const closeSidebar = () => {
@@ -199,7 +206,9 @@ export default function AgentLists() {
                   </td>
                   <td className='p-3'>{truncateId(item.id)}</td>
                   <td className='p-3'>
-                    {item.fullName ? item.fullName : `${item.firstName} ${item.lastName}`}
+                    {item.fullName
+                      ? item.fullName
+                      : `${item.firstName} ${item.lastName}`}
                   </td>
                   <td className='p-3'>{item.email}</td>
                   <td
