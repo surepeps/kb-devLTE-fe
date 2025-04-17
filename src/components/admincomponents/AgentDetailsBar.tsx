@@ -1,11 +1,19 @@
-/* eslint-disable @next/next/no-img-element */
+/**
+ * eslint-disable @next/next/no-img-element
+ *
+ * @format
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Loading from '@/components/loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { downloadImage } from '@/utils/downloadImage';
 
 export default function AgentDetailsBar({
   user,
@@ -14,7 +22,10 @@ export default function AgentDetailsBar({
   user: any;
   onClose: () => void;
 }) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{
+    image: string;
+    name: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const closeModal = () => {
@@ -22,7 +33,12 @@ export default function AgentDetailsBar({
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    console.log('User details' + user);
+  }, [user]);
+
   const onSubmit = async (status?: boolean) => {
+    console.log('User details' + user);
     try {
       const isBrief = !!user?.legalName; // Determine if it's a brief based on legalName
       const url = isBrief
@@ -36,12 +52,12 @@ export default function AgentDetailsBar({
             status,
           } // Payload for briefs
         : {
-            agentId: user?.id || '', 
+            agentId: user?.id || '',
             approved: true,
-          }; 
+          };
 
-          console.log("payload", payload);
-          console.log("url", url);
+      console.log('payload', payload);
+      console.log('url', url);
 
       await toast.promise(
         POST_REQUEST(url, payload).then((response) => {
@@ -80,9 +96,12 @@ export default function AgentDetailsBar({
     }
   };
 
-  const handleImageClick = (docImg: string) => {
+  const handleImageClick = (docImg: string, docName: string) => {
     setIsLoading(true);
-    setSelectedImage(docImg);
+    setSelectedImage({
+      image: docImg,
+      name: docName,
+    });
   };
 
   return (
@@ -90,42 +109,66 @@ export default function AgentDetailsBar({
       {isLoading && <Loading />}
       {selectedImage && (
         <div className='fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center'>
-          <div className='relative bg-white p-4 rounded-lg w-[60%] h-[50%] overflow-auto my-auto'>
+          <div className='relative bg-white p-4 rounded-lg w-[60%] h-[50%] overflow-auto my-auto hide-scrollbar'>
             <button
+              type='button'
               onClick={closeModal}
               className='absolute top-2 right-2 text-black hover:bg-gray-300 p-2 rounded-full'>
               <FaTimes size={20} />
+              {''}
             </button>
             <img
-              src={selectedImage}
-              alt="Document"
-              className='max-w-[80%] h-full max-h-screen mx-auto my-auto'
+              src={selectedImage.image}
+              alt='Document'
+              className='max-w-[80%] h-[90%] max-h-screen mx-auto my-auto'
               onLoad={() => setIsLoading(false)}
               onError={() => {
                 setIsLoading(false);
                 toast.error('Failed to load image');
               }}
             />
+            <div className='flex items-center mb-[20px]'>
+              <button
+                title='Download'
+                type='button'
+                onClick={() => {
+                  downloadImage(selectedImage.image, selectedImage.name);
+                }}
+                className='flex items-center gap-2 rounded-[5px] bg-gray-100 hover:bg-gray-200 px-2 py-[2px] border-[1px] border-gray-200'>
+                <span>Download</span>
+                <FontAwesomeIcon icon={faDownload} size='sm' />
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       <div className='h-full flex flex-col'>
         <button
+          type='button'
           onClick={onClose}
           className='absolute top-4 left-4 text-black hover:bg-gray-300 p-2 rounded-full'>
           <FaTimes size={25} />
+          {''}
         </button>
 
         <div className='h-full overflow-y-auto py-14 px-10'>
           <div className='bg-[#FAFAFA] p-6 flex flex-col items-center justify-center gap-4'>
             <div className='w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold text-white'>
               {user?.legalName
-                ? user.legalName.split(' ').map((name: string) => name[0]).join('').toUpperCase()
+                ? user.legalName
+                    .split(' ')
+                    .map((name: string) => name[0])
+                    .join('')
+                    .toUpperCase()
                 : user?.firstName && user?.lastName
                 ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
                 : user?.fullName
-                ? user.fullName.split(' ').map((name: string) => name[0]).join('').toUpperCase()
+                ? user.fullName
+                    .split(' ')
+                    .map((name: string) => name[0])
+                    .join('')
+                    .toUpperCase()
                 : 'N/A'}
             </div>
             <div className='text-center'>
@@ -138,7 +181,9 @@ export default function AgentDetailsBar({
               </p>
               <p
                 className={`text-lg font-semibold ${
-                  user?.agentType === 'individual' ? 'text-red-500' : 'text-green-500'
+                  user?.agentType === 'individual'
+                    ? 'text-red-500'
+                    : 'text-green-500'
                 }`}>
                 {user?.agentType || 'N/A'}
               </p>
@@ -152,7 +197,11 @@ export default function AgentDetailsBar({
             <div className='space-y-4'>
               <div className='flex justify-between'>
                 <span className='font-normal'>Date:</span>
-                <span>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</span>
+                <span>
+                  {user?.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString()
+                    : 'N/A'}
+                </span>
               </div>
               <div className='flex justify-between'>
                 <span className='font-normal'>Email:</span>
@@ -161,7 +210,9 @@ export default function AgentDetailsBar({
               <div className='flex justify-between'>
                 <span className='font-normal'>Address:</span>
                 <span>
-                  {user?.address?.street && user?.address?.localGovtArea && user?.address?.state
+                  {user?.address?.street &&
+                  user?.address?.localGovtArea &&
+                  user?.address?.state
                     ? `${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`
                     : 'N/A'}
                 </span>
@@ -197,10 +248,13 @@ export default function AgentDetailsBar({
                     ? user.meansOfId.map((doc: any, index: number) => (
                         <a
                           key={index}
-                          href="#"
+                          href='#'
                           onClick={(e) => {
                             e.preventDefault();
-                            handleImageClick(doc?.docImg?.[0] || '');
+                            handleImageClick(
+                              doc?.docImg?.[0] || '',
+                              doc?.name || ''
+                            );
                           }}
                           className='text-blue-500 underline'>
                           {doc?.name || 'N/A'}
@@ -242,7 +296,9 @@ export default function AgentDetailsBar({
                 onClick={!user?.accountApproved ? () => onSubmit() : undefined} // No status for agent approval
                 disabled={false}
                 className={`w-full bg-white border ${
-                  user?.accountApproved ? 'border-gray-500 text-gray-500' : 'border-green-500 text-green-500'
+                  user?.accountApproved
+                    ? 'border-gray-500 text-gray-500'
+                    : 'border-green-500 text-green-500'
                 } py-4 rounded-md ${
                   user?.accountApproved
                     ? 'cursor-not-allowed'
