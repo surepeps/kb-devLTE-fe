@@ -171,11 +171,11 @@ const Register = () => {
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
       } transition-all duration-500`}>
-      <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
+      <div className='container flex items-center justify-center py-[20px] md:py-[30px] md:mt-[60px] px-[25px] lg:px-0'>
         <form
           onSubmit={formik.handleSubmit}
           className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+          <h2 className='text-3xl md:text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
             Register with us
           </h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
@@ -241,14 +241,14 @@ const Register = () => {
           <Button
             value={`${isDisabled ? 'Registering...' : 'Register'}`}
             isDisabled={
-              isDisabled || 
-              !agreed || 
-              !formik.values.email || 
-              !formik.values.password || 
-              !formik.values.firstName || 
-              !formik.values.lastName || 
+              isDisabled ||
+              !agreed ||
+              !formik.values.email ||
+              !formik.values.password ||
+              !formik.values.firstName ||
+              !formik.values.lastName ||
               !formik.values.phone
-            } 
+            }
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
             type='submit'
             onSubmit={formik.handleSubmit}

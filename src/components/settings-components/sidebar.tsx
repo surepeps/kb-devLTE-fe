@@ -77,6 +77,7 @@ const Sidebar = () => {
     const newFile = await urlToFile(file, 'profile-pic.jpg');
     const formData = new FormData();
     formData.append('file', newFile);
+    console.log(formData);
     try {
       setUploading(true); // Show loading state while uploading
       await toast.promise(
@@ -133,13 +134,6 @@ const Sidebar = () => {
         error: 'Image upload failed',
       }
     );
-    // const file = event.target.files?.[0];
-    // if (!file) return; // Return early if no file is selected
-
-    // const formData = new FormData();
-    // formData.append('file', file as Blob); // Append the file to the FormData object
-    // const url = URLS.BASE + '/agent/upload-profile-pic';
-    // console.log(formData);
   };
 
   // useEffect(() => {
