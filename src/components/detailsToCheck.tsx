@@ -198,7 +198,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                             ({ docName }) => docName
                           )
                         : [''],
-                    price: detailsToCheck.propertyPrice.toString(),
+                    price: detailsToCheck.price.toString(),
                     fileUrl:
                       detailsToCheck.pictures !== undefined
                         ? detailsToCheck.pictures.map((item: string) => ({

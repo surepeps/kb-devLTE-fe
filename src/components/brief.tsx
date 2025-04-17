@@ -19,6 +19,7 @@ import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { useCreateBriefContext } from '@/context/create-brief-context';
 import { usePageContext } from '@/context/page-context';
 import { AgentNavData } from '@/enums';
+import toast from 'react-hot-toast';
 
 interface TotalBriefProps extends ShowTableProps {
   detailsToCheck: DataProps;
@@ -39,7 +40,7 @@ const Brief: FC<TotalBriefProps> = ({
   const { setSelectedNav } = usePageContext();
 
   useEffect(() => {
-    // console.log(data);
+    console.log(data);
   }, []);
 
   const handleEditBrief = () => {
@@ -98,8 +99,27 @@ const Brief: FC<TotalBriefProps> = ({
     });
     setSelectedNav(AgentNavData.CREATE_BRIEF);
   };
+
+  /**
+   * @handleDeleteBrief : delete brief
+   * @param id : id of the brief | string
+   */
+  const handleDeleteBrief = async (id: string | undefined) => {
+    const url = URLS.BASE + URLS.deleteSellBrief + id;
+    console.log(url);
+    try {
+      const response = await axios.delete(url);
+      console.log(response);
+      toast.success('Brief deleted');
+      if (response.status === 200) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <div className=' w-full mt-[60px] flex items-center justify-center'>
+    <div className=' w-full mt-[30px] md:mt-[60px] flex items-center justify-center'>
       {showFullDetails ? (
         <div>
           <DetailsToCheck
@@ -115,6 +135,9 @@ const Brief: FC<TotalBriefProps> = ({
               Edit
             </button>
             <button
+              onClick={() => {
+                handleDeleteBrief(detailsToCheck._id);
+              }}
               type='button'
               className='w-[90%] ml-[5%] min-h-[50px] flex justify-center items-center border-[1px] border-red-500 text-red-500 rounded-[8px] font-ubuntu'>
               Delete
