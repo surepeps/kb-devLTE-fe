@@ -15,6 +15,9 @@ import Modal from './Modal';
 import { usePageContext } from '@/context/page-context';
 import { useCreateBriefContext } from '@/context/create-brief-context';
 import { AgentNavData } from '@/enums';
+import axios from 'axios';
+import { URLS } from '@/utils/URLS';
+import toast from 'react-hot-toast';
 
 const ShowTable: React.FC<ShowTableProps> = ({
   data,
@@ -46,6 +49,26 @@ const ShowTable: React.FC<ShowTableProps> = ({
     });
     setModalVisible(true);
     console.log(data);
+  };
+  const [briefID, setBriefID] = useState<string | undefined>(undefined);
+
+  /**
+   * @handleDeleteBrief : delete brief
+   * @param id : id of the brief | string
+   */
+  const handleDeleteBrief = async (id: string | undefined) => {
+    const url = URLS.BASE + URLS.deleteSellBrief + id;
+    console.log(url);
+    try {
+      const response = await axios.delete(url);
+      console.log(response);
+      toast.success('Brief deleted');
+      if (response.status === 200) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const closeModal = () => setModalVisible(false);
@@ -105,6 +128,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
                   onClick={(e) => {
                     handleIconClick(e, item);
                     setEditBriefDetails(item);
+                    setBriefID(item._id);
                   }}
                   icon={faEllipsis}
                   width={24}
@@ -174,7 +198,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
           });
           setSelectedNav(AgentNavData.CREATE_BRIEF);
         }}
-        onDeleteBrief={() => console.log('Delete Brief clicked')}
+        onDeleteBrief={() => handleDeleteBrief(briefID)}
       />
     </div>
   );
