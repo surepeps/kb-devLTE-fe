@@ -40,8 +40,8 @@ export default function AgentDetailsBar({
             approved: true,
           }; 
 
-          console.log("payload", payload);
-          console.log("url", url);
+          // console.log("payload", payload);
+          // console.log("url", url);
 
       await toast.promise(
         POST_REQUEST(url, payload).then((response) => {
@@ -54,7 +54,7 @@ export default function AgentDetailsBar({
                 : 'Agent approved successfully'
             );
             console.log('Approval successful:', response);
-            window.location.href = '/admin'; // Redirect to /admin after success
+            window.location.href = '/admin'; 
             return isBrief
               ? status
                 ? 'Brief approved successfully'
@@ -146,69 +146,142 @@ export default function AgentDetailsBar({
             </div>
           </div>
 
-          <div className='h-4'></div>
+          <div className='h-4'></div> 
 
           <div className='bg-[#FAFAFA] p-5'>
             <div className='space-y-4'>
-              <div className='flex justify-between'>
-                <span className='font-normal'>Date:</span>
-                <span>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='font-normal'>Email:</span>
-                <span>{user?.email || 'N/A'}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='font-normal'>Address:</span>
-                <span>
-                  {user?.address?.street && user?.address?.localGovtArea && user?.address?.state
-                    ? `${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`
-                    : 'N/A'}
-                </span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='font-normal'>Areas of Operation:</span>
-                <span>{user?.regionOfOperation?.join(', ') || 'N/A'}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='font-normal'>Referral:</span>
-                <span>{user?.referral || 'N/A'}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='font-normal'>Type of Agent:</span>
-                <span>{user?.agentType || 'N/A'}</span>
-              </div>
+              {user?.createdAt && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Date:</span>
+                  <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+                </div>
+              )}
+              {user?.email && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Email:</span>
+                  <span>{user.email}</span>
+                </div>
+              )}
+              {user?.address?.street && user?.address?.localGovtArea && user?.address?.state && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Address:</span>
+                  <span>{`${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`}</span>
+                </div>
+              )}
+              {user?.regionOfOperation?.length > 0 && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Areas of Operation:</span>
+                  <span>{user.regionOfOperation.join(', ')}</span>
+                </div>
+              )}
+              {user?.referral && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Referral:</span>
+                  <span>{user.referral}</span>
+                </div>
+              )}
+              {user?.agentType && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Type of Agent:</span>
+                  <span>{user.agentType}</span>
+                </div>
+              )}
               {user?.agentType?.toLowerCase() === 'incorporated' && (
                 <>
-                  <div className='flex justify-between'>
-                    <span className='font-normal'>Company Name:</span>
-                    <span>{user?.companyName || 'N/A'}</span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span className='font-normal'>Registration Number:</span>
-                    <span>{user?.registrationNumber || 'N/A'}</span>
-                  </div>
+                  {user?.companyName && (
+                    <div className='flex justify-between'>
+                      <span className='font-normal'>Company Name:</span>
+                      <span>{user.companyName}</span>
+                    </div>
+                  )}
+                  {user?.registrationNumber && (
+                    <div className='flex justify-between'>
+                      <span className='font-normal'>Registration Number:</span>
+                      <span>{user.registrationNumber}</span>
+                    </div>
+                  )}
                 </>
               )}
-              <div className='flex justify-between'>
-                <span className='font-normal'>Documents:</span>
-                <span className='space-x-2'>
-                  {user?.meansOfId?.length > 0
-                    ? user.meansOfId.map((doc: any, index: number) => (
-                        <a
-                          key={index}
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleImageClick(doc?.docImg?.[0] || '');
-                          }}
-                          className='text-blue-500 underline'>
-                          {doc?.name || 'N/A'}
-                        </a>
-                      ))
-                    : 'N/A'}
-                </span>
-              </div>
+              {user?.meansOfId?.length > 0 && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Documents:</span>
+                  <span className='space-x-2'>
+                    {user.meansOfId.map((doc: any, index: number) => (
+                      <a
+                        key={index}
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleImageClick(doc?.docImg?.[0] || '');
+                        }}
+                        className='text-blue-500 underline'>
+                        {doc?.name}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              )}
+              {user?.location && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Location:</span>
+                  <span>{user.location}</span>
+                </div>
+              )}
+              {user?.propertyType && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Property Type:</span>
+                  <span>{user.propertyType}</span>
+                </div>
+              )}
+              {user?.price && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Price:</span>
+                  <span>{user.price}</span>
+                </div>
+              )}
+              {user?.usageOptions && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Usage Options:</span>
+                  <span>{user.usageOptions}</span>
+                </div>
+              )}
+              {user?.bedrooms && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Number of Bedrooms:</span>
+                  <span>{user.noOfBedrooms}</span>
+                </div>
+              )}
+              {user?.desiredFeatures && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Desired Features:</span>
+                  <span>{user.desiredFeatures}</span>
+                </div>
+              )}
+              {user?.documents && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Documents:</span>
+                  <span>{user.documents}</span>
+                </div>
+              )}
+              {user?.pictures?.length > 0 && (
+                <div className='flex justify-between'>
+                  <span className='font-normal'>Pictures:</span>
+                  <span>
+                    {user.pictures.map((pic: string, index: number) => (
+                      <a
+                        key={index}
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleImageClick(pic);
+                        }}
+                        className='text-blue-500 underline'>
+                        Picture {index + 1}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              )}
             </div>
             <hr className='my-4' />
           </div>
