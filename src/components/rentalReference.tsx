@@ -12,7 +12,7 @@ import Button from './button';
 import { useFormik } from 'formik';
 import ReactSelect, { components } from 'react-select';
 import Input from './Input';
-import naijaStates from 'naija-state-local-government';
+//import naijaStates from 'naija-state-local-government';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,6 +29,7 @@ import toast from 'react-hot-toast';
 import { shuffleArray } from '@/utils/shuffleArray';
 import SubmitPrefrenceModal from './can-not-find-brief-modal';
 import { usePageContext } from '@/context/page-context';
+import data from '@/data/state-lga';
 
 interface RentalReferenceDataProps {
   rentalReferenceData: { heading: string; options: string[] }[];
@@ -187,7 +188,7 @@ const RentalReference = ({
   useEffect(() => {
     // Load Nigerian states correctly
     setStateOptions(
-      naijaStates.states().map((state: string) => ({
+      Object.keys(data).map((state: string) => ({
         value: state,
         label: state,
       }))
@@ -199,7 +200,7 @@ const RentalReference = ({
         onSubmit={formik.handleSubmit}
         className='min-h-[398px] lg:min-h-[257px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
         <div className='w-full flex flex-col gap-[37px]'>
-          <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
+          <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
             {/**Type of Property */}
             <Select
               allowMultiple={false}
