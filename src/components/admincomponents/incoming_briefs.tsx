@@ -14,7 +14,6 @@ import EllipsisOptions from './ellipsisOptions';
 
 export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaitingApprovalCount?: (count: number) => void; data: any[] }) {
   const [openRow, setOpenRow] = useState<number | null>(null);
-  const [showFullDetails, setShowFullDetails] = useState<boolean>(false);
   const [detailsToCheck, setDetailsToCheck] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(3);
