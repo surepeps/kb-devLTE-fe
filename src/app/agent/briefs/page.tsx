@@ -13,7 +13,7 @@ import { usePageContext } from '@/context/page-context';
 import AgentNav from '@/components/agent_navbar';
 import { AgentNavData } from '@/enums';
 import { DataProps } from '@/types/agent_data_props';
-import PropertyType from '@/components/propertyType';
+import CreateBrief from '@/components/propertyType';
 import Overview from '@/components/overview';
 // import { completeTransactionData } from '@/data/sampleDataForAgent';
 import Brief from '@/components/brief';
@@ -132,7 +132,7 @@ const Form2 = () => {
       <div className='container flex flex-col min-h-[700px] items-center p-[20px]'>
         <AgentNav />
         {selectedNav === AgentNavData.OVERVIEW && <Overview />}
-        {selectedNav === AgentNavData.CREATE_BRIEF && <PropertyType />}
+        {selectedNav === AgentNavData.CREATE_BRIEF && <CreateBrief />}
         {selectedNav === AgentNavData.TOTAL_BRIEF && (
           <Brief
             headerData={headerData}
