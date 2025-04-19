@@ -188,7 +188,7 @@ const Login = () => {
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
       } transition-all duration-500`}>
-      <div className='container flex items-center justify-center py-[30px] mt-[20px] px-[25px] lg:px-0'>
+      <div className='container flex items-center justify-center py-[30px] mt-[100px] px-[25px] lg:px-0'>
         {!showForgotPassword ? (
           <form
             onSubmit={formik.handleSubmit}
@@ -226,7 +226,7 @@ const Login = () => {
             />
             {/**Already have an account */}
 
-            <div className='flex flex-col gap-[5px] items-center'>
+            {/* <div className='flex flex-col gap-[5px] items-center'>
               <p className='text-base leading-[25.6px] font-normal'>
                 Don&apos;t have an account?{' '}
                 <Link
@@ -245,7 +245,7 @@ const Login = () => {
                   Reset
                 </button>
               </p>
-            </div>
+            </div> */}
             {/**Google | Facebook */}
             {/* <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
               <RegisterWith
