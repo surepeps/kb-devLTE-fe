@@ -24,13 +24,14 @@ import ReactSelect from 'react-select';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
-import naijaStates from 'naija-state-local-government';
+//import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
 import { epilogue } from '@/styles/font';
 import customStyles from '@/styles/inputStyle';
+import data from '@/data/state-lga';
 
 interface Option {
   value: string;
@@ -62,10 +63,21 @@ const Sell = () => {
     return numericValue ? Number(numericValue).toLocaleString() : '';
   };
 
+  // useEffect(() => {
+  //   // Load Nigerian states correctly
+  //   setStateOptions(
+  //     naijaStates.states().map((state: string) => ({
+  //       value: state,
+  //       label: state,
+  //     }))
+  //   );
+  // }, []);
   useEffect(() => {
     // Load Nigerian states correctly
+    const sample = Object.keys(data);
+    console.log(sample);
     setStateOptions(
-      naijaStates.states().map((state: string) => ({
+      Object.keys(data).map((state: string) => ({
         value: state,
         label: state,
       }))
@@ -84,7 +96,7 @@ const Sell = () => {
     setSelectedState?.(selected);
 
     if (selected) {
-      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      const lgas = Object.values(data[selected.label]);
       console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
@@ -450,12 +462,11 @@ const Sell = () => {
                         isDisabled={areInputsDisabled}
                       />
                     </div>
-                    {formik.touched.landSize &&
-                      formik.errors.landSize && (
-                        <span className='text-red-600 text-sm'>
-                          {formik.errors.landSize}
-                        </span>
-                      )}
+                    {formik.touched.landSize && formik.errors.landSize && (
+                      <span className='text-red-600 text-sm'>
+                        {formik.errors.landSize}
+                      </span>
+                    )}
                   </div>
                   {formik.touched.documents && formik.errors.documents && (
                     <span className='text-red-600 text-sm'>
