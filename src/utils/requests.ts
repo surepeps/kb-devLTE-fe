@@ -19,6 +19,26 @@ export const GET_REQUEST = async (url: string, token?: string) => {
   }
 };
 
+export const DELETE_REQUEST = async (url: string, token?: string) => {
+  try {
+    const request = await fetch(url, {
+      method: 'DELETE', // Added the DELETE method
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const response = await request.json();
+    return response;
+  } catch (error: unknown) {
+    console.log(error);
+    return {
+      error: (error as Error).message || 'Unknown error',
+      success: false,
+      message: 'An error occurred, please try again.',
+    };
+  }
+};
+
 export const POST_REQUEST = async (url: string, data: unknown, token?: string) => {
   try {
     const request = await fetch(url, {

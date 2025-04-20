@@ -16,7 +16,7 @@ const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
 
   return (
     <Fragment>
-      <div className='min-h-[51px] w-full grid grid-cols-2 md:flex gap-[20px] flex-wrap flex-row justify-center items-center'>
+      <div className='min-h-[51px] w-full grid grid-cols-2 gap-[15px] md:flex md:gap-[20px] flex-wrap flex-row justify-center items-center'>
         {navData.map((item: string, idx: number) => (
           <Box
             className={`${idx === 0 ? 'col-span-2' : 'shrink-0'}`}

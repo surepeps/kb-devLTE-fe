@@ -15,6 +15,9 @@ import Modal from './Modal';
 import { usePageContext } from '@/context/page-context';
 import { useCreateBriefContext } from '@/context/create-brief-context';
 import { AgentNavData } from '@/enums';
+import axios from 'axios';
+import { URLS } from '@/utils/URLS';
+import toast from 'react-hot-toast';
 
 const ShowTable: React.FC<ShowTableProps> = ({
   data,
@@ -42,8 +45,30 @@ const ShowTable: React.FC<ShowTableProps> = ({
       ...item,
       propertyPrice: item.price,
       propertyFeatures: item.propertyFeatures,
+      pictures: item.pictures.length !== 0 ? item.pictures : [],
     });
     setModalVisible(true);
+    console.log(data);
+  };
+  const [briefID, setBriefID] = useState<string | undefined>(undefined);
+
+  /**
+   * @handleDeleteBrief : delete brief
+   * @param id : id of the brief | string
+   */
+  const handleDeleteBrief = async (id: string | undefined) => {
+    const url = URLS.BASE + URLS.deleteSellBrief + id;
+    console.log(url);
+    try {
+      const response = await axios.delete(url);
+      console.log(response);
+      toast.success('Brief deleted');
+      if (response.status === 200) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const closeModal = () => setModalVisible(false);
@@ -66,10 +91,10 @@ const ShowTable: React.FC<ShowTableProps> = ({
             ))}
           </tr>
         </thead>
-        <tbody className='space-y-6 overflow-y-scroll hide-scrollbar px-[8px] '>
+        <tbody className='space-y-2 overflow-y-scroll hide-scrollbar px-[8px] '>
           {data.map((item, idx: number) => (
             <tr
-              className='w-full flex hover:bg-gray-100 transition duration-500 py-2 items-center'
+              className='w-full flex hover:bg-gray-100 rounded-[5px] transition duration-500 py-2 items-center'
               key={idx}>
               <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                 {item.createdAt?.split('T')[0]}
@@ -103,6 +128,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
                   onClick={(e) => {
                     handleIconClick(e, item);
                     setEditBriefDetails(item);
+                    setBriefID(item._id);
                   }}
                   icon={faEllipsis}
                   width={24}
@@ -122,6 +148,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
         onClose={closeModal}
         onViewBrief={() => setShowFullDetails(true)}
         onEditBrief={() => {
+          if (heading === 'Total Brief' || heading === 'Publish Brief') return;
           setCreateBrief({
             ...createBrief,
             propertyType: editBriefDetails.propertyType,
@@ -171,7 +198,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
           });
           setSelectedNav(AgentNavData.CREATE_BRIEF);
         }}
-        onDeleteBrief={() => console.log('Delete Brief clicked')}
+        onDeleteBrief={() => handleDeleteBrief(briefID)}
       />
     </div>
   );

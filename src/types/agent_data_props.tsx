@@ -2,6 +2,7 @@
 
 export interface DataProps {
   areYouTheOwner?: boolean;
+  fileUrl?: string[];
   features?: { featureName: string; _id: string }[];
   createdAt?: string;
   rentalPrice?: number;

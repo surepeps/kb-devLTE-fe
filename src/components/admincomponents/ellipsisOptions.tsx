@@ -13,6 +13,7 @@ interface EllipsisOptionsProps {
   onDeleteBrief: () => void;
   onRejectBrief: () => void;
   closeMenu?: (type: number | null) => void;
+  isAgent?: boolean; // Added optional isAgent prop
 }
 
 const EllipsisOptions: FC<EllipsisOptionsProps> = ({
@@ -20,15 +21,16 @@ const EllipsisOptions: FC<EllipsisOptionsProps> = ({
   onDeleteBrief,
   onRejectBrief,
   closeMenu,
+  isAgent,
 }) => {
   const ellipsisData = [
-    { name: 'Approve brief', onClick: onApproveBrief },
+    { name: isAgent ? 'Approve agent' : 'Approve brief', onClick: onApproveBrief },
     {
-      name: 'Delete brief',
+      name: isAgent ? 'Delete agent' : 'Delete brief',
       onClick: onDeleteBrief,
     },
     {
-      name: 'Reject brief',
+      name: isAgent ? 'Reject agent' : 'Reject brief',
       onClick: onRejectBrief,
     },
   ];

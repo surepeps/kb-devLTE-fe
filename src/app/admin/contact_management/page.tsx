@@ -12,7 +12,7 @@ import Loading from '@/components/loading';
 import { useFormik } from 'formik';
 import BriefLists from '@/components/admincomponents/brief_lists';
 
-export default function BriefManagement() {
+export default function ContactManagement() {
        const isLoading = useLoading();
       const currentDate = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
@@ -67,7 +67,7 @@ export default function BriefManagement() {
             <div className='flex flex-col gap-1 md:gap-0'>
               <h2
                 className={`text-3xl font-bold text-[#2E2C34] ${archivo.className}`}>
-                Briefs Management
+                Contact Management
               </h2>
               <p className={`text-sm text-[#84818A] ${archivo.className}`}>
                 Showing your Account metrics from{' '}

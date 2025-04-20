@@ -243,6 +243,7 @@ const PropertyType = () => {
           email: retrieved?.email,
         },
         areYouTheOwner: createBrief.areYouTheOwner,
+        pictures: createBrief.fileUrl.map(({ image }) => image),
       };
       console.warn(payload);
 
