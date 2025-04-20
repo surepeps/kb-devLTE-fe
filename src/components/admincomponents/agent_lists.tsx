@@ -16,7 +16,7 @@ import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import AgentSidebar from './AgentDetailsBar';
-import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
+import { DELETE_REQUEST, GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
@@ -27,6 +27,7 @@ import EllipsisOptions from './ellipsisOptions';
 import ApproveBriefs from './approveBriefs';
 import DeleteBriefs from './deleteBriefs';
 import RejectBriefs from './rejectBriefs';
+import { string } from 'yup';
 
 interface Agent {
   id: string;
@@ -131,9 +132,9 @@ export default function AgentLists() {
     }
   };
 
-  const handleDeleteAgent = async (agentId: string, reason?: string) => {
+  const handleDeleteAgent = async (agentId: string, reason: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE}/admin/delete-agent/${agentId}`, { reason });
+      const response = await DELETE_REQUEST(`${URLS.BASE}/admin/delete-agent/${agentId}`, reason );
       if (response?.success) {
         toast.success('Agent deleted successfully');
         setAgents((prev) => prev.filter((agent) => agent.id !== agentId));
@@ -341,7 +342,7 @@ export default function AgentLists() {
         {agentToDelete && (
           <DeleteBriefs
             brief={agentToDelete}
-            onConfirm={(reason) => handleDeleteAgent(agentToDelete.id, reason)}
+            onConfirm={(reason) => handleDeleteAgent(agentToDelete.id, reason || 'No reason provided')}
             onCancel={() => setAgentToDelete(null)}
             isAgentApproval={true}
           />
