@@ -6,7 +6,8 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import useClickOutside from '@/hooks/clickOutside';
 import arrowIcon from '@/svgs/arrowDown.svg';
 import Image from 'next/image';
-import naijaStates from 'naija-state-local-government';
+//import naijaStates from 'naija-state-local-government';
+import data from '@/data/state-lga';
 
 type OptionType = {
   value: string;
@@ -87,8 +88,8 @@ const MultiSelectionProcess: FC<MultiSelectionProcessProps> = ({
                   setModifyHeading(`${option.label} state`);
                   //console.log(formik.values);
 
-                  const lgas = naijaStates.lgas(option.label)?.lgas;
-                  // console.log('Raw LGA Data:', lgas); // Log raw LGA data
+                  const lgas = Object.values(data[option.label]);
+                  console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
                   if (Array.isArray(lgas)) {
                     setDataOptions(
