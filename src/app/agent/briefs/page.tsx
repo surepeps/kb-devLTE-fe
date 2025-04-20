@@ -13,7 +13,7 @@ import { usePageContext } from '@/context/page-context';
 import AgentNav from '@/components/agent_navbar';
 import { AgentNavData } from '@/enums';
 import { DataProps } from '@/types/agent_data_props';
-import PropertyType from '@/components/propertyType';
+import CreateBrief from '@/components/propertyType';
 import Overview from '@/components/overview';
 // import { completeTransactionData } from '@/data/sampleDataForAgent';
 import Brief from '@/components/brief';
@@ -92,7 +92,13 @@ const Form2 = () => {
                 item?.features?.map(({ featureName }) => featureName) ||
                 item.propertyFeatures?.additionalFeatures,
             },
-
+            fileUrl:
+              item?.pictures?.length !== 0
+                ? item.pictures?.map((image) => ({
+                    id: image,
+                    image: image,
+                  }))
+                : [],
             features:
               item?.features?.map(({ featureName }) => featureName) ||
               item.propertyFeatures?.additionalFeatures,
@@ -101,7 +107,8 @@ const Form2 = () => {
           }))
           .sort(
             (a, b) =>
-              new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+              new Date(b.createdAt || 0).getTime() -
+              new Date(a.createdAt || 0).getTime()
           ); // Sort by date in descending order
         // console.log(combinedProperties);
         setTotalBriefData(combinedProperties);
@@ -119,13 +126,13 @@ const Form2 = () => {
 
   return (
     <section
-      className={`flex w-full items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] py-[40px]  ${
+      className={`flex w-full items-center filter justify-center transition duration-500 bg-[#EEF1F1] min-h-[800px] md:py-[40px]  ${
         (isContactUsClicked || isModalOpened) && 'brightness-[30%]'
       }`}>
       <div className='container flex flex-col min-h-[700px] items-center p-[20px]'>
         <AgentNav />
         {selectedNav === AgentNavData.OVERVIEW && <Overview />}
-        {selectedNav === AgentNavData.CREATE_BRIEF && <PropertyType />}
+        {selectedNav === AgentNavData.CREATE_BRIEF && <CreateBrief />}
         {selectedNav === AgentNavData.TOTAL_BRIEF && (
           <Brief
             headerData={headerData}

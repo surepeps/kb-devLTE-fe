@@ -35,13 +35,13 @@ const navItems = [
     href: '/admin/brief_management',
     label: 'Briefs Management',
     icon: faFileAlt,
-    disabled: true,
+    disabled: false,
   },
   {
-    href: '/admin/transactions',
-    label: 'Transaction Management',
+    href: '/admin/contact_management',
+    label: 'Contact Management',
     icon: faMoneyCheckAlt,
-    disabled: true,
+    disabled: false,
   },
   {
     href: '/admin/analytics',
@@ -69,18 +69,6 @@ export default function AdminNavbar() {
 
   return (
     <Fragment>
-      {/* <button
-        type='button'
-        className='flex py-6 px-8 min-h-full align-top '
-        onClick={() => setIsOpen(!isOpen)}>
-        {''}
-        <FontAwesomeIcon
-          icon={faBars}
-          color='#fff'
-          className='  bg-[#8DDB90] p-4 rounded-full shadow-md'
-        />
-      </button> */}
-
       <div
         className={`relative z-50 min-h-screen w-[270px] bg-white transition-transform duration-300 md:flex flex-col hidden`}>
         <Image
@@ -89,8 +77,9 @@ export default function AdminNavbar() {
           height={1000}
           className='md:w-[169px] md:h-[40px] w-[144px] h-[40px] m-8 cursor-pointer'
           alt='Khabiteq Logo '
-          onClick={() => router.push('/')} // Fixed navigation to landing page
+          onClick={() => router.push('/')}
         />
+
         <nav className='flex flex-col space-y-2 border-t-2 p-2 pt-4'>
           {navItems.map(({ href, label, icon, disabled }) => {
             const isActive = pathname === href;
@@ -106,6 +95,7 @@ export default function AdminNavbar() {
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-[#515B6F] hover:bg-gray-200'
                 }`}>
+
                 <FontAwesomeIcon
                   width={24}
                   height={24}

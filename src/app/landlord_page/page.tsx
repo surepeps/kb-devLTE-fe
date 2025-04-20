@@ -26,6 +26,7 @@ import { epilogue } from '@/styles/font';
 import MultiSelectionProcess from '@/components/multiSelectionProcess';
 import ImageContainer from '@/components/image-container';
 import axios from 'axios';
+import data from '@/data/state-lga';
 
 interface Option {
   value: string;
@@ -62,7 +63,7 @@ const Landlord = () => {
   useEffect(() => {
     // Load Nigerian states correctly
     setStateOptions(
-      naijaStates.states().map((state: string) => ({
+      Object.keys(data).map((state: string) => ({
         value: state,
         label: state,
       }))
@@ -81,7 +82,7 @@ const Landlord = () => {
     setSelectedState?.(selected);
 
     if (selected) {
-      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      const lgas = Object.values(data[selected.label]);
       // console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
