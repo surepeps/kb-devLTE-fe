@@ -21,6 +21,9 @@ const Sidebar = () => {
     usePageContext();
   const [uploading, setUploading] = useState(false);
   const { logout } = useUserContext();
+  const [img, setImg] = useState<any>(
+    userDetails.profile_picture || randomImage
+  );
 
   // const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = event.target.files?.[0];
@@ -62,33 +65,35 @@ const Sidebar = () => {
   //   );
   // };
 
-  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return; // Return early if no file is selected
+  const urlToFile = async (url: string, filename: string): Promise<File> => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const mime = blob.type;
+    return new File([blob], filename, { type: mime });
+  };
 
-    const formData = new FormData();
-    formData.append('file', file as Blob); // Append the file to the FormData object
+  const uploadImageToProfileDetails = async (file: string) => {
     const url = URLS.BASE + '/agent/upload-profile-pic';
+    const newFile = await urlToFile(file, 'profile-pic.jpg');
+    const formData = new FormData();
+    formData.append('file', newFile);
     console.log(formData);
-
     try {
       setUploading(true); // Show loading state while uploading
       await toast.promise(
-        POST_REQUEST(url, { file: file.name }, Cookies.get('token')).then(
-          (response) => {
+        axios
+          .post(url, formData, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${Cookies.get('token')}`,
+            },
+          })
+          .then((response) => {
             console.log(response);
-            if (response?.data?.url) {
-              setUserDetails({
-                ...userDetails,
-                profile_picture: response.data.url,
-              });
-              console.log('Image uploaded successfully', response);
-              return 'Image uploaded successfully';
-            } else {
-              throw new Error('Failed to get image URL');
+            if (response.status === 200) {
+              setImg(response.data.url);
             }
-          }
-        ),
+          }),
         {
           loading: 'Uploading...',
           success: 'Image uploaded successfully!',
@@ -101,6 +106,34 @@ const Sidebar = () => {
     } finally {
       setUploading(false); // Reset uploading state after completion
     }
+  };
+
+  const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    const fromData = new FormData();
+    fromData.append('file', file as Blob);
+
+    const url = URLS.BASE + URLS.uploadImg;
+
+    await toast.promise(
+      POST_REQUEST_FILE_UPLOAD(url, fromData).then((response) => {
+        if ((response as unknown as { url: string }).url) {
+          console.log((response as unknown as { url: string }).url as string);
+          uploadImageToProfileDetails(
+            (response as unknown as { url: string }).url as string
+          );
+          return 'Image uploaded successfully';
+        } else {
+          toast.error('Image upload failed');
+          throw new Error('Image upload failed');
+        }
+      }),
+      {
+        loading: 'Uploading...',
+        success: 'Image  uploaded successfully',
+        error: 'Image upload failed',
+      }
+    );
   };
 
   // useEffect(() => {
@@ -141,11 +174,7 @@ const Sidebar = () => {
         <div>
           {' '}
           <Image
-            src={
-              userDetails.profile_picture
-                ? userDetails.profile_picture
-                : randomImage
-            }
+            src={img}
             alt='user image'
             className='w-[120px] h-[120px] bg-[#D9D9D9] rounded-full object-cover'
             width={120}

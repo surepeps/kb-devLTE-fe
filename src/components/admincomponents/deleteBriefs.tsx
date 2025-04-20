@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import faClose from '@/svgs/cancelIcon.svg';
@@ -9,11 +9,22 @@ import { archivo } from '@/styles/font';
 
 interface DeleteBriefsProps {
   brief: any;
-  onConfirm: () => void;
+  onConfirm: (reason?: string) => void;
   onCancel: () => void;
+  isAgentApproval?: boolean;
 }
 
-const DeleteBriefs: FC<DeleteBriefsProps> = ({ brief, onConfirm, onCancel }) => {
+const DeleteBriefs: FC<DeleteBriefsProps> = ({ brief, onConfirm, onCancel, isAgentApproval }) => {
+  const [reason, setReason] = useState('');
+
+  const handleConfirm = () => {
+    if (isAgentApproval && !reason.trim()) {
+      alert('Please provide a reason for deleting the agent.');
+      return;
+    }
+    onConfirm(reason);
+  };
+
   return (
     <section className='w-full h-full fixed top-0 left-0 bg-transparent z-[10] flex justify-center items-center px-[10px]'>
       <motion.div
@@ -41,17 +52,26 @@ const DeleteBriefs: FC<DeleteBriefsProps> = ({ brief, onConfirm, onCancel }) => 
             <div className='flex flex-col justify-center items-center gap-[4px]'>
               <h2
                 className={`text-[#FB1515] text-[28px] leading-[40.4px] font-bold ${archivo.className}`}>
-                Delete Brief
+                {isAgentApproval ? 'Delete Agent' : 'Delete Brief'}
               </h2>
               <p
                 className={`text-lg text-[#515B6F] ${archivo.className} text-center font-normal`}>
-                Are you sure you want to delete the brief for{' '}
-                <strong>{brief?.buyerContact?.name}</strong>?
+                {isAgentApproval
+                  ? `Are you sure you want to delete the agent ${brief?.firstName || brief?.email}?`
+                  : `Are you sure you want to delete the brief for ${brief?.buyerContact?.name}?`}
               </p>
             </div>
+            {isAgentApproval && (
+              <textarea
+                placeholder='Enter reason for deletion'
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className='w-full h-[100px] border-[1px] border-[#E9EBEB] rounded-[5px] p-2 text-[#515B6F] text-lg'
+              />
+            )}
             <div className='h-[129px] w-full flex flex-col gap-[15px]'>
               <button
-                onClick={onConfirm}
+                onClick={handleConfirm}
                 type='button'
                 className={`h-[57px] w-full bg-[#FB1515] hover:bg-[#C90000] transition duration-500 rounded-[5px] font-bold text-lg text-white ${archivo.className}`}>
                 Confirm
