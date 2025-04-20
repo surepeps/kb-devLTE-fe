@@ -311,6 +311,7 @@ export default function AgentLists() {
                           onDeleteBrief={() => setAgentToDelete(item)}
                           onRejectBrief={() => setAgentToReject(item)}
                           closeMenu={setOpenRow}
+                          isAgent={true}
                         />
                       )}
                     </td>
