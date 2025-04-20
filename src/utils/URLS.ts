@@ -26,6 +26,7 @@ export const URLS = {
   confirmAvailability: '/confirm-property',
   agentGetUserPreferences: '/agent/preferences',
   agentApproval: '/admin/approve-agent',
+  deleteAgent: '/admin/delete-agent',
   getAllAgents: '/admin/all-agents',
   changePassword: '/agent/change-password',
   upgradeAccount: '/agent/account-upgrade',

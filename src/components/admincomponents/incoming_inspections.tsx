@@ -69,7 +69,7 @@ export default function IncomingInspections({
     } catch (error) {
       toast.error('An error occurred while approving the brief');
     } finally {
-      setBriefToApprove(null); // Close the modal after the action
+      setBriefToApprove(null);
     }
   };
 

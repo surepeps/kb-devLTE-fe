@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
+import { features } from 'process';
 
 interface Agent {
   id: string;
@@ -80,7 +81,7 @@ export default function BriefLists() {
       const sells = response?.properties?.data?.sells || [];
 
       const mappedRents = rents
-        .filter((item: any) => !item.isApproved)
+        .filter((item: any) => item.isApproved === false)
         .map((item: any) => ({
           id: item._id?.slice(0, 8) || '--',
           legalName: item.owner
@@ -101,11 +102,24 @@ export default function BriefLists() {
           createdAt: item.createdAt || '--',
           propertyId: item._id || '--',
           briefType: 'rent',
+          propertyType: item.propertyType || '--',
           isApproved: item.isApproved || false,
+          isRejected: item.isRejected || false,
+          usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
+          ? item.usageOptions.join(', ') 
+          : '--',
+          noOfBedrooms: item.noOfBedrooms || '--',
+          features: Array.isArray(item.features) && item.features.length > 0
+          ? item.features.map((feature: any) => feature.featureName || '--').join(', ')
+          : '--',
+          tenantCriteria: Array.isArray(item.tenantCriteria) && item.tenantCriteria.length > 0
+          ? item.tenantCriteria.map((tenantCriterium: any) => tenantCriterium.criteria || '--').join(', ')
+          : '--',
+          propertyCondition: item.propertyCondition || '--',
         }));
 
       const mappedSells = sells
-        .filter((item: any) => !item.isApproved)
+        .filter((item: any) => item.isApproved === false)
         .map((item: any) => ({
           id: item._id?.slice(0, 8) || '--',
           legalName: item.owner
@@ -130,7 +144,17 @@ export default function BriefLists() {
             : '--',
           createdAt: item.createdAt || '--',
           propertyId: item._id || '--',
+          propertyType: item.propertyType || '--',
+          isApproved: item.isApproved || '',
+          isRejected: item.isRejected || '',
           briefType: 'sell',
+          usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
+          ? item.usageOptions.join(', ') 
+          : '--',
+          noOfBedrooms: item.propertyFeatures.noOfBedrooms || '--',
+          features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
+            ? item.propertyFeatures.additionalFeatures.join(', ')
+            : '--',
         }));
 
       return [...mappedRents, ...mappedSells].sort(
@@ -152,7 +176,7 @@ export default function BriefLists() {
         ownerType: 'Agent',
         page: currentPage,
         limit: 10,
-      };
+      }; 
 
       const response = await POST_REQUEST(URLS.BASE + URLS.adminGetAllBriefs, payload);
 
@@ -187,7 +211,15 @@ export default function BriefLists() {
         createdAt: item.createdAt || '--',
         propertyId: item._id || '--',
         briefType: 'sell',
+        isApproved: item.isApproved || false,
+        isRejected: item.isRejected || false,
         noOfBedrooms: item.noOfBedrooms || '--',
+        usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
+        ? item.usageOptions.join(', ') 
+        : '--',
+        features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
+        ? item.propertyFeatures.additionalFeatures.join(', ')
+        : '--',
       }));
 
       return mappedBriefs.sort(
@@ -243,13 +275,16 @@ export default function BriefLists() {
         createdAt: item.createdAt || '--',
         propertyId: item._id || '--',
         briefType: 'sell',
+        isApproved: item.isApproved || false,
+        isRejected: item.isRejected || false,
         noOfBedrooms: item.propertyFeatures.noOfBedrooms || '--',
-        additionalFeatures: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0 
-          ? item.propertyFeatures.additionalFeatures.join(', ') 
-          : '--',
+        features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
+        ? item.propertyFeatures.additionalFeatures.join(', ')
+        : '--',
         usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
           ? item.usageOptions.join(', ') 
           : '--',
+          propertyType: item.propertyType || '--',
       }));
 
       return mappedBriefs.sort(
@@ -351,9 +386,9 @@ export default function BriefLists() {
     const briefDetails = {
       legalName: brief.legalName || 'N/A',
       location: brief.location || 'N/A',
-      propertyType: brief.briefType || 'N/A',
+      propertyType: brief.propertyType || 'N/A',
       price: brief.amount || 'N/A',
-      usageOptions: brief.usageOptions || 'N/A',
+      usageOptions: brief.usageOptions || '--',
       documents: brief.document || 'N/A',
       bedrooms: brief.bedrooms || 'N/A',
       desiredFeatures: brief.desiredFeatures || 'N/A',
@@ -362,8 +397,18 @@ export default function BriefLists() {
       email: brief.email || 'N/A',
       noOfBedrooms: brief.noOfBedrooms || '--',
       additionalFeatures: brief.additionalFeatures || '--',
+      agentType: brief.agentType || '--',
+      features: brief.features || '--',
+      propertyCondition: brief.propertyCondition || '--',
+      tenantCriteria: brief.tenantCriteria || '--',
+      briefType: brief.briefType || '--',
+      propertyId: brief.propertyId || '--',
+      isApproved: brief.isApproved || false,
+      isRejected: brief.isRejected || false,
     };
     setSelectedBrief(briefDetails);
+
+    console.log('Selected Brief:', briefDetails);
   };
 
   const closeSidebar = () => {
