@@ -22,7 +22,7 @@ import RequestsTable from './RquestsTable';
 import toast from 'react-hot-toast';
 
 interface RequestData {
-  docOnProperty: { docName: string }[];
+  docOnProperty: { docName: string; isProvided: boolean; _id: string }[];
   createdAt: string;
   propertyType: string;
   location: {
@@ -97,6 +97,8 @@ const Overview = () => {
     useState<boolean>(false);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(briefData[0]);
+
+  const [totalBriefs, setTotalBriefs] = useState<DataPropsArray>([]);
 
   useEffect(() => {
     if (selectedOption === 'Require Attention') {
@@ -175,6 +177,7 @@ const Overview = () => {
           ...briefs,
           totalBrief: combinedProperties.length,
         });
+        setTotalBriefs(combinedProperties);
       } catch (error) {
         console.log(error);
         setIsLoadingDetails({
@@ -207,11 +210,11 @@ const Overview = () => {
             seamless transaction`}
             data={buyerPreferences.map((item) => ({
               ...item,
-              docOnProperty: item.docOnProperty.map(({ docName }) => ({
-                docName,
-                isProvided: true,
-                _id: '',
-              })),
+              // docOnProperty: item.docOnProperty.map(({ docName }) => ({
+              //   docName,
+              //   isProvided: true,
+              //   _id: '',
+              // })),
               date: formatDate(item.createdAt),
               propertyType: item.propertyType,
               location: {
@@ -256,6 +259,49 @@ const Overview = () => {
     }
   };
 
+  const mobileDynamicContent = () => {
+    switch (selectedOption) {
+      case SELECTED_OPTIONS.REQUIRE_ATTENTION:
+        return (
+          <Briefs
+            header='Urgent Property request'
+            isLoading={isLoadingDetails.isLoading}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
+            // briefData={briefData}
+            briefData={buyerPreferences}
+          />
+        );
+
+      case SELECTED_OPTIONS.INSPECTION_REQUESTS:
+        return <RequestsTable data={allRequests} />;
+      case SELECTED_OPTIONS.THREE_MONTHS_AGO_BRIEF:
+        return (
+          <Table
+            headingColor='black'
+            headerData={headerData}
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
+            heading='3 month ago Brief'
+            description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
+            data={briefData}
+          />
+        );
+      case SELECTED_OPTIONS.RECENTLY_PUBLISH:
+        return (
+          <Briefs
+            isLoading={isLoadingDetails.isLoading}
+            header='Publish Brief'
+            setDetailsToCheck={setDetailsToCheck}
+            setShowFullDetails={setIsFullDetailsClicked}
+            briefData={totalBriefs}
+          />
+        );
+      default:
+        break;
+    }
+  };
+
   return (
     <Fragment>
       {isFullDetailsClicked ? (
@@ -268,8 +314,8 @@ const Overview = () => {
           />
         </div>
       ) : (
-        <div className='lg:w-[1184px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[60px] flex flex-col'>
-          <div className='w-full m-auto min-h-[140px] grid md:grid-cols-2 lg:grid-cols-3 items-center gap-[40px] '>
+        <div className='lg:w-[1184px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[30px] md:mt-[60px] flex flex-col'>
+          <div className='w-full m-auto min-h-[140px] grid md:grid-cols-2 lg:grid-cols-3 items-center gap-[20px] md:gap-[40px] '>
             {/**Total Brief */}
             <div className='w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
               <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
@@ -327,14 +373,14 @@ const Overview = () => {
             </div> */}
           </div>
 
-          <div className='w-full min-h-[51px] md:flex flex-wrap gap-[25px] hidden'>
+          <div className='w-full min-h-[51px] flex gap-[15px] md:gap-[25px] overflow-x-auto hide-scrollbar'>
             {OptionData.map((item: string, idx: number) => (
               <Options
                 onClick={() => {
                   setSelectedOption(item);
                   setHeading(item);
                 }}
-                className={`${
+                className={`shrink-0 ${
                   selectedOption === item
                     ? 'bg-[#8DDB9033] text-[#09391C] font-bold'
                     : 'font-normal text-[#5A5D63]'
@@ -352,12 +398,9 @@ const Overview = () => {
           </div>
 
           {/**Mobile View */}
-          <Briefs
-            header='Publish Brief'
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            briefData={briefData}
-          />
+          <div className='flex md:hidden w-full'>
+            {selectedOption && mobileDynamicContent()}
+          </div>
         </div>
       )}
     </Fragment>

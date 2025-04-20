@@ -20,7 +20,11 @@ import { URLS } from '@/utils/URLS';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import toast from 'react-hot-toast';
 
-export default function IncomingInspections({ onPendingCount }: { onPendingCount?: (count: number) => void }) {
+export default function IncomingInspections({
+  onPendingCount,
+}: {
+  onPendingCount?: (count: number) => void;
+}) {
   const formik = useFormik({
     initialValues: {
       selectedStat: {
@@ -41,7 +45,7 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
   const [totalBriefData, setTotalBriefData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(3);
-  const [briefToApprove, setBriefToApprove] = useState<any>(null); 
+  const [briefToApprove, setBriefToApprove] = useState<any>(null);
   const [briefToReject, setBriefToReject] = useState<any>(null);
   const [briefToDelete, setBriefToDelete] = useState<any>(null);
   const { dashboard, setDashboard } = usePageContext();
@@ -53,7 +57,9 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
 
   const confirmApproveBrief = async (briefId: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE + URLS.approveBrief}`, { id: briefId });
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.approveBrief}`, {
+        id: briefId,
+      });
       if (response?.success) {
         toast.success('Brief approved successfully');
         setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
@@ -63,13 +69,15 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
     } catch (error) {
       toast.error('An error occurred while approving the brief');
     } finally {
-      setBriefToApprove(null); // Close the modal after the action
+      setBriefToApprove(null);
     }
   };
 
   const handleDeleteBrief = async (briefId: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE + URLS.deleteBrief}`, { id: briefId });
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.deleteBrief}`, {
+        id: briefId,
+      });
       if (response?.success) {
         toast.success('Brief deleted successfully');
         setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
@@ -83,7 +91,9 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
 
   const handleRejectBrief = async (briefId: string) => {
     try {
-      const response = await POST_REQUEST(`${URLS.BASE + URLS.rejectBrief}`, { id: briefId });
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.rejectBrief}`, {
+        id: briefId,
+      });
       if (response?.success) {
         toast.success('Brief rejected successfully');
         setTotalBriefData((prev) => prev.filter((item) => item.id !== briefId));
@@ -101,7 +111,9 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
 
       try {
         const response = await GET_REQUEST(
-          `${URLS.BASE + URLS.adminGetAllInspections}?page=${currentPage}&limit=10&propertyType=PropertySell`,
+          `${
+            URLS.BASE + URLS.adminGetAllInspections
+          }?page=${currentPage}&limit=10&propertyType=PropertySell`
         );
 
         if (response?.success === false) {
@@ -110,7 +122,6 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
         }
 
         const data = response?.requests?.data || [];
-        // setTotalPages(response?.requests?.total || 1);
 
         const mappedData = data
           .map((item: any) => ({
@@ -126,19 +137,35 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
               phone: item.property?.owner?.phoneNumber || 'N/A',
             },
             propertyToInspect: {
-              address: `${item.property?.location?.state || 'N/A'}, ${item.property?.location?.localGovernment || 'N/A'}, ${item.property?.location?.area || 'N/A'}`,
+              address: `${item.property?.location?.state || 'N/A'}, ${
+                item.property?.location?.localGovernment || 'N/A'
+              }, ${item.property?.location?.area || 'N/A'}`,
               type: item.property?.propertyType || 'N/A',
-              size: item.property?.propertyFeatures?.noOfBedrooms ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms` : 'N/A',
+              size: item.property?.propertyFeatures?.noOfBedrooms
+                ? `${item.property.propertyFeatures.noOfBedrooms} Bedrooms`
+                : 'N/A',
             },
-            inspectionDate: item.inspectionDate ? formatDate(item.inspectionDate) : '-',
+            inspectionDate: item.inspectionDate
+              ? formatDate(item.inspectionDate)
+              : '-',
             inspectionStatus: item.status || '-',
             briefDetails: {
               agentInCharge: item.property?.owner?.fullName || 'N/A',
               type: item.property?.propertyType || 'N/A',
-              location: `${item.property?.location?.state || 'N/A'}, ${item.property?.location?.localGovernment || 'N/A'}, ${item.property?.location?.area || 'N/A'}`,
-              price: item.property?.price ? `₦${item.property.price.toLocaleString()}` : 'N/A',
-              usageOptions: item.property?.usageOptions?.length > 0 ? item.property.usageOptions.join(', ') : 'N/A',
-              documents: item.property?.docOnProperty?.map((doc: any) => doc.docName).join(', ') || 'N/A',
+              location: `${item.property?.location?.state || 'N/A'}, ${
+                item.property?.location?.localGovernment || 'N/A'
+              }, ${item.property?.location?.area || 'N/A'}`,
+              price: item.property?.price
+                ? `₦${item.property.price.toLocaleString()}`
+                : 'N/A',
+              usageOptions:
+                item.property?.usageOptions?.length > 0
+                  ? item.property.usageOptions.join(', ')
+                  : 'N/A',
+              documents:
+                item.property?.docOnProperty
+                  ?.map((doc: any) => doc.docName)
+                  .join(', ') || 'N/A',
             },
           }))
           .filter((item: any) => item.inspectionStatus === 'Pending'); // Only include pending briefs
@@ -203,16 +230,16 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
           <table className='min-w-[900px] md:w-full border-collapse'>
             <thead className='bg-[#fafafa] text-center text-sm font-medium text-gray-600'>
               <tr className='border-b'>
-                <th className='p-3'>
+                <th className='p-3' style={{ width: '5%' }}>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3'>Inspection ID</th>
-                <th className='p-3'>Buyer Contact</th>
-                <th className='p-3'>Agent in Charge</th>
-                <th className='p-3'>Property to Inspect</th>
-                <th className='p-3'>Inspection Date</th>
-                <th className='p-3'>Status</th>
-                <th className='p-3'>Action</th>
+                <th className='p-3' style={{ width: '10%' }}>Inspection ID</th>
+                <th className='p-3' style={{ width: '10%' }}>Buyer Contact</th>
+                <th className='p-3' style={{ width: '10%' }}>Agent in Charge</th>
+                <th className='p-3' style={{ width: '15%' }}>Property to Inspect</th>
+                <th className='p-3' style={{ width: '10%' }}>Inspection Date</th>
+                <th className='p-3' style={{ width: '10%' }}>Status</th>
+                <th className='p-3' style={{ width: '5%' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -245,9 +272,7 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
                       View Details
                     </span>
                   </td>
-                  <td className='p-3'>
-                    {item.inspectionDate}
-                  </td>
+                  <td className='p-3'>{item.inspectionDate}</td>
                   <td className='p-3'>
                     <span
                       className={`${
@@ -256,8 +281,7 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
                           : item.inspectionStatus === 'Accepted'
                           ? 'text-green-500'
                           : ''
-                      }`}
-                    >
+                      }`}>
                       {item.inspectionStatus}
                     </span>
                   </td>
@@ -270,7 +294,16 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
                     />
                     {openRow === index && (
                       <EllipsisOptions
-                        onApproveBrief={() => setBriefToApprove(item)}
+                        onApproveBrief={() => {
+                          setBriefToApprove(item);
+                          // setDashboard({
+                          //   ...dashboard,
+                          //   approveBriefsTable: {
+                          //     ...dashboard.approveBriefsTable,
+                          //     isApproveClicked: true,
+                          //   },
+                          // });
+                        }}
                         onDeleteBrief={() => setBriefToReject(item)}
                         onRejectBrief={() => setBriefToDelete(item)}
                         closeMenu={setOpenRow}
@@ -282,29 +315,45 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
             </tbody>
           </table>
         </div>
-        <div className="flex justify-end items-center mt-10 gap-1">
+        <div className='flex justify-end items-center mt-10 gap-1'>
           <button
+            type='button'
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className={`px-4 py-1 rounded-md ${currentPage === 1 ? 'text-gray-300' : 'text-black-500 hover:text-[#8DDB90]'}`}
-            disabled={currentPage === 1}
-          >
+            className={`px-4 py-1 rounded-md ${
+              currentPage === 1
+                ? 'text-gray-300'
+                : 'text-black-500 hover:text-[#8DDB90]'
+            }`}
+            disabled={currentPage === 1}>
             <FaChevronLeft />
+            {''}
           </button>
           {Array.from({ length: totalPages }, (_, index) => (
             <button
+              type='button'
               key={index + 1}
               onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded-md ${currentPage === index + 1 ? 'bg-[#8DDB90] text-white' : ' hover:bg-gray-300'}`}
-            >
+              className={`px-3 py-1 rounded-md ${
+                currentPage === index + 1
+                  ? 'bg-[#8DDB90] text-white'
+                  : ' hover:bg-gray-300'
+              }`}>
               {index + 1}
             </button>
           ))}
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            className={`px-4 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-300' : 'text-black-500 hover:text-[#8DDB90]'}`}
-            disabled={currentPage === totalPages}
-          >
+            type='button'
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className={`px-4 py-1 rounded-md ${
+              currentPage === totalPages
+                ? 'text-gray-300'
+                : 'text-black-500 hover:text-[#8DDB90]'
+            }`}
+            disabled={currentPage === totalPages}>
             <FaChevronRight />
+            {''}
           </button>
         </div>
       </motion.div>
@@ -312,9 +361,11 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
       {isSidebarOpen && (
         <div className='fixed top-0 right-0 h-full w-[40%] bg-white shadow-lg z-50 px-8'>
           <button
+            type='button'
             onClick={() => setIsSidebarOpen(false)}
             className='left-4 text-black hover:bg-gray-300 p-2 rounded-full mt-8'>
             <FaTimes size={25} />
+            {''}
           </button>
           <div className='items-center p-4 border-b border-[#CFD0D5] mt-4'>
             <h4 className='text-lg font-semibold'>Inspection Details</h4>
@@ -323,6 +374,7 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
             {['Buyer Contact', 'Agent in Charge', 'Property', 'Brief'].map(
               (tab) => (
                 <button
+                  type='button'
                   key={tab}
                   className={`flex-1 py-3 text-center text-base ${
                     activeTab === tab
@@ -385,19 +437,25 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Address</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.address}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.address}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Type</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.type}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.type}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Size</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.size}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.size}
+                    </strong>
                   </p>
                 </div>
               </div>
@@ -407,19 +465,25 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Agent in Charge</p>
                   <p>
-                    <strong>{selectedInspection?.briefDetails.agentInCharge}</strong>
+                    <strong>
+                      {selectedInspection?.briefDetails.agentInCharge}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Property Type</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.type}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.type}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Location</p>
                   <p>
-                    <strong>{selectedInspection?.propertyToInspect.address}</strong>
+                    <strong>
+                      {selectedInspection?.propertyToInspect.address}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
@@ -431,13 +495,17 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Usage Options</p>
                   <p>
-                    <strong>{selectedInspection?.briefDetails.usageOptions}</strong>
+                    <strong>
+                      {selectedInspection?.briefDetails.usageOptions}
+                    </strong>
                   </p>
                 </div>
                 <div className='flex justify-between items-center bg-[#F7F7F8] p-3 mb-1'>
                   <p>Document</p>
                   <p>
-                    <strong>{selectedInspection?.briefDetails.documents}</strong>
+                    <strong>
+                      {selectedInspection?.briefDetails.documents}
+                    </strong>
                   </p>
                 </div>
               </div>
@@ -460,7 +528,7 @@ export default function IncomingInspections({ onPendingCount }: { onPendingCount
           onConfirm={() => handleRejectBrief(briefToReject.id)}
           onCancel={() => setBriefToReject(null)}
         />
-      )} 
+      )}
 
       {briefToDelete && (
         <DeleteBriefs

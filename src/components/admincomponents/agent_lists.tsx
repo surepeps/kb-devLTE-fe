@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
@@ -11,13 +16,18 @@ import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import AgentSidebar from './AgentDetailsBar';
-import { GET_REQUEST } from '@/utils/requests';
+import { DELETE_REQUEST, GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
+import EllipsisOptions from './ellipsisOptions';
+import ApproveBriefs from './approveBriefs';
+import DeleteBriefs from './deleteBriefs';
+import RejectBriefs from './rejectBriefs';
+import { string } from 'yup';
 
 interface Agent {
   id: string;
@@ -56,6 +66,10 @@ export default function AgentLists() {
     message: '',
   });
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [openRow, setOpenRow] = useState<number | null>(null);
+  const [agentToApprove, setAgentToApprove] = useState<any>(null);
+  const [agentToReject, setAgentToReject] = useState<any>(null);
+  const [agentToDelete, setAgentToDelete] = useState<any>(null);
 
   const getAgentsData = async () => {
     setIsLoadingDetails({
@@ -81,6 +95,7 @@ export default function AgentLists() {
         message: 'Data Loaded',
       });
       setAgents(data);
+      console.log(data);
     } catch (error: any) {
       setIsLoadingDetails({
         isLoading: false,
@@ -94,11 +109,69 @@ export default function AgentLists() {
     }
   };
 
+  const confirmApproveAgent = async (agentId: string) => {
+    try {
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.agentApproval}`, {
+        agentId,
+        approved: true,
+      });
+      if (response?.success) {
+        toast.success('Agent approved successfully');
+        setAgents((prev) =>
+          prev.map((agent) =>
+            agent.id === agentId ? { ...agent, accountApproved: true } : agent
+          )
+        );
+      } else {
+        toast.error('Failed to approve agent');
+      }
+    } catch (error) {
+      toast.error('An error occurred while approving the agent');
+    } finally {
+      setAgentToApprove(null);
+    }
+  };
+
+  const handleDeleteAgent = async (agentId: string, reason: string) => {
+    try {
+      const response = await DELETE_REQUEST(`${URLS.BASE}/admin/delete-agent/${agentId}`, reason );
+      if (response?.success) {
+        toast.success('Agent deleted successfully');
+        setAgents((prev) => prev.filter((agent) => agent.id !== agentId));
+      } else {
+        toast.error('Failed to delete agent');
+      }
+    } catch (error) {
+      toast.error('An error occurred while deleting the agent');
+    } finally {
+      setAgentToDelete(null);
+    }
+  };
+
+  const handleRejectAgent = async (agentId: string) => {
+    try {
+      const response = await POST_REQUEST(`${URLS.BASE + URLS.agentApproval}`, {
+        agentId,
+        approved: false,
+      });
+      if (response?.success) {
+        toast.success('Brief rejected successfully');
+        setAgents((prev) => prev.filter((agent) => agent.id !== agentId));
+      } else {
+        toast.error('Failed to reject brief');
+      }
+    } catch (error) {
+      toast.error('An error occurred while rejecting the brief');
+    } finally {
+      setAgentToReject(null);
+    }
+  };
+
   useEffect(() => {
-    getAgentsData(); // Initial data fetch
+    getAgentsData();
 
     const handleFocus = () => {
-      getAgentsData(); // Fetch updates when the page gains focus
+      getAgentsData();
     };
 
     window.addEventListener('focus', handleFocus);
@@ -125,6 +198,7 @@ export default function AgentLists() {
 
   const handleActionClick = (user: any) => {
     setSelectedUser(user);
+    console.log(user);
   };
 
   const closeSidebar = () => {
@@ -135,98 +209,146 @@ export default function AgentLists() {
 
   const renderDynamicComponent = () => {
     const tableContent = (
-      <motion.div
-        initial={{ y: 90, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.3 }}
-        className='mt-6 p-4 border rounded-md bg-white w-full lg:max-w-[1128px] px-8 mr-2 overflow-hidden md:overflow-x-auto'>
-        <h3 className='text-[#2E2C34] text-xl font-semibold py-6'>{active}</h3>
-        <div className='flex md:flex-row flex-col gap-2 justify-between'>
-          <Select
-            className='text-[#2E2C34] text-sm ml-1'
-            styles={{
-              control: (styles) => ({
-                ...styles,
-                boxShadow: 'none',
-                cursor: 'pointer',
-                outline: 'none',
-                backgroundColor: '#F9FAFB',
-                border: '1px solid #D6DDEB',
-                minWidth: '160px',
-              }),
-            }}
-            options={statsOptions}
-            defaultValue={statsOptions}
-            value={formik.values.selectedStat}
-            onChange={(options) => {
-              formik.setFieldValue('selectedStat', options);
-            }}
-          />
-          <div className='flex md:w-[initial] w-fit gap-3 cursor-pointer border px-3 justify-center items-center rounded-md h-[40px] md:h-[initial]'>
-            <Image
-              src={filterIcon}
-              alt='filter icon'
-              width={24}
-              height={24}
-              className='w-[24px] h-[24px]'
+      <>
+        <motion.div
+          initial={{ y: 90, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className='mt-6 p-4 border rounded-md bg-white w-full lg:max-w-[1128px] px-8 mr-2 overflow-hidden md:overflow-x-auto'>
+          <h3 className='text-[#2E2C34] text-xl font-semibold py-6'>{active}</h3>
+          <div className='flex md:flex-row flex-col gap-2 justify-between'>
+            <Select
+              className='text-[#2E2C34] text-sm ml-1'
+              styles={{
+                control: (styles) => ({
+                  ...styles,
+                  boxShadow: 'none',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  backgroundColor: '#F9FAFB',
+                  border: '1px solid #D6DDEB',
+                  minWidth: '160px',
+                }),
+              }}
+              options={statsOptions}
+              defaultValue={statsOptions}
+              value={formik.values.selectedStat}
+              onChange={(options) => {
+                formik.setFieldValue('selectedStat', options);
+              }}
             />
-            <span className='text-[#2E2C34]'>Filter</span>
+            <div className='flex md:w-[initial] w-fit gap-3 cursor-pointer border px-3 justify-center items-center rounded-md h-[40px] md:h-[initial]'>
+              <Image
+                src={filterIcon}
+                alt='filter icon'
+                width={24}
+                height={24}
+                className='w-[24px] h-[24px]'
+              />
+              <span className='text-[#2E2C34]'>Filter</span>
+            </div>
           </div>
-        </div>
-        <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
-          <table className='min-w-[900px] md:w-full border-collapse'>
-            <thead className='bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
-              <tr className='border-b'>
-                <th className='p-3'>
-                  <input title='checkbox' type='checkbox' />
-                </th>
-                <th className='p-3'>ID</th>
-                <th className='p-3'>Legal Name</th>
-                <th className='p-3'>Email</th>
-                <th className='p-3'>Agent Type</th>
-                <th className='p-3'>Address</th>
-                <th className='p-3'>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAgents.map((item, index) => (
-                <tr
-                  key={index}
-                  className='border-b text-sm text-gray-700 hover:bg-gray-50'>
-                  <td className='p-3'>
+          <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
+            <table className='min-w-[900px] md:w-full border-collapse'>
+              <thead className='bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
+                <tr className='border-b'>
+                  <th className='p-3'>
                     <input title='checkbox' type='checkbox' />
-                  </td>
-                  <td className='p-3'>{truncateId(item.id)}</td>
-                  <td className='p-3'>
-                    {item.fullName ? item.fullName : `${item.firstName} ${item.lastName}`}
-                  </td>
-                  <td className='p-3'>{item.email}</td>
-                  <td
-                    className={`p-3 font-semibold ${
-                      item.agentType?.toLowerCase() === 'individual' // Added optional chaining
-                        ? 'text-red-500'
-                        : 'text-green-500'
-                    }`}>
-                    {item.agentType || 'N/A'}
-                  </td>
-                  <td className='p-3'>
-                    {item.address
-                      ? `${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`
-                      : 'N/A'}
-                  </td>
-                  <td className='p-3 cursor-pointer text-2xl'>
-                    <FontAwesomeIcon
-                      onClick={() => handleActionClick(item)}
-                      icon={faEllipsis}
-                    />
-                  </td>
+                  </th>
+                  <th className='p-3'>ID</th>
+                  <th className='p-3'>Legal Name</th>
+                  <th className='p-3'>Email</th>
+                  <th className='p-3'>Agent Type</th>
+                  <th className='p-3'>Address</th>
+                  <th className='p-3'>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </motion.div>
+              </thead>
+              <tbody>
+                {filteredAgents.map((item, index) => (
+                  <tr
+                    key={index}
+                    className='border-b text-sm text-gray-700 hover:bg-gray-50'>
+                    <td className='p-3'>
+                      <input title='checkbox' type='checkbox' />
+                    </td>
+                    <td className='p-3'>{truncateId(item.id)}</td>
+                    <td className='p-3'>
+                      {item.firstName && item.lastName
+                        ? `${item.firstName} ${item.lastName}`
+                        : item.fullName}
+                    </td>
+                    <td className='p-3'>{item.email}</td>
+                    <td
+                      className={`p-3 font-semibold ${
+                        item.agentType?.toLowerCase() === 'individual'
+                          ? 'text-red-500'
+                          : 'text-green-500'
+                      }`}>
+                      {item.agentType || 'N/A'}
+                    </td>
+                    <td className='p-3'>
+                      {item.address
+                        ? `${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`
+                        : 'N/A'}
+                    </td>
+                    <td className='p-3 cursor-pointer text-2xl'>
+                      <FontAwesomeIcon
+                        onClick={() => {
+                          if (active === 'Onboarding Agents') {
+                            setOpenRow(openRow === index ? null : index);
+                          } else {
+                            handleActionClick(item);
+                          }
+                        }}
+                        icon={faEllipsis}
+                      />
+                      {openRow === index && active === 'Onboarding Agents' && (
+                        <EllipsisOptions
+                          onApproveBrief={() => {
+                            setAgentToApprove(item);
+                          }}
+                          onDeleteBrief={() => setAgentToDelete(item)}
+                          onRejectBrief={() => setAgentToReject(item)}
+                          closeMenu={setOpenRow}
+                          isAgent={true}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+
+        {agentToApprove && (
+          <ApproveBriefs
+            brief={agentToApprove}
+            onConfirm={() => confirmApproveAgent(agentToApprove.id)}
+            onCancel={() => setAgentToApprove(null)}
+            isAgentApproval={true}
+          />
+        )}
+
+        {agentToReject && (
+          <RejectBriefs
+            brief={agentToReject}
+            onConfirm={() => handleRejectAgent(agentToReject.id)}
+            onCancel={() => setAgentToReject(null)}
+            isAgentApproval={true}
+          />
+        )}
+
+        {agentToDelete && (
+          <DeleteBriefs
+            brief={agentToDelete}
+            onConfirm={(reason) => handleDeleteAgent(agentToDelete.id, reason || 'No reason provided')}
+            onCancel={() => setAgentToDelete(null)}
+            isAgentApproval={true}
+          />
+        )}
+      </>
     );
 
     return tableContent;

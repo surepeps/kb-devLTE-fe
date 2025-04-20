@@ -19,6 +19,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import MultiSelectionProcess from './multiSelectionProcess';
 import customStyles from '@/styles/inputStyle';
 import SubmitPrefrenceModal from './can-not-find-brief-modal';
+import { data } from '@/data/about_us_data';
 
 interface valuesProps {
   propertyType: string;
@@ -176,8 +177,10 @@ const PropertyReference = ({
 
   useEffect(() => {
     // Load Nigerian states correctly
+    const sample = Object.keys(data);
+    console.log(sample);
     setStateOptions(
-      naijaStates.states().map((state: string) => ({
+      Object.keys(data).map((state: string) => ({
         value: state,
         label: state,
       }))
@@ -194,7 +197,7 @@ const PropertyReference = ({
         <form
           onSubmit={formik.handleSubmit}
           className='w-full flex flex-col gap-[37px]'>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
+          <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
             {/**Type of Property */}
             <Select
               allowMultiple={false}

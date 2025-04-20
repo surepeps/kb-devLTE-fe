@@ -28,7 +28,7 @@ const HeroSection: FC<HeroSectionProps> = ({
 }) => {
   return (
     /**#0A3E72 */
-    <section className='flex items-center justify-center min-h-[536px] w-full overflow-hidden pt-[20px]'>
+    <section className='flex items-center justify-center min-h-[536px] w-full overflow-hidden'>
       <div className='container h-full flex md:flex-row flex-col px-[10px] md:px-[20px] slide-from-bottom'>
         <div
           style={{ backgroundColor: bgColor }}

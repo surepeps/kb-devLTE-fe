@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   faMagnifyingGlass,
   faQuestion,
@@ -14,10 +14,15 @@ import Select from 'react-select';
 import { useFormik } from 'formik';
 import Loading from '@/components/loading';
 import { useLoading } from '@/hooks/useLoading';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 
 export default function AdminHome() {
   const [activeTab, setActiveTab] = useState('attention');
   const isLoading = useLoading();
+  const router = useRouter();
 
   const formik = useFormik({
     initialValues: {
@@ -27,6 +32,28 @@ export default function AdminHome() {
       // console.log(values);
     },
   });
+
+  /**
+   * validate user before going into admin dashboard
+   */
+
+  // useEffect(() => {
+  //   const getAdminInfo = async () => {
+  //     const adminToken = Cookies.get('adminToken');
+  //     if (!adminToken) {
+  //       router.push('/admin/auth/login');
+  //     }
+  //     try {
+  //       const response = await GET_REQUEST(URLS.BASE + '/', adminToken);
+  //       if (response.status === 200) {
+  //         //do something
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   getAdminInfo();
+  // }, []);
 
   if (isLoading) return <Loading />;
 
