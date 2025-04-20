@@ -122,7 +122,6 @@ export default function IncomingInspections({
         }
 
         const data = response?.requests?.data || [];
-        // setTotalPages(response?.requests?.total || 1);
 
         const mappedData = data
           .map((item: any) => ({
