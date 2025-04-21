@@ -12,8 +12,31 @@ import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Loading from '@/components/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import {
+  faClose,
+  faDownload,
+  faEllipsis,
+} from '@fortawesome/free-solid-svg-icons';
 import { downloadImage } from '@/utils/downloadImage';
+import { archivo, ubuntu } from '@/styles/font';
+import Toggle from '../toggle';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import Select from 'react-select';
+import customStyles from '@/styles/inputStyle';
+import filterIcon from '@/svgs/filterIcon.svg';
+
+type TableProps = {
+  id: string;
+  location: {
+    state: string;
+    lga: string;
+    area: string;
+  };
+  landSize: string;
+  amount: number;
+  documents: { docName: string }[];
+};
 
 export default function AgentDetailsBar({
   user,
@@ -22,11 +45,13 @@ export default function AgentDetailsBar({
   user: any;
   onClose: () => void;
 }) {
+  //const [isActive, setIsActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
     image: string;
     name: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [tableData, setTableData] = useState<TableProps[]>(dummyTableData);
 
   const closeModal = () => {
     setSelectedImage(null);
@@ -37,7 +62,11 @@ export default function AgentDetailsBar({
     console.log('User details' + user);
   }, [user]);
 
-  const onSubmit = async (status?: boolean, propertyId?: string, briefType?: string) => {
+  const onSubmit = async (
+    status?: boolean,
+    propertyId?: string,
+    briefType?: string
+  ) => {
     try {
       const isBrief = !!user?.legalName; // Determine if it's a brief based on legalName
       const url = isBrief
@@ -49,7 +78,7 @@ export default function AgentDetailsBar({
             propertyId: propertyId || user?.propertyId || '',
             propertyType: briefType || user?.briefType || '',
             status,
-          } 
+          }
         : {
             agentId: user?.id || '',
             approved: true,
@@ -99,9 +128,200 @@ export default function AgentDetailsBar({
     });
   };
 
+  const [selectedTab, setSelectedTab] = useState<string>('Total transaction');
+
   return (
-    <div className='fixed top-0 right-0 h-full w-[35%] bg-white shadow-lg z-50'>
-      {isLoading && <Loading />}
+    <div className='fixed top-0 right-0 h-full lg:w-[837px] w-[90%] bg-white shadow-lg z-50 p-[40px]'>
+      <div className='w-full flex flex-col gap-[20px]'>
+        {/**Close Modal Section */}
+        <div className='w-full flex items-center'>
+          <button
+            title='Close'
+            onClick={onClose}
+            type='button'
+            className='w-[41px] h-[41px] cursor-pointer rounded-full bg-gray-100 flex justify-center items-center'>
+            {' '}
+            <FontAwesomeIcon icon={faClose} size='xl' />
+          </button>
+        </div>
+        {/**User */}
+        <div className='min-h-[64px] w-full flex flex-wrap gap-[10px] items-center justify-between'>
+          <div className='flex md:flex-row flex-col items-start md:items-center gap-[14px]'>
+            {/**Image user section */}
+            <div
+              className={`w-16 h-16 bg-[#CDA4FF] rounded-full flex items-center justify-center text-xl font-bold text-[#181336] ${archivo.className}`}>
+              {user?.profile_picture ? (
+                <img
+                  src={user.profile_picture}
+                  alt='Profile'
+                  className='w-16 h-16 rounded-full object-cover'
+                />
+              ) : user?.legalName ? (
+                user.legalName
+                  .split(' ')
+                  .map((name: string) => name[0])
+                  .join('')
+                  .toUpperCase()
+              ) : user?.firstName && user?.lastName ? (
+                `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+              ) : user?.fullName ? (
+                user.fullName
+                  .split(' ')
+                  .map((name: string) => name[0])
+                  .join('')
+                  .toUpperCase()
+              ) : (
+                '-'
+              )}
+            </div>
+            {/**Name and other details */}
+            <div className='flex flex-col'>
+              <div className='flex gap-2'>
+                <h2
+                  className={`text-[#000000] font-bold text-lg ${ubuntu.className}`}>
+                  {user.firstName} {user.lastName}
+                </h2>{' '}
+                <span
+                  className={`text-[#000000] font-bold text-lg ${ubuntu.className}`}>
+                  /
+                </span>
+                <span
+                  className={`text-[#45D884] font-bold text-lg ${ubuntu.className}`}>
+                  incorporated
+                </span>
+              </div>
+              {/**Referrer */}
+              <div className='flex gap-1'>
+                <span
+                  className={`text-[#707281] text-sm font-semibold ${ubuntu.className}`}>
+                  Referrer:
+                </span>
+                {/**Referrer Name */}
+                <span
+                  className={`text-sm text-[#000000] font-semibold underline`}>
+                  John Doe
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className='flex gap-[15px]'>
+            <Toggle name='Deactivate Agent' onClick={() => {}} />
+            <Toggle name='Flag Agent' onClick={() => {}} />
+          </div>
+        </div>
+        {/**Box Notifications */}
+        <div className='w-full flex gap-[15px] overflow-x-auto hide-scrollbar border-t-[1px] pt-[10px] border-[#CFD0D5]'>
+          {BoxData.map((item, idx: number) => (
+            <BoxNotification {...item} key={idx} />
+          ))}
+        </div>
+        {/**Tabs to select */}
+        <div className='h-[34px] border-b-[1px] border-[#B8C9C9] flex gap-[25px] overflow-x-auto hide-scrollbar items-center'>
+          {[
+            'Total transaction',
+            'Agent referred',
+            'Briefs',
+            'Notification',
+            'Details',
+          ].map((tab: string, idx: number) => (
+            <span
+              onClick={() => {
+                setSelectedTab(tab);
+              }}
+              className={`cursor-pointer shrink-0 border- ${
+                archivo.className
+              } text-base ${
+                selectedTab === tab
+                  ? 'font-bold underline text-[#181336] underline-offset-8 decoration-[#8DDB90] decoration-[3px]'
+                  : 'font-normal text-[#515B6F]'
+              }`}
+              key={idx}>
+              {tab}
+            </span>
+          ))}
+        </div>
+        {/**Table */}
+        <div>
+          <motion.div
+            initial={{ y: 90, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className='p-4 border rounded-md bg-white w-full mr-2 overflow-hidden md:overflow-x-auto'>
+            <h3 className='text-[#2E2C34] text-xl font-semibold py-2'>
+              {selectedTab}
+            </h3>
+            <div className='flex md:flex-row flex-col gap-2 justify-between'>
+              <Select
+                className='text-[#2E2C34] text-sm ml-1'
+                styles={customStyles}
+                options={statsOptions}
+                defaultValue={statsOptions}
+                // value={formik.values.selectedStat}
+                // onChange={(options) => {
+                //   formik.setFieldValue('selectedStat', options);
+                // }}
+              />
+              <div className='flex md:w-[initial] w-fit gap-3 cursor-pointer border px-3 justify-center items-center rounded-md h-[40px] md:h-[initial]'>
+                <Image
+                  src={filterIcon}
+                  alt='filter icon'
+                  width={24}
+                  height={24}
+                  className='w-[24px] h-[24px]'
+                />
+                <span className='text-[#2E2C34]'>Filter</span>
+              </div>
+            </div>
+            <div className='w-full min-h-fit overflow-y-auto mt-6'>
+              <table className='min-w-[900px] md:w-full border-collapse'>
+                <thead className='bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
+                  <tr className='border-b'>
+                    <th className='p-3'>
+                      <input title='checkbox' type='checkbox' />
+                    </th>
+                    <th className='p-3'>ID</th>
+                    <th className='p-3'>Location</th>
+                    <th className='p-3'>Land Size</th>
+                    <th className='p-3'>Amount</th>
+                    <th className='p-3'>Documents</th>
+                    <th className='p-3'>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.map((item: TableProps, idx: number) => (
+                    <tr key={idx}>
+                      <td className='p-3'>
+                        <input title='checkbox' type='checkbox' />
+                      </td>
+                      <td className='p-3'>{item.id}</td>
+                      <td className='p-3'>
+                        {item.location.state.split(' ')[0]},{item.location.lga}
+                      </td>
+                      <td className='p-3'>{item.landSize}</td>
+                      <td className='p-3'>
+                        N{Number(item.amount).toLocaleString()}
+                      </td>
+                      <td className='p-3 text-ellipsis'>
+                        {item.documents.map(({ docName }) => docName)}
+                      </td>
+                      <FontAwesomeIcon
+                        icon={faEllipsis}
+                        width={24}
+                        height={24}
+                        title={'See full details'}
+                        className='w-[24px] h-[24px] cursor-pointer'
+                        color={'#181336'}
+                      />
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+      {/* {isLoading && <Loading />}
       {selectedImage && (
         <div className='fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center'>
           <div className='relative bg-white p-4 rounded-lg w-[60%] h-[50%] overflow-auto my-auto hide-scrollbar'>
@@ -214,12 +434,14 @@ export default function AgentDetailsBar({
                   <span>{user.email}</span>
                 </div>
               )}
-              {user?.address?.street && user?.address?.localGovtArea && user?.address?.state && (
-                <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Address:</span>
-                  <span>{`${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`}</span>
-                </div>
-              )}
+              {user?.address?.street &&
+                user?.address?.localGovtArea &&
+                user?.address?.state && (
+                  <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                    <span className='font-normal'>Address:</span>
+                    <span>{`${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`}</span>
+                  </div>
+                )}
               {user?.regionOfOperation?.length > 0 && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
                   <span className='font-normal'>Areas of Operation:</span>
@@ -246,12 +468,15 @@ export default function AgentDetailsBar({
                       <span>{user.companyName}</span>
                     </div>
                   )}
-                  {user?.registrationNumber && user.registrationNumber !== '--' && (
-                    <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                      <span className='font-normal'>Registration Number:</span>
-                      <span>{user.registrationNumber}</span>
-                    </div>
-                  )}
+                  {user?.registrationNumber &&
+                    user.registrationNumber !== '--' && (
+                      <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                        <span className='font-normal'>
+                          Registration Number:
+                        </span>
+                        <span>{user.registrationNumber}</span>
+                      </div>
+                    )}
                 </>
               )}
               {user?.meansOfId?.length > 0 && (
@@ -264,7 +489,10 @@ export default function AgentDetailsBar({
                         href='#'
                         onClick={(e) => {
                           e.preventDefault();
-                          handleImageClick(doc?.docImg?.[0] || '', doc?.name || '');
+                          handleImageClick(
+                            doc?.docImg?.[0] || '',
+                            doc?.name || ''
+                          );
                         }}
                         className='text-blue-500 underline'>
                         {doc?.name || 'N/A'}
@@ -334,7 +562,7 @@ export default function AgentDetailsBar({
                     {user.pictures.map((pic: string, index: number) => (
                       <a
                         key={index}
-                        href="#"
+                        href='#'
                         onClick={(e) => {
                           e.preventDefault();
                           handleImageClick(pic, `Picture ${index + 1}`);
@@ -360,64 +588,160 @@ export default function AgentDetailsBar({
                   <span
                     className={`w-2 h-2 rounded-full ${
                       user?.isApproved ? 'bg-green-500' : 'bg-red-500'
-                    }`}
-                  ></span>
+                    }`}></span>
                 </span>
               </div>
             )}
 
-          <div className='mt-14'>
-            {user?.legalName ? (
-              <>
-                <button
-                  onClick={() => onSubmit(true, user?.propertyId, user?.briefType)}
-                  disabled={user?.isApproved} 
-                  className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 mb-2 ${
-                    user?.isApproved
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#8DDB90] text-white hover:bg-green-900'
-                  }`}>
-                  Approve Brief
-                </button>
-                <div className='flex gap-4'>
+            <div className='mt-14'>
+              {user?.legalName ? (
+                <>
                   <button
-                    onClick={() => onSubmit(false)}
-                    disabled={user?.isRejected}
-                    className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 ${
-                      user?.isRejected
-                        ? 'border-red-300 text-red-300 cursor-not-allowed'
-                        : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                    }`}>
-                    Reject Brief
-                  </button>
-                  <button
-                    onClick={() => {  }}
+                    onClick={() =>
+                      onSubmit(true, user?.propertyId, user?.briefType)
+                    }
                     disabled={user?.isApproved}
-                    className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 border-[#1976D2] text-[#1976D2] hover:bg-blue-900 hover:text-white`}>
-                    Edit Brief
+                    className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 mb-2 ${
+                      user?.isApproved
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-[#8DDB90] text-white hover:bg-green-900'
+                    }`}>
+                    Approve Brief
                   </button>
-                </div>
-              </>
-            ) : (
-              <button
-                onClick={!user?.accountApproved ? () => onSubmit() : undefined} 
-                disabled={false}
-                className={`w-full py-4 text-base md:text-sm sm:text-xs bg-white border ${
-                  user?.accountApproved
-                    ? 'border-gray-500 text-gray-500'
-                    : 'border-green-500 text-green-500'
-                } rounded-md ${
-                  user?.accountApproved
-                    ? 'cursor-not-allowed'
-                    : 'hover:bg-green-500 hover:text-white'
-                } transition duration-300`}>
-                {user?.accountApproved ? 'Agent Approved' : 'Approve Agent'}
-              </button>
-            )}
+                  <div className='flex gap-4'>
+                    <button
+                      onClick={() => onSubmit(false)}
+                      disabled={user?.isRejected}
+                      className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 ${
+                        user?.isRejected
+                          ? 'border-red-300 text-red-300 cursor-not-allowed'
+                          : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                      }`}>
+                      Reject Brief
+                    </button>
+                    <button
+                      onClick={() => {}}
+                      disabled={user?.isApproved}
+                      className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 border-[#1976D2] text-[#1976D2] hover:bg-blue-900 hover:text-white`}>
+                      Edit Brief
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button
+                  onClick={
+                    !user?.accountApproved ? () => onSubmit() : undefined
+                  }
+                  disabled={false}
+                  className={`w-full py-4 text-base md:text-sm sm:text-xs bg-white border ${
+                    user?.accountApproved
+                      ? 'border-gray-500 text-gray-500'
+                      : 'border-green-500 text-green-500'
+                  } rounded-md ${
+                    user?.accountApproved
+                      ? 'cursor-not-allowed'
+                      : 'hover:bg-green-500 hover:text-white'
+                  } transition duration-300`}>
+                  {user?.accountApproved ? 'Agent Approved' : 'Approve Agent'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div> */}
     </div>
   );
 }
+
+type BoxNotificationProps = {
+  heading: string;
+  amount: number;
+};
+
+const BoxNotification: React.FC<BoxNotificationProps> = ({
+  heading,
+  amount,
+}) => {
+  return (
+    <div className='w-[178px] h-[79px] shrink-0 flex flex-col gap-[7px] p-[13px] bg-[#FAFAFA]'>
+      <p className={`text-[#515B6F] text-sm ${archivo.className}`}>{heading}</p>
+      <h3
+        className={`font-semibold text-[#000000] ${archivo.className} text-base`}>
+        {heading.includes('Close') ? '₦ ' : null}
+        {Number(amount).toLocaleString()}
+      </h3>
+    </div>
+  );
+};
+
+const BoxData: BoxNotificationProps[] = [
+  {
+    heading: 'Total Transaction Close',
+    amount: 500000000,
+  },
+  {
+    heading: 'Total Profit',
+    amount: 25000000,
+  },
+  {
+    heading: 'Total Briefs',
+    amount: 30,
+  },
+  {
+    heading: 'Total Referred',
+    amount: 200,
+  },
+];
+
+const headerData: string[] = [
+  'Date',
+  'Property Type',
+  'Location',
+  'Property price',
+  'Document',
+  'Full details',
+];
+
+const statsOptions = [
+  { value: '1', label: 'Individual' },
+  { value: '2', label: 'Incoporated' },
+];
+
+const dummyTableData: TableProps[] = [
+  {
+    id: 'KA4556',
+    location: {
+      state: 'Lagos state',
+      lga: 'Kosofe',
+      area: 'oworoshoki',
+    },
+    landSize: '5000ms',
+    amount: 300000000,
+    documents: [
+      {
+        docName: 'C of O',
+      },
+      {
+        docName: 'Government Consent',
+      },
+    ],
+  },
+  {
+    id: 'KB4852',
+    location: {
+      state: 'Lagos state',
+      lga: 'Agege',
+      area: 'ifaki',
+    },
+    landSize: '8000ms',
+    amount: 23545890000,
+    documents: [
+      {
+        docName: 'C of O',
+      },
+      {
+        docName: 'Government Consent',
+      },
+    ],
+  },
+];

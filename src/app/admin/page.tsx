@@ -37,23 +37,24 @@ export default function AdminHome() {
    * validate user before going into admin dashboard
    */
 
-  // useEffect(() => {
-  //   const getAdminInfo = async () => {
-  //     const adminToken = Cookies.get('adminToken');
-  //     if (!adminToken) {
-  //       router.push('/admin/auth/login');
-  //     }
-  //     try {
-  //       const response = await GET_REQUEST(URLS.BASE + '/', adminToken);
-  //       if (response.status === 200) {
-  //         //do something
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   getAdminInfo();
-  // }, []);
+  useEffect(() => {
+    const getAdminInfo = async () => {
+      const adminToken = Cookies.get('adminToken');
+      if (!adminToken) {
+        router.push('/admin/auth/login');
+      }
+      // try {
+      //   const response = await GET_REQUEST(URLS.BASE + '/', adminToken);
+      //   console.log(response);
+      //   if (response.status === 200) {
+      //     //do something
+      //   }
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    };
+    getAdminInfo();
+  }, []);
 
   if (isLoading) return <Loading />;
 
