@@ -58,7 +58,11 @@ interface Agent {
   profile_picture: string;
 }
 
-export default function AgentLists() {
+type AgentManagementTabsProps = {
+  setDetails?: (details: any) => void;
+};
+
+export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   const [active, setActive] = useState('All Agents');
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
@@ -90,11 +94,20 @@ export default function AgentLists() {
         });
       }
       const data = response.agents.data;
+      console.log(data);
       setIsLoadingDetails({
         isLoading: false,
         message: 'Data Loaded',
       });
       setAgents(data);
+      setDetails?.({
+        totalAgents: data.length,
+        activeAgents: data.filter(
+          (agent: { isInActive: boolean }) => agent.isInActive
+        ).length,
+        bannedAgents: 0,
+        flaggedAgents: 0,
+      });
       console.log(data);
     } catch (error: any) {
       setIsLoadingDetails({
@@ -134,7 +147,10 @@ export default function AgentLists() {
 
   const handleDeleteAgent = async (agentId: string, reason: string) => {
     try {
-      const response = await DELETE_REQUEST(`${URLS.BASE}/admin/delete-agent/${agentId}`, reason );
+      const response = await DELETE_REQUEST(
+        `${URLS.BASE}/admin/delete-agent/${agentId}`,
+        reason
+      );
       if (response?.success) {
         toast.success('Agent deleted successfully');
         setAgents((prev) => prev.filter((agent) => agent.id !== agentId));
@@ -216,7 +232,9 @@ export default function AgentLists() {
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
           className='mt-6 p-4 border rounded-md bg-white w-full lg:max-w-[1128px] px-8 mr-2 overflow-hidden md:overflow-x-auto'>
-          <h3 className='text-[#2E2C34] text-xl font-semibold py-6'>{active}</h3>
+          <h3 className='text-[#2E2C34] text-xl font-semibold py-6'>
+            {active}
+          </h3>
           <div className='flex md:flex-row flex-col gap-2 justify-between'>
             <Select
               className='text-[#2E2C34] text-sm ml-1'
@@ -343,7 +361,12 @@ export default function AgentLists() {
         {agentToDelete && (
           <DeleteBriefs
             brief={agentToDelete}
-            onConfirm={(reason) => handleDeleteAgent(agentToDelete.id, reason || 'No reason provided')}
+            onConfirm={(reason) =>
+              handleDeleteAgent(
+                agentToDelete.id,
+                reason || 'No reason provided'
+              )
+            }
             onCancel={() => setAgentToDelete(null)}
             isAgentApproval={true}
           />
@@ -370,7 +393,7 @@ export default function AgentLists() {
     <Fragment>
       {isLoadingDetails.isLoading && <Loading />} {/* Show loading component */}
       <div>
-        <div className='flex text-lg w-full gap-4 md:gap-8 mt-6'>
+        <div className='flex overflow-x-auto hide-scrollbar text-lg w-full gap-4 md:gap-8 mt-6'>
           {tabs.map((item, index) => (
             <TabButton
               key={index}
@@ -402,7 +425,7 @@ const TabButton = ({
     <button
       type='button'
       onClick={onClick}
-      className={`relative rounded-sm  ${
+      className={`relative rounded-sm shrink-0  ${
         active === text
           ? 'border-b-4 border-[#8DDB90]  text-[#181336] font-semibold'
           : 'text-[#515B6F]'

@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /** @format */
 
 'use client';
@@ -6,7 +11,13 @@
 import AgentLists from '@/components/admincomponents/agent_lists';
 import { motion } from 'framer-motion';
 
-export default function AgentManagementTabs() {
+type AgentManagementTabsProps = {
+  setDetails?: (details: any) => void;
+};
+
+export default function AgentManagementTabs({
+  setDetails,
+}: AgentManagementTabsProps) {
   return (
     <motion.div
       className='w-full overflow-hidden'
@@ -17,7 +28,7 @@ export default function AgentManagementTabs() {
       <div className='flex flex-col w-full'>
         <div className='w-full'>
           {/* Ensure AgentLists renders updated cards */}
-          <AgentLists />
+          <AgentLists setDetails={setDetails} />
         </div>
       </div>
     </motion.div>
