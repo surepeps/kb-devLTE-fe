@@ -28,7 +28,7 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
       },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 

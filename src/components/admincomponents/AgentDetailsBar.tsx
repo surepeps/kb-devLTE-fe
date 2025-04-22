@@ -8,7 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import { POST_REQUEST } from '@/utils/requests';
+import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Loading from '@/components/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,6 +25,7 @@ import { motion } from 'framer-motion';
 import Select from 'react-select';
 import customStyles from '@/styles/inputStyle';
 import filterIcon from '@/svgs/filterIcon.svg';
+import Cookies from 'js-cookie';
 
 type TableProps = {
   id: string;
@@ -45,13 +46,18 @@ export default function AgentDetailsBar({
   user: any;
   onClose: () => void;
 }) {
-  //const [isActive, setIsActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
     image: string;
     name: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tableData, setTableData] = useState<TableProps[]>(dummyTableData);
+  const [agentBrief, setAgentBrief] = useState<TableProps[]>(dummyTableData);
+  const [isLoadingDetails, setIsLoadingDetails] = useState({
+    isLoading: false,
+    message: '',
+  });
+  const [isAgentInactive, setIsAgentInactive] = useState(!user?.isInActive); // Set active if isInActive is false
 
   const closeModal = () => {
     setSelectedImage(null);
@@ -59,40 +65,86 @@ export default function AgentDetailsBar({
   };
 
   useEffect(() => {
-    console.log('User details' + user);
+    // console.log('User details' + user);
+
+    const getAgentBrief = async (agentId: string) => {
+      setIsLoadingDetails({
+        isLoading: true,
+        message: 'Loading...',
+      });
+      try {
+        const response = await GET_REQUEST(
+          `${URLS.BASE}/admin/agent/${agentId}/properties?page=1&limit=10`,
+          Cookies.get('token')
+        );
+  
+        if (response?.success === false) {
+          toast.error('Failed to get data');
+          return setIsLoadingDetails({
+            isLoading: false,
+            message: 'Failed to get data',
+          });
+        }
+  
+        const data = response.properties?.data || [];
+        // console.log('Agent brief data:', data);
+        setIsLoadingDetails({
+          isLoading: false,
+          message: 'Data Loaded',
+        });
+        setAgentBrief(data);
+      } catch (error: any) {
+        setIsLoadingDetails({
+          isLoading: false,
+          message: 'Failed to get data',
+        });
+      } finally {
+        setIsLoadingDetails({
+          isLoading: false,
+          message: '',
+        });
+      }
+    };
+
+    getAgentBrief(user?.id);
   }, [user]);
 
-  const onSubmit = async (
-    agentId?: string,
-    // reason?: string
-  ) => {
+  const activateAgent = async (agentId?: string) => {
     try {
       const url = URLS.BASE + URLS.deActivateAccount;
 
       const payload = {
-          agentId: agentId || '',
-          inActiveSatatus: true,
-          reason: 'Agent is not active',
+        agentId: agentId || '',
+        inActiveSatatus: isAgentInactive,
+        reason: !isAgentInactive ? 'Agent is now active' : 'Agent is not active',
       };
+
+      // console.log('Payload:', payload);
 
       await toast.promise(
         POST_REQUEST(url, payload).then((response) => {
           if ((response as any).success) {
-            toast.success('Agent deactivated successfully');
-            window.location.href = '/admin/agent-management';
-            return 'Agent deactivated successfully';
+            toast.success(
+              !isAgentInactive
+                ? 'Agent activated successfully'
+                : 'Agent deactivated successfully'
+            );
+            setIsAgentInactive(!isAgentInactive); // Update the state
+            return !isAgentInactive
+              ? 'Agent activated successfully'
+              : 'Agent deactivated successfully';
           } else {
-            const errorMessage = (response as any).error || 'Deactivation failed';
+            const errorMessage = (response as any).error || 'Action failed';
             toast.error(errorMessage);
             throw new Error(errorMessage);
           }
         }),
         {
-          loading : 'Deactivating ...',
+          loading: !isAgentInactive ? 'Activating ...' : 'Deactivating ...',
         }
       );
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast.error('An error occurred, please try again');
     }
   };
@@ -178,13 +230,17 @@ export default function AgentDetailsBar({
                 {/**Referrer Name */}
                 <span
                   className={`text-sm text-[#000000] font-semibold underline`}>
-                   {user?.referralName ? user?.referralName : '-----'}
+                  {user?.referralName ? user?.referralName : '-----'}
                 </span>
               </div>
             </div>
           </div>
           <div className='flex gap-[15px]'>
-            <Toggle name='Deactivate Agent' onClick={() => {onSubmit(user?.id)}} />
+            <Toggle
+              name={isAgentInactive ? 'Deactivate Agent' : 'Activate Agent'}
+              onClick={() => activateAgent(user?.id)}
+              isActive={isAgentInactive}
+            />
             <Toggle name='Flag Agent' onClick={() => {}} />
           </div>
         </div>
@@ -328,19 +384,19 @@ const BoxNotification: React.FC<BoxNotificationProps> = ({
 const BoxData: BoxNotificationProps[] = [
   {
     heading: 'Total Transaction Close',
-    amount: 500000000,
+    amount: 0,
   },
   {
     heading: 'Total Profit',
-    amount: 25000000,
+    amount: 0,
   },
   {
     heading: 'Total Briefs',
-    amount: 30,
+    amount: 0,
   },
   {
     heading: 'Total Referred',
-    amount: 200,
+    amount: 0,
   },
 ];
 
