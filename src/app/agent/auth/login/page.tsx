@@ -150,8 +150,8 @@ const Login = () => {
               'token',
               (response as unknown as { token: string }).token
             );
-            console.log('response', response);
-            console.log('response Data', response.data);
+            // console.log('response', response);
+            // console.log('response Data', response.data);
 
             const user = response as unknown as {
               id: string;
@@ -164,6 +164,7 @@ const Login = () => {
             };
 
             setUser(user);
+            sessionStorage.setItem('user', JSON.stringify(user));
 
             if (response.accountApproved === false) {
               router.push('/agent/under-review');
