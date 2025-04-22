@@ -65,7 +65,7 @@ export default function AgentDetailsBar({
   };
 
   useEffect(() => {
-    console.log('User details' + user);
+    // console.log('User details' + user);
 
     const getAgentBrief = async (agentId: string) => {
       setIsLoadingDetails({
@@ -87,7 +87,7 @@ export default function AgentDetailsBar({
         }
   
         const data = response.properties?.data || [];
-        console.log('Agent brief data:', data);
+        // console.log('Agent brief data:', data);
         setIsLoadingDetails({
           isLoading: false,
           message: 'Data Loaded',
@@ -144,7 +144,7 @@ export default function AgentDetailsBar({
         }
       );
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast.error('An error occurred, please try again');
     }
   };
