@@ -1,12 +1,21 @@
 /** @format */
 "use client"
-import { ReactNode } from 'react';
+import { ReactNode, use, useEffect } from 'react';
 import AdminNavbar from '@/components/admincomponents/navbar';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isLoginPage = pathname === '/admin/auth/login';
+
+  useEffect(() => {
+    const adminToken = Cookies.get('adminToken');
+    if (!adminToken && !isLoginPage) {
+      router.push('/admin/auth/login');
+    }
+  }, [isLoginPage, router]);
 
   return (
     <main className='w-full flex'>
