@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
@@ -71,7 +76,10 @@ export default function BriefLists() {
         page: currentPage,
         limit: 10,
       };
-      const response = await POST_REQUEST(URLS.BASE + URLS.adminGetAllBriefs, payload);
+      const response = await POST_REQUEST(
+        URLS.BASE + URLS.adminGetAllBriefs,
+        payload
+      );
 
       if (response?.success === false) {
         toast.error('Failed to fetch Incoming Briefs');
@@ -81,15 +89,19 @@ export default function BriefLists() {
       const rents = response?.properties?.data?.rents || [];
       const sells = response?.properties?.data?.sells || [];
 
-      console.log("rents", rents);
-      console.log("sells", sells);
+      console.log('rents', rents);
+      console.log('sells', sells);
 
       const mappedRents = rents
         .filter((item: any) => item.isApproved === false)
         .map((item: any) => ({
           id: item._id?.slice(0, 8) || '--',
           legalName: item.owner
-            ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || '--'
+            ? item.owner.fullName ||
+              `${item.owner.firstName || ''} ${
+                item.owner.lastName || ''
+              }`.trim() ||
+              '--'
             : '--',
           email: item.owner?.email || '--',
           phoneNumber: item.owner?.phoneNumber || '--',
@@ -99,13 +111,19 @@ export default function BriefLists() {
               : item.owner.agentType || '--'
             : '--',
           location: item.location
-            ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}`
+            ? `${item.location.state || '--'}, ${
+                item.location.localGovernment || '--'
+              }`
             : '--',
           landSize:
             item.landSize && item.landSize.size !== 'N/A'
-              ? `${item.landSize.size || '--'} ${item.landSize.measurementType || '--'}`
+              ? `${item.landSize.size || '--'} ${
+                  item.landSize.measurementType || '--'
+                }`
               : '--',
-          amount: item.rentalPrice ? `₦${item.rentalPrice.toLocaleString()}` : '--',
+          amount: item.rentalPrice
+            ? `₦${item.rentalPrice.toLocaleString()}`
+            : '--',
           document: '--',
           createdAt: item.createdAt || '--',
           propertyId: item._id || '--',
@@ -113,20 +131,30 @@ export default function BriefLists() {
           propertyType: item.propertyType || '--',
           isApproved: item.isApproved || false,
           isRejected: item.isRejected || false,
-          usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
-          ? item.usageOptions.join(', ') 
-          : '--',
+          usageOptions:
+            Array.isArray(item.usageOptions) && item.usageOptions.length > 0
+              ? item.usageOptions.join(', ')
+              : '--',
           noOfBedrooms: item.noOfBedrooms || '--',
-          features: Array.isArray(item.features) && item.features.length > 0
-          ? item.features.map((feature: any) => feature.featureName || '--').join(', ')
-          : '--',
-          tenantCriteria: Array.isArray(item.tenantCriteria) && item.tenantCriteria.length > 0
-          ? item.tenantCriteria.map((tenantCriterium: any) => tenantCriterium.criteria || '--').join(', ')
-          : '--',
+          features:
+            Array.isArray(item.features) && item.features.length > 0
+              ? item.features
+                  .map((feature: any) => feature.featureName || '--')
+                  .join(', ')
+              : '--',
+          tenantCriteria:
+            Array.isArray(item.tenantCriteria) && item.tenantCriteria.length > 0
+              ? item.tenantCriteria
+                  .map(
+                    (tenantCriterium: any) => tenantCriterium.criteria || '--'
+                  )
+                  .join(', ')
+              : '--',
           propertyCondition: item.propertyCondition || '--',
-          pictures: Array.isArray(item.pictures) && item.pictures.length > 0
-            ? item.pictures
-            : [],
+          pictures:
+            Array.isArray(item.pictures) && item.pictures.length > 0
+              ? item.pictures
+              : [],
         }));
 
       const mappedSells = sells
@@ -134,7 +162,11 @@ export default function BriefLists() {
         .map((item: any) => ({
           id: item._id?.slice(0, 8) || '--',
           legalName: item.owner
-            ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || '--'
+            ? item.owner.fullName ||
+              `${item.owner.firstName || ''} ${
+                item.owner.lastName || ''
+              }`.trim() ||
+              '--'
             : '--',
           email: item.owner?.email || '--',
           phoneNumber: item.owner?.phoneNumber || '--',
@@ -144,11 +176,15 @@ export default function BriefLists() {
               : item.owner.agentType || '--'
             : '--',
           location: item.location
-            ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
+            ? `${item.location.state || '--'}, ${
+                item.location.localGovernment || '--'
+              }, ${item.location.area || '--'}`
             : '--',
           landSize:
             item.landSize && item.landSize.size !== 'N/A'
-              ? `${item.landSize.size || '--'} ${item.landSize.measurementType || '--'}`
+              ? `${item.landSize.size || '--'} ${
+                  item.landSize.measurementType || '--'
+                }`
               : '--',
           amount: item.price ? `₦${item.price.toLocaleString()}` : '--',
           document: item.docOnProperty?.length
@@ -163,20 +199,26 @@ export default function BriefLists() {
           isApproved: item.isApproved || '',
           isRejected: item.isRejected || '',
           briefType: 'sell',
-          usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
-          ? item.usageOptions.join(', ') 
-          : '--',
+          usageOptions:
+            Array.isArray(item.usageOptions) && item.usageOptions.length > 0
+              ? item.usageOptions.join(', ')
+              : '--',
           noOfBedrooms: item.propertyFeatures.noOfBedrooms || '--',
-          features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
-            ? item.propertyFeatures.additionalFeatures.join(', ')
-            : '--',
-          pictures: Array.isArray(item.pictures) && item.pictures.length > 0
-            ? item.pictures
-            : [],
+          features:
+            Array.isArray(item.propertyFeatures.additionalFeatures) &&
+            item.propertyFeatures.additionalFeatures.length > 0
+              ? item.propertyFeatures.additionalFeatures.join(', ')
+              : '--',
+          pictures:
+            Array.isArray(item.pictures) && item.pictures.length > 0
+              ? item.pictures
+              : [],
         }));
 
+      console.log(mappedRents, mappedSells);
       return [...mappedRents, ...mappedSells].sort(
-        (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
       console.error('Error fetching Incoming Briefs:', error);
@@ -194,9 +236,12 @@ export default function BriefLists() {
         ownerType: 'Agent',
         page: currentPage,
         limit: 10,
-      }; 
+      };
 
-      const response = await POST_REQUEST(URLS.BASE + URLS.adminGetAllBriefs, payload);
+      const response = await POST_REQUEST(
+        URLS.BASE + URLS.adminGetAllBriefs,
+        payload
+      );
 
       if (response?.success === false) {
         toast.error('Failed to fetch Agents Briefs');
@@ -207,21 +252,29 @@ export default function BriefLists() {
       const mappedBriefs = briefs.map((item: any) => ({
         id: item._id?.slice(0, 8) || '--',
         legalName: item.owner
-          ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || '--'
+          ? item.owner.fullName ||
+            `${item.owner.firstName || ''} ${
+              item.owner.lastName || ''
+            }`.trim() ||
+            '--'
           : '--',
         email: item.owner?.email || '--',
         phoneNumber: item.owner?.phoneNumber || '--',
         agentType: item.owner
-        ? item.owner.agentType === 'Company'
-          ? 'Incorporated Agent'
-          : item.owner.agentType || '--'
-        : '--',
+          ? item.owner.agentType === 'Company'
+            ? 'Incorporated Agent'
+            : item.owner.agentType || '--'
+          : '--',
         location: item.location
-          ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
+          ? `${item.location.state || '--'}, ${
+              item.location.localGovernment || '--'
+            }, ${item.location.area || '--'}`
           : '--',
         landSize:
           item.landSize && item.landSize.size !== 'N/A'
-            ? `${item.landSize.size || '--'} ${item.landSize.measurementType || '--'}`
+            ? `${item.landSize.size || '--'} ${
+                item.landSize.measurementType || '--'
+              }`
             : '--',
         amount: item.price ? `₦${item.price.toLocaleString()}` : '--',
         document: item.docOnProperty?.length
@@ -236,19 +289,24 @@ export default function BriefLists() {
         isApproved: item.isApproved || false,
         isRejected: item.isRejected || false,
         noOfBedrooms: item.noOfBedrooms || '--',
-        usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
-        ? item.usageOptions.join(', ') 
-        : '--',
-        features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
-        ? item.propertyFeatures.additionalFeatures.join(', ')
-        : '--',
-        pictures: Array.isArray(item.pictures) && item.pictures.length > 0
-          ? item.pictures
-          : [],
+        usageOptions:
+          Array.isArray(item.usageOptions) && item.usageOptions.length > 0
+            ? item.usageOptions.join(', ')
+            : '--',
+        features:
+          Array.isArray(item.propertyFeatures.additionalFeatures) &&
+          item.propertyFeatures.additionalFeatures.length > 0
+            ? item.propertyFeatures.additionalFeatures.join(', ')
+            : '--',
+        pictures:
+          Array.isArray(item.pictures) && item.pictures.length > 0
+            ? item.pictures
+            : [],
       }));
-
+      console.log(mappedBriefs);
       return mappedBriefs.sort(
-        (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
       console.error('Error fetching Agents Briefs:', error);
@@ -267,7 +325,10 @@ export default function BriefLists() {
         page: currentPage,
         limit: 10,
       };
-      const response = await POST_REQUEST(URLS.BASE + URLS.adminGetAllBriefs, payload);
+      const response = await POST_REQUEST(
+        URLS.BASE + URLS.adminGetAllBriefs,
+        payload
+      );
 
       if (response?.success === false) {
         toast.error('Failed to fetch Seller Briefs');
@@ -278,17 +339,28 @@ export default function BriefLists() {
       const mappedBriefs = briefs.map((item: any) => ({
         id: item._id?.slice(0, 8) || '--',
         legalName: item.owner
-          ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || '--'
+          ? item.owner.fullName ||
+            `${item.owner.firstName || ''} ${
+              item.owner.lastName || ''
+            }`.trim() ||
+            '--'
           : '--',
         email: item.owner?.email || '--',
         phoneNumber: item.owner?.phoneNumber || '--',
-        agentType: item.owner.agentType === 'Company' ? 'Incoporated Agent' : item.owner.agentType || '--',
+        agentType:
+          item.owner.agentType === 'Company'
+            ? 'Incoporated Agent'
+            : item.owner.agentType || '--',
         location: item.location
-          ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
+          ? `${item.location.state || '--'}, ${
+              item.location.localGovernment || '--'
+            }, ${item.location.area || '--'}`
           : '--',
         landSize:
           item.landSize && item.landSize.size !== 'N/A'
-            ? `${item.landSize.size || '--'} ${item.landSize.measurementType || '--'}`
+            ? `${item.landSize.size || '--'} ${
+                item.landSize.measurementType || '--'
+              }`
             : '--',
         amount: item.price ? `₦${item.price.toLocaleString()}` : '--',
         document: item.docOnProperty?.length
@@ -303,20 +375,25 @@ export default function BriefLists() {
         isApproved: item.isApproved || false,
         isRejected: item.isRejected || false,
         noOfBedrooms: item.propertyFeatures.noOfBedrooms || '--',
-        features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
-        ? item.propertyFeatures.additionalFeatures.join(', ')
-        : '--',
-        usageOptions: Array.isArray(item.usageOptions) && item.usageOptions.length > 0 
-          ? item.usageOptions.join(', ') 
-          : '--',
-          propertyType: item.propertyType || '--',
-        pictures: Array.isArray(item.pictures) && item.pictures.length > 0
-          ? item.pictures
-          : [],
+        features:
+          Array.isArray(item.propertyFeatures.additionalFeatures) &&
+          item.propertyFeatures.additionalFeatures.length > 0
+            ? item.propertyFeatures.additionalFeatures.join(', ')
+            : '--',
+        usageOptions:
+          Array.isArray(item.usageOptions) && item.usageOptions.length > 0
+            ? item.usageOptions.join(', ')
+            : '--',
+        propertyType: item.propertyType || '--',
+        pictures:
+          Array.isArray(item.pictures) && item.pictures.length > 0
+            ? item.pictures
+            : [],
       }));
 
       return mappedBriefs.sort(
-        (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
       console.error('Error fetching Seller Briefs:', error);
@@ -335,7 +412,10 @@ export default function BriefLists() {
         page: currentPage,
         limit: 10,
       };
-      const response = await POST_REQUEST(URLS.BASE + URLS.adminGetAllBriefs, payload);
+      const response = await POST_REQUEST(
+        URLS.BASE + URLS.adminGetAllBriefs,
+        payload
+      );
 
       if (response?.success === false) {
         toast.error('Failed to fetch Transacted Briefs');
@@ -346,31 +426,46 @@ export default function BriefLists() {
       const mappedRents = rents.map((item: any) => ({
         id: item._id?.slice(0, 8) || '--',
         legalName: item.owner
-          ? item.owner.fullName || `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() || '--'
+          ? item.owner.fullName ||
+            `${item.owner.firstName || ''} ${
+              item.owner.lastName || ''
+            }`.trim() ||
+            '--'
           : '--',
         email: item.owner?.email || '--',
         phoneNumber: item.owner?.phoneNumber || '--',
-        agentType: item.ownerModel === 'PropertyOwner' ? 'Property Owner' : item.ownerModel || '--',
+        agentType:
+          item.ownerModel === 'PropertyOwner'
+            ? 'Property Owner'
+            : item.ownerModel || '--',
         location: item.location
-          ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}`
+          ? `${item.location.state || '--'}, ${
+              item.location.localGovernment || '--'
+            }`
           : '--',
         landSize:
           item.landSize && item.landSize.size !== ''
-            ? `${item.landSize.size || '--'} ${item.landSize.measurementType || '--'}`
+            ? `${item.landSize.size || '--'} ${
+                item.landSize.measurementType || '--'
+              }`
             : '--',
-        amount: item.rentalPrice ? `₦${item.rentalPrice.toLocaleString()}` : '--',
+        amount: item.rentalPrice
+          ? `₦${item.rentalPrice.toLocaleString()}`
+          : '--',
         document: '--',
         createdAt: item.createdAt || '--',
         propertyId: item._id || '--',
         briefType: 'rent',
         isApproved: item.isApproved || false,
-        pictures: Array.isArray(item.pictures) && item.pictures.length > 0
-          ? item.pictures
-          : [],
+        pictures:
+          Array.isArray(item.pictures) && item.pictures.length > 0
+            ? item.pictures
+            : [],
       }));
 
       return mappedRents.sort(
-        (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
       console.error('Error fetching Transacted Briefs:', error);
@@ -395,7 +490,7 @@ export default function BriefLists() {
 
   const handleTabClick = async (tab: string) => {
     setActive(tab);
-    setIncomingBriefsData([]); 
+    setIncomingBriefsData([]);
     setIsLoading(true);
 
     let data = [];
@@ -496,16 +591,32 @@ export default function BriefLists() {
                 <th className='p-3' style={{ width: '5%' }}>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3' style={{ width: '5%' }}>ID</th>
-                <th className='p-3' style={{ width: '10%' }}>Legal Name</th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  ID
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Legal Name
+                </th>
                 {!['Seller Briefs'].includes(active) && (
-                  <th className='p-3' style={{ width: '10%' }}>Agent Type</th>
+                  <th className='p-3' style={{ width: '10%' }}>
+                    Agent Type
+                  </th>
                 )}
-                <th className='p-3' style={{ width: '15%' }}>Location</th>
-                <th className='p-3' style={{ width: '5%' }}>Land Size</th>
-                <th className='p-3' style={{ width: '10%' }}>Amount</th>
-                <th className='p-3' style={{ width: '15%' }}>Document</th>
-                <th className='p-3' style={{ width: '5%' }}>Action</th>
+                <th className='p-3' style={{ width: '15%' }}>
+                  Location
+                </th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  Land Size
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Amount
+                </th>
+                <th className='p-3' style={{ width: '15%' }}>
+                  Document
+                </th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -518,7 +629,7 @@ export default function BriefLists() {
                   </td>
                   <td className='p-3'>{item.id}</td>
                   <td className='p-3'>{item.legalName}</td>
-                  {!['Seller Briefs'].includes(active) && ( 
+                  {!['Seller Briefs'].includes(active) && (
                     <td
                       className={`p-3 font-semibold ${
                         item.agentType === 'Individual'
