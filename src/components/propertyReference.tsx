@@ -20,6 +20,7 @@ import MultiSelectionProcess from './multiSelectionProcess';
 import customStyles from '@/styles/inputStyle';
 import SubmitPrefrenceModal from './can-not-find-brief-modal';
 import { data } from '@/data/about_us_data';
+import nigeriaStates from '@/data/state-lga';
 
 interface valuesProps {
   propertyType: string;
@@ -177,10 +178,10 @@ const PropertyReference = ({
 
   useEffect(() => {
     // Load Nigerian states correctly
-    const sample = Object.keys(data);
+    const sample = Object.keys(nigeriaStates);
     console.log(sample);
     setStateOptions(
-      Object.keys(data).map((state: string) => ({
+      Object.keys(nigeriaStates).map((state: string) => ({
         value: state,
         label: state,
       }))

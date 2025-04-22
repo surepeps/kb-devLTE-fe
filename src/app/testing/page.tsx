@@ -1,10 +1,10 @@
 /** @format */
 
 import React from 'react';
-import Sell from '../sell_page/page';
+import EditBrief from '@/components/admincomponents/editBrief';
 
 const page = () => {
-  return <Sell />;
+  return <EditBrief />;
 };
 
 export default page;
