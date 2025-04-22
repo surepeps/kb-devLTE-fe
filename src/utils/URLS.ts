@@ -38,4 +38,5 @@ export const URLS = {
   rejectBrief: '/api/briefs/reject',
   adminGetAllBriefs: '/admin/properties',
   deleteSellBrief: '/properties/sell/delete/',
+  adminGetAUserBriefs: 'admin/agent',
 };

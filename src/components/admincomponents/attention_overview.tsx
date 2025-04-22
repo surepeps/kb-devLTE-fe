@@ -132,7 +132,7 @@ export default function AttentionOverview() {
 
         setIsLoading(false);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         setIsLoading(false);
       } finally {
         setIsLoading(false);
@@ -231,7 +231,7 @@ export default function AttentionOverview() {
 
         setIsLoading(false);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         setIsLoading(false);
       }
     };
