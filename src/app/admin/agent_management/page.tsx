@@ -51,6 +51,7 @@ export default function AgentManagement() {
     bannedAgents: 0,
     flaggedAgents: 0,
   });
+
   const [data, setData] = useState<BoxNotificationProps[]>(boxData);
 
   const formik = useFormik({
@@ -66,26 +67,26 @@ export default function AgentManagement() {
     setData([
       {
         name: 'Active Agents',
-        total: details.activeAgents,
+        total: details.activeAgents || 0,
         type: 'active',
       },
       {
         name: 'Total Agents',
-        total: details.totalAgents,
+        total: details.totalAgents || 0,
         type: 'initial',
       },
       {
         name: 'Ban Agents',
-        total: 4,
+        total: details.bannedAgents || 0,
         type: 'banned',
       },
       {
         name: 'Flagged Agents',
-        total: 4,
+        total: details.flaggedAgents || 0,
         type: 'flagged',
       },
     ]);
-  }, [setDetails, details]);
+  }, [details]);
 
   if (isLoading) return <Loading />;
 
