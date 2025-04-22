@@ -213,7 +213,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
 
   const handleActionClick = (user: any) => {
     setSelectedUser(user);
-    console.log(user);
+    // console.log(user);
   };
 
   const closeSidebar = () => {
@@ -371,7 +371,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
       },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
