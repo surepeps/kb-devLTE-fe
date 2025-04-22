@@ -69,6 +69,7 @@ const Login = () => {
                   toast.success('Sign in successful');
                   Cookies.set('adminToken', (response as any).admin.token);
                   sessionStorage.setItem('adminToken', response.admin.token);
+                  router.push('/admin');
                 } else {
                   toast.error('Admin is not verified');
                   return;
@@ -193,7 +194,7 @@ const Login = () => {
           <form
             onSubmit={formik.handleSubmit}
             className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
-            <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+            <h2 className='text-2xl md:text-[24px] font-display text-center leading-[38.4px] font-semibold text-[#09391C]'>
               Sign Into The Admin Account
             </h2>
             <div className='w-full flex flex-col gap-[15px] lg:px-[60px]'>

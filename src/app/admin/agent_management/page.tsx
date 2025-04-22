@@ -12,14 +12,46 @@ import { useLoading } from '@/hooks/useLoading';
 import Select from 'react-select';
 import Loading from '@/components/loading';
 import { useFormik } from 'formik';
+import { useEffect, useState } from 'react';
+
+const boxData: BoxNotificationProps[] = [
+  {
+    name: 'Active Agents',
+    total: 3000,
+    type: 'active',
+  },
+  {
+    name: 'Total Agents',
+    total: 30000,
+    type: 'initial',
+  },
+  {
+    name: 'Ban Agents',
+    total: 4,
+    type: 'banned',
+  },
+  {
+    name: 'Flagged Agents',
+    total: 4,
+    type: 'flagged',
+  },
+];
 
 export default function AgentManagement() {
-   const isLoading = useLoading();
+  const isLoading = useLoading();
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
+
+  const [details, setDetails] = useState({
+    totalAgents: 0,
+    activeAgents: 0,
+    bannedAgents: 0,
+    flaggedAgents: 0,
+  });
+  const [data, setData] = useState<BoxNotificationProps[]>(boxData);
 
   const formik = useFormik({
     initialValues: {
@@ -29,6 +61,31 @@ export default function AgentManagement() {
       console.log(values);
     },
   });
+
+  useEffect(() => {
+    setData([
+      {
+        name: 'Active Agents',
+        total: details.activeAgents,
+        type: 'active',
+      },
+      {
+        name: 'Total Agents',
+        total: details.totalAgents,
+        type: 'initial',
+      },
+      {
+        name: 'Ban Agents',
+        total: 4,
+        type: 'banned',
+      },
+      {
+        name: 'Flagged Agents',
+        total: 4,
+        type: 'flagged',
+      },
+    ]);
+  }, [setDetails, details]);
 
   if (isLoading) return <Loading />;
 
@@ -75,6 +132,7 @@ export default function AgentManagement() {
             <span>31st Mar, 2025 to {currentDate}</span>
           </p>
         </div>
+
         <div className='flex h-[48px] w-fit md:w-[initial] items-center bg-white px-4 rounded-lg'>
           <div className='text-[#84818A] flex items-center text-sm'>
             Show stats:
@@ -99,10 +157,14 @@ export default function AgentManagement() {
           </div>
         </div>
       </div>
-
+      <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
+        {data.map((item: BoxNotificationProps, index: number) => (
+          <BoxNotification key={index} {...item} />
+        ))}
+      </div>
       {/* Conditional Rendering of Overviews */}
       <div className='w-full'>
-          <AgentManagements />
+        <AgentManagements setDetails={setDetails} />
       </div>
     </section>
   );
@@ -115,3 +177,43 @@ const statsOptions = [
   { value: 'Yearly', label: 'Yearly' },
 ];
 
+type BoxNotificationProps = {
+  type: 'initial' | 'banned' | 'flagged' | 'active';
+  name: string;
+  total: number;
+};
+
+const BoxNotification: React.FC<BoxNotificationProps> = ({
+  name,
+  total,
+  type,
+}) => {
+  const getTypeClass = (type: string) => {
+    switch (type) {
+      case 'initial':
+        return 'text-[#181336]';
+      case 'banned':
+        return 'text-[#F41515]';
+      case 'flagged':
+        return 'text-[#181336]';
+      case 'active':
+        return 'text-[#0B423D]';
+      default:
+        return 'text-[#2E2C34]';
+    }
+  };
+  return (
+    <div className='h-[127px] shrink-0 flex flex-col rounded-[4px] gap-[35px] py-[23px] px-[25px] w-[259.5px] bg-[#FFFFFF] border-[#E4DFDF] border-[1px]'>
+      <h3
+        className={`${getTypeClass(type)} text-base ${
+          archivo.className
+        } font-bold`}>
+        {name}
+      </h3>
+      <h2
+        className={`text-[#181336] font-semibold text-3xl ${archivo.className}`}>
+        {Number(total).toLocaleString()}
+      </h2>
+    </div>
+  );
+};
