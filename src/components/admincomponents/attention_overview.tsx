@@ -197,7 +197,11 @@ export default function AttentionOverview() {
               : '--',
             email: item.owner?.email || '--',
             phoneNumber: item.owner?.phoneNumber || '--',
-            agentType: item.owner.agentType === 'Company' ? 'Incoporated Agent' : item.owner.agentType || '--',
+            agentType: item.owner
+            ? item.owner.agentType === 'Company'
+              ? 'Incorporated Agent'
+              : item.owner.agentType || '--'
+            : '--',
             location: item.location
               ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
               : '--',

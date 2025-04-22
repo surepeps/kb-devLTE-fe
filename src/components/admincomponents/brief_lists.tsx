@@ -81,6 +81,9 @@ export default function BriefLists() {
       const rents = response?.properties?.data?.rents || [];
       const sells = response?.properties?.data?.sells || [];
 
+      console.log("rents", rents);
+      console.log("sells", sells);
+
       const mappedRents = rents
         .filter((item: any) => item.isApproved === false)
         .map((item: any) => ({
@@ -90,7 +93,11 @@ export default function BriefLists() {
             : '--',
           email: item.owner?.email || '--',
           phoneNumber: item.owner?.phoneNumber || '--',
-          agentType: item.ownerModel === 'PropertyOwner' ? 'Property Owner' : item.ownerModel || '--',
+          agentType: item.owner
+            ? item.owner.agentType === 'Company'
+              ? 'Incorporated Agent'
+              : item.owner.agentType || '--'
+            : '--',
           location: item.location
             ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}`
             : '--',
@@ -117,6 +124,9 @@ export default function BriefLists() {
           ? item.tenantCriteria.map((tenantCriterium: any) => tenantCriterium.criteria || '--').join(', ')
           : '--',
           propertyCondition: item.propertyCondition || '--',
+          pictures: Array.isArray(item.pictures) && item.pictures.length > 0
+            ? item.pictures
+            : [],
         }));
 
       const mappedSells = sells
@@ -128,7 +138,11 @@ export default function BriefLists() {
             : '--',
           email: item.owner?.email || '--',
           phoneNumber: item.owner?.phoneNumber || '--',
-          agentType: item.owner.agentType === 'Company' ? 'Incoporated Agent' : item.owner.agentType || '--',
+          agentType: item.owner
+            ? item.owner.agentType === 'Company'
+              ? 'Incorporated Agent'
+              : item.owner.agentType || '--'
+            : '--',
           location: item.location
             ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
             : '--',
@@ -156,6 +170,9 @@ export default function BriefLists() {
           features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
             ? item.propertyFeatures.additionalFeatures.join(', ')
             : '--',
+          pictures: Array.isArray(item.pictures) && item.pictures.length > 0
+            ? item.pictures
+            : [],
         }));
 
       return [...mappedRents, ...mappedSells].sort(
@@ -194,7 +211,11 @@ export default function BriefLists() {
           : '--',
         email: item.owner?.email || '--',
         phoneNumber: item.owner?.phoneNumber || '--',
-        agentType: item.owner.agentType === 'Company' ? 'Incoporated Agent' : item.owner.agentType || '--',
+        agentType: item.owner
+        ? item.owner.agentType === 'Company'
+          ? 'Incorporated Agent'
+          : item.owner.agentType || '--'
+        : '--',
         location: item.location
           ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
           : '--',
@@ -221,6 +242,9 @@ export default function BriefLists() {
         features: Array.isArray(item.propertyFeatures.additionalFeatures) && item.propertyFeatures.additionalFeatures.length > 0
         ? item.propertyFeatures.additionalFeatures.join(', ')
         : '--',
+        pictures: Array.isArray(item.pictures) && item.pictures.length > 0
+          ? item.pictures
+          : [],
       }));
 
       return mappedBriefs.sort(
@@ -286,6 +310,9 @@ export default function BriefLists() {
           ? item.usageOptions.join(', ') 
           : '--',
           propertyType: item.propertyType || '--',
+        pictures: Array.isArray(item.pictures) && item.pictures.length > 0
+          ? item.pictures
+          : [],
       }));
 
       return mappedBriefs.sort(
@@ -337,6 +364,9 @@ export default function BriefLists() {
         propertyId: item._id || '--',
         briefType: 'rent',
         isApproved: item.isApproved || false,
+        pictures: Array.isArray(item.pictures) && item.pictures.length > 0
+          ? item.pictures
+          : [],
       }));
 
       return mappedRents.sort(
