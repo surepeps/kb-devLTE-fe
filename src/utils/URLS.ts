@@ -31,6 +31,7 @@ export const URLS = {
   changePassword: '/agent/change-password',
   upgradeAccount: '/agent/account-upgrade',
   userAccount: '/agent/account',
+  deActivateAccount: '/admin/activate-deactivate-agent',
   adminGetAllInspections: '/admin/request/all',
   approveBrief: '/admin/approve-disapprove-property',
   deleteBrief: '/api/briefs/delete',
