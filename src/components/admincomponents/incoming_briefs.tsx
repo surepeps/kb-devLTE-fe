@@ -11,6 +11,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { usePageContext } from '@/context/page-context';
 import AgentDetailsBar from './AgentDetailsBar';
 import EllipsisOptions from './ellipsisOptions';
+import BriefDetailsBar from './briefDetailsBar';
 
 export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaitingApprovalCount?: (count: number) => void; data: any[] }) {
   const [openRow, setOpenRow] = useState<number | null>(null);
@@ -204,10 +205,10 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
         </div>
       </motion.div>
       {detailsToCheck && (
-        <AgentDetailsBar
+        <BriefDetailsBar 
           user={detailsToCheck}
           onClose={() => setDetailsToCheck(null)}
-        />
+          />
       )}
     </>
   );
