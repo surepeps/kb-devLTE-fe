@@ -28,7 +28,7 @@ import ApproveBriefs from './approveBriefs';
 import DeleteBriefs from './deleteBriefs';
 import RejectBriefs from './rejectBriefs';
 import { string } from 'yup';
-
+import OnboardAgentBar from './OnboardAgentbar';
 interface Agent {
   id: string;
   email: string;
@@ -94,7 +94,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         });
       }
       const data = response.agents.data;
-      console.log(data);
+      // console.log(data);
       setIsLoadingDetails({
         isLoading: false,
         message: 'Data Loaded',
@@ -108,7 +108,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         bannedAgents: 0,
         flaggedAgents: 0,
       });
-      console.log(data);
+      // console.log(data);
     } catch (error: any) {
       setIsLoadingDetails({
         isLoading: false,
@@ -203,6 +203,9 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
     if (active === 'Active Agents') {
       return agent.accountStatus.toLowerCase() === 'active';
     }
+    if (active === 'All Agents') {
+      return agent;
+    }
     if (active === 'Inactive Agents') {
       return agent.accountStatus.toLowerCase() === 'inactive';
     }
@@ -220,8 +223,6 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   const closeSidebar = () => {
     setSelectedUser(null);
   };
-
-  const agentCounts = calculateAgentCounts(agents);
 
   const renderDynamicComponent = () => {
     const tableContent = (
@@ -314,24 +315,13 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
                       <FontAwesomeIcon
                         onClick={() => {
                           if (active === 'Onboarding Agents') {
-                            setOpenRow(openRow === index ? null : index);
+                            setSelectedUser(item); // Set the selected user for OnboardAgentBar
                           } else {
                             handleActionClick(item);
                           }
                         }}
                         icon={faEllipsis}
                       />
-                      {openRow === index && active === 'Onboarding Agents' && (
-                        <EllipsisOptions
-                          onApproveBrief={() => {
-                            setAgentToApprove(item);
-                          }}
-                          onDeleteBrief={() => setAgentToDelete(item)}
-                          onRejectBrief={() => setAgentToReject(item)}
-                          closeMenu={setOpenRow}
-                          isAgent={true}
-                        />
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -405,8 +395,46 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         </div>
         <div className='w-full'>{renderDynamicComponent()}</div>
       </div>
-      {selectedUser && (
+      {selectedUser && active === 'Onboarding Agents' && (
+        <OnboardAgentBar
+          user={selectedUser}
+          onClose={closeSidebar}
+          onApprove={() => setAgentToApprove(selectedUser)} // Trigger ApproveBriefs
+          onReject={() => setAgentToReject(selectedUser)} // Trigger RejectBriefs
+          onDelete={() => setAgentToDelete(selectedUser)} // Trigger DeleteBriefs
+        />
+      )}
+      {selectedUser && active !== 'Onboarding Agents' && (
         <AgentSidebar user={selectedUser} onClose={closeSidebar} />
+      )}
+      {agentToApprove && (
+        <ApproveBriefs
+          brief={agentToApprove}
+          onConfirm={() => confirmApproveAgent(agentToApprove.id)}
+          onCancel={() => setAgentToApprove(null)}
+          isAgentApproval={true}
+        />
+      )}
+      {agentToReject && (
+        <RejectBriefs
+          brief={agentToReject}
+          onConfirm={() => handleRejectAgent(agentToReject.id)}
+          onCancel={() => setAgentToReject(null)}
+          isAgentApproval={true}
+        />
+      )}
+      {agentToDelete && (
+        <DeleteBriefs
+          brief={agentToDelete}
+          onConfirm={(reason) =>
+            handleDeleteAgent(
+              agentToDelete.id,
+              reason || 'No reason provided'
+            )
+          }
+          onCancel={() => setAgentToDelete(null)}
+          isAgentApproval={true}
+        />
       )}
     </Fragment>
   );

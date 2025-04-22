@@ -11,6 +11,7 @@ import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import AgentSidebar from './AgentDetailsBar';
+import BriefDetailsBar from './briefDetailsBar';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
@@ -549,7 +550,7 @@ export default function BriefLists() {
         <div className='w-full'>{renderDynamicComponent()}</div>
       </div>
       {selectedBrief && (
-        <AgentSidebar user={selectedBrief} onClose={closeSidebar} />
+        <BriefDetailsBar user={selectedBrief} onClose={closeSidebar} />
       )}
     </Fragment>
   );
