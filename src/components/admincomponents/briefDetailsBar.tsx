@@ -36,7 +36,7 @@ export default function BriefDetailsBar({
   };
 
   useEffect(() => {
-    console.log('User details' + user);
+    // console.log('User details' + user);
   }, [user]);
 
   const [isEditBriefClicked, setIsEditBriefClicked] = useState<boolean>(false);
