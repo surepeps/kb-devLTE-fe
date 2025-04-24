@@ -75,8 +75,11 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   const [agentToApprove, setAgentToApprove] = useState<any>(null);
   const [agentToReject, setAgentToReject] = useState<any>(null);
   const [agentToDelete, setAgentToDelete] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(3);
 
   const getAgentsData = async (page = 1, limit = 20, type = 'all') => {
+    setCurrentPage(page);
     setIsLoadingDetails({
       isLoading: true,
       message: 'Loading...',
