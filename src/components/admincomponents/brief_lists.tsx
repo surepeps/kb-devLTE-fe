@@ -1,10 +1,9 @@
 /**
- * eslint-disable @typescript-eslint/no-unused-vars
+ * eslint-disable @typescript-eslint/no-explicit-any
  *
  * @format
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
 import { Fragment, useEffect, useState, useRef } from 'react';
