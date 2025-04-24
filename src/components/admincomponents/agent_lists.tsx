@@ -189,7 +189,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
       if (active === 'Active Agents') type = 'active';
       if (active === 'Inactive Agents') type = 'inactive';
       if (active === 'Flagged Agents') type = 'flagged';
-      getAgentsData(1, 20, type);
+      getAgentsData(1, 10, type);
     };
 
     fetchAgents();
@@ -208,7 +208,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
     if (active === 'Onboarding Agents') {
       return !agent.accountApproved;
     }
-    return true; // Default behavior for other tabs
+    return agent.meansOfId.length > 0;
   });
 
   const handleActionClick = (user: any) => {
