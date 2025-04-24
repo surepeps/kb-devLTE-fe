@@ -11,7 +11,7 @@ import { usePageContext } from '@/context/page-context';
 import { motion } from 'framer-motion';
 import arrow from '@/svgs/arrowRight.svg';
 import HouseFrame from '@/components/house-frame';
-import houseImage from '@/assets/assets.png';
+import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { useLoading } from '@/hooks/useLoading';
 import Loading from '@/components/loading';
 import { epilogue } from '@/styles/font';
@@ -72,7 +72,8 @@ type HouseFrameProps = {
 
 const Buy = () => {
   const [point, setPoint] = useState<string>('Details');
-  const { isContactUsClicked, isModalOpened } = usePageContext();
+  const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
+    usePageContext();
   const [scrollPosition, setScrollPosition] = useState(0);
   const isLoading = useLoading();
   const [details, setDetails] = useState<DetailsProps>({
@@ -230,16 +231,18 @@ const Buy = () => {
         const res = await axios.get(URLS.BASE + `/properties/rents/rent/${id}`);
         console.log(res);
         if (res.status === 200) {
-          setDetails({
-            price: res.data.rentalPrice,
-            propertyType: res.data.propertyType,
-            bedRoom: res.data.noOfBedrooms,
-            propertyStatus: res.data.propertyCondition,
-            location: res.data.location,
-            tenantCriteria: res.data.tenantCriteria,
-            pictures: res.data.pictures,
-          });
-          setFeatureData(res.data.features);
+          if (typeof res.data === 'object') {
+            setDetails({
+              price: res.data.rentalPrice,
+              propertyType: res.data.propertyType,
+              bedRoom: res.data.noOfBedrooms,
+              propertyStatus: res.data.propertyCondition,
+              location: res.data.location,
+              tenantCriteria: res.data.tenantCriteria,
+              pictures: res.data.pictures,
+            });
+            setFeatureData(res.data.features);
+          }
         }
       } catch (error) {
         console.log(error);
@@ -309,14 +312,39 @@ const Buy = () => {
 
             <div
               id='scrollableElement'
-              className='w-full hide-scrollbar gap-[30px] overflow-x-auto flex mt-0 md:mt-10 lg:mt-0'>
-              {Array.from({ length: 18 }).map((__, idx: number) => (
-                <div
-                  key={idx}
-                  className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0'>
-                  {/* {idx} */}
-                </div>
-              ))}
+              className={`${
+                details.pictures.length === 0
+                  ? 'justify-center'
+                  : 'justify-start'
+              } w-full hide-scrollbar gap-[30px] overflow-x-auto flex mt-0 md:mt-10 lg:mt-0`}>
+              {details?.pictures?.length !== 0 ? (
+                details.pictures.map((picture, idx: number) => (
+                  <Image
+                    src={picture !== '' ? picture : noImage.src}
+                    alt=''
+                    key={idx}
+                    width={500}
+                    onClick={() => {
+                      setImageData([picture]);
+                      setViewImage(true);
+                    }}
+                    height={400}
+                    className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0'
+                  />
+                ))
+              ) : (
+                <Image
+                  src={noImage.src}
+                  alt=''
+                  onClick={() => {
+                    setImageData([noImage.src]);
+                    setViewImage(true);
+                  }}
+                  width={500}
+                  height={400}
+                  className='w-[424px] h-[324px] bg-[#D9D9D9] object-cover flex-shrink-0'
+                />
+              )}
               {/** {details.pictures.map((img: string, idx: number) => (
                 <Image
                   src={img !== '' ? img : imgSample}
@@ -583,7 +611,7 @@ const Buy = () => {
                       key={idx}
                       images={item.pictures}
                       title={item.propertyType}
-                      location={`${item.location.state}, ${item.location.area}, ${item.location.localGovernment}`}
+                      location={`${item.location.state}, ${item.location.localGovernment}`}
                       bedroom={item.noOfBedrooms}
                       bathroom={2}
                       carPark={3}

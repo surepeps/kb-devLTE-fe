@@ -19,6 +19,7 @@ import RejectBriefs from './rejectBriefs';
 import { URLS } from '@/utils/URLS';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import toast from 'react-hot-toast';
+import Pagination from '../pagination';
 
 export default function IncomingInspections({
   onPendingCount,
@@ -233,13 +234,27 @@ export default function IncomingInspections({
                 <th className='p-3' style={{ width: '5%' }}>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3' style={{ width: '10%' }}>Inspection ID</th>
-                <th className='p-3' style={{ width: '10%' }}>Buyer Contact</th>
-                <th className='p-3' style={{ width: '10%' }}>Agent in Charge</th>
-                <th className='p-3' style={{ width: '15%' }}>Property to Inspect</th>
-                <th className='p-3' style={{ width: '10%' }}>Inspection Date</th>
-                <th className='p-3' style={{ width: '10%' }}>Status</th>
-                <th className='p-3' style={{ width: '5%' }}>Action</th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Inspection ID
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Buyer Contact
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Agent in Charge
+                </th>
+                <th className='p-3' style={{ width: '15%' }}>
+                  Property to Inspect
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Inspection Date
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Status
+                </th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -315,7 +330,7 @@ export default function IncomingInspections({
             </tbody>
           </table>
         </div>
-        <div className='flex justify-end items-center mt-10 gap-1'>
+        {/* <div className='flex justify-end items-center mt-10 gap-1'>
           <button
             type='button'
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -355,7 +370,12 @@ export default function IncomingInspections({
             <FaChevronRight />
             {''}
           </button>
-        </div>
+        </div> */}
+        <Pagination
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
       </motion.div>
 
       {isSidebarOpen && (

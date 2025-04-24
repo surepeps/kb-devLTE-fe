@@ -8,11 +8,16 @@ import arrow from '@/svgs/arrowRight.svg';
 import cancelIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { downloadImage } from '@/utils/downloadImage';
+import DownloadImage from './downloadImage';
 
 const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const { setViewImage, viewImage } = usePageContext();
   const ref = useRef<HTMLDivElement>(null);
+  const [downloadStatus, setDownloadStatus] = useState<
+    'idle' | 'success' | 'pending' | 'failed' | undefined
+  >('idle');
 
   const isInView = useInView(ref, { once: true });
 
@@ -103,15 +108,26 @@ const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
           id='scrollableElement2'
           className='w-full hide-scrollbar gap-[30px] flex justify-center items-center mt-0 md:mt-10 lg:mt-0 overflow-x-scroll'>
           {imageData.map((image, idx: number) => (
-            <Image
-              src={image}
-              width={1000}
-              height={1000}
-              alt=''
-              key={idx}
-              className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'>
-              {/* {idx} */}
-            </Image>
+            <div key={idx}>
+              <Image
+                src={image}
+                width={1000}
+                height={1000}
+                alt=''
+                className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'>
+                {/* {idx} */}
+              </Image>
+              <DownloadImage
+                status={downloadStatus}
+                downloadImage={() => {
+                  downloadImage(
+                    image as string,
+                    `image-${idx}`,
+                    setDownloadStatus
+                  );
+                }}
+              />
+            </div>
           ))}
         </div>
         <div className='flex gap-[18px]'>
