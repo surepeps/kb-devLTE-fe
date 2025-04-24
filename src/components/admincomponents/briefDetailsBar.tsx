@@ -20,9 +20,13 @@ import { useEditBriefContext } from '@/context/admin-context/brief-management/ed
 export default function BriefDetailsBar({
   user,
   onClose,
+  hideButtons = false, // Optional prop to hide buttons
+  hideDetails = false, // New prop to hide details
 }: {
   user: any;
   onClose: () => void;
+  hideButtons?: boolean;
+  hideDetails?: boolean;
 }) {
   const [selectedImage, setSelectedImage] = useState<{
     image: string;
@@ -36,7 +40,7 @@ export default function BriefDetailsBar({
   };
 
   useEffect(() => {
-    console.log('User details' + user);
+    // console.log('User details' + user);
   }, [user]);
 
   const [isEditBriefClicked, setIsEditBriefClicked] = useState<boolean>(false);
@@ -184,28 +188,33 @@ export default function BriefDetailsBar({
                   '-'
                 )}
               </div>
-              <div className='text-center'>
-                <p className='text-2xl md:text-xl sm:text-lg font-semibold'>
-                  {user?.legalName
-                    ? user.legalName
-                    : user?.firstName && user?.lastName
-                    ? `${user.firstName} ${user.lastName}`
-                    : user?.fullName && !(user?.firstName && user?.lastName)
-                    ? user.fullName
-                    : '-'}
-                </p>
-                <p
-                  className={`text-lg md:text-base sm:text-sm font-semibold ${
-                    user?.agentType === 'individual'
-                      ? 'text-red-500'
-                      : 'text-green-500'
-                  }`}>
-                  {user?.agentType || '--'}
-                </p>
-                <p className='text-sm md:text-xs sm:text-[10px] text-gray-600'>
-                  {user?.email || 'N/A'}
-                </p>
-              </div>
+             
+                <div className='text-center'>
+                  <p className='text-2xl md:text-xl sm:text-lg font-semibold'>
+                    {user?.legalName
+                      ? user.legalName
+                      : user?.firstName && user?.lastName
+                      ? `${user.firstName} ${user.lastName}`
+                      : user?.fullName && !(user?.firstName && user?.lastName)
+                      ? user.fullName
+                      : '-'}
+                  </p>
+                  {!hideDetails && (
+                    <>
+                      <p
+                        className={`text-lg md:text-base sm:text-sm font-semibold ${
+                          user?.agentType === 'individual'
+                            ? 'text-red-500'
+                            : 'text-green-500'
+                        }`}>
+                        {user?.agentType || '--'}
+                      </p>
+                      <p className='text-sm md:text-xs sm:text-[10px] text-gray-600'>
+                        {user?.email || 'N/A'}
+                      </p>
+                    </>
+                    )}
+                </div>
             </div>
 
             <div className='h-4'></div>
@@ -367,7 +376,7 @@ export default function BriefDetailsBar({
               </div>
               <hr className='my-4' />
 
-              {user?.legalName && (
+              {!hideDetails && user?.legalName && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
                   <span className='font-normal'>Awaiting Confirmation</span>
                   <span
@@ -384,70 +393,74 @@ export default function BriefDetailsBar({
               )}
 
               <div className='mt-14'>
-                {user?.legalName ? (
-                  <>
-                    <button
-                      onClick={() =>
-                        onSubmit(true, user?.propertyId, user?.briefType)
-                      }
-                      disabled={user?.isApproved}
-                      className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 mb-2 ${
-                        user?.isApproved
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-[#8DDB90] text-white hover:bg-green-900'
-                      }`}>
-                      Approve Brief
-                    </button>
-                    <div className='flex gap-4'>
+                {!hideButtons && !hideDetails && (
+                  user?.legalName ? (
+                    <>
                       <button
-                        onClick={() => onSubmit(false)}
-                        disabled={user?.isRejected}
-                        className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 ${
-                          user?.isRejected
-                            ? 'border-red-300 text-red-300 cursor-not-allowed'
-                            : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                        }`}>
-                        Reject Brief
-                      </button>
-                      <button
-                        type='button'
-                        onClick={() => {
-                          setIsEditBriefClicked(true);
-                          setEditBrief({
-                            ...editBrief,
-                            ...user,
-                            price: user?.price || user?.amount,
-                            amount: user?.price || user?.amount,
-                            documents: user?.documents || user?.document,
-                            fileUrl: user?.pictures?.map((pic: string) => ({
-                              id: pic,
-                              image: pic,
-                            })),
-                          });
-                        }}
+                        onClick={() =>
+                          onSubmit(true, user?.propertyId, user?.briefType)
+                        }
                         disabled={user?.isApproved}
-                        className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 border-[#1976D2] text-[#1976D2] hover:bg-blue-900 hover:text-white`}>
-                        Edit Brief
+                        className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 mb-2 ${
+                          user?.isApproved
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-[#8DDB90] text-white hover:bg-green-900'
+                        }`}>
+                        Approve Brief
                       </button>
-                    </div>
-                  </>
-                ) : (
-                  <button
-                    onClick={
-                      !user?.accountApproved ? () => onSubmit() : undefined
-                    }
-                    disabled={false}
-                    className={`w-full py-4 text-base md:text-sm sm:text-xs bg-white border ${
-                      user?.accountApproved
-                        ? 'border-gray-500 text-gray-500'
-                        : 'border-green-500 text-green-500'
-                    } rounded-md ${
-                      user?.accountApproved
-                        ? 'cursor-not-allowed'
-                        : 'hover:bg-green-500 hover:text-white'
-                    } transition duration-300`}>
-                    {user?.accountApproved ? 'Agent Approved' : 'Approve Agent'}
-                  </button>
+                      <div className='flex gap-4'>
+                        <button
+                          onClick={() => onSubmit(false)}
+                          disabled={user?.isRejected}
+                          className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 ${
+                            user?.isRejected
+                              ? 'border-red-300 text-red-300 cursor-not-allowed'
+                              : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                          }`}>
+                          Reject Brief
+                        </button>
+                        <button
+                          type='button'
+                          onClick={() => {
+                            setIsEditBriefClicked(true);
+                            setEditBrief({
+                              ...editBrief,
+                              ...user,
+                              price: user?.price || user?.amount,
+                              amount: user?.price || user?.amount,
+                              documents: user?.documents || user?.document,
+                              fileUrl: user?.pictures?.map((pic: string) => ({
+                                id: pic,
+                                image: pic,
+                              })),
+                            });
+                          }}
+                          disabled={user?.isApproved}
+                          className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 border-[#1976D2] text-[#1976D2] hover:bg-blue-900 hover:text-white`}>
+                          Edit Brief
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <button
+                      onClick={
+                        !user?.accountApproved ? () => onSubmit() : undefined
+                      }
+                      disabled={false}
+                      className={`w-full py-4 text-base md:text-sm sm:text-xs bg-white border ${
+                        user?.accountApproved
+                          ? 'border-gray-500 text-gray-500'
+                          : 'border-green-500 text-green-500'
+                      } rounded-md ${
+                        user?.accountApproved
+                          ? 'cursor-not-allowed'
+                          : 'hover:bg-green-500 hover:text-white'
+                      } transition duration-300`}>
+                      {user?.accountApproved
+                        ? 'Agent Approved'
+                        : 'Approve Agent'}
+                    </button>
+                  )
                 )}
               </div>
             </div>

@@ -41,7 +41,7 @@ const navItems = [
     href: '/admin/contact_management',
     label: 'Contact Management',
     icon: faMoneyCheckAlt,
-    disabled: true,
+    disabled: false,
   },
   {
     href: '/admin/analytics',

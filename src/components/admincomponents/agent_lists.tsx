@@ -75,17 +75,17 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   const [agentToApprove, setAgentToApprove] = useState<any>(null);
   const [agentToReject, setAgentToReject] = useState<any>(null);
   const [agentToDelete, setAgentToDelete] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
 
-  const getAgentsData = async () => {
+  const getAgentsData = async (page = 1, limit = 20, type = 'all') => {
     setIsLoadingDetails({
       isLoading: true,
       message: 'Loading...',
     });
     try {
       const response = await GET_REQUEST(
-        URLS.BASE + URLS.getAllAgents,
+        `${
+          URLS.BASE + URLS.getAllAgents
+        }?page=${page}&limit=${limit}&type=${type}`,
         Cookies.get('token')
       );
 
@@ -102,15 +102,13 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         isLoading: false,
         message: 'Data Loaded',
       });
-      console.log(data);
       setAgents(data);
       setDetails?.({
-        totalAgents: data.length,
-        activeAgents: data.filter(
-          (agent: { isInActive: boolean }) => agent.isInActive
-        ).length,
-        bannedAgents: 0,
-        flaggedAgents: 0,
+        totalAgents: response.agents.totalAgents || 0,
+        activeAgents: response.agents.totalActiveAgents || 0,
+        inActiveAgents: response.agents.totalInactiveAgents || 0,
+        bannedAgents: 0, // Update if banned agents data is available
+        flaggedAgents: response.agents.totalFlaggedAgents || 0,
       });
       // console.log(data);
     } catch (error: any) {
@@ -188,40 +186,36 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   };
 
   useEffect(() => {
-    getAgentsData();
+    const fetchAgents = () => {
+      let type = 'all';
+      if (active === 'Active Agents') type = 'active';
+      if (active === 'Inactive Agents') type = 'inactive';
+      if (active === 'Flagged Agents') type = 'flagged';
+      getAgentsData(1, 10, type);
+    };
+
+    fetchAgents();
 
     const handleFocus = () => {
-      getAgentsData();
+      fetchAgents();
     };
 
     window.addEventListener('focus', handleFocus);
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [active]);
 
   const filteredAgents = agents.filter((agent) => {
     if (active === 'Onboarding Agents') {
       return !agent.accountApproved;
     }
-    if (active === 'Active Agents') {
-      return agent.accountStatus.toLowerCase() === 'active';
-    }
-    if (active === 'All Agents') {
-      return agent;
-    }
-    if (active === 'Inactive Agents') {
-      return agent.accountStatus.toLowerCase() === 'inactive';
-    }
-    if (active === 'Banned Agents') {
-      return false;
-    }
-    return true;
+    return agent.meansOfId.length > 0;
   });
 
   const handleActionClick = (user: any) => {
     setSelectedUser(user);
-    console.log(user);
+    // console.log(user);
   };
 
   const closeSidebar = () => {
@@ -384,7 +378,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
       },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
@@ -474,7 +468,7 @@ const tabs = [
   { text: 'All Agents' },
   { text: 'Active Agents' },
   { text: 'Inactive Agents' },
-  { text: 'Banned Agents' },
+  { text: 'Flagged Agents' },
 ];
 
 const statsOptions = [
