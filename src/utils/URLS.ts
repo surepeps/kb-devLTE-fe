@@ -32,10 +32,13 @@ export const URLS = {
   upgradeAccount: '/agent/account-upgrade',
   userAccount: '/agent/account',
   deActivateAccount: '/admin/activate-deactivate-agent',
+  flagAnAgent: '/admin/agent/flag',
   adminGetAllInspections: '/admin/request/all',
   approveBrief: '/admin/approve-disapprove-property',
   deleteBrief: '/api/briefs/delete',
   rejectBrief: '/api/briefs/reject',
   adminGetAllBriefs: '/admin/properties',
   deleteSellBrief: '/properties/sell/delete/',
+  adminGetAUserBriefs: 'admin/agent',
+  fetchUsersData: '/admin/properties-users',
 };
