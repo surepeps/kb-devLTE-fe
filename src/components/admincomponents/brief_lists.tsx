@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState, useRef } from 'react';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
@@ -17,14 +17,13 @@ import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import AgentSidebar from './AgentDetailsBar';
 import BriefDetailsBar from './briefDetailsBar';
-import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
+import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
-import { features } from 'process';
 
 interface Agent {
   id: string;
@@ -55,20 +54,23 @@ interface Agent {
   profile_picture: string;
 }
 
-export default function BriefLists() {
+export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals: Record<string, number>) => void }) {
   const [active, setActive] = useState('Incoming Briefs');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedBrief, setSelectedBrief] = useState<any | null>(null);
   const [incomingBriefsData, setIncomingBriefsData] = useState<any[]>([]);
+  const [agentsBriefsData, setAgentsBriefsData] = useState<any[]>([]);
+  const [sellerBriefsData, setSellerBriefsData] = useState<any[]>([]);
+  const [transactedBriefsData, setTransactedBriefsData] = useState<any[]>([]);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
     isLoading: false,
     message: '',
   });
   const [agents, setAgents] = useState<Agent[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const isMounted = useRef(false); // Track if the component is mounted
 
   const fetchIncomingBriefs = async () => {
-    setIsLoading(true);
     try {
       const payload = {
         propertyType: 'all',
@@ -88,9 +90,6 @@ export default function BriefLists() {
 
       const rents = response?.properties?.data?.rents || [];
       const sells = response?.properties?.data?.sells || [];
-
-      console.log('rents', rents);
-      console.log('sells', sells);
 
       const mappedRents = rents
         .filter((item: any) => item.isApproved === false)
@@ -215,7 +214,6 @@ export default function BriefLists() {
               : [],
         }));
 
-      console.log(mappedRents, mappedSells);
       return [...mappedRents, ...mappedSells].sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -223,13 +221,10 @@ export default function BriefLists() {
     } catch (error) {
       console.error('Error fetching Incoming Briefs:', error);
       return [];
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const fetchAgentsBriefs = async () => {
-    setIsLoading(true);
     try {
       const payload = {
         propertyType: 'sell',
@@ -303,7 +298,6 @@ export default function BriefLists() {
             ? item.pictures
             : [],
       }));
-      console.log(mappedBriefs);
       return mappedBriefs.sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -311,13 +305,10 @@ export default function BriefLists() {
     } catch (error) {
       console.error('Error fetching Agents Briefs:', error);
       return [];
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const fetchSellerBriefs = async () => {
-    setIsLoading(true);
     try {
       const payload = {
         propertyType: 'sell',
@@ -348,9 +339,9 @@ export default function BriefLists() {
         email: item.owner?.email || '--',
         phoneNumber: item.owner?.phoneNumber || '--',
         agentType:
-          item.owner.agentType === 'Company'
-            ? 'Incoporated Agent'
-            : item.owner.agentType || '--',
+          item.ownerModel === 'PropertyOwner'
+            ? 'Property Owner'
+            : item.ownerModel || '--',
         location: item.location
           ? `${item.location.state || '--'}, ${
               item.location.localGovernment || '--'
@@ -398,13 +389,10 @@ export default function BriefLists() {
     } catch (error) {
       console.error('Error fetching Seller Briefs:', error);
       return [];
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const fetchTransactedBriefs = async () => {
-    setIsLoading(true);
     try {
       const payload = {
         propertyType: 'all',
@@ -470,57 +458,68 @@ export default function BriefLists() {
     } catch (error) {
       console.error('Error fetching Transacted Briefs:', error);
       return [];
-    } finally {
-      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchIncomingBriefs().then((data) => setIncomingBriefsData(data));
+    const fetchAllBriefs = async () => {
+      setIsLoading(true);
+      try {
+        const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] = await Promise.all([
+          fetchIncomingBriefs(),
+          fetchAgentsBriefs(),
+          fetchSellerBriefs(),
+          fetchTransactedBriefs(),
+        ]);
 
-    const handleFocus = () => {
-      fetchIncomingBriefs().then((data) => setIncomingBriefsData(data));
+        // Avoid redundant state updates by checking if data has changed
+        setIncomingBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(incomingBriefs) ? incomingBriefs : prev));
+        setAgentsBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(agentsBriefs) ? agentsBriefs : prev));
+        setSellerBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(sellerBriefs) ? sellerBriefs : prev));
+        setTransactedBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(transactedBriefs) ? transactedBriefs : prev));
+
+        // Calculate totals and pass them to the parent component
+        const totals = {
+          'Incoming Briefs': incomingBriefs.length,
+          'Agents Briefs': agentsBriefs.length,
+          'Sellers Briefs': sellerBriefs.length,
+          'Transacted Briefs': transactedBriefs.length,
+        };
+
+        setBriefTotals(totals);
+      } catch (error) {
+        console.error('Error fetching briefs:', error);
+        toast.error('Failed to fetch briefs');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
-  const handleTabClick = async (tab: string) => {
-    setActive(tab);
-    setIncomingBriefsData([]);
-    setIsLoading(true);
-
-    let data = [];
-    if (tab === 'Incoming Briefs') {
-      data = await fetchIncomingBriefs();
-    } else if (tab === 'Agents Briefs') {
-      data = await fetchAgentsBriefs();
-    } else if (tab === 'Seller Briefs') {
-      data = await fetchSellerBriefs();
-    } else if (tab === '') {
-      data = await fetchTransactedBriefs();
+    // Prevent fetching on initial render
+    if (isMounted.current) {
+      fetchAllBriefs();
+    } else {
+      isMounted.current = true;
     }
+  }, [currentPage, setBriefTotals]); // Ensure dependencies are minimal and necessary
 
-    setIncomingBriefsData(data);
-    setIsLoading(false);
+  const handleTabClick = (tab: string) => {
+    setActive(tab);
   };
 
   const handleActionClick = (brief: any) => {
     const briefDetails = {
-      legalName: brief.legalName || 'N/A',
-      location: brief.location || 'N/A',
-      propertyType: brief.propertyType || 'N/A',
-      price: brief.amount || 'N/A',
+      legalName: brief.legalName || '--',
+      location: brief.location || '--',
+      propertyType: brief.propertyType || '--',
+      price: brief.amount || '--',
       usageOptions: brief.usageOptions || '--',
-      documents: brief.document || 'N/A',
-      bedrooms: brief.bedrooms || 'N/A',
-      desiredFeatures: brief.desiredFeatures || 'N/A',
+      documents: brief.document || '--',
+      bedrooms: brief.bedrooms || '--',
+      desiredFeatures: brief.desiredFeatures || '--',
       pictures: brief.pictures || [],
-      createdAt: brief.createdAt || 'N/A',
-      email: brief.email || 'N/A',
+      createdAt: brief.createdAt || '--',
+      email: brief.email || '--',
       noOfBedrooms: brief.noOfBedrooms || '--',
       additionalFeatures: brief.additionalFeatures || '--',
       agentType: brief.agentType || '--',
@@ -533,17 +532,30 @@ export default function BriefLists() {
       isRejected: brief.isRejected || false,
     };
     setSelectedBrief(briefDetails);
-
-    console.log('Selected Brief:', briefDetails);
   };
 
   const closeSidebar = () => {
     setSelectedBrief(null);
   };
 
-  const agentCounts = calculateAgentCounts(agents);
+  const handlePageChange = (newPage: number) => {
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage); // Update page only if it has changed
+    }
+  };
 
   const renderDynamicComponent = () => {
+    let dataToRender = [];
+    if (active === 'Incoming Briefs') {
+      dataToRender = incomingBriefsData;
+    } else if (active === 'Agents Briefs') {
+      dataToRender = agentsBriefsData;
+    } else if (active === 'Sellers Briefs') {
+      dataToRender = sellerBriefsData;
+    } else if (active === 'Transacted Briefs') {
+      dataToRender = transactedBriefsData;
+    }
+
     const tableContent = (
       <motion.div
         initial={{ y: 90, opacity: 0 }}
@@ -620,7 +632,7 @@ export default function BriefLists() {
               </tr>
             </thead>
             <tbody>
-              {incomingBriefsData.map((item, index) => (
+              {dataToRender.map((item, index) => (
                 <tr
                   key={index}
                   className='border-b text-sm text-center text-gray-700 hover:bg-gray-50'>
@@ -723,7 +735,7 @@ const TabButton = ({
 const tabs = [
   { text: 'Incoming Briefs' },
   { text: 'Agents Briefs' },
-  { text: 'Seller Briefs' },
+  { text: 'Sellers Briefs' },
   { text: 'Transacted Briefs' },
 ];
 

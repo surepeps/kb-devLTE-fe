@@ -17,22 +17,22 @@ import { useEffect, useState } from 'react';
 const boxData: BoxNotificationProps[] = [
   {
     name: 'Active Agents',
-    total: 3000,
+    total: 0,
     type: 'active',
   },
   {
     name: 'Total Agents',
-    total: 30000,
+    total: 0,
     type: 'initial',
   },
   {
     name: 'Ban Agents',
-    total: 4,
+    total: 0,
     type: 'banned',
   },
   {
     name: 'Flagged Agents',
-    total: 4,
+    total: 0,
     type: 'flagged',
   },
 ];
@@ -59,7 +59,7 @@ export default function AgentManagement() {
       selectedStat: { value: 'Today', label: 'Today' },
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
