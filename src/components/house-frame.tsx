@@ -24,6 +24,7 @@ const HouseFrame: FC<HouseFrameProps> = ({
   bathroom,
   carPark,
   onClick,
+  images,
 }) => {
   return (
     <div
@@ -34,7 +35,7 @@ const HouseFrame: FC<HouseFrameProps> = ({
         animate={{ opacity: 1 }}
         whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.4 }}
-        src={imgSample.src}
+        src={images[0] ?? imgSample.src}
         width={1000}
         height={1000}
         alt=''

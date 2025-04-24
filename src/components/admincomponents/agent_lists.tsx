@@ -29,6 +29,7 @@ import DeleteBriefs from './deleteBriefs';
 import RejectBriefs from './rejectBriefs';
 import { string } from 'yup';
 import OnboardAgentBar from './OnboardAgentbar';
+import Pagination from '../pagination';
 interface Agent {
   id: string;
   email: string;
@@ -74,6 +75,8 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   const [agentToApprove, setAgentToApprove] = useState<any>(null);
   const [agentToReject, setAgentToReject] = useState<any>(null);
   const [agentToDelete, setAgentToDelete] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const getAgentsData = async () => {
     setIsLoadingDetails({
@@ -99,6 +102,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         isLoading: false,
         message: 'Data Loaded',
       });
+      console.log(data);
       setAgents(data);
       setDetails?.({
         totalAgents: data.length,
@@ -328,6 +332,11 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
               </tbody>
             </table>
           </div>
+          <Pagination
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
         </motion.div>
 
         {agentToApprove && (
@@ -427,10 +436,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         <DeleteBriefs
           brief={agentToDelete}
           onConfirm={(reason) =>
-            handleDeleteAgent(
-              agentToDelete.id,
-              reason || 'No reason provided'
-            )
+            handleDeleteAgent(agentToDelete.id, reason || 'No reason provided')
           }
           onCancel={() => setAgentToDelete(null)}
           isAgentApproval={true}

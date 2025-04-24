@@ -25,6 +25,7 @@ import Loading from '@/components/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
 import { features } from 'process';
+import Pagination from '../pagination';
 
 interface Agent {
   id: string;
@@ -66,6 +67,7 @@ export default function BriefLists() {
   });
   const [agents, setAgents] = useState<Agent[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(3);
 
   const fetchIncomingBriefs = async () => {
     setIsLoading(true);
@@ -76,8 +78,13 @@ export default function BriefLists() {
         page: currentPage,
         limit: 10,
       };
+      // const params = new URLSearchParams({
+      //   page: currentPage.toString(),
+      //   limit: '10',
+      //   propertyType: 'PropertySell',
+      // });
       const response = await POST_REQUEST(
-        URLS.BASE + URLS.adminGetAllBriefs,
+        `${URLS.BASE + URLS.adminGetAllBriefs}`,
         payload
       );
 
@@ -91,6 +98,7 @@ export default function BriefLists() {
 
       console.log('rents', rents);
       console.log('sells', sells);
+      console.log(response);
 
       const mappedRents = rents
         .filter((item: any) => item.isApproved === false)
@@ -215,7 +223,12 @@ export default function BriefLists() {
               : [],
         }));
 
-      console.log(mappedRents, mappedSells);
+      console.log(
+        `mappedRents: ${mappedRents?.length} \n` +
+          `mappedSells: ${mappedSells?.length} \n` +
+          '\n' +
+          `currentPage: ${currentPage}`
+      );
       return [...mappedRents, ...mappedSells].sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -486,7 +499,7 @@ export default function BriefLists() {
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [currentPage]);
 
   const handleTabClick = async (tab: string) => {
     setActive(tab);
@@ -656,6 +669,11 @@ export default function BriefLists() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
       </motion.div>
     );
 
