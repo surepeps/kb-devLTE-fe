@@ -157,7 +157,8 @@ export default function PreferenceAttention({ totalBriefData }: { totalBriefData
         <BriefDetailsBar 
           user={detailsToCheck}
           onClose={() => setDetailsToCheck(null)}
-            />
+          hideButtons={true} // Pass the optional prop to hide buttons
+        />
       )}
   </>
   );
