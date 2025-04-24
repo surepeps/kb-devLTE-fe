@@ -110,7 +110,7 @@ const Overview = () => {
         const url = URLS.BASE + URLS.agentGetUserPreferences;
         await GET_REQUEST(url, Cookies.get('token')).then((data) => {
           if (data.success) {
-            console.log(data.sellPreferences);
+            // console.log(data.sellPreferences);
             setBuyerPreferences(data.sellPreferences);
             setIsLoadingDetails({
               isLoading: false,

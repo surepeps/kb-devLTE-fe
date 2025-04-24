@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import EllipsisOptions from './ellipsisOptions';
 import { usePageContext } from '@/context/page-context';
+import BriefDetailsBar from './briefDetailsBar';
 
 export default function PreferenceAttention({ totalBriefData }: { totalBriefData: any[] }) {
   const formik = useFormik({
@@ -26,10 +27,12 @@ export default function PreferenceAttention({ totalBriefData }: { totalBriefData
   });
 
   const [openRow, setOpenRow] = useState<number | null>(null);
+  const [detailsToCheck, setDetailsToCheck] = useState<any>(null);
   const { dashboard, setDashboard } = usePageContext();
   const data = totalBriefData;
 
   return (
+    <>
     <motion.div
       initial={{ y: 90, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
@@ -102,10 +105,8 @@ export default function PreferenceAttention({ totalBriefData }: { totalBriefData
                 <td className='p-3'>{item.document}</td>
                 <td className='p-3 cursor-pointer text-2xl'>
                   <FontAwesomeIcon
-                    // onClick={() => {
-                    //   setOpenRow(openRow === index ? null : index);
-                    // }}
-                    icon={faEllipsis}
+                       icon={faEllipsis}
+                       onClick={() => setDetailsToCheck(item)}
                   />
                   {openRow === index && (
                     <EllipsisOptions
@@ -152,6 +153,14 @@ export default function PreferenceAttention({ totalBriefData }: { totalBriefData
         </table>
       </div>
     </motion.div>
+      {detailsToCheck && (
+        <BriefDetailsBar 
+          user={detailsToCheck}
+          onClose={() => setDetailsToCheck(null)}
+          hideButtons={true} // Pass the optional prop to hide buttons
+        />
+      )}
+  </>
   );
 }
 
