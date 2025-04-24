@@ -129,7 +129,7 @@ export default function Rent() {
                     title={item.propertyType}
                     images={item?.pictures}
                     features={item.features}
-                    location={`${item.location.state}, ${item.location.area}, ${item.location.localGovernment}`}
+                    location={`${item.location.state}, ${item.location.localGovernment}`}
                     bedroom={item.noOfBedrooms}
                     onClick={() => {
                       router.push(`/buy_page/details/${item._id}`);

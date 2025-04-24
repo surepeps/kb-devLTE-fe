@@ -1,11 +1,12 @@
 /** @format */
-
 import toast from 'react-hot-toast';
 
 export const downloadImage = async (
   imageUrl: string,
-  fileName: string = 'image.jpg'
+  fileName: string = 'image.jpg',
+  setStatus?: (status: 'idle' | 'pending' | 'success' | 'failed') => void
 ) => {
+  setStatus?.('pending');
   try {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
@@ -17,8 +18,10 @@ export const downloadImage = async (
     a.click();
 
     URL.revokeObjectURL(url);
+    setStatus?.('success');
   } catch (error) {
     console.error('Failed to download image:', error);
     toast.error('Failed to download image:', error as any);
+    setStatus?.('failed');
   }
 };
