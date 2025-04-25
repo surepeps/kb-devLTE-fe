@@ -64,7 +64,7 @@ interface SellerContact {
   properties: Property[];
 }
 
-export default function ContactLists({ setTotals }: { setTotals: (totals: { [key: string]: number }) => void }) {
+export default function BuyerTenantPreferences({ setTotals }: { setTotals: (totals: { [key: string]: number }) => void }) {
   const [active, setActive] = useState('Sellers Contacts');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [contacts, setContacts] = useState<SellerContact[]>([]);
