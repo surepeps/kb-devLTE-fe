@@ -1,10 +1,9 @@
 /**
- * eslint-disable @typescript-eslint/no-unused-vars
+ * eslint-disable @typescript-eslint/no-explicit-any
  *
  * @format
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 'use client';
 import { Fragment, useEffect, useState, useRef } from 'react';
@@ -24,6 +23,8 @@ import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
+import { features } from 'process';
+import Pagination from '../pagination';
 
 interface Agent {
   id: string;
@@ -54,7 +55,11 @@ interface Agent {
   profile_picture: string;
 }
 
-export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals: Record<string, number>) => void }) {
+export default function BriefLists({
+  setBriefTotals,
+}: {
+  setBriefTotals: (totals: Record<string, number>) => void;
+}) {
   const [active, setActive] = useState('Incoming Briefs');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedBrief, setSelectedBrief] = useState<any | null>(null);
@@ -68,6 +73,7 @@ export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals
   });
   const [agents, setAgents] = useState<Agent[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(3);
   const isMounted = useRef(false); // Track if the component is mounted
 
   const fetchIncomingBriefs = async () => {
@@ -78,8 +84,13 @@ export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals
         page: currentPage,
         limit: 10,
       };
+      // const params = new URLSearchParams({
+      //   page: currentPage.toString(),
+      //   limit: '10',
+      //   propertyType: 'PropertySell',
+      // });
       const response = await POST_REQUEST(
-        URLS.BASE + URLS.adminGetAllBriefs,
+        `${URLS.BASE + URLS.adminGetAllBriefs}`,
         payload
       );
 
@@ -214,6 +225,12 @@ export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals
               : [],
         }));
 
+      console.log(
+        `mappedRents: ${mappedRents?.length} \n` +
+          `mappedSells: ${mappedSells?.length} \n` +
+          '\n' +
+          `currentPage: ${currentPage}`
+      );
       return [...mappedRents, ...mappedSells].sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -465,18 +482,35 @@ export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals
     const fetchAllBriefs = async () => {
       setIsLoading(true);
       try {
-        const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] = await Promise.all([
-          fetchIncomingBriefs(),
-          fetchAgentsBriefs(),
-          fetchSellerBriefs(),
-          fetchTransactedBriefs(),
-        ]);
+        const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] =
+          await Promise.all([
+            fetchIncomingBriefs(),
+            fetchAgentsBriefs(),
+            fetchSellerBriefs(),
+            fetchTransactedBriefs(),
+          ]);
 
         // Avoid redundant state updates by checking if data has changed
-        setIncomingBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(incomingBriefs) ? incomingBriefs : prev));
-        setAgentsBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(agentsBriefs) ? agentsBriefs : prev));
-        setSellerBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(sellerBriefs) ? sellerBriefs : prev));
-        setTransactedBriefsData((prev) => (JSON.stringify(prev) !== JSON.stringify(transactedBriefs) ? transactedBriefs : prev));
+        setIncomingBriefsData((prev) =>
+          JSON.stringify(prev) !== JSON.stringify(incomingBriefs)
+            ? incomingBriefs
+            : prev
+        );
+        setAgentsBriefsData((prev) =>
+          JSON.stringify(prev) !== JSON.stringify(agentsBriefs)
+            ? agentsBriefs
+            : prev
+        );
+        setSellerBriefsData((prev) =>
+          JSON.stringify(prev) !== JSON.stringify(sellerBriefs)
+            ? sellerBriefs
+            : prev
+        );
+        setTransactedBriefsData((prev) =>
+          JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
+            ? transactedBriefs
+            : prev
+        );
 
         // Calculate totals and pass them to the parent component
         const totals = {
@@ -668,6 +702,11 @@ export default function BriefLists({ setBriefTotals }: { setBriefTotals: (totals
             </tbody>
           </table>
         </div>
+        <Pagination
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
       </motion.div>
     );
 
