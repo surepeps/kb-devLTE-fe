@@ -1,19 +1,20 @@
 /** @format */
 'use client';
 import Image from 'next/image';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import arrow from '@/svgs/arrowRight.svg';
-//import image from '@/assets/assets.png';
+import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import cancelIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { downloadImage } from '@/utils/downloadImage';
+import DownloadImage from './downloadImage';
 
 const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const { setViewImage, viewImage } = usePageContext();
   const ref = useRef<HTMLDivElement>(null);
-
   const isInView = useInView(ref, { once: true });
 
   const handlePreviousSlide = () => {
@@ -102,17 +103,32 @@ const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
         <div
           id='scrollableElement2'
           className='w-full hide-scrollbar gap-[30px] flex justify-center items-center mt-0 md:mt-10 lg:mt-0 overflow-x-scroll'>
-          {imageData.map((image, idx: number) => (
+          {imageData.length > 0 ? (
+            imageData.map((image, idx: number) => (
+              <div key={idx}>
+                <Image
+                  src={image}
+                  width={1000}
+                  height={1000}
+                  alt={`Image ${idx}`}
+                  className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'
+                />
+                <DownloadImage
+                  downloadImage={() =>
+                    downloadImage(image as string, `image-${idx}`)
+                  }
+                />
+              </div>
+            ))
+          ) : (
             <Image
-              src={image}
+              src={noImage}
               width={1000}
               height={1000}
-              alt=''
-              key={idx}
-              className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'>
-              {/* {idx} */}
-            </Image>
-          ))}
+              alt='No image available'
+              className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'
+            />
+          )}
         </div>
         <div className='flex gap-[18px]'>
           {/**Previous */}

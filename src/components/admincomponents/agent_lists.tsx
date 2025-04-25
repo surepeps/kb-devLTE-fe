@@ -29,6 +29,7 @@ import DeleteBriefs from './deleteBriefs';
 import RejectBriefs from './rejectBriefs';
 import { string } from 'yup';
 import OnboardAgentBar from './OnboardAgentbar';
+import Pagination from '../pagination';
 interface Agent {
   id: string;
   email: string;
@@ -74,16 +75,20 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   const [agentToApprove, setAgentToApprove] = useState<any>(null);
   const [agentToReject, setAgentToReject] = useState<any>(null);
   const [agentToDelete, setAgentToDelete] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(3);
 
   const getAgentsData = async (page = 1, limit = 20, type = 'all') => {
-  
+    setCurrentPage(page);
     setIsLoadingDetails({
       isLoading: true,
       message: 'Loading...',
     });
     try {
       const response = await GET_REQUEST(
-        `${URLS.BASE + URLS.getAllAgents}?page=${page}&limit=${limit}&type=${type}`,
+        `${
+          URLS.BASE + URLS.getAllAgents
+        }?page=${page}&limit=${limit}&type=${type}`,
         Cookies.get('token')
       );
 
@@ -100,7 +105,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         isLoading: false,
         message: 'Data Loaded',
       });
-      setAgents(data); 
+      setAgents(data);
       setDetails?.({
         totalAgents: response.agents.totalAgents || 0,
         activeAgents: response.agents.totalActiveAgents || 0,
@@ -324,6 +329,11 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
               </tbody>
             </table>
           </div>
+          <Pagination
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
         </motion.div>
 
         {agentToApprove && (
@@ -423,10 +433,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         <DeleteBriefs
           brief={agentToDelete}
           onConfirm={(reason) =>
-            handleDeleteAgent(
-              agentToDelete.id,
-              reason || 'No reason provided'
-            )
+            handleDeleteAgent(agentToDelete.id, reason || 'No reason provided')
           }
           onCancel={() => setAgentToDelete(null)}
           isAgentApproval={true}

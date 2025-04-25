@@ -113,6 +113,7 @@ export default function Rent() {
         // const randomData = data.data.slice(randomIndex, randomIndex + 10);
         const shuffledData = shuffleArray(data.data);
         setProperties(shuffledData.slice(0, 10));
+        console.log(`Properties: ${properties}`);
         console.log(data);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
@@ -216,7 +217,7 @@ export default function Rent() {
                 {properties?.length !== 0 &&
                   properties?.map((property, idx: number) => (
                     <Card
-                      images={Array(12).fill(imgSample)}
+                      images={property.pictures}
                       onClick={() => {
                         if (selectedBriefs.has(property)) {
                           return toast.error(
