@@ -206,18 +206,19 @@ export default function AgentDetailsBar({
     }
   };
 
-  const flagAgent = async (agentId?: string) => {
+  const flagAgent = async (agentId: string, currentStatus: boolean) => {
     try {
-      const url = `${URLS.BASE}${URLS.flagAnAgent}/${agentId || ''}`;
+      const newStatus = !currentStatus;
+      const url = `${URLS.BASE}${URLS.flagAnAgent}/${agentId}/${newStatus}`;
 
       const payload = {};
 
       await toast.promise(
         PUT_REQUEST(url, payload).then((response) => {
           if ((response as any).success) {
-            toast.success('Agent flagged successfully');
-            setIsAgentInactive(!isAgentInactive);
-            return 'Agent flagged successfully';
+            toast.success(newStatus ? 'Agent flagged successfully' : 'Agent unflagged successfully');
+            setIsFlagged(newStatus);
+            return newStatus ? 'Agent flagged successfully' : 'Agent unflagged successfully';
           } else {
             const errorMessage = (response as any).error || 'Action failed';
             toast.error(errorMessage);
@@ -225,7 +226,7 @@ export default function AgentDetailsBar({
           }
         }),
         {
-          loading: !isAgentInactive ? 'Flagged ...' : 'Flagging ...',
+          loading: newStatus ? 'Flagged ...' : 'Unflagging ...',
         }
       );
     } catch (error) {
@@ -326,9 +327,10 @@ export default function AgentDetailsBar({
                 onClick={() => activateAgent(user?.id)}
                 isActive={isAgentInactive}
               />
-              <Toggle name='Flag Agent' 
-                onClick={() => flagAgent(user?.id)}
-                isActive={isFlagged} 
+              <Toggle
+                name={isFlagged ? 'UnFlag Agent' : 'Flag Agent'}
+                onClick={() => flagAgent(user?.id, isFlagged)}
+                isActive={isFlagged}
               />
             </div>
           </div>
