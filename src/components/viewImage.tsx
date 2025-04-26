@@ -78,8 +78,8 @@ const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
         initial={{ x: '900px' }}
         animate={isInView || viewImage ? { x: 0 } : { x: '900px' }}
         transition={{ delay: 0.2 }}
-        className='flex items-center justify-center flex-col gap-[20px] w-full'>
-        <div className='flex items-end justify-end w-full px-[20px]'>
+        className='flex items-center justify-center flex-col gap-[20px] w-full px-[10px]'>
+        <div className='flex items-end justify-end w-full px-[10px]'>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -102,7 +102,7 @@ const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
 
         <div
           id='scrollableElement2'
-          className='w-full hide-scrollbar gap-[30px] flex justify-center items-center mt-0 md:mt-10 lg:mt-0 overflow-x-scroll'>
+          className='w-full hide-scrollbar gap-[30px] flex justify-start md:justify-center items-center mt-0 md:mt-10 lg:mt-0 overflow-x-auto whitespace-nowrap px-[10px] md:px-0'>
           {imageData.length > 0 ? (
             imageData.map((image, idx: number) => (
               <div key={idx}>
@@ -111,7 +111,7 @@ const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
                   width={1000}
                   height={1000}
                   alt={`Image ${idx}`}
-                  className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'
+                  className='w-[424px] h-[324px] bg-[#D9D9D9] shrink-0 object-cover md:object-contain'
                 />
                 <DownloadImage
                   downloadImage={() =>
@@ -126,7 +126,7 @@ const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
               width={1000}
               height={1000}
               alt='No image available'
-              className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0 object-cover'
+              className='w-[424px] h-[324px] bg-[#D9D9D9] shrink-0 object-contain'
             />
           )}
         </div>
