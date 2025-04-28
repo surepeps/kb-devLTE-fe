@@ -74,16 +74,16 @@ const Section2 = () => {
     }
   };
 
-  const fetchLandBriefs = async () => {
-    setIsLoading(true);
+  // const fetchLandBriefs = async () => {
+  //   setIsLoading(true);
 
-    const response = await axios.get(URLS.BASE + '');
+  //   const response = await axios.get(URLS.BASE + '');
 
-    try {
-    } catch (err) {
-      console.log(err as any);
-    }
-  };
+  //   try {
+  //   } catch (err) {
+  //     console.log(err as any);
+  //   }
+  // };
 
   const fetchPropertyInsightData = async () => {
     setIsLoading(true);
@@ -212,6 +212,7 @@ const Section2 = () => {
                 button2: true,
                 button3: false,
               });
+              fetchAllRentProperties();
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button2 ? '' : 'text-[#5A5D63]'
