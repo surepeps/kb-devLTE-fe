@@ -529,13 +529,8 @@ export default function BriefLists({
       }
     };
 
-    // Prevent fetching on initial render
-    if (isMounted.current) {
-      fetchAllBriefs();
-    } else {
-      isMounted.current = true;
-    }
-  }, [currentPage, setBriefTotals]); // Ensure dependencies are minimal and necessary
+    fetchAllBriefs();
+  }, [currentPage]); // Ensure dependencies are stable
 
   const handleTabClick = (tab: string) => {
     setActive(tab);

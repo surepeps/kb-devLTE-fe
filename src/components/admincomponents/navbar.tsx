@@ -46,7 +46,7 @@ const navItems = [
   {
     href: '/admin/buyer_tenant_preferences',
     label: 'Buyer/tenant Preferences',
-    icon: faChartBar,
+    icon: faUserShield,
     disabled: true,
   },
   // {
