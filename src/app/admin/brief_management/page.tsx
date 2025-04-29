@@ -69,9 +69,9 @@ export default function BriefManagement() {
     },
   });
 
-  if (isLoading) return <Loading />;
-
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <section className='flex flex-col w-full md:w-[initial]'>
       {/* Search & Help Button */}
       <div className='flex justify-between items-center'>
