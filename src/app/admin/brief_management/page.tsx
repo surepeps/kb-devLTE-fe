@@ -138,11 +138,11 @@ export default function BriefManagement() {
           </div>
         </div>
       </div>
-      <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
+      {/* <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
         {data.map((item: BoxNotificationProps, index: number) => (
           <BoxNotification key={index} {...item} />
         ))}
-      </div>
+      </div> */}
       {/* Conditional Rendering of Overviews */}
       <div className='w-full'>
         <BriefLists setBriefTotals={updateBriefTotals} />
