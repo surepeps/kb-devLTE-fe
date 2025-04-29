@@ -36,6 +36,7 @@ import { shuffleArray } from '@/utils/shuffleArray';
 import { requestFormReset } from 'react-dom';
 
 interface DetailsProps {
+  propertyId: string;
   price: number;
   propertyType: string;
   bedRoom: number;
@@ -88,6 +89,7 @@ const Buy = () => {
     },
     tenantCriteria: [],
     pictures: [],
+    propertyId: '',
   });
   const [featureData, setFeatureData] = useState<
     { _id: string; featureName: string }[]
@@ -178,45 +180,51 @@ const Buy = () => {
       message: '',
     },
     validationSchema,
-    onSubmit: async (values: FormProps) => {
-      // console.log(values, details, featureData);
+    onSubmit: async (values: FormProps, {resetForm}) => {
       const payload = {
-        propertyType: details.propertyType,
-        propertyCondition: details.propertyStatus,
-        location: { ...details.location },
-        rentalPrice: details.price,
-        noOfBedrooms: details.bedRoom,
-        features: featureData.map(
-          ({ featureName }: { featureName: string }) => ({ featureName })
-        ),
-        tenantCriteria: details.tenantCriteria.map(
-          ({ criteria }: { criteria: string }) => ({ criteria })
-        ),
-        areYouTheOwner: agreedToTermsOfUse,
-        budgetRange: details.price.toString(),
-        owner: {
+        propertyId: details.propertyId,
+        requestFrom: {
           email: values.email,
           phoneNumber: values.phoneNumber,
           fullName: values.name,
         },
+        propertyType: "PropertyRent",
       };
       if (agreedToTermsOfUse) {
         try {
-          await toast.promise(
+          const response = await toast.promise(
             () =>
               axios.post(
-                URLS.BASE + '/properties/rent/request/rent/new',
+                URLS.BASE + '/property/request-inspection',
                 payload
               ),
             {
               loading: 'Submitting request...',
               success: 'Successfully submitted for inspection',
-              error: 'Failed to submit request',
+              // error: 'Failed to submit request',
             }
           );
-        } catch (error) {
-          console.log(error);
-          // console.log(payload);
+
+          // Display the API response message in a toast
+          if (response?.data?.message) {
+            toast.success(response.data.message);
+          }
+          
+        } catch (error: any) {
+          // Handle error and display the error message from the API
+          if (error.response?.data?.message) {
+            toast.error(error.response.data.message);
+          } else {
+            console.error(error);
+          }
+
+          formik.setValues({
+            name: '',
+            email: '',
+            phoneNumber: '', 
+            gender: '',
+            message: '',
+          });
         }
         return;
       }
@@ -240,6 +248,7 @@ const Buy = () => {
               location: res.data.location,
               tenantCriteria: res.data.tenantCriteria,
               pictures: res.data.pictures,
+              propertyId: res.data._id,
             });
             setFeatureData(res.data.features);
           }
@@ -256,7 +265,7 @@ const Buy = () => {
       setDataLoading(true);
       try {
         const resposne = await axios.get(URLS.BASE + '/properties/rents/all');
-        console.log(resposne);
+        // console.log(resposne);
         if (resposne.status === 200) {
           const shuffledData = shuffleArray(resposne.data.data);
           //  console.log(shuffledData);
