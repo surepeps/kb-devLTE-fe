@@ -14,16 +14,11 @@ import filterIcon from '@/svgs/filterIcon.svg';
 import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
-import AgentSidebar from './AgentDetailsBar';
 import BriefDetailsBar from './briefDetailsBar';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
-import { calculateAgentCounts } from '@/utils/agentUtils';
-import { truncateId } from '@/utils/stringUtils';
-import { features } from 'process';
 import Pagination from '../pagination';
 
 interface Agent {
@@ -60,7 +55,7 @@ export default function BriefLists({
 }: {
   setBriefTotals: (totals: Record<string, number>) => void;
 }) {
-  const [active, setActive] = useState('Incoming Briefs');
+  const [active, setActive] = useState('Agents Briefs');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedBrief, setSelectedBrief] = useState<any | null>(null);
   const [incomingBriefsData, setIncomingBriefsData] = useState<any[]>([]);
@@ -482,12 +477,14 @@ export default function BriefLists({
     const fetchAllBriefs = async () => {
       setIsLoading(true);
       try {
-        const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] =
+        const [incomingBriefs, agentsBriefs, sellerBriefs,
+          //  transactedBriefs
+          ] =
           await Promise.all([
             fetchIncomingBriefs(),
             fetchAgentsBriefs(),
             fetchSellerBriefs(),
-            fetchTransactedBriefs(),
+            // fetchTransactedBriefs(),
           ]);
 
         // Avoid redundant state updates by checking if data has changed
@@ -506,18 +503,18 @@ export default function BriefLists({
             ? sellerBriefs
             : prev
         );
-        setTransactedBriefsData((prev) =>
-          JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
-            ? transactedBriefs
-            : prev
-        );
+        // setTransactedBriefsData((prev) =>
+        //   JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
+        //     ? transactedBriefs
+        //     : prev
+        // );
 
         // Calculate totals and pass them to the parent component
         const totals = {
           'Incoming Briefs': incomingBriefs.length,
           'Agents Briefs': agentsBriefs.length,
           'Sellers Briefs': sellerBriefs.length,
-          'Transacted Briefs': transactedBriefs.length,
+          // 'Transacted Briefs': transactedBriefs.length,
         };
 
         setBriefTotals(totals);

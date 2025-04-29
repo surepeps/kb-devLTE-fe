@@ -204,7 +204,7 @@ export default function ContactLists({ setTotals }: { setTotals: (totals: { [key
         viewport={{ once: true }}
         transition={{ delay: 0.3 }}
         className='mt-6 p-4 border rounded-md bg-white w-full lg:max-w-[1128px] px-8 mr-2 overflow-hidden md:overflow-x-auto'>
-        <h3 className='text-[#2E2C34] text-xl font-semibold py-6'>{active}</h3>
+        <h3 className='text-[#6e6589] text-xl font-semibold py-6'>{active}</h3>
         <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
           <table className='min-w-[900px] md:w-full border-collapse'>
             <thead>
