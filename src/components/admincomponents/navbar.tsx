@@ -44,23 +44,29 @@ const navItems = [
     disabled: false,
   },
   {
-    href: '/admin/analytics',
-    label: 'Advance Analytics',
-    icon: faChartBar,
-    disabled: true,
-  },
-  {
-    href: '/admin/notifications',
-    label: 'Notifications and Alerts',
-    icon: faBullhorn,
-    disabled: true,
-  },
-  {
-    href: '/admin/roles',
-    label: 'Role and Permission',
+    href: '/admin/buyer_tenant_preferences',
+    label: 'Buyer/tenant Preferences',
     icon: faUserShield,
     disabled: true,
   },
+  // {
+  //   href: '/admin/analytics',
+  //   label: 'Advance Analytics',
+  //   icon: faChartBar,
+  //   disabled: true,
+  // },
+  // {
+  //   href: '/admin/notifications',
+  //   label: 'Notifications and Alerts',
+  //   icon: faBullhorn,
+  //   disabled: true,
+  // },
+  // {
+  //   href: '/admin/roles',
+  //   label: 'Role and Permission',
+  //   icon: faUserShield,
+  //   disabled: true,
+  // },
 ];
 
 export default function AdminNavbar() {

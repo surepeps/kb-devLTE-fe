@@ -1,59 +1,25 @@
 'use client';
-import React, { useEffect, useState, useCallback } from 'react';
+
 import {
   faMagnifyingGlass,
   faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { archivo } from '@/styles/font';
 import { useLoading } from '@/hooks/useLoading';
 import Select from 'react-select';
 import Loading from '@/components/loading';
 import { useFormik } from 'formik';
-import BriefLists from '@/components/admincomponents/brief_lists';
+import BuyerTenantPreferences from '@/components/admincomponents/buyer_tenant-preferences';
 
-const boxData: BoxNotificationProps[] = [
-  {
-    name: 'Incoming Briefs',
-    total: 0,
-    type: 'initial',
-  },
-  {
-    name: 'Agents Briefs',
-    total: 0,
-    type: 'active',
-  },
-  {
-    name: 'Sellers Briefs',
-    total: 0,
-    type: 'flagged',
-  },
-  {
-    name: 'Transacted Briefs',
-    total: 0,
-    type: 'banned',
-  },
-];
+export default function Preferences() {
+  const [totals, setTotals] = useState<{ [key: string]: number }>({
+    'Buyers Preferences': 0,
+    'Tenant Preferences': 0,
+  });
 
-export default function BriefManagement() {
   const isLoading = useLoading();
-  const [data, setData] = useState<BoxNotificationProps[]>(boxData);
-
-  // Memoize the updateBriefTotals function to prevent unnecessary re-renders
-  const updateBriefTotals = useCallback((totals: Record<string, number>) => {
-    setData((prevData) => {
-      const updatedData = prevData.map((item) => ({
-        ...item,
-        total: totals[item.name] || 0,
-      }));
-      // Only update state if data has actually changed
-      if (JSON.stringify(prevData) !== JSON.stringify(updatedData)) {
-        return updatedData;
-      }
-      return prevData;
-    });
-  }, []);
-
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -69,9 +35,9 @@ export default function BriefManagement() {
     },
   });
 
-  return isLoading ? (
-    <Loading />
-  ) : (
+  if (isLoading) return <Loading />;
+
+  return (
     <section className='flex flex-col w-full md:w-[initial]'>
       {/* Search & Help Button */}
       <div className='flex justify-between items-center'>
@@ -107,7 +73,7 @@ export default function BriefManagement() {
         <div className='flex flex-col gap-1 md:gap-0'>
           <h2
             className={`text-3xl font-bold text-[#2E2C34] ${archivo.className}`}>
-            Briefs Management
+            Buyer/Tenant Preferences
           </h2>
           <p className={`text-sm text-[#84818A] ${archivo.className}`}>
             Showing your Account metrics from{' '}
@@ -139,12 +105,13 @@ export default function BriefManagement() {
         </div>
       </div>
       <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
-        {data.map((item: BoxNotificationProps, index: number) => (
-          <BoxNotification key={index} {...item} />
+        {Object.entries(totals).map(([name, total], index) => (
+          <BoxNotification key={index} name={name} total={total} type='active' />
         ))}
       </div>
+      {/* Conditional Rendering of Overviews */}
       <div className='w-full'>
-        <BriefLists setBriefTotals={updateBriefTotals} />
+        <BuyerTenantPreferences setTotals={setTotals} />
       </div>
     </section>
   );
