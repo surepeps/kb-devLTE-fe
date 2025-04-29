@@ -421,7 +421,7 @@ const data = [
       },
       {
         value: 'Tenant Preference',
-        url: '#',
+        url: '/rent_page',
       },
     ],
   },
