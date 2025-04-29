@@ -1,33 +1,22 @@
-/**
- * eslint-disable react-hooks/exhaustive-deps
- *
- * @format
- */
-
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import Button from '@/components/button';
-// import HouseFrame from './house-frame';
-// import houseImage from '@/assets/assets.png';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
 import Card from './card';
 import { motion, useInView } from 'framer-motion';
-//import { cardDataArray } from '@/data';
 import toast from 'react-hot-toast';
-//import { usePageContext } from '@/context/page-context';
 import imgSample from '@/assets/assets.png';
 import { URLS } from '@/utils/URLS';
 import { usePageContext } from '@/context/page-context';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import 'ldrs/react/Trio.css';
 import { Trio } from 'ldrs/react';
 import { epilogue } from '@/styles/font';
 import { shuffleArray } from '@/utils/shuffleArray';
+import axios from 'axios';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -36,9 +25,7 @@ const Section2 = () => {
     button3: false,
   });
   const { setCardData } = usePageContext();
-  //const [fetchingData, setFetchingData] = useState(false);
   const [properties, setProperties] = useState<any[]>([]);
-  //const [errMessage, setErrMessage] = useState('');
 
   const housesRef = useRef<HTMLDivElement>(null);
 
@@ -46,49 +33,135 @@ const Section2 = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+  const fetchAllRentProperties = async () => {
+    setIsLoading(true);
 
-    const fetchAllData = async () => {
-      // setFetchingData(true);
-      setIsLoading(true);
-      try {
-        const response = await fetch(URLS.BASE + '/properties/sell/all', {
-          signal,
-        });
+    try {
+      const response = await axios.get(URLS.BASE + URLS.rentersFetchBriefs);
 
-        if (!response.ok) {
-          setIsLoading(false);
-          // setErrMessage('Failed to fetch data');
-          throw new Error('Failed to fetch data');
-        }
-
-        const data = await response.json();
-        console.log(data);
-        //cut a section of the array data randomly, that the objects in the array are only four
-        // const randomIndex = Math.floor(
-        //   Math.random() * (data.data.length - 4 + 1)
-        // );
-        // const randomData = data.data.slice(randomIndex, randomIndex + 4);
-        const shuffled = shuffleArray(data.data);
-        setProperties(shuffled.slice(0, 4));
-        setCardData(data);
+      if (response.status !== 200) {
         setIsLoading(false);
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.error(err);
-          // setErrMessage(err.message || 'An error occurred');
-          setIsLoading(false);
-        }
+        throw new Error('Failed to fetch data');
       }
-    };
 
-    fetchAllData();
+      const data = response.data.data;
+      console.log(response, data);
+      const shuffled = shuffleArray(data);
+      setProperties(
+        shuffled.slice(0, 2).map((item: any) => ({
+          ...item,
+          price: item?.rentalPrice,
+          propertyFeatures: {
+            additionalFeatures: item?.features?.map(
+              (item: { featureName: string }) => item.featureName
+            ),
+            noOfBedrooms: item.noOfBedrooms,
+          },
+          docOnProperty: item?.tenantCriteria?.map(
+            ({ criteria, _id }: { criteria: string; _id: string }) => ({
+              docName: criteria,
+              _id: _id,
+              isProvided: true,
+            })
+          ),
+        }))
+      );
+      setCardData(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      setIsLoading(false);
+    }
+  };
 
-    return () => {
-      controller.abort(); // Cleanup to prevent memory leaks
-    };
+  // const fetchLandBriefs = async () => {
+  //   setIsLoading(true);
+
+  //   const response = await axios.get(URLS.BASE + '');
+
+  //   try {
+  //   } catch (err) {
+  //     console.log(err as any);
+  //   }
+  // };
+
+  const fetchPropertyInsightData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(URLS.BASE + URLS.buyersFetchBriefs);
+
+      if (response.status !== 200) {
+        setIsLoading(false);
+        throw new Error('Failed to fetch data');
+      }
+
+      const data = response.data;
+      console.log(data);
+      const shuffled = shuffleArray(data.data);
+      setProperties(shuffled.slice(0, 4));
+      setCardData(data);
+      setIsLoading(false);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error(err);
+        // setErrMessage(err.message || 'An error occurred');
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleShowMoreClick = () => {
+    if (buttons.button1) return (window.location.href = '/buy_page');
+    if (buttons.button2) return (window.location.href = '/buy_page');
+    if (buttons.button3) return (window.location.href = '/rent_page');
+  };
+
+  const handleSubmitInspection = (property: any) => {
+    if (buttons.button1) {
+      //Retrieve existing selectedBriefs from localStorage
+      const existingBriefs = JSON.parse(
+        localStorage.getItem('selectedBriefs') || '[]'
+      );
+
+      //check if the new property exists
+      const isPropertyExisting = existingBriefs.find(
+        (brief: any) => brief._id === property._id
+      );
+
+      if (isPropertyExisting) {
+        //apply toast warning
+        toast.error('Property already selected');
+        return;
+      }
+
+      //check if the properties selected has exceeded 3
+      if (existingBriefs.length >= 3) {
+        //apply toast warning
+        toast.error('Maximum properties selected');
+        return;
+      }
+
+      //Ensure it's an array and add the new property
+      const updatedBriefs = Array.isArray(existingBriefs)
+        ? [...existingBriefs, property]
+        : [property];
+
+      //Save back to localStorage
+      localStorage.setItem('selectedBriefs', JSON.stringify(updatedBriefs));
+      toast.success('Successfully added for inspection');
+    } else if (buttons.button2) {
+      //
+      toast.error('Feature not available yet');
+    } else if (buttons.button3) {
+      //apply toast warning
+      toast.error('Feature not available yet');
+    }
+  };
+
+  useEffect(() => {
+    fetchPropertyInsightData();
+
+    return () => {};
   }, [setCardData]);
 
   return (
@@ -124,6 +197,7 @@ const Section2 = () => {
                 button2: false,
                 button3: false,
               });
+              fetchPropertyInsightData();
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button1 ? '' : 'text-[#5A5D63]'
@@ -138,6 +212,7 @@ const Section2 = () => {
                 button2: true,
                 button3: false,
               });
+              fetchAllRentProperties();
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button2 ? '' : 'text-[#5A5D63]'
@@ -152,6 +227,7 @@ const Section2 = () => {
                 button2: false,
                 button3: true,
               });
+              fetchAllRentProperties();
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button3 ? '' : 'text-[#5A5D63] '
@@ -172,66 +248,37 @@ const Section2 = () => {
             properties?.map((property: any, idx: number) => {
               return (
                 <Card
-                  images={Array(12).fill(imgSample)}
+                  images={property?.pictures}
                   onClick={() => {
-                    //Retrieve existing selectedBriefs from localStorage
-                    const existingBriefs = JSON.parse(
-                      localStorage.getItem('selectedBriefs') || '[]'
-                    );
-
-                    //check if the new property exists
-                    const isPropertyExisting = existingBriefs.find(
-                      (brief: any) => brief._id === property._id
-                    );
-
-                    if (isPropertyExisting) {
-                      //apply toast warning
-                      toast.error('Property already selected');
-                      return;
-                    }
-
-                    //check if the properties selected has exceeded 3
-                    if (existingBriefs.length >= 3) {
-                      //apply toast warning
-                      toast.error('Maximum properties selected');
-                      return;
-                    }
-
-                    //Ensure it's an array and add the new property
-                    const updatedBriefs = Array.isArray(existingBriefs)
-                      ? [...existingBriefs, property]
-                      : [property];
-
-                    //Save back to localStorage
-                    localStorage.setItem(
-                      'selectedBriefs',
-                      JSON.stringify(updatedBriefs)
-                    );
-                    toast.success('Successfully added for inspection');
+                    handleSubmitInspection(property);
                   }}
                   cardData={[
                     {
                       header: 'Property Type',
-                      value: property.propertyType,
+                      value: property?.propertyType || 'N/A',
                     },
                     {
                       header: 'Price',
-                      value: `₦${Number(property.price).toLocaleString()}`,
+                      value: `₦${Number(
+                        property?.price || 0
+                      ).toLocaleString()}`,
                     },
                     {
                       header: 'Bedrooms',
-                      value: property.propertyFeatures?.noOfBedrooms || 'N/A',
+                      value: property?.propertyFeatures?.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',
-                      value: `${property.location.state}, ${property.location.localGovernment}`,
+                      value: `${property?.location?.state || 'N/A'}, ${
+                        property?.location?.localGovernment || 'N/A'
+                      }`,
                     },
                     {
                       header: 'Documents',
-                      value: `<ol class='' style='list-style: 'dics';'>${property.docOnProperty.map(
+                      value: `<div>${property?.docOnProperty?.map(
                         (item: { _id: string; docName: string }) =>
-                          `<li key={${item._id}>${item.docName}</li>`
-                      )}<ol>`,
+                          `<span key={${item._id}>${item.docName}</span>`
+                      )}</div>`,
                     },
                   ]}
                   key={idx}
@@ -249,9 +296,7 @@ const Section2 = () => {
         </motion.div>
         <div className='flex justify-center items-center mt-6'>
           <button
-            onClick={() => {
-              window.location.href = '/buy_page';
-            }}
+            onClick={handleShowMoreClick}
             type='button'
             className='flex justify-center items-center gap-2'>
             <span className='text-base text-[#09391C] leading-[25px] font-semibold'>
