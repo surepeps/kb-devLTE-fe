@@ -14,11 +14,16 @@ import filterIcon from '@/svgs/filterIcon.svg';
 import Select from 'react-select';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
+import AgentSidebar from './AgentDetailsBar';
 import BriefDetailsBar from './briefDetailsBar';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
+import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import Loading from '@/components/loading';
+import { calculateAgentCounts } from '@/utils/agentUtils';
+import { truncateId } from '@/utils/stringUtils';
+import { features } from 'process';
 import Pagination from '../pagination';
 
 interface Agent {
@@ -55,7 +60,7 @@ export default function BriefLists({
 }: {
   setBriefTotals: (totals: Record<string, number>) => void;
 }) {
-  const [active, setActive] = useState('Agents Briefs');
+  const [active, setActive] = useState('Incoming Briefs');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedBrief, setSelectedBrief] = useState<any | null>(null);
   const [incomingBriefsData, setIncomingBriefsData] = useState<any[]>([]);
@@ -79,14 +84,17 @@ export default function BriefLists({
         page: currentPage,
         limit: 10,
       };
-      console.log('Fetching Incoming Briefs with payload:', payload); // Debugging log
+      // const params = new URLSearchParams({
+      //   page: currentPage.toString(),
+      //   limit: '10',
+      //   propertyType: 'PropertySell',
+      // });
       const response = await POST_REQUEST(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL || URLS.BASE}${URLS.adminGetAllBriefs}`,
+        `${URLS.BASE + URLS.adminGetAllBriefs}`,
         payload
       );
 
-      if (!response?.success) {
-        console.error('Failed to fetch Incoming Briefs:', response); // Log error details
+      if (response?.success === false) {
         toast.error('Failed to fetch Incoming Briefs');
         return [];
       }
@@ -217,14 +225,18 @@ export default function BriefLists({
               : [],
         }));
 
-      console.log('Fetched Incoming Briefs:', [...mappedRents, ...mappedSells]); // Debugging log
+      console.log(
+        `mappedRents: ${mappedRents?.length} \n` +
+          `mappedSells: ${mappedSells?.length} \n` +
+          '\n' +
+          `currentPage: ${currentPage}`
+      );
       return [...mappedRents, ...mappedSells].sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
-      console.error('Error fetching Incoming Briefs:', error); // Log error details
-      toast.error('Failed to fetch Incoming Briefs');
+      console.error('Error fetching Incoming Briefs:', error);
       return [];
     }
   };
@@ -461,8 +473,7 @@ export default function BriefLists({
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
-      console.error('Error fetching Transacted Briefs:', error); // Log error details
-      toast.error('Failed to fetch Transacted Briefs');
+      console.error('Error fetching Transacted Briefs:', error);
       return [];
     }
   };
@@ -471,12 +482,15 @@ export default function BriefLists({
     const fetchAllBriefs = async () => {
       setIsLoading(true);
       try {
-        const [incomingBriefs, agentsBriefs, sellerBriefs] = await Promise.all([
-          fetchIncomingBriefs(),
-          fetchAgentsBriefs(),
-          fetchSellerBriefs(),
-        ]);
+        const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] =
+          await Promise.all([
+            fetchIncomingBriefs(),
+            fetchAgentsBriefs(),
+            fetchSellerBriefs(),
+            fetchTransactedBriefs(),
+          ]);
 
+        // Avoid redundant state updates by checking if data has changed
         setIncomingBriefsData((prev) =>
           JSON.stringify(prev) !== JSON.stringify(incomingBriefs)
             ? incomingBriefs
@@ -492,28 +506,31 @@ export default function BriefLists({
             ? sellerBriefs
             : prev
         );
+        setTransactedBriefsData((prev) =>
+          JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
+            ? transactedBriefs
+            : prev
+        );
 
+        // Calculate totals and pass them to the parent component
         const totals = {
           'Incoming Briefs': incomingBriefs.length,
           'Agents Briefs': agentsBriefs.length,
           'Sellers Briefs': sellerBriefs.length,
+          'Transacted Briefs': transactedBriefs.length,
         };
 
         setBriefTotals(totals);
       } catch (error) {
-        console.error('Error fetching briefs:', error); // Log error details
+        console.error('Error fetching briefs:', error);
         toast.error('Failed to fetch briefs');
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (isMounted.current) {
-      fetchAllBriefs();
-    } else {
-      isMounted.current = true;
-    }
-  }, [currentPage, setBriefTotals]); // Ensure dependencies are minimal and necessary
+    fetchAllBriefs();
+  }, [currentPage]); // Ensure dependencies are stable
 
   const handleTabClick = (tab: string) => {
     setActive(tab);
