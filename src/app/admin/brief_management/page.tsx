@@ -69,9 +69,9 @@ export default function BriefManagement() {
     },
   });
 
-  if (isLoading) return <Loading />;
-
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <section className='flex flex-col w-full md:w-[initial]'>
       {/* Search & Help Button */}
       <div className='flex justify-between items-center'>
@@ -143,7 +143,6 @@ export default function BriefManagement() {
           <BoxNotification key={index} {...item} />
         ))}
       </div>
-      {/* Conditional Rendering of Overviews */}
       <div className='w-full'>
         <BriefLists setBriefTotals={updateBriefTotals} />
       </div>
