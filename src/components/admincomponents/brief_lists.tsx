@@ -79,17 +79,14 @@ export default function BriefLists({
         page: currentPage,
         limit: 10,
       };
-      // const params = new URLSearchParams({
-      //   page: currentPage.toString(),
-      //   limit: '10',
-      //   propertyType: 'PropertySell',
-      // });
+      console.log('Fetching Incoming Briefs with payload:', payload); // Debugging log
       const response = await POST_REQUEST(
-        `${URLS.BASE + URLS.adminGetAllBriefs}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || URLS.BASE}${URLS.adminGetAllBriefs}`,
         payload
       );
 
-      if (response?.success === false) {
+      if (!response?.success) {
+        console.error('Failed to fetch Incoming Briefs:', response); // Log error details
         toast.error('Failed to fetch Incoming Briefs');
         return [];
       }
@@ -220,18 +217,14 @@ export default function BriefLists({
               : [],
         }));
 
-      console.log(
-        `mappedRents: ${mappedRents?.length} \n` +
-          `mappedSells: ${mappedSells?.length} \n` +
-          '\n' +
-          `currentPage: ${currentPage}`
-      );
+      console.log('Fetched Incoming Briefs:', [...mappedRents, ...mappedSells]); // Debugging log
       return [...mappedRents, ...mappedSells].sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
-      console.error('Error fetching Incoming Briefs:', error);
+      console.error('Error fetching Incoming Briefs:', error); // Log error details
+      toast.error('Failed to fetch Incoming Briefs');
       return [];
     }
   };
@@ -468,7 +461,8 @@ export default function BriefLists({
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     } catch (error) {
-      console.error('Error fetching Transacted Briefs:', error);
+      console.error('Error fetching Transacted Briefs:', error); // Log error details
+      toast.error('Failed to fetch Transacted Briefs');
       return [];
     }
   };
@@ -477,17 +471,12 @@ export default function BriefLists({
     const fetchAllBriefs = async () => {
       setIsLoading(true);
       try {
-        const [incomingBriefs, agentsBriefs, sellerBriefs,
-          //  transactedBriefs
-          ] =
-          await Promise.all([
-            fetchIncomingBriefs(),
-            fetchAgentsBriefs(),
-            fetchSellerBriefs(),
-            // fetchTransactedBriefs(),
-          ]);
+        const [incomingBriefs, agentsBriefs, sellerBriefs] = await Promise.all([
+          fetchIncomingBriefs(),
+          fetchAgentsBriefs(),
+          fetchSellerBriefs(),
+        ]);
 
-        // Avoid redundant state updates by checking if data has changed
         setIncomingBriefsData((prev) =>
           JSON.stringify(prev) !== JSON.stringify(incomingBriefs)
             ? incomingBriefs
@@ -503,30 +492,22 @@ export default function BriefLists({
             ? sellerBriefs
             : prev
         );
-        // setTransactedBriefsData((prev) =>
-        //   JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
-        //     ? transactedBriefs
-        //     : prev
-        // );
 
-        // Calculate totals and pass them to the parent component
         const totals = {
           'Incoming Briefs': incomingBriefs.length,
           'Agents Briefs': agentsBriefs.length,
           'Sellers Briefs': sellerBriefs.length,
-          // 'Transacted Briefs': transactedBriefs.length,
         };
 
         setBriefTotals(totals);
       } catch (error) {
-        console.error('Error fetching briefs:', error);
+        console.error('Error fetching briefs:', error); // Log error details
         toast.error('Failed to fetch briefs');
       } finally {
         setIsLoading(false);
       }
     };
 
-    // Prevent fetching on initial render
     if (isMounted.current) {
       fetchAllBriefs();
     } else {
