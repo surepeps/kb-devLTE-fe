@@ -169,6 +169,11 @@ export const PageContextProvider = ({
     },
   });
 
+  /**
+   * Market Place
+   */
+  const [selectedType, setSelectedType] = useState<string>('Buy');
+
   return (
     <PageContext.Provider
       value={{
@@ -204,6 +209,8 @@ export const PageContextProvider = ({
         setDashboard,
         userDetails,
         setUserDetails,
+        selectedType,
+        setSelectedType,
       }}>
       {children}
     </PageContext.Provider>

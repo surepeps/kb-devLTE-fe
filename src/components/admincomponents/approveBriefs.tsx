@@ -14,9 +14,14 @@ interface ApproveBriefsProps {
   isAgentApproval?: boolean;
 }
 
-const ApproveBriefs: FC<ApproveBriefsProps> = ({ brief, onConfirm, onCancel, isAgentApproval }) => {
+const ApproveBriefs: FC<ApproveBriefsProps> = ({
+  brief,
+  onConfirm,
+  onCancel,
+  isAgentApproval,
+}) => {
   return (
-    <section className='w-full h-full fixed top-0 left-0 bg-transparent z-[10] flex justify-center items-center px-[10px]'>
+    <section className='w-full h-full bg-[#00000080] fixed top-0 left-0 z-[10] flex justify-center items-center px-[10px]'>
       <motion.div
         initial={{ y: 90, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -47,7 +52,9 @@ const ApproveBriefs: FC<ApproveBriefsProps> = ({ brief, onConfirm, onCancel, isA
               <p
                 className={`text-lg text-[#515B6F] ${archivo.className} text-center font-normal`}>
                 {isAgentApproval
-                  ? `Are you sure you want to approve the agent ${brief?.firstName || brief?.email}?`
+                  ? `Are you sure you want to approve the agent ${
+                      brief?.firstName || brief?.email
+                    }?`
                   : `Are you sure you want to approve the brief for ${brief?.buyerContact?.name}?`}
               </p>
             </div>
