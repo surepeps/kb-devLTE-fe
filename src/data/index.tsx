@@ -17,18 +17,8 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
     isClicked: true,
   },
   {
-    name: 'Buy',
-    url: '/buy_page',
-    isClicked: false,
-  },
-  {
-    name: 'Sell',
-    url: '/sell_page',
-    isClicked: false,
-  },
-  {
-    name: 'Rent',
-    url: '/rent_page',
+    name: 'Marketplace',
+    url: '#',
     isClicked: false,
   },
   {
