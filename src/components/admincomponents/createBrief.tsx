@@ -115,16 +115,37 @@ const CreateBrief = ({
     console.log(editBrief);
   }, [editBrief]);
 
-  const docOfTheProperty: string[] = [
-    'Survey Document',
-    'Deed of Assignment',
-    'Receipt',
-    'C of O',
-  ];
+  const dynamicContentToRender = () => {
+    switch (selectedBrief) {
+      case 'Rental Brief':
+        return (
+          <RentalBrief
+            editBrief={editBrief}
+            handleLGAChange={handleLGAChange}
+            setEditBrief={setEditBrief}
+            handleStateChange={handleStateChange}
+            setViewImage={setViewImage}
+            setImageData={setImageData}
+            attachRef={attachRef}
+          />
+        );
 
-  useEffect(() => {
-    console.log(editBrief.fileUrl);
-  }, [editBrief]);
+      case 'Property Brief':
+        return <>{selectedBrief}</>;
+      default:
+        return (
+          <RentalBrief
+            editBrief={editBrief}
+            handleLGAChange={handleLGAChange}
+            setEditBrief={setEditBrief}
+            handleStateChange={handleStateChange}
+            setViewImage={setViewImage}
+            setImageData={setImageData}
+            attachRef={attachRef}
+          />
+        );
+    }
+  };
 
   return (
     <>
@@ -199,15 +220,7 @@ const CreateBrief = ({
                 </h2>
               </div>
               {/**Form to fill */}
-              <RentalBrief
-                editBrief={editBrief}
-                handleLGAChange={handleLGAChange}
-                setEditBrief={setEditBrief}
-                handleStateChange={handleStateChange}
-                setViewImage={setViewImage}
-                setImageData={setImageData}
-                attachRef={attachRef}
-              />
+              {selectedBrief && dynamicContentToRender()}
             </div>
           </form>
         </section>
@@ -230,71 +243,63 @@ interface SelectProps {
   values?: string[];
 }
 
-const Select: React.FC<SelectProps> = ({
-  heading,
-  options,
-  formik,
-  allowMultiple,
-  name,
-  setCreateBrief,
-  createBrief,
-  values,
-}) => {
-  const opts = options.map((item) => ({
-    value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
-    label: typeof item === 'number' ? Number(item) : item,
-  }));
+// const Select: React.FC<SelectProps> = ({
+//   heading,
+//   options,
+//   formik,
+//   allowMultiple,
+//   name,
+//   setCreateBrief,
+//   createBrief,
+//   values,
+// }) => {
+//   const opts = options.map((item) => ({
+//     value: typeof item === 'string' ? item.toLowerCase() : `${item} Bedroom`,
+//     label: typeof item === 'number' ? Number(item) : item,
+//   }));
 
-  return (
-    <label
-      htmlFor='select'
-      className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
-      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
-        {name}
-      </h2>
-      <ReactSelect
-        isMulti={allowMultiple}
-        name={name}
-        onChange={(selectedOption: any) =>
-          allowMultiple
-            ? // ? formik.setFieldValue(
-              //     heading,
-              //     [
-              //       ...(Array.isArray(selectedOption)
-              //         ? selectedOption.map((opt: any) => opt.label)
-              //         : []),
-              //     ].filter(Boolean)
-              //   )
-              setCreateBrief?.((prev) => {
-                const existing = Array.isArray(prev?.[heading])
-                  ? prev[heading]
-                  : [];
+//   return (
+//     <label
+//       htmlFor='select'
+//       className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
+//       <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
+//         {name}
+//       </h2>
+//       <ReactSelect
+//         isMulti={allowMultiple}
+//         name={name}
+//         onChange={(selectedOption: any) =>
+//           allowMultiple
+//             ? setCreateBrief?.((prev: any) => {
+//                 const existing = Array.isArray(prev?.[heading])
+//                   ? prev[heading]
+//                   : [];
 
-                const newLabels = Array.isArray(selectedOption)
-                  ? selectedOption.map((opt) => opt.label).filter(Boolean)
-                  : [];
+//                 const newLabels = Array.isArray(selectedOption)
+//                   ? selectedOption.map((opt) => opt.label).filter(Boolean)
+//                   : [];
 
-                return {
-                  ...prev,
-                  [heading]: Array.from(new Set([...existing, ...newLabels])),
-                };
-              })
-            : // : formik.setFieldValue(heading, selectedOption?.label ?? '')
-              setCreateBrief?.({
-                ...createBrief,
-                [heading]: selectedOption?.label,
-              })
-        }
-        onBlur={formik?.handleBlur}
-        value={values?.map((item: string) => ({ label: item, value: item }))}
-        options={opts}
-        className={`w-full`}
-        styles={customStyles}
-        placeholder='Select'
-      />
-    </label>
-  );
-};
+//                 return {
+//                   ...prev,
+//                   [heading]: Array.from(new Set([...existing, ...newLabels])),
+//                 };
+//               })
+//             : // : formik.setFieldValue(heading, selectedOption?.label ?? '')
+//               setCreateBrief?.({
+//                 ...createBrief,
+//                 [heading]: selectedOption?.label,
+//               })
+//         }
+//         onBlur={formik?.handleBlur}
+//         value={values?.map((item: string) => ({ label: item, value: item }))}
+//         options={opts}
+//         className={`w-full`}
+//         styles={customStyles}
+//         placeholder='Select'
+//       />
+//     </label>
+//   );
+// };
 
 type ImageContainerProps = {
   image: string;
@@ -377,7 +382,7 @@ const RentalBrief = ({
       <div className='w-full flex flex-col gap-[15px]'></div>
       {/**Property Type */}
       <div className='lg:w-[535px] min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+        <h2 className='text-[20px] leading-[32px] font-semibold text-[#1E1E1E]'>
           Property Type
         </h2>
         {/**options */}
@@ -465,7 +470,7 @@ const RentalBrief = ({
       </div> */}
       {/**Property condition */}
       <div className='lg:w-[535px] min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+        <h2 className='text-[20px] leading-[32px] font-semibold text-[#1E1E1E]'>
           Property condition
         </h2>
         {/**options */}
@@ -530,7 +535,7 @@ const RentalBrief = ({
       </div>
       {/**Location */}
       <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+        <h2 className='text-[20px] leading-[32px] font-semibold text-[#1E1E1E]'>
           Location
         </h2>
         {/**inputs */}
@@ -571,7 +576,7 @@ const RentalBrief = ({
             }}
             type='number'
           />
-          <label className='flex flex-col gap-[7px]' htmlFor='bedroom'>
+          {/* <label className='flex flex-col gap-[7px]' htmlFor='bedroom'>
             <span>Number of Bedroom</span>
             <input
               value={formik.values.bedroom}
@@ -590,7 +595,19 @@ const RentalBrief = ({
                 type='Bedroom'
               />
             )}
-          </label>
+          </label> */}
+          <Input
+            label='Number of Bedroom'
+            name='noOfBedroom'
+            value={editBrief?.noOfBedroom}
+            onChange={(event) => {
+              setEditBrief({
+                ...editBrief,
+                noOfBedroom: Number(event.target.value) as number,
+              });
+            }}
+            type='number'
+          />
         </div>
         {/* {formik.touched.selectedState && formik.errors.selectedState && (
               <span className='text-red-600 text-sm'>
@@ -603,204 +620,90 @@ const RentalBrief = ({
               </span>
             )} */}
       </div>
-      {/**Price */}
-      <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-          Price
-        </h2>
-        {/**input */}
-        <div className='min-h-[26px] w-full flex gap-[50px]'>
-          <Input
-            label='Enter property price'
-            placeholder='Enter property price'
-            name='price'
-            type='number'
-            className='w-full'
-            value={
-              convertToNumber(editBrief?.amount) ||
-              convertToNumber(editBrief?.price.toLocaleString())
-            }
-            onChange={(event) => {
-              setEditBrief({
-                ...editBrief,
-                price: event.target.value,
-                amount: event.target.value,
-              });
-            }}
-          />
-        </div>
-        {/* {formik.touched.price && formik.errors.price && (
-              <span className='text-red-600 text-sm'>
-                {formik.errors.price}
-              </span>
-            )} */}
-      </div>
-      {/**Land Size */}
-      <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-          Land Size
-        </h2>
-        {/**input */}
-        <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[20px]'>
-          <Select
-            allowMultiple={false}
-            heading={'typeOfMeasurement'}
-            // formik={formik}
-            name={propertyReferenceData[8].heading}
-            options={propertyReferenceData[8].options}
-            createBrief={editBrief}
-            setCreateBrief={setEditBrief}
-            placeholder='Select'
-            values={[editBrief.typeOfMeasurement]}
-          />
-          <Input
-            label='Enter land size'
-            placeholder=''
-            name='landSize'
-            type='number'
-            className='w-full'
-            value={editBrief?.landSize}
-            onChange={(event) => {
-              setEditBrief({
-                ...editBrief,
-                landSize: event.target.value,
-              });
-            }}
-          />
-        </div>
-        {/* {formik.touched.price && formik.errors.landSize && (
-              <span className='text-red-600 text-sm'>
-                {formik.errors.landSize}
-              </span>
-            )} */}
-      </div>
-      {/**Document on the property */}
-      <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-          Document on the property
-        </h2>
-        {/**options */}
-        {/* <div className='min-h-[26px] w-full flex flex-wrap gap-[30px]'>
-          {docOfTheProperty.map((item: string, idx: number) => (
-            <RadioCheck
-              type='checkbox'
-              key={idx}
-              value={item}
-              name='documents'
-              isChecked={editBrief.documents?.includes(item)}
-              handleChange={() => {
-                const documents = editBrief?.documents?.includes(item)
-                  ? editBrief?.documents.filter((doc) => doc !== item)
-                  : [...editBrief?.documents, item];
-                // formik.setFieldValue('documents', documents);
-                setEditBrief({
-                  ...editBrief,
-                  documents: documents,
-                });
-              }}
-            />
-          ))}
-        </div> */}
-      </div>
+
       {/**Property Features */}
       <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-          Property Features
+        <h2 className='text-[20px] leading-[32px] font-semibold text-[#1E1E1E]'>
+          Features
         </h2>
         {/**options */}
-        <div className='min-h-[26px] w-full flex md:flex-row flex-col gap-[15px]'>
-          <Input
-            label='Number of Bedrooms'
-            name='noOfBedroom'
-            type='number'
-            className='lg:w-1/2 w-full'
-            value={editBrief?.noOfBedroom}
-            onChange={(event) => {
-              setEditBrief({
-                ...editBrief,
-                noOfBedroom: Number(event.target.value),
-              });
-            }}
-          />
-          <Select
-            allowMultiple={true}
-            heading={'features'}
-            // formik={formik}
-            name={propertyReferenceData[6].heading}
-            options={propertyReferenceData[6].options}
-            placeholder='Select'
-            createBrief={editBrief}
-            setCreateBrief={setEditBrief}
-            values={editBrief.features}
-          />
-        </div>
-        <div className='w-full flex flex-col mt-4'>
-          <h3 className='text-[#1E1E1E] text-[20px] leading-[32px] font-medium'>
-            Are you a mandate on this property
-          </h3>
-          <div className='flex gap-[20px] mt-2'>
+        <div className='grid grid-cols-3 gap-[10px]'>
+          {[
+            'Furnished',
+            'Security',
+            'Closets',
+            'Bath Tub',
+            'Unfurnished',
+            'Secure Estate',
+            'Water Heaters',
+            'Balconies',
+            'Parking Space',
+            'Spacious Compound',
+            'Security Features (CCTV)',
+            'Swimming Pool',
+          ].map((item: string, idx: number) => (
             <RadioCheck
-              selectedValue={editBrief?.areYouTheOwner}
-              isChecked={editBrief.areYouTheOwner === true}
+              selectedValue={item}
+              key={idx}
               handleChange={() => {
-                // formik.setFieldValue('areYouTheOwner', true);
                 setEditBrief({
                   ...editBrief,
-                  areYouTheOwner: true,
+                  features: Array.from(new Set([...editBrief.features, item])),
                 });
               }}
-              type='radio'
-              name='mandate'
-              value='Yes'
+              type='checkbox'
+              name='propertyCondition'
+              value={item}
+              //isChecked={editBrief.propertyType === 'Land'}
             />
+          ))}
+        </div>
+      </div>
+      {/**Tenanat Criteria */}
+      <div className='w-full min-h-[73px] flex flex-col gap-[15px]'>
+        <h2 className='text-[20px] leading-[32px] font-semibold text-[#1E1E1E]'>
+          Tenant Criteria
+        </h2>
+        {/**options */}
+        <div className='grid grid-cols-3 gap-[20px]'>
+          {[
+            'No Pets Allowed',
+            'Corporate Tenant',
+            'Male',
+            'Female',
+            'Individual Tenant',
+            'Employee',
+            'Self Employed',
+            'Student',
+            'Must Provide Credit Report',
+          ].map((item: string, idx: number) => (
             <RadioCheck
-              selectedValue={editBrief?.areYouTheOwner}
-              isChecked={editBrief.areYouTheOwner === false}
+              selectedValue={item}
+              key={idx}
               handleChange={() => {
-                // formik.setFieldValue('areYouTheOwner', false);
                 setEditBrief({
                   ...editBrief,
-                  areYouTheOwner: false,
+                  tenantCriteria: Array.from(
+                    new Set([...(editBrief.tenantCriteria ?? item), item])
+                  ),
                 });
               }}
-              type='radio'
-              name='mandate'
-              value='No'
+              type='checkbox'
+              name='propertyCondition'
+              value={item}
+              //isChecked={editBrief.propertyType === 'Land'}
             />
-          </div>
-        </div>
-        <div className='w-full flex gap-[15px]'>
-          {/* {formik.touched.noOfBedroom && formik.errors.noOfBedroom && (
-                <span className='text-red-600 text-sm'>
-                  {formik.errors.noOfBedroom}
-                </span>
-              )}
-              {formik.touched.additionalFeatures &&
-                formik.errors.additionalFeatures && (
-                  <span className='text-red-600 text-sm'>
-                    {formik.errors.additionalFeatures}
-                  </span>
-                )} */}
+          ))}
         </div>
       </div>
       {/**Upload Image | Documents */}
       {/* <AttachFile
-            setFileUrl={() => {
-              setCreateBrief({
-                ...createBrief,
-                fileUrl: [],
-              });
-            }}
-            heading='Upload image(optional)'
-            id='image-upload'
-          /> */}
-      <AttachFile
         ref={attachRef}
         heading='Upload image(optional)'
         id='my-upload'
-      />
+      /> */}
       {/**Images selected */}
-      <div className='flex justify-end items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
+      {/* <div className='flex justify-end items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
         {typeof editBrief?.fileUrl === 'object' &&
           editBrief?.fileUrl.map((image) => (
             <ImageContainer
@@ -822,7 +725,7 @@ const RentalBrief = ({
               id={image.id}
             />
           ))}
-      </div>
+      </div> */}
 
       {/**Button */}
       <div className='min-h-[50px] w-full flex justify-end items-center'>

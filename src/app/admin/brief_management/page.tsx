@@ -74,6 +74,19 @@ export default function BriefManagement() {
     },
   });
 
+  const [briefSelected, setBriefSelected] = useState<string>('External brief');
+
+  const renderDynamicTableContent = () => {
+    switch (briefSelected) {
+      case 'External brief':
+        return <BriefLists setBriefTotals={updateBriefTotals} />;
+      case 'Internal brief':
+        return <>{briefSelected}</>; //To be worked on later
+      default:
+        return <BriefLists setBriefTotals={updateBriefTotals} />;
+    }
+  };
+
   return isLoading ? (
     <Loading />
   ) : (
@@ -156,13 +169,35 @@ export default function BriefManagement() {
             </div>
           </div>
         </div>
+        {/**
+         * External and Internal Briefs Buttons
+         */}
+        <div className='mt-6 lg:w-[265px] flex gap-[30px]'>
+          {['External brief', 'Internal brief'].map(
+            (item: string, idx: number) => (
+              <button
+                onClick={() => setBriefSelected(item)}
+                type='button'
+                className={`${
+                  item === briefSelected
+                    ? 'bg-[#8DDB90] font-semibold text-[#FFFFFF]'
+                    : 'bg-gray-200 font-normal text-[#000000]'
+                } rounded-[4px] py-[12px] px-[7px] w-[121px] text-base transition-all duration-500 ${
+                  archivo.className
+                }`}
+                key={idx}>
+                {item}
+              </button>
+            )
+          )}
+        </div>
         <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
           {data.map((item: BoxNotificationProps, index: number) => (
             <BoxNotification key={index} {...item} />
           ))}
         </div>
         <div className='w-full'>
-          <BriefLists setBriefTotals={updateBriefTotals} />
+          {briefSelected && renderDynamicTableContent()}
         </div>
       </section>
       {isCreateBriefModalOpened && (

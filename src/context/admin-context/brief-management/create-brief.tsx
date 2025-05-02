@@ -34,7 +34,7 @@ export type createBriefProps = {
   propertyCondition?: string;
   propertyType?: string;
   propertyId?: string;
-  tenantCriteria?: string;
+  tenantCriteria?: string[];
 };
 interface CreateBriefContextProps {
   editBrief: createBriefProps;
@@ -88,7 +88,7 @@ export const CreateBriefProvider = ({
     propertyCondition: '',
     propertyType: '',
     propertyId: '',
-    tenantCriteria: '',
+    tenantCriteria: [],
   });
 
   return (
