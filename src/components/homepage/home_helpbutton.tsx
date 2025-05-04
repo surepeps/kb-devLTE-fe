@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react';
-import Button from './button';
+import Button from '../general-components/button';
 
 const HelpButton = () => {
   return (

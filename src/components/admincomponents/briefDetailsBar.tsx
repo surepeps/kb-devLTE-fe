@@ -10,7 +10,7 @@ import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { downloadImage } from '@/utils/downloadImage';
@@ -188,33 +188,33 @@ export default function BriefDetailsBar({
                   '-'
                 )}
               </div>
-             
-                <div className='text-center'>
-                  <p className='text-2xl md:text-xl sm:text-lg font-semibold'>
-                    {user?.legalName
-                      ? user.legalName
-                      : user?.firstName && user?.lastName
-                      ? `${user.firstName} ${user.lastName}`
-                      : user?.fullName && !(user?.firstName && user?.lastName)
-                      ? user.fullName
-                      : '-'}
-                  </p>
-                  {!hideDetails && (
-                    <>
-                      <p
-                        className={`text-lg md:text-base sm:text-sm font-semibold ${
-                          user?.agentType === 'individual'
-                            ? 'text-red-500'
-                            : 'text-green-500'
-                        }`}>
-                        {user?.agentType || '--'}
-                      </p>
-                      <p className='text-sm md:text-xs sm:text-[10px] text-gray-600'>
-                        {user?.email || 'N/A'}
-                      </p>
-                    </>
-                    )}
-                </div>
+
+              <div className='text-center'>
+                <p className='text-2xl md:text-xl sm:text-lg font-semibold'>
+                  {user?.legalName
+                    ? user.legalName
+                    : user?.firstName && user?.lastName
+                    ? `${user.firstName} ${user.lastName}`
+                    : user?.fullName && !(user?.firstName && user?.lastName)
+                    ? user.fullName
+                    : '-'}
+                </p>
+                {!hideDetails && (
+                  <>
+                    <p
+                      className={`text-lg md:text-base sm:text-sm font-semibold ${
+                        user?.agentType === 'individual'
+                          ? 'text-red-500'
+                          : 'text-green-500'
+                      }`}>
+                      {user?.agentType || '--'}
+                    </p>
+                    <p className='text-sm md:text-xs sm:text-[10px] text-gray-600'>
+                      {user?.email || 'N/A'}
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className='h-4'></div>
@@ -393,8 +393,9 @@ export default function BriefDetailsBar({
               )}
 
               <div className='mt-14'>
-                {!hideButtons && !hideDetails && (
-                  user?.legalName ? (
+                {!hideButtons &&
+                  !hideDetails &&
+                  (user?.legalName ? (
                     <>
                       <button
                         onClick={() =>
@@ -460,8 +461,7 @@ export default function BriefDetailsBar({
                         ? 'Agent Approved'
                         : 'Approve Agent'}
                     </button>
-                  )
-                )}
+                  ))}
               </div>
             </div>
           </div>

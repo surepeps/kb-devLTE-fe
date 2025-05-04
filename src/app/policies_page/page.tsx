@@ -1,7 +1,7 @@
 /** @format */
 'use client';
-import Button from '@/components/button';
-import Loading from '@/components/loading';
+import Button from '@/components/general-components/button';
+import Loading from '@/components/loading-component/loading';
 import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import React, { FC, Fragment, useState } from 'react';
@@ -73,8 +73,10 @@ const Policies = () => {
         </div>
         <div className='container'>
           {policiesButton.dataProductionPolicyButton && DataProtectionPolicy()}
-          {policiesButton.clientEngagementPolicyButton && ClientEngagementPolicy()}
-          {policiesButton.agentEngagementPolicyButton && AgentEngagementPolicy()}
+          {policiesButton.clientEngagementPolicyButton &&
+            ClientEngagementPolicy()}
+          {policiesButton.agentEngagementPolicyButton &&
+            AgentEngagementPolicy()}
         </div>
       </div>
     </section>
@@ -139,8 +141,8 @@ const ClientEngagementPolicy = () => {
             transition={{ delay: 0.3 }}
             viewport={{ once: true }}
             className='text-[40px] leading-[64px] text-center font-semibold text-[#09391C] font-display'>
-            <span className='text-[#8DDB90] font-display'>Khabi-Teq</span> Client
-            Engagement Policy
+            <span className='text-[#8DDB90] font-display'>Khabi-Teq</span>{' '}
+            Client Engagement Policy
           </motion.h2>
           <motion.span
             initial={{ y: 90, opacity: 0 }}
@@ -148,9 +150,10 @@ const ClientEngagementPolicy = () => {
             transition={{ delay: 0.4 }}
             viewport={{ once: true }}
             className='text-[20px] leading-[32px] text-center text-[#5A5D63]'>
-          At Khabiteq Realty, we are committed to providing exceptional service to
-our clients. This Client Engagement Policy outlines our approach to building
-and maintaining strong relationships with our clients.
+            At Khabiteq Realty, we are committed to providing exceptional
+            service to our clients. This Client Engagement Policy outlines our
+            approach to building and maintaining strong relationships with our
+            clients.
           </motion.span>
         </div>
         <div className='flex flex-col justify-center items-center w-full'>
@@ -188,9 +191,10 @@ const AgentEngagementPolicy = () => {
             transition={{ delay: 0.4 }}
             viewport={{ once: true }}
             className='text-[20px] leading-[32px] text-center text-[#5A5D63]'>
-          At Khabiteq Realty, we are committed to providing exceptional service to
-our clients. This Client Engagement Policy outlines our approach to building
-and maintaining strong relationships with our clients.
+            At Khabiteq Realty, we are committed to providing exceptional
+            service to our clients. This Client Engagement Policy outlines our
+            approach to building and maintaining strong relationships with our
+            clients.
           </motion.span>
         </div>
         <div className='flex flex-col justify-center items-center w-full'>
@@ -209,7 +213,13 @@ and maintaining strong relationships with our clients.
 };
 
 type SubData = {
-  subListing: { title: string; details: string; paragraph1?: string,  paragraph2?: string,  paragraph3?: string,}[];
+  subListing: {
+    title: string;
+    details: string;
+    paragraph1?: string;
+    paragraph2?: string;
+    paragraph3?: string;
+  }[];
   paragraph: string;
 };
 
@@ -255,7 +265,13 @@ const ListingFormat: FC<ListingFormatProps> = ({ data }) => {
                   <motion.ul className='list-disc list-inside'>
                     {subItem.subListing.map(
                       (
-                        list: { title: string; details: string; paragraph1?: string; paragraph2?: string; paragraph3?: string },
+                        list: {
+                          title: string;
+                          details: string;
+                          paragraph1?: string;
+                          paragraph2?: string;
+                          paragraph3?: string;
+                        },
                         idx: number
                       ) => (
                         <motion.li
@@ -271,14 +287,18 @@ const ListingFormat: FC<ListingFormatProps> = ({ data }) => {
                           </span>
                           {list.details}
                           {list.paragraph1 && (
-                            <><ul className='text-black font-medium ml-10'>
-                            {list.paragraph1}
-                            </ul><ul className='text-black font-medium ml-10'>
-                              {list.paragraph2}
-                              </ul><ul className='text-black font-medium ml-10'>
-                              {list.paragraph3}
-                              </ul></>
-                          )} 
+                            <>
+                              <ul className='text-black font-medium ml-10'>
+                                {list.paragraph1}
+                              </ul>
+                              <ul className='text-black font-medium ml-10'>
+                                {list.paragraph2}
+                              </ul>
+                              <ul className='text-black font-medium ml-10'>
+                                {list.paragraph3}
+                              </ul>
+                            </>
+                          )}
                         </motion.li>
                       )
                     )}
@@ -560,8 +580,7 @@ const clientData: Data[] = [
     heading: `Purpose`,
     subData: [
       {
-        subListing: [
-        ],
+        subListing: [],
         paragraph:
           'The purpose of this policy is to ensure that our clients receive the highest level of service, professionalism, and expertise from our team.',
       },
@@ -571,8 +590,7 @@ const clientData: Data[] = [
     heading: `Scope`,
     subData: [
       {
-        subListing: [
-        ],
+        subListing: [],
         paragraph:
           'This policy applies to all clients of Khabiteq Realty, including buyers, sellers, landlords, and tenants',
       },
@@ -586,7 +604,8 @@ const clientData: Data[] = [
         subListing: [
           {
             title: 'Professionalism:',
-            details: 'We will maintain the highest level of professionalism in all our interactions with clients.',
+            details:
+              'We will maintain the highest level of professionalism in all our interactions with clients.',
           },
           {
             title: 'Communication:',
@@ -607,7 +626,8 @@ their background, culture, or circumstances.`,
 and transactions`,
           },
         ],
-        paragraph: 'We are committed to the following client engagement principles:',
+        paragraph:
+          'We are committed to the following client engagement principles:',
       },
     ],
   },
@@ -639,7 +659,8 @@ and transactions`,
             details: `We will follow up with clients after the transaction is complete to ensure that they are satisfied with the service they received.`,
           },
         ],
-        paragraph: 'Our client engagement process includes the following steps:',
+        paragraph:
+          'Our client engagement process includes the following steps:',
       },
     ],
   },
@@ -648,9 +669,9 @@ and transactions`,
     heading: `Client Feedback and Complaints`,
     subData: [
       {
-        subListing: [
-        ],
-        paragraph: 'We value client feedback and complaints, and we will use them to improve our services and client engagement process. Clients can provide feedback and complaints through our website, email, or phone.',
+        subListing: [],
+        paragraph:
+          'We value client feedback and complaints, and we will use them to improve our services and client engagement process. Clients can provide feedback and complaints through our website, email, or phone.',
       },
     ],
   },
@@ -659,9 +680,9 @@ and transactions`,
     heading: `Amendments to this Policy`,
     subData: [
       {
-        subListing: [
-        ],
-        paragraph: 'We reserve the right to amend this policy at any time. Any changes will be posted on our website and will take eect immediately.',
+        subListing: [],
+        paragraph:
+          'We reserve the right to amend this policy at any time. Any changes will be posted on our website and will take eect immediately.',
       },
     ],
   },
@@ -670,9 +691,9 @@ and transactions`,
     heading: `Acceptance of this Policy`,
     subData: [
       {
-        subListing: [
-        ],
-        paragraph: 'By engaging our services, clients acknowledge that they have read, understood, and accepted this Client Engagement Policy.',
+        subListing: [],
+        paragraph:
+          'By engaging our services, clients acknowledge that they have read, understood, and accepted this Client Engagement Policy.',
       },
     ],
   },
@@ -681,9 +702,9 @@ and transactions`,
     heading: `Contact Us`,
     subData: [
       {
-        subListing: [
-        ],
-        paragraph: 'If you have any questions or concerns about this policy, please contact us via email or call on our telephone lines',
+        subListing: [],
+        paragraph:
+          'If you have any questions or concerns about this policy, please contact us via email or call on our telephone lines',
       },
     ],
   },
@@ -697,15 +718,16 @@ const agentData: Data[] = [
         subListing: [
           {
             title: '',
-            details: 'All new agents must attend a comprehensive onboarding session, which will cover company policies, procedures, and expectations.',
+            details:
+              'All new agents must attend a comprehensive onboarding session, which will cover company policies, procedures, and expectations.',
           },
           {
             title: '',
-            details: 'New agents must complete all required training modules within the first 30 days of joining the company',
+            details:
+              'New agents must complete all required training modules within the first 30 days of joining the company',
           },
         ],
-        paragraph:
-          '',
+        paragraph: '',
       },
     ],
   },
@@ -716,11 +738,11 @@ const agentData: Data[] = [
         subListing: [
           {
             title: '',
-            details: 'Agents must disclose any past or pending disciplinary actions against their license.',
+            details:
+              'Agents must disclose any past or pending disciplinary actions against their license.',
           },
         ],
-        paragraph:
-          '',
+        paragraph: '',
       },
     ],
   },
@@ -732,7 +754,8 @@ const agentData: Data[] = [
         subListing: [
           {
             title: '',
-            details: 'Khabiteq Realty will provide a clear and transparent commission structure to all agents.',
+            details:
+              'Khabiteq Realty will provide a clear and transparent commission structure to all agents.',
           },
           {
             title: '',
@@ -743,13 +766,14 @@ const agentData: Data[] = [
             details: ``,
             paragraph1: '- 5% of property value below 200 million.',
             paragraph2: '- 3% of property value above 200 million.',
-            paragraph3: '- The commission is split equally between the agency (Khabiteq) and agent.',
+            paragraph3:
+              '- The commission is split equally between the agency (Khabiteq) and agent.',
           },
           {
             title: `JOINT VENTURES`,
             details: ``,
             paragraph1: '- 2.5% of the property value.',
-          }, 
+          },
           {
             title: ``,
             details: `Commission payments will be made upon closing of transaction.`,
@@ -823,7 +847,7 @@ const agentData: Data[] = [
           {
             title: ``,
             details: `Upon termination, agents must return all company property, includingmarketing materials and client lists.`,
-           },
+          },
         ],
         paragraph: '',
       },

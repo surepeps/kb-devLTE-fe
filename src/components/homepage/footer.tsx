@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
 import ContactUs from '@/components/contactus';
 import { reducer } from '@/hooks/reducer';
+import { epilogue } from '@/styles/font';
 //import { useVisibility } from '@/utils/useVisibility';
 
 const Footer = () => {
@@ -41,7 +42,7 @@ const Footer = () => {
             rentPage.submitPreference ||
             settings.isUpgradeButtonClicked) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
-        } ${'slide-from-left'}`}>
+        }`}>
         <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[20px]'>
           <div className='w-full flex lg:flex-row flex-col justify-between gap-[30px] md:gap-[120px]'>
             {/**Logo with some texts */}
@@ -53,7 +54,8 @@ const Footer = () => {
                 alt=''
                 className='lg:w-[169px] lg:h-[35px] w-[144px] h-[30px]'
               />
-              <p className='font-normal lg:text-base text-[14px] leading-[25px] text-[#D6DDEB]'>
+              <p
+                className={`font-normal lg:text-base text-[14px] leading-[25px] text-[#D6DDEB] ${epilogue.className}`}>
                 Simplifying real estate transactions in Lagos. Buy, sell, rent,
                 and manage properties with ease through Khabi-Teq&apos;s trusted
                 platform
@@ -62,7 +64,8 @@ const Footer = () => {
             <div className='min-h-[241px] lg:w-[806px] lg:flex lg:justify-between grid grid-cols-2 gap-[50px]'>
               {/**Explore */}
               <div className='flex flex-col gap-[10px]'>
-                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>
+                <h2
+                  className={`text-[18px] leading-[28px] font-semibold text-[#FFFFFF] ${epilogue.className}`}>
                   Explore
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
@@ -78,7 +81,7 @@ const Footer = () => {
                             name: item.name,
                           });
                         }}
-                        className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
+                        className={`lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal ${epilogue.className}`}
                         key={idx}
                         href={item.url}>
                         {item.name}
@@ -89,14 +92,15 @@ const Footer = () => {
               </div>
               {/**Services */}
               <div className='flex flex-col gap-[10px]'>
-                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>
+                <h2
+                  className={`text-[18px] leading-[28px] font-semibold text-[#FFFFFF] ${epilogue.className}`}>
                   Services
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
                   {servicesData.map(
                     (item: { name: string; url: string }, idx: number) => (
                       <Link
-                        className='lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal'
+                        className={`lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal ${epilogue.className}`}
                         key={idx}
                         onClick={handleClick}
                         href={item.url}>
@@ -108,14 +112,15 @@ const Footer = () => {
               </div>
               {/**Support */}
               <div className='flex flex-col gap-[10px]'>
-                <h2 className='text-[18px] leading-[28px] font-semibold text-[#FFFFFF]'>
+                <h2
+                  className={`text-[18px] leading-[28px] font-semibold text-[#FFFFFF] ${epilogue.className}`}>
                   Support
                 </h2>
                 <div className='flex flex-col gap-[16px]'>
                   {supportData.map(
                     (item: { name: string; url: string }, idx: number) => (
                       <Link
-                        className='text-base leading-[25px] text-[#D6DDEB] font-normal'
+                        className={`text-base leading-[25px] text-[#D6DDEB] font-normal ${epilogue.className}`}
                         key={idx}
                         onClick={(e) => {
                           handleClick(e);
@@ -136,7 +141,8 @@ const Footer = () => {
           <hr className='md:border-[2px] border-[1px] border-[#FFFFFF] mt-[100px]' />
 
           <div className='min-h-[70px] w-full mt-[30px] flex lg:flex-row lg:justify-between flex-col-reverse items-center gap-[30px]'>
-            <span className='font-medium text-center lg:text-start text-[#FFFFFF] text-base leading-[25px]'>
+            <span
+              className={`font-medium text-center lg:text-start text-gray-400 text-base leading-[25px] ${epilogue.className}`}>
               2020@ Khabiteqrealty Limited. All rights reserved.
             </span>
             <div className='flex gap-[20px]'>

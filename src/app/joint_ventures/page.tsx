@@ -1,19 +1,19 @@
 /** @format */
 
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
 import React from 'react';
 import arrowRIcon from '@/svgs/arrowR.svg';
 import Link from 'next/link';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 const JointVentures = () => {
   const isLoading = useLoading();
-  const router = useRouter()
+  const router = useRouter();
 
   // sessionStorage.setItem('previousPage', 'joint_ventures');
 
@@ -21,7 +21,6 @@ const JointVentures = () => {
     sessionStorage.setItem('previousPage', '/joint_ventures');
     router.push(page);
   };
-
 
   if (isLoading) return <Loading />;
   return (
@@ -33,8 +32,8 @@ const JointVentures = () => {
             alt=''
             width={1000}
             height={1000}
-            onClick={()=>{
-              router.back()
+            onClick={() => {
+              router.back();
             }}
             title='Go Back'
             className='w-[24px] h-[24px] cursor-pointer'
@@ -91,7 +90,7 @@ const JointVentures = () => {
               value='Share Your Property Brief Today'
               className='min-h-[50px] py-[12px] px-[24px] gap-[10px] text-[#FAFAFA] text-base font-bold leading-[25.6px] text-center'
               green={true}
-              onClick={() =>  router.push('/sell_page')}
+              onClick={() => router.push('/sell_page')}
             />
           </motion.div>
         </div>

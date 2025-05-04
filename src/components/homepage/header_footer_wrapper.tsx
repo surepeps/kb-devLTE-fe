@@ -8,7 +8,7 @@ import HeaderLogic from '@/logic/headerLogic';
 import Footer from './footer';
 
 import { ReactNode } from 'react';
-import ViewImage from './viewImage';
+import ViewImage from '../general-components/viewImage';
 import { usePageContext } from '@/context/page-context';
 
 interface Props {

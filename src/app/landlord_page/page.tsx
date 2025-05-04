@@ -1,16 +1,16 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import Button from '@/components/button';
-import Loading from '@/components/loading';
+import Button from '@/components/general-components/button';
+import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
 // import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import React, { Fragment, useEffect, useState } from 'react';
-import RadioCheck from '@/components/radioCheck';
+import RadioCheck from '@/components/general-components/radioCheck';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import Input from '@/components/Input';
+import Input from '@/components/general-components/Input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { featuresData, tenantCriteriaData } from '@/data/landlord';
@@ -24,7 +24,7 @@ import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
 import { epilogue } from '@/styles/font';
 import MultiSelectionProcess from '@/components/multiSelectionProcess';
-import ImageContainer from '@/components/image-container';
+import ImageContainer from '@/components/general-components/image-container';
 import axios from 'axios';
 import data from '@/data/state-lga';
 

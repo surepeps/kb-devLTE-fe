@@ -1,0 +1,107 @@
+/** @format */
+'use client';
+import React from 'react';
+import bookIcon from '@/svgs/book.svg';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import Card from './home_card';
+import { motion } from 'framer-motion';
+import homeIconSVG from '@/svgs/homeIcon.svg';
+import userIconSVG from '@/svgs/userIcon.svg';
+
+interface CardProps {
+  heading: string;
+  image: StaticImport;
+  paragraphs: string[];
+  color: string;
+  secondaryColor: string;
+  buttonText: string;
+  link: string;
+}
+
+const Section2 = () => {
+  return (
+    <section className='w-full flex items-center justify-center py-[30px]'>
+      <div className='flex flex-col gap-[37px] items-center justify-center w-full md:min-h-[490px] px-[20px] overflow-hidden'>
+        <div className='flex flex-col gap-[5px] container'>
+          <motion.h2
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            viewport={{ once: true }}
+            className='text-[30px] text-[#09391C] font-display lg:leading-[41.02px] text-center font-bold'>
+            Services
+          </motion.h2>
+          <motion.p className='text-xl text-[#000000] text-center'>
+            Our Comprehensive Real Estate Solutions offers
+          </motion.p>
+        </div>
+
+        <div className='overflow-y-clip hide-scrollbar w-full md:min-h-[412px] flex md:justify-start items-center lg:flex lg:flex-row gap-[25px] overflow-x-auto whitespace-normal'>
+          {cardData.map((item: CardProps, idx: number) => (
+            <Card key={idx} {...item} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const cardData: CardProps[] = [
+  {
+    heading: 'Property Sales',
+    image: homeIconSVG,
+    paragraphs: [
+      'Find your dream home or investment property with our extensive listings. Benefit from expert advice and seamless transaction processes.',
+    ],
+    color: '#8DDB90',
+    secondaryColor: '#F2FFF8',
+    buttonText: 'Go to Marketplace',
+    link: '#',
+  },
+  {
+    heading: 'Property Rentals',
+    image: homeIconSVG,
+    paragraphs: [
+      'Explore a wide range of rental properties tailored to your needs. Enjoy flexible leasing options and transparent terms',
+    ],
+    color: '#9E9E0B',
+    secondaryColor: '#FFFFF2',
+    buttonText: 'Go to Marketplace',
+    link: '#',
+  },
+  {
+    heading: 'Agent Partnership Program',
+    image: userIconSVG,
+    paragraphs: [
+      'Join our network of trusted agents and grow your business. Gain access to exclusive tools, listings, and support',
+    ],
+    color: '#137ADF',
+    secondaryColor: '#dbedff',
+    buttonText: 'Register',
+    link: '#',
+  },
+  {
+    heading: 'Property Management',
+    image: bookIcon,
+    paragraphs: [
+      'End-to-end management services for landlords and property owners. Ensure your property is well maintained and profitable',
+    ],
+    color: '#F9701A',
+    secondaryColor: '#FFEBCA',
+    buttonText: 'Contact us',
+    link: '#',
+  },
+  {
+    heading: 'Market Insights and Analytics',
+    image: bookIcon,
+    paragraphs: [
+      'Access data-driven insights to make smarter real estate decisions. Stay ahead of trends with our expert market analysis.',
+    ],
+    color: '#F00952',
+    secondaryColor: '#FFF2FB',
+    buttonText: 'Contact us',
+    link: '#',
+  },
+];
+
+export default Section2;

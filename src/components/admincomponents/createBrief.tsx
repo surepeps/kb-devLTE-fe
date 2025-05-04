@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 //import AttachFile from '@/components/multipleAttachFile';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 import Cookies from 'js-cookie';
-import Input from '@/components/Input';
-import RadioCheck from '@/components/radioCheck';
+import Input from '@/components/general-components/Input';
+import RadioCheck from '@/components/general-components/radioCheck';
 import { toast } from 'react-hot-toast';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';

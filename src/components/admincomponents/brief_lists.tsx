@@ -20,7 +20,7 @@ import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
 import { features } from 'process';
@@ -468,7 +468,7 @@ export default function BriefLists({
             : [],
       }));
 
-      console.log(response)
+      console.log(response);
       return mappedRents.sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

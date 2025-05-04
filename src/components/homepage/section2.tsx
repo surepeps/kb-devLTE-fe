@@ -3,10 +3,10 @@
 
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
-import Card from './card';
+import Card from '../card';
 import { motion, useInView } from 'framer-motion';
 import toast from 'react-hot-toast';
 import imgSample from '@/assets/assets.png';
@@ -48,7 +48,7 @@ const Section2 = () => {
       console.log(response, data);
       const shuffled = shuffleArray(data);
       setProperties(
-        shuffled.slice(0, 2).map((item: any) => ({
+        shuffled.slice(0, 4).map((item: any) => ({
           ...item,
           price: item?.rentalPrice,
           propertyFeatures: {
@@ -239,7 +239,7 @@ const Section2 = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={areHousesVisible ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.3 }}
-          className={`lg:w-[1154px] w-full min-h-[446px] grid lg:grid-cols-4 lg:gap-[83px] grid-cols-1 md:grid-cols-2 gap-[24px]`}>
+          className={`min-h-[446px] overflow-y-clip hide-scrollbar w-full md:min-h-[412px] flex md:justify-start items-center lg:flex lg:flex-row overflow-x-auto whitespace-normal gap-[24px]`}>
           {isLoading ? (
             <div className='w-[inherit] flex justify-center items-center'>
               <Trio size={50} speed={1.3} color='#09391C' />
@@ -299,16 +299,16 @@ const Section2 = () => {
             onClick={handleShowMoreClick}
             type='button'
             className='flex justify-center items-center gap-2'>
-            <span className='text-base text-[#09391C] leading-[25px] font-semibold'>
-              Show more
+            <span className='text-base font-display text-[#09391C] leading-[25px] font-semibold'>
+              View more
             </span>{' '}
-            <Image
+            {/* <Image
               src={arrowIcon}
               width={12}
               height={15}
               alt=''
               className='w-[12px] h-[15px]'
-            />
+            /> */}
           </button>
         </div>
       </div>

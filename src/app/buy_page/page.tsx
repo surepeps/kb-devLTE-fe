@@ -1,13 +1,13 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
 import Card from '@/components/card';
 import { Fragment, useEffect, useState, useRef, FC } from 'react';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 // import Buyer_Contact from '@/components/buyer_contact';
 import PropertyReference from '@/components/propertyReference';
 //import HouseFrame from '@/components/house-frame';
