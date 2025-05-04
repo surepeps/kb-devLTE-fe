@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
 import { motion } from 'framer-motion';
 import arrow from '@/svgs/arrowRight.svg';
-import HouseFrame from '@/components/house-frame';
+import HouseFrame from '@/components/general-components/house-frame';
 import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { useLoading } from '@/hooks/useLoading';
 import Loading from '@/components/loading-component/loading';

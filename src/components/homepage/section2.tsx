@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Button from '@/components/general-components/button';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowIcon.svg';
-import Card from '../card';
+import Card from '../general-components/card';
 import { motion, useInView } from 'framer-motion';
 import toast from 'react-hot-toast';
 import imgSample from '@/assets/assets.png';

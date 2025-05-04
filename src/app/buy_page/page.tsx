@@ -5,7 +5,7 @@ import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
-import Card from '@/components/card';
+import Card from '@/components/general-components/card';
 import { Fragment, useEffect, useState, useRef, FC } from 'react';
 import Button from '@/components/general-components/button';
 // import Buyer_Contact from '@/components/buyer_contact';
