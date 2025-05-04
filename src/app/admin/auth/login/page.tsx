@@ -19,7 +19,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Button from '@/components/general-components/button';
 import RadioCheck from '@/components/general-components/radioCheck';
-import { RegisterWith } from '@/components/registerWith';
+import { RegisterWith } from '@/components/general-components/registerWith';
 import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';

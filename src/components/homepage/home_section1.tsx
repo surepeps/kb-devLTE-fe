@@ -1,7 +1,7 @@
 /** @format */
 'use client';
 import React from 'react';
-import Counts from '../counts';
+import Counts from '../general-components/counts';
 import { color, motion } from 'framer-motion';
 import Image from 'next/image';
 import image from '@/assets/Agentpic.png';

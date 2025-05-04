@@ -3,7 +3,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import arrowDown from '@/svgs/arrowDown.svg';
 import Image from 'next/image';
-import Button from './general-components/button';
+import Button from './button';
 //import ViewImage from './viewImage';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';

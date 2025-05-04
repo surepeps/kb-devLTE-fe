@@ -9,7 +9,7 @@ import cancelIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { downloadImage } from '@/utils/downloadImage';
-import DownloadImage from '../downloadImage';
+import DownloadImage from './downloadImage';
 
 const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
   const [scrollPosition, setScrollPosition] = useState(0);

@@ -8,10 +8,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import Button from './general-components/button';
+import Button from '../general-components/button';
 import { useFormik } from 'formik';
 import ReactSelect, { components } from 'react-select';
-import Input from './general-components/Input';
+import Input from '../general-components/Input';
 //import naijaStates from 'naija-state-local-government';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
@@ -22,12 +22,12 @@ import {
   faArrowLeft,
   faCaretDown,
 } from '@fortawesome/free-solid-svg-icons';
-import MultiSelectionProcess from './multiSelectionProcess';
+import MultiSelectionProcess from '../multiSelectionProcess';
 import customStyles from '@/styles/inputStyle';
 import { useUserContext } from '@/context/user-context';
 import toast from 'react-hot-toast';
 import { shuffleArray } from '@/utils/shuffleArray';
-import SubmitPrefrenceModal from './can-not-find-brief-modal';
+import SubmitPrefrenceModal from '../can-not-find-brief-modal';
 import { usePageContext } from '@/context/page-context';
 import data from '@/data/state-lga';
 

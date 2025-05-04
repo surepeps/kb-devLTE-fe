@@ -7,7 +7,7 @@ import Loading from '@/components/loading-component/loading';
 import Section1 from '@/components/section1';
 import Section3 from '@/components/homepage/section3';
 import FAQs from '@/components/homepage/FAQs';
-import HelpButton from '@/components/helpButton';
+import HelpButton from '@/components/general-components/helpButton';
 import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import agentImage from '@/assets/Agentpic.png';
