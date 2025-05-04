@@ -19,7 +19,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Button from '@/components/general-components/button';
 import RadioCheck from '@/components/general-components/radioCheck';
-import { RegisterWith } from '@/components/registerWith';
+import { RegisterWith } from '@/components/general-components/registerWith';
 import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGoogleLogin } from '@react-oauth/google';
-import CustomToast from '@/components/CustomToast';
+import CustomToast from '@/components/general-components/CustomToast';
 
 const Register = () => {
   const isLoading = useLoading();

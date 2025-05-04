@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { FC } from 'react';
-import Button from './general-components/button';
+import Button from './button';
 
 interface HelpButtonProps {
   isHomePage: boolean;

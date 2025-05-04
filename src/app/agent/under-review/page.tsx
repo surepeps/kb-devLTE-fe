@@ -2,7 +2,7 @@
 
 'use client';
 import React from 'react';
-import ReviewingApplication from '@/components/applicationUnderReview';
+import ReviewingApplication from '@/components/general-components/applicationUnderReview';
 import AgentNav from '@/components/agent-page-components/agent_navbar';
 
 const page = () => {

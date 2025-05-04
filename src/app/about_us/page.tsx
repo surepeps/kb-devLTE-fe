@@ -7,7 +7,7 @@ import '@/styles/stylish.modules.css';
 import { data, servicesData } from '@/data/about_us_data';
 import AboutUsUnit from '@/components/aboutus_unit';
 import { usePageContext } from '@/context/page-context';
-import CEO from '@/components/displayCEO';
+import CEO from '@/components/general-components/displayCEO';
 import { useLoading } from '@/hooks/useLoading';
 
 const AboutUs = () => {

@@ -10,7 +10,7 @@ import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import Loading from '@/components/loading-component/loading';
 import '@/styles/stylish.modules.css';
-import { RegisterWith } from '@/components/registerWith';
+import { RegisterWith } from '@/components/general-components/registerWith';
 import { useGoogleLogin } from '@react-oauth/google';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
