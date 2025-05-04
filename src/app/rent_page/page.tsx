@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceDataWithoutUsageOption } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';

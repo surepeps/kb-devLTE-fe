@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 // import * as Yup from 'yup';
 // import { useFormik } from 'formik';
 import 'react-phone-number-input/style.css';
-import Input from '../Input';
+import Input from '../general-components/Input';
 import { usePageContext } from '@/context/page-context';
 // import axios from 'axios';
 // import { URLS } from '@/utils/URLS';

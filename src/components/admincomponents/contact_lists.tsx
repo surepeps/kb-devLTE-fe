@@ -15,7 +15,7 @@ import BriefDetailsBar from './briefDetailsBar';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 
 interface Property {
   _id: string;
@@ -64,16 +64,26 @@ interface SellerContact {
   properties: Property[];
 }
 
-export default function ContactLists({ setTotals }: { setTotals: (totals: { [key: string]: number }) => void }) {
+export default function ContactLists({
+  setTotals,
+}: {
+  setTotals: (totals: { [key: string]: number }) => void;
+}) {
   const [active, setActive] = useState('Sellers Contacts');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [contacts, setContacts] = useState<SellerContact[]>([]);
-  const [selectedContact, setSelectedContact] = useState<{ legalName: string; createdAt: string; email: string } | null>(null);
+  const [selectedContact, setSelectedContact] = useState<{
+    legalName: string;
+    createdAt: string;
+    email: string;
+  } | null>(null);
   const [totalContacts, setTotalContacts] = useState<number>(0);
   const [sellersContacts, setSellersContacts] = useState<SellerContact[]>([]);
   const [buyersContacts, setBuyersContacts] = useState<SellerContact[]>([]);
   const [rentersContacts, setRentersContacts] = useState<SellerContact[]>([]);
-  const [landlordsContacts, setLandlordsContacts] = useState<SellerContact[]>([]);
+  const [landlordsContacts, setLandlordsContacts] = useState<SellerContact[]>(
+    []
+  );
 
   const fetchContacts = async (userType: string) => {
     try {
@@ -82,7 +92,10 @@ export default function ContactLists({ setTotals }: { setTotals: (totals: { [key
         page: 1,
         limit: 10,
       };
-      const response = await POST_REQUEST(URLS.BASE + URLS.fetchUsersData, payload);
+      const response = await POST_REQUEST(
+        URLS.BASE + URLS.fetchUsersData,
+        payload
+      );
 
       if (response?.success === false) {
         toast.error(`Failed to fetch ${userType} contacts`);
@@ -254,12 +267,15 @@ export default function ContactLists({ setTotals }: { setTotals: (totals: { [key
             />
           ))}
         </div>
-        <div className='w-full'>
-          {renderDynamicComponent()}
-        </div>
+        <div className='w-full'>{renderDynamicComponent()}</div>
       </div>
       {selectedContact && (
-        <BriefDetailsBar user={selectedContact} onClose={closeSidebar} hideButtons={true} hideDetails />
+        <BriefDetailsBar
+          user={selectedContact}
+          onClose={closeSidebar}
+          hideButtons={true}
+          hideDetails
+        />
       )}
     </Fragment>
   );

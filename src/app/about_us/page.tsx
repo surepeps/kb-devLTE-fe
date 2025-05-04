@@ -1,6 +1,6 @@
 /** @format */
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useVisibility } from '@/hooks/useVisibility';
 import React, { Fragment, useRef } from 'react';
 import '@/styles/stylish.modules.css';

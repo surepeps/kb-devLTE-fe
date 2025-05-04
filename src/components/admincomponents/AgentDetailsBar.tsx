@@ -10,7 +10,7 @@ import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faClose,
@@ -176,7 +176,9 @@ export default function AgentDetailsBar({
       const payload = {
         agentId: agentId || '',
         inActiveSatatus: isAgentInactive,
-        reason: !isAgentInactive ? 'Agent is now active' : 'Agent is not active',
+        reason: !isAgentInactive
+          ? 'Agent is now active'
+          : 'Agent is not active',
       };
 
       await toast.promise(
@@ -216,9 +218,15 @@ export default function AgentDetailsBar({
       await toast.promise(
         PUT_REQUEST(url, payload).then((response) => {
           if ((response as any).success) {
-            toast.success(newStatus ? 'Agent flagged successfully' : 'Agent unflagged successfully');
+            toast.success(
+              newStatus
+                ? 'Agent flagged successfully'
+                : 'Agent unflagged successfully'
+            );
             setIsFlagged(newStatus);
-            return newStatus ? 'Agent flagged successfully' : 'Agent unflagged successfully';
+            return newStatus
+              ? 'Agent flagged successfully'
+              : 'Agent unflagged successfully';
           } else {
             const errorMessage = (response as any).error || 'Action failed';
             toast.error(errorMessage);
@@ -418,7 +426,8 @@ export default function AgentDetailsBar({
                           </td>
                           <td className='p-3'>{item.id}</td>
                           <td className='p-3'>
-                            {item.location?.state || 'N/A'}, {item.location?.localGovernment || 'N/A'}
+                            {item.location?.state || 'N/A'},{' '}
+                            {item.location?.localGovernment || 'N/A'}
                           </td>
                           <td className='p-3'>{item.propertyType || 'N/A'}</td>
                           <td className='p-3'>

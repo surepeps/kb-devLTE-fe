@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use clients';
 import React, { Fragment, MouseEvent, useEffect, useState } from 'react';
-import Button from './button';
+import Button from './general-components/button';
 import ReactSelect, { components } from 'react-select';
 import { useFormik } from 'formik';
 //import * as Yup from 'yup';
 //import { cardDataArray } from '@/data';
 // import { POST_REQUEST } from '@/utils/requests';
-import Input from '@/components/Input';
+import Input from '@/components/general-components/Input';
 import toast from 'react-hot-toast';
 import { usePageContext } from '@/context/page-context';
 import { URLS } from '@/utils/URLS';

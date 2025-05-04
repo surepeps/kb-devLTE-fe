@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import khabiteqIcon from '@/svgs/khabi-teq.svg';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 import Image from 'next/image';
 import { navData } from '@/data';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ import { usePageContext } from '@/context/page-context';
 import { reducer } from '@/hooks/reducer';
 // import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
-import SideBar from './sideBar';
+import SideBar from '../general-components/sideBar';
 import { FaCaretDown } from 'react-icons/fa';
 import useClickOutside from '@/hooks/clickOutside';
 
@@ -52,7 +52,7 @@ const Header = () => {
             rentPage.submitPreference) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         } ${'slide-from-top'}`}>
-        <nav className='h-[50px] container flex justify-between items-center'>
+        <nav className={`h-[50px] container flex justify-between items-center`}>
           <Image
             src={khabiteqIcon}
             width={1000}
@@ -68,7 +68,7 @@ const Header = () => {
               ) => {
                 if (item.name === 'Marketplace') {
                   return (
-                    <div className='flex flex-col'>
+                    <div key={idx} className='flex flex-col'>
                       <div
                         className='flex items-center gap-1 cursor-pointer'
                         onClick={() =>
@@ -82,12 +82,12 @@ const Header = () => {
                           }`}>
                           {item.name}
                         </span>
-                        <FaCaretDown
+                        {/* <FaCaretDown
                           size={'sm'}
                           width={16}
                           height={16}
                           className='w-[16px] h-[16px]'
-                        />
+                        /> */}
                       </div>
                       {isMarketplaceModalOpened && (
                         <MarketplaceOptions
@@ -119,14 +119,25 @@ const Header = () => {
               }
             )}
           </div>
-          <Button
-            value="Let's talk"
-            green={true}
-            onClick={() => {
-              setIsContactUsClicked(true);
-            }}
-            className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px] hidden lg:inline'
-          />
+          {/**Buttons */}
+          <div className='hidden lg:flex lg:w-[226px]'>
+            <Button
+              value='Sign up'
+              green={true}
+              onClick={() => {
+                //setIsContactUsClicked(true);
+              }}
+              className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
+            />
+            <Button
+              value='Login'
+              onClick={() => {
+                //setIsContactUsClicked(true);
+              }}
+              className='text-base bg-transparent leading-[25px] font-bold w-[71px] h-[50px] text-black'
+            />
+          </div>
+
           <Image
             src={barIcon}
             onClick={() => {
@@ -149,18 +160,18 @@ const Header = () => {
 
 const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
   {
-    name: 'Buy',
+    name: 'Buy a Property',
     url: '/buy_page',
     isClicked: false,
   },
 
   {
-    name: 'Sell',
+    name: 'Sell a Property',
     url: '/sell_page',
     isClicked: false,
   },
   {
-    name: 'Rent',
+    name: 'Rent a Property',
     url: '/rent_page',
     isClicked: false,
   },
@@ -177,7 +188,7 @@ const MarketplaceOptions = ({
   return (
     <div
       ref={ref}
-      className='w-[114px] mt-[30px] flex flex-col gap-[5px] bg-[#FFFFFF] shadow-lg absolute'>
+      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute'>
       {marketPlaceData.map(
         (
           item: { name: string; url: string; isClicked: boolean },
@@ -185,7 +196,7 @@ const MarketplaceOptions = ({
         ) => (
           <Link
             onClick={() => setModal(false)}
-            className='text-base font-semibold text-[#000000] hover:bg-gray-100 py-2 px-5'
+            className='text-base font-medium text-[#000000] hover:text-[#8DDB90]'
             href={item.url}
             key={idx}>
             {item.name}

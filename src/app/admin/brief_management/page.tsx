@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { archivo } from '@/styles/font';
 import { useLoading } from '@/hooks/useLoading';
 import Select from 'react-select';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useFormik } from 'formik';
 import BriefLists from '@/components/admincomponents/brief_lists';
 import CreateBrief from '@/components/admincomponents/createBrief';

@@ -8,10 +8,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import Button from './button';
+import Button from './general-components/button';
 import { useFormik } from 'formik';
 import ReactSelect, { components } from 'react-select';
-import Input from './Input';
+import Input from './general-components/Input';
 //import naijaStates from 'naija-state-local-government';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
