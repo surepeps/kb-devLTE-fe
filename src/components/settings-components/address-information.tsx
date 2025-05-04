@@ -7,7 +7,7 @@ import ReactSelect from 'react-select';
 import naijaStates from 'naija-state-local-government';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Input from '../Input';
+import Input from '../general-components/Input';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';

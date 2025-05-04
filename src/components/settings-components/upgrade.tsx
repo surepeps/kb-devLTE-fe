@@ -4,7 +4,7 @@
 import React from 'react';
 import UpgradeNotification from './upgrade-notification';
 import { motion } from 'framer-motion';
-import Input from '../Input';
+import Input from '../general-components/Input';
 import { usePageContext } from '@/context/page-context';
 import Image from 'next/image';
 import sampleImage from '@/assets/bgImg.jpg';

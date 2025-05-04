@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import React, { useEffect, useState } from 'react';
-import Clients from './clients';
+import Clients from '../clients';
 import Image from 'next/image';
 import arrow from '@/svgs/arrowRight.svg';
 import { motion } from 'framer-motion';

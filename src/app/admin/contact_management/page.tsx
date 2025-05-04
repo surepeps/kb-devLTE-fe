@@ -1,3 +1,5 @@
+/** @format */
+
 'use client';
 
 import {
@@ -9,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { archivo } from '@/styles/font';
 import { useLoading } from '@/hooks/useLoading';
 import Select from 'react-select';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useFormik } from 'formik';
 import ContactLists from '@/components/admincomponents/contact_lists';
 
@@ -108,7 +110,12 @@ export default function ContactManagement() {
       </div>
       <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
         {Object.entries(totals).map(([name, total], index) => (
-          <BoxNotification key={index} name={name} total={total} type='active' />
+          <BoxNotification
+            key={index}
+            name={name}
+            total={total}
+            type='active'
+          />
         ))}
       </div>
       {/* Conditional Rendering of Overviews */}

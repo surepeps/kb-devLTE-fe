@@ -1,14 +1,14 @@
 /** @format */
 'use client';
 import React, { FC, useState } from 'react';
-import Button from './button';
+import Button from '../general-components/button';
 import {
   agentFAQsData,
   GeneralFAQsData,
   LandlordFAQsData,
   TenantsFAQsData,
 } from '@/data';
-import Details from './details';
+import Details from '../details';
 
 interface FAQsProps {
   isHomePage: boolean;

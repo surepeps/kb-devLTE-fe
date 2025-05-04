@@ -21,9 +21,14 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
     url: '#',
     isClicked: false,
   },
+  // {
+  //   name: 'Landlord',
+  //   url: '/landlord_page',
+  //   isClicked: false,
+  // },
   {
-    name: 'Landlord',
-    url: '/landlord_page',
+    name: 'My Listing',
+    url: '#',
     isClicked: false,
   },
   {
@@ -39,6 +44,11 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   {
     name: 'About us',
     url: '/about_us',
+    isClicked: false,
+  },
+  {
+    name: 'Contact Us',
+    url: '/contact-us',
     isClicked: false,
   },
 ];
@@ -129,7 +139,7 @@ export const iconsData: { image: StaticImageData; url: string }[] = [
 //Section1 data
 export const section1Data: { name: string; count: number }[] = [
   {
-    name: 'Properties',
+    name: 'Deals Completed',
     count: 22,
   },
   {

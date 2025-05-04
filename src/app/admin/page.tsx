@@ -12,7 +12,7 @@ import AnalysisOverview from '@/components/admincomponents/analysis_overview';
 import { archivo } from '@/styles/font';
 import Select from 'react-select';
 import { useFormik } from 'formik';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';

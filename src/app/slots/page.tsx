@@ -1,12 +1,17 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 'use client';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import toast from 'react-hot-toast';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 
 interface Slot {
   _id: string;
@@ -76,7 +81,9 @@ const SlotsPage = () => {
 
   return (
     <div className='max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl'>
-      <h2 className='text-2xl font-bold text-center mb-4'>Select an Inspection Slot</h2>
+      <h2 className='text-2xl font-bold text-center mb-4'>
+        Select an Inspection Slot
+      </h2>
 
       {slots.length === 0 ? (
         <p className='text-gray-500 text-center'>No slots available.</p>
@@ -99,10 +106,11 @@ const SlotsPage = () => {
                     <button
                       key={slot._id}
                       className={`p-3 border rounded-lg text-sm ${
-                        selectedSlot?._id === slot._id ? 'bg-foreground text-white' : 'bg-gray-100 hover:bg-gray-200'
+                        selectedSlot?._id === slot._id
+                          ? 'bg-foreground text-white'
+                          : 'bg-gray-100 hover:bg-gray-200'
                       }`}
-                      onClick={() => handleSelectSlot(slot)}
-                    >
+                      onClick={() => handleSelectSlot(slot)}>
                       {slot.slotStartTime} - {slot.slotEndTime}
                     </button>
                   ))}
@@ -114,18 +122,22 @@ const SlotsPage = () => {
           {/* Selected Slot Details */}
           {
             <div className='w-1/3 p-4 border rounded-lg bg-gray-100 shadow-md'>
-              <h3 className='text-lg font-semibold text-center mb-2'>Selected Slot</h3>
+              <h3 className='text-lg font-semibold text-center mb-2'>
+                Selected Slot
+              </h3>
 
               {selectedSlot ? (
                 <>
                   <p>
-                    <strong>Date:</strong> {new Date(selectedSlot.slotDate).toDateString()}
+                    <strong>Date:</strong>{' '}
+                    {new Date(selectedSlot.slotDate).toDateString()}
                   </p>
                   <p>
                     <strong>Day:</strong> {selectedSlot.slotDay}
                   </p>
                   <p>
-                    <strong>Time:</strong> {selectedSlot.slotStartTime} - {selectedSlot.slotEndTime}
+                    <strong>Time:</strong> {selectedSlot.slotStartTime} -{' '}
+                    {selectedSlot.slotEndTime}
                   </p>
                   <p>
                     <strong>Status:</strong> {selectedSlot.slotStatus}

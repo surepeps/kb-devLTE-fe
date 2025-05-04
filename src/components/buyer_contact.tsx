@@ -9,7 +9,7 @@ import React, { FC, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Button from './button';
+import Button from './general-components/button';
 import toast from 'react-hot-toast';
 import { URLS } from '@/utils/URLS';
 //import { POST_REQUEST } from '@/utils/requests';
