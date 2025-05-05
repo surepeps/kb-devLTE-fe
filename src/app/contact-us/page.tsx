@@ -1,6 +1,6 @@
 /** @format */
 
-import ContactUs from '@/components/contactus';
+import ContactUs from '@/components/contact-us-component/index';
 import React from 'react';
 
 const page = () => {
