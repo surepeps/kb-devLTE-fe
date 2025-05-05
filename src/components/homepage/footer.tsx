@@ -138,7 +138,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <hr className='md:border-[2px] border-[1px] border-[#FFFFFF] mt-[100px]' />
+          <hr className='md:border-[1px] border-[1px] border-[#ffffff5b] mt-[100px]' />
 
           <div className='min-h-[70px] w-full mt-[30px] flex lg:flex-row lg:justify-between flex-col-reverse items-center gap-[30px]'>
             <span
