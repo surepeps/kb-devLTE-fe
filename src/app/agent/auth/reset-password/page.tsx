@@ -1,9 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
 import React, { FC, useEffect, useState, Suspense } from 'react';
@@ -12,9 +17,9 @@ import phoneIcon from '@/svgs/phone.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import Button from '@/components/button';
-import RadioCheck from '@/components/radioCheck';
-import { RegisterWith } from '@/components/registerWith';
+import Button from '@/components/general-components/button';
+import RadioCheck from '@/components/general-components/radioCheck';
+import { RegisterWith } from '@/components/general-components/registerWith';
 import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
@@ -55,7 +60,10 @@ const ResetPassword = () => {
       // ) // At least two uppercase letters
       .matches(/[a-z]/, 'Password must contain at least one lowercase letter') // At least one lowercase letter
       // .matches(/\d/, 'Password must contain at least one number') // At least one number
-      .matches(/[\W_]{2,}/, 'Password must contain at least two special character') // At least two special character
+      .matches(
+        /[\W_]{2,}/,
+        'Password must contain at least two special character'
+      ) // At least two special character
       .required('Password is required'),
 
     confirmPassword: Yup.string()
@@ -99,7 +107,9 @@ const ResetPassword = () => {
 
               return 'Password reset successful';
             } else {
-              throw new Error((response as any).error || 'Password reset failed');
+              throw new Error(
+                (response as any).error || 'Password reset failed'
+              );
             }
           }),
           {
@@ -133,13 +143,11 @@ const ResetPassword = () => {
     <section
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
-      } transition-all duration-500`}
-    >
+      } transition-all duration-500`}>
       <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
         <form
           onSubmit={formik.handleSubmit}
-          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
-        >
+          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
           <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
             Reset Your Password
           </h2>
@@ -190,10 +198,22 @@ interface InputProps {
   formik: any;
 }
 
-const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, formik }) => {
+const Input: FC<InputProps> = ({
+  className,
+  id,
+  title,
+  type,
+  placeholder,
+  icon,
+  formik,
+}) => {
   return (
-    <label htmlFor={id} className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
-      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>{title}</span>
+    <label
+      htmlFor={id}
+      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+        {title}
+      </span>
       <div className='flex'>
         <input
           name={id}
@@ -215,7 +235,9 @@ const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, 
         ) : null} */}
       </div>
       {formik.touched[title] ||
-        (formik.errors[title] && <span className='text-red-600 text-sm'>{formik.errors[title]}</span>)}
+        (formik.errors[title] && (
+          <span className='text-red-600 text-sm'>{formik.errors[title]}</span>
+        ))}
     </label>
   );
 };

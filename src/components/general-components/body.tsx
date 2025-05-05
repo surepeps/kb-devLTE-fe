@@ -2,11 +2,11 @@
 'use client';
 import { usePageContext } from '@/context/page-context';
 import React, { Fragment, ReactNode, useState } from 'react';
-import SubmitPopUp from './submit';
-import OnUpgradeNotification from './settings-components/on-ugrade-notification';
-import ApproveBriefs from './admincomponents/approveBriefs';
-import RejectBriefs from './admincomponents/rejectBriefs';
-import DeleteBriefs from './admincomponents/deleteBriefs';
+import SubmitPopUp from '../submit';
+import OnUpgradeNotification from '../settings-components/on-ugrade-notification';
+import ApproveBriefs from '../admincomponents/approveBriefs';
+import RejectBriefs from '../admincomponents/rejectBriefs';
+import DeleteBriefs from '../admincomponents/deleteBriefs';
 //import SubmitPopUp from './submit';
 
 const Body = ({ children }: { children: ReactNode }) => {

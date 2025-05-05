@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import Image, { StaticImageData } from 'next/image';
 
 import lineStyle from '@/svgs/linestyle.svg';
-import Button from './button';
+import Button from '@/components/general-components/button';
 
 interface HeroSectionProps {
   image: StaticImageData;

@@ -1,13 +1,13 @@
 /** @format */
 
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
 import React from 'react';
 import arrowRIcon from '@/svgs/arrowR.svg';
 import Link from 'next/link';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 
 const JointVentures = () => {
   const isLoading = useLoading();

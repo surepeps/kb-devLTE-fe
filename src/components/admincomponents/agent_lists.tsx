@@ -20,7 +20,7 @@ import { DELETE_REQUEST, GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { calculateAgentCounts } from '@/utils/agentUtils';
 import { truncateId } from '@/utils/stringUtils';
 import EllipsisOptions from './ellipsisOptions';
