@@ -3,11 +3,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
-import HeaderFooterWrapper from '@/components/header_footer_wrapper';
+import HeaderFooterWrapper from '@/components/homepage/header_footer_wrapper';
 //import Header from '@/components/header';
 import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
 import { Toaster } from 'react-hot-toast';
-import Body from '@/components/body';
+import Body from '@/components/general-components/body';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from '@/context/user-context';
 import { CreateBriefProvider } from '@/context/create-brief-context';

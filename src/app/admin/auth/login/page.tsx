@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
 import React, { FC, useEffect, useState } from 'react';
@@ -17,9 +17,9 @@ import phoneIcon from '@/svgs/phone.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import Button from '@/components/button';
-import RadioCheck from '@/components/radioCheck';
-import { RegisterWith } from '@/components/registerWith';
+import Button from '@/components/general-components/button';
+import RadioCheck from '@/components/general-components/radioCheck';
+import { RegisterWith } from '@/components/general-components/registerWith';
 import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';

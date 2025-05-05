@@ -10,7 +10,7 @@ import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { downloadImage } from '@/utils/downloadImage';
@@ -43,7 +43,11 @@ export default function OnboardAgentBar({
     console.log('User details' + user);
   }, [user]);
 
-  const onSubmit = async (status?: boolean, propertyId?: string, briefType?: string) => {
+  const onSubmit = async (
+    status?: boolean,
+    propertyId?: string,
+    briefType?: string
+  ) => {
     try {
       const isBrief = !!user?.legalName; // Determine if it's a brief based on legalName
       const url = isBrief
@@ -55,7 +59,7 @@ export default function OnboardAgentBar({
             propertyId: propertyId || user?.propertyId || '',
             propertyType: briefType || user?.briefType || '',
             status,
-          } 
+          }
         : {
             agentId: user?.id || '',
             approved: true,
@@ -92,7 +96,7 @@ export default function OnboardAgentBar({
         }
       );
     } catch (error) {
-    //   console.error(error);
+      //   console.error(error);
       toast.error('An error occurred, please try again');
     }
   };
@@ -220,12 +224,14 @@ export default function OnboardAgentBar({
                   <span>{user.email}</span>
                 </div>
               )}
-              {user?.address?.street && user?.address?.localGovtArea && user?.address?.state && (
-                <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Address</span>
-                  <span>{`${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`}</span>
-                </div>
-              )}
+              {user?.address?.street &&
+                user?.address?.localGovtArea &&
+                user?.address?.state && (
+                  <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                    <span className='font-normal'>Address</span>
+                    <span>{`${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`}</span>
+                  </div>
+                )}
               {user?.regionOfOperation?.length > 0 && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
                   <span className='font-normal'>Areas of Operation</span>
@@ -252,12 +258,13 @@ export default function OnboardAgentBar({
                       <span>{user.companyName}</span>
                     </div>
                   )}
-                  {user?.registrationNumber && user.registrationNumber !== '--' && (
-                    <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                      <span className='font-normal'>Registration Number</span>
-                      <span>{user.registrationNumber}</span>
-                    </div>
-                  )}
+                  {user?.registrationNumber &&
+                    user.registrationNumber !== '--' && (
+                      <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                        <span className='font-normal'>Registration Number</span>
+                        <span>{user.registrationNumber}</span>
+                      </div>
+                    )}
                 </>
               )}
               {user?.meansOfId?.length > 0 && (
@@ -270,7 +277,10 @@ export default function OnboardAgentBar({
                         href='#'
                         onClick={(e) => {
                           e.preventDefault();
-                          handleImageClick(doc?.docImg?.[0] || '', doc?.name || '');
+                          handleImageClick(
+                            doc?.docImg?.[0] || '',
+                            doc?.name || ''
+                          );
                         }}
                         className='text-blue-500 underline'>
                         {doc?.name || 'N/A'}
@@ -340,7 +350,7 @@ export default function OnboardAgentBar({
                     {user.pictures.map((pic: string, index: number) => (
                       <a
                         key={index}
-                        href="#"
+                        href='#'
                         onClick={(e) => {
                           e.preventDefault();
                           handleImageClick(pic, `Picture ${index + 1}`);
@@ -366,78 +376,79 @@ export default function OnboardAgentBar({
                   <span
                     className={`w-2 h-2 rounded-full ${
                       user?.isApproved ? 'bg-green-500' : 'bg-red-500'
-                    }`}
-                  ></span>
+                    }`}></span>
                 </span>
               </div>
             )}
 
-          <div className='mt-14'>
-            {user?.legalName ? (
-              <>
-                <button
-                  onClick={() => onSubmit(true, user?.propertyId, user?.briefType)}
-                  disabled={user?.isApproved} 
-                  className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 mb-2 ${
-                    user?.isApproved
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#8DDB90] text-white hover:bg-green-900'
-                  }`}>
-                  Approve Brief
-                </button>
-                <div className='flex gap-4'>
+            <div className='mt-14'>
+              {user?.legalName ? (
+                <>
                   <button
-                    onClick={() => onSubmit(false)}
-                    disabled={user?.isRejected}
-                    className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 ${
-                      user?.isRejected
-                        ? 'border-red-300 text-red-300 cursor-not-allowed'
-                        : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                    }`}>
-                    Reject Brief
-                  </button>
-                  <button
-                    onClick={() => {  }}
+                    onClick={() =>
+                      onSubmit(true, user?.propertyId, user?.briefType)
+                    }
                     disabled={user?.isApproved}
-                    className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 border-[#1976D2] text-[#1976D2] hover:bg-blue-900 hover:text-white`}>
-                    Edit Brief
+                    className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 mb-2 ${
+                      user?.isApproved
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-[#8DDB90] text-white hover:bg-green-900'
+                    }`}>
+                    Approve Brief
                   </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={onApprove} // Trigger approve action
-                  disabled={user?.accountApproved}
-                  className={`w-full py-4 text-base md:text-sm sm:text-xs bg-white border ${
-                    user?.accountApproved
-                      ? 'border-gray-500 text-gray-500'
-                      : 'border-green-500 text-green-500'
-                  } rounded-md ${
-                    user?.accountApproved
-                      ? 'cursor-not-allowed'
-                      : 'hover:bg-green-500 hover:text-white'
-                  } transition duration-300`}>
-                  {user?.accountApproved ? 'Agent Approved' : 'Approve Agent'}
-                </button>
-                <div className='flex gap-4 mt-4'>
+                  <div className='flex gap-4'>
+                    <button
+                      onClick={() => onSubmit(false)}
+                      disabled={user?.isRejected}
+                      className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 ${
+                        user?.isRejected
+                          ? 'border-red-300 text-red-300 cursor-not-allowed'
+                          : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                      }`}>
+                      Reject Brief
+                    </button>
+                    <button
+                      onClick={() => {}}
+                      disabled={user?.isApproved}
+                      className={`w-full py-4 text-base md:text-sm sm:text-xs transition duration-300 border-2 border-[#1976D2] text-[#1976D2] hover:bg-blue-900 hover:text-white`}>
+                      Edit Brief
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
                   <button
-                    onClick={onReject} // Trigger reject action
-                    className='w-full py-4 text-base md:text-sm sm:text-xs border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-300'>
-                    Reject Agent
+                    onClick={onApprove} // Trigger approve action
+                    disabled={user?.accountApproved}
+                    className={`w-full py-4 text-base md:text-sm sm:text-xs bg-white border ${
+                      user?.accountApproved
+                        ? 'border-gray-500 text-gray-500'
+                        : 'border-green-500 text-green-500'
+                    } rounded-md ${
+                      user?.accountApproved
+                        ? 'cursor-not-allowed'
+                        : 'hover:bg-green-500 hover:text-white'
+                    } transition duration-300`}>
+                    {user?.accountApproved ? 'Agent Approved' : 'Approve Agent'}
                   </button>
-                  <button
-                    onClick={onDelete} // Trigger delete action
-                    className='w-full py-4 text-base md:text-sm sm:text-xs border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition duration-300'>
-                    Delete Agent
-                  </button>
-                </div>
-              </>
-            )}
+                  <div className='flex gap-4 mt-4'>
+                    <button
+                      onClick={onReject} // Trigger reject action
+                      className='w-full py-4 text-base md:text-sm sm:text-xs border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-300'>
+                      Reject Agent
+                    </button>
+                    <button
+                      onClick={onDelete} // Trigger delete action
+                      className='w-full py-4 text-base md:text-sm sm:text-xs border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition duration-300'>
+                      Delete Agent
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -7,14 +7,14 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 'use client';
-import Button from '@/components/button';
-import Loading from '@/components/loading';
+import Button from '@/components/general-components/button';
+import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
 // import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import React, { Fragment, useEffect, useState } from 'react';
-import RadioCheck from '@/components/radioCheck';
-import Input from '@/components/Input';
+import RadioCheck from '@/components/general-components/radioCheck';
+import Input from '@/components/general-components/Input';
 import { usePageContext } from '@/context/page-context';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';

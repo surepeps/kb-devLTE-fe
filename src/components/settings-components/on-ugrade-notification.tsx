@@ -6,14 +6,14 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import closeModalIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
-import Input from '../Input';
+import Input from '../general-components/Input';
 import AttachFile from '../multipleAttachFile';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
-import ImageContainer from '../image-container';
+import ImageContainer from '../general-components/image-container';
 import axios from 'axios';
 
 const OnUpgradeNotification = () => {

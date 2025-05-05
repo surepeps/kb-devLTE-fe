@@ -9,10 +9,10 @@
 'use client';
 import { usePageContext } from '@/context/page-context';
 import React, { FC, useEffect, useState } from 'react';
-import Button from './button';
-import Input from './Input';
-import Select from './select';
-import AttachFile from '@/components/attach_file';
+import Button from './general-components/button';
+import Input from './general-components/Input';
+import Select from './general-components/select';
+import AttachFile from '@/components/general-components/attach_file';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';

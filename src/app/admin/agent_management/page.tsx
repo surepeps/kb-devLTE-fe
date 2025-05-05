@@ -10,7 +10,7 @@ import AgentManagements from '@/components/admincomponents/agent_management-tabs
 import { archivo } from '@/styles/font';
 import { useLoading } from '@/hooks/useLoading';
 import Select from 'react-select';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 

@@ -10,16 +10,16 @@ import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
 import { motion } from 'framer-motion';
 import arrow from '@/svgs/arrowRight.svg';
-import HouseFrame from '@/components/house-frame';
+import HouseFrame from '@/components/general-components/house-frame';
 import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { useLoading } from '@/hooks/useLoading';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { epilogue } from '@/styles/font';
 import { featuresData } from '@/data/buy_data';
 import checkIcon from '@/svgs/checkIcon.svg';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Button from '@/components/button';
+import Button from '@/components/general-components/button';
 import PhoneInput, {
   Country,
   isValidPhoneNumber,
@@ -30,7 +30,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import customStyles from '@/styles/inputStyle';
-import RadioCheck from '@/components/radioCheck';
+import RadioCheck from '@/components/general-components/radioCheck';
 import toast from 'react-hot-toast';
 import { shuffleArray } from '@/utils/shuffleArray';
 import { requestFormReset } from 'react-dom';
@@ -180,7 +180,7 @@ const Buy = () => {
       message: '',
     },
     validationSchema,
-    onSubmit: async (values: FormProps, {resetForm}) => {
+    onSubmit: async (values: FormProps, { resetForm }) => {
       const payload = {
         propertyId: details.propertyId,
         requestFrom: {
@@ -188,16 +188,13 @@ const Buy = () => {
           phoneNumber: values.phoneNumber,
           fullName: values.name,
         },
-        propertyType: "PropertyRent",
+        propertyType: 'PropertyRent',
       };
       if (agreedToTermsOfUse) {
         try {
           const response = await toast.promise(
             () =>
-              axios.post(
-                URLS.BASE + '/property/request-inspection',
-                payload
-              ),
+              axios.post(URLS.BASE + '/property/request-inspection', payload),
             {
               loading: 'Submitting request...',
               success: 'Successfully submitted for inspection',
@@ -209,7 +206,6 @@ const Buy = () => {
           if (response?.data?.message) {
             toast.success(response.data.message);
           }
-          
         } catch (error: any) {
           // Handle error and display the error message from the API
           if (error.response?.data?.message) {
@@ -221,7 +217,7 @@ const Buy = () => {
           formik.setValues({
             name: '',
             email: '',
-            phoneNumber: '', 
+            phoneNumber: '',
             gender: '',
             message: '',
           });

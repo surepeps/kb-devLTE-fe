@@ -14,7 +14,12 @@ interface DeleteBriefsProps {
   isAgentApproval?: boolean;
 }
 
-const DeleteBriefs: FC<DeleteBriefsProps> = ({ brief, onConfirm, onCancel, isAgentApproval }) => {
+const DeleteBriefs: FC<DeleteBriefsProps> = ({
+  brief,
+  onConfirm,
+  onCancel,
+  isAgentApproval,
+}) => {
   const [reason, setReason] = useState('');
 
   const handleConfirm = () => {
@@ -26,7 +31,7 @@ const DeleteBriefs: FC<DeleteBriefsProps> = ({ brief, onConfirm, onCancel, isAge
   };
 
   return (
-    <section className='w-full h-full fixed top-0 left-0 bg-transparent z-[10] flex justify-center items-center px-[10px]'>
+    <section className='w-full h-full fixed top-0 left-0 bg-[#00000080] z-[10] flex justify-center items-center px-[10px]'>
       <motion.div
         initial={{ y: 90, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -57,7 +62,9 @@ const DeleteBriefs: FC<DeleteBriefsProps> = ({ brief, onConfirm, onCancel, isAge
               <p
                 className={`text-lg text-[#515B6F] ${archivo.className} text-center font-normal`}>
                 {isAgentApproval
-                  ? `Are you sure you want to delete the agent ${brief?.firstName || brief?.email}?`
+                  ? `Are you sure you want to delete the agent ${
+                      brief?.firstName || brief?.email
+                    }?`
                   : `Are you sure you want to delete the brief for ${brief?.buyerContact?.name}?`}
               </p>
             </div>

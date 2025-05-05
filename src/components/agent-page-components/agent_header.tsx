@@ -16,7 +16,7 @@ import Link from 'next/link';
 import barIcon from '@/svgs/bars.svg';
 import { usePageContext } from '@/context/page-context';
 import { reducer } from '@/hooks/reducer';
-import SideBar from './sideBar';
+import SideBar from '../general-components/sideBar';
 import { useRouter, usePathname } from 'next/navigation';
 // import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
@@ -135,7 +135,7 @@ const AgentHeader = () => {
             {isDropdownOpen && (
               <div className='absolute left-6 transform -translate-x-1/2 mt-2 w-40 max-w-xs bg-white border border-gray-200 rounded-md shadow-lg md:-ml-[40px]'>
                 <ul>
-                  { pathname !== '/agent/under-review' && (
+                  {pathname !== '/agent/under-review' && (
                     <>
                       <li
                         className='px-4 py-2 hover:bg-gray-100 cursor-pointer'

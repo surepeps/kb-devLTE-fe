@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react';
-import Button from './button';
+import Button from '../general-components/button';
 
 const HelpButton = () => {
   return (
@@ -33,7 +33,7 @@ const HelpButton = () => {
               window.location.href = '/joint_ventures';
             }}
             value={`Learn More About Joint Ventures`}
-            className='h-[50px] font-bold text-[#FFFFFF] text-base w-[249px] md:w-[328px] py-[12px] md:px-[24px] bg-[#8DDB90] leading-[25.6px]'
+            className='h-[50px] font-bold text-[#09391C] text-base w-[249px] md:w-[328px] py-[12px] md:px-[24px] bg-[#EEF1F1] leading-[25.6px] border border-[#C7CAD0]'
           />
         </div>
       </div>

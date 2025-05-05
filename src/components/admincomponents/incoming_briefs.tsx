@@ -13,7 +13,13 @@ import AgentDetailsBar from './AgentDetailsBar';
 import EllipsisOptions from './ellipsisOptions';
 import BriefDetailsBar from './briefDetailsBar';
 
-export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaitingApprovalCount?: (count: number) => void; data: any[] }) {
+export default function IncomingBriefs({
+  awaitingApprovalCount,
+  data,
+}: {
+  awaitingApprovalCount?: (count: number) => void;
+  data: any[];
+}) {
   const [openRow, setOpenRow] = useState<number | null>(null);
   const [detailsToCheck, setDetailsToCheck] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,14 +92,30 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
                 <th className='p-3' style={{ width: '5%' }}>
                   <input title='checkbox' type='checkbox' />
                 </th>
-                <th className='p-3' style={{ width: '5%' }}>ID</th>
-                <th className='p-3' style={{ width: '10%' }}>Legal Name</th>
-                <th className='p-3' style={{ width: '10%' }}>Type of Agent</th>
-                <th className='p-3' style={{ width: '15%' }}>Location</th>
-                <th className='p-3' style={{ width: '5%' }}>Land Size</th>
-                <th className='p-3' style={{ width: '10%' }}>Amount</th>
-                <th className='p-3' style={{ width: '15%' }}>Document</th>
-                <th className='p-3' style={{ width: '5%' }}>Action</th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  ID
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Legal Name
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Type of Agent
+                </th>
+                <th className='p-3' style={{ width: '15%' }}>
+                  Location
+                </th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  Land Size
+                </th>
+                <th className='p-3' style={{ width: '10%' }}>
+                  Amount
+                </th>
+                <th className='p-3' style={{ width: '15%' }}>
+                  Document
+                </th>
+                <th className='p-3' style={{ width: '5%' }}>
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -171,6 +193,7 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
         </div>
         <div className='flex justify-end items-center mt-10 gap-1'>
           <button
+            type='button'
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             className={`px-4 py-1 rounded-md ${
               currentPage === 1
@@ -178,10 +201,12 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
                 : 'text-black-500 hover:text-[#8DDB90]'
             }`}
             disabled={currentPage === 1}>
+            {''}
             <FaChevronLeft />
           </button>
           {Array.from({ length: totalPages }, (_, index) => (
             <button
+              type='button'
               key={index + 1}
               onClick={() => setCurrentPage(index + 1)}
               className={`px-3 py-1 rounded-md ${
@@ -193,7 +218,10 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
             </button>
           ))}
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            type='button'
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             className={`px-4 py-1 rounded-md ${
               currentPage === totalPages
                 ? 'text-gray-300'
@@ -201,14 +229,15 @@ export default function IncomingBriefs({ awaitingApprovalCount, data }: { awaiti
             }`}
             disabled={currentPage === totalPages}>
             <FaChevronRight />
+            {''}
           </button>
         </div>
       </motion.div>
       {detailsToCheck && (
-        <BriefDetailsBar 
+        <BriefDetailsBar
           user={detailsToCheck}
           onClose={() => setDetailsToCheck(null)}
-          />
+        />
       )}
     </>
   );

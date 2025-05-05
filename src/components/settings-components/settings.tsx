@@ -8,7 +8,7 @@ import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import { usePageContext } from '@/context/page-context';
 import { userDetailsProperties } from '@/types';
-import Loading from '../loading';
+import Loading from '../loading-component/loading';
 
 const Settings = () => {
   const { userDetails, setUserDetails } = usePageContext();
