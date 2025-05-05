@@ -57,23 +57,18 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
 export const exploreData: { name: string; url: string; isClicked: boolean }[] =
   [
     {
-      name: 'Buy',
+      name: 'List a property',
       url: '/buy_page',
       isClicked: false,
     },
     {
-      name: 'sell a property',
+      name: 'Buy a property',
       url: '/sell_page',
       isClicked: false,
     },
     {
-      name: 'Agent',
+      name: 'Become an Agent',
       url: '/agent_page',
-      isClicked: false,
-    },
-    {
-      name: 'Landlord',
-      url: '/landlord_page',
       isClicked: false,
     },
     {
@@ -85,19 +80,23 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
 
 export const servicesData: { name: string; url: string }[] = [
   {
-    name: 'Property management',
+    name: 'Property Sales',
     url: '#',
   },
   {
-    name: 'Property Valuation',
+    name: 'Property Rental',
     url: '#',
   },
   {
-    name: 'Legal Management',
+    name: 'Agent Partnership Program',
     url: '#',
   },
   {
-    name: 'Exchange Management',
+    name: 'Property Management',
+    url: '#',
+  },
+  {
+    name: 'Market Insights and Analytic',
     url: '#',
   },
 ];
@@ -127,13 +126,13 @@ export const iconsData: { image: StaticImageData; url: string }[] = [
     url: 'https://www.instagram.com/khabiteq_realty/profilecard/?igsh=YjRvanQ3YmlmdDNl',
   },
   {
-    image: twitterIcon,
-    url: 'https://x.com/Khabi_Teq?t=Jq6MpEMfwfJ6aQ46CYGPpQ&s=09',
-  },
-  {
     image: linkedInIcon,
     url: '#',
   },
+  {
+    image: twitterIcon,
+    url: 'https://x.com/Khabi_Teq?t=Jq6MpEMfwfJ6aQ46CYGPpQ&s=09',
+  }
 ];
 
 //Section1 data
