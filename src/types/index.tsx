@@ -122,6 +122,10 @@ export interface GlobalContextTypes {
       isDeleteClicked: boolean;
     };
   }) => void;
+
+  /**Market Place */
+  selectedType: string;
+  setSelectedType: (type: string) => void;
 }
 
 export type BriefType = {

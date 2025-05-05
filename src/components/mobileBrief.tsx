@@ -5,7 +5,7 @@ import { URLS } from '@/utils/URLS';
 import axios from 'axios';
 import { FC, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import Loading from './loading';
+import Loading from './loading-component/loading';
 
 interface PublishMobileViewProps {
   item: DataProps;

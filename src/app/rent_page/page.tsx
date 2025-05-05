@@ -1,13 +1,13 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { propertyReferenceDataWithoutUsageOption } from '@/data/buy_page_data';
 import { usePageContext } from '@/context/page-context';
 import { Fragment, useEffect, useState } from 'react';
-import RentalReference from '@/components/rentalReference';
-import HouseFrame from '@/components/house-frame';
+import RentalReference from '@/components/rent-component/rentalReference';
+import HouseFrame from '@/components/general-components/house-frame';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';

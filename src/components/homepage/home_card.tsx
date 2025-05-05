@@ -9,22 +9,41 @@ interface CardProps {
   heading: string;
   image: StaticImport;
   paragraphs: string[];
+  color: string;
+  secondaryColor: string;
+  buttonText: string;
+  link: string;
 }
 
-const Card: FC<CardProps> = ({ heading, image, paragraphs }) => {
+const Card: FC<CardProps> = ({
+  heading,
+  image,
+  paragraphs,
+  color,
+  secondaryColor,
+  buttonText,
+  link,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}
-      className='card w-[356.33px] shrink-0 min-h-[412px] flex flex-col gap-[10px] border-[1px] border-[#C7CAD0] bg-[#F2FFF8] p-[30px]'>
+      style={{
+        backgroundColor: secondaryColor,
+        border: `1px solid ${color}`,
+      }}
+      className='card w-[356.33px] shrink-0 min-h-[412px] flex flex-col gap-[10px] p-[30px]'>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
         viewport={{ once: true }}
-        className='w-[53px] h-[53px] rounded-[15px] bg-[#6FCF97] flex items-center justify-center'>
+        style={{
+          backgroundColor: color,
+        }}
+        className='w-[53px] h-[53px] rounded-[15px] flex items-center justify-center'>
         <Image
           src={image}
           alt=''
@@ -34,7 +53,7 @@ const Card: FC<CardProps> = ({ heading, image, paragraphs }) => {
         />
       </motion.div>
 
-      <div className='w-full lg:w-[304px] mt-6 min-h-[238px] flex flex-col gap-[15px]'>
+      <div className='w-full lg:w-[304px] mt-6 min-h-[238px] flex flex-col justify-between gap-[15px]'>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -55,6 +74,14 @@ const Card: FC<CardProps> = ({ heading, image, paragraphs }) => {
             {paragraph}
           </motion.p>
         ))}
+        <button
+          style={{
+            backgroundColor: color,
+          }}
+          type='button'
+          className='h-[54px] flex items-center justify-center w-full text-base font-bold text-white'>
+          {buttonText}
+        </button>
       </div>
     </motion.div>
   );

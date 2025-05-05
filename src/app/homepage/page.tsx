@@ -3,18 +3,18 @@
 'use client';
 import React, { Fragment, Suspense, useEffect } from 'react';
 //import HeroSection from '@/components/hero';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 //import Section1 from '@/components/section1';
-import Section2 from '@/components/home_section2';
-import SeeWhatOthers from '@/components/section2';
-import Section3 from '@/components/section3';
-import FAQs from '@/components/FAQs';
-import Feedback from '@/components/feedback';
-import HelpButton from '@/components/home_helpbutton';
+import Section2 from '@/components/homepage/home_section2';
+import SeeWhatOthers from '@/components/homepage/section2';
+import Section3 from '@/components/homepage/section3';
+import FAQs from '@/components/homepage/FAQs';
+import Feedback from '@/components/homepage/feedback';
+import HelpButton from '@/components/homepage/home_helpbutton';
 import { useLoading } from '@/hooks/useLoading';
 //import homeImage from '@/assets/assets.png';
-import HeroSection from '@/components/homepage_hero';
-import Section1 from '@/components/home_section1';
+import HeroSection from '@/components/homepage/homepage_hero';
+import Section1 from '@/components/homepage/home_section1';
 import NewSection from '@/components/new_section';
 import EmailVerification from '@/components/EmailVerification';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -22,6 +22,8 @@ import { URLS } from '@/utils/URLS';
 import { GET_REQUEST } from '@/utils/requests';
 import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
+import Card from '@/components/homepage/how-it-works-card';
+import HowItWorksSection from '@/components/homepage/how-it-works-section';
 
 /**
  * @Homepage - A function that returns the web homepage
@@ -108,7 +110,8 @@ const Homepage = () => {
            * Takes no props
            */}
           <Section2 />
-          <NewSection />
+          {/* <NewSection /> */}
+          <HowItWorksSection />
           <SeeWhatOthers />
           <Section3
             isHomepage={true}
