@@ -111,7 +111,7 @@ export const supportData: { name: string; url: string }[] = [
     url: '#',
   },
   {
-    name: 'policies',
+    name: 'Policies',
     url: '/policies_page',
   },
 ];

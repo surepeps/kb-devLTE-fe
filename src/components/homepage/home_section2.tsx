@@ -36,7 +36,7 @@ const Section2 = () => {
           </motion.p>
         </div>
 
-        <div className='overflow-y-clip hide-scrollbar w-full md:min-h-[412px] flex md:justify-start items-center lg:flex lg:flex-row gap-[25px] overflow-x-auto whitespace-normal'>
+        <div className='w-full md:min-h-[412px] flex flex-wrap justify-center items-center gap-[25px] overflow-hidden'>
           {cardData.map((item: CardProps, idx: number) => (
             <Card key={idx} {...item} />
           ))}
