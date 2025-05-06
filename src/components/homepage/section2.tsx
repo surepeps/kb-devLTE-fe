@@ -256,7 +256,7 @@ const Section2 = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={areHousesVisible ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.3 }}
-          className={`min-h-[446px] overflow-y-clip hide-scrollbar w-full md:min-h-[412px] flex flex-wrap justify-center md:justify-start items-center gap-[10px]`}>
+          className={`min-h-[446px] overflow-y-clip hide-scrollbar w-full md:min-h-[412px] flex flex-wrap justify-center md:justify-center items-center gap-[10px]`}>
           {isLoading ? (
             <div className='w-[inherit] flex justify-center items-center'>
               <Trio size={50} speed={1.3} color='#09391C' />

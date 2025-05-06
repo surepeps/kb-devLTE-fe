@@ -68,12 +68,17 @@ const Header = () => {
               ) => {
                 if (item.name === 'Marketplace') {
                   return (
-                    <div key={idx} className='flex flex-col'>
-                      <div
-                        className='flex items-center gap-1 cursor-pointer'
-                        onClick={() =>
-                          setIsMarketplaceModalOpened(!isMarketplaceModalOpened)
-                        }>
+                    <div
+                      key={idx}
+                      className='flex flex-col'
+                      onMouseEnter={() =>
+                        setIsMarketplaceModalOpened(true)
+                      }
+                      // onMouseLeave={() =>
+                      //   setIsMarketplaceModalOpened(false)
+                      // }
+                      >
+                      <div className='flex items-center gap-1 cursor-pointer'>
                         <span
                           className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
                             item.url === pathName
@@ -173,6 +178,11 @@ const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
   {
     name: 'Rent a Property',
     url: '/rent_page',
+    isClicked: false,
+  },
+  {
+    name: 'Property Joint Venture',
+    url: '/joint_ventures',
     isClicked: false,
   },
 ];
