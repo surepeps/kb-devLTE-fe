@@ -60,7 +60,7 @@ const Header = () => {
             className='md:w-[169px] md:h-[25px] w-[144px] h-[30px]'
             alt=''
           />
-          <div className='lg:flex gap-[27px] hidden'>
+          <div className='lg:flex gap-[20px] hidden'>
             {state.map(
               (
                 item: { name: string; url: string; isClicked: boolean },
