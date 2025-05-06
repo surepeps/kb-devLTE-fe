@@ -185,7 +185,7 @@ const Section2 = () => {
           transition={{ duration: 0.3 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex`}>
+          className={`md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex flex-wrap justify-center`}>
           <Button
             value='House for sale'
             green={buttons.button1}
