@@ -22,7 +22,7 @@ const Counts = () => {
                 }`}>
                 <h2 className='text-[#0B423D] font-bold text-[18px] lg:text-[28px] leading-[28px] lg:leading-[44px]'>
                   {isInView && (
-                    <div className='flex gap-2'>
+                    <div className='flex'>
                       {' '}
                       <CountUp
                         start={0}

@@ -2,6 +2,7 @@
 'use client';
 import React from 'react';
 import Counts from '../general-components/counts';
+import Link from 'next/link';
 import { color, motion } from 'framer-motion';
 import Image from 'next/image';
 import image from '@/assets/Agentpic.png';
@@ -95,6 +96,15 @@ const Section1 = () => {
             service to ensure you find the perfect property that meets your
             needs.
           </motion.p>
+          <motion.button
+              initial={{ x: 50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              viewport={{ once: true }}
+              type='button'
+              className='border-2 border-black h-[47px] md:h-[60px] w-fit md:w-[207px] px-[12px] text-[14px] md:text-base font-bold text-black flex items-center justify-center mt-4'>
+              <Link href='/about_us'>Learn More</Link>
+          </motion.button>
         </div>
       </div>
     </section>
