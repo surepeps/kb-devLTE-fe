@@ -73,14 +73,14 @@ const ContactUs = () => {
             </span>
             , reach out to us
           </h2>
-          <p className='text-lg md:text-xl font-normal text-[#5A5D63] text-center'>
+          <p className='text-lg md:text-xl font-normal text-[#5A5D63] text-center md:mx-[250px] md:px-[0px] mt-3'>
             Have questions or feedback? We are here to help. Send us a message
             and we will respond within 24 hours.
           </p>
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='w-full flex md:flex-row flex-col gap-[40px]'>
+          className='w-full flex md:flex-row flex-col gap-[40px] items-center justify-center'>
           <div className='w-full md:w-[561px] flex flex-col gap-[40px]'>
             <div className='w-full grid grid-cols-2 gap-x-[25px] md:gap-x-[45px] gap-y-[20px]'>
               <Input
@@ -193,7 +193,7 @@ const ContactUs = () => {
                         </div>
                         {/**button */}
                         <Link
-                          href={'https://wa.me/070454556775'}
+                          href={'https://wa.me/+23470454556775'}
                           target='_blank'
                           rel='noopener noreferrer'
                           className='bg-[#8DDB90] h-[40px] md:h-[50px] w-[120px] md:w-[155px] text-base text-white font-bold flex items-center justify-center'
