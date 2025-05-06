@@ -10,12 +10,12 @@ const SearchModal = () => {
 
   const renderDynamicComponent = () => {
     switch (userSelectedMarketPlace) {
-      case 'Buy':
+      case 'Buy a property':
         return <BuyOptionModal />;
-      case 'Rent':
-        return <p>Rent Options</p>;
-      case 'Sell':
-        return <p>Sell Options</p>;
+      case 'Rent/Lease a property':
+        return <p>{userSelectedMarketPlace}</p>;
+      case 'Find property for Joint Venture':
+        return <p>{userSelectedMarketPlace}</p>;
       default:
         return <></>;
     }
