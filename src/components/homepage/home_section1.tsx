@@ -37,7 +37,7 @@ const Section1 = () => {
               viewport={{ once: true }}
               type='button'
               className='bg-[#8DDB90] h-[40px] md:h-[50px] w-fit md:w-[207px] px-[12px] text-[14px] md:text-base font-bold text-white flex items-center justify-center'>
-              Partner with us
+              <Link href={'/agent/auth'}>Partner with us</Link>
             </motion.button>
           </div>
           <div className='w-[300px] h-full blended-image2'>
@@ -97,13 +97,13 @@ const Section1 = () => {
             needs.
           </motion.p>
           <motion.button
-              initial={{ x: 50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              viewport={{ once: true }}
-              type='button'
-              className='border-2 border-black h-[47px] md:h-[60px] w-fit md:w-[207px] px-[12px] text-[14px] md:text-base font-bold text-black flex items-center justify-center mt-4'>
-              <Link href='/about_us'>Learn More</Link>
+            initial={{ x: 50, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            viewport={{ once: true }}
+            type='button'
+            className='border-2 border-black h-[47px] md:h-[60px] w-fit md:w-[207px] px-[12px] text-[14px] md:text-base font-bold text-black flex items-center justify-center mt-4'>
+            <Link href='/about_us'>Learn More</Link>
           </motion.button>
         </div>
       </div>

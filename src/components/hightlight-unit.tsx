@@ -15,8 +15,12 @@ interface HighlightUnitProps {
 const HighlightUnit: FC<HighlightUnitProps> = ({ title, text, isHomepage }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.1 }}
+      //whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
+      viewport={{ once: true }}
+      initial={{ y: 30, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
       className='py-[15px] cursor-pointer px-[24px] flex-shrink-0 lg:flex-shrink w-[366px] border-[1px] lg:py-[20px] lg:px-[32px] flex flex-col lg:gap-[16px] gap-[15px] border-[#D6DDEB]'>
       <Image
         src={isHomepage ? icon : blueIcon}
