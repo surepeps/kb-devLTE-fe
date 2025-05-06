@@ -24,7 +24,7 @@ const Section3: FC<Section3Props> = ({
           className={`text-[${headingColor}] text-[24px] text-center lg:text-[42px] leading-[26.4px] lg:leading-[46px] font-semibold`}>
           {heading}
         </h2>
-        <div className='lg:min-h-[469px] w-full gap-[30px] hide-scrollbar overflow-x-auto lg:overflow-x-visible lg:grid lg:grid-cols-3 lg:gap-[47px] flex mt-0 md:mt-10 lg:mt-6'>
+        <div className='lg:min-h-[469px] w-full gap-[30px] hide-scrollbar overflow-x-auto lg:overflow-x-visible lg:grid lg:grid-cols-3 lg:gap-[47px] flex flex-wrap mt-0 md:mt-10 lg:mt-6  justify-center'>
           {isHomepage &&
             HighlightData.map(
               (item: { title: string; text: string }, idx: number) => (
