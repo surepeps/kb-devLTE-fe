@@ -172,7 +172,7 @@ export const PageContextProvider = ({
   /**
    * Market Place
    */
-  const [selectedType, setSelectedType] = useState<string>('Buy');
+  const [selectedType, setSelectedType] = useState<string>('Buy a property');
 
   return (
     <PageContext.Provider
