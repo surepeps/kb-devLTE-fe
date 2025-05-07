@@ -24,11 +24,11 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className='lg:text-[50px] font-semibold text-[40px] leading-[55px] font-display lg:leading-[130%] text-[#FFFFFF] text-center lg:text-center md:inline hidden tracking-[2%]'>
+            className='lg:text-[50px] font-semibold text-[40px] leading-[55px] font-display lg:leading-[130%] text-[#FFFFFF] text-center lg:text-center tracking-[2%]'>
             The most secure way to deal on a{' '}
             <span className='text-[#8DDB90] font-display'>Property</span>
           </motion.h2>
-          <motion.h2
+          {/* <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -36,7 +36,7 @@ const HeroSection = () => {
             Embrace The Future With
             <br />
             <span className='text-[#8DDB90] font-display'>Khabiteq</span>
-          </motion.h2>
+          </motion.h2> */}
           <Image
             src={lineStyle}
             width={1000}
@@ -48,18 +48,18 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className='font-normal lg:w-[890px] text-center lg:text-[24px] text-[20px] lg:leading-[38.4px] leading-[25px] text-[#FFFFFF] hidden md:inline'>
+            className='font-normal lg:w-[890px] text-center lg:text-[24px] text-base md:text-[20px] lg:leading-[38.4px] leading-[25px] text-[#FFFFFF] md:my-0 my-4'>
             Discover exclusive listings, advanced search tools, and expert
             support to make your real estate journey seamless.
           </motion.p>
-          <motion.p
+          {/* <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className='font-normal lg:w-[890px] text-start lg:text-[24px] text-base my-4 text-[#FFFFFF] md:hidden'>
             Tell us what you&apos;re looking for! Submit your property
             preferences below and let us find the perfect match for you
-          </motion.p>
+          </motion.p> */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
