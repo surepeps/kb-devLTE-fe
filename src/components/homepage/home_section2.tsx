@@ -32,7 +32,7 @@ const Section2 = () => {
             Services
           </motion.h2>
           <motion.p className='text-xl text-[#000000] text-center'>
-            Our Comprehensive Real Estate Solutions offers
+            Our comprehensive real estate solutions offers
           </motion.p>
         </div>
 
