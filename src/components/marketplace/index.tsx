@@ -23,11 +23,16 @@ const MarketPlace = () => {
             Marketplace
           </h2>
           <p className='text-xl text-[#5A5D63]'>
-            Buy, Sell or Rent - what can we help you with today?
+            Whether you're buying, selling, renting, or investing (JV), how can
+            we assist you?.
           </p>
           {/**type of market to select */}
-          <div className={`flex gap-[15px] w-[527px]`}>
-            {['Buy', 'Sell', 'Rent'].map((item: string, idx: number) => (
+          <div className={`flex gap-[15px]`}>
+            {[
+              'Buy a property',
+              'Find property for Joint Venture',
+              'Rent/Lease a property',
+            ].map((item: string, idx: number) => (
               <ButtonBoxModal
                 selectedType={selectedType}
                 onSelect={() => {
@@ -41,8 +46,8 @@ const MarketPlace = () => {
           </div>
           {/**Paragraph */}
           <p className='text-xl text-[#5A5D63] md:max-w-[657px] text-center mt-2'>
-            Browse our verified listings, schedule inspections, and negotiate
-            the best deal. Where would you like to begin your search?
+            Explore our verified listings, schedule an inspection, and negotiate
+            the best deal. Ready to start your search?
           </p>
         </div>
         {/**Search Modal */}
@@ -68,7 +73,7 @@ const ButtonBoxModal = ({
     <button
       onClick={onSelect}
       type='button'
-      className={`w-full py-[15px] px-[15px] flex items-center justify-center gap-[10px] ${
+      className={`min-w-fit h-[51px] px-[15px] flex items-center justify-center gap-[10px] ${
         selectedType === text
           ? 'bg-[#8DDB90] text-[#FFFFFF]'
           : 'bg-transparent text-[#5A5D63]'
