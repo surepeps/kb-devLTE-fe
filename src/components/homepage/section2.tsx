@@ -171,7 +171,7 @@ const Section2 = () => {
       <div className='container min-h-[700px] flex flex-col justify-center items-center gap-[20px] px-[10px] overflow-hidden'>
         <div className='min-h-[128px] w-full lg:w-[870px] flex flex-col justify-center items-center gap-[9px] pt-[40px]'>
           <h2 className='text-[24px] leading-[28.13px] lg:text-[36px] lg:leading-[57.6px] md:leading-[32px] text-[#09391C] text-center font-semibold'>
-            See What Other Buyers Are Exploring
+            See what other buyers are exploring
           </h2>
           <p className='text-[#5A5D63] text-base md:text-[18px] leading-[28.8px] tracking-[5%] font-normal text-center'>
             Discover properties recently viewed by buyers like you. Stay
@@ -185,7 +185,7 @@ const Section2 = () => {
           transition={{ duration: 0.3 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex`}>
+          className={`md:min-w-[466px] min-h-[38px] py-[10px] gap-[15px] flex flex-wrap justify-center`}>
           <Button
             value='House for sale'
             green={buttons.button1}

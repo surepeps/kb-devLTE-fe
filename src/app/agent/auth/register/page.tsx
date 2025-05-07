@@ -241,13 +241,14 @@ const Register = () => {
           <Button
             value={`${isDisabled ? 'Registering...' : 'Register'}`}
             isDisabled={
-              isDisabled ||
-              !agreed ||
-              !formik.values.email ||
-              !formik.values.password ||
-              !formik.values.firstName ||
-              !formik.values.lastName ||
-              !formik.values.phone
+              isDisabled
+              // isDisabled ||
+              // !agreed ||
+              // !formik.values.email ||
+              // !formik.values.password ||
+              // !formik.values.firstName ||
+              // !formik.values.lastName ||
+              // !formik.values.phone
             }
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
             type='submit'
