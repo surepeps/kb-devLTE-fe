@@ -116,7 +116,7 @@ const Homepage = () => {
           <Section3
             isHomepage={true}
             isAgentPage={false}
-            heading='Highlight of Our Real Estate Expertise'
+            heading='Highlight of our real estate expertise'
             headingColor='#09391C'
           />
           <FAQs isHomePage={true} />
