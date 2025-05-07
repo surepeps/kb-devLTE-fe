@@ -64,7 +64,7 @@ const Feedback = () => {
     <section className='min-h-[359px] w-full flex justify-center items-center py-[40px] lg:py-0'>
       <div className='container min-h-[359px] flex flex-col gap-[45px] justify-center items-center px-[20px]'>
         <h2 className='md:text-[42px] text-[24px] leading-[26px] lg:leading-[46px] text-[#09391C] font-semibold'>
-          What our client are saying
+          What our clients are saying
         </h2>
         <div className='min-h-[268px] w-full flex md:flex-row flex-col overflow-hidden'>
           <div
