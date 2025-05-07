@@ -5,8 +5,8 @@ import Card from './how-it-works-card';
 
 const HowItWorksSection = () => {
   return (
-    <div className='w-full bg-[#0B423D] pb-[60px] mt-[40px] md:pb-0 flex justify-center items-center'>
-      <div className='border-white flex flex-col gap-[20px] px-[5px] md:px-[10px] my-14'>
+    <div className='w-full bg-[#0B423D] mt-[40px] md:pb-0 flex justify-center items-center'>
+      <div className='border-white flex flex-col gap-[20px] px-[20px] md:px-[10px] my-14'>
         <div className='flex gap-[5px] flex-col justify-center items-center'>
           <h2 className='text-center text-white text-3xl font-bold'>
             How it works
@@ -16,7 +16,7 @@ const HowItWorksSection = () => {
             find properties tailored to your needs
           </p>
         </div>
-        <div className='w-full min-h-[389px] flex flex-wrap gap-[24px] mt-3 hide-scrollbar overflow-x-auto whitespace-nowrap justify-center'>
+        <div className='w-full min-h-[389px] flex flex-wrap gap-[24px] mt-3 hide-scrollbar overflow-y-clip overflow-x-auto whitespace-nowrap justify-center'>
           {HowItWorksDetails.map(
             (
               details: { heading: string; detailsArr: string[] },

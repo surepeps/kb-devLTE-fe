@@ -43,7 +43,7 @@ const Footer = () => {
             settings.isUpgradeButtonClicked) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
         }`}>
-        <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[70px]'>
+        <section className='container flex flex-col min-h-[400px] pt-[80px] pb-[20px] px-[30px] md:px-[70px]'>
           <div className='w-full flex lg:flex-row flex-col justify-between gap-[30px] md:gap-[120px]'>
             {/**Logo with some texts */}
             <div className='flex flex-col gap-[30px] lg:w-[376px] flex-wrap'>

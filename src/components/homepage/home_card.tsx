@@ -34,7 +34,7 @@ const Card: FC<CardProps> = ({
         backgroundColor: secondaryColor,
         border: `1px solid ${color}`,
       }}
-      className='card w-[250px] shrink-0 h-[412px] flex flex-col gap-[10px] p-[20px] overflow-hidden justify-center'>
+      className='card w-full md:w-[250px] shrink-0 md:h-[412px] flex flex-col gap-[10px] p-[20px] overflow-hidden justify-center'>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -63,7 +63,7 @@ const Card: FC<CardProps> = ({
           {heading}
         </motion.h2>
         <hr className='w-full border-[1px] border-[#CED2D6] flex-shrink-0' />
-        <div className='flex-1 overflow-y-auto min-h-0'>
+        <div className='flex-1 overflow-hidden min-h-0'>
           {paragraphs.map((paragraph: string, idx: number) => (
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -81,7 +81,7 @@ const Card: FC<CardProps> = ({
             backgroundColor: color,
           }}
           type='button'
-          className='h-[54px] flex items-center justify-center w-[100%] text-base font-bold text-white flex-shrink-0 break-words whitespace-normal'>
+          className='h-[54px] flex items-center justify-center w-[100%] text-base font-bold text-white flex-shrink-0 break-words whitespace-normal mt-2 md:mt-0'>
           {buttonText}
         </button>
       </div>
