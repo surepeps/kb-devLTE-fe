@@ -1,121 +1,17 @@
 /** @format */
-
 'use client';
-import { usePageContext } from '@/context/page-context';
 import { useFormik } from 'formik';
-import React, { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SelectStateLGA from './select-state-lga';
-import PriceRange from './price-range';
 import Input from '../general-components/Input';
+import PriceRange from './price-range';
 import DocumentTypeComponent from './document-type';
 import BedroomComponent from './bedroom';
-import Card from '../general-components/card';
-import { epilogue } from '@/styles/font';
-import sampleImage from '@/assets/Agentpic.png';
-import toast from 'react-hot-toast';
 import MoreFilter from './more-filter';
-import Loading from '../loading-component/loading';
-import { IsMobile } from '@/hooks/isMobile';
-import RentSearchModal from './rent-search-modal';
+import RadioCheck from '../general-components/radioCheck';
+import BedsAndBathModal from './beds-and-bath-modal';
 
-const SearchModal = () => {
-  const [selectedType, setSelectedType] = useState<string>('Land');
-  const { selectedType: userSelectedMarketPlace } = usePageContext();
-  const [uniqueProperties, setUniqueProperties] = useState<Set<string>>(
-    new Set()
-  );
-  const [formikStatus, setFormikStatus] = useState<
-    'idle' | 'pending' | 'success' | 'failed'
-  >('success');
-
-  const renderDynamicComponent = () => {
-    switch (userSelectedMarketPlace) {
-      case 'Buy a property':
-        return (
-          <>
-            <BuyAPropertySearchModal selectedBriefs={uniqueProperties.size} />
-            <section className='flex justify-center items-center mt-[20px]'>
-              {formikStatus && renderBriefs()}
-            </section>
-          </>
-        );
-      case 'Rent/Lease a property':
-        return (
-          <>
-            <RentSearchModal />
-            <section className='flex justify-center items-center mt-[20px]'>
-              {formikStatus && renderBriefs()}
-            </section>
-          </>
-        );
-      case 'Find property for Joint Venture':
-        return <p>{userSelectedMarketPlace}</p>;
-      default:
-        return <></>;
-    }
-  };
-
-  const renderBriefs = () => {
-    switch (formikStatus) {
-      case 'success':
-        return (
-          <div className='flex flex-col gap-[21px] lg:w-[1154px]'>
-            <h2
-              className={`text-[#09391C] font-semibold ${epilogue.className} text-lg`}>
-              Select the property brief you wish to inspect
-            </h2>
-            <div className='grid grid-cols-4 gap-[37px]'>
-              {Array.from({ length: 8 }).map((__, idx: number) => (
-                <Card
-                  style={{ width: '281px' }}
-                  images={[sampleImage]}
-                  onClick={() =>
-                    handlePropertiesSelection(idx.toLocaleString())
-                  }
-                  cardData={dummyCardData}
-                  key={idx}
-                />
-              ))}
-            </div>
-          </div>
-        );
-      case 'pending':
-        return <Loading />;
-      case 'idle':
-        return <p>Failed to Load</p>;
-      default:
-        return <p>Failed to Load</p>;
-    }
-  };
-
-  const handlePropertiesSelection = (id: string) => {
-    if (uniqueProperties.has(id)) {
-      return toast.error('Property already selected');
-    }
-    setUniqueProperties((prev) => new Set([...prev, id]));
-    toast.success('Property selected');
-  };
-
-  const is_mobile = IsMobile();
-
-  useEffect(() => {}, []);
-
-  return (
-    <Fragment>
-      {is_mobile ? (
-        <p>View is not allowed on mobile yet</p>
-      ) : (
-        userSelectedMarketPlace && renderDynamicComponent()
-      )}
-    </Fragment>
-  );
-};
-
-const BuyAPropertySearchModal = ({
-  selectedBriefs,
-}: {
-  selectedBriefs: number;
-}) => {
+const RentSearchModal = () => {
   const formik = useFormik({
     initialValues: {
       selectedLGA: '',
@@ -128,9 +24,6 @@ const BuyAPropertySearchModal = ({
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] =
     useState<boolean>(false);
   const [priceRadioValue, setPriceRadioValue] = useState<string>('');
-  const [isDocumentModalOpened, setIsDocumentModalOpened] =
-    useState<boolean>(false);
-  const [documentsSelected, setDocumentsSelected] = useState<string[]>([]);
   const [isBedroomModalOpened, setIsBedroomModalOpened] =
     useState<boolean>(false);
   const [noOfBedrooms, setNoOfBedrooms] = useState<number | undefined>(
@@ -153,12 +46,20 @@ const BuyAPropertySearchModal = ({
     },
     desirer_features: [],
   });
+  const [isBedAndBathModalOpened, setIsBedAndBathModalOpened] =
+    useState<boolean>(false);
+  const [bedsAndBath, setBedsAndBath] = useState<{
+    bath: undefined | number | string;
+    bed: undefined | number | string;
+  }>({
+    bath: undefined,
+    bed: undefined,
+  });
 
   const handleSubmit = () => {
     console.log(formik.values);
     console.log(priceFormik.values);
     console.log(priceRadioValue);
-    console.log(documentsSelected);
   };
 
   const priceFormik = useFormik({
@@ -173,18 +74,16 @@ const BuyAPropertySearchModal = ({
 
   useEffect(
     () => handleSubmit(),
-    [priceRadioValue, formik.values, priceFormik.values, documentsSelected]
+    [priceRadioValue, formik.values, priceFormik.values]
   );
-
-  const docsValues = documentsSelected.map((item: string) => item);
   return (
     <form
       onSubmit={formik.handleSubmit}
       className='container min-h-[181px] flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF]'>
       <div className='w-full pb-[10px] flex justify-between items-center gap-[53px] border-b-[1px] border-[#C7CAD0]'>
         <div className='flex gap-[15px]'>
-          <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
-          {['All', 'Land', 'Residential', 'Commercial'].map(
+          <h3 className='font-semibold text-[#1E1E1E]'>Filter by</h3>
+          {['All', 'Land', 'Residential', 'Commercial', 'Duplex'].map(
             (item: string, idx: number) => (
               <label
                 htmlFor='usageOptions'
@@ -211,13 +110,30 @@ const BuyAPropertySearchModal = ({
             type='button'>
             Post property
           </button>
-          <button
-            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
-            type='button'>
-            {selectedBriefs} selected briefs
-          </button>
         </div>
       </div>
+      {/**Home Condition */}
+      <div className='w-full flex items-center gap-[15px]'>
+        <h3 className='text-base font-medium text-[#1E1E1E]'>
+          Home Condition:{' '}
+        </h3>
+        {[
+          'All',
+          'Brand new',
+          'Good condition',
+          'Fairly used',
+          'Need Renovation',
+        ].map((item: string, idx: number) => (
+          <RadioCheck
+            key={idx}
+            value={item}
+            name='home_condition'
+            type='radio'
+          />
+        ))}
+      </div>
+
+      {/**Third section */}
       <div className='flex gap-[20px] items-end'>
         {/**Preferred Location */}
         <SelectStateLGA
@@ -254,23 +170,27 @@ const BuyAPropertySearchModal = ({
             />
           )}
         </div>
-        {/**Document Type */}
+        {/**Beds and Bath */}
         <div className='flex flex-col gap-[10px]'>
           <Input
             className='w-[189px] text-sm'
-            placeholder='Document Type'
+            placeholder='Beds & Baths'
             type='text'
-            label='Document'
+            label='Beds & Baths'
             readOnly
             name=''
-            value={docsValues.toString()}
-            onClick={() => setIsDocumentModalOpened(true)}
+            value={`${
+              bedsAndBath.bed !== undefined && 'Bed: ' + bedsAndBath.bed + ' &'
+            } ${
+              bedsAndBath.bath !== undefined && 'Bath: ' + bedsAndBath.bath
+            } `}
+            onClick={() => setIsBedAndBathModalOpened(true)}
           />
-          {isDocumentModalOpened && (
-            <DocumentTypeComponent
-              docsSelected={documentsSelected}
-              setDocsSelected={setDocumentsSelected}
-              closeModal={setIsDocumentModalOpened}
+          {isBedAndBathModalOpened && (
+            <BedsAndBathModal
+              bedAndBath={bedsAndBath}
+              setBedAndBath={setBedsAndBath}
+              closeModal={setIsBedAndBathModalOpened}
             />
           )}
         </div>
@@ -322,27 +242,4 @@ const BuyAPropertySearchModal = ({
   );
 };
 
-const dummyCardData = [
-  {
-    header: 'Property Type',
-    value: 'N/A',
-  },
-  {
-    header: 'Price',
-    value: `₦${Number(2180000).toLocaleString()}`,
-  },
-  {
-    header: 'Bedrooms',
-    value: 'N/A',
-  },
-  {
-    header: 'Location',
-    value: `N/A`,
-  },
-  {
-    header: 'Documents',
-    value: `N/A`,
-  },
-];
-
-export default SearchModal;
+export default RentSearchModal;
