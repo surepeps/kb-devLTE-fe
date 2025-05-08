@@ -14,7 +14,7 @@ const MarketPlace = () => {
         {/**
          * Heading and the type of market place user wants to select
          */}
-        <div className='flex flex-col items-center justify-center gap-[15px]'>
+        <div className='flex flex-col items-center justify-center gap-[20px]'>
           <h2 className='font-display text-4xl font-semibold text-[#09391C]'>
             Welcome to{' '}
             <span className='text-[#8DDB90] font-display text-4xl font-semibold'>
@@ -44,14 +44,21 @@ const MarketPlace = () => {
               />
             ))}
           </div>
-          {/**Paragraph */}
-          <p className='text-xl text-[#5A5D63] md:max-w-[657px] text-center mt-2'>
-            Explore our verified listings, schedule an inspection, and negotiate
-            the best deal. Ready to start your search?
-          </p>
+          <div className='flex gap-[14px] min-w-[517px] h-[34px] items-center'>
+            {/**Paragraph */}
+            <p className='text-lg text-[#5A5D63] md:max-w-[657px] text-center mt-2'>
+              Didn't find a match for your search?
+            </p>
+            {/**button ~ Share your preference*/}
+            <button
+              className='h-[34px] bg-transparent border-[1px] border-[#09391C] w-[221px] text-sm text-[#09391C]'
+              type='button'>
+              Share your preference
+            </button>
+          </div>
         </div>
         {/**Search Modal */}
-        <div className='w-full mt-2'>
+        <div className='w-full mt-2 px-[20px]'>
           <SearchModal />
         </div>
       </div>
