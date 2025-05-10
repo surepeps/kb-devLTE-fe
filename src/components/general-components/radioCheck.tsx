@@ -75,7 +75,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
           height: '24px',
           backgroundColor: 'transparent',
         }}
-        checked={isChecked}
+        defaultChecked={isChecked}
         title={title ?? value}
         type={type}
         name={name}

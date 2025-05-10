@@ -9,6 +9,7 @@ import { FormikProps } from 'formik';
 import useClickOutside from '@/hooks/clickOutside';
 import Image from 'next/image';
 import arrowIcon from '@/svgs/arrowDown.svg';
+import { motion } from 'framer-motion';
 
 type SelectStateLGAProps = {
   id?: string;
@@ -174,7 +175,11 @@ const SelectOption: FC<SelectOptionProps> = ({
   });
 
   return (
-    <div
+    <motion.div
+      initial={{ y: 50, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}
       ref={ref}
       className='w-[241px] min-h-fit absolute z-30 mt-[100px] flex flex-col p-[19px] gap-[13px] shadow-md bg-[#FFFFFF]'>
       <div className='py-[2px] flex items-center'>
@@ -220,7 +225,7 @@ const SelectOption: FC<SelectOptionProps> = ({
             </div>
           ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 export default SelectStateLGA;
