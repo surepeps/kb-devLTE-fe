@@ -3,6 +3,7 @@
 import useClickOutside from '@/hooks/clickOutside';
 import React, { useRef } from 'react';
 import RadioCheck from '../general-components/radioCheck';
+import { motion } from 'framer-motion';
 
 interface DocumentTypeComponentProps {
   closeModal: (type: boolean) => void;
@@ -18,7 +19,11 @@ const DocumentTypeComponent: React.FC<DocumentTypeComponentProps> = ({
   const divRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(divRef, () => closeModal(false));
   return (
-    <div
+    <motion.div
+      initial={{ y: 50, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}
       ref={divRef}
       className='absolute mt-[100px] bg-white w-[286px] h-[327px] p-[19px] shadow-md flex flex-col gap-[13px] border-[1px] border-black'>
       <h2 className='text-base font-medium text-[#000000]'>Document type</h2>
@@ -49,7 +54,7 @@ const DocumentTypeComponent: React.FC<DocumentTypeComponentProps> = ({
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

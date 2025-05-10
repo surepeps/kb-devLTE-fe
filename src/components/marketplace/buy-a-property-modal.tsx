@@ -1,19 +1,23 @@
 /** @format */
+
 'use client';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import SelectStateLGA from './select-state-lga';
 import Input from '../general-components/Input';
 import PriceRange from './price-range';
-import DocumentTypeComponent from './document-type';
 import BedroomComponent from './bedroom';
 import MoreFilter from './more-filter';
+import DocumentTypeComponent from './document-type';
+import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
-import BedsAndBathModal from './beds-and-bath-modal';
-import DesiresFeaturesModal from './desires-features-modal';
-import TenantFeaturesModal from './tenant-criteria';
 
-const RentSearchModal = () => {
+const BuyAPropertySearchModal = ({
+  selectedBriefs,
+}: {
+  selectedBriefs: number;
+}) => {
+  const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
       selectedLGA: '',
@@ -26,31 +30,35 @@ const RentSearchModal = () => {
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] =
     useState<boolean>(false);
   const [priceRadioValue, setPriceRadioValue] = useState<string>('');
-  const [filters, setFilters] = useState<string[]>([]);
-  const [homeCondition, setHomeCondition] = useState<string>('');
-  const [isBedAndBathModalOpened, setIsBedAndBathModalOpened] =
+  const [isDocumentModalOpened, setIsDocumentModalOpened] =
     useState<boolean>(false);
-  const [bedsAndBath, setBedsAndBath] = useState<{
-    bath: undefined | number | string;
-    bed: undefined | number | string;
+  const [documentsSelected, setDocumentsSelected] = useState<string[]>([]);
+  const [isBedroomModalOpened, setIsBedroomModalOpened] =
+    useState<boolean>(false);
+  const [noOfBedrooms, setNoOfBedrooms] = useState<number | undefined>(
+    undefined
+  );
+  const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] =
+    useState<boolean>(false);
+  const [filters, setFilters] = useState<{
+    bathroom: number | undefined | string;
+    landSize: {
+      type: string;
+      size: undefined | number;
+    };
+    desirer_features: string[];
   }>({
-    bath: undefined,
-    bed: undefined,
+    bathroom: undefined,
+    landSize: {
+      type: 'plot',
+      size: undefined,
+    },
+    desirer_features: [],
   });
 
-  const [isDesiresFeaturesModalOpened, setIsDesiresFeaturesModalOpened] =
-    useState<boolean>(false);
-  const [desiresFeatures, setDesiresFeatures] = useState<string[]>([]);
-
-  const [isTenantCriteriaModalOpened, setIsTenantCriteriaModalOpened] =
-    useState<boolean>(false);
-  const [tenatCriteria, setTenantCriteria] = useState<string[]>([]);
-
-  //Where we will be making the http requests
   const handleSubmit = () => {
     const payload = {
-      filters,
-      homeCondition,
+      usageOptions,
       location: {
         state: formik.values.selectedState,
         lga: formik.values.selectedLGA,
@@ -60,10 +68,11 @@ const RentSearchModal = () => {
         maxPrice: priceFormik.values.maxPrice,
         actualRadioPrice: priceRadioValue,
       },
-      bedroom: bedsAndBath.bed,
-      bathroom: bedsAndBath.bath,
-      desiresFeatures,
-      tenatCriteria,
+      docsOnProperty: documentsSelected,
+      bedroom: noOfBedrooms,
+      bathroom: filters.bathroom,
+      landSize: filters.landSize,
+      desirerFeatures: filters.desirer_features,
     };
     console.log(payload);
   };
@@ -80,30 +89,32 @@ const RentSearchModal = () => {
 
   useEffect(
     () => handleSubmit(),
-    [priceRadioValue, formik.values, priceFormik.values]
+    [priceRadioValue, formik.values, priceFormik.values, documentsSelected]
   );
+
+  const docsValues = documentsSelected.map((item: string) => item);
   return (
     <form
       onSubmit={formik.handleSubmit}
       className='container min-h-[181px] flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF]'>
       <div className='w-full pb-[10px] flex justify-between items-center gap-[53px] border-b-[1px] border-[#C7CAD0]'>
         <div className='flex gap-[15px]'>
-          <h3 className='font-semibold text-[#1E1E1E]'>Filter by</h3>
-          {['All', 'Land', 'Residential', 'Commercial', 'Duplex'].map(
+          <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
+          {['All', 'Land', 'Residential', 'Commercial'].map(
             (item: string, idx: number) => (
               <RadioCheck
                 key={idx}
                 type='checkbox'
-                name='filterBy'
+                name='usageOptions'
                 value={item}
                 handleChange={() => {
-                  const uniqueValues = new Set(filters as Array<string>);
+                  const uniqueValues = new Set(usageOptions as Array<string>);
                   if (uniqueValues.has(item)) {
                     uniqueValues.delete(item);
-                    setFilters([...uniqueValues]);
+                    setUsageOptions([...uniqueValues]);
                   } else {
                     uniqueValues.add(item);
-                    setFilters([...uniqueValues]);
+                    setUsageOptions([...uniqueValues]);
                   }
                 }}
               />
@@ -116,33 +127,13 @@ const RentSearchModal = () => {
             type='button'>
             Post property
           </button>
+          <button
+            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
+            type='button'>
+            {selectedBriefs} selected briefs
+          </button>
         </div>
       </div>
-      {/**Home Condition */}
-      <div className='w-full flex items-center gap-[15px]'>
-        <h3 className='text-base font-medium text-[#1E1E1E]'>
-          Home Condition:{' '}
-        </h3>
-        {[
-          'All',
-          'Brand new',
-          'Good condition',
-          'Fairly used',
-          'Need Renovation',
-        ].map((item: string, idx: number) => (
-          <RadioCheck
-            key={idx}
-            value={item}
-            name='home_condition'
-            type='radio'
-            handleChange={() => {
-              setHomeCondition(item);
-            }}
-          />
-        ))}
-      </div>
-
-      {/**Third section */}
       <div className='flex gap-[20px] items-end'>
         {/**Preferred Location */}
         <SelectStateLGA
@@ -179,49 +170,43 @@ const RentSearchModal = () => {
             />
           )}
         </div>
-        {/**Beds and Bath */}
+        {/**Document Type */}
         <div className='flex flex-col gap-[10px]'>
           <Input
             className='w-[189px] text-sm'
-            placeholder='Beds & Baths'
+            placeholder='Document Type'
             type='text'
-            label='Beds & Baths'
+            label='Document'
             readOnly
             name=''
-            value={`${
-              bedsAndBath.bed !== undefined
-                ? 'Bed: ' + bedsAndBath.bed + ' &'
-                : ''
-            } ${
-              bedsAndBath.bath !== undefined ? 'Bath: ' + bedsAndBath.bath : ''
-            } `}
-            onClick={() => setIsBedAndBathModalOpened(true)}
+            value={docsValues.toString()}
+            onClick={() => setIsDocumentModalOpened(true)}
           />
-          {isBedAndBathModalOpened && (
-            <BedsAndBathModal
-              bedAndBath={bedsAndBath}
-              setBedAndBath={setBedsAndBath}
-              closeModal={setIsBedAndBathModalOpened}
+          {isDocumentModalOpened && (
+            <DocumentTypeComponent
+              docsSelected={documentsSelected}
+              setDocsSelected={setDocumentsSelected}
+              closeModal={setIsDocumentModalOpened}
             />
           )}
         </div>
-        {/**Desires Features Component */}
+        {/**Bedroom Component */}
         <div className='flex flex-col gap-[10px]'>
           <Input
             className='w-[189px] text-sm'
             placeholder='bedroom'
             type='text'
-            label='Desires Features'
+            label='Bedroom'
             readOnly
             name=''
-            // value={noOfBedrooms}
-            onClick={() => setIsDesiresFeaturesModalOpened(true)}
+            value={noOfBedrooms}
+            onClick={() => setIsBedroomModalOpened(true)}
           />
-          {isDesiresFeaturesModalOpened && (
-            <DesiresFeaturesModal
-              values={desiresFeatures}
-              setValues={setDesiresFeatures}
-              closeModal={setIsDesiresFeaturesModalOpened}
+          {isBedroomModalOpened && (
+            <BedroomComponent
+              noOfBedrooms={noOfBedrooms}
+              closeModal={setIsBedroomModalOpened}
+              setNumberOfBedrooms={setNoOfBedrooms}
             />
           )}
         </div>
@@ -230,15 +215,15 @@ const RentSearchModal = () => {
           <div className='flex flex-col gap-[10px]'>
             <button
               type='button'
-              onClick={() => setIsTenantCriteriaModalOpened(true)}
+              onClick={() => setIsMoreFilterModalOpened(true)}
               className='w-[133px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C]'>
               More filter
             </button>
-            {isTenantCriteriaModalOpened && (
-              <TenantFeaturesModal
-                values={tenatCriteria}
-                setValues={setTenantCriteria}
-                closeModal={setIsTenantCriteriaModalOpened}
+            {isMoreFilterModalOpened && (
+              <MoreFilter
+                filters={filters}
+                setFilters={setFilters}
+                closeModal={setIsMoreFilterModalOpened}
               />
             )}
           </div>
@@ -253,4 +238,4 @@ const RentSearchModal = () => {
   );
 };
 
-export default RentSearchModal;
+export default BuyAPropertySearchModal;

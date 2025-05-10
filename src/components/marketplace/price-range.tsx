@@ -4,6 +4,7 @@ import useClickOutside from '@/hooks/clickOutside';
 import { FormikProps } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import RadioCheck from '../general-components/radioCheck';
+import { motion } from 'framer-motion';
 
 type FormikType = {
   minPrice: number;
@@ -34,7 +35,11 @@ const PriceRange: React.FC<PriceComponentMenuListProps> = ({
 
   useEffect(() => setSlectedRadioValue(radioValue), [radioValue]);
   return (
-    <div
+    <motion.div
+      initial={{ y: 50, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}
       ref={divRef}
       className='flex flex-col gap-[10px] justify-start items-start border-[#8D9096] border-b-[1px] absolute mt-[100px] bg-white border-[1px] h-[303px] shadow-md'
       style={{ padding: '19px', color: '#555' }}>
@@ -102,7 +107,7 @@ const PriceRange: React.FC<PriceComponentMenuListProps> = ({
           name='prices'
         />
       ))}
-    </div>
+    </motion.div>
   );
 };
 

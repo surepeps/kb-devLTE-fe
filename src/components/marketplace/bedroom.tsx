@@ -3,6 +3,7 @@
 import useClickOutside from '@/hooks/clickOutside';
 import React, { useRef } from 'react';
 import RadioCheck from '../general-components/radioCheck';
+import { motion } from 'framer-motion';
 
 interface BedroomComponentProps {
   closeModal: (type: boolean) => void;
@@ -19,7 +20,11 @@ const BedroomComponent: React.FC<BedroomComponentProps> = ({
 
   useClickOutside(divRef, () => closeModal(false));
   return (
-    <div
+    <motion.div
+      initial={{ y: 50, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}
       ref={divRef}
       className='w-[151px] h-[262px] p-[19px] flex flex-col gap-[25px] bg-white shadow-md absolute mt-[100px]'>
       <h2 className='text-base font-medium text-[#000000]'>Bedroom</h2>
@@ -35,7 +40,7 @@ const BedroomComponent: React.FC<BedroomComponentProps> = ({
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

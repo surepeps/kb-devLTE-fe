@@ -1,9 +1,11 @@
 /** @format */
 
+'use client';
 import useClickOutside from '@/hooks/clickOutside';
 import React, { ChangeEvent, ChangeEventHandler, FC, useRef } from 'react';
 import RadioCheck from '../general-components/radioCheck';
 import { featuresData } from '@/data/landlord';
+import { motion } from 'framer-motion';
 
 type FilterProps = {
   bathroom: number | undefined | string;
@@ -31,7 +33,11 @@ const MoreFilter: FC<MoreFilterProps> = ({
   useClickOutside(divRef, () => closeModal(false));
 
   return (
-    <div
+    <motion.div
+      initial={{ y: 50, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      viewport={{ once: true }}
       ref={divRef}
       className='w-[334px] min-h-[599px] bg-white border-[1px] border-black flex flex-col gap-[25px] p-[19px] shadow-md absolute mt-[70px]'>
       <h2 className='text-base text-[#000000] font-medium'>More Filter</h2>
@@ -147,7 +153,7 @@ const MoreFilter: FC<MoreFilterProps> = ({
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

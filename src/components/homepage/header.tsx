@@ -21,6 +21,12 @@ import { usePathname } from 'next/navigation';
 import SideBar from '../general-components/sideBar';
 import { FaCaretDown } from 'react-icons/fa';
 import useClickOutside from '@/hooks/clickOutside';
+import { motion } from 'framer-motion';
+import { useUserContext } from '@/context/user-context';
+import notificationBellIcon from '@/svgs/bell.svg';
+import userIcon from '@/svgs/user.svg';
+import UserNotifications from './user-notifications';
+import UserProfile from './my-profile';
 
 const Header = () => {
   const {
@@ -36,10 +42,30 @@ const Header = () => {
   const pathName = usePathname();
   const [isMarketplaceModalOpened, setIsMarketplaceModalOpened] =
     useState<boolean>(false);
+  // const { user, logout } = useUserContext();
+  const [isNotificationModalOpened, setIsNotificationModalOpened] =
+    useState<boolean>(false);
+  const [isUserProfileModalOpened, setIsUserProfileModal] =
+    useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<{
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    id: string;
+  } | null>(null);
 
   useEffect(() => {
     console.log(isModalOpened);
   }, [isModalOpened]);
+
+  useEffect(() => {
+    const user = sessionStorage.getItem('user');
+    const parsedUser = JSON.parse(user ?? '');
+    if (typeof parsedUser === 'object') {
+      return setUserDetails(parsedUser);
+    }
+  }, []);
   return (
     <Fragment>
       <header
@@ -71,13 +97,11 @@ const Header = () => {
                     <div
                       key={idx}
                       className='flex flex-col'
-                      onMouseEnter={() =>
-                        setIsMarketplaceModalOpened(true)
-                      }
+                      onMouseEnter={() => setIsMarketplaceModalOpened(true)}
                       // onMouseLeave={() =>
                       //   setIsMarketplaceModalOpened(false)
                       // }
-                      >
+                    >
                       <div className='flex items-center gap-1 cursor-pointer'>
                         <span
                           className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
@@ -124,35 +148,111 @@ const Header = () => {
               }
             )}
           </div>
-          {/**Buttons */}
-          <div className='hidden lg:flex lg:w-[226px]'>
-            <Button
-              value='Sign up'
-              green={true}
-              onClick={() => {
-                //setIsContactUsClicked(true);
-              }}
-              className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
-            />
-            <Button
-              value='Login'
-              onClick={() => {
-                //setIsContactUsClicked(true);
-              }}
-              className='text-base bg-transparent leading-[25px] font-bold w-[71px] h-[50px] text-black'
-            />
+          {/**Buttons for laptop and bigger screens */}
+          <div className='hidden lg:flex'>
+            {userDetails !== null ? (
+              <div className='flex gap-[30px]'>
+                <div className='flex flex-col '>
+                  <button
+                    type='button'
+                    title='Notifications'
+                    onClick={() => setIsNotificationModalOpened(true)}
+                    className='w-[61px] h-[61px] rounded-full flex items-center justify-center bg-[#FAFAFA] cursor-pointer'>
+                    <Image
+                      src={notificationBellIcon}
+                      width={1000}
+                      height={1000}
+                      alt=''
+                      className='w-[24px] h-[24px]'
+                    />
+                  </button>
+                  {/** <UserNotifications /> */}
+                  {isNotificationModalOpened && (
+                    <UserNotifications
+                      closeNotificationModal={setIsNotificationModalOpened}
+                    />
+                  )}
+                </div>
+                <div className='flex flex-col'>
+                  <button
+                    type='button'
+                    title='User'
+                    onClick={() => setIsUserProfileModal(true)}
+                    className='w-[61px] h-[61px] cursor-pointer rounded-full flex items-center justify-center bg-[#FAFAFA]'>
+                    <Image
+                      src={userIcon}
+                      width={1000}
+                      height={1000}
+                      alt=''
+                      className='w-[24px] h-[24px]'
+                    />
+                  </button>
+                  {/**User Profile Modal */}
+                  {isUserProfileModalOpened && (
+                    <UserProfile
+                      userDetails={userDetails}
+                      setUserDetails={setUserDetails}
+                      closeUserProfileModal={setIsUserProfileModal}
+                    />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className='lg:w-[226px]'>
+                <Button
+                  value='Sign up'
+                  green={true}
+                  onClick={() => {
+                    //setIsContactUsClicked(true);
+                  }}
+                  className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
+                />
+                <Button
+                  value='Login'
+                  onClick={() => {
+                    window.location.href = '/agent/auth/login';
+                  }}
+                  className='text-base bg-transparent leading-[25px] font-bold w-[71px] h-[50px] text-black'
+                />
+              </div>
+            )}
           </div>
 
-          <Image
-            src={barIcon}
-            onClick={() => {
-              setIsModalOpened(!isModalOpened);
-            }}
-            width={35}
-            height={22}
-            alt=''
-            className='w-[35px] h-[22px] lg:hidden'
-          />
+          <div className='flex items-center gap-[20px] lg:hidden'>
+            <div className='flex flex-col gap-[10px]'>
+              <button
+                type='button'
+                title='User'
+                onClick={() => setIsUserProfileModal(true)}
+                className='w-[45px] h-[45px] border-[1px] border-[#A8ADB7] cursor-pointer rounded-full flex items-center justify-center bg-[#FAFAFA]'>
+                <Image
+                  src={userIcon}
+                  width={1000}
+                  height={1000}
+                  alt=''
+                  className='w-[20px] h-[20px]'
+                />
+              </button>
+              {/**User Profile Modal */}
+              {isUserProfileModalOpened && (
+                <UserProfile
+                  userDetails={userDetails}
+                  setUserDetails={setUserDetails}
+                  closeUserProfileModal={setIsUserProfileModal}
+                />
+              )}
+            </div>
+            <Image
+              src={barIcon}
+              onClick={() => {
+                setIsModalOpened(!isModalOpened);
+              }}
+              width={35}
+              height={22}
+              alt=''
+              className='w-[35px] h-[22px] lg:hidden'
+            />
+          </div>
         </nav>
       </header>
       <SideBar
@@ -196,7 +296,11 @@ const MarketplaceOptions = ({
 
   useClickOutside(ref, () => setModal(false));
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      viewport={{ once: true }}
       ref={ref}
       className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute'>
       {marketPlaceData.map(
@@ -213,7 +317,7 @@ const MarketplaceOptions = ({
           </Link>
         )
       )}
-    </div>
+    </motion.div>
   );
 };
 
