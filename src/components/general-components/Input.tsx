@@ -9,6 +9,7 @@ import React, {
   FocusEventHandler,
   Fragment,
   memo,
+  MouseEventHandler,
 } from 'react';
 //import naijaStates from 'naija-state-local-government';
 import Select, { components, MenuListProps } from 'react-select';
@@ -30,6 +31,8 @@ interface InputProps {
   value?: string | number | undefined;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: FocusEventHandler<HTMLInputElement>;
+  onClick?: MouseEventHandler<HTMLInputElement>;
+  onFocus?: FocusEventHandler<HTMLInputElement>;
   forState?: boolean;
   forLGA?: boolean;
   forIdtype?: boolean;
@@ -50,6 +53,7 @@ interface InputProps {
   lgasOptions?: Option[];
   idTypeOptions?: Option[];
   stateValue?: string;
+  readOnly?: boolean;
 }
 
 const Input: FC<InputProps> = memo(
@@ -83,6 +87,9 @@ const Input: FC<InputProps> = memo(
     setSelectedRegion,
     formik,
     stateValue,
+    onClick,
+    onFocus,
+    readOnly,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -214,8 +221,11 @@ const Input: FC<InputProps> = memo(
                   onChange={isDisabled ? undefined : onChange}
                   onBlur={onBlur}
                   disabled={isDisabled}
+                  onClick={isDisabled ? undefined : onClick}
+                  onFocus={isDisabled ? undefined : onFocus}
                   min={type === 'number' ? minNumber : undefined}
                   max={type === 'number' ? maxNumber : undefined}
+                  readOnly={readOnly}
                   placeholder={placeholder ?? 'This is placeholder'}
                   className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
                 />
