@@ -1,5 +1,6 @@
 /** @format */
 
+import { archivo } from '@/styles/font';
 import Image, { StaticImageData } from 'next/image';
 import React, { useState, FC } from 'react';
 
@@ -24,7 +25,7 @@ const ContactUnit: FC<ContactUnitProps> = ({ icon, value }) => {
     }
   };
   return (
-    <div className='w-full md:py-[15px] md:px-[30px] py-[10px] px-[15px] h-[90px] flex justify-between bg-[#FAFAFA]'>
+    <div className='w-full md:py-[15px] md:px-[30px] py-[10px] px-[15px] h-[66px] md:h-[90px] flex justify-between bg-[#FAFAFA]'>
       <div className='flex justify-between items-center w-full'>
         <div className='flex items-center gap-[10px] md:gap-[20px]'>
           <div className='flex items-center gap-[20px] bg-white justify-center md:w-[60px] md:h-[60px] w-[46px] h-[46px] rounded-full'>
@@ -36,7 +37,8 @@ const ContactUnit: FC<ContactUnitProps> = ({ icon, value }) => {
               className='w-[24px] h-[24px]'
             />
           </div>
-          <h3 className='md:text-[18px] font-semibold md:leading-[28px] text-base leading-[25px] text-[#000000]'>
+          <h3
+            className={`md:text-[18px] font-semibold md:leading-[28px] text-base leading-[25px] text-[#000000] ${archivo.className}`}>
             {value}
           </h3>
         </div>
