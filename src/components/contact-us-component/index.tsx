@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { ChangeEvent, FormEvent, FormEventHandler } from 'react';
 import Input from '../general-components/Input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -64,16 +64,16 @@ const ContactUs = () => {
   });
   return (
     <div className='w-full flex items-center justify-center'>
-      <div className='container flex flex-col justify-center items-center gap-[60px] py-[40px] px-[20px]'>
+      <div className='container flex flex-col justify-center items-center gap-[30px] md:gap-[60px] pb-[60px] pt-[20px] md:py-[40px] px-[17px]'>
         <div className='flex flex-col justify-center items-center'>
-          <h2 className='md:text-4xl text-3xl font-display text-center font-semibold text-[#09391C]'>
+          <h2 className='md:text-4xl text-2xl font-display text-center font-semibold text-[#09391C]'>
             Let's{' '}
-            <span className='md:text-4xl text-3xl font-display font-semibold text-[#8DDB90]'>
+            <span className='md:text-4xl text-2xl font-display font-semibold text-[#8DDB90]'>
               chat
             </span>
             , reach out to us
           </h2>
-          <p className='text-lg md:text-xl font-normal text-[#5A5D63] text-center md:mx-[250px] md:px-[0px] mt-3'>
+          <p className='text-base md:text-xl font-normal text-[#5A5D63] text-center md:mx-[250px] md:px-[0px] mt-3'>
             Have questions or feedback? We are here to help. Send us a message
             and we will respond within 24 hours.
           </p>
@@ -82,7 +82,7 @@ const ContactUs = () => {
           onSubmit={formik.handleSubmit}
           className='w-full flex md:flex-row flex-col gap-[40px] items-center justify-center'>
           <div className='w-full md:w-[561px] flex flex-col gap-[40px]'>
-            <div className='w-full grid grid-cols-2 gap-x-[25px] md:gap-x-[45px] gap-y-[20px]'>
+            <div className='w-full grid grid-cols-2 gap-x-[15px] md:gap-x-[45px] gap-y-[20px]'>
               <Input
                 name='name'
                 label='Name'
@@ -116,7 +116,7 @@ const ContactUs = () => {
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
               />
-              <Input
+              {/* <Input
                 name='category'
                 label='Category'
                 type='text'
@@ -126,7 +126,42 @@ const ContactUs = () => {
                 value={formik.values.category}
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-              />
+              /> */}
+              <label htmlFor='category' className='flex flex-col gap-[5px]'>
+                <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+                  Category
+                </span>
+                <select
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
+                  name='category'
+                  id='category'
+                  title='category'>
+                  {[
+                    'Login',
+                    'Register',
+                    'Listing',
+                    'Agent',
+                    'Marketplace',
+                    'Promotion',
+                    'Referral',
+                    'Payment',
+                    'Subscription',
+                    'Inspection',
+                    'Negotiation',
+                  ].map((item: string, idx: number) => (
+                    <option key={idx} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                {(formik?.errors?.category || formik?.touched?.category) && (
+                  <span className='text-red-600 text-xs'>
+                    {formik?.errors?.category}
+                  </span>
+                )}
+              </label>
               <label
                 htmlFor='message'
                 className='flex flex-col gap-[5px] w-full col-span-2'>
@@ -149,12 +184,12 @@ const ContactUs = () => {
               </label>
             </div>
             <button
-              className='h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF]'
+              className='h-[49px] md:h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF]'
               type='submit'>
-              List a property
+              Submit
             </button>
           </div>
-          <div className='w-full md:w-[589px] bg-[#FFFFFF] rounded-[4px] p-[15px] md:p-[40px] flex items-center justify-center'>
+          <div className='w-full md:w-[589px] bg-[#FFFFFF] rounded-[4px] p-[15px] md:p-[40px] flex items-center justify-center shadow-md'>
             <div className='w-full h-full flex flex-col gap-[20px] md:gap-[30px]'>
               <h2 className='text-[28px] font-bold leading-[40.4px] text-[#0B0D0C] text-center'>
                 Our Contact
@@ -175,7 +210,7 @@ const ContactUs = () => {
                     return (
                       <div
                         key={idx}
-                        className='h-[90px] w-full flex items-center justify-between bg-[#F6FFF7] px-[15px]'>
+                        className='h-[66px] md:h-[90px] w-full flex items-center justify-between bg-[#F6FFF7] px-[15px]'>
                         <div className='flex items-center gap-[20px]'>
                           <div className='flex items-center gap-[20px] bg-white justify-center md:w-[60px] md:h-[60px] w-[46px] h-[46px] rounded-full'>
                             <Image
@@ -196,7 +231,7 @@ const ContactUs = () => {
                           href={'https://wa.me/+23470454556775'}
                           target='_blank'
                           rel='noopener noreferrer'
-                          className='bg-[#8DDB90] h-[40px] md:h-[50px] w-[120px] md:w-[155px] text-base text-white font-bold flex items-center justify-center'
+                          className='bg-[#8DDB90] h-[30px] md:h-[50px] w-[84px] md:w-[155px] text-xs md:text-base text-white font-bold flex items-center justify-center'
                           type='button'>
                           Chat with us
                         </Link>
