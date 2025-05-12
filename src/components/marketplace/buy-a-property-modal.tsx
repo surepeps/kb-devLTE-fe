@@ -125,7 +125,7 @@ const BuyAPropertySearchModal = ({
           <button
             className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
             type='button'>
-            Post property
+            List property
           </button>
           <button
             className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
@@ -139,7 +139,7 @@ const BuyAPropertySearchModal = ({
         <SelectStateLGA
           placeholder='Enter state, lga, city....'
           formik={formik}
-          heading='Location'
+          heading='Preferred Location'
         />
         {/**Price Range */}
         <div className='flex flex-col gap-[10px]'>
@@ -147,17 +147,16 @@ const BuyAPropertySearchModal = ({
             className='w-[189px]'
             placeholder='Price Range'
             type='text'
-            label='Price'
+            label=''
             readOnly
-            value={
-              priceRadioValue !== ''
-                ? priceRadioValue
-                : `${Number(
-                    priceFormik.values.minPrice
-                  ).toLocaleString()} - ${Number(
-                    priceFormik.values.maxPrice
-                  ).toLocaleString()}`
-            }
+            showDropdownIcon={true}
+              value={
+                priceRadioValue !== '' 
+                  ? priceRadioValue 
+                  : (priceFormik.values.minPrice === 0 && priceFormik.values.maxPrice === 0)
+                    ? undefined // Allow placeholder to show
+                    : `${Number(priceFormik.values.minPrice).toLocaleString()} - ${Number(priceFormik.values.maxPrice).toLocaleString()}`
+              }
             name=''
             onClick={() => setIsPriceRangeModalOpened(true)}
           />
@@ -176,8 +175,9 @@ const BuyAPropertySearchModal = ({
             className='w-[189px] text-sm'
             placeholder='Document Type'
             type='text'
-            label='Document'
+            label=''
             readOnly
+            showDropdownIcon={true}
             name=''
             value={docsValues.toString()}
             onClick={() => setIsDocumentModalOpened(true)}
@@ -196,8 +196,9 @@ const BuyAPropertySearchModal = ({
             className='w-[189px] text-sm'
             placeholder='bedroom'
             type='text'
-            label='Bedroom'
+            label=''
             readOnly
+            showDropdownIcon={true}
             name=''
             value={noOfBedrooms}
             onClick={() => setIsBedroomModalOpened(true)}

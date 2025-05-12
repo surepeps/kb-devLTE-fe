@@ -12,7 +12,11 @@ import DocumentTypeComponent from './document-type';
 import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
 
-const JointVentureModal = () => {
+const JointVentureModal = ({
+  selectedBriefs,
+}: {
+  selectedBriefs: number;
+}) => {
   const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
@@ -121,7 +125,12 @@ const JointVentureModal = () => {
           <button
             className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
             type='button'>
-            Post property
+            List property
+          </button>
+          <button
+            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
+            type='button'>
+            {selectedBriefs} selected briefs
           </button>
         </div>
       </div>
@@ -138,17 +147,15 @@ const JointVentureModal = () => {
             className='w-[189px]'
             placeholder='Price Range'
             type='text'
-            label='Price'
+            label=''
             readOnly
-            value={
-              priceRadioValue !== ''
-                ? priceRadioValue
-                : `${Number(
-                    priceFormik.values.minPrice
-                  ).toLocaleString()} - ${Number(
-                    priceFormik.values.maxPrice
-                  ).toLocaleString()}`
-            }
+              value={
+                priceRadioValue !== '' 
+                  ? priceRadioValue 
+                  : (priceFormik.values.minPrice === 0 && priceFormik.values.maxPrice === 0)
+                    ? undefined // Allow placeholder to show
+                    : `${Number(priceFormik.values.minPrice).toLocaleString()} - ${Number(priceFormik.values.maxPrice).toLocaleString()}`
+              }
             name=''
             onClick={() => setIsPriceRangeModalOpened(true)}
           />
@@ -167,7 +174,7 @@ const JointVentureModal = () => {
             className='w-[189px] text-sm'
             placeholder='Document Type'
             type='text'
-            label='Document'
+            label=''
             readOnly
             name=''
             value={docsValues.toString()}
@@ -187,7 +194,7 @@ const JointVentureModal = () => {
             className='w-[189px] text-sm'
             placeholder='bedroom'
             type='text'
-            label='Bedroom'
+            label=''
             readOnly
             name=''
             value={noOfBedrooms}
