@@ -76,13 +76,17 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
       <h2 className='text-base text-[#1E1E1E] font-medium'>{heading}</h2>
       <div className='flex items-center w-full h-[50px] border-[1px] cursor-pointer border-[#D6DDEB] disabled:bg-gray-300 disabled:cursor-not-allowed'>
         <input
-          className='w-[85%] outline-none h-full px-[12px] text-base placeholder:text-[#A8ADB7] text-black'
+          className='w-[85%] outline-none h-full px-[12px] text-base placeholder:text-[#A8ADB7] text-black cursor-pointer'
           type='text'
           name={name}
           title={title}
           disabled={isDisabled}
           readOnly
-          value={`${formik.values.selectedState}, ${formik.values.selectedLGA}`}
+          value={
+            formik.values.selectedState || formik.values.selectedLGA
+              ? `${formik.values.selectedState}${formik.values.selectedLGA ? `, ${formik.values.selectedLGA}` : ''}`
+              : '' // Show placeholder if both are empty
+          }
           onFocus={() => {
             setShowLocationModal(true);
           }}

@@ -61,9 +61,14 @@ const Header = () => {
 
   useEffect(() => {
     const user = sessionStorage.getItem('user');
-    const parsedUser = JSON.parse(user ?? '');
-    if (typeof parsedUser === 'object') {
-      return setUserDetails(parsedUser);
+    try {
+      const parsedUser = user ? JSON.parse(user) : null;
+      if (parsedUser && typeof parsedUser === 'object') {
+        setUserDetails(parsedUser);
+      }
+    } catch (error) {
+      console.error('Failed to parse user data:', error);
+      setUserDetails(null);
     }
   }, []);
   return (
