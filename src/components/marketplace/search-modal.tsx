@@ -47,7 +47,7 @@ const SearchModal = () => {
       case 'Find property for Joint Venture':
         return (
           <>
-            <JointVentureModal />
+            <JointVentureModal selectedBriefs={uniqueProperties.size} />
             <section className='flex justify-center items-center mt-[20px]'>
               {formikStatus && renderBriefs(userSelectedMarketPlace)}
             </section>
@@ -70,7 +70,13 @@ const SearchModal = () => {
             <div className='grid grid-cols-4 gap-[37px]'>
               {Array.from({ length: 12 }).map((__, idx: number) => {
                 if (type === 'Find property for Joint Venture') {
-                  return <JointVentureModalCard key={idx} />;
+                  return <JointVentureModalCard 
+                  key={idx} 
+                  onClick={() =>
+                      handlePropertiesSelection(idx.toLocaleString())
+                  }
+                  isDisabled={uniqueProperties.has(idx.toLocaleString())}
+                  />;
                 }
                 return (
                   <Card
@@ -81,6 +87,7 @@ const SearchModal = () => {
                     }
                     cardData={dummyCardData}
                     key={idx}
+                    isDisabled={uniqueProperties.has(idx.toLocaleString())}
                   />
                 );
               })}

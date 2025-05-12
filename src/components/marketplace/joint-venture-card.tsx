@@ -8,7 +8,22 @@ import { faStarOfDavid } from '@fortawesome/free-solid-svg-icons';
 import markerIcon from '@/svgs/marker.svg';
 import Button from '../general-components/button';
 
-const JointVentureModalCard = () => {
+interface CardDataProps {
+  isRed?: boolean;
+  onClick?: () => void;
+  className?: string;
+  isPremium?: boolean;
+  style?: React.CSSProperties;
+  isDisabled?: boolean;
+}
+
+const JointVentureModalCard = ({
+  isRed,
+  onClick,
+  className,
+  style,
+  isDisabled,
+}: CardDataProps) => {
   return (
     <div className='w-[261px] h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
       <div className='min-h-[62px] w-full flex gap-[10px] items-end'>
@@ -58,7 +73,7 @@ const JointVentureModalCard = () => {
       <hr />
       <div className='flex flex-col gap-[10px]'>
         <Button
-          value={`Price Negotiation`}
+          value={`Submit LOI`}
           type='button'
           // green={isRed ? false : true}
           //red={isRed}
@@ -70,8 +85,13 @@ const JointVentureModalCard = () => {
           type='button'
           //green={isRed ? false : true}
           //red={isRed}
-          //onClick={onClick}
-          className='min-h-[38px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold'
+          onClick={onClick}
+          isDisabled={isDisabled} // Disable the button if the property is already selected
+          className={`min-h-[50px] py-[12px] px-[24px] ${
+            isDisabled
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[#8DDB90] hover:bg-[#76c77a]'
+          } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
         />
       </div>
     </div>
