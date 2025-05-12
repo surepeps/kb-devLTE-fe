@@ -13,6 +13,9 @@ import RentSearchModal from './rent-search-modal';
 import BuyAPropertySearchModal from './buy-a-property-modal';
 import JointVentureModal from './joint-venture-modal';
 import JointVentureModalCard from './joint-venture-card';
+import SelectStateLGA from './select-state-lga';
+import { useFormik } from 'formik';
+import Mobile from './for-mobile';
 
 const SearchModal = () => {
   const [selectedType, setSelectedType] = useState<string>('Land');
@@ -29,8 +32,8 @@ const SearchModal = () => {
       case 'Buy a property':
         return (
           <>
-            <BuyAPropertySearchModal selectedBriefs={uniqueProperties.size} />
-            <section className='flex justify-center items-center mt-[20px]'>
+            {<BuyAPropertySearchModal selectedBriefs={uniqueProperties.size} />}
+            <section className='w-full flex justify-center items-center md:mt-[20px]'>
               {formikStatus && renderBriefs()}
             </section>
           </>
@@ -38,8 +41,8 @@ const SearchModal = () => {
       case 'Rent/Lease a property':
         return (
           <>
-            <RentSearchModal />
-            <section className='flex justify-center items-center mt-[20px]'>
+            {<RentSearchModal />}
+            <section className='flex justify-center items-center md:mt-[20px]'>
               {formikStatus && renderBriefs()}
             </section>
           </>
@@ -47,8 +50,8 @@ const SearchModal = () => {
       case 'Find property for Joint Venture':
         return (
           <>
-            <JointVentureModal selectedBriefs={uniqueProperties.size} />
-            <section className='flex justify-center items-center mt-[20px]'>
+            {<JointVentureModal selectedBriefs={uniqueProperties.size} />}
+            <section className='flex justify-center items-center md:mt-[20px]'>
               {formikStatus && renderBriefs(userSelectedMarketPlace)}
             </section>
           </>
@@ -62,25 +65,27 @@ const SearchModal = () => {
     switch (formikStatus) {
       case 'success':
         return (
-          <div className='flex flex-col gap-[21px] lg:w-[1154px]'>
+          <div className='flex flex-col gap-[21px] w-full lg:w-[1154px]'>
             <h2
-              className={`text-[#09391C] font-semibold ${epilogue.className} text-lg`}>
+              className={`text-[#09391C] font-semibold ${epilogue.className} md:inline hidden text-lg`}>
               Select the property brief you wish to inspect
             </h2>
-            <div className='grid grid-cols-4 gap-[37px]'>
+            <div className='grid md:grid-cols-4 gap-[20px] md:gap-[37px]'>
               {Array.from({ length: 12 }).map((__, idx: number) => {
                 if (type === 'Find property for Joint Venture') {
-                  return <JointVentureModalCard 
-                  key={idx} 
-                  onClick={() =>
-                      handlePropertiesSelection(idx.toLocaleString())
-                  }
-                  isDisabled={uniqueProperties.has(idx.toLocaleString())}
-                  />;
+                  return (
+                    <JointVentureModalCard
+                      key={idx}
+                      onClick={() =>
+                        handlePropertiesSelection(idx.toLocaleString())
+                      }
+                      isDisabled={uniqueProperties.has(idx.toLocaleString())}
+                    />
+                  );
                 }
                 return (
                   <Card
-                    style={{ width: '281px' }}
+                    style={is_mobile ? { width: '100%' } : { width: '281px' }}
                     images={[sampleImage]}
                     onClick={() =>
                       handlePropertiesSelection(idx.toLocaleString())
@@ -118,7 +123,10 @@ const SearchModal = () => {
   return (
     <Fragment>
       {is_mobile ? (
-        <p>View is not allowed on mobile yet</p>
+        <Mobile
+          selectedMarketPlace={userSelectedMarketPlace}
+          renderBrief={renderDynamicComponent}
+        />
       ) : (
         userSelectedMarketPlace && renderDynamicComponent()
       )}
