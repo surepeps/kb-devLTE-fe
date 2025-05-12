@@ -132,7 +132,7 @@ export const iconsData: { image: StaticImageData; url: string }[] = [
   {
     image: twitterIcon,
     url: 'https://x.com/Khabi_Teq?t=Jq6MpEMfwfJ6aQ46CYGPpQ&s=09',
-  }
+  },
 ];
 
 //Section1 data
@@ -324,7 +324,7 @@ export const contactUsData: {
   type: string;
 }[] = [
   {
-    value: 'Khabireqrealty.com',
+    value: 'info@Khabireqrealty.com',
     icon: envelopeIcon,
     type: 'mail',
   },
