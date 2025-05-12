@@ -18,7 +18,7 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Marketplace',
-    url: '#',
+    url: '/market-place',
     isClicked: false,
   },
   // {

@@ -97,40 +97,40 @@ const Header = () => {
                 item: { name: string; url: string; isClicked: boolean },
                 idx: number
               ) => {
-                if (item.name === 'Marketplace') {
-                  return (
-                    <div
-                      key={idx}
-                      className='flex flex-col'
-                      onMouseEnter={() => setIsMarketplaceModalOpened(true)}
-                      // onMouseLeave={() =>
-                      //   setIsMarketplaceModalOpened(false)
-                      // }
-                    >
-                      <div className='flex items-center gap-1 cursor-pointer'>
-                        <span
-                          className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                            item.url === pathName
-                              ? 'text-[#8DDB90]'
-                              : 'text-[#000000]'
-                          }`}>
-                          {item.name}
-                        </span>
-                        {/* <FaCaretDown
-                          size={'sm'}
-                          width={16}
-                          height={16}
-                          className='w-[16px] h-[16px]'
-                        /> */}
-                      </div>
-                      {isMarketplaceModalOpened && (
-                        <MarketplaceOptions
-                          setModal={setIsMarketplaceModalOpened}
-                        />
-                      )}
-                    </div>
-                  );
-                }
+                // if (item.name === 'Marketplace') {
+                //   return (
+                //     <div
+                //       key={idx}
+                //       className='flex flex-col'
+                //       onMouseEnter={() => setIsMarketplaceModalOpened(true)}
+                //       // onMouseLeave={() =>
+                //       //   setIsMarketplaceModalOpened(false)
+                //       // }
+                //     >
+                //       <div className='flex items-center gap-1 cursor-pointer'>
+                //         <span
+                //           className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                //             item.url === pathName
+                //               ? 'text-[#8DDB90]'
+                //               : 'text-[#000000]'
+                //           }`}>
+                //           {item.name}
+                //         </span>
+                //         {/* <FaCaretDown
+                //           size={'sm'}
+                //           width={16}
+                //           height={16}
+                //           className='w-[16px] h-[16px]'
+                //         /> */}
+                //       </div>
+                //       {isMarketplaceModalOpened && (
+                //         <MarketplaceOptions
+                //           setModal={setIsMarketplaceModalOpened}
+                //         />
+                //       )}
+                //     </div>
+                //   );
+                // }
                 return (
                   <Link
                     key={idx}
