@@ -142,12 +142,13 @@ const JointVentureModal = ({
           heading='Location'
         />
         {/**Price Range */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-[10px] z-50'>
           <Input
             className='w-[189px]'
             placeholder='Price Range'
             type='text'
             label=''
+            showDropdownIcon={true}
             readOnly
               value={
                 priceRadioValue !== '' 
@@ -169,12 +170,13 @@ const JointVentureModal = ({
           )}
         </div>
         {/**Document Type */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-[10px] z-50'>
           <Input
             className='w-[189px] text-sm'
             placeholder='Document Type'
             type='text'
             label=''
+            showDropdownIcon={true}
             readOnly
             name=''
             value={docsValues.toString()}
@@ -189,12 +191,13 @@ const JointVentureModal = ({
           )}
         </div>
         {/**Bedroom Component */}
-        <div className='flex flex-col gap-[10px]'>
+        <div className='flex flex-col gap-[10px] z-50'>
           <Input
             className='w-[189px] text-sm'
             placeholder='bedroom'
             type='text'
             label=''
+            showDropdownIcon={true}
             readOnly
             name=''
             value={noOfBedrooms}
@@ -209,7 +212,7 @@ const JointVentureModal = ({
           )}
         </div>
         {/**Buttons ~ More Filter and Search */}
-        <div className='flex gap-[20px]'>
+        <div className='flex gap-[20px] z-50'>
           <div className='flex flex-col gap-[10px]'>
             <button
               type='button'

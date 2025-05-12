@@ -9,8 +9,8 @@ import SearchModal from './search-modal';
 const MarketPlace = () => {
   const { selectedType, setSelectedType } = usePageContext();
   return (
-    <section className={`flex flex-col justify-center items-center w-full`}>
-      <div className={`container lg:py-[30px] flex flex-col gap-[20px]`}>
+    <section className='flex flex-col justify-center items-center w-full h-auto'>
+      <div className='container lg:py-[30px] flex flex-col gap-[20px]'>
         {/**
          * Heading and the type of market place user wants to select
          */}

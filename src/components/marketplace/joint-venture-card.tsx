@@ -25,8 +25,8 @@ const JointVentureModalCard = ({
   isDisabled,
 }: CardDataProps) => {
   return (
-    <div className='w-[261px] h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
-      <div className='min-h-[62px] w-full flex gap-[10px] items-end'>
+    <div className='relative w-[261px] h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
+      <div className='min-h-[62px] w-full flex gap-[10px] items-end relative'>
         <Image
           src={imageSample}
           width={61}
@@ -38,7 +38,7 @@ const JointVentureModalCard = ({
           N {Number(300000000).toLocaleString()}
         </h3>
         {/**Premium */}
-        <div className='w-[98px] absolute mb-[35px] ml-[151px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00]'>
+        <div className=' w-[98px] top-0 absolute mb-[35px] ml-[151px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00]'>
           <span>Premium</span>
           <FontAwesomeIcon icon={faStarOfDavid} size='sm' />
         </div>
