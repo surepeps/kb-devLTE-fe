@@ -38,7 +38,7 @@ const SearchModal = () => {
       case 'Rent/Lease a property':
         return (
           <>
-            <RentSearchModal />
+            <RentSearchModal selectedBriefs={uniqueProperties.size}/>
             <section className='flex justify-center items-center mt-[20px]'>
               {formikStatus && renderBriefs()}
             </section>
