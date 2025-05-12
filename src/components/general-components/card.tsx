@@ -19,6 +19,8 @@ interface CardDataProps {
   className?: string;
   images: StaticImport[];
   isPremium?: boolean;
+  style?: React.CSSProperties;
+  isDisabled?: boolean;
 }
 
 const Card = ({
@@ -27,6 +29,8 @@ const Card = ({
   onClick,
   className,
   images,
+  style,
+  isDisabled,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
@@ -49,6 +53,7 @@ const Card = ({
         // animate={isCardInView ? { opacity: 1, x: 0 } : {}}
         // transition={{ delay: 0.3 }}
         ref={cardRef}
+        style={style}
         className={`w-full md:w-[296px] shrink-0 bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500 ${className}`}>
         <div className='flex flex-col gap-[11px] w-full'>
           <div className={`w-full h-[148px] bg-gray-200`}>
@@ -199,10 +204,15 @@ const Card = ({
           <Button
             value={`${isRed ? 'Remove' : 'Select for Inspection'}`}
             type='button'
-            green={isRed ? false : true}
+            green={!isRed}
             red={isRed}
             onClick={onClick}
-            className='min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold'
+            isDisabled={isDisabled} // Disable the button if the property is already selected
+            className={`min-h-[50px] py-[12px] px-[24px] ${
+              isDisabled
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[#8DDB90] hover:bg-[#76c77a]'
+            } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
           />
         </div>
       </motion.div>
