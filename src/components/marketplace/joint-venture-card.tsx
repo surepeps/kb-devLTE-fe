@@ -25,7 +25,7 @@ const JointVentureModalCard = ({
   isDisabled,
 }: CardDataProps) => {
   return (
-    <div className='w-[261px] h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
+    <div className='md:w-[261px] w-full h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
       <div className='min-h-[62px] w-full flex gap-[10px] items-end'>
         <Image
           src={imageSample}
@@ -89,8 +89,8 @@ const JointVentureModalCard = ({
           isDisabled={isDisabled} // Disable the button if the property is already selected
           className={`min-h-[50px] py-[12px] px-[24px] ${
             isDisabled
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#8DDB90] hover:bg-[#76c77a]'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-[#8DDB90] hover:bg-[#76c77a]'
           } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
         />
       </div>
