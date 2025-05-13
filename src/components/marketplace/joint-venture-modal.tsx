@@ -12,11 +12,7 @@ import DocumentTypeComponent from './document-type';
 import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
 
-const JointVentureModal = ({
-  selectedBriefs,
-}: {
-  selectedBriefs: number;
-}) => {
+const JointVentureModal = ({ selectedBriefs }: { selectedBriefs: number }) => {
   const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
@@ -96,7 +92,7 @@ const JointVentureModal = ({
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className='container min-h-[181px] flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF]'>
+      className='container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20'>
       <div className='w-full pb-[10px] flex justify-between items-center gap-[53px] border-b-[1px] border-[#C7CAD0]'>
         <div className='flex gap-[15px]'>
           <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
@@ -150,13 +146,18 @@ const JointVentureModal = ({
             label=''
             showDropdownIcon={true}
             readOnly
-              value={
-                priceRadioValue !== '' 
-                  ? priceRadioValue 
-                  : (priceFormik.values.minPrice === 0 && priceFormik.values.maxPrice === 0)
-                    ? undefined // Allow placeholder to show
-                    : `${Number(priceFormik.values.minPrice).toLocaleString()} - ${Number(priceFormik.values.maxPrice).toLocaleString()}`
-              }
+            value={
+              priceRadioValue !== ''
+                ? priceRadioValue
+                : priceFormik.values.minPrice === 0 &&
+                  priceFormik.values.maxPrice === 0
+                ? undefined // Allow placeholder to show
+                : `${Number(
+                    priceFormik.values.minPrice
+                  ).toLocaleString()} - ${Number(
+                    priceFormik.values.maxPrice
+                  ).toLocaleString()}`
+            }
             name=''
             onClick={() => setIsPriceRangeModalOpened(true)}
           />

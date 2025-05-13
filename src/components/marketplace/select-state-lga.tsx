@@ -72,7 +72,7 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
   }, []);
 
   return (
-    <label htmlFor='' className='flex flex-col w-[354px] gap-[4px]'>
+    <label htmlFor='' className='flex flex-col w-full md:w-[354px] gap-[4px]'>
       <h2 className='text-base text-[#1E1E1E] font-medium'>{heading}</h2>
       <div className='flex items-center w-full h-[50px] border-[1px] cursor-pointer border-[#D6DDEB] disabled:bg-gray-300 disabled:cursor-not-allowed'>
         <input
@@ -84,7 +84,11 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
           readOnly
           value={
             formik.values.selectedState || formik.values.selectedLGA
-              ? `${formik.values.selectedState}${formik.values.selectedLGA ? `, ${formik.values.selectedLGA}` : ''}`
+              ? `${formik.values.selectedState}${
+                  formik.values.selectedLGA
+                    ? `, ${formik.values.selectedLGA}`
+                    : ''
+                }`
               : '' // Show placeholder if both are empty
           }
           onFocus={() => {

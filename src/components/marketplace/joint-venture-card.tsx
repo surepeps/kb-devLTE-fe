@@ -25,7 +25,7 @@ const JointVentureModalCard = ({
   isDisabled,
 }: CardDataProps) => {
   return (
-    <div className='relative w-[261px] h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
+    <div className='md:w-[261px] w-full h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
       <div className='min-h-[62px] w-full flex gap-[10px] items-end relative'>
         <Image
           src={imageSample}
@@ -38,7 +38,7 @@ const JointVentureModalCard = ({
           N {Number(300000000).toLocaleString()}
         </h3>
         {/**Premium */}
-        <div className=' w-[98px] top-0 absolute mb-[35px] ml-[151px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00]'>
+        <div className=' w-[98px] top-0 right-0 md:right-auto absolute mb-[35px] ml-[151px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00]'>
           <span>Premium</span>
           <FontAwesomeIcon icon={faStarOfDavid} size='sm' />
         </div>
@@ -54,18 +54,18 @@ const JointVentureModalCard = ({
           />
           <span className='text-xs text-[#000000]'>GRA, Ikeja, Lagos.</span>
         </div>
-        <div className='flex flex-wrap gap-[5px] min-h-[57px]'>
+        <div className='flex flex-wrap gap-[2%] min-h-[57px]'>
           {/**Land sqft */}
-          <div className='bg-[#E4EFE7] px-[7px] h-[26px] w-[50%] text-xs text-[#000000] flex items-center'>
+          <div className='bg-[#E4EFE7] px-[7px] h-[26px] w-[49%] text-xs text-[#000000] flex items-center mb-2'>
             4000 sqft
           </div>
-          <div className='bg-[#09391C] px-[7px] h-[26px] text-xs flex items-center text-white'>
+          <div className='bg-[#09391C] px-[7px] h-[26px] text-xs w-[49%] flex items-center text-white'>
             Joint venture (JV)
           </div>
-          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px] flex items-center min-w-fit'>
+          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px] w-[70%] flex items-center min-w-fit'>
             deed of assignment
           </div>
-          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px] w-[45%] flex items-center'>
+          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px]  w-[28%] flex items-center'>
             Fence
           </div>
         </div>
@@ -89,8 +89,8 @@ const JointVentureModalCard = ({
           isDisabled={isDisabled} // Disable the button if the property is already selected
           className={`min-h-[50px] py-[12px] px-[24px] ${
             isDisabled
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#8DDB90] hover:bg-[#76c77a]'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-[#8DDB90] hover:bg-[#76c77a]'
           } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
         />
       </div>

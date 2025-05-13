@@ -91,7 +91,7 @@ const Input: FC<InputProps> = memo(
     onClick,
     onFocus,
     readOnly,
-    showDropdownIcon
+    showDropdownIcon,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -234,7 +234,8 @@ const Input: FC<InputProps> = memo(
                 {showDropdownIcon && (
                   <FontAwesomeIcon
                     icon={faCaretDown}
-                    className='absolute right-[16px] text-[#A8ADB7] pointer-events-none'
+                    size='sm'
+                    className='absolute right-[16px] text-[#A8ADB7] pointer-events-none w-[16px] h-[16px]'
                   />
                 )}
               </div>
