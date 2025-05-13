@@ -13,7 +13,11 @@ import BedsAndBathModal from './beds-and-bath-modal';
 import DesiresFeaturesModal from './desires-features-modal';
 import TenantFeaturesModal from './tenant-criteria';
 
-const RentSearchModal = () => {
+const RentSearchModal = ({
+  selectedBriefs,
+}: {
+  selectedBriefs: number;
+}) => {
   const formik = useFormik({
     initialValues: {
       selectedLGA: '',
@@ -85,7 +89,7 @@ const RentSearchModal = () => {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className='container min-h-[181px] flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF]'>
+      className='container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20'>
       <div className='w-full pb-[10px] flex justify-between items-center gap-[53px] border-b-[1px] border-[#C7CAD0]'>
         <div className='flex gap-[15px]'>
           <h3 className='font-semibold text-[#1E1E1E]'>Filter by</h3>
@@ -114,7 +118,12 @@ const RentSearchModal = () => {
           <button
             className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
             type='button'>
-            Post property
+            List property
+          </button>
+          <button
+            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
+            type='button'>
+            {selectedBriefs} selected briefs
           </button>
         </div>
       </div>
@@ -148,7 +157,7 @@ const RentSearchModal = () => {
         <SelectStateLGA
           placeholder='Enter state, lga, city....'
           formik={formik}
-          heading='Location'
+          heading='Preferred Location'
         />
         {/**Price Range */}
         <div className='flex flex-col gap-[10px]'>
@@ -156,17 +165,16 @@ const RentSearchModal = () => {
             className='w-[189px]'
             placeholder='Price Range'
             type='text'
-            label='Price'
+            showDropdownIcon={true}
+            label=''
             readOnly
-            value={
-              priceRadioValue !== ''
-                ? priceRadioValue
-                : `${Number(
-                    priceFormik.values.minPrice
-                  ).toLocaleString()} - ${Number(
-                    priceFormik.values.maxPrice
-                  ).toLocaleString()}`
-            }
+              value={
+                priceRadioValue !== '' 
+                  ? priceRadioValue 
+                  : (priceFormik.values.minPrice === 0 && priceFormik.values.maxPrice === 0)
+                    ? undefined // Allow placeholder to show
+                    : `${Number(priceFormik.values.minPrice).toLocaleString()} - ${Number(priceFormik.values.maxPrice).toLocaleString()}`
+              }
             name=''
             onClick={() => setIsPriceRangeModalOpened(true)}
           />
@@ -185,16 +193,15 @@ const RentSearchModal = () => {
             className='w-[189px] text-sm'
             placeholder='Beds & Baths'
             type='text'
-            label='Beds & Baths'
+            showDropdownIcon={true}
+            label=''
             readOnly
             name=''
             value={`${
-              bedsAndBath.bed !== undefined
-                ? 'Bed: ' + bedsAndBath.bed + ' &'
-                : ''
-            } ${
-              bedsAndBath.bath !== undefined ? 'Bath: ' + bedsAndBath.bath : ''
-            } `}
+              bedsAndBath.bed !== undefined ? bedsAndBath.bed + ' Bed' : ''
+            }${bedsAndBath.bed !== undefined && bedsAndBath.bath !== undefined ? ' & ' : ''}${
+              bedsAndBath.bath !== undefined ? bedsAndBath.bath + ' Bath' : ''
+            }`}
             onClick={() => setIsBedAndBathModalOpened(true)}
           />
           {isBedAndBathModalOpened && (
@@ -209,12 +216,13 @@ const RentSearchModal = () => {
         <div className='flex flex-col gap-[10px]'>
           <Input
             className='w-[189px] text-sm'
-            placeholder='bedroom'
+            placeholder='Desires Features'
             type='text'
-            label='Desires Features'
+            showDropdownIcon={true}
+            label=''
             readOnly
             name=''
-            // value={noOfBedrooms}
+            value={desiresFeatures.join(', ')}
             onClick={() => setIsDesiresFeaturesModalOpened(true)}
           />
           {isDesiresFeaturesModalOpened && (
