@@ -42,7 +42,7 @@ const Header = () => {
   const pathName = usePathname();
   const [isMarketplaceModalOpened, setIsMarketplaceModalOpened] =
     useState<boolean>(false);
-  // const { user, logout } = useUserContext();
+  const { user, logout } = useUserContext();
   const [isNotificationModalOpened, setIsNotificationModalOpened] =
     useState<boolean>(false);
   const [isUserProfileModalOpened, setIsUserProfileModal] =
@@ -97,40 +97,40 @@ const Header = () => {
                 item: { name: string; url: string; isClicked: boolean },
                 idx: number
               ) => {
-                if (item.name === 'Marketplace') {
-                  return (
-                    <div
-                      key={idx}
-                      className='flex flex-col'
-                      onMouseEnter={() => setIsMarketplaceModalOpened(true)}
-                      // onMouseLeave={() =>
-                      //   setIsMarketplaceModalOpened(false)
-                      // }
-                    >
-                      <div className='flex items-center gap-1 cursor-pointer'>
-                        <span
-                          className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                            item.url === pathName
-                              ? 'text-[#8DDB90]'
-                              : 'text-[#000000]'
-                          }`}>
-                          {item.name}
-                        </span>
-                        {/* <FaCaretDown
-                          size={'sm'}
-                          width={16}
-                          height={16}
-                          className='w-[16px] h-[16px]'
-                        /> */}
-                      </div>
-                      {isMarketplaceModalOpened && (
-                        <MarketplaceOptions
-                          setModal={setIsMarketplaceModalOpened}
-                        />
-                      )}
-                    </div>
-                  );
-                }
+                // if (item.name === 'Marketplace') {
+                //   return (
+                //     <div
+                //       key={idx}
+                //       className='flex flex-col'
+                //       onMouseEnter={() => setIsMarketplaceModalOpened(true)}
+                //       // onMouseLeave={() =>
+                //       //   setIsMarketplaceModalOpened(false)
+                //       // }
+                //     >
+                //       <div className='flex items-center gap-1 cursor-pointer'>
+                //         <span
+                //           className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                //             item.url === pathName
+                //               ? 'text-[#8DDB90]'
+                //               : 'text-[#000000]'
+                //           }`}>
+                //           {item.name}
+                //         </span>
+                //         {/* <FaCaretDown
+                //           size={'sm'}
+                //           width={16}
+                //           height={16}
+                //           className='w-[16px] h-[16px]'
+                //         /> */}
+                //       </div>
+                //       {isMarketplaceModalOpened && (
+                //         <MarketplaceOptions
+                //           setModal={setIsMarketplaceModalOpened}
+                //         />
+                //       )}
+                //     </div>
+                //   );
+                // }
                 return (
                   <Link
                     key={idx}
@@ -155,7 +155,7 @@ const Header = () => {
           </div>
           {/**Buttons for laptop and bigger screens */}
           <div className='hidden lg:flex'>
-            {userDetails !== null ? (
+            {user?.id ? (
               <div className='flex gap-[30px]'>
                 <div className='flex flex-col '>
                   <button
@@ -195,8 +195,7 @@ const Header = () => {
                   {/**User Profile Modal */}
                   {isUserProfileModalOpened && (
                     <UserProfile
-                      userDetails={userDetails}
-                      setUserDetails={setUserDetails}
+                      userDetails={user}
                       closeUserProfileModal={setIsUserProfileModal}
                     />
                   )}
@@ -209,6 +208,7 @@ const Header = () => {
                   green={true}
                   onClick={() => {
                     //setIsContactUsClicked(true);
+                    window.location.href = '/agent/auth/register';
                   }}
                   className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
                 />
@@ -224,29 +224,30 @@ const Header = () => {
           </div>
 
           <div className='flex items-center gap-[20px] lg:hidden'>
-            <div className='flex flex-col gap-[10px]'>
-              <button
-                type='button'
-                title='User'
-                onClick={() => setIsUserProfileModal(true)}
-                className='w-[45px] h-[45px] border-[1px] border-[#A8ADB7] cursor-pointer rounded-full flex items-center justify-center bg-[#FAFAFA]'>
-                <Image
-                  src={userIcon}
-                  width={1000}
-                  height={1000}
-                  alt=''
-                  className='w-[20px] h-[20px]'
-                />
-              </button>
-              {/**User Profile Modal */}
-              {isUserProfileModalOpened && (
-                <UserProfile
-                  userDetails={userDetails}
-                  setUserDetails={setUserDetails}
-                  closeUserProfileModal={setIsUserProfileModal}
-                />
-              )}
-            </div>
+            {user?.id ? (
+              <div className='flex flex-col gap-[10px]'>
+                <button
+                  type='button'
+                  title='User'
+                  onClick={() => setIsUserProfileModal(true)}
+                  className='w-[45px] h-[45px] border-[1px] border-[#A8ADB7] cursor-pointer rounded-full flex items-center justify-center bg-[#FAFAFA]'>
+                  <Image
+                    src={userIcon}
+                    width={1000}
+                    height={1000}
+                    alt=''
+                    className='w-[20px] h-[20px]'
+                  />
+                </button>
+                {/**User Profile Modal */}
+                {isUserProfileModalOpened && (
+                  <UserProfile
+                    userDetails={user}
+                    closeUserProfileModal={setIsUserProfileModal}
+                  />
+                )}
+              </div>
+            ) : null}
             <Image
               src={barIcon}
               onClick={() => {
@@ -271,18 +272,18 @@ const Header = () => {
 const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
   {
     name: 'Buy a Property',
-    url: '/buy_page',
+    url: '/market-place',
     isClicked: false,
   },
 
   {
     name: 'Sell a Property',
-    url: '/sell_page',
+    url: '/market-place',
     isClicked: false,
   },
   {
     name: 'Rent a Property',
-    url: '/rent_page',
+    url: '/market-place',
     isClicked: false,
   },
   {
@@ -298,6 +299,7 @@ const MarketplaceOptions = ({
   setModal: (type: boolean) => void;
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
+  const { setSelectedType } = usePageContext();
 
   useClickOutside(ref, () => setModal(false));
   return (
@@ -314,7 +316,18 @@ const MarketplaceOptions = ({
           idx: number
         ) => (
           <Link
-            onClick={() => setModal(false)}
+            onClick={() => {
+              if (
+                item.name === 'Buy a Property' ||
+                item.name === 'Sell a Property'
+              ) {
+                setSelectedType('Buy a property');
+              } else if (item.name === 'Rent a Property') {
+                setSelectedType('Rent/Lease a property');
+              }
+
+              setModal(false);
+            }}
             className='text-base font-medium text-[#000000] hover:text-[#8DDB90]'
             href={item.url}
             key={idx}>
