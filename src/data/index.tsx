@@ -51,7 +51,7 @@ export const navData: {
   // },
   {
     name: 'My Listing',
-    url: '#',
+    url: '/my_listing',
     isClicked: false,
   },
   {
