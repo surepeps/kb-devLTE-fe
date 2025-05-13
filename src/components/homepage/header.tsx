@@ -207,15 +207,15 @@ const Header = () => {
                   value='Sign up'
                   green={true}
                   onClick={() => {
-                    //setIsContactUsClicked(true);
-                    window.location.href = '/agent/auth/register';
+                    window.localStorage.setItem('signupFromHeader', 'true');
+                    window.location.href = '/auth';
                   }}
                   className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
                 />
                 <Button
                   value='Login'
                   onClick={() => {
-                    window.location.href = '/agent/auth/login';
+                    window.location.href = '/auth/login';
                   }}
                   className='text-base bg-transparent leading-[25px] font-bold w-[71px] h-[50px] text-black'
                 />
