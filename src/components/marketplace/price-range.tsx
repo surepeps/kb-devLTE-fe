@@ -88,25 +88,26 @@ const PriceRange: React.FC<PriceComponentMenuListProps> = ({
         </div>
       </div>
       {/**Radios */}
-      <div className='flex flex-col gap-[10px] mt-4'></div>
-      {[
-        '500k - 1million',
-        '2million - 4million',
-        '5million - 6million',
-        '10million above',
-      ].map((item: string, idx: number) => (
-        <RadioCheck
-          key={idx}
-          type='radio'
-          onClick={() => {
-            setRadioValue(item);
-            formik.setFieldValue('minPrice', '');
-            formik.setFieldValue('maxPrice', '');
-          }}
-          value={item}
-          name='prices'
-        />
-      ))}
+      <div className='flex flex-col gap-[10px] mt-4'>
+        {[
+          '500k - 1million',
+          '2million - 4million',
+          '5million - 6million',
+          '10million above',
+        ].map((item: string, idx: number) => (
+          <RadioCheck
+            key={idx}
+            type='radio'
+            onClick={() => {
+              setRadioValue(item);
+              formik.setFieldValue('minPrice', '');
+              formik.setFieldValue('maxPrice', '');
+            }}
+            value={item}
+            name='prices'
+          />
+        ))}
+      </div>
     </motion.div>
   );
 };
