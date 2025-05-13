@@ -140,7 +140,7 @@ const EditEmail = ({
         <div className=' w-[411px] mt-[70px] flex flex-col gap-[25px]'>
           <h2
             className={`font-display text-[#09391C] font-semibold text-2xl text-center`}>
-            Register with us
+            Edit Email
           </h2>
           <Input
             type='email'
