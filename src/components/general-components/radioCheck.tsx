@@ -16,6 +16,7 @@ interface RadioCheckProps {
   handleChange?: ChangeEventHandler<HTMLInputElement> | undefined;
   selectedValue?: string | boolean | undefined;
   isChecked?: boolean;
+  modifyStyle?: React.CSSProperties;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
@@ -30,6 +31,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
   handleChange,
   //selectedValue
   isChecked,
+  modifyStyle,
 }) => {
   return (
     <label
@@ -86,6 +88,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
         //checked={selectedValue === value}
       />
       <span
+        style={modifyStyle}
         dangerouslySetInnerHTML={{ __html: value }}
         className='text-base leading-[25.6px] font-normal text-[#000000]'
       />

@@ -20,6 +20,8 @@ import SideBar from '../general-components/sideBar';
 import { useRouter, usePathname } from 'next/navigation';
 // import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
+import userIcon from '@/svgs/user.svg';
+import UserProfile from '../homepage/my-profile';
 
 const AgentHeader = () => {
   const {
@@ -30,9 +32,11 @@ const AgentHeader = () => {
     viewImage,
     settings,
   } = usePageContext();
-  const { logout } = useUserContext();
+  const { logout, user } = useUserContext();
   const [state, dispatch] = useReducer(reducer, navData);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUserProfileModalOpened, setIsUserProfileModal] =
+    useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -158,16 +162,42 @@ const AgentHeader = () => {
               </div>
             )}
           </div>
-          <Image
-            src={barIcon}
-            width={35}
-            height={22}
-            alt=''
-            className='w-[35px] h-[22px] lg:hidden'
-            onClick={() => {
-              setIsModalOpened(true);
-            }}
-          />
+          <div className='flex items-center gap-[20px] lg:hidden'>
+            {user?.id ? (
+              <div className='flex flex-col gap-[10px]'>
+                <button
+                  type='button'
+                  title='User'
+                  onClick={() => setIsUserProfileModal(true)}
+                  className='w-[45px] h-[45px] border-[1px] border-[#A8ADB7] cursor-pointer rounded-full flex items-center justify-center bg-[#FAFAFA]'>
+                  <Image
+                    src={userIcon}
+                    width={1000}
+                    height={1000}
+                    alt=''
+                    className='w-[20px] h-[20px]'
+                  />
+                </button>
+                {/**User Profile Modal */}
+                {isUserProfileModalOpened && (
+                  <UserProfile
+                    userDetails={user}
+                    closeUserProfileModal={setIsUserProfileModal}
+                  />
+                )}
+              </div>
+            ) : null}
+            <Image
+              src={barIcon}
+              width={35}
+              height={22}
+              alt=''
+              className='w-[35px] h-[22px] lg:hidden'
+              onClick={() => {
+                setIsModalOpened(true);
+              }}
+            />
+          </div>
         </nav>
       </header>
       <SideBar
