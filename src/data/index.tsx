@@ -10,7 +10,12 @@ import phoneIcon from '@/svgs/phone.svg';
 import whatsappIcon from '@/svgs/whatsapp.svg';
 
 //Navbar data
-export const navData: { name: string; url: string; isClicked: boolean }[] = [
+export const navData: {
+  name: string;
+  url: string;
+  isClicked: boolean;
+  additionalLinks?: { name: string; url: string }[];
+}[] = [
   {
     name: 'Home',
     url: '/',
@@ -20,6 +25,24 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
     name: 'Marketplace',
     url: '/market-place',
     isClicked: false,
+    additionalLinks: [
+      {
+        name: 'list a property',
+        url: '#',
+      },
+      {
+        name: 'Buy a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Rent a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Property on joint venture',
+        url: '#',
+      },
+    ],
   },
   // {
   //   name: 'Landlord',
