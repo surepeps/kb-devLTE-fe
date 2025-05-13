@@ -55,6 +55,8 @@ const Register = () => {
         'Password must contain at least two special character'
       ) // At least two special character
       .required('Password is required'),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), undefined], 'Passwords must match'),
     firstName: Yup.string()
       .matches(/^[a-zA-Z]+$/, 'First name must only contain letters') // Only letters
       .required('Firstname is required'),
@@ -179,6 +181,38 @@ const Register = () => {
             Register with us
           </h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
+
+            <div className='flex flex-col lg:flex-row gap-[15px] w-full'>
+                <Input
+                    formik={formik}
+                    title='First name'
+                    isDisabled={isDisabled}
+                    id='firstName'
+                    icon={''}
+                    type='text'
+                    placeholder='Enter your first name'
+                    className='w-full'
+                />
+                <Input
+                    formik={formik}
+                    title='Last name'
+                    isDisabled={isDisabled}
+                    id='lastName'
+                    icon={''}
+                    type='text'
+                    placeholder='Enter your last name'
+                    className='w-full'
+                />
+            </div>
+            <Input
+              formik={formik}
+              title='Phone'
+              id='phone'
+              icon={phoneIcon}
+              type='number'
+              placeholder='Enter your phone number'
+              isDisabled={isDisabled}
+            />
             <Input
               formik={formik}
               title='Email'
@@ -199,30 +233,12 @@ const Register = () => {
             />
             <Input
               formik={formik}
-              title='First name'
+              title='Confirm Password'
               isDisabled={isDisabled}
-              id='firstName'
+              id='confirmPassword'
               icon={''}
-              type='text'
-              placeholder='Enter your first name'
-            />
-            <Input
-              formik={formik}
-              title='Last name'
-              isDisabled={isDisabled}
-              id='lastName'
-              icon={''}
-              type='text'
-              placeholder='Enter your last name'
-            />
-            <Input
-              formik={formik}
-              title='Phone'
-              id='phone'
-              icon={phoneIcon}
-              type='number'
-              placeholder='Enter your phone number'
-              isDisabled={isDisabled}
+              type='password'
+              placeholder='Confirm your password'
             />
           </div>
           <div className='flex justify-center items-center w-full lg:px-[60px]'>
@@ -320,7 +336,7 @@ const Input: FC<InputProps> = ({
           placeholder={placeholder ?? 'This is placeholder'}
           className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar disabled:bg-gray-200'
         />
-        {/* {icon ? (
+        {icon ? (
           <Image
             src={icon}
             alt=''
@@ -328,7 +344,7 @@ const Input: FC<InputProps> = ({
             height={20}
             className='w-[20px] h-[20px] absolute ml-[330px] lg:ml-[440px] z-20 mt-[15px]'
           />
-        ) : null} */}
+        ) : null}
       </div>
       {fieldError && fieldTouched && (
         <span className='text-red-600 text-sm'>{fieldError}</span>
