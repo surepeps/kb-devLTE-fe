@@ -306,7 +306,7 @@ interface InputProps {
   isDisabled?: boolean;
 }
 
-export const Input: FC<InputProps> = ({
+const Input: FC<InputProps> = ({
   className,
   id,
   title,
