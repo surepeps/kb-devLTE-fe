@@ -208,6 +208,7 @@ const Header = () => {
                   green={true}
                   onClick={() => {
                     //setIsContactUsClicked(true);
+                    window.location.href = '/agent/auth/register';
                   }}
                   className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
                 />
