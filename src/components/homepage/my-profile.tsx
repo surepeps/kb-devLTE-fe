@@ -7,7 +7,7 @@ import useClickOutside from '@/hooks/clickOutside';
 import Image from 'next/image';
 import userIcon from '@/svgs/user2.svg';
 import faLock from '@/svgs/lock.svg';
-import { useUserContext } from '@/context/user-context';
+import { User, useUserContext } from '@/context/user-context';
 import { archivo } from '@/styles/font';
 
 type userDetailsProps = {
@@ -19,14 +19,12 @@ type userDetailsProps = {
 } | null;
 interface UserProfileModalProps {
   closeUserProfileModal: (type: boolean) => void;
-  userDetails: userDetailsProps;
-  setUserDetails: (type: userDetailsProps) => void;
+  userDetails: User | null;
 }
 
 const UserProfile: React.FC<UserProfileModalProps> = ({
   closeUserProfileModal,
   userDetails,
-  setUserDetails,
 }) => {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const { logout } = useUserContext();
@@ -50,7 +48,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           <div className='flex items-end gap-[10px]'>
             <span className='text-base text-[#7C8493]'>User ID</span>
             <span className='text-base text-[#25324B]'>
-              {userDetails?.id.slice(0, 15)}...
+              {userDetails?.id?.slice(0, 15)}...
             </span>
           </div>
           {/**Name */}
@@ -108,7 +106,6 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       <button
         type='button'
         onClick={() => {
-          setUserDetails(null);
           logout();
         }}
         className='w-full h-[50px] border-[1px] border-[#5A5D63] text-base font-medium text-[#FF2539]'>

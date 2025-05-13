@@ -41,6 +41,24 @@ const Mobile = ({
     },
     onSubmit: (values) => console.log(values),
   });
+  const [payloadFromFilter, setPayloadFromFilter] = useState<any>();
+
+  const handleSubmit = async () => {
+    const payload = {
+      ...payloadFromFilter,
+      location: {
+        state: formik.values.selectedState,
+        lga: formik.values.selectedLGA,
+      },
+    };
+    console.log(payload);
+    // try {
+
+    // } catch (error) {
+    //  console.log(error)
+    // }
+  };
+
   const isLoading = useLoading();
   if (isLoading) return <Loading />;
 
@@ -93,6 +111,7 @@ const Mobile = ({
                 filter
               </button>
               <button
+                onClick={handleSubmit}
                 className='h-[50px] w-full bg-[#8DDB90] px-[12px] col-span-2 text-white text-base font-bold'
                 type='button'>
                 Search
@@ -102,12 +121,23 @@ const Mobile = ({
         </div>
         <div className=''>{selectedMarketPlace && renderBrief()}</div>
       </div>
-      {isFilterModalOpened && <Filter closeModal={setIsFilterModalOpened} />}
+      {isFilterModalOpened && (
+        <Filter
+          setPayloadFromFilter={setPayloadFromFilter}
+          closeModal={setIsFilterModalOpened}
+        />
+      )}
     </Fragment>
   );
 };
 
-const Filter = ({ closeModal }: { closeModal: (type: boolean) => void }) => {
+const Filter = ({
+  closeModal,
+  setPayloadFromFilter,
+}: {
+  closeModal: (type: boolean) => void;
+  setPayloadFromFilter: (type: any) => void;
+}) => {
   const [radioValue, setRadioValue] = useState<string>('');
   const formik = useFormik({
     initialValues: {
@@ -133,7 +163,7 @@ const Filter = ({ closeModal }: { closeModal: (type: boolean) => void }) => {
   const lastDivRef = useRef<HTMLDivElement>(null);
   const visible = useVisibility(lastDivRef);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const payload = {
       actualPrice: radioValue,
       prices: {
@@ -146,13 +176,7 @@ const Filter = ({ closeModal }: { closeModal: (type: boolean) => void }) => {
       bathroom,
     };
     console.log(payload);
-    try {
-      const response = await axios.post(URLS.BASE);
-      if (response.status === 200) {
-      }
-    } catch (err: any) {
-      console.log(err.message);
-    }
+    setPayloadFromFilter(payload);
 
     toast.success('Changes applied');
     closeModal(false);
@@ -456,6 +480,7 @@ const SimilarComponent = ({
         {data &&
           renderData().map((item: string, idx: number) => (
             <RadioCheck
+              isChecked={selectedValues.some((text: string) => item === text)}
               modifyStyle={{
                 fontSize: '14px',
               }}
