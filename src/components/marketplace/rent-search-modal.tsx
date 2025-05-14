@@ -15,8 +15,16 @@ import TenantFeaturesModal from './tenant-criteria';
 
 const RentSearchModal = ({
   selectedBriefs,
+  rentFilterBy,
+  setRentFilterBy,
+  homeCondition,
+  setHomeCondition,
 }: {
   selectedBriefs: number;
+  rentFilterBy: string[];
+  setRentFilterBy: (type: string[]) => void;
+  homeCondition: string;
+  setHomeCondition: (type: string) => void;
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -31,7 +39,6 @@ const RentSearchModal = ({
     useState<boolean>(false);
   const [priceRadioValue, setPriceRadioValue] = useState<string>('');
   const [filters, setFilters] = useState<string[]>([]);
-  const [homeCondition, setHomeCondition] = useState<string>('');
   const [isBedAndBathModalOpened, setIsBedAndBathModalOpened] =
     useState<boolean>(false);
   const [bedsAndBath, setBedsAndBath] = useState<{
@@ -99,15 +106,16 @@ const RentSearchModal = ({
                 key={idx}
                 type='checkbox'
                 name='filterBy'
+                isChecked={rentFilterBy.some((text: string) => text === item)}
                 value={item}
                 handleChange={() => {
-                  const uniqueValues = new Set(filters as Array<string>);
+                  const uniqueValues = new Set(rentFilterBy as Array<string>);
                   if (uniqueValues.has(item)) {
                     uniqueValues.delete(item);
-                    setFilters([...uniqueValues]);
+                    setRentFilterBy([...uniqueValues]);
                   } else {
                     uniqueValues.add(item);
-                    setFilters([...uniqueValues]);
+                    setRentFilterBy([...uniqueValues]);
                   }
                 }}
               />
@@ -134,10 +142,11 @@ const RentSearchModal = ({
         </h3>
         {[
           'All',
-          'Brand new',
-          'Good condition',
-          'Fairly used',
+          'Brand New',
+          'Good Condition',
+          'Fairly Used',
           'Need Renovation',
+          'New Building',
         ].map((item: string, idx: number) => (
           <RadioCheck
             key={idx}
@@ -168,13 +177,18 @@ const RentSearchModal = ({
             showDropdownIcon={true}
             label=''
             readOnly
-              value={
-                priceRadioValue !== '' 
-                  ? priceRadioValue 
-                  : (priceFormik.values.minPrice === 0 && priceFormik.values.maxPrice === 0)
-                    ? undefined // Allow placeholder to show
-                    : `${Number(priceFormik.values.minPrice).toLocaleString()} - ${Number(priceFormik.values.maxPrice).toLocaleString()}`
-              }
+            value={
+              priceRadioValue !== ''
+                ? priceRadioValue
+                : priceFormik.values.minPrice === 0 &&
+                  priceFormik.values.maxPrice === 0
+                ? undefined // Allow placeholder to show
+                : `${Number(
+                    priceFormik.values.minPrice
+                  ).toLocaleString()} - ${Number(
+                    priceFormik.values.maxPrice
+                  ).toLocaleString()}`
+            }
             name=''
             onClick={() => setIsPriceRangeModalOpened(true)}
           />
@@ -199,7 +213,11 @@ const RentSearchModal = ({
             name=''
             value={`${
               bedsAndBath.bed !== undefined ? bedsAndBath.bed + ' Bed' : ''
-            }${bedsAndBath.bed !== undefined && bedsAndBath.bath !== undefined ? ' & ' : ''}${
+            }${
+              bedsAndBath.bed !== undefined && bedsAndBath.bath !== undefined
+                ? ' & '
+                : ''
+            }${
               bedsAndBath.bath !== undefined ? bedsAndBath.bath + ' Bath' : ''
             }`}
             onClick={() => setIsBedAndBathModalOpened(true)}
