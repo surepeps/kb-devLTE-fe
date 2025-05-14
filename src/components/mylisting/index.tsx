@@ -8,6 +8,8 @@ import RadioCheck from '../general-components/radioCheck';
 import JointVentureModalCard from '../marketplace/joint-venture-card';
 import Card from '../general-components/card';
 import sampleImage from '@/assets/Agentpic.png';
+import Select from 'react-select';
+
 
 const dummyCardData = [
   {
@@ -77,31 +79,57 @@ const MyListing = () => {
            Stay in control of your properties.
           </p>
   
-          <div className='w-full pb-[10px] flex justify-between items-center gap-[53px] border-b-[1px] border-[#C7CAD0] '>
-            <div className='flex gap-[15px]'>
-              <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
-              {['All', 'Land', 'Residential', 'Commercial'].map(
-                (item: string, idx: number) => (
-                  <RadioCheck
-                    key={idx}
-                    type='checkbox'
-                    name='usageOptions'
-                    value={item}
-                    handleChange={() => {}}
-                  />
-                )
-              )}
+          <div className='w-full pb-[25px] flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0 gap-x-0 md:gap-x-[53px] border-b-[1px] border-[#C7CAD0] sticky top-0 z-20'>
+            <div className='flex flex-col sm:flex-row gap-3 w-full md:w-auto'>
+              <Select
+                className='text-[#2E2C34] text-sm ml-1 w-full md:w-auto'
+                styles={{
+                  control: (styles) => ({
+                    ...styles,
+                    boxShadow: 'none',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    backgroundColor: '#F9FAFB',
+                    border: '1px solid #D6DDEB',
+                    minWidth: '120px',
+                    height: '45px',
+                  }),
+                }}
+                options={filterOptions}
+                defaultValue={filterOptions[0]}
+                // value={formik.values.selectedStat}
+                // onChange={(options) => formik.setFieldValue('selectedStat', options)}
+              />
+              <Select
+                className='text-[#2E2C34] text-sm ml-1 w-full md:w-auto'
+                styles={{
+                  control: (styles) => ({
+                    ...styles,
+                    boxShadow: 'none',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    backgroundColor: '#F9FAFB',
+                    border: '1px solid #D6DDEB',
+                    minWidth: '120px',
+                    height: '45px',
+                  }),
+                }}
+                options={statusOptions}
+                defaultValue={statusOptions[0]}
+                // value={formik.values.selectedStat}
+                // onChange={(options) => formik.setFieldValue('selectedStat', options)}
+              />
             </div>
-              <button
-                className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
-                type='button'>
-                List property
-              </button>
+            <button
+              className='h-[34px] w-full md:w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm mt-2 md:mt-0'
+              type='button'>
+              List property
+            </button>
           </div>
         </div>
         {/* Listing Cards */}
           <div className='w-full flex justify-center'>
-            <div className='w-[90%] mt-6 grid md:grid-cols-4 gap-[20px] md:gap-[37px] justify-items-center'>
+            <div className='w-full sm:w-[95%] lg:w-[90%] mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[20px] md:gap-[37px] justify-items-center'>
               {dummyList.map((_, idx) => renderCard(idx))}
             </div>
           </div>
@@ -110,27 +138,15 @@ const MyListing = () => {
   );
 };
 
-const ButtonBoxModal = ({
-  text,
-  onSelect,
-  selectedType,
-}: {
-  text: string;
-  selectedType: string;
-  isSelected: boolean;
-  onSelect: () => void;
-}) => {
-  return (
-    <button
-      onClick={onSelect}
-      type='button'
-      className={`min-w-fit h-[51px] px-[15px] flex items-center justify-center gap-[10px] ${
-        selectedType === text
-          ? 'bg-[#8DDB90] text-[#FFFFFF]'
-          : 'bg-transparent text-[#5A5D63]'
-      } border-[1px] border-[#C7CAD0] font-medium text-lg`}>
-      {text}
-    </button>
-  );
-};
 export default MyListing;
+
+const filterOptions = [
+  { value: '1', label: 'Filter by' },
+  { value: '2', label: 'Pending' },
+  { value: '3', label: 'Overdue' },
+];
+const statusOptions = [
+  { value: '1', label: 'Status' },
+  { value: '2', label: 'Pending' },
+  { value: '3', label: 'Overdue' },
+];
