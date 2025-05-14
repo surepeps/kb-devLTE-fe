@@ -21,6 +21,7 @@ interface CardDataProps {
   isPremium?: boolean;
   style?: React.CSSProperties;
   isDisabled?: boolean;
+  onCardPageClick?: () => void;
 }
 
 const Card = ({
@@ -31,6 +32,7 @@ const Card = ({
   images,
   style,
   isDisabled,
+  onCardPageClick,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
@@ -49,9 +51,12 @@ const Card = ({
   return (
     <Fragment>
       <motion.div
-        // initial={{ opacity: 0, x: 80 }}
-        // animate={isCardInView ? { opacity: 1, x: 0 } : {}}
-        // transition={{ delay: 0.3 }}
+        onClick={onCardPageClick}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        exit={{ opacity: 0, y: 20 }}
+        viewport={{ once: true }}
         ref={cardRef}
         style={style}
         className={`w-full md:w-[296px] shrink-0 bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500 ${className}`}>
