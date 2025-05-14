@@ -1,21 +1,16 @@
 /** @format */
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const copy = async (text: string) => {
-  const [isCopied, setIsCopied] = useState<boolean>(false);
+  //const [isCopied, setIsCopied] = useState<boolean>(false);
   try {
     await navigator.clipboard.writeText(text);
-    setIsCopied(true);
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 3000);
-  } catch (error) {
-    console.error('Failed to copy:', error);
-    setIsCopied(false);
+    toast.success('Copied');
+  } catch (error: any) {
+    toast.error(`Failed to copy: ${error}`);
   }
-
-  return isCopied;
 };
 
 export default copy;
