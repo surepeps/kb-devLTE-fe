@@ -40,6 +40,9 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import copy from '@/utils/copyItem';
+import Card from '@/components/general-components/card';
+import { IsMobile } from '@/hooks/isMobile';
 
 interface DetailsProps {
   propertyId: string;
@@ -54,6 +57,10 @@ interface DetailsProps {
   };
   tenantCriteria: { _id: string; criteria: string }[];
   pictures: string[];
+  createdAt: string;
+  owner: string;
+  updatedAt: string;
+  isAvailable: boolean;
 }
 
 interface FormProps {
@@ -96,6 +103,10 @@ const ProductDetailsPage = () => {
     tenantCriteria: [],
     pictures: [],
     propertyId: '',
+    createdAt: '',
+    owner: '',
+    updatedAt: '',
+    isAvailable: false,
   });
   const [featureData, setFeatureData] = useState<
     { _id: string; featureName: string }[]
@@ -106,6 +117,7 @@ const ProductDetailsPage = () => {
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
+  const is_mobile = IsMobile();
 
   const handlePreviousSlide = () => {
     const scrollableElement = document.getElementById(
@@ -252,6 +264,10 @@ const ProductDetailsPage = () => {
               tenantCriteria: res.data.tenantCriteria,
               pictures: res.data.pictures,
               propertyId: res.data._id,
+              createdAt: res.data.createdAt,
+              owner: res.data.owner,
+              updatedAt: res.data.updatedAt,
+              isAvailable: res.data.isAvailable,
             });
             setFeatureData(res.data.features);
           }
@@ -327,95 +343,74 @@ const ProductDetailsPage = () => {
               </h2>
             </div>
 
-            {/* <div
-              id='scrollableElement'
-              className={`${
-                details.pictures.length === 0
-                  ? 'justify-center'
-                  : 'justify-start'
-              } w-full hide-scrollbar gap-[30px] overflow-x-auto flex mt-0 md:mt-10 lg:mt-0`}>
-              {details?.pictures?.length !== 0 ? (
-                details.pictures.map((picture, idx: number) => (
-                  <Image
-                    src={picture !== '' ? picture : noImage.src}
-                    alt=''
-                    key={idx}
-                    width={500}
-                    onClick={() => {
-                      setImageData([picture]);
-                      setViewImage(true);
-                    }}
-                    height={400}
-                    className='w-[424px] h-[324px] bg-[#D9D9D9] flex-shrink-0'
-                  />
-                ))
-              ) : (
-                <Image
-                  src={noImage.src}
-                  alt=''
-                  onClick={() => {
-                    setImageData([noImage.src]);
-                    setViewImage(true);
-                  }}
-                  width={500}
-                  height={400}
-                  className='w-[424px] h-[324px] bg-[#D9D9D9] object-cover flex-shrink-0'
-                />
-              )}
-            </div> */}
             <div className='w-full flex justify-center items-center px-[20px]'>
               <div className='flex justify-between items-start container'>
                 <div className='lg:w-[837px] flex flex-col gap-[20px]'>
                   <ImageSwiper images={details.pictures ?? [sampleImage.src]} />
                   {details.pictures['length'] !== 0 ? (
-                    <div>
+                    <div className='flex gap-[20px]'>
                       {details.pictures.map((src: string, idx: number) => (
-                        <Image
+                        <img
                           src={src}
                           key={idx}
-                          className='w-[120px] h-[92px]'
+                          width={200}
+                          height={200}
+                          className='w-[120px] h-[92px] object-cover bg-gray-200'
                           alt={'image'}
                         />
                       ))}
                     </div>
                   ) : null}
                 </div>
-                <div>f</div>
+                <div className='lg:min-w-fit flex flex-col gap-[26px] h-[inherit]'>
+                  <div className='flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full lg:w-[282px] lg:max-w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar'>
+                    <div className='flex gap-[10px] w-full'>
+                      <span className='text-base text-[#7C8493]'>
+                        Reference ID:
+                      </span>{' '}
+                      <span
+                        //onClick={() => copy(details.owner)}
+                        className={`${epilogue.className} text-lg text-clip text-[#25324B]`}>
+                        {details.owner}
+                      </span>
+                    </div>
+                    {/**Date Added */}
+                    <div className='flex gap-[10px] w-full'>
+                      <span className='text-base text-[#7C8493]'>
+                        Date added:
+                      </span>{' '}
+                      <span
+                        className={`${epilogue.className} text-lg text-[#25324B]`}>
+                        {details.createdAt.split('T')[0]}
+                      </span>
+                    </div>
+                    {/**Last Update */}
+                    <div className='flex gap-[10px] w-full'>
+                      <span className='text-base text-[#7C8493]'>
+                        Last Update:
+                      </span>{' '}
+                      <span
+                        className={`${epilogue.className} text-lg text-[#25324B]`}>
+                        {details.updatedAt.split('T')[0]}
+                      </span>
+                    </div>
+                    {/**Market Status */}
+                    <div className='flex gap-[10px] w-full'>
+                      <span className='text-base text-[#7C8493]'>
+                        Market Status
+                      </span>{' '}
+                      <span
+                        className={`${epilogue.className} text-lg text-[#25324B]`}>
+                        {details.isAvailable ? 'Available' : 'Not Available'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className='flex gap-[18px]'>
-              {/**Previous */}
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handlePreviousSlide}
-                className='w-[54px] h-[54px] cursor-pointer flex justify-center items-center border-[#949baa80] border-[1px]'>
-                <Image
-                  src={arrow}
-                  width={25}
-                  height={25}
-                  alt=''
-                  className='w-[25px] h-[25px] transform rotate-180'
-                />
-              </motion.div>
-              {/**Next */}
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleNextSlide}
-                className='w-[54px] h-[54px] cursor-pointer flex justify-center items-center border-[#5A5D6380] border-[1px]'>
-                <Image
-                  src={arrow}
-                  width={25}
-                  height={25}
-                  alt=''
-                  className='w-[25px] h-[25px]'
-                />
-              </motion.div>
             </div>
 
             {/**Next Section */}
-            <div className='container px-[20px] md:px-[40px] min-h-[1400px] flex md:flex-row flex-col gap-[40px]'>
+            <div className='container px-[20px] md:px-[40px] min-h-[1400px] flex md:flex-row justify-between flex-col gap-[40px]'>
               <div className='md:w-[70%] w-full h-full flex flex-col gap-[20px]'>
                 {/**Details */}
                 <div className='min-h-[152px] w-full py-[40px] border-b-[1px] border-[#C7CAD0]'>
@@ -631,20 +626,59 @@ const ProductDetailsPage = () => {
                   </form>
                 </div>
               </div>
-              <div className='md:w-[30%] hidden h-full md:flex md:flex-col gap-[10px]'>
-                {data.map((item: HouseFrameProps, idx: number) => {
+              <div className='md:w-[30%] items-end hidden h-full md:flex md:flex-col gap-[10px]'>
+                {data.map((property, idx: number) => {
                   return (
-                    <HouseFrame
-                      key={idx}
-                      images={item.pictures}
-                      title={item.propertyType}
-                      location={`${item.location.state}, ${item.location.localGovernment}`}
-                      bedroom={item.noOfBedrooms}
-                      bathroom={2}
-                      carPark={3}
-                      onClick={() => {
-                        router.push(`/buy_page/details/${item._id}`);
+                    // <HouseFrame
+                    //   key={idx}
+                    //   images={item.pictures}
+                    //   title={item.propertyType}
+                    //   location={`${item.location.state}, ${item.location.localGovernment}`}
+                    //   bedroom={item.noOfBedrooms}
+                    //   bathroom={2}
+                    //   carPark={3}
+                    //   onClick={() => {
+                    //     router.push(`/buy_page/details/${item._id}`);
+                    //   }}
+                    // />
+                    <Card
+                      style={is_mobile ? { width: '100%' } : { width: '281px' }}
+                      images={property?.pictures}
+                      onCardPageClick={() => {
+                        router.push(`/property/Rent/${property._id}`);
                       }}
+                      // onClick={() =>
+                      //   handlePropertiesSelection(idx.toLocaleString())
+                      // }
+                      cardData={[
+                        {
+                          header: 'Property Type',
+                          value: property.propertyType,
+                        },
+                        {
+                          header: 'Price',
+                          value: `₦${Number(
+                            property.rentalPrice
+                          ).toLocaleString()}`,
+                        },
+                        {
+                          header: 'Bedrooms',
+                          value: property.noOfBedrooms || 'N/A',
+                        },
+                        {
+                          header: 'Location',
+                          value: `${property.location.state}, ${property.location.localGovernment}`,
+                        },
+                        {
+                          header: 'Documents',
+                          value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
+                            (item: { _id: string; docName: string }) =>
+                              `<li key={${item._id}>${item.docName}</li>`
+                          )}<ol>`,
+                        },
+                      ]}
+                      key={idx}
+                      // isDisabled={uniqueProperties.has(idx.toLocaleString())}
                     />
                   );
                 })}
