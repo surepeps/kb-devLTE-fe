@@ -16,12 +16,15 @@ const BuyAPropertySearchModal = ({
   selectedBriefs,
   className = '',
   style = {},
+  usageOptions,
+  setUsageOptions,
 }: {
   selectedBriefs: number;
   className?: string;
   style?: React.CSSProperties;
+  usageOptions: string[];
+  setUsageOptions: (type: string[]) => void;
 }) => {
-  const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
       selectedLGA: '',
@@ -108,6 +111,7 @@ const BuyAPropertySearchModal = ({
             (item: string, idx: number) => (
               <RadioCheck
                 key={idx}
+                isChecked={usageOptions.some((text: string) => text === item)}
                 type='checkbox'
                 name='usageOptions'
                 value={item}
