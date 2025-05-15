@@ -50,9 +50,11 @@ const MyListing = () => {
       return (
         <JointVentureModalCard
           key={idx}
-          onClick={() => {}}
-          isDisabled={false}
-        />
+          onClick={() => { } }
+          isDisabled={false} 
+          cardData={dummyCardData} 
+          images={[sampleImage]}        
+          />
       );
     }
     // Default card for Buy/Sell/Rent

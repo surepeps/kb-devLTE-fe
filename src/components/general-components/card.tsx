@@ -59,7 +59,7 @@ const Card = ({
         viewport={{ once: true }}
         ref={cardRef}
         style={style}
-        className={`w-full md:w-[296px] shrink-0 bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500 ${className} cursor-pointer`}>
+        className={`w-full md:w-[296px] shrink-0 bg-white border-[1px] py-[21px] px-[19px] gap-[10px] transition-all duration-500 ${className}`}>
         <div className='flex flex-col gap-[11px] w-full'>
           <div className={`w-full h-[148px] bg-gray-200`}>
             {/**Premium */}
@@ -76,7 +76,11 @@ const Card = ({
               alt=''
               width={400}
               height={200}
-              className='w-full h-[148px] object-cover'
+              onClick={() => {
+                setImageData(images);
+                setViewImage(true);
+              }}
+              className='w-full h-[148px] object-cover cursor-pointer'
             />
           </div>
           <div className='flex flex-col gap-[2px] mt-6'>
