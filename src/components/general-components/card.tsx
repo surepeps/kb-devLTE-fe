@@ -159,7 +159,7 @@ const Card = ({
                   setViewImage(true);
                 }}
                 className='text-xs font-semibold text-[#0B423D] underline'>
-                View image
+                View Details
               </button>
             </div>
           </div>
