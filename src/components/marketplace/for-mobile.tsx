@@ -27,9 +27,13 @@ import toast from 'react-hot-toast';
 const Mobile = ({
   selectedMarketPlace,
   renderBrief,
+  selectedBriefs,
+  onSelectBrief,
 }: {
   selectedMarketPlace: string;
-  renderBrief: () => React.JSX.Element;
+  renderBrief: (onSelectBrief: (id: string) => void) => React.JSX.Element;
+  selectedBriefs: number;
+  onSelectBrief: (id: string) => void;
 }) => {
   const { selectedType, setSelectedType } = usePageContext();
   const [isFilterModalOpened, setIsFilterModalOpened] =
@@ -62,37 +66,31 @@ const Mobile = ({
   const isLoading = useLoading();
   if (isLoading) return <Loading />;
 
+  // const selectedBriefs = 5;
+
   return (
     <Fragment>
       <div className='w-full flex flex-col gap-[20px]'>
-        <div className='py-[25px] px-[30px] bg-white w-full sticky top-0 z-20'>
-          <article className='h-full w-full flex flex-col gap-[15px]'>
-            {/**List Property */}
-            <div className='flex items-end justify-end'>
-              <button
-                title='List property'
-                className='w-[133px] h-[34px] bg-[#8DDB90] text-white text-sm font-medium shadow-md shadow-[#a7e2a9]'
-                type='button'>
-                List Property
-              </button>
-            </div>
+        <div className='py-[10px] bg-white w-full sticky top-0 z-20'>
+          <article className='h-full w-full flex flex-col gap-[15px] px-[10px]'>
             {/**Preferred Location */}
             <SelectStateLGA
               placeholder='Enter state, lga, city....'
               formik={formik}
-              heading='Preferred Location'
+              heading=''
             />
             {/**other content */}
-            <div className='grid grid-cols-2 min-h-[115px] w-full gap-[30px]'>
-              <label htmlFor='market_place_type'>
+            <div className="flex w-full gap-[20px]">
+              <label htmlFor="market_place_type" className="flex-1">
                 <select
                   onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
                     setSelectedType(event.target.value)
                   }
-                  className='w-full h-[50px] px-[12px] border-[1px] border-[#D6DDEB] text-xs'
-                  title='Select option'
-                  name='market_place_type'
-                  id='market_place_type'>
+                  className="w-full h-[34px] px-[12px] border-[1px] border-[#D6DDEB] text-xs"
+                  title="Select option"
+                  name="market_place_type"
+                  id="market_place_type"
+                >
                   {[
                     'Buy a property',
                     'Find property for Joint Venture',
@@ -104,26 +102,36 @@ const Mobile = ({
                   ))}
                 </select>
               </label>
-              <button
-                onClick={() => setIsFilterModalOpened(!isFilterModalOpened)}
-                className='border-[1px] px-[12px] border-[#09391C] w-full h-[50px] text-base text-[#09391C]'
-                type='button'>
-                filter
-              </button>
-              <button
-                onClick={handleSubmit}
-                className='h-[50px] w-full bg-[#8DDB90] px-[12px] col-span-2 text-white text-base font-bold'
-                type='button'>
-                Search
-              </button>
+                <button
+                  title="List property"
+                  className="w-[30%] h-[34px] bg-[#8DDB90] text-white text-xs font-medium shadow-md shadow-[#a7e2a9] "
+                  type="button"
+                >
+                  List Property
+                </button>
             </div>
+
+              <div className="grid grid-cols-2 gap-[10px]">
+                <button
+                  onClick={handleSubmit}
+                  className='h-[34px] w-full bg-[#8DDB90] px-[12px] text-white text-xs font-bold'
+                  type='button'>
+                  Search
+                </button>
+                <button
+                  onClick={() => setIsFilterModalOpened(!isFilterModalOpened)}
+                  className='border-[1px] px-[8px] border-[#09391C] w-full h-[34px] text-xs text-[#09391C]'
+                  type='button'>
+                  filter
+                </button>
+              </div>
           </article>
         </div>
         <div
           className='flex-1 overflow-y-auto'
-          style={{ maxHeight: 'calc(100dvh - 180px)', marginBottom: '30px' }} // adjust 180px as needed for your header height
+          style={{ maxHeight: 'calc(100dvh - 180px)', marginBottom: '20px' }} // adjust 180px as needed for your header height
         >
-          {selectedMarketPlace && renderBrief()}
+          {selectedMarketPlace && renderBrief(onSelectBrief)}
         </div>
       </div>
       {isFilterModalOpened && (
@@ -132,6 +140,29 @@ const Mobile = ({
           closeModal={setIsFilterModalOpened}
         />
       )}
+
+            {/* Selected Briefs Section */}
+      <div className="w-full flex flex-col gap-3 bg-white py-5 px-5">
+        <div className="text-[#000] text-base font-medium">
+          <span className="text-red-500 font-bold">({selectedBriefs})</span> Brief{Number(selectedBriefs) === 1 ? '' : 's'} selected for inspection
+        </div>
+        <div className="flex gap-3 w-full ">
+          <button
+            className=" h-[50px] border-[1px] border-[#5A5D6380] text-[#09391C] font-medium w-[40%]"
+            type="button"
+            // onClick={handleViewBrief}
+          >
+            View Listing
+          </button>
+          <button
+            className="h-[50px] bg-[#8DDB90] text-white font-medium w-[60%]"
+            type="button"
+            // onClick={handleSubmitForInspection}
+          >
+            Submit for inspection
+          </button>
+        </div>
+      </div>
     </Fragment>
   );
 };
