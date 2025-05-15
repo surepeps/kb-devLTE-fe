@@ -368,7 +368,7 @@ const ProductDetailsPage = () => {
                         ))}
                       </div>
                     ) : null}
-                    <div className='md:w-[70%] w-full h-full flex flex-col gap-[20px]'>
+                    <div className='w-full h-full flex flex-col gap-[20px]'>
                       {/**Details */}
                       <div className='min-h-[152px] w-full py-[40px] border-b-[1px] border-[#C7CAD0]'>
                         {/* <h2
@@ -376,7 +376,7 @@ const ProductDetailsPage = () => {
                           Details
                         </h2> */}
 
-                        <div className='w-full min-h-[152px] grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4'>
+                        <div className='w-full min-h-[152px] grid grid-cols-3 gap-[10px]'>
                           {/**Price */}
                           {/* <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
                             <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
@@ -387,39 +387,38 @@ const ProductDetailsPage = () => {
                             </h3>
                           </div> */}
                           <BoxContainer
+                            heading='Property Type'
+                            subHeading={details.propertyType}
+                          />
+
+                          <BoxContainer
+                            heading='Location'
+                            subHeading={`${details.location.state}, ${details.location.localGovernment}`}
+                          />
+                          <BoxContainer
                             heading='Price'
                             subHeading={Number(details.price).toLocaleString()}
                           />
 
-                          {/**Property Type */}
-                          <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
-                            <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
-                              Property Type
-                            </h4>
-                            <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
-                              {details.propertyType}
-                            </h3>
-                          </div>
-
                           {/**Bed room */}
-                          <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
+                          {/* <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
                             <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
                               Bed Room
                             </h4>
                             <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
                               {details.bedRoom}
                             </h3>
-                          </div>
+                          </div> */}
 
                           {/**Property Status */}
-                          <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
+                          {/* <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
                             <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
                               Property Status
                             </h4>
                             <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
                               {details.propertyStatus}
                             </h3>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
 
@@ -440,8 +439,21 @@ const ProductDetailsPage = () => {
                         />
                       ) : null}
 
+                      <div className='w-full flex items-center mt-10 justify-between'>
+                        <button
+                          type='button'
+                          className='lg:w-[266px] h-[64px] bg-[#8DDB90] text-base font-bold text-[#FFFFFF]'>
+                          Select for inspection
+                        </button>
+                        <button
+                          type='button'
+                          className='lg:w-[266px] h-[64px] bg-[#1976D2] text-base font-bold text-[#FFFFFF]'>
+                          Price Negotiation
+                        </button>
+                      </div>
+
                       {/**Contact Information */}
-                      <div className='min-h-[152px] w-full py-[40px]'>
+                      {/* <div className='min-h-[152px] w-full py-[40px]'>
                         <h2
                           className={`text-[24px] leading-[38.4px] font-semibold font-epilogue`}>
                           Contact Information
@@ -547,7 +559,7 @@ const ProductDetailsPage = () => {
                             </span>
                           )}
 
-                          {/** */}
+                        
                           <div className='flex items-center gap-[10px] mt-[10px]'>
                             <input
                               title='checkbox'
@@ -577,7 +589,7 @@ const ProductDetailsPage = () => {
                             />
                           </div>
                         </form>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -840,7 +852,7 @@ const SimilarComponent = ({
   heading: string;
 }) => {
   return (
-    <div className='min-h-fit bg-[#F7F7F8] p-[15px] w-full flex flex-col gap-[24px]'>
+    <div className='min-h-fit bg-[#F7F7F8] p-[15px] flex flex-col gap-[24px]'>
       <h2
         className={`md:text-[24px] md:leading-[38.4px] text-[20px] leading-[32px] font-semibold font-epilogue`}>
         {heading}
@@ -875,11 +887,26 @@ const BoxContainer = ({
   heading: string;
   subHeading: string;
 }) => {
+  const changeColorBehaviors = () => {
+    switch (heading) {
+      case 'Price':
+        return { bg: 'bg-green-100', color: 'text-[#25324B]' };
+      case 'Property Type':
+        return { bg: 'bg-white', color: 'text-[#09391C]' };
+      default:
+        return { bg: 'bg-white', color: 'text-[#25324B]' };
+    }
+  };
   return (
-    <div className='w-[240px] bg-[#F7F7F8] h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]'>
+    <div
+      className={`w-[240px] ${
+        heading && changeColorBehaviors().bg
+      } h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
       <h4 className='text-lg text-[#7C8493]'>{heading}</h4>
       <h3
-        className={`text-lg font-medium text-[#25324B] ${epilogue.className}`}>
+        className={`text-lg font-semibold ${
+          heading && changeColorBehaviors().color
+        } ${epilogue.className}`}>
         {subHeading}
       </h3>
     </div>
