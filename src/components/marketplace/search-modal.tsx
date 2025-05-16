@@ -218,7 +218,9 @@ const SearchModal = () => {
               <JointVentureModalCard
                 key={idx}
                 onClick={() => handlePropertiesSelection(idx.toLocaleString())}
-                isDisabled={uniqueProperties.has(idx.toLocaleString())}
+                isDisabled={uniqueProperties.has(idx.toLocaleString())} 
+                cardData={[]} 
+                images={[]}              
               />
             );
           });
@@ -415,6 +417,8 @@ const SearchModal = () => {
         <Mobile
           selectedMarketPlace={userSelectedMarketPlace}
           renderBrief={renderDynamicComponent}
+          selectedBriefs={uniqueProperties.size}
+          onSelectBrief={handlePropertiesSelection}
         />
       ) : (
         userSelectedMarketPlace && renderDynamicComponent()
