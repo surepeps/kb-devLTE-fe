@@ -51,7 +51,7 @@ const Card = ({
   return (
     <Fragment>
       <motion.div
-        onClick={onCardPageClick}
+        // onClick={onCardPageClick}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
@@ -76,7 +76,11 @@ const Card = ({
               alt=''
               width={400}
               height={200}
-              className='w-full h-[148px] object-cover'
+              onClick={() => {
+                setImageData(images);
+                setViewImage(true);
+              }}
+              className='w-full h-[148px] object-cover cursor-pointer'
             />
           </div>
           <div className='flex flex-col gap-[2px] mt-6'>
@@ -154,10 +158,11 @@ const Card = ({
 
               <button
                 type='button'
-                onClick={() => {
-                  setImageData(images);
-                  setViewImage(true);
-                }}
+                onClick={
+                  onCardPageClick
+                  // setImageData(images);
+                  // setViewImage(true);
+                }
                 className='text-xs font-semibold text-[#0B423D] underline'>
                 View Details
               </button>
