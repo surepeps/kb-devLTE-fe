@@ -126,12 +126,14 @@ const Mobile = ({
           {selectedMarketPlace && renderBrief()}
         </div>
       </div>
-      {isFilterModalOpened && (
-        <Filter
-          setPayloadFromFilter={setPayloadFromFilter}
-          closeModal={setIsFilterModalOpened}
-        />
-      )}
+      <AnimatePresence>
+        {isFilterModalOpened && (
+          <Filter
+            setPayloadFromFilter={setPayloadFromFilter}
+            closeModal={setIsFilterModalOpened}
+          />
+        )}
+      </AnimatePresence>
     </Fragment>
   );
 };
