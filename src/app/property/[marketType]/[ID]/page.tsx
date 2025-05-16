@@ -312,7 +312,7 @@ const ProductDetailsPage = () => {
             (isContactUsClicked || isModalOpened) &&
             'filter brightness-[30%] transition-all duration-500 overflow-hidden'
           }`}>
-          <div className='flex flex-col items-center gap-[20px] w-full'>
+          <div className='flex flex-col items-center gap-[20px] w-full mt-10'>
             <div className='min-h-[90px] container w-full flex flex-col items-start lg:px-[40px]'>
               <div className='flex gap-1 items-center px-[10px] lg:px-[0px]'>
                 <Image
@@ -336,16 +336,16 @@ const ProductDetailsPage = () => {
                   </h3>
                 </div>
               </div>
-              <h2
-                className={`${epilogue.className} text-2xl font-semibold mt-6 text-black`}>
-                Newly Built 5 bedroom Duplex with BQ in a highly secured area in
-                the heart of GRA
-              </h2>
+                <h2
+                  className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold mt-6 text-black px-3 md:px-5`}>
+                  Newly Built 5 bedroom Duplex with BQ in a highly secured area in
+                  the heart of GRA
+                </h2>
             </div>
 
-            <div className='w-full flex justify-center items-center'>
-              <div className='flex justify-between items-start container px-[20px]'>
-                <div className='w-[70%] flex flex-col'>
+            {/* <div className='w-full flex justify-center items-center'> */}
+              <div className='flex flex-col md:flex-row justify-between items-start container px-[10px] md:px-[20px]'>
+                <div className='w-full md:w-[70%] flex flex-col'>
                   <div className='lg:w-[837px] flex flex-col gap-[20px]'>
                     <ImageSwiper
                       images={
@@ -354,43 +354,31 @@ const ProductDetailsPage = () => {
                           : [sampleImage.src]
                       }
                     />
+
+                    <div className='w-full md:w-[90%] h-full flex flex-col gap-[20px]'>
                     {details.pictures['length'] !== 0 ? (
-                      <div className='flex gap-[20px]'>
+                        <div className="flex gap-[12px] overflow-x-auto w-full min-w-0">
                         {details.pictures.map((src: string, idx: number) => (
                           <img
                             src={src}
                             key={idx}
                             width={200}
                             height={200}
-                            className='w-[120px] h-[92px] object-cover bg-gray-200'
+                            className="w-[80px] h-[60px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded"
+                            // style={{ maxWidth: '100%', flex: '0 0 auto' }}
                             alt={'image'}
                           />
                         ))}
                       </div>
                     ) : null}
-                    <div className='w-full h-full flex flex-col gap-[20px]'>
                       {/**Details */}
-                      <div className='min-h-[152px] w-full py-[40px] border-b-[1px] border-[#C7CAD0]'>
-                        {/* <h2
-                          className={`md:text-[24px] md:leading-[38.4px] text-[20px] leading-[32px] font-semibold font-epilogue`}>
-                          Details
-                        </h2> */}
+                      <div className='w-full min-h-[152px] py-[40px] border-b-[1px] border-[#C7CAD0]'>
 
-                        <div className='w-full min-h-[152px] grid grid-cols-3 gap-[10px]'>
-                          {/**Price */}
-                          {/* <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
-                            <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
-                              Price
-                            </h4>
-                            <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
-                              {Number(details.price).toLocaleString()}
-                            </h3>
-                          </div> */}
+                       <div className='w-full min-h-[152px] grid grid-cols-2 md:grid-cols-3 gap-[10px]'>
                           <BoxContainer
                             heading='Property Type'
                             subHeading={details.propertyType}
                           />
-
                           <BoxContainer
                             heading='Location'
                             subHeading={`${details.location.state}, ${details.location.localGovernment}`}
@@ -399,27 +387,7 @@ const ProductDetailsPage = () => {
                             heading='Price'
                             subHeading={Number(details.price).toLocaleString()}
                           />
-
-                          {/**Bed room */}
-                          {/* <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
-                            <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
-                              Bed Room
-                            </h4>
-                            <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
-                              {details.bedRoom}
-                            </h3>
-                          </div> */}
-
-                          {/**Property Status */}
-                          {/* <div className='min-w-[122px] min-h-[68px] gap-[10px]'>
-                            <h4 className='text-[18px] text-[#7C8493] leading-[28.8px] font-normal'>
-                              Property Status
-                            </h4>
-                            <h3 className='text-[18px] leading-[28.8px] font-bold text-[#25324B] font-epilogue'>
-                              {details.propertyStatus}
-                            </h3>
-                          </div> */}
-                        </div>
+                        </div> 
                       </div>
 
                       {/**Property Features */}
@@ -439,18 +407,20 @@ const ProductDetailsPage = () => {
                         />
                       ) : null}
 
-                      <div className='w-full flex items-center mt-10 justify-between'>
-                        <button
-                          type='button'
-                          className='lg:w-[266px] h-[64px] bg-[#8DDB90] text-base font-bold text-[#FFFFFF]'>
-                          Select for inspection
-                        </button>
-                        <button
-                          type='button'
-                          className='lg:w-[266px] h-[64px] bg-[#1976D2] text-base font-bold text-[#FFFFFF]'>
-                          Price Negotiation
-                        </button>
-                      </div>
+                        <div className="w-full flex flex-row items-center mt-10 gap-3 justify-between">
+                          <button
+                            type="button"
+                            className="w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white"
+                          >
+                            Select for inspection
+                          </button>
+                          <button
+                            type="button"
+                            className="w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white"
+                          >
+                            Price Negotiation
+                          </button>
+                        </div>
 
                       {/**Contact Information */}
                       {/* <div className='min-h-[152px] w-full py-[40px]'>
@@ -593,7 +563,7 @@ const ProductDetailsPage = () => {
                     </div>
                   </div>
                 </div>
-                <div className='w-[30%] flex flex-col items-end'>
+                <div className='hidden md:flex w-full md:w-[30%] flex-col items-end'>
                   <div className='w-full lg:w-[282px] flex justify-center items-center'>
                     <div className='flex justify-between items-start container'>
                       <div className='w-full flex flex-col gap-[26px] h-[inherit]'>
@@ -709,7 +679,7 @@ const ProductDetailsPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            {/* </div> */}
           </div>
         </section>
       ) : (
@@ -719,59 +689,59 @@ const ProductDetailsPage = () => {
   );
 };
 
-const Input = ({
-  name,
-  placeholder,
-  type,
-  formik,
-  onChange,
-  label,
-}: {
-  name: string;
-  placeholder: string;
-  type: string;
-  formik: any;
-  onChange?: (name: string, value: string) => void;
-  label: string;
-}) => {
-  return (
-    <label
-      className='md:1/2 w-full min-h-[80px] gap-[4px] flex flex-col'
-      htmlFor={name}>
-      <h2 className='text-base leading-[25.6px] text-[#1E1E1E] font-medium'>
-        {name}
-      </h2>
-      {type === 'number' ? (
-        <PhoneInputField
-          id='phoneNumber'
-          name='phoneNumber'
-          value={formik.values[name]}
-          onChange={formik.setFieldValue}
-          onBlur={formik.handleBlur}
-          error={formik.errors[name]}
-          touched={formik.touched[name]}
-          // className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
-          placeholder='Enter Your phone number'
-        />
-      ) : (
-        <input
-          type={type}
-          id={label}
-          value={formik.values[label]}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          name={label}
-          placeholder={placeholder}
-          className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]  disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
-        />
-      )}
+// const Input = ({
+//   name,
+//   placeholder,
+//   type,
+//   formik,
+//   onChange,
+//   label,
+// }: {
+//   name: string;
+//   placeholder: string;
+//   type: string;
+//   formik: any;
+//   onChange?: (name: string, value: string) => void;
+//   label: string;
+// }) => {
+//   return (
+//     <label
+//       className='md:1/2 w-full min-h-[80px] gap-[4px] flex flex-col'
+//       htmlFor={name}>
+//       <h2 className='text-base leading-[25.6px] text-[#1E1E1E] font-medium'>
+//         {name}
+//       </h2>
+//       {type === 'number' ? (
+//         <PhoneInputField
+//           id='phoneNumber'
+//           name='phoneNumber'
+//           value={formik.values[name]}
+//           onChange={formik.setFieldValue}
+//           onBlur={formik.handleBlur}
+//           error={formik.errors[name]}
+//           touched={formik.touched[name]}
+//           // className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
+//           placeholder='Enter Your phone number'
+//         />
+//       ) : (
+//         <input
+//           type={type}
+//           id={label}
+//           value={formik.values[label]}
+//           onBlur={formik.handleBlur}
+//           onChange={formik.handleChange}
+//           name={label}
+//           placeholder={placeholder}
+//           className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]  disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
+//         />
+//       )}
 
-      {(formik.touched[label] || formik.errors[label]) && (
-        <span className='text-sm text-red-500'>{formik.errors[label]}</span>
-      )}
-    </label>
-  );
-};
+//       {(formik.touched[label] || formik.errors[label]) && (
+//         <span className='text-sm text-red-500'>{formik.errors[label]}</span>
+//       )}
+//     </label>
+//   );
+// };
 
 // components/PhoneInputField.tsx
 
@@ -788,36 +758,36 @@ interface PhoneInputFieldProps {
   className?: string;
 }
 
-const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
-  name,
-  value,
-  onChange,
-  onBlur,
-  error,
-  touched,
-  placeholder = 'Enter phone number',
-  defaultCountry = 'NG', // Default country set to Nigeria
-  className,
-}) => {
-  return (
-    <div className='w-full'>
-      <PhoneInput
-        international
-        defaultCountry={defaultCountry}
-        placeholder={placeholder}
-        value={value}
-        onChange={(value) => onChange(name, value || '')}
-        onBlur={onBlur}
-        id={name}
-        name={name}
-        className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
-      />
-      {touched && error && (
-        <span className='text-sm text-red-500'>{error}</span>
-      )}
-    </div>
-  );
-};
+// const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
+//   name,
+//   value,
+//   onChange,
+//   onBlur,
+//   error,
+//   touched,
+//   placeholder = 'Enter phone number',
+//   defaultCountry = 'NG', // Default country set to Nigeria
+//   className,
+// }) => {
+//   return (
+//     <div className='w-full'>
+//       <PhoneInput
+//         international
+//         defaultCountry={defaultCountry}
+//         placeholder={placeholder}
+//         value={value}
+//         onChange={(value) => onChange(name, value || '')}
+//         onBlur={onBlur}
+//         id={name}
+//         name={name}
+//         className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
+//       />
+//       {touched && error && (
+//         <span className='text-sm text-red-500'>{error}</span>
+//       )}
+//     </div>
+//   );
+// };
 
 const ImageSwiper = ({ images }: { images: string[] }) => {
   //const images = [sampleImage.src, sampleImage.src];
@@ -830,7 +800,7 @@ const ImageSwiper = ({ images }: { images: string[] }) => {
       pagination={{ clickable: true }}
       autoplay={{ delay: 3000 }}
       loop={true}
-      className='w-full lg:w-[837px]'>
+      className='w-full max-w-full lg:w-[837px]'>
       {images.map((src, i) => (
         <SwiperSlide key={i}>
           <img
@@ -858,7 +828,7 @@ const SimilarComponent = ({
         {heading}
       </h2>
 
-      <div className='w-full grid grid-cols-subgrid gap-[8px]'>
+      <div className='w-full grid grid-cols-2 md:grid-cols-3 gap-[8px]'>
         {data.map((item: string, idx: number) => {
           return (
             <div key={idx} className='flex items-center gap-[8px]'>
@@ -898,10 +868,8 @@ const BoxContainer = ({
     }
   };
   return (
-    <div
-      className={`w-[240px] ${
-        heading && changeColorBehaviors().bg
-      } h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
+  <div
+      className={`w-full ${heading && changeColorBehaviors().bg} h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
       <h4 className='text-lg text-[#7C8493]'>{heading}</h4>
       <h3
         className={`text-lg font-semibold ${
