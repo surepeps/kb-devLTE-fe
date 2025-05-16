@@ -242,6 +242,8 @@ const SearchModal = ({
                 key={idx}
                 onClick={() => handlePropertiesSelection(property)}
                 isDisabled={uniqueProperties.has(property)}
+                cardData={[]}
+                images={[]}
               />
             );
           });
@@ -469,6 +471,8 @@ const SearchModal = ({
         <Mobile
           selectedMarketPlace={userSelectedMarketPlace}
           renderBrief={renderDynamicComponent}
+          selectedBriefs={uniqueProperties.size}
+          onSelectBrief={handlePropertiesSelection}
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>

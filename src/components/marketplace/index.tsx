@@ -88,7 +88,7 @@ const MarketPlace = () => {
             </div>
           </div>
           {/**Search Modal */}
-          <div className='w-full mt-2 px-[20px]'>
+          <div className='w-full mt-2 '>
             <SearchModal
               propertiesSelected={propertiesSelected}
               setPropertiesSelected={setPropertiesSelected}
