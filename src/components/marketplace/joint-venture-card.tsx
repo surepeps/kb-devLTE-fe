@@ -1,36 +1,71 @@
 /** @format */
 'use client';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import React from 'react';
 import imageSample from '@/assets/assets.png';
+import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { faStarOfDavid } from '@fortawesome/free-solid-svg-icons';
 import markerIcon from '@/svgs/marker.svg';
+import { usePageContext } from '@/context/page-context';
 import Button from '../general-components/button';
 
 interface CardDataProps {
-  isRed?: boolean;
-  onClick?: () => void;
-  className?: string;
-  isPremium?: boolean;
-  style?: React.CSSProperties;
-  isDisabled?: boolean;
+  // isRed?: boolean;
+  // onClick?: () => void;
+  // className?: string;
+  // isPremium?: boolean;
+  // style?: React.CSSProperties;
+  // isDisabled?: boolean;
+
+    isRed?: boolean;
+    cardData: { header: string; value: string }[];
+    onClick?: () => void;
+    className?: string;
+    images: StaticImport[];
+    isPremium?: boolean;
+    style?: React.CSSProperties;
+    isDisabled?: boolean;
+    onCardPageClick?: () => void;
 }
 
 const JointVentureModalCard = ({
   isRed,
   onClick,
   className,
+  cardData,
+  images = [],
   style,
   isDisabled,
+  onCardPageClick
 }: CardDataProps) => {
+  const { setViewImage, setImageData } = usePageContext();
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+
   return (
-    <div className='md:w-[261px] w-full h-[287px] p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF]'>
-      <div className='min-h-[62px] w-full flex gap-[10px] items-end relative'>
+    <Fragment>
+      <motion.div
+        onClick={onCardPageClick}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        exit={{ opacity: 0, y: 20 }}
+        viewport={{ once: true }}
+        ref={cardRef}
+        style={style}
+      >
+        <div className='md:w-[261px] w-full p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF] on'>
+          <div className='min-h-[62px] w-full flex gap-[10px] items-end relative'>
         <Image
-          src={imageSample}
+          src={images[0] ?? imageSample}
           width={61}
           height={62}
+          onClick={() => {
+            setImageData(images);
+            setViewImage(true);
+          }}
           className='w-[61px] h-[62px] object-cover'
           alt=''
         />
@@ -56,17 +91,14 @@ const JointVentureModalCard = ({
         </div>
         <div className='flex flex-wrap gap-[2%] min-h-[57px]'>
           {/**Land sqft */}
-          <div className='bg-[#E4EFE7] px-[7px] h-[26px] w-[49%] text-xs text-[#000000] flex items-center mb-2'>
+          <div className='bg-[#E4EFE7] px-[7px] h-[26px] w-[59%] text-xs text-[#000000] flex items-center mb-2'>
             4000 sqft
           </div>
-          <div className='bg-[#09391C] px-[7px] h-[26px] text-xs w-[49%] flex items-center text-white'>
-            Joint venture (JV)
-          </div>
-          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px] w-[70%] flex items-center min-w-fit'>
-            deed of assignment
-          </div>
-          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px]  w-[28%] flex items-center'>
+          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px]  w-[39%] flex items-center'>
             Fence
+          </div>
+          <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px] w-[100%] flex items-center min-w-fit'>
+            deed of assignment
           </div>
         </div>
       </div>
@@ -94,7 +126,9 @@ const JointVentureModalCard = ({
           } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
         />
       </div>
-    </div>
+        </div>
+      </motion.div>
+    </Fragment>
   );
 };
 

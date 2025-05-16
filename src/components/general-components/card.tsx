@@ -75,7 +75,11 @@ const Card = ({
               alt=''
               width={400}
               height={200}
-              className='w-full h-[148px] object-cover'
+              onClick={() => {
+                setImageData(images);
+                setViewImage(true);
+              }}
+              className='w-full h-[148px] object-cover cursor-pointer'
             />
           </div>
           <div className='flex flex-col gap-[2px] mt-6'>
