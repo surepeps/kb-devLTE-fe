@@ -14,7 +14,7 @@ import DesiresFeaturesModal from './desires-features-modal';
 import TenantFeaturesModal from './tenant-criteria';
 import toast from 'react-hot-toast';
 
-export type PayloadProps = {
+type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
   initialAmount: number;
   toBeIncreaseBy: number;

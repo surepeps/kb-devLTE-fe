@@ -13,7 +13,7 @@ import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
 import toast from 'react-hot-toast';
 
-export type PayloadProps = {
+type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
   initialAmount: number;
   toBeIncreaseBy: number;
