@@ -43,6 +43,9 @@ import 'swiper/css/pagination';
 import copy from '@/utils/copyItem';
 import Card from '@/components/general-components/card';
 import { IsMobile } from '@/hooks/isMobile';
+import MobileSelectedBottomBar from '@/components/marketplace/MobileSelectedBottomBar';
+
+// const selectedBriefs = 9;
 
 interface DetailsProps {
   propertyId: string;
@@ -84,7 +87,10 @@ type HouseFrameProps = {
   _id: string;
 };
 
-const ProductDetailsPage = () => {
+const ProductDetailsPage = ({
+  selectedBriefs = 2,
+  selectedBriefsList = [],
+}) => {
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
     usePageContext();
@@ -248,7 +254,7 @@ const ProductDetailsPage = () => {
   });
 
   useEffect(() => {
-    console.log(id);
+    // console.log(id);
     const getProductDetails = async () => {
       try {
         const res = await axios.get(URLS.BASE + `/properties/rents/rent/${id}`);
@@ -619,7 +625,7 @@ const ProductDetailsPage = () => {
                           <button
                             type='button'
                             className='w-full h-[60px] border-[1px] border-[#FF3D00] text-[#FF3D00] font-medium text-lg'>
-                            2 selected brief
+                            {selectedBriefs} selected brief
                           </button>
                         </div>
                         <div className='w-full items-end hidden h-full md:flex md:flex-col gap-[10px]'>
@@ -679,7 +685,16 @@ const ProductDetailsPage = () => {
                   </div>
                 </div>
               </div>
-            {/* </div> */}
+              <MobileSelectedBottomBar
+                selectedBriefs={selectedBriefs}
+                selectedBriefsList={selectedBriefsList}
+                onViewBrief={() => {
+                  console.log('View Briefs', selectedBriefsList);
+                }}
+                onSubmitForInspection={() => {
+                  console.log('Submit for inspection', selectedBriefsList);
+                }}
+              />
           </div>
         </section>
       ) : (
