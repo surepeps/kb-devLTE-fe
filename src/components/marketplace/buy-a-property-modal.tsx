@@ -11,6 +11,13 @@ import MoreFilter from './more-filter';
 import DocumentTypeComponent from './document-type';
 import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
+import toast from 'react-hot-toast';
+
+export type PayloadProps = {
+  twoDifferentInspectionAreas: boolean;
+  initialAmount: number;
+  toBeIncreaseBy: number;
+};
 
 const BuyAPropertySearchModal = ({
   selectedBriefs,
@@ -18,12 +25,18 @@ const BuyAPropertySearchModal = ({
   style = {},
   usageOptions,
   setUsageOptions,
+  setAddInspectionModal,
+  addForInspectionPayload,
+  setSelectedBriefs,
 }: {
   selectedBriefs: number;
   className?: string;
   style?: React.CSSProperties;
   usageOptions: string[];
   setUsageOptions: (type: string[]) => void;
+  setAddInspectionModal?: (type: boolean) => void;
+  addForInspectionPayload: PayloadProps;
+  setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -137,9 +150,29 @@ const BuyAPropertySearchModal = ({
           </button>
           <button
             className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
-            type='button'>
+            type='button'
+            onClick={() => {
+              if (addForInspectionPayload.initialAmount === 0) {
+                setAddInspectionModal?.(false);
+                return toast.error('All states can not be different');
+              }
+              if (selectedBriefs === 0) {
+                return toast.error(
+                  'Please, Select at least one for inspection before listing'
+                );
+              }
+              setAddInspectionModal?.(true);
+            }}>
             {selectedBriefs} selected briefs
           </button>
+          {selectedBriefs > 0 && (
+            <button
+              onClick={() => setSelectedBriefs(new Set([]))}
+              className='h-[34px] w-[133px] bg-transparent text-black border-[1px] border-zinc-800 font-medium text-sm'
+              type='button'>
+              reset
+            </button>
+          )}
         </div>
       </div>
       <div className='flex gap-[20px] items-end'>

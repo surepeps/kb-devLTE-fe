@@ -314,7 +314,7 @@ const ProductDetailsPage = ({
     <Fragment>
       {path.match(/[0-9]/) ? (
         <section
-          className={`flex justify-center w-full bg-[#EEF1F1] pb-[50px] ${
+          className={`flex justify-center w-full bg-[#EEF1F1] md:pb-[50px] ${
             (isContactUsClicked || isModalOpened) &&
             'filter brightness-[30%] transition-all duration-500 overflow-hidden'
           }`}>
