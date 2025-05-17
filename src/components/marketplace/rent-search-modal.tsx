@@ -12,6 +12,13 @@ import RadioCheck from '../general-components/radioCheck';
 import BedsAndBathModal from './beds-and-bath-modal';
 import DesiresFeaturesModal from './desires-features-modal';
 import TenantFeaturesModal from './tenant-criteria';
+import toast from 'react-hot-toast';
+
+type PayloadProps = {
+  twoDifferentInspectionAreas: boolean;
+  initialAmount: number;
+  toBeIncreaseBy: number;
+};
 
 const RentSearchModal = ({
   selectedBriefs,
@@ -19,12 +26,19 @@ const RentSearchModal = ({
   setRentFilterBy,
   homeCondition,
   setHomeCondition,
+  setAddInspectionModal,
+  addForInspectionPayload,
+  setSelectedBriefs,
 }: {
   selectedBriefs: number;
   rentFilterBy: string[];
   setRentFilterBy: (type: string[]) => void;
   homeCondition: string;
   setHomeCondition: (type: string) => void;
+  setUsageOptions: (type: string[]) => void;
+  setAddInspectionModal?: (type: boolean) => void;
+  addForInspectionPayload: PayloadProps;
+  setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -48,11 +62,9 @@ const RentSearchModal = ({
     bath: undefined,
     bed: undefined,
   });
-
   const [isDesiresFeaturesModalOpened, setIsDesiresFeaturesModalOpened] =
     useState<boolean>(false);
   const [desiresFeatures, setDesiresFeatures] = useState<string[]>([]);
-
   const [isTenantCriteriaModalOpened, setIsTenantCriteriaModalOpened] =
     useState<boolean>(false);
   const [tenatCriteria, setTenantCriteria] = useState<string[]>([]);
@@ -130,9 +142,29 @@ const RentSearchModal = ({
           </button>
           <button
             className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
-            type='button'>
+            type='button'
+            onClick={() => {
+              if (addForInspectionPayload.initialAmount === 0) {
+                setAddInspectionModal?.(false);
+                return toast.error('All states can not be different');
+              }
+              if (selectedBriefs === 0) {
+                return toast.error(
+                  'Please, Select at least one for inspection before listing'
+                );
+              }
+              setAddInspectionModal?.(true);
+            }}>
             {selectedBriefs} selected briefs
           </button>
+          {selectedBriefs > 0 && (
+            <button
+              onClick={() => setSelectedBriefs(new Set([]))}
+              className='h-[34px] w-[133px] bg-transparent text-black border-[1px] border-zinc-800 font-medium text-sm'
+              type='button'>
+              reset
+            </button>
+          )}
         </div>
       </div>
       {/**Home Condition */}
