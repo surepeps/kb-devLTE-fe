@@ -3,7 +3,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import arrowDown from '@/svgs/arrowDown.svg';
 import Image from 'next/image';
-import Button from './button';
+import Button from '@/components/general-components/button';
 //import ViewImage from './viewImage';
 import { usePageContext } from '@/context/page-context';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
@@ -22,6 +22,7 @@ interface CardDataProps {
   style?: React.CSSProperties;
   isDisabled?: boolean;
   onCardPageClick?: () => void;
+  onPriceNegotiation?: () => void;
 }
 
 const Card = ({
@@ -33,6 +34,7 @@ const Card = ({
   style,
   isDisabled,
   onCardPageClick,
+  onPriceNegotiation,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
@@ -75,11 +77,7 @@ const Card = ({
               alt=''
               width={400}
               height={200}
-              onClick={() => {
-                setImageData(images);
-                setViewImage(true);
-              }}
-              className='w-full h-[148px] object-cover cursor-pointer'
+              className='w-full h-[148px] object-cover'
             />
           </div>
           <div className='flex flex-col gap-[2px] mt-6'>
@@ -207,33 +205,22 @@ const Card = ({
             type='button'
             // green={isRed ? false : true}
             red={isRed}
-            //onClick={onClick}
+            onClick={onPriceNegotiation}
             className='min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold'
           />
-          <button
-            onClick={onClick}
-            disabled={isDisabled}
-            className={`min-h-[50px] py-[12px] px-[24px] ${
-              isDisabled
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#8DDB90] hover:bg-[#76c77a]'
-            } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
-            type='button'>
-            {isDisabled ? 'Selcted' : 'Select for Inspection'}
-          </button>
-          {/* <Button
-            value={`${isDisabled ? 'Selected' : 'Select for Inspection'}`}
+          <Button
+            value={`Remove`}
             type='button'
-            green={!isRed}
-            red={isRed}
+            // green={!isRed}
+            // red={isRed}
             onClick={onClick}
             isDisabled={isDisabled} // Disable the button if the property is already selected
             className={`min-h-[50px] py-[12px] px-[24px] ${
               isDisabled
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#8DDB90] hover:bg-[#76c77a]'
+                : 'bg-[#FF3D00] hover:bg-[#8a3318]'
             } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
-          /> */}
+          />
         </div>
       </motion.div>
     </Fragment>
