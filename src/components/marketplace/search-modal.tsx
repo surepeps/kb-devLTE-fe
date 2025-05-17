@@ -23,9 +23,8 @@ import { useRouter } from 'next/navigation';
 const SearchModal = () => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
-  const [uniqueProperties, setUniqueProperties] = useState<Set<string>>(
-    new Set()
-  );
+  const [uniqueProperties, setUniqueProperties] = useState<Set<string>>(new Set());
+  const [selectedBriefs, setSelectedBriefs] = useState<any[]>([]); // Store selected briefs
   const [formikStatus, setFormikStatus] = useState<
     'idle' | 'pending' | 'success' | 'failed'
   >('success');
@@ -362,6 +361,11 @@ const SearchModal = () => {
       return toast.error('Property already selected');
     }
     setUniqueProperties((prev) => new Set([...prev, id]));
+    // Find the property by id and add to selectedBriefs
+    const idx = Number(id);
+    if (!isNaN(idx) && properties[idx]) {
+      setSelectedBriefs((prev) => [...prev, properties[idx]]);
+    }
     toast.success('Property selected');
   };
 
@@ -407,7 +411,7 @@ const SearchModal = () => {
     fetchAllData();
 
     return () => {
-      controller.abort(); // Cleanup to prevent memory leaks
+      controller.abort();
     };
   }, [briefToFetch]);
 
@@ -419,9 +423,11 @@ const SearchModal = () => {
           renderBrief={renderDynamicComponent}
           selectedBriefs={uniqueProperties.size}
           onSelectBrief={handlePropertiesSelection}
+          selectedBriefsList={selectedBriefs} // pass the array
         />
       ) : (
-        userSelectedMarketPlace && renderDynamicComponent()
+        userSelectedMarketPlace &&
+        renderDynamicComponent()
       )}
     </Fragment>
   );
