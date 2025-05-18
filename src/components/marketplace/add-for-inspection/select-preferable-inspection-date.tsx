@@ -59,14 +59,14 @@ const SelectPreferableInspectionDate = ({
     },
   });
   return (
-    <div className='w-full h-full border-black border-[1px] fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]'>
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 pt-[80vh]'>
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true }}
-        className='lg:w-[658px] flex flex-col gap-[26px]'>
+        className='lg:w-[658px] w-full flex flex-col gap-[26px] rounded-md overflow-hidden'>
         <div className='flex items-center justify-end'>
           <motion.button
             whileHover={{ scale: 1.1 }}
