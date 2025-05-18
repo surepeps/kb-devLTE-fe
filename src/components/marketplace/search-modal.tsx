@@ -43,6 +43,8 @@ const SearchModal = ({
 }) => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
+  // const [uniqueProperties, setUniqueProperties] = useState<Set<string>>(new Set());
+  const [selectedBriefs, setSelectedBriefs] = useState<any[]>([]); // Store selected briefs
   const [uniqueProperties, setUniqueProperties] = useState<Set<any>>(
     new Set(propertiesSelected)
   );
@@ -105,6 +107,10 @@ const SearchModal = ({
               rentFilterBy={rentFilterBy}
               setRentFilterBy={setRentFilterBy}
               selectedBriefs={uniqueProperties.size}
+              setSelectedBriefs={setUniqueProperties}
+              setAddInspectionModal={setIsAddInspectionModalOpened}
+              addForInspectionPayload={addForInspectionPayload}
+              setUsageOptions={setUsageOptions}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {formikStatus &&
@@ -119,7 +125,13 @@ const SearchModal = ({
       case 'Find property for Joint Venture':
         return (
           <div className='relative w-full flex flex-col'>
-            <JointVentureModal selectedBriefs={uniqueProperties.size} />
+            <JointVentureModal 
+              selectedBriefs={uniqueProperties.size} 
+              addForInspectionPayload={addForInspectionPayload}
+              setUsageOptions={setUsageOptions}
+              setSelectedBriefs={setUniqueProperties}
+              setAddInspectionModal={setIsAddInspectionModalOpened}
+            />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {formikStatus && renderBriefs(userSelectedMarketPlace, [''])}
             </section>
@@ -461,7 +473,7 @@ const SearchModal = ({
     fetchAllData();
 
     return () => {
-      controller.abort(); // Cleanup to prevent memory leaks
+      controller.abort();
     };
   }, [briefToFetch]);
 
@@ -473,6 +485,7 @@ const SearchModal = ({
           renderBrief={renderDynamicComponent}
           selectedBriefs={uniqueProperties.size}
           onSelectBrief={handlePropertiesSelection}
+          selectedBriefsList={selectedBriefs} // pass the array
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>
