@@ -14,6 +14,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import NegiotiatePrice from './negotiate-price-modal';
 import SelectPreferableInspectionDate from './select-preferable-inspection-date';
 import { AnimatePresence } from 'framer-motion';
+import ProvideTransactionDetails from './provide-transaction-details';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -55,6 +56,11 @@ const AddForInspection = ({
     isSelectPreferableInspectionDateModalOpened,
     setSelectPreferableInspectionDateModalOpened,
   ] = React.useState<boolean>(false);
+  const [isProvideTransactionDetails, setIsProvideTransactionDetails] =
+    React.useState<boolean>(false);
+  const [actionTracker, setActionTracker] = React.useState<
+    { lastPage: 'SelectPreferableInspectionDate' | '' }[]
+  >([]);
 
   const renderCards = ({ length }: { length: number }): React.JSX.Element => {
     /**
@@ -271,8 +277,21 @@ const AddForInspection = ({
               icon={faArrowLeft}
               width={24}
               height={24}
-              onClick={() => setIsAddForInspectionModalOpened(false)}
-              className='w-[24px] h-[24px]'
+              onClick={() => {
+                const getLastAction = actionTracker[actionTracker.length - 1];
+                if (getLastAction === undefined)
+                  return setIsAddForInspectionModalOpened(false);
+                const { lastPage } = getLastAction;
+                if (lastPage === 'SelectPreferableInspectionDate') {
+                  setIsAddForInspectionModalOpened(true);
+                  setIsProvideTransactionDetails(false);
+                  setActionTracker([]); //reset after performing the expected action
+                  return;
+                }
+                setIsAddForInspectionModalOpened(false);
+              }}
+              className='w-[24px] h-[24px] cursor-pointer'
+              title='Back'
             />
             <div className='flex gap-[10px] items-center'>
               <span className='text-xl text-[#25324B]'>marketplace</span>
@@ -283,48 +302,60 @@ const AddForInspection = ({
               </span>
             </div>
           </div>
-          <div className='flex w-full items-center justify-center flex-col gap-[10px]'>
-            <h2
-              className={`text-2xl font-display font-semibold text-[#09391C] text-center`}>
-              Add for Inspection
-            </h2>
-            <p className='text-xl text-[#5A5D63]'>
-              Here are the briefs you selected for inspection.{' '}
-              <span className='text-xl text-black'>
-                You can negotiate the price for each property
-              </span>
-            </p>
-          </div>
-          <div className='flex justify-center items-center gap-[20px] mt-4'>
-            {propertiesSelected &&
-              renderCards({ length: propertiesSelected['length'] })}
-          </div>
-          <div className='flex flex-col gap-[10px] justify-center items-center'>
-            <h2 className='text-lg text-black text-center items-center'>
-              To confirm your inspection, please pay the inspection fee to
-              proceed
-            </h2>
-            {payload.toBeIncreaseBy > 0 && (
-              <span className='text-base text-[#1976D2] text-center'>
-                Your inspection fee increased because you selected two different
-                inspection areas.
-              </span>
+          <AnimatePresence>
+            {isProvideTransactionDetails ? (
+              <ProvideTransactionDetails
+                amountToPay={payload.initialAmount + payload.toBeIncreaseBy}
+              />
+            ) : (
+              <Fragment>
+                <div className='flex w-full items-center justify-center flex-col gap-[10px]'>
+                  <h2
+                    className={`text-2xl font-display font-semibold text-[#09391C] text-center`}>
+                    Add for Inspection
+                  </h2>
+                  <p className='text-xl text-[#5A5D63]'>
+                    Here are the briefs you selected for inspection.{' '}
+                    <span className='text-xl text-black'>
+                      You can negotiate the price for each property
+                    </span>
+                  </p>
+                </div>
+                <div className='flex justify-center items-center gap-[20px] mt-4'>
+                  {propertiesSelected &&
+                    renderCards({ length: propertiesSelected['length'] })}
+                </div>
+                <div className='flex flex-col gap-[10px] justify-center items-center'>
+                  <h2 className='text-lg text-black text-center items-center'>
+                    To confirm your inspection, please pay the inspection fee to
+                    proceed
+                  </h2>
+                  {payload.toBeIncreaseBy > 0 && (
+                    <span className='text-base text-[#1976D2] text-center'>
+                      Your inspection fee increased because you selected two
+                      different inspection areas.
+                    </span>
+                  )}
+                  {/**Amount to be paid */}
+                  <h2 className='text-center font-display font-semibold text-black text-3xl'>
+                    N{' '}
+                    {Number(
+                      payload.initialAmount + payload.toBeIncreaseBy
+                    ).toLocaleString()}
+                  </h2>
+                  {/**Submit */}
+                  <button
+                    onClick={() =>
+                      setSelectPreferableInspectionDateModalOpened(true)
+                    }
+                    className='h-[65px] w-[292px] bg-[#8DDB90] text-lg font-bold text-[#FAFAFA]'
+                    type='button'>
+                    Proceed
+                  </button>
+                </div>
+              </Fragment>
             )}
-            {/**Amount to be paid */}
-            <h2 className='text-center font-display font-semibold text-black text-3xl'>
-              N{' '}
-              {Number(
-                payload.initialAmount + payload.toBeIncreaseBy
-              ).toLocaleString()}
-            </h2>
-            {/**Submit */}
-            <button
-              onClick={() => setSelectPreferableInspectionDateModalOpened(true)}
-              className='h-[65px] w-[292px] bg-[#8DDB90] text-lg font-bold text-[#FAFAFA]'
-              type='button'>
-              Proceed
-            </button>
-          </div>
+          </AnimatePresence>
         </div>
       </div>
       <AnimatePresence>
@@ -339,6 +370,9 @@ const AddForInspection = ({
         )}
         {isSelectPreferableInspectionDateModalOpened && (
           <SelectPreferableInspectionDate
+            actionTracker={actionTracker}
+            setActionTracker={setActionTracker}
+            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
             closeModal={setSelectPreferableInspectionDateModalOpened}
           />
         )}
