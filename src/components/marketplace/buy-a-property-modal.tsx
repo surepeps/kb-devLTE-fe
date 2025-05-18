@@ -144,6 +144,13 @@ const BuyAPropertySearchModal = ({
         </div>
         <div className='flex gap-[30px]'>
           <button
+            className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
+            type='button'>
+            List property
+          </button>
+          <button
+            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
+            type='button'
             onClick={() => {
               if (addForInspectionPayload.initialAmount === 0) {
                 setAddInspectionModal?.(false);
@@ -155,14 +162,7 @@ const BuyAPropertySearchModal = ({
                 );
               }
               setAddInspectionModal?.(true);
-            }}
-            className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
-            type='button'>
-            List property
-          </button>
-          <button
-            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
-            type='button'>
+            }}>
             {selectedBriefs} selected briefs
           </button>
           {selectedBriefs > 0 && (

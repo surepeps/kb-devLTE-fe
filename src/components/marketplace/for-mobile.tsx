@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import PriceRange from './price-range';
 import RadioCheck from '../general-components/radioCheck';
+import MobileSelectedBottomBar from '@/components/marketplace/MobileSelectedBottomBar';
 import axios, { AxiosError } from 'axios';
 import { URLS } from '@/utils/URLS';
 import { featuresData } from '@/data/landlord';
@@ -29,11 +30,13 @@ const Mobile = ({
   renderBrief,
   selectedBriefs,
   onSelectBrief,
+  selectedBriefsList, // new prop
 }: {
   selectedMarketPlace: string;
   renderBrief: (onSelectBrief: (id: string) => void) => React.JSX.Element;
   selectedBriefs: number;
   onSelectBrief: (id: string) => void;
+  selectedBriefsList: any[]; // new prop type
 }) => {
   const { selectedType, setSelectedType } = usePageContext();
   const [isFilterModalOpened, setIsFilterModalOpened] =
@@ -141,29 +144,16 @@ const Mobile = ({
         )}
       </AnimatePresence>
 
-      {/* Selected Briefs Section */}
-      <div className='w-full flex flex-col gap-3 bg-white py-5 px-5'>
-        <div className='text-[#000] text-base font-medium'>
-          <span className='text-red-500 font-bold'>({selectedBriefs})</span>{' '}
-          Brief{Number(selectedBriefs) === 1 ? '' : 's'} selected for inspection
-        </div>
-        <div className='flex gap-3 w-full '>
-          <button
-            className=' h-[50px] border-[1px] border-[#5A5D6380] text-[#09391C] font-medium w-[40%]'
-            type='button'
-            // onClick={handleViewBrief}
-          >
-            View Listing
-          </button>
-          <button
-            className='h-[50px] bg-[#8DDB90] text-white font-medium w-[60%]'
-            type='button'
-            // onClick={handleSubmitForInspection}
-          >
-            Submit for inspection
-          </button>
-        </div>
-      </div>
+      <MobileSelectedBottomBar
+          selectedBriefs={selectedBriefs}
+          selectedBriefsList={selectedBriefsList}
+          onViewBrief={() => {
+            console.log('View Briefs', selectedBriefsList);
+          }}
+          onSubmitForInspection={() => {
+            console.log('Submit for inspection', selectedBriefsList);
+          }}
+        />
     </Fragment>
   );
 };
@@ -418,7 +408,7 @@ const Filter = ({
         </div>
         <div className='flex flex-col gap-[15px]'>
           <h2 className='text-[#5A5D63] text-sm font-medium'>
-            Desirer Features
+            Desired Features
           </h2>
           <div className='flex flex-col gap-[10px]'>
             {featuresData.map((item: string, idx: number) => (
