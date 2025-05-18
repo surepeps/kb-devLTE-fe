@@ -10,6 +10,7 @@ interface AttachFileProps {
   setFileUrl?: React.Dispatch<React.SetStateAction<string | null>>;
   className?: string;
   id: string; // Add id prop
+  style?: React.CSSProperties;
 }
 
 const AttachFile: React.FC<AttachFileProps> = ({
@@ -17,6 +18,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
   setFileUrl,
   className,
   id, // Destructure id prop
+  style,
 }) => {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -64,6 +66,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
       />
 
       <svg
+        style={style}
         onClick={() => {
           const file: HTMLElement | null = document.getElementById(id); // Use dynamic id
           file?.click();

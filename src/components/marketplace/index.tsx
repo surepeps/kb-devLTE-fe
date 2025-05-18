@@ -25,6 +25,17 @@ const MarketPlace = () => {
     toBeIncreaseBy: 0,
   });
 
+  const renderDynamicComponent = (): React.JSX.Element => {
+    switch (isAddForInspectionModalOpened) {
+      case true:
+        break;
+
+      default:
+        return <></>;
+    }
+    return <></>;
+  };
+
   useEffect(
     () => console.log(propertiesSelected, addForInspectionPayload),
     [propertiesSelected]

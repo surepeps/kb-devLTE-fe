@@ -22,8 +22,16 @@ type ContactProps = {
 
 const SelectPreferableInspectionDate = ({
   closeModal,
+  setIsProvideTransactionDetails,
+  setActionTracker,
+  actionTracker,
 }: {
   closeModal: (type: boolean) => void;
+  setIsProvideTransactionDetails: (type: boolean) => void;
+  actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
+  setActionTracker: React.Dispatch<
+    React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
+  >;
 }) => {
   const [details, setDetails] = useState<DetailsProps>({
     selectedDate: 'Jan 1, 2025',
@@ -40,7 +48,15 @@ const SelectPreferableInspectionDate = ({
       email: '',
     },
     validationSchema,
-    onSubmit: (values: ContactProps) => console.log(values),
+    onSubmit: (values: ContactProps) => {
+      console.log(values);
+      setActionTracker([
+        ...actionTracker,
+        { lastPage: 'SelectPreferableInspectionDate' },
+      ]);
+      setIsProvideTransactionDetails(true);
+      closeModal(false);
+    },
   });
   return (
     <div className='w-full h-full border-black border-[1px] fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]'>
@@ -107,7 +123,7 @@ const SelectPreferableInspectionDate = ({
             Select preferable inspection time
           </h3>
           <h4 className={`text-lg font-medium ${archivo.className} text-black`}>
-            january 23, 2025
+            {details.selectedDate}
           </h4>
           {/**third div */}
           <div className='grid grid-cols-3 gap-[14px]'>
@@ -204,7 +220,8 @@ const SelectPreferableInspectionDate = ({
               Submit
             </button>
             <button
-              type='submit'
+              onClick={() => closeModal(false)}
+              type='button'
               className={`w-[277px] h-[57px] bg-transparent border-[1px] border-[#5A5D63] text-[#414357] font-medium text-lg ${archivo.className}`}>
               Close
             </button>
