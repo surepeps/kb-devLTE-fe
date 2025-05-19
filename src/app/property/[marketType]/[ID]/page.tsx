@@ -88,9 +88,11 @@ type HouseFrameProps = {
 };
 
 const ProductDetailsPage = ({
-  selectedBriefs = 2,
-  selectedBriefsList = [],
+  // selectedBriefs = 2,
+  // selectedBriefsList = [],
 }) => {
+    const [selectedBriefs, setSelectedBriefs] = useState(2);
+  const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
     usePageContext();
