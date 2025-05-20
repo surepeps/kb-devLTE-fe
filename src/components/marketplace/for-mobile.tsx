@@ -146,7 +146,7 @@ const Mobile = ({
 
       <MobileSelectedBottomBar
         selectedBriefs={selectedBriefs}
-        selectedBriefsList={selectedBriefsList}
+        selectedBriefsList={Array.from(selectedBriefsList)}
         onViewBrief={() => {
           console.log('View Briefs', selectedBriefsList);
         }}

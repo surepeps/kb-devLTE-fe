@@ -4,7 +4,7 @@ import React from 'react';
 
 interface SelectedBriefsBarProps {
   selectedBriefs: number;
-  selectedBriefsList?: Set<any>;
+  selectedBriefsList?: any[];
   onViewBrief: () => void;
   onSubmitForInspection: () => void;
 }
