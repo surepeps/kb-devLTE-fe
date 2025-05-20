@@ -266,7 +266,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     console.warn(selectedProperty);
     setSelectedProperty({
       id: findSelectedCard.id,
-      askingPrice: findSelectedCard.price,
+      askingPrice: findSelectedCard?.price ?? findSelectedCard?.rentalPrice,
       yourPrice: '',
       isOpened: false,
     });
