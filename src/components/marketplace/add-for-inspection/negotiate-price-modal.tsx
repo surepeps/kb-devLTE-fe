@@ -150,13 +150,12 @@ const NegiotiatePrice = ({
               name='enter_your_price'
               type='number'
               placeholder='Enter amount'
-              value={selectedProperty.yourPrice}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                //setInputValue(event.target.value);
-                console.log('clicked');
-                setSelectedProperty({
-                  ...selectedProperty,
-                  yourPrice: event.target.value,
+              value={selectedCard.yourPrice}
+              onChange={(event) => {
+                const value = 'value' in event.target ? event.target.value : '';
+                setSelectedCard({
+                  ...selectedCard,
+                  yourPrice: value,
                 });
               }}
             />
