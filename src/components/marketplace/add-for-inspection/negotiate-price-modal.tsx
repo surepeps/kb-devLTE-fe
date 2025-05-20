@@ -129,10 +129,12 @@ const NegiotiatePrice = ({
               type='number'
               placeholder='Enter amount'
               value={selectedCard.yourPrice}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(event) => {
+                const value =
+                  'value' in event.target ? event.target.value : '';
                 setSelectedCard({
                   ...selectedCard,
-                  yourPrice: event.target.value,
+                  yourPrice: value,
                 });
               }}
             />
