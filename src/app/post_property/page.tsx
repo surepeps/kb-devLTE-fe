@@ -16,6 +16,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import RadioCheck from '@/components/general-components/radioCheck';
 import Input from '@/components/general-components/Input';
 import { usePageContext } from '@/context/page-context';
+import { useRouter } from 'next/navigation';
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
@@ -23,12 +24,19 @@ import * as Yup from 'yup';
 import ReactSelect from 'react-select';
 import { propertyReferenceData } from '@/data/buy_page_data';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+import arrowRightIcon from '@/svgs/arrowR.svg';
+import Stepper from '@/components/post-property-components/Stepper';
+import ClickableCard from '@/components/post-property-components/ClickableCard';
 import 'react-phone-number-input/style.css';
+import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 //import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
+import Blue from '@/assets/blue.png';
+import Red from '@/assets/red.png';
+import Green from '@/assets/green.png';
 import { epilogue } from '@/styles/font';
 import customStyles from '@/styles/inputStyle';
 import data from '@/data/state-lga';
@@ -40,6 +48,7 @@ interface Option {
 const Sell = () => {
   // const { user } = useUserContext();
   const isLoading = useLoading();
+  const router = useRouter();
   const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
   const { setIsSubmittedSuccessfully } = usePageContext();
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
@@ -51,6 +60,15 @@ const Sell = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [formattedValue, setFormattedValue] = useState<string>('');
   const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
+
+
+const steps = [
+  { status: "completed" as "completed", label: "Type of brief" },
+  { status: "completed" as "completed", label: "Submit brief details" },
+  { status: "pending" as "pending", label: "Feature & Conditions" },
+  { status: "pending" as "pending", label: "Upload Picture" },
+  { status: "pending" as "pending", label: "Owners Declaration" },
+];
 
   const formatNumber = (val: string) => {
     const containsLetters = /[A-Za-z]/.test(val);
@@ -250,24 +268,45 @@ const Sell = () => {
   return (
     <Fragment>
       <section
-        className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
-        <div className='container flex flex-col justify-center items-center gap-[10px] my-[30px] px-[20px]'>
-          <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
-            Submit Your{' '}
-            <span className='text-[#8DDB90] font-display'>Property Brief</span>
+        className={` bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500 my-7`}>
+        <div className='container flex flex-col justify-center items-center gap-[10px] px-[10px]'>
+          <div className='w-full flex justify-start mb-5'>
+            <BreadcrumbNav
+              point="Cancel"
+              onBack={() => router.back()}
+              arrowIcon={arrowRightIcon}
+              backText="MarketPlace"
+            />
+          </div>
+
+          <Stepper steps={steps} />
+          <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[24px] leading-[40.4px] mt-7'>
+            Select type of Property
           </h2>
           <div className='lg:w-[953px] w-full text-xl text-[#5A5D63] font-normal text-center'>
-            Khabi-Teq helps you reach a wide network of potential buyers and
-            simplifies the property selling process. Our platform ensures your
-            property is showcased effectively, connects you with verified
-            buyers, and streamlines negotiations for a smooth and successful
-            sale
+            Khabi-Teq helps you reach a wide network of potential buyers and simplifies the property selling process. Our platform ensures your property is showcased effectively, connects you with verified buyers, and streamlines negotiations for a smooth and successful sale
           </div>
-          <div className='lg:w-[877px] w-full'>
-            <h3 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C] lg:py-[30px] py-[20px] lg:px-[80px] w-full'>
-              Brief Details
-            </h3>
-            <form
+          <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px] mt-[20px]'>
+                <ClickableCard
+                  imageSrc={Green}
+                  text="Do you have a property you want to Sell?"
+                  href="/sell-property"
+                />
+                <ClickableCard
+                  imageSrc={Blue}
+                  text="Do you have a property you want to Rent?"
+                  href="/sell-property"
+                />
+                <ClickableCard
+                  imageSrc={Red}
+                  text="Do you have a property you joint venture?"
+                  href="/sell-property"
+                />
+
+                <div className='lg:w-[953px] w-full text-xl text-[#FF3D00] font-normal text-center'>
+                    Note: Only property owners are allowed to submit listings. Submissions from non-owners will be automatically rejected."
+                </div>
+            {/* <form
               onSubmit={formik.handleSubmit}
               className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
               <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
@@ -621,7 +660,7 @@ const Sell = () => {
                   className={`bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                 />
               </div>
-            </form>
+            </form> */}
           </div>
         </div>
       </section>
