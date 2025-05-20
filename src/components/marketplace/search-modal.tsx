@@ -35,6 +35,8 @@ const SearchModal = ({
   setAddForInspectionPayload,
   isComingFromPriceNeg,
   comingFromPriceNegotiation,
+  inspectionType,
+  setInspectionType,
 }: {
   isAddForInspectionModalOpened: boolean;
   setIsAddInspectionModalOpened: (type: boolean) => void;
@@ -47,6 +49,9 @@ const SearchModal = ({
    */
   isComingFromPriceNeg?: boolean;
   comingFromPriceNegotiation?: (type: boolean) => void;
+  //inspection type
+  inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
+  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
 }) => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
@@ -98,6 +103,8 @@ const SearchModal = ({
               selectedBriefs={uniqueProperties.size}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
+              inspectionType={inspectionType}
+              setInspectionType={setInspectionType}
             />
             <section className='w-full flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {(formikStatus || usageOptions) &&
@@ -118,6 +125,8 @@ const SearchModal = ({
               setAddInspectionModal={setIsAddInspectionModalOpened}
               addForInspectionPayload={addForInspectionPayload}
               setUsageOptions={setUsageOptions}
+              inspectionType={inspectionType}
+              setInspectionType={setInspectionType}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {formikStatus &&
@@ -138,6 +147,8 @@ const SearchModal = ({
               setUsageOptions={setUsageOptions}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
+              inspectionType={inspectionType}
+              setInspectionType={setInspectionType}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {formikStatus && renderBriefs(userSelectedMarketPlace, [''])}

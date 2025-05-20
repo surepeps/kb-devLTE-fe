@@ -3,7 +3,7 @@
 'use client';
 import { usePageContext } from '@/context/page-context';
 import { basic_styling_architecture } from '@/utils/tool';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchModal from './search-modal';
 import { IsMobile } from '@/hooks/isMobile';
 import { useRouter } from 'next/navigation';
@@ -26,6 +26,9 @@ const MarketPlace = () => {
   });
   const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
     React.useState<boolean>(false);
+  const [inspectionType, setInspectionType] = useState<
+    'Buy' | 'JV' | 'Rent/Lease'
+  >('Buy');
 
   // const renderDynamicComponent = (): React.JSX.Element => {
   //   switch (isAddForInspectionModalOpened) {
@@ -53,6 +56,8 @@ const MarketPlace = () => {
           propertiesSelected={propertiesSelected}
           isComingFromPriceNeg={isComingFromPriceNeg}
           comingFromPriceNegotiation={setIsComingFromPriceNeg}
+          inspectionType={inspectionType}
+          setInspectionType={setInspectionType}
         />
       ) : (
         <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[20px]'>
@@ -113,6 +118,8 @@ const MarketPlace = () => {
               setAddForInspectionPayload={setAddInspectionPayload}
               isComingFromPriceNeg={isComingFromPriceNeg}
               comingFromPriceNegotiation={setIsComingFromPriceNeg}
+              inspectionType={inspectionType}
+              setInspectionType={setInspectionType}
             />
           </div>
         </div>

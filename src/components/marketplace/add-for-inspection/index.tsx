@@ -21,6 +21,9 @@ import { AnimatePresence } from 'framer-motion';
 import ProvideTransactionDetails from './provide-transaction-details';
 import { motion } from 'framer-motion';
 import Input from '@/components/general-components/Input';
+import JointVentureModalCard from '../joint-venture-card';
+import { Span } from 'next/dist/trace';
+import LetterOfIntention from './letter-of-intention';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -42,6 +45,7 @@ const AddForInspection = ({
   payload,
   isComingFromPriceNeg,
   comingFromPriceNegotiation,
+  inspectionType,
 }: {
   propertiesSelected: any[];
   setPropertiesSelected: (type: any[]) => void;
@@ -52,6 +56,9 @@ const AddForInspection = ({
    */
   isComingFromPriceNeg?: boolean;
   comingFromPriceNegotiation?: (type: boolean) => void;
+  /**Type of inspection */
+  inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
+  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
 }) => {
   const is_mobile = IsMobile();
   const router = useRouter();
@@ -77,6 +84,11 @@ const AddForInspection = ({
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
+  const [isLolGuidelineModalOpened, setIsLolGuidelineModalOpened] =
+    useState<boolean>(true);
+  const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
+    useState<boolean>(false);
+
   const renderCards = ({ length }: { length: number }): React.JSX.Element => {
     /**
      * check for properties selected,
@@ -90,67 +102,84 @@ const AddForInspection = ({
       case 1:
         return (
           <Fragment>
-            {propertiesSelected.map((property, idx: number) => (
-              <Card
-                style={is_mobile ? { width: '100%' } : { width: '281px' }}
-                images={property?.pictures}
-                //setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
-                setPropertySelected={setPropertiesSelected}
-                isComingFromPriceNeg={isComingFromPriceNeg}
-                setIsComingFromPriceNeg={comingFromPriceNegotiation}
-                property={property}
-                onCardPageClick={() => {
-                  router.push(`/property/Rent/${property._id}`);
-                }}
-                onClick={() => {
-                  const filteredArray: Array<any> = propertiesSelected.filter(
-                    (item) => item._id !== property._id
-                  );
-                  setPropertiesSelected(filteredArray);
-                }}
-                onPriceNegotiation={() => {
-                  setNegationModal({
-                    isOpened: true,
-                    id: property._id,
-                    askingPrice: property.price,
-                    yourPrice: undefined,
-                  });
-                }}
-                cardData={[
-                  {
-                    header: 'Property Type',
-                    value: property.propertyType,
-                  },
-                  {
-                    header: 'Price',
-                    value: `₦${Number(property.price).toLocaleString()}`,
-                  },
-                  {
-                    header: 'Bedrooms',
-                    value: property.noOfBedrooms || 'N/A',
-                  },
-                  {
-                    header: 'Location',
-                    value: `${property.location.state}, ${property.location.localGovernment}`,
-                  },
-                  {
-                    header: 'Documents',
-                    value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
-                      (item: { _id: string; docName: string }) =>
-                        `<li key={${item._id}>${item.docName}</li>`
-                    )}<ol>`,
-                  },
-                ]}
-                key={idx}
-                //isDisabled={uniqueProperties.has(property._id)}
-              />
-            ))}
+            {propertiesSelected.map((property, idx: number) => {
+              if (inspectionType === 'Buy' || inspectionType === 'Rent/Lease') {
+                return (
+                  <Card
+                    style={is_mobile ? { width: '100%' } : { width: '281px' }}
+                    images={property?.pictures}
+                    //setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                    setPropertySelected={setPropertiesSelected}
+                    isComingFromPriceNeg={isComingFromPriceNeg}
+                    setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                    property={property}
+                    onCardPageClick={() => {
+                      router.push(`/property/Rent/${property._id}`);
+                    }}
+                    onClick={() => {
+                      const filteredArray: Array<any> =
+                        propertiesSelected.filter(
+                          (item) => item._id !== property._id
+                        );
+                      setPropertiesSelected(filteredArray);
+                    }}
+                    onPriceNegotiation={() => {
+                      setNegationModal({
+                        isOpened: true,
+                        id: property._id,
+                        askingPrice: property.price,
+                        yourPrice: undefined,
+                      });
+                    }}
+                    cardData={[
+                      {
+                        header: 'Property Type',
+                        value: property.propertyType,
+                      },
+                      {
+                        header: 'Price',
+                        value: `₦${Number(
+                          property?.price ?? property?.rentalPrice
+                        ).toLocaleString()}`,
+                      },
+                      {
+                        header: 'Bedrooms',
+                        value: property.noOfBedrooms || 'N/A',
+                      },
+                      {
+                        header: 'Location',
+                        value: `${property.location.state}, ${property.location.localGovernment}`,
+                      },
+                      {
+                        header: 'Documents',
+                        value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
+                          (item: { _id: string; docName: string }) =>
+                            `<li key={${item._id}>${item.docName}</li>`
+                        )}<ol>`,
+                      },
+                    ]}
+                    key={idx}
+                    //isDisabled={uniqueProperties.has(property._id)}
+                  />
+                );
+              } else if (inspectionType === 'JV') {
+                return (
+                  <JointVentureModalCard
+                    key={idx}
+                    onClick={() => {}}
+                    cardData={[]}
+                    images={[]}
+                  />
+                );
+              }
+            })}
             <Slot
               propertiesSelected={propertiesSelected}
               setIsAddForInspectionModalOpened={
                 setIsAddForInspectionModalOpened
               }
               setPropertiesSelected={setPropertiesSelected}
+              inspectionType={inspectionType}
             />
             {/* <Slot
               propertiesSelected={propertiesSelected}
@@ -165,138 +194,89 @@ const AddForInspection = ({
       case 2:
         return (
           <Fragment>
-            {propertiesSelected.map((property, idx: number) => (
-              <Card
-                style={is_mobile ? { width: '100%' } : { width: '281px' }}
-                images={property?.pictures}
-                setPropertySelected={setPropertiesSelected}
-                isComingFromPriceNeg={isComingFromPriceNeg}
-                setIsComingFromPriceNeg={comingFromPriceNegotiation}
-                property={property}
-                onCardPageClick={() => {
-                  router.push(`/property/Rent/${property._id}`);
-                }}
-                onPriceNegotiation={() => {
-                  setNegationModal({
-                    isOpened: true,
-                    id: property._id,
-                    askingPrice: property.price,
-                    yourPrice: undefined,
-                  });
-                }}
-                onClick={() => {
-                  const filteredArray: Array<any> = propertiesSelected.filter(
-                    (item) => item._id !== property._id
-                  );
-                  setPropertiesSelected(filteredArray);
-                }}
-                cardData={[
-                  {
-                    header: 'Property Type',
-                    value: property.propertyType,
-                  },
-                  {
-                    header: 'Price',
-                    value: `₦${Number(property.price).toLocaleString()}`,
-                  },
-                  {
-                    header: 'Bedrooms',
-                    value: property.noOfBedrooms || 'N/A',
-                  },
-                  {
-                    header: 'Location',
-                    value: `${property.location.state}, ${property.location.localGovernment}`,
-                  },
-                  {
-                    header: 'Documents',
-                    value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
-                      (item: { _id: string; docName: string }) =>
-                        `<li key={${item._id}>${item.docName}</li>`
-                    )}<ol>`,
-                  },
-                ]}
-                key={idx}
-                //isDisabled={uniqueProperties.has(property._id)}
-              />
-            ))}
-            {/* <Slot
-              propertiesSelected={propertiesSelected}
-              setIsAddForInspectionModalOpened={
-                setIsAddForInspectionModalOpened
+            {propertiesSelected.map((property, idx: number) => {
+              if (inspectionType === 'Buy' || inspectionType === 'Rent/Lease') {
+                return (
+                  <Card
+                    style={is_mobile ? { width: '100%' } : { width: '281px' }}
+                    images={property?.pictures}
+                    setPropertySelected={setPropertiesSelected}
+                    isComingFromPriceNeg={isComingFromPriceNeg}
+                    setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                    property={property}
+                    onCardPageClick={() => {
+                      router.push(`/property/Rent/${property._id}`);
+                    }}
+                    onPriceNegotiation={() => {
+                      setNegationModal({
+                        isOpened: true,
+                        id: property._id,
+                        askingPrice: property.price,
+                        yourPrice: undefined,
+                      });
+                    }}
+                    onClick={() => {
+                      const filteredArray: Array<any> =
+                        propertiesSelected.filter(
+                          (item) => item._id !== property._id
+                        );
+                      setPropertiesSelected(filteredArray);
+                    }}
+                    cardData={[
+                      {
+                        header: 'Property Type',
+                        value: property.propertyType,
+                      },
+                      {
+                        header: 'Price',
+                        value: `₦${Number(property.price).toLocaleString()}`,
+                      },
+                      {
+                        header: 'Bedrooms',
+                        value: property.noOfBedrooms || 'N/A',
+                      },
+                      {
+                        header: 'Location',
+                        value: `${property.location.state}, ${property.location.localGovernment}`,
+                      },
+                      {
+                        header: 'Documents',
+                        value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
+                          (item: { _id: string; docName: string }) =>
+                            `<li key={${item._id}>${item.docName}</li>`
+                        )}<ol>`,
+                      },
+                    ]}
+                    key={idx}
+                    //isDisabled={uniqueProperties.has(property._id)}
+                  />
+                );
+              } else if (inspectionType === 'JV') {
+                return (
+                  <JointVentureModalCard
+                    key={idx}
+                    onClick={() => {}}
+                    cardData={[]}
+                    images={[]}
+                  />
+                );
               }
-              setPropertiesSelected={setPropertiesSelected}
-            /> */}
+            })}
           </Fragment>
         );
-      // case 3:
-      //   return (
-      //     <Fragment>
-      //       {propertiesSelected.map((property, idx: number) => (
-      //         <Card
-      //           style={is_mobile ? { width: '100%' } : { width: '281px' }}
-      //           images={property?.pictures}
-      //           onCardPageClick={() => {
-      //             router.push(`/property/Rent/${property._id}`);
-      //           }}
-      //           onClick={() => {
-      //             const filteredArray: Array<any> = propertiesSelected.filter(
-      //               (item) => item._id !== property._id
-      //             );
-      //             setPropertiesSelected(filteredArray);
-      //           }}
-      //           onPriceNegotiation={() => {
-      //             setNegationModal({
-      //               isOpened: true,
-      //               id: property._id,
-      //               askingPrice: property.price,
-      //               yourPrice: undefined,
-      //             });
-      //           }}
-      //           cardData={[
-      //             {
-      //               header: 'Property Type',
-      //               value: property.propertyType,
-      //             },
-      //             {
-      //               header: 'Price',
-      //               value: `₦${Number(property.price).toLocaleString()}`,
-      //             },
-      //             {
-      //               header: 'Bedrooms',
-      //               value: property.noOfBedrooms || 'N/A',
-      //             },
-      //             {
-      //               header: 'Location',
-      //               value: `${property.location.state}, ${property.location.localGovernment}`,
-      //             },
-      //             {
-      //               header: 'Documents',
-      //               value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
-      //                 (item: { _id: string; docName: string }) =>
-      //                   `<li key={${item._id}>${item.docName}</li>`
-      //               )}<ol>`,
-      //             },
-      //           ]}
-      //           key={idx}
-      //           //isDisabled={uniqueProperties.has(property._id)}
-      //         />
-      //       ))}
-      //     </Fragment>
-      //   );
       default:
         return <></>;
     }
   };
 
-  // const renderForm =() => {
-  //   sw
-  // }
-
   const arrayOfPropertiesSelected = propertiesSelected?.map((property) => {
     return {
       isOpened: false as boolean,
       id: property?._id as string | null,
-      askingPrice: property?.price as number | undefined | string,
+      askingPrice: (property?.price ?? property?.rentalPrice) as
+        | number
+        | undefined
+        | string,
       yourPrice: undefined as number | undefined | string,
     };
   });
@@ -356,10 +336,75 @@ const AddForInspection = ({
                   <p className='text-xl text-[#5A5D63]'>
                     Here are the briefs you selected for inspection.{' '}
                     <span className='text-xl text-black'>
-                      You can negotiate the price for each property
+                      {inspectionType === 'Buy' &&
+                        'You can negotiate the price for each property'}
+                      {inspectionType === 'JV' &&
+                        'You can Submit LOI for each property'}
                     </span>
+                    &nbsp;
+                    {inspectionType === 'JV' && !isLolGuidelineModalOpened && (
+                      <span
+                        onClick={() => setIsLolGuidelineModalOpened(true)}
+                        className='text-sm cursor-pointer font-medium text-[#1976D2] underline'>
+                        LOI guideline instruction
+                      </span>
+                    )}
                   </p>
                 </div>
+                {/**
+                 * Info on how to submit Lol guidelines
+                 */}
+                {inspectionType === 'JV' ? (
+                  <AnimatePresence>
+                    {isLolGuidelineModalOpened && (
+                      <div className='w-full flex justify-center items-center'>
+                        <motion.div
+                          initial={{ y: 20, opacity: 0 }}
+                          whileInView={{ y: 0, opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                          viewport={{ once: true }}
+                          exit={{ y: 20, opacity: 0 }}
+                          className='border-[1px] bg-[#E8F3FE] border-[#A8ADB7] lg:w-[667px] h-[217px] p-[20px] flex flex-col gap-[24px]'>
+                          <h2 className='text-black font-bold text-xl'>
+                            How to submit LOI guideline
+                          </h2>
+                          <FontAwesomeIcon
+                            icon={faClose}
+                            size='sm'
+                            width={24}
+                            height={24}
+                            color='#181336'
+                            title='close modal'
+                            className='w-[24px] h-[24px] absolute lg:ml-[600px] mt-[20px] cursor-pointer'
+                            onClick={() => setIsLolGuidelineModalOpened(false)}
+                          />
+                          <div className='flex flex-col gap-[2px]'>
+                            <span className='text-base text-[#5A5D63]'>
+                              Please address your letter to{' '}
+                              <span className='font-bold text-base text-black'>
+                                Khabi-Teq Limited
+                              </span>{' '}
+                              and include our office address:
+                            </span>
+                            <span className='text-base text-[#5A5D63]'>
+                              Goldrim Plaza
+                            </span>
+                            <span className='text-base text-[#5A5D63]'>
+                              Mokuolu Street, Ifako Agege
+                            </span>
+                            <span className='text-base text-[#5A5D63]'>
+                              Lagos 101232, Nigeria
+                            </span>
+                            <span className='text-base text-[#1976D2]'>
+                              Kindly note that all documents will be reviewed
+                              prior to approval.
+                            </span>
+                          </div>
+                        </motion.div>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                ) : null}
                 <div className='flex justify-center items-center gap-[20px] mt-4'>
                   {propertiesSelected &&
                     renderCards({ length: propertiesSelected['length'] })}
@@ -385,13 +430,19 @@ const AddForInspection = ({
                   {/**Submit */}
                   <button
                     onClick={() => {
-                      //setSelectPreferableInspectionDateModalOpened(true);
-                      setCurrentIndex(0);
-                      // console.log(allNegotiations);
-                      if (allNegotiations.length !== 0) {
-                        return setAllNegotiations(allNegotiations);
-                      }
-                      setAllNegotiations(arrayOfPropertiesSelected);
+                      if (
+                        inspectionType === 'Buy' ||
+                        inspectionType === 'Rent/Lease'
+                      ) {
+                        //setSelectPreferableInspectionDateModalOpened(true);
+                        setCurrentIndex(0);
+                        // console.log(allNegotiations);
+                        if (allNegotiations.length !== 0) {
+                          return setAllNegotiations(allNegotiations);
+                        }
+                        setAllNegotiations(arrayOfPropertiesSelected);
+                      } else if (inspectionType === 'JV')
+                        return setIsLetterOfIntentionModalOpened(true);
                     }}
                     className='h-[65px] w-[292px] bg-[#8DDB90] text-lg font-bold text-[#FAFAFA]'
                     type='button'>
@@ -438,6 +489,14 @@ const AddForInspection = ({
             }
           />
         )}
+        {isLetterOfIntentionModalOpened && (
+          <LetterOfIntention
+            setIsModalClosed={setIsLetterOfIntentionModalOpened}
+            closeSelectPreferableModal={
+              setSelectPreferableInspectionDateModalOpened
+            }
+          />
+        )}
       </AnimatePresence>
     </Fragment>
   );
@@ -447,13 +506,19 @@ const Slot = ({
   propertiesSelected,
   setIsAddForInspectionModalOpened,
   setPropertiesSelected,
+  inspectionType,
 }: {
   propertiesSelected: any;
   setIsAddForInspectionModalOpened: (type: boolean) => void;
   setPropertiesSelected: (type: any[]) => void;
+  inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
 }) => {
   return (
-    <div className='w-[261px] h-[440px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center'>
+    <div
+      className={`w-[261px] ${inspectionType === 'JV' && 'h-[300px]'} ${
+        (inspectionType === 'Buy' || inspectionType === 'Rent/Lease') &&
+        'h-[440px]'
+      } border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center`}>
       <span
         title='Click to add for inspection'
         onClick={() => {
