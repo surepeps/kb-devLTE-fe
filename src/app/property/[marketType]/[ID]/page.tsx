@@ -88,10 +88,7 @@ type HouseFrameProps = {
   _id: string;
 };
 
-const ProductDetailsPage = ({
-  selectedBriefs = 2,
-  selectedBriefsList = [],
-}) => {
+const ProductDetailsPage = () => {
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
     usePageContext();
@@ -124,6 +121,8 @@ const ProductDetailsPage = ({
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
+    const [selectedBriefs, setSelectedBriefs] = useState(2);
+  const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
   const is_mobile = IsMobile();
 
   const handlePreviousSlide = () => {
