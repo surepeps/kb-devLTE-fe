@@ -25,6 +25,6 @@ export const tenantCriteriaData: string[] = [
   'Self Employed',
   'Male',
   'Female',
-  'Tenant Responsible for Basic Maintenance',
   'Both Gender',
+  'Tenant Responsible for Basic Maintenance',
 ];
