@@ -159,7 +159,7 @@ export default function Rent() {
   if (isComingSoon) return <UseIsLoading />;
   return (
     <Fragment>
-      <section
+      {/* <section
         className={`w-full bg-[#EEF1F1] flex justify-center items-center ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
@@ -306,7 +306,7 @@ export default function Rent() {
         />
       )}
 
-      {rentPage.submitPreference && <ContactUs />}
+      {rentPage.submitPreference && <ContactUs />} */}
     </Fragment>
   );
 }
@@ -339,66 +339,67 @@ const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
 }) => {
   const isMobile = IsMobile();
   return (
-    <div
-      // ref={selectedBriefsRef}
-      className={`lg:flex ${
-        isMobile && isViewBriefClicked ? 'flex' : 'hidden'
-      } flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
-      <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
-        Submit for inspection
-      </h2>
-      <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
-        {[...data].map((selectedBrief: BriefType, idx: number) => (
-          <Card
-            key={idx}
-            images={Array(12).fill(imgSample)}
-            onClick={() => {
-              removeBrief(selectedBrief);
-              localStorage.clear();
-              toast.success('Removed successfully');
-            }}
-            cardData={[
-              {
-                header: 'Property Type',
-                value: selectedBrief?.propertyType,
-              },
-              {
-                header: 'Price',
-                value: `₦${Number(selectedBrief?.price).toLocaleString()}`,
-              },
-              {
-                header: 'Bedrooms',
-                value: selectedBrief?.propertyFeatures?.noOfBedrooms || 'N/A',
-              },
-              {
-                header: 'Location',
-                value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
-              },
-              {
-                header: 'Documents',
-                value: `<ol>${selectedBrief?.docOnProperty.map(
-                  (item: { _id: string; docName: string }) =>
-                    `<li key={${item._id}>${item.docName}</li>`
-                )}<ol>`,
-              },
-            ]}
-            isRed={true}
-          />
-        ))}
-      </div>
-      <Button
-        green={true}
-        value='Submit'
-        onClick={() => {
-          setRentPage({
-            ...rentPage,
-            isSubmitForInspectionClicked: true,
-          });
-          setPropertyRefSelectedBriefs(Array.from(data));
-        }}
-        className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
-      />
-    </div>
+    // <div
+    //   // ref={selectedBriefsRef}
+    //   className={`lg:flex ${
+    //     isMobile && isViewBriefClicked ? 'flex' : 'hidden'
+    //   } flex-col lg:border-l-[1px] lg:border-[#A8ADB7] lg:pl-[20px] `}>
+    //   <h2 className='text-[24px] leading-[38.4px] text-[#09391C] font-display font-semibold'>
+    //     Submit for inspection
+    //   </h2>
+    //   <div className='lg:w-[266px] w-full flex flex-col gap-[14px]'>
+    //     {[...data].map((selectedBrief: BriefType, idx: number) => (
+    //       <Card
+    //         key={idx}
+    //         images={Array(12).fill(imgSample)}
+    //         onClick={() => {
+    //           removeBrief(selectedBrief);
+    //           localStorage.clear();
+    //           toast.success('Removed successfully');
+    //         }}
+    //         cardData={[
+    //           {
+    //             header: 'Property Type',
+    //             value: selectedBrief?.propertyType,
+    //           },
+    //           {
+    //             header: 'Price',
+    //             value: `₦${Number(selectedBrief?.price).toLocaleString()}`,
+    //           },
+    //           {
+    //             header: 'Bedrooms',
+    //             value: selectedBrief?.propertyFeatures?.noOfBedrooms || 'N/A',
+    //           },
+    //           {
+    //             header: 'Location',
+    //             value: `${selectedBrief?.location.state}, ${selectedBrief?.location.localGovernment}`,
+    //           },
+    //           {
+    //             header: 'Documents',
+    //             value: `<ol>${selectedBrief?.docOnProperty.map(
+    //               (item: { _id: string; docName: string }) =>
+    //                 `<li key={${item._id}>${item.docName}</li>`
+    //             )}<ol>`,
+    //           },
+    //         ]}
+    //         isRed={true}
+    //       />
+    //     ))}
+    //   </div>
+    //   <Button
+    //     green={true}
+    //     value='Submit'
+    //     onClick={() => {
+    //       setRentPage({
+    //         ...rentPage,
+    //         isSubmitForInspectionClicked: true,
+    //       });
+    //       setPropertyRefSelectedBriefs(Array.from(data));
+    //     }}
+    //     className='py-[12px] px-[24px] h-[64px] text-[#FFFFFF] text-base leading-[25.6px] font-bold mt-6'
+    //   />
+    // </div>
+    <></>
   );
 };
 
