@@ -13,6 +13,7 @@ import BedsAndBathModal from './beds-and-bath-modal';
 import DesiresFeaturesModal from './desires-features-modal';
 import TenantFeaturesModal from './tenant-criteria';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -49,6 +50,7 @@ const RentSearchModal = ({
       console.log(values);
     },
   });
+  const router = useRouter();
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] =
     useState<boolean>(false);
   const [priceRadioValue, setPriceRadioValue] = useState<string>('');
@@ -137,7 +139,10 @@ const RentSearchModal = ({
         <div className='flex gap-[30px]'>
           <button
             className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
-            type='button'>
+            type='button'
+            onClick={() => {
+              router.push('/post_property');
+            }}>
             List property
           </button>
           <button

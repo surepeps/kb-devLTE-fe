@@ -44,6 +44,7 @@ import copy from '@/utils/copyItem';
 import Card from '@/components/general-components/card';
 import { IsMobile } from '@/hooks/isMobile';
 import MobileSelectedBottomBar from '@/components/marketplace/MobileSelectedBottomBar';
+import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 
 // const selectedBriefs = 9;
 
@@ -320,28 +321,14 @@ const ProductDetailsPage = ({
           }`}>
           <div className='flex flex-col items-center gap-[20px] w-full mt-10'>
             <div className='min-h-[90px] container w-full flex flex-col items-start lg:px-[40px]'>
-              <div className='flex gap-1 items-center px-[10px] lg:px-[0px]'>
-                <Image
-                  alt=''
-                  src={arrowRightIcon}
-                  width={24}
-                  height={24}
-                  className='w-[24px] h-[24px]'
-                  onClick={() => {
-                    router.back();
-                  }}
-                />
-                <div className='flex gap-2 items-center justify-center align-middle'>
-                  <Link
-                    href={'/'}
-                    className='text-[20px] leading-[32px] text-[#25324B] font-normal'>
-                    Home
-                  </Link>
-                  <h3 className='text-[20px] leading-[32px] text-[#25324B] font-semibold'>
-                    .&nbsp;{point}
-                  </h3>
-                </div>
-              </div>
+            <div className='w-full flex justify-start mb-5'>
+              <BreadcrumbNav
+                point={point}
+                onBack={() => router.back()}
+                arrowIcon={arrowRightIcon}
+                backText="Home"
+              />
+            </div>
                 <h2
                   className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold mt-6 text-black px-3 md:px-5`}>
                   Newly Built 5 bedroom Duplex with BQ in a highly secured area in
