@@ -22,6 +22,11 @@ interface CardDataProps {
   style?: React.CSSProperties;
   isDisabled?: boolean;
   onCardPageClick?: () => void;
+  setIsAddInspectionModalOpened: (type: boolean) => void;
+  property: any;
+  setPropertySelected: (type: any[]) => void;
+  isComingFromPriceNeg?: boolean;
+  setIsComingFromPriceNeg?: (type: boolean) => void;
 }
 
 const Card = ({
@@ -33,6 +38,11 @@ const Card = ({
   style,
   isDisabled,
   onCardPageClick,
+  setIsAddInspectionModalOpened,
+  property,
+  setPropertySelected,
+  isComingFromPriceNeg,
+  setIsComingFromPriceNeg,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
@@ -206,6 +216,11 @@ const Card = ({
             value={`Price Negotiation`}
             type='button'
             // green={isRed ? false : true}
+            onClick={() => {
+              setIsAddInspectionModalOpened(true);
+              setPropertySelected([property]);
+              setIsComingFromPriceNeg?.(true);
+            }}
             red={isRed}
             //onClick={onClick}
             className='min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold'
