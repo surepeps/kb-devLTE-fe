@@ -22,9 +22,9 @@ interface CardDataProps {
   style?: React.CSSProperties;
   isDisabled?: boolean;
   onCardPageClick?: () => void;
-  setIsAddInspectionModalOpened: (type: boolean) => void;
-  property: any;
-  setPropertySelected: (type: any[]) => void;
+  setIsAddInspectionModalOpened?: (type: boolean) => void;
+  property?: any;
+  setPropertySelected?: (type: any[]) => void;
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (type: boolean) => void;
 }
@@ -217,8 +217,8 @@ const Card = ({
             type='button'
             // green={isRed ? false : true}
             onClick={() => {
-              setIsAddInspectionModalOpened(true);
-              setPropertySelected([property]);
+              setIsAddInspectionModalOpened?.(true);
+              setPropertySelected?.([property]);
               setIsComingFromPriceNeg?.(true);
             }}
             red={isRed}
