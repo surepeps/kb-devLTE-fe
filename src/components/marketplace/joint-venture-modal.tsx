@@ -12,6 +12,7 @@ import DocumentTypeComponent from './document-type';
 import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
  
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -41,6 +42,7 @@ const JointVentureModal = ({
       console.log(values);
     },
   });
+  const router = useRouter();
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] =
     useState<boolean>(false);
   const [priceRadioValue, setPriceRadioValue] = useState<string>('');
@@ -138,7 +140,10 @@ const JointVentureModal = ({
         <div className='flex gap-[30px]'>
           <button
             className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
-            type='button'>
+            type='button'
+            onClick={() => {
+              router.push('/post_property');
+            }}>
             List property
           </button>
           <button
