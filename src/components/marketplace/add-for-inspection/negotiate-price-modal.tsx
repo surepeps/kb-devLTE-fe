@@ -150,11 +150,11 @@ const NegiotiatePrice = ({
               name='enter_your_price'
               type='number'
               placeholder='Enter amount'
-              value={selectedCard.yourPrice}
+              value={selectedProperty.yourPrice}
               onChange={(event) => {
                 const value = 'value' in event.target ? event.target.value : '';
-                setSelectedCard({
-                  ...selectedCard,
+                setSelectedProperty({
+                  ...selectedProperty,
                   yourPrice: value,
                 });
               }}
@@ -189,6 +189,12 @@ type NegotiateWithSellerProps = {
   closeModal?: (type: boolean) => void;
   allNegotiation: any[];
   getID: string | null;
+  closeSelectPreferableModal: (type: boolean) => void;
+  setIsProvideTransactionDetails: (type: boolean) => void;
+  actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
+  setActionTracker: React.Dispatch<
+    React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
+  >;
 };
 
 type DetailsProps = {
@@ -206,6 +212,10 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
   closeModal,
   allNegotiation,
   getID,
+  setIsProvideTransactionDetails,
+  setActionTracker,
+  actionTracker,
+  closeSelectPreferableModal,
 }): React.JSX.Element => {
   const [selectedProperty, setSelectedProperty] =
     useState<NegotiationModalProps>({
@@ -232,15 +242,18 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     validationSchema,
     onSubmit: (values: ContactProps) => {
       console.log(values);
-      // setActionTracker([
-      //   ...actionTracker,
-      //   { lastPage: 'SelectPreferableInspectionDate' },
-      // ]);
-      // setIsProvideTransactionDetails(true);
-      // closeModal(false);
+      setActionTracker([
+        ...actionTracker,
+        { lastPage: 'SelectPreferableInspectionDate' },
+      ]);
+      setIsProvideTransactionDetails(true);
+      closeSelectPreferableModal(false);
+      closeModal?.(false);
     },
   });
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
+
+  const allFilled = Object.values(formik.values).every((value) => value !== '');
 
   useEffect(() => {
     const findSelectedCard = allNegotiation.find((item) => item.id === getID);
@@ -287,9 +300,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
           </motion.button>
         </div>
         <form
-          onSubmit={(event: React.FormEvent) => {
-            event.preventDefault();
-          }}
+          onSubmit={formik.handleSubmit}
           className='w-full rounded-[4px] h-[437px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[50px]'>
           <div className='w-full flex flex-col gap-[20px]'>
             <div className='flex flex-col gap-[10px]'>
@@ -324,7 +335,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
               type='number'
               placeholder='Enter amount'
               value={selectedProperty.yourPrice}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(event: any) => {
                 //setInputValue(event.target.value);
                 console.log('clicked');
                 setSelectedProperty({
@@ -496,7 +507,10 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
               <div className=' w-full flex gap-[15px] h-[57px]'>
                 <button
                   type='submit'
-                  className={`w-1/2 h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${archivo.className}`}>
+                  onSubmit={formik.handleSubmit}
+                  className={`w-1/2 h-[57px] ${
+                    allFilled ? 'bg-[#8DDB90]' : 'bg-[#5A5D63]'
+                  } text-[#FFFFFF] font-bold text-lg ${archivo.className}`}>
                   Submit
                 </button>
                 <button

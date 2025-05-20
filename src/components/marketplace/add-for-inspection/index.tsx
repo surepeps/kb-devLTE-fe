@@ -430,6 +430,12 @@ const AddForInspection = ({
             getID={propertiesSelected[0].id}
             allNegotiation={propertiesSelected}
             closeModal={comingFromPriceNegotiation}
+            actionTracker={actionTracker}
+            setActionTracker={setActionTracker}
+            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
+            closeSelectPreferableModal={
+              setSelectPreferableInspectionDateModalOpened
+            }
           />
         )}
       </AnimatePresence>
