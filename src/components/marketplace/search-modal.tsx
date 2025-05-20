@@ -33,6 +33,8 @@ const SearchModal = ({
   propertiesSelected,
   addForInspectionPayload,
   setAddForInspectionPayload,
+  isComingFromPriceNeg,
+  comingFromPriceNegotiation,
 }: {
   isAddForInspectionModalOpened: boolean;
   setIsAddInspectionModalOpened: (type: boolean) => void;
@@ -40,6 +42,11 @@ const SearchModal = ({
   setPropertiesSelected: (type: any[]) => void;
   addForInspectionPayload: PayloadProps;
   setAddForInspectionPayload: (type: PayloadProps) => void;
+  /**
+   * coming from the price negotiation button
+   */
+  isComingFromPriceNeg?: boolean;
+  comingFromPriceNegotiation?: (type: boolean) => void;
 }) => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
@@ -125,8 +132,8 @@ const SearchModal = ({
       case 'Find property for Joint Venture':
         return (
           <div className='relative w-full flex flex-col'>
-            <JointVentureModal 
-              selectedBriefs={uniqueProperties.size} 
+            <JointVentureModal
+              selectedBriefs={uniqueProperties.size}
               addForInspectionPayload={addForInspectionPayload}
               setUsageOptions={setUsageOptions}
               setSelectedBriefs={setUniqueProperties}
@@ -166,6 +173,11 @@ const SearchModal = ({
                 <Card
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
                   images={property?.pictures}
+                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                  setPropertySelected={setPropertiesSelected}
+                  isComingFromPriceNeg={isComingFromPriceNeg}
+                  setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                  property={property}
                   onCardPageClick={() => {
                     router.push(`/property/${type}/${property._id}`);
                   }}
@@ -210,6 +222,11 @@ const SearchModal = ({
                 <Card
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
                   images={property?.pictures}
+                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                  setPropertySelected={setPropertiesSelected}
+                  isComingFromPriceNeg={isComingFromPriceNeg}
+                  setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                  property={property}
                   onCardPageClick={() => {
                     router.push(`/property/${type}/${property._id}`);
                   }}
@@ -282,6 +299,11 @@ const SearchModal = ({
                 <Card
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
                   images={property?.pictures}
+                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                  setPropertySelected={setPropertiesSelected}
+                  isComingFromPriceNeg={isComingFromPriceNeg}
+                  setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                  property={property}
                   onCardPageClick={() => {
                     router.push(`/property/Rent/${property._id}`);
                   }}
@@ -329,6 +351,11 @@ const SearchModal = ({
                 <Card
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
                   images={property?.pictures}
+                  property={property}
+                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                  setPropertySelected={setPropertiesSelected}
+                  isComingFromPriceNeg={isComingFromPriceNeg}
+                  setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   onCardPageClick={() => {
                     router.push(`/property/Rent/${property._id}`);
                   }}
@@ -393,9 +420,10 @@ const SearchModal = ({
   };
 
   const handlePropertiesSelection = (property: any) => {
-    console.log('Clicked');
-    if (uniqueProperties.size === 3) {
-      return toast.error('Maximum of 3 reached');
+    //console.log('Clicked');
+    const maximumSelection: number = 2;
+    if (uniqueProperties.size === maximumSelection) {
+      return toast.error(`Maximum of ${maximumSelection} reached`);
     }
     uniqueProperties.add(property);
     setPropertiesSelected(Array.from(uniqueProperties));
@@ -485,7 +513,7 @@ const SearchModal = ({
           renderBrief={renderDynamicComponent}
           selectedBriefs={uniqueProperties.size}
           onSelectBrief={handlePropertiesSelection}
-          selectedBriefsList={selectedBriefs} // pass the array
+          selectedBriefsList={uniqueProperties} // pass the array
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>
