@@ -5,6 +5,14 @@ export const propertyReferenceData: {
   options: any[];
 }[] = [
   {
+    heading: 'Type of Residential Buildings',
+    options: ['Bungalow', 'Duplex', 'Flat/Apartment', 'Terrace House', 'Mansion', 'Others'],
+  },
+  {
+    heading: 'Type of Commercial Building',
+    options: ['Office Buildings', 'Shopping Malls/Plazas', 'Warehouses', 'Hotels', 'Factories', 'Worshops', 'School', 'Hospitals/Clinics', 'Petrol Station', 'Religious Buildings Church/Mosque', 'Others'],
+  },
+  {
     heading: 'Type of Property',
     options: ['Land', 'Residential', 'Commercial'],
   },
@@ -37,10 +45,6 @@ export const propertyReferenceData: {
   {
     heading: 'Desires Features',
     options: [
-      // '1 Bedroom',
-      // '2 Bedrooms',
-      // '3 Bedrooms',
-      // '4 Bedrooms and more',
       'Contemporary Designs',
       'Modern Interior Finishing',
       'Guest Toilet',
@@ -67,13 +71,14 @@ export const propertyReferenceData: {
   },
   {
     heading: 'Bedroom',
-    options: [1, 2, 3, 4],
+    options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "More"],
   },
   {
     heading: 'Type of Measurement',
     options: ['Plot', 'Square Meter', 'Acres'],
   },
 ];
+
 
 export const propertyReferenceDataWithoutUsageOption: {
   heading: string;

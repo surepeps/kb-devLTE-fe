@@ -8,6 +8,7 @@ import React, {
   FC,
   FocusEventHandler,
   Fragment,
+  MouseEvent,
   memo,
   MouseEventHandler,
 } from 'react';
@@ -21,6 +22,10 @@ interface Option {
   label: string;
 }
 
+type InputOrTextareaChangeEvent = React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>;
+type InputOrTextareaFocusEvent = React.FocusEvent<HTMLInputElement> | React.FocusEvent<HTMLTextAreaElement>;
+type InputOrTextareaMouseEvent = MouseEvent<HTMLInputElement> | MouseEvent<HTMLTextAreaElement>;
+
 interface InputProps {
   name: string;
   label: string;
@@ -29,10 +34,11 @@ interface InputProps {
   className?: string;
   id?: string;
   value?: string | number | undefined;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: FocusEventHandler<HTMLInputElement>;
-  onClick?: MouseEventHandler<HTMLInputElement>;
-  onFocus?: FocusEventHandler<HTMLInputElement>;
+  // onChange?: ChangeEventHandler<HTMLInputElement>;
+  onChange?: (e: InputOrTextareaChangeEvent) => void;
+  onBlur?: (e: InputOrTextareaFocusEvent) => void;
+  onClick?: (e: InputOrTextareaMouseEvent) => void;
+  onFocus?: (e: InputOrTextareaFocusEvent) => void;
   forState?: boolean;
   forLGA?: boolean;
   forIdtype?: boolean;
@@ -55,6 +61,8 @@ interface InputProps {
   stateValue?: string;
   readOnly?: boolean;
   showDropdownIcon?: boolean;
+  multiline?: boolean;
+  rows?: number;
 }
 
 const Input: FC<InputProps> = memo(
@@ -92,6 +100,8 @@ const Input: FC<InputProps> = memo(
     onFocus,
     readOnly,
     showDropdownIcon,
+    multiline = false,
+    rows = 3,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -213,6 +223,22 @@ const Input: FC<InputProps> = memo(
           {!forLGA && !forState && !forRegion && !forIdtype && (
             <div className='flex flex-col w-full'>
               <div className='flex items-center relative'>
+                {multiline ? (
+                  <textarea
+                    id={id}
+                    name={name}
+                    value={value}
+                    onChange={isDisabled ? undefined : onChange}
+                    onBlur={isDisabled ? undefined : onBlur}
+                    disabled={isDisabled}
+                    onClick={isDisabled ? undefined : onClick}
+                    onFocus={isDisabled ? undefined : onFocus}
+                    readOnly={readOnly}
+                    placeholder={placeholder ?? 'This is placeholder'}
+                    rows={rows}
+                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
+                  />
+                ) : (
                 <input
                   id={id}
                   name={name}
@@ -229,7 +255,8 @@ const Input: FC<InputProps> = memo(
                   placeholder={placeholder ?? 'This is placeholder'}
                   className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-black text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
                 />
-                {showDropdownIcon && (
+                )}
+                {showDropdownIcon && !multiline && (
                   <FontAwesomeIcon
                     icon={faCaretDown}
                     size='sm'
