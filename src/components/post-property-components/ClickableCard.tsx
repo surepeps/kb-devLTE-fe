@@ -11,9 +11,10 @@ interface ClickableCardProps {
   href: string;
 }
 
-const ClickableCard: React.FC<ClickableCardProps> = ({ imageSrc, text, href }) => {
+const ClickableCard: React.FC<ClickableCardProps & { onClick?: () => void }> = ({ imageSrc, text, href, onClick }) => {
   return (
-    <Link href={href}>
+    <div onClick={onClick} className="cursor-pointer">
+    <Link href={href} onClick={e => { if (href === "#") e.preventDefault(); }}>
       <div className="flex items-center justify-between border rounded-md p-5 hover:shadow-md transition cursor-pointer bg-white px-10">
         {/* Left side: icon and text */}
         <div className="flex items-center space-x-4">
@@ -29,6 +30,7 @@ const ClickableCard: React.FC<ClickableCardProps> = ({ imageSrc, text, href }) =
         <ArrowRight className="text-gray-800" size={24} />
       </div>
     </Link>
+    </div>
   );
 };
 
