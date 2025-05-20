@@ -507,7 +507,6 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
               <div className=' w-full flex gap-[15px] h-[57px]'>
                 <button
                   type='submit'
-                  onSubmit={formik.handleSubmit}
                   className={`w-1/2 h-[57px] ${
                     allFilled ? 'bg-[#8DDB90]' : 'bg-[#5A5D63]'
                   } text-[#FFFFFF] font-bold text-lg ${archivo.className}`}>
