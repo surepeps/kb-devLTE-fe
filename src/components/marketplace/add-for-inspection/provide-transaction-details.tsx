@@ -79,172 +79,322 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
     if (options.length > 0) return setAllBanks(options);
   }, []);
   return (
+    // <Fragment>
+    //   <aside className='w-full flex justify-center items-center py-[40px]'>
+    //     <div className='lg:w-[1057px] w-full flex gap-[35px]'>
+    //       {/**First div */}
+    //       <div className='lg:w-[420px] h-full flex flex-col gap-[10px]'>
+    //         <motion.div
+    //           initial={{ y: 20, opacity: 0 }}
+    //           whileInView={{ y: 0, opacity: 1 }}
+    //           transition={{ delay: 0.2 }}
+    //           exit={{ y: 20, opacity: 0 }}
+    //           viewport={{ once: true }}
+    //           className='w-full bg-white py-[22px] px-[28px] flex flex-col gap-[10px]'>
+    //           {/**Make payment to */}
+    //           <div className='flex flex-col'>
+    //             <h3
+    //               className={`${archivo.className} text-lg font-bold text-black`}>
+    //               Make payment to
+    //             </h3>
+    //             <h2
+    //               className={`${archivo.className} text-3xl font-bold text-black`}>
+    //               N{Number(amountToPay).toLocaleString()}
+    //             </h2>
+    //           </div>
+    //           {/**Account details */}
+    //           <div className='flex flex-col gap-[7px]'>
+    //             <h4
+    //               className={`${archivo.className} text-lg font-bold text-black`}>
+    //               Account details
+    //             </h4>
+    //             {/**Bank */}
+    //             <p
+    //               className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+    //               Bank{' '}
+    //               <span
+    //                 className={`${archivo.className} text-lg font-medium text-black`}>
+    //                 GTB
+    //               </span>
+    //             </p>
+    //             {/**Account number */}
+    //             <p
+    //               className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+    //               Account Number{' '}
+    //               <span
+    //                 className={`${archivo.className} text-lg font-medium text-black`}>
+    //                 0234567894
+    //               </span>
+    //             </p>
+    //             {/**Account Name */}
+    //             <p
+    //               className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+    //               Account Name{' '}
+    //               <span
+    //                 className={`${archivo.className} text-lg font-medium text-black`}>
+    //                 Khabi-Teq Reality
+    //               </span>
+    //             </p>
+    //           </div>
+    //         </motion.div>
+    //         {/**PS */}
+    //         <motion.p
+    //           initial={{ y: 20, opacity: 0 }}
+    //           whileInView={{ y: 0, opacity: 1 }}
+    //           transition={{ delay: 0.3 }}
+    //           exit={{ y: 20, opacity: 0 }}
+    //           viewport={{ once: true }}
+    //           className={`text-[#1976D2] font-medium text-lg`}>
+    //           Note that this process is subject to Approval by khabiteq realty
+    //         </motion.p>
+    //       </div>
+    //       {/**Second div - form section */}
+    //       <motion.form
+    //         initial={{ y: 20, opacity: 0 }}
+    //         whileInView={{ y: 0, opacity: 1 }}
+    //         transition={{ delay: 0.2 }}
+    //         exit={{ y: 20, opacity: 0 }}
+    //         viewport={{ once: true }}
+    //         onSubmit={formik.handleSubmit}
+    //         className='lg:w-[602px] h-full flex flex-col gap-[20px]'>
+    //         {/**Provide the Transaction Details */}
+    //         <h2 className={`text-xl text-[#09391C] font-semibold`}>
+    //           Provide Transaction Details
+    //         </h2>
+    //         <div className='w-full h-[181px] gap-x-[20px] gap-y-[10px] grid grid-cols-2'>
+    //           {/**Select Bank */}
+    //           <label
+    //             htmlFor={'bankName'}
+    //             className={`w-full flex flex-col gap-[4px]`}>
+    //             <span
+    //               className={`text-base text-[#24272C] ${archivo.className} font-medium`}>
+    //               Enter Bank
+    //             </span>
+    //             <Select
+    //               styles={customStyles}
+    //               name='bankName'
+    //               options={allBanks}
+    //               id='bankName'
+    //               placeholder='Select Bank'
+    //               onBlur={formik.handleBlur}
+    //               onChange={(
+    //                 event: SingleValue<{ value: string; label: string }>
+    //               ) => {
+    //                 formik.setFieldValue('bankName', event?.label);
+    //               }}
+    //             />
+    //             {(formik.errors.bankName || formik.touched.bankName) && (
+    //               <span className={`${archivo.className} text-xs text-red-500`}>
+    //                 {formik.errors.bankName}
+    //               </span>
+    //             )}
+    //           </label>
+
+    //           {/**Enter Account Number */}
+    //           <Input
+    //             formikType={formik}
+    //             id='accountNumber'
+    //             type='number'
+    //             name='accountNumber'
+    //             placeholder='Enter Account Number'
+    //             heading='Enter Account Number'
+    //           />
+
+    //           {/**Enter Account Name */}
+    //           <Input
+    //             formikType={formik}
+    //             id='accountName'
+    //             type='text'
+    //             name='accountName'
+    //             placeholder='Enter Account Name'
+    //             heading='Enter Account Name'
+    //           />
+
+    //           {/**Insert Transaction Reference */}
+    //           <Input
+    //             formikType={formik}
+    //             id='transactionReference'
+    //             type='text'
+    //             name='transactionReference'
+    //             placeholder='Insert Transaction Reference'
+    //             heading='Insert Transaction Reference'
+    //           />
+    //         </div>
+    //         {/**Attach Receipt */}
+    //         <div className='h-[58px] flex justify-between items-center'>
+    //           {/* <h4 className={`text-base font-medium text-[#202430]`}>
+    //           Upload your transaction receipt.
+    //         </h4> */}
+    //           <AttachFile
+    //             heading='Upload your transaction receipt.'
+    //             style={{
+    //               width: '283px',
+    //             }}
+    //             id='transaction_receipt'
+    //             setFileUrl={setFileURL}
+    //           />
+    //         </div>
+    //         {/**button to submit */}
+    //         <button
+    //           type='submit'
+    //           className='h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA]'>
+    //           Submit
+    //         </button>
+    //       </motion.form>
+    //     </div>
+    //     {isSuccessfullySubmitted && <SubmitPopUp />}
+    //   </aside>
+    // </Fragment>
+
     <Fragment>
-      <aside className='w-full flex justify-center items-center py-[40px]'>
-        <div className='lg:w-[1057px] w-full flex gap-[35px]'>
-          {/**First div */}
-          <div className='lg:w-[420px] h-full flex flex-col gap-[10px]'>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              exit={{ y: 20, opacity: 0 }}
-              viewport={{ once: true }}
-              className='w-full bg-white py-[22px] px-[28px] flex flex-col gap-[10px]'>
-              {/**Make payment to */}
-              <div className='flex flex-col'>
-                <h3
-                  className={`${archivo.className} text-lg font-bold text-black`}>
-                  Make payment to
-                </h3>
-                <h2
-                  className={`${archivo.className} text-3xl font-bold text-black`}>
-                  N{Number(amountToPay).toLocaleString()}
-                </h2>
-              </div>
-              {/**Account details */}
-              <div className='flex flex-col gap-[7px]'>
-                <h4
-                  className={`${archivo.className} text-lg font-bold text-black`}>
-                  Account details
-                </h4>
-                {/**Bank */}
-                <p
-                  className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
-                  Bank{' '}
-                  <span
-                    className={`${archivo.className} text-lg font-medium text-black`}>
-                    GTB
-                  </span>
-                </p>
-                {/**Account number */}
-                <p
-                  className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
-                  Account Number{' '}
-                  <span
-                    className={`${archivo.className} text-lg font-medium text-black`}>
-                    0234567894
-                  </span>
-                </p>
-                {/**Account Name */}
-                <p
-                  className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
-                  Account Name{' '}
-                  <span
-                    className={`${archivo.className} text-lg font-medium text-black`}>
-                    Khabi-Teq Reality
-                  </span>
-                </p>
-              </div>
-            </motion.div>
-            {/**PS */}
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              exit={{ y: 20, opacity: 0 }}
-              viewport={{ once: true }}
-              className={`text-[#1976D2] font-medium text-lg`}>
-              Note that this process is subject to Approval by khabiteq realty
-            </motion.p>
-          </div>
-          {/**Second div - form section */}
-          <motion.form
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            exit={{ y: 20, opacity: 0 }}
-            viewport={{ once: true }}
-            onSubmit={formik.handleSubmit}
-            className='lg:w-[602px] h-full flex flex-col gap-[20px]'>
-            {/**Provide the Transaction Details */}
-            <h2 className={`text-xl text-[#09391C] font-semibold`}>
-              Provide Transaction Details
+  <aside className="w-full flex justify-center items-center py-6 sm:py-8 md:py-10">
+    <div className="w-full flex flex-col lg:flex-row gap-6 md:gap-8 lg:gap-[35px] max-w-6xl px-2 sm:px-4 md:px-8">
+      {/* First div */}
+      <div className="w-full lg:w-[420px] flex flex-col gap-4">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          exit={{ y: 20, opacity: 0 }}
+          viewport={{ once: true }}
+          className="w-full bg-white py-6 px-4 sm:px-6 flex flex-col gap-3"
+        >
+          {/* Make payment to */}
+          <div className="flex flex-col">
+            <h3 className={`${archivo.className} text-lg font-bold text-black`}>
+              Make payment to
+            </h3>
+            <h2 className={`${archivo.className} text-3xl font-bold text-black`}>
+              N{Number(amountToPay).toLocaleString()}
             </h2>
-            <div className='w-full h-[181px] gap-x-[20px] gap-y-[10px] grid grid-cols-2'>
-              {/**Select Bank */}
-              <label
-                htmlFor={'bankName'}
-                className={`w-full flex flex-col gap-[4px]`}>
-                <span
-                  className={`text-base text-[#24272C] ${archivo.className} font-medium`}>
-                  Enter Bank
-                </span>
-                <Select
-                  styles={customStyles}
-                  name='bankName'
-                  options={allBanks}
-                  id='bankName'
-                  placeholder='Select Bank'
-                  onBlur={formik.handleBlur}
-                  onChange={(
-                    event: SingleValue<{ value: string; label: string }>
-                  ) => {
-                    formik.setFieldValue('bankName', event?.label);
-                  }}
-                />
-                {(formik.errors.bankName || formik.touched.bankName) && (
-                  <span className={`${archivo.className} text-xs text-red-500`}>
-                    {formik.errors.bankName}
-                  </span>
-                )}
-              </label>
-
-              {/**Enter Account Number */}
-              <Input
-                formikType={formik}
-                id='accountNumber'
-                type='number'
-                name='accountNumber'
-                placeholder='Enter Account Number'
-                heading='Enter Account Number'
-              />
-
-              {/**Enter Account Name */}
-              <Input
-                formikType={formik}
-                id='accountName'
-                type='text'
-                name='accountName'
-                placeholder='Enter Account Name'
-                heading='Enter Account Name'
-              />
-
-              {/**Insert Transaction Reference */}
-              <Input
-                formikType={formik}
-                id='transactionReference'
-                type='text'
-                name='transactionReference'
-                placeholder='Insert Transaction Reference'
-                heading='Insert Transaction Reference'
-              />
-            </div>
-            {/**Attach Receipt */}
-            <div className='h-[58px] flex justify-between items-center'>
-              {/* <h4 className={`text-base font-medium text-[#202430]`}>
-              Upload your transaction receipt.
-            </h4> */}
-              <AttachFile
-                heading='Upload your transaction receipt.'
-                style={{
-                  width: '283px',
-                }}
-                id='transaction_receipt'
-                setFileUrl={setFileURL}
-              />
-            </div>
-            {/**button to submit */}
-            <button
-              type='submit'
-              className='h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA]'>
-              Submit
-            </button>
-          </motion.form>
+          </div>
+          {/* Account details */}
+          <div className="flex flex-col gap-2">
+            <h4 className={`${archivo.className} text-lg font-bold text-black`}>
+              Account details
+            </h4>
+            <p className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+              Bank{" "}
+              <span className={`${archivo.className} text-lg font-medium text-black`}>
+                GTB
+              </span>
+            </p>
+            <p className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+              Account Number{" "}
+              <span className={`${archivo.className} text-lg font-medium text-black`}>
+                0234567894
+              </span>
+            </p>
+            <p className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+              Account Name{" "}
+              <span className={`${archivo.className} text-lg font-medium text-black`}>
+                Khabi-Teq Reality
+              </span>
+            </p>
+          </div>
+        </motion.div>
+        {/* PS */}
+        <motion.p
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          exit={{ y: 20, opacity: 0 }}
+          viewport={{ once: true }}
+          className="text-[#1976D2] font-medium text-base sm:text-lg"
+        >
+          Note that this process is subject to Approval by khabiteq realty
+        </motion.p>
+      </div>
+      {/* Second div - form section */}
+      <motion.form
+        initial={{ y: 20, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        exit={{ y: 20, opacity: 0 }}
+        viewport={{ once: true }}
+        onSubmit={formik.handleSubmit}
+        className="w-full lg:w-[602px] flex flex-col gap-5"
+      >
+        {/* Provide the Transaction Details */}
+        <h2 className="text-xl text-[#09391C] font-semibold">
+          Provide Transaction Details
+        </h2>
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3">
+          {/* Select Bank */}
+          <label htmlFor={"bankName"} className="w-full flex flex-col gap-1">
+            <span className={`text-base text-[#24272C] ${archivo.className} font-medium`}>
+              Enter Bank
+            </span>
+            <Select
+              styles={customStyles}
+              name="bankName"
+              options={allBanks}
+              id="bankName"
+              placeholder="Select Bank"
+              onBlur={formik.handleBlur}
+              onChange={(
+                event: SingleValue<{ value: string; label: string }>
+              ) => {
+                formik.setFieldValue("bankName", event?.label);
+              }}
+            />
+            {(formik.errors.bankName || formik.touched.bankName) && (
+              <span className={`${archivo.className} text-xs text-red-500`}>
+                {formik.errors.bankName}
+              </span>
+            )}
+          </label>
+          {/* Enter Account Number */}
+          <Input
+            formikType={formik}
+            id="accountNumber"
+            type="number"
+            name="accountNumber"
+            placeholder="Enter Account Number"
+            heading="Enter Account Number"
+          />
+          {/* Enter Account Name */}
+          <Input
+            formikType={formik}
+            id="accountName"
+            type="text"
+            name="accountName"
+            placeholder="Enter Account Name"
+            heading="Enter Account Name"
+          />
+          {/* Insert Transaction Reference */}
+          <Input
+            formikType={formik}
+            id="transactionReference"
+            type="text"
+            name="transactionReference"
+            placeholder="Insert Transaction Reference"
+            heading="Insert Transaction Reference"
+          />
         </div>
-        {isSuccessfullySubmitted && <SubmitPopUp />}
-      </aside>
-    </Fragment>
+        {/* Attach Receipt */}
+        <div className="h-[58px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <AttachFile
+            heading="Upload your transaction receipt."
+            style={{
+              width: "283px",
+            }}
+            id="transaction_receipt"
+            setFileUrl={setFileURL}
+          />
+        </div>
+        {/* button to submit */}
+        <button
+          type="submit"
+          className="h-[50px] sm:h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA] rounded"
+        >
+          Submit
+        </button>
+      </motion.form>
+    </div>
+    {isSuccessfullySubmitted && <SubmitPopUp />}
+  </aside>
+</Fragment>
   );
 };
 

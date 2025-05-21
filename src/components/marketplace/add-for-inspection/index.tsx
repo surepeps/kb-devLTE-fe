@@ -333,9 +333,9 @@ const AddForInspection = ({
                     className={`text-2xl font-display font-semibold text-[#09391C] text-center`}>
                     Add for Inspection
                   </h2>
-                  <p className='text-xl text-[#5A5D63]'>
+                  <p className='text-center text-base md:text-xl text-[#5A5D63]'>
                     Here are the briefs you selected for inspection.{' '}
-                    <span className='text-xl text-black'>
+                    <span className='text-base md:text-xl text-black'>
                       {inspectionType === 'Buy' &&
                         'You can negotiate the price for each property'}
                       {inspectionType === 'JV' &&
@@ -405,9 +405,8 @@ const AddForInspection = ({
                     )}
                   </AnimatePresence>
                 ) : null}
-                <div className='flex justify-center items-center gap-[20px] mt-4'>
-                  {propertiesSelected &&
-                    renderCards({ length: propertiesSelected['length'] })}
+                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 mt-4 w-full">
+                  {propertiesSelected && renderCards({ length: propertiesSelected.length })}
                 </div>
                 <div className='flex flex-col gap-[10px] justify-center items-center'>
                   <h2 className='text-lg text-black text-center items-center'>
