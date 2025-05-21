@@ -37,6 +37,8 @@ const SearchModal = ({
   comingFromPriceNegotiation,
   inspectionType,
   setInspectionType,
+  isComingFromSubmitLol,
+  setIsComingFromSubmitLol,
 }: {
   isAddForInspectionModalOpened: boolean;
   setIsAddInspectionModalOpened: (type: boolean) => void;
@@ -52,6 +54,11 @@ const SearchModal = ({
   //inspection type
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
   setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
+  /**
+   * coming from submit Lol button
+   */
+  isComingFromSubmitLol: boolean;
+  setIsComingFromSubmitLol: (type: boolean) => void;
 }) => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
@@ -282,8 +289,13 @@ const SearchModal = ({
                 key={idx}
                 onClick={() => handlePropertiesSelection(property)}
                 isDisabled={uniqueProperties.has(property)}
+                isComingFromSubmitLol={isComingFromSubmitLol}
+                setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                 cardData={[]}
                 images={[]}
+                property={property}
+                setPropertySelected={setPropertiesSelected}
+                setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
               />
             );
           });
