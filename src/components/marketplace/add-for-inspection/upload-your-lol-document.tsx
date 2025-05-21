@@ -135,7 +135,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='w-full rounded-[4px] h-[437px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[50px]'>
+          className='w-[95%] md:w-full mx-auto rounded-[4px] h-[437px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[20px] md:px-[50px]'>
           <div className='w-full flex flex-col gap-[20px]'>
             <div className='flex flex-col gap-[10px]'>
               <h2
