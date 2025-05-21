@@ -13,24 +13,28 @@ import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
- 
+
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
   initialAmount: number;
   toBeIncreaseBy: number;
 };
 
-const JointVentureModal = ({ 
-  selectedBriefs, 
-  addForInspectionPayload,  
+const JointVentureModal = ({
+  selectedBriefs,
+  addForInspectionPayload,
   setAddInspectionModal,
-  setSelectedBriefs
-}: { 
+  setSelectedBriefs,
+  inspectionType,
+  setInspectionType,
+}: {
   selectedBriefs: number;
   addForInspectionPayload: PayloadProps;
   setUsageOptions: (type: string[]) => void;
   setAddInspectionModal?: (type: boolean) => void;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
+  inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
+  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
 }) => {
   const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
@@ -150,6 +154,7 @@ const JointVentureModal = ({
             className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
             type='button'
             onClick={() => {
+              setInspectionType('JV');
               if (addForInspectionPayload.initialAmount === 0) {
                 setAddInspectionModal?.(false);
                 return toast.error('All states can not be different');
@@ -163,7 +168,7 @@ const JointVentureModal = ({
             }}>
             {selectedBriefs} selected briefs
           </button>
-            {selectedBriefs > 0 && (
+          {selectedBriefs > 0 && (
             <button
               onClick={() => setSelectedBriefs(new Set([]))}
               className='h-[34px] w-[133px] bg-transparent text-black border-[1px] border-zinc-800 font-medium text-sm'
