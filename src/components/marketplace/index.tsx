@@ -29,17 +29,8 @@ const MarketPlace = () => {
   const [inspectionType, setInspectionType] = useState<
     'Buy' | 'JV' | 'Rent/Lease'
   >('Buy');
-
-  // const renderDynamicComponent = (): React.JSX.Element => {
-  //   switch (isAddForInspectionModalOpened) {
-  //     case true:
-  //       break;
-
-  //     default:
-  //       return <></>;
-  //   }
-  //   return <></>;
-  // };
+  const [isComingFromSubmitLol, setIsComingFromSubmitLol] =
+    React.useState<boolean>(false);
 
   useEffect(
     () => console.log(propertiesSelected, addForInspectionPayload),
@@ -58,6 +49,8 @@ const MarketPlace = () => {
           comingFromPriceNegotiation={setIsComingFromPriceNeg}
           inspectionType={inspectionType}
           setInspectionType={setInspectionType}
+          isComingFromSubmitLol={isComingFromSubmitLol}
+          setIsComingFromSubmitLol={setIsComingFromSubmitLol}
         />
       ) : (
         <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[20px]'>
@@ -120,6 +113,8 @@ const MarketPlace = () => {
               comingFromPriceNegotiation={setIsComingFromPriceNeg}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
+              isComingFromSubmitLol={isComingFromSubmitLol}
+              setIsComingFromSubmitLol={setIsComingFromSubmitLol}
             />
           </div>
         </div>

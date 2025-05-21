@@ -24,6 +24,7 @@ import Input from '@/components/general-components/Input';
 import JointVentureModalCard from '../joint-venture-card';
 import { Span } from 'next/dist/trace';
 import LetterOfIntention from './letter-of-intention';
+import UploadLolDocumentModal from './upload-your-lol-document';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -46,6 +47,8 @@ const AddForInspection = ({
   isComingFromPriceNeg,
   comingFromPriceNegotiation,
   inspectionType,
+  isComingFromSubmitLol,
+  setIsComingFromSubmitLol,
 }: {
   propertiesSelected: any[];
   setPropertiesSelected: (type: any[]) => void;
@@ -59,6 +62,11 @@ const AddForInspection = ({
   /**Type of inspection */
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
   setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
+  /**
+   * coming from submit Lol button
+   */
+  isComingFromSubmitLol: boolean;
+  setIsComingFromSubmitLol: (type: boolean) => void;
 }) => {
   const is_mobile = IsMobile();
   const router = useRouter();
@@ -88,6 +96,13 @@ const AddForInspection = ({
     useState<boolean>(true);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState<boolean>(false);
+  const [totalAmount, setTotalAmount] = useState<number>(
+    payload.initialAmount + payload.toBeIncreaseBy
+  );
+
+  useEffect(() => {
+    setTotalAmount(payload.initialAmount + payload.toBeIncreaseBy);
+  }, [payload]);
 
   const renderCards = ({ length }: { length: number }): React.JSX.Element => {
     /**
@@ -168,7 +183,14 @@ const AddForInspection = ({
                     key={idx}
                     onClick={() => {}}
                     cardData={[]}
+                    isComingFromSubmitLol={isComingFromSubmitLol}
+                    setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                     images={[]}
+                    property={property}
+                    setPropertySelected={setPropertiesSelected}
+                    setIsAddInspectionModalOpened={
+                      setIsAddForInspectionModalOpened
+                    }
                   />
                 );
               }
@@ -258,6 +280,13 @@ const AddForInspection = ({
                     onClick={() => {}}
                     cardData={[]}
                     images={[]}
+                    isComingFromSubmitLol={isComingFromSubmitLol}
+                    setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+                    property={property}
+                    setPropertySelected={setPropertiesSelected}
+                    setIsAddInspectionModalOpened={
+                      setIsAddForInspectionModalOpened
+                    }
                   />
                 );
               }
@@ -285,7 +314,7 @@ const AddForInspection = ({
     console.log(allNegotiations);
   }, [allNegotiations]);
 
-  useEffect(() => console.log(isComingFromPriceNeg), [isComingFromPriceNeg]);
+  useEffect(() => console.log(isComingFromSubmitLol), [isComingFromSubmitLol]);
 
   return (
     <Fragment>
@@ -422,10 +451,7 @@ const AddForInspection = ({
                   )}
                   {/**Amount to be paid */}
                   <h2 className='text-center font-display font-semibold text-black text-3xl'>
-                    N{' '}
-                    {Number(
-                      payload.initialAmount + payload.toBeIncreaseBy
-                    ).toLocaleString()}
+                    N {Number(totalAmount).toLocaleString()}
                   </h2>
                   {/**Submit */}
                   <button
@@ -492,6 +518,19 @@ const AddForInspection = ({
         {isLetterOfIntentionModalOpened && (
           <LetterOfIntention
             setIsModalClosed={setIsLetterOfIntentionModalOpened}
+            closeSelectPreferableModal={
+              setSelectPreferableInspectionDateModalOpened
+            }
+          />
+        )}
+        {isComingFromSubmitLol && (
+          <UploadLolDocumentModal
+            getID={propertiesSelected[0].id}
+            allNegotiation={propertiesSelected}
+            closeModal={setIsComingFromSubmitLol}
+            actionTracker={actionTracker}
+            setActionTracker={setActionTracker}
+            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
             closeSelectPreferableModal={
               setSelectPreferableInspectionDateModalOpened
             }
