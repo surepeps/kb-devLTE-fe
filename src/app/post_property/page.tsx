@@ -29,6 +29,8 @@ import Stepper from '@/components/post-property-components/Stepper';
 import ClickableCard from '@/components/post-property-components/ClickableCard';
 import 'react-phone-number-input/style.css';
 import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
+import CommissionModal from "@/components/post-property-components/CommissionModal";
+
 //import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
 
@@ -43,6 +45,8 @@ import data from '@/data/state-lga';
 import { DocOnPropertyData, featuresData, JvConditionData } from '@/data/buy_data';
 import { tenantCriteriaData } from '@/data/landlord';
 import { features } from 'process';
+import PropertySummary from '@/components/post-property-components/PropertySummary';
+import Submit from '@/components/submit';
 
 interface Option {
   value: string;
@@ -69,6 +73,9 @@ const Sell = () => {
   const [formatedPrice, setFormatedPrice] = useState<string>('');
   const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
   const [selectedCard, setSelectedCard] = useState<'' | 'sell' | 'rent' | 'jv'>('');
+  const [showSummary, setShowSummary] = useState(false);
+  const [showFinalSubmit, setShowFinalSubmit] = useState(false);
+  const commision = '10%';
 
 
 const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
@@ -171,6 +178,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
       areYouTheOwner: true,
       landSize: '',
       measurementType: '',
+      addtionalInfo: '',
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
@@ -236,6 +244,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
             email: values.ownerEmail,
           },
           areYouTheOwner: values.areYouTheOwner,
+          addtionalInfo: values.addtionalInfo,
         };
 
         console.log('Payload:', payload);
@@ -306,6 +315,8 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
             />
           </div>
 
+       {!showSummary && (
+        <>
           <Stepper steps={steps} />
             {currentStep === 0 && !selectedCard && (
               <div>
@@ -350,7 +361,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                   </div>
               </div>
             )}
-                {/* Show the form only if a card is selected */}
+              {/* Show the form only if a card is selected */}
               {selectedCard && (
                 <form
                   onSubmit={formik.handleSubmit}
@@ -751,7 +762,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                   <div className='min-h-[73px] flex flex-col gap-[15px] mt-8'>
                       <Input
                         label='Addition information'
-                        name='numberOfFloors'
+                        name='addtionalInfo'
                         type='textArea'
                         className='w-full'
                         multiline={true}
@@ -949,50 +960,38 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     />
                   </div>
                 </form>
-              )}  
+              )} 
+              </>
+            )}
 
+              {showSummary && (
+                  <PropertySummary
+                    values={formik.values}
+                    images={images}
+                    onEdit={() => setShowSummary(false)}
+                    // onSubmit={formik.handleSubmit}
+                    onSubmit={() => setShowFinalSubmit(true)}
+                  />
+              )}
 
+              {showFinalSubmit && 
+                <Submit
+                  href = '/my_listing'
+                />
+                }
+        
               {showCommissionModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                  <div className="bg-white shadow-lg p-8 w-[90%] sm:w-[35%] relative">
-                    <h2 className="text-3xl font-bold text-center my-3">Commission Details</h2>
-                    <p className="text-center text-[#5A5D63] mb-6 text-lg">
-                      Below is your applicable commission rate. This fee will be deducted when we close the deal
-                    </p>
-                    <div className="flex flex-col mb-6 border-[1px] border-[#A7A9A9] p-4 bg-[#F4FFF4] w-[65%] mx-auto ">
-                      <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center self-start">
-                        <Image src={Green} alt="icon" width={24} height={24} />
-                      </div>
-                          {/* 100% in the center */}
-                      <div className="flex flex-col items-center w-full">
-                        <div className="w-20 h-20 rounded-full bg-[#FFFFFF] flex items-center justify-center mb-3">
-                          <span className="text-xl font-bold text-black">100%</span>
-                        </div>
-                        <p className="text-center text-[#1E1E1E] font-medium text-base mb-6">
-                          I, Emperor Ade, agree that Khabiteq Realty will collect <b>100%</b> of the commission fee
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-center text-[#5A5D63] mb-6 text-sm">
-                      Please click Yes to accept the commission policy, and let Khabiteq Realty handle the rest for you.
-                    </p>
-                    <div className="flex justify-between gap-4">
-                      <Button
-                        value='No'
-                        // isDisabled={!isLegalOwner}
-                        type='button'
-                         onClick={() => setShowCommissionModal(false)}
-                        className={`border-[1px] border-black lg:w-[30%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
-                      />
-                      <Button
-                        value='Yes'
-                        // isDisabled={!isLegalOwner}
-                        type='button'
-                         onClick={() => setShowCommissionModal(false)}
-                          className={`bg-[#8DDB90] lg:w-[30%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}                      />
-                    </div>
-                  </div>
-                </div>
+                <CommissionModal
+                  open={showCommissionModal}
+                  onClose={() => setShowCommissionModal(false)}
+                  onAccept={() => {
+                    setShowCommissionModal(false);
+                     setShowSummary(true);
+                    // handle accept logic here
+                  }}
+                  commission={commision}
+                  userName="Emperor Ade"
+                />
               )}
         </div>
       </section>

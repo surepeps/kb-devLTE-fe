@@ -352,12 +352,12 @@ export const contactUsData: {
     type: 'mail',
   },
   {
-    value: '070567778906',
+    value: '08132108659',
     icon: phoneIcon,
     type: 'call',
   },
   {
-    value: '070454556775',
+    value: '08132108659',
     icon: whatsappIcon,
     type: 'social_media',
   },

@@ -228,7 +228,7 @@ const ContactUs = () => {
                         </div>
                         {/**button */}
                         <Link
-                          href={'https://wa.me/+23470454556775'}
+                          href={'https://wa.me/+2348132108659'}
                           target='_blank'
                           rel='noopener noreferrer'
                           className='bg-[#8DDB90] h-[30px] md:h-[50px] w-[84px] md:w-[155px] text-xs md:text-base text-white font-bold flex items-center justify-center'
