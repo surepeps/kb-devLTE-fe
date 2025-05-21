@@ -22,8 +22,16 @@ type ContactProps = {
 
 const SelectPreferableInspectionDate = ({
   closeModal,
+  setIsProvideTransactionDetails,
+  setActionTracker,
+  actionTracker,
 }: {
   closeModal: (type: boolean) => void;
+  setIsProvideTransactionDetails: (type: boolean) => void;
+  actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
+  setActionTracker: React.Dispatch<
+    React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
+  >;
 }) => {
   const [details, setDetails] = useState<DetailsProps>({
     selectedDate: 'Jan 1, 2025',
@@ -40,18 +48,25 @@ const SelectPreferableInspectionDate = ({
       email: '',
     },
     validationSchema,
-    onSubmit: (values: ContactProps) => console.log(values),
+    onSubmit: (values: ContactProps) => {
+      console.log(values);
+      setActionTracker([
+        ...actionTracker,
+        { lastPage: 'SelectPreferableInspectionDate' },
+      ]);
+      setIsProvideTransactionDetails(true);
+      closeModal(false);
+    },
   });
   return (
-  <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 pt-[80vh]'>
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30'>
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
-        exit={{ opacity: 0, y: 20 }} 
+        exit={{ opacity: 0, y: 20 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true }}
-        className='lg:w-[658px] w-full flex flex-col gap-[26px] rounded-md overflow-hidden'
-        >
+        className='lg:w-[658px] w-full flex flex-col gap-[26px] rounded-md overflow-hidden'>
         <div className='flex items-center justify-end'>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -69,7 +84,7 @@ const SelectPreferableInspectionDate = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className=' bg-white w-full py-[36px] px-[32px] border-[1px] border-[#D9D9D9] flex flex-col gap-[25px]'>
+          className=' bg-white h-[500px] overflow-y-auto w-full py-[36px] px-[32px] border-[1px] border-[#D9D9D9] flex flex-col gap-[25px] hide-scrollbar'>
           {/**First div */}
           <div className='flex flex-col gap-[18px]'>
             <h2 className={`font-bold text-black ${archivo.className} text-xl`}>
@@ -77,7 +92,7 @@ const SelectPreferableInspectionDate = ({
             </h2>
           </div>
           {/**Second div */}
-          <div className='h-[72px] overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
+          <div className='pb-[58px] overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
             {[
               'Jan 1, 2025',
               'Jan 2, 2025',
@@ -108,7 +123,7 @@ const SelectPreferableInspectionDate = ({
             Select preferable inspection time
           </h3>
           <h4 className={`text-lg font-medium ${archivo.className} text-black`}>
-            January 23, 2025
+            {details.selectedDate}
           </h4>
           {/**third div */}
           <div className='grid grid-cols-3 gap-[14px]'>
@@ -140,7 +155,7 @@ const SelectPreferableInspectionDate = ({
             ))}
           </div>
           {/**fourth div */}
-          <div className='h-[103px] w-full bg-[#8DDB90]/[20%] flex justify-center flex-col gap-[5px] px-[28px]'>
+          <div className='h-[103px] py-[28px] w-full bg-[#8DDB90]/[20%] flex justify-center flex-col gap-[5px] px-[28px]'>
             <h3
               className={`text-lg font-medium ${archivo.className} text-black font-semibold`}>
               Booking details
@@ -205,7 +220,8 @@ const SelectPreferableInspectionDate = ({
               Submit
             </button>
             <button
-              type='submit'
+              onClick={() => closeModal(false)}
+              type='button'
               className={`w-[277px] h-[57px] bg-transparent border-[1px] border-[#5A5D63] text-[#414357] font-medium text-lg ${archivo.className}`}>
               Close
             </button>
