@@ -209,42 +209,42 @@ const Register = () => {
                   className='w-full'
                 />
             </div>
-            <Input
-              formik={formik}
-              title='Phone'
-              id='phone'
-              icon={phoneIcon}
-              type='number'
-              placeholder='Enter your phone number'
-              isDisabled={isDisabled}
-            />
-            <Input
-              formik={formik}
-              title='Email'
-              isDisabled={isDisabled}
-              id='email'
-              icon={mailIcon}
-              type='email'
-              placeholder='Enter your email'
-            />
-            <Input
-              formik={formik}
-              title='Password'
-              isDisabled={isDisabled}
-              id='password'
-              icon={''}
-              type='password'
-              placeholder='Enter your password'
-            />
-            <Input
-              formik={formik}
-              title='Confirm Password'
-              isDisabled={isDisabled}
-              id='confirmPassword'
-              icon={''}
-              type='password'
-              placeholder='Confirm your password'
-            />
+              <Input
+                formik={formik}
+                title='Phone'
+                id='phone'
+                icon={phoneIcon}
+                type='number'
+                placeholder='Enter your phone number'
+                isDisabled={isDisabled}
+              />
+              <Input
+                formik={formik}
+                title='Email'
+                isDisabled={isDisabled}
+                id='email'
+                icon={mailIcon}
+                type='email'
+                placeholder='Enter your email'
+              />
+              <Input
+                formik={formik}
+                title='Password'
+                isDisabled={isDisabled}
+                id='password'
+                icon={''}
+                type='password'
+                placeholder='Enter your password'
+              />
+              <Input
+                formik={formik}
+                title='Confirm Password'
+                isDisabled={isDisabled}
+                id='confirmPassword'
+                icon={''}
+                type='password'
+                placeholder='Confirm your password'
+              />
           </div>
           <div className='flex justify-center items-center w-full lg:px-[60px]'>
             <RadioCheck
@@ -282,7 +282,7 @@ const Register = () => {
             Already have an account?{' '}
             <Link
               className='font-semibold text-[#09391C]'
-              href={'/agent/auth/login'}>
+              href={'/auth/login'}>
               Sign In
             </Link>
           </span>
