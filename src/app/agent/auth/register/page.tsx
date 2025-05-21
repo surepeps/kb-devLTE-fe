@@ -80,7 +80,7 @@ const Register = () => {
     onSubmit: async (values) => {
       setIsDisabled(true);
       try {
-        const url = URLS.BASE + URLS.agentSignup;
+        const url = URLS.BASE + URLS.userSignup;
         const { phone, ...payload } = values;
         await toast.promise(
           POST_REQUEST(url, {

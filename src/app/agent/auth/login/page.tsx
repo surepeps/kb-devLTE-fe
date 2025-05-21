@@ -186,17 +186,17 @@ const Login = () => {
       toast.error('Sign In failed, please try again!'),
   });
 
-  useEffect(() => {
-    if (user) {
-      if (!user.agentType) {
-        router.push('/agent/onboard');
-      } else if (!user.accountApproved) {
-        router.push('/agent/under-review');
-      } else if (user.phoneNumber && user.agentType) {
-        router.push('/agent/briefs');
-      }
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     if (!user.agentType) {
+  //       router.push('/agent/onboard');
+  //     } else if (!user.accountApproved) {
+  //       router.push('/agent/under-review');
+  //     } else if (user.phoneNumber && user.agentType) {
+  //       router.push('/agent/briefs');
+  //     }
+  //   }
+  // }, [user]);
 
   if (isLoading) return <Loading />;
 

@@ -10,6 +10,7 @@
 'use client';
 import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import React, { FC, useEffect, useState } from 'react';
 import mailIcon from '@/svgs/envelope.svg';
@@ -40,6 +41,10 @@ const Register = () => {
   const { setUser, user } = useUserContext();
   const { isContactUsClicked } = usePageContext();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const userType = searchParams.get('type');
+
+  console.log('userType', userType);
 
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
@@ -48,10 +53,9 @@ const Register = () => {
     email: Yup.string().email('Invalid email address').required('Enter email'),
     password: Yup.string()
       .min(8, 'Password must be at least 8 characters')
-      .matches(/[a-z]/, 'Password must contain at least one lowercase letter') // At least one lowercase letter
-      // .matches(/\d/, 'Password must contain at least one number') // At least one number
+      .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
       .matches(
-        /[\W_]{2,}/,
+        /^(?=(?:.*[\W_]){2,}).*$/,
         'Password must contain at least two special character'
       ) // At least two special character
       .required('Password is required'),
@@ -77,27 +81,28 @@ const Register = () => {
       firstName: '',
       lastName: '',
       phone: '',
+      confirmPassword: '',
+      userType: userType || '',
     },
     validationSchema,
     onSubmit: async (values) => {
       setIsDisabled(true);
       try {
-        const url = URLS.BASE + URLS.agentSignup;
-        const { phone, ...payload } = values;
+        const url = URLS.BASE + URLS.userSignup;
+        const { phone, confirmPassword, ...payload } = values;
         await toast.promise(
           POST_REQUEST(url, {
             ...payload,
             phoneNumber: String(values.phone),
+            userType: values.userType,
           }).then((response) => {
-            // console.log('response from signup', response);
-            if ((response as any).id) {
+            if ((response as any).success) {
               toast.success('Registration successful');
-              setUser((response as any).user);
               localStorage.setItem(
                 'fullname',
                 `${formik.values.firstName} ${formik.values.lastName}`
               );
-              localStorage.setItem('email', `${formik.values.email}`); // Save email to local storage
+              localStorage.setItem('email', `${formik.values.email}`);
               localStorage.setItem(
                 'phoneNumber',
                 `${String(formik.values.phone)}`
@@ -184,24 +189,24 @@ const Register = () => {
 
             <div className='flex flex-col lg:flex-row gap-[15px] w-full'>
                 <Input
-                    formik={formik}
-                    title='First name'
-                    isDisabled={isDisabled}
-                    id='firstName'
-                    icon={''}
-                    type='text'
-                    placeholder='Enter your first name'
-                    className='w-full'
+                  formik={formik}
+                  title='First name'
+                  isDisabled={isDisabled}
+                  id='firstName'
+                  icon={''}
+                  type='text'
+                  placeholder='Enter your first name'
+                  className='w-full'
                 />
                 <Input
-                    formik={formik}
-                    title='Last name'
-                    isDisabled={isDisabled}
-                    id='lastName'
-                    icon={''}
-                    type='text'
-                    placeholder='Enter your last name'
-                    className='w-full'
+                  formik={formik}
+                  title='Last name'
+                  isDisabled={isDisabled}
+                  id='lastName'
+                  icon={''}
+                  type='text'
+                  placeholder='Enter your last name'
+                  className='w-full'
                 />
             </div>
             <Input
@@ -257,18 +262,19 @@ const Register = () => {
           <Button
             value={`${isDisabled ? 'Registering...' : 'Register'}`}
             isDisabled={
-              isDisabled
-              // isDisabled ||
-              // !agreed ||
-              // !formik.values.email ||
-              // !formik.values.password ||
-              // !formik.values.firstName ||
-              // !formik.values.lastName ||
-              // !formik.values.phone
+              (
+                isDisabled ||
+                !agreed ||
+                !formik.values.email ||
+                !formik.values.password ||
+                !formik.values.firstName ||
+                !formik.values.lastName ||
+                !formik.values.phone
+              )
             }
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
             type='submit'
-            onSubmit={formik.handleSubmit}
+            // onSubmit={formik.handleSubmit}
             green={true}
           />
           {/**Already have an account */}
