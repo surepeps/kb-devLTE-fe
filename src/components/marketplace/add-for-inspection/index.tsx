@@ -24,6 +24,7 @@ import Input from '@/components/general-components/Input';
 import JointVentureModalCard from '../joint-venture-card';
 import { Span } from 'next/dist/trace';
 import LetterOfIntention from './letter-of-intention';
+import UploadLolDocumentModal from './upload-your-lol-document';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -46,6 +47,8 @@ const AddForInspection = ({
   isComingFromPriceNeg,
   comingFromPriceNegotiation,
   inspectionType,
+  isComingFromSubmitLol,
+  setIsComingFromSubmitLol,
 }: {
   propertiesSelected: any[];
   setPropertiesSelected: (type: any[]) => void;
@@ -59,6 +62,11 @@ const AddForInspection = ({
   /**Type of inspection */
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
   setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
+  /**
+   * coming from submit Lol button
+   */
+  isComingFromSubmitLol: boolean;
+  setIsComingFromSubmitLol: (type: boolean) => void;
 }) => {
   const is_mobile = IsMobile();
   const router = useRouter();
@@ -88,6 +96,13 @@ const AddForInspection = ({
     useState<boolean>(true);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState<boolean>(false);
+  const [totalAmount, setTotalAmount] = useState<number>(
+    payload.initialAmount + payload.toBeIncreaseBy
+  );
+
+  useEffect(() => {
+    setTotalAmount(payload.initialAmount + payload.toBeIncreaseBy);
+  }, [payload]);
 
   const renderCards = ({ length }: { length: number }): React.JSX.Element => {
     /**
@@ -168,7 +183,14 @@ const AddForInspection = ({
                     key={idx}
                     onClick={() => {}}
                     cardData={[]}
+                    isComingFromSubmitLol={isComingFromSubmitLol}
+                    setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                     images={[]}
+                    property={property}
+                    setPropertySelected={setPropertiesSelected}
+                    setIsAddInspectionModalOpened={
+                      setIsAddForInspectionModalOpened
+                    }
                   />
                 );
               }
@@ -258,6 +280,13 @@ const AddForInspection = ({
                     onClick={() => {}}
                     cardData={[]}
                     images={[]}
+                    isComingFromSubmitLol={isComingFromSubmitLol}
+                    setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+                    property={property}
+                    setPropertySelected={setPropertiesSelected}
+                    setIsAddInspectionModalOpened={
+                      setIsAddForInspectionModalOpened
+                    }
                   />
                 );
               }
@@ -285,7 +314,7 @@ const AddForInspection = ({
     console.log(allNegotiations);
   }, [allNegotiations]);
 
-  useEffect(() => console.log(isComingFromPriceNeg), [isComingFromPriceNeg]);
+  useEffect(() => console.log(isComingFromSubmitLol), [isComingFromSubmitLol]);
 
   return (
     <Fragment>
@@ -333,9 +362,9 @@ const AddForInspection = ({
                     className={`text-2xl font-display font-semibold text-[#09391C] text-center`}>
                     Add for Inspection
                   </h2>
-                  <p className='text-xl text-[#5A5D63]'>
+                  <p className='text-center text-base md:text-xl text-[#5A5D63]'>
                     Here are the briefs you selected for inspection.{' '}
-                    <span className='text-xl text-black'>
+                    <span className='text-base md:text-xl text-black'>
                       {inspectionType === 'Buy' &&
                         'You can negotiate the price for each property'}
                       {inspectionType === 'JV' &&
@@ -405,9 +434,8 @@ const AddForInspection = ({
                     )}
                   </AnimatePresence>
                 ) : null}
-                <div className='flex justify-center items-center gap-[20px] mt-4'>
-                  {propertiesSelected &&
-                    renderCards({ length: propertiesSelected['length'] })}
+                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 mt-4 w-full">
+                  {propertiesSelected && renderCards({ length: propertiesSelected.length })}
                 </div>
                 <div className='flex flex-col gap-[10px] justify-center items-center'>
                   <h2 className='text-lg text-black text-center items-center'>
@@ -422,10 +450,7 @@ const AddForInspection = ({
                   )}
                   {/**Amount to be paid */}
                   <h2 className='text-center font-display font-semibold text-black text-3xl'>
-                    N{' '}
-                    {Number(
-                      payload.initialAmount + payload.toBeIncreaseBy
-                    ).toLocaleString()}
+                    N {Number(totalAmount).toLocaleString()}
                   </h2>
                   {/**Submit */}
                   <button
@@ -492,6 +517,19 @@ const AddForInspection = ({
         {isLetterOfIntentionModalOpened && (
           <LetterOfIntention
             setIsModalClosed={setIsLetterOfIntentionModalOpened}
+            closeSelectPreferableModal={
+              setSelectPreferableInspectionDateModalOpened
+            }
+          />
+        )}
+        {isComingFromSubmitLol && (
+          <UploadLolDocumentModal
+            getID={propertiesSelected[0].id}
+            allNegotiation={propertiesSelected}
+            closeModal={setIsComingFromSubmitLol}
+            actionTracker={actionTracker}
+            setActionTracker={setActionTracker}
+            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
             closeSelectPreferableModal={
               setSelectPreferableInspectionDateModalOpened
             }

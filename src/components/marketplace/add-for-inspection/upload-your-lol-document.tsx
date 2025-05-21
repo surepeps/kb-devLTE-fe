@@ -2,6 +2,9 @@
 
 'use client';
 import React, { useEffect, useState } from 'react';
+import { archivo } from '@/styles/font';
+import { FormikProps, useFormik } from 'formik';
+import * as Yup from 'yup';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,183 +12,10 @@ import {
   faCaretUp,
   faClose,
 } from '@fortawesome/free-solid-svg-icons';
-import { archivo } from '@/styles/font';
 import Input from '@/components/general-components/Input';
-import { FormikProps, useFormik } from 'formik';
-import * as Yup from 'yup';
+import AttachFile from '@/components/general-components/attach_file';
 
-type NegotiationModalProps = {
-  id: string | null;
-  isOpened: boolean;
-  askingPrice: number | string | undefined;
-  yourPrice: number | string | undefined;
-};
-
-const NegiotiatePrice = ({
-  allNegotiation,
-  setAllNegotiation,
-  getID,
-  currentIndex,
-  setCurrentIndex,
-  setSelectPreferableInspectionDateModalOpened,
-}: {
-  getID: string | null;
-  allNegotiation: NegotiationModalProps[];
-  setAllNegotiation: (type: NegotiationModalProps[]) => void;
-  currentIndex: number;
-  setCurrentIndex: (type: number) => void;
-  setSelectPreferableInspectionDateModalOpened: (type: boolean) => void;
-}): React.JSX.Element => {
-  //const [inputValue, setInputValue] = useState<string>('');
-  const [selectedProperty, setSelectedProperty] =
-    useState<NegotiationModalProps>({
-      id: null,
-      yourPrice: undefined,
-      askingPrice: undefined,
-      isOpened: false,
-    });
-  const handleSubmit = () => {
-    //to avoid duplicates
-    //check if ID is not null
-    if (getID === null) return;
-
-    const findSelectedCard = allNegotiation.find((item) => item.id === getID);
-    //console.log(findSelectedCard);
-    //if it doesn't exist
-    if (!findSelectedCard) {
-      //save formal values and add new one
-      console.log("Doesn't exist");
-      throw new Error('Property does not exist');
-    }
-    console.log('FOUND');
-
-    //if the card exists, modify
-    //update the state
-    findSelectedCard.yourPrice = selectedProperty.yourPrice;
-
-    //check if the maximum selected has reached
-    //then pop up the next modal for select preference
-    if (currentIndex === allNegotiation.length - 1) {
-      setSelectPreferableInspectionDateModalOpened(true);
-    }
-
-    //set the current index to the next one
-    setCurrentIndex(currentIndex + 1);
-  };
-
-  useEffect(() => {
-    const findSelectedCard = allNegotiation.find((item) => item.id === getID);
-
-    if (!findSelectedCard) return;
-
-    console.log(findSelectedCard);
-    setSelectedProperty({
-      id: findSelectedCard.id,
-      askingPrice: findSelectedCard.askingPrice,
-      yourPrice: findSelectedCard.yourPrice,
-      isOpened: findSelectedCard.isOpened,
-    });
-  }, []);
-
-  return (
-    <div className='w-full h-full border-black border-[1px] fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]'>
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ delay: 0.1 }}
-        viewport={{ once: true }}
-        className='lg:w-[615px] w-full h-[637px] flex flex-col gap-[26px]'>
-        <div className='flex items-center justify-end'>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            type='button'
-            className='w-[51px] h-[51px] rounded-full bg-white flex items-center justify-center'>
-            <FontAwesomeIcon
-              icon={faClose}
-              width={24}
-              height={24}
-              onClick={() => {
-                setCurrentIndex(allNegotiation.length + 1); //just to close the modal
-              }}
-              className='w-[24px] h-[24px]'
-              color='#181336'
-            />
-          </motion.button>
-        </div>
-        <form
-          onSubmit={(event: React.FormEvent) => {
-            event.preventDefault();
-          }}
-          className='w-[95%] md:w-full mx-auto rounded-[4px] bg-[#FFFFFF] shadow-md py-[40px] px-[20px] md:px-[80px]'>
-          <div className='w-full flex flex-col gap-[20px]'>
-            <div className='flex flex-col gap-[4px]'>
-              <h2
-                className={`${archivo.className} font-bold text-2xl text-black text-center`}>
-                Negotiate price with the seller
-              </h2>
-              <p
-                className={`${archivo.className} text-[#515B6F] text-lg text-center`}>
-                You&apos;re welcome to negotiate the price directly with the
-                seller even before arranging an inspection. Please enter your
-                proposed offer below
-              </p>
-            </div>
-            {/**Asking Price */}
-            <Input
-              label='Asking Price'
-              name='asking_price'
-              type='text'
-              isDisabled
-              value={Number(selectedProperty.askingPrice).toLocaleString()}
-              onChange={() => {
-                setSelectedProperty({
-                  ...selectedProperty,
-                });
-              }}
-            />
-            {/**Enter your price */}
-            <Input
-              label='Enter your price'
-              name='enter_your_price'
-              type='number'
-              placeholder='Enter amount'
-              value={selectedProperty.yourPrice}
-              onChange={(event) => {
-                const value = 'value' in event.target ? event.target.value : '';
-                setSelectedProperty({
-                  ...selectedProperty,
-                  yourPrice: value,
-                });
-              }}
-            />
-            {/** Submit and Cancel buttons */}
-            <div className='w-full flex gap-[15px]'>
-              <button
-                onClick={handleSubmit}
-                className={`h-[57px] bg-[#8DDB90] w-[260px] text-lg text-[#FFFFFF] font-bold ${archivo.className}`}
-                type='submit'>
-                Submit
-              </button>
-              <button
-                onClick={() => setCurrentIndex(allNegotiation.length + 1)}
-                className={`h-[57px] bg-white border-[1px] border-[#5A5D63] w-[260px] text-lg text-[#5A5D63] font-bold ${archivo.className}`}
-                type='button'>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </form>
-      </motion.div>
-    </div>
-  );
-};
-
-/**
- * second negiotiate price with seller
- */
-
-type NegotiateWithSellerProps = {
+type UploadLolDocumentProps = {
   closeModal?: (type: boolean) => void;
   allNegotiation: any[];
   getID: string | null;
@@ -208,7 +38,12 @@ type ContactProps = {
   email: string;
 };
 
-const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
+type SelectedPropertyProps = {
+  id: string | null;
+  document: string | null;
+};
+
+const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
   closeModal,
   allNegotiation,
   getID,
@@ -218,11 +53,9 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
   closeSelectPreferableModal,
 }): React.JSX.Element => {
   const [selectedProperty, setSelectedProperty] =
-    useState<NegotiationModalProps>({
+    useState<SelectedPropertyProps>({
       id: null,
-      yourPrice: undefined,
-      askingPrice: undefined,
-      isOpened: false,
+      document: null,
     });
 
   const [details, setDetails] = useState<DetailsProps>({
@@ -252,6 +85,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     },
   });
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const allFilled = Object.values(formik.values).every((value) => value !== '');
 
@@ -264,12 +98,12 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
 
     console.log(findSelectedCard);
     console.warn(selectedProperty);
-    setSelectedProperty({
-      id: findSelectedCard.id,
-      askingPrice: findSelectedCard?.price ?? findSelectedCard?.rentalPrice,
-      yourPrice: '',
-      isOpened: false,
-    });
+    // setSelectedProperty({
+    //   id: findSelectedCard.id,
+    //   askingPrice: findSelectedCard?.price ?? findSelectedCard?.rentalPrice,
+    //   yourPrice: '',
+    //   isOpened: false,
+    // });
   }, []);
 
   return (
@@ -301,52 +135,41 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='w-[95%] md:w-full mx-auto rounded-[4px] h-[600px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[20] md:px-[50px]'>
+          className='w-[95%] md:w-full mx-auto rounded-[4px] h-[437px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[20px] md:px-[50px]'>
           <div className='w-full flex flex-col gap-[20px]'>
             <div className='flex flex-col gap-[10px]'>
               <h2
                 className={`${archivo.className} font-bold text-2xl text-black text-center`}>
-                Negotiate price with the seller
+                Upload your LOI document
               </h2>
               <p
-                className={`${archivo.className} text-[#515B6F] text-lg text-center`}>
-                You&apos;re welcome to negotiate the price directly with the
-                seller even before arranging an inspection. Please enter your
-                proposed offer below
+                className={`${archivo.className} text-[#5A5D63] text-base font-medium text-center`}>
+                Please address your letter to{' '}
+                <span className='text-base font-medium text-black'>
+                  Khabi-Teq Limited
+                </span>{' '}
+                and include our office address: Goldrim Plaza Mokuolu Street,
+                Ifako Agege Lagos 101232, Nigeria
               </p>
             </div>
-            {/**Asking Price */}
-            <Input
-              label='Asking Price'
-              name='asking_price'
-              type='text'
-              isDisabled
-              value={Number(selectedProperty.askingPrice).toLocaleString()}
-              onChange={() => {
-                setSelectedProperty({
-                  ...selectedProperty,
-                });
-              }}
-            />
-            {/**Enter your price */}
-            <Input
-              label='Enter your price'
-              name='enter_your_price'
-              type='number'
-              placeholder='Enter amount'
-              value={selectedProperty.yourPrice}
-              onChange={(event: any) => {
-                //setInputValue(event.target.value);
-                console.log('clicked');
-                setSelectedProperty({
-                  ...selectedProperty,
-                  yourPrice: event.target.value,
-                });
-              }}
-            />
+            {/**Upload your Lol section */}
+            <div className='lg:w-[534px]'>
+              <AttachFile
+                style={{
+                  width: '283px',
+                }}
+                id='attach_file'
+                setFileUrl={setFileUrl}
+                heading='Upload your LOI'
+              />
+            </div>
             <p className='text-[#1976D2] font-medium text-lg'>
-              A fee of ₦10,000 will be charged for inspection and negotiation
-              before your request is sent to the seller.
+              A fee of{' '}
+              <span className='text-[#FF3D00] text-lg font-medium'>
+                ₦10,000
+              </span>{' '}
+              will be charged for inspection and negotiation before your request
+              is sent to the seller.
             </p>
 
             <div className='flex flex-col gap-[20px]'>
@@ -593,4 +416,4 @@ const Input2: React.FC<InputProps> = ({
   );
 };
 
-export { NegiotiatePrice, NegiotiatePriceWithSellerModal };
+export default UploadLolDocumentModal;
