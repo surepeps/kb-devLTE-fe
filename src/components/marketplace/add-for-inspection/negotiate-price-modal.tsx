@@ -117,8 +117,8 @@ const NegiotiatePrice = ({
           onSubmit={(event: React.FormEvent) => {
             event.preventDefault();
           }}
-          className='w-full rounded-[4px] bg-[#FFFFFF] shadow-md py-[40px] px-[80px]'>
-          <div className='w-full h-[400px] flex flex-col gap-[20px]'>
+          className='w-[95%] md:w-full mx-auto rounded-[4px] bg-[#FFFFFF] shadow-md py-[40px] px-[20px] md:px-[80px]'>
+          <div className='w-full flex flex-col gap-[20px]'>
             <div className='flex flex-col gap-[4px]'>
               <h2
                 className={`${archivo.className} font-bold text-2xl text-black text-center`}>
@@ -301,7 +301,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='w-full rounded-[4px] h-[437px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[50px]'>
+          className='w-[95%] md:w-full mx-auto rounded-[4px] h-[600px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[20] md:px-[50px]'>
           <div className='w-full flex flex-col gap-[20px]'>
             <div className='flex flex-col gap-[10px]'>
               <h2
