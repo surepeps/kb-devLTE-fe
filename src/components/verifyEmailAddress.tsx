@@ -19,7 +19,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     const email = localStorage.getItem('email');
     if (!email) return;
-    setUserEmail(JSON.parse(email));
+    setUserEmail(email);
   }, []);
   return (
     <div className='w-full flex justify-center items-center'>
