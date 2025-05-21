@@ -228,7 +228,7 @@ const Input: FC<InputProps> = memo(
 
           {!forLGA && !forState && !forRegion && !forIdtype && (
             <div className='flex flex-col w-full'>
-              <label htmlFor={id} className='flex items-center relative'>
+              <div className='flex items-center relative'>
                 {multiline ? (
                   <textarea
                     id={id}
@@ -269,7 +269,7 @@ const Input: FC<InputProps> = memo(
                     className='absolute right-[16px] text-[#A8ADB7] pointer-events-none w-[16px] h-[16px]'
                   />
                 )}
-              </label>
+              </div>
               {(formik?.errors?.[name] || formik?.touched?.[name]) && (
                 <span className='text-red-600 text-xs'>
                   {formik?.errors?.[name]}

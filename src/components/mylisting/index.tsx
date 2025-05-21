@@ -10,7 +10,6 @@ import Card from '../general-components/card';
 import sampleImage from '@/assets/Agentpic.png';
 import Select from 'react-select';
 
-
 const dummyCardData = [
   {
     header: 'Property Type',
@@ -38,23 +37,28 @@ const MyListing = () => {
   const { selectedType, setSelectedType } = usePageContext();
   const [propertyType, setPropertyType] = useState<string>('All');
 
-    // Dummy list of property types for demonstration
+  // Dummy list of property types for demonstration
   const propertyTypes = ['All', 'Land', 'Residential', 'Commercial', 'JV'];
 
   // Dummy list of cards (replace with real data later)
   const dummyList = Array.from({ length: 12 });
 
-    // Render the correct card based on propertyType
+  // Render the correct card based on propertyType
   const renderCard = (idx: number) => {
     if (propertyType === 'JV') {
       return (
         <JointVentureModalCard
           key={idx}
-          onClick={() => { } }
-          isDisabled={false} 
-          cardData={dummyCardData} 
-          images={[sampleImage]}        
-          />
+          onClick={() => {}}
+          isDisabled={false}
+          cardData={dummyCardData}
+          images={[sampleImage]}
+          property={dummyCardData}
+          setPropertySelected={() => {}}
+          isComingFromSubmitLol={false}
+          setIsComingFromSubmitLol={() => {}}
+          setIsAddInspectionModalOpened={() => {}}
+        />
       );
     }
     // Default card for Buy/Sell/Rent
@@ -78,9 +82,9 @@ const MyListing = () => {
             Discover and manage your listings.
           </h2>
           <p className='text-base md:text-xl text-[#5A5D63] text-center'>
-           Stay in control of your properties.
+            Stay in control of your properties.
           </p>
-  
+
           <div className='w-full pb-[25px] flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0 gap-x-0 md:gap-x-[53px] border-b-[1px] border-[#C7CAD0] sticky top-0 z-20'>
             <div className='flex flex-col sm:flex-row gap-3 w-full md:w-auto'>
               <Select
@@ -130,11 +134,11 @@ const MyListing = () => {
           </div>
         </div>
         {/* Listing Cards */}
-          <div className='w-full flex justify-center'>
-            <div className='w-full sm:w-[95%] lg:w-[90%] mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[20px] md:gap-[37px] justify-items-center'>
-              {dummyList.map((_, idx) => renderCard(idx))}
-            </div>
+        <div className='w-full flex justify-center'>
+          <div className='w-full sm:w-[95%] lg:w-[90%] mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[20px] md:gap-[37px] justify-items-center'>
+            {dummyList.map((_, idx) => renderCard(idx))}
           </div>
+        </div>
       </div>
     </section>
   );
