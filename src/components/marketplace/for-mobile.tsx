@@ -36,7 +36,7 @@ const Mobile = ({
   renderBrief: (onSelectBrief: (id: string) => void) => React.JSX.Element;
   selectedBriefs: number;
   onSelectBrief: (id: string) => void;
-  selectedBriefsList: any[]; // new prop type
+  selectedBriefsList: Set<any>; // new prop type
 }) => {
   const { selectedType, setSelectedType } = usePageContext();
   const [isFilterModalOpened, setIsFilterModalOpened] =
@@ -145,15 +145,15 @@ const Mobile = ({
       </AnimatePresence>
 
       <MobileSelectedBottomBar
-          selectedBriefs={selectedBriefs}
-          selectedBriefsList={selectedBriefsList}
-          onViewBrief={() => {
-            console.log('View Briefs', selectedBriefsList);
-          }}
-          onSubmitForInspection={() => {
-            console.log('Submit for inspection', selectedBriefsList);
-          }}
-        />
+        selectedBriefs={selectedBriefs}
+        selectedBriefsList={Array.from(selectedBriefsList)}
+        onViewBrief={() => {
+          console.log('View Briefs', selectedBriefsList);
+        }}
+        onSubmitForInspection={() => {
+          console.log('Submit for inspection', selectedBriefsList);
+        }}
+      />
     </Fragment>
   );
 };

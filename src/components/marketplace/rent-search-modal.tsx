@@ -30,6 +30,8 @@ const RentSearchModal = ({
   setAddInspectionModal,
   addForInspectionPayload,
   setSelectedBriefs,
+  inspectionType,
+  setInspectionType,
 }: {
   selectedBriefs: number;
   rentFilterBy: string[];
@@ -40,6 +42,8 @@ const RentSearchModal = ({
   setAddInspectionModal?: (type: boolean) => void;
   addForInspectionPayload: PayloadProps;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
+  inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
+  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -149,6 +153,7 @@ const RentSearchModal = ({
             className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
             type='button'
             onClick={() => {
+              setInspectionType('Rent/Lease');
               if (addForInspectionPayload.initialAmount === 0) {
                 setAddInspectionModal?.(false);
                 return toast.error('All states can not be different');

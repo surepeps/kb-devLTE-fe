@@ -22,9 +22,15 @@ interface Option {
   label: string;
 }
 
-type InputOrTextareaChangeEvent = React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>;
-type InputOrTextareaFocusEvent = React.FocusEvent<HTMLInputElement> | React.FocusEvent<HTMLTextAreaElement>;
-type InputOrTextareaMouseEvent = MouseEvent<HTMLInputElement> | MouseEvent<HTMLTextAreaElement>;
+type InputOrTextareaChangeEvent =
+  | React.ChangeEvent<HTMLInputElement>
+  | React.ChangeEvent<HTMLTextAreaElement>;
+type InputOrTextareaFocusEvent =
+  | React.FocusEvent<HTMLInputElement>
+  | React.FocusEvent<HTMLTextAreaElement>;
+type InputOrTextareaMouseEvent =
+  | MouseEvent<HTMLInputElement>
+  | MouseEvent<HTMLTextAreaElement>;
 
 interface InputProps {
   name: string;
@@ -126,9 +132,7 @@ const Input: FC<InputProps> = memo(
           htmlFor={id}
           className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}>
           <span
-            className={`text-base leading-[25.6px] font-medium text-[#1E1E1E] ${
-              isDisabled && 'text-[#847F7F]'
-            }`}>
+            className={`text-base leading-[25.6px] font-medium text-[#1E1E1E]`}>
             {label || <span className='invisible'>Placeholder</span>}
           </span>
 
@@ -224,7 +228,7 @@ const Input: FC<InputProps> = memo(
 
           {!forLGA && !forState && !forRegion && !forIdtype && (
             <div className='flex flex-col w-full'>
-              <div className='flex items-center relative'>
+              <label htmlFor={id} className='flex items-center relative'>
                 {multiline ? (
                   <textarea
                     id={id}
@@ -238,25 +242,25 @@ const Input: FC<InputProps> = memo(
                     readOnly={readOnly}
                     placeholder={placeholder ?? 'This is placeholder'}
                     rows={rows}
-                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
+                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
                   />
                 ) : (
-                <input
-                  id={id}
-                  name={name}
-                  type={type}
-                  value={value}
-                  onChange={isDisabled ? undefined : onChange}
-                  onBlur={onBlur}
-                  disabled={isDisabled}
-                  onClick={isDisabled ? undefined : onClick}
-                  onFocus={isDisabled ? undefined : onFocus}
-                  min={type === 'number' ? minNumber : undefined}
-                  max={type === 'number' ? maxNumber : undefined}
-                  readOnly={readOnly}
-                  placeholder={placeholder ?? 'This is placeholder'}
-                  className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
-                />
+                  <input
+                    id={id}
+                    name={name}
+                    type={type}
+                    value={value}
+                    onChange={isDisabled ? undefined : onChange}
+                    onBlur={onBlur}
+                    disabled={isDisabled}
+                    onClick={isDisabled ? undefined : onClick}
+                    onFocus={isDisabled ? undefined : onFocus}
+                    min={type === 'number' ? minNumber : undefined}
+                    max={type === 'number' ? maxNumber : undefined}
+                    readOnly={readOnly}
+                    placeholder={placeholder ?? 'This is placeholder'}
+                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-black text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
+                  />
                 )}
                 {showDropdownIcon && !multiline && (
                   <FontAwesomeIcon
@@ -265,7 +269,7 @@ const Input: FC<InputProps> = memo(
                     className='absolute right-[16px] text-[#A8ADB7] pointer-events-none w-[16px] h-[16px]'
                   />
                 )}
-              </div>
+              </label>
               {(formik?.errors?.[name] || formik?.touched?.[name]) && (
                 <span className='text-red-600 text-xs'>
                   {formik?.errors?.[name]}

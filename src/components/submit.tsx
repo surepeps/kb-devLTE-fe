@@ -6,6 +6,7 @@ import bigMarkIcon from '@/svgs/bigMark.svg';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
 import useClickOutside from '@/hooks/clickOutside';
+import { product_sans } from '@/styles/font';
 
 interface SubmitPopUpProps {
   title?: string;
@@ -32,7 +33,8 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
         className='md:w-[488px] w-full h-[374px] p-[20px] md:p-[40px] gap-[10px] bg-white shadow-md '>
         <div className='w-full h-[294px] gap-[24px] flex flex-col justify-center items-center'>
           <div className='flex flex-col min-h-[59px] gap-[10px]'>
-            <h2 className='text-[25px] text-[#202430] font-bold leading-[30px] text-center'>
+            <h2
+              className={`text-[25px] text-[#202430] font-bold leading-[30px] text-center ${product_sans.className}`}>
               {title}
             </h2>
             <p className='text-base font-normal text-[#5A5D63] leading-[19.2px] text-center'>
@@ -53,7 +55,7 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
               // Invoke onClick to close modal
               window.location.href = href;
             }}
-            className='min-h-[57px] w-full rounded-[5px] py-[14px] px-[27px] gap-[10px] bg-[#8DDB90] text-white text-[18px] leading-[28.8px] font-bold text-center text-whites'>
+            className={`min-h-[57px] w-full rounded-[5px] py-[14px] px-[27px] gap-[10px] bg-[#8DDB90] text-white text-[18px] leading-[28.8px] font-bold text-center text-whitespace-nowrap ${product_sans.className}`}>
             {buttonText}
           </Link>
         </div>

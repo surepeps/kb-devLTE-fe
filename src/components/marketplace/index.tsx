@@ -3,7 +3,7 @@
 'use client';
 import { usePageContext } from '@/context/page-context';
 import { basic_styling_architecture } from '@/utils/tool';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchModal from './search-modal';
 import { IsMobile } from '@/hooks/isMobile';
 import { useRouter } from 'next/navigation';
@@ -24,6 +24,22 @@ const MarketPlace = () => {
     initialAmount: 10000,
     toBeIncreaseBy: 0,
   });
+  const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
+    React.useState<boolean>(false);
+  const [inspectionType, setInspectionType] = useState<
+    'Buy' | 'JV' | 'Rent/Lease'
+  >('Buy');
+
+  // const renderDynamicComponent = (): React.JSX.Element => {
+  //   switch (isAddForInspectionModalOpened) {
+  //     case true:
+  //       break;
+
+  //     default:
+  //       return <></>;
+  //   }
+  //   return <></>;
+  // };
 
   useEffect(
     () => console.log(propertiesSelected, addForInspectionPayload),
@@ -38,9 +54,13 @@ const MarketPlace = () => {
           setIsAddForInspectionModalOpened={setIsAddForInspectionModalOpened}
           setPropertiesSelected={setPropertiesSelected}
           propertiesSelected={propertiesSelected}
+          isComingFromPriceNeg={isComingFromPriceNeg}
+          comingFromPriceNegotiation={setIsComingFromPriceNeg}
+          inspectionType={inspectionType}
+          setInspectionType={setInspectionType}
         />
       ) : (
-        <div className='container lg:py-[30px] flex flex-col gap-[20px]'>
+        <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[20px]'>
           {/**
            * Heading and the type of market place user wants to select
            */}
@@ -96,6 +116,10 @@ const MarketPlace = () => {
               setIsAddInspectionModalOpened={setIsAddForInspectionModalOpened}
               addForInspectionPayload={addForInspectionPayload}
               setAddForInspectionPayload={setAddInspectionPayload}
+              isComingFromPriceNeg={isComingFromPriceNeg}
+              comingFromPriceNegotiation={setIsComingFromPriceNeg}
+              inspectionType={inspectionType}
+              setInspectionType={setInspectionType}
             />
           </div>
         </div>
