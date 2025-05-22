@@ -45,7 +45,7 @@ const ResetPassword = () => {
     const token = params.get('token') ?? '';
     if (!token || token.length < 100) {
       toast.error('Invalid token');
-      router.push('/agent/login');
+      router.push('/auth/login');
     }
   }, []);
 
@@ -79,7 +79,6 @@ const ResetPassword = () => {
     // validationSchema,
     onSubmit: async (values) => {
       try {
-        console.log('values', values);
         if (!values.password || !values.confirmPassword) {
           toast.error('Please fill all fields');
           return;
@@ -95,7 +94,7 @@ const ResetPassword = () => {
           toast.error('Invalid token');
           return;
         }
-        const url = URLS.BASE + URLS.agent + URLS.resetPassword;
+        const url = URLS.BASE + URLS.user + URLS.resetPassword;
         const payload = { token, password: values.password };
 
         await toast.promise(
@@ -103,7 +102,7 @@ const ResetPassword = () => {
             console.log('response from signin', response);
 
             if (response.success) {
-              router.push('/agent/auth/login');
+              router.push('/auth/login');
 
               return 'Password reset successful';
             } else {

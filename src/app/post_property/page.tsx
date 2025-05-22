@@ -30,6 +30,8 @@ import ClickableCard from '@/components/post-property-components/ClickableCard';
 import 'react-phone-number-input/style.css';
 import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 import CommissionModal from "@/components/post-property-components/CommissionModal";
+import { useUserContext } from '@/context/user-context';
+import Cookies from 'js-cookie';
 
 //import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
@@ -53,7 +55,7 @@ interface Option {
   label: string;
 }
 const Sell = () => {
-  // const { user } = useUserContext();
+  const { user } = useUserContext();
   const isLoading = useLoading();
   const router = useRouter();
   const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
@@ -109,7 +111,6 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
   useEffect(() => {
     // Load Nigerian states correctly
     const sample = Object.keys(data);
-    console.log(sample);
     setStateOptions(
       Object.keys(data).map((state: string) => ({
         value: state,
@@ -182,105 +183,132 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
-      propertyCondition: Yup.string().required('Property Condition is required'),
-      typeOfBuilding: Yup.string().required('Property Condition is required'),
-      usageOptions: Yup.array().min(1, 'At least one usage option is required'),
-      price: Yup.string().required('Price is required'),
-      documents: Yup.array().min(1, 'At least one document is required'),
+      // propertyCondition: Yup.string().required('Property Condition is required'),
+      // typeOfBuilding: Yup.string().required('Property Condition is required'),
+      // usageOptions: Yup.array().min(1, 'At least one usage option is required'),
+      // price: Yup.string().required('Price is required'),
+      // documents: Yup.array().min(1, 'At least one document is required'),
       landSize: Yup.string(),
       measurementType: Yup.string(),
       // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       // additionalFeatures: Yup.array()
       //   .of(Yup.string())
       //   .min(1, 'At least one additional feature is required'), 
-      selectedState: Yup.string().required('State is required'),
+      // selectedState: Yup.string().required('State is required'),
       // selectedAddress: Yup.string().required('Address is required'),
-      selectedCity: Yup.string().required('City is required'),
-      selectedLGA: Yup.string().required('LGA is required'),
-      ownerFullName: Yup.string().required('Owner full name is required'),
+      // selectedCity: Yup.string().required('City is required'),
+      // selectedLGA: Yup.string().required('LGA is required'),
+      // ownerFullName: Yup.string().required('Owner full name is required'),
       ownerPhoneNumber: Yup.string()
-        .required('Owner phone number is required')
+        // .required('Owner phone number is required')
         .test('is-valid-phone', 'Invalid phone number', (value) =>
           value ? isValidPhoneNumber(value) : false
         ),
       ownerEmail: Yup.string()
         .email('Invalid email')
-        .required('Owner email is required'),
+        // .required('Owner email is required'),
     }),
     onSubmit: async (values) => {
-      console.log(values);
-      setAreInputsDisabled(true);
-      try {
-        const url = URLS.BASE + URLS.agentCreateBrief;
-        const payload = {
-          propertyType: values.propertyType,
-          propertyCondition: values.propertyCondition,
-          typeOfBuilding: values.typeOfBuilding,
-          usageOptions: values.usageOptions,
-          tenantCriteria: values.tenantCriteria,
-          landSize: {
-            measurementType: values.measurementType,
-            size: values.landSize,
-          },
-          propertyFeatures: {
-            noOfBedrooms: values.noOfBedroom,
-            additionalFeatures: values.features,
-          },
-          docOnProperty: values.documents.map((doc) => ({
-            docName: doc,
-            isProvided: true, // Assuming all selected documents are provided
-          })),
-          location: {
-            state: values.selectedState,
-            // address: values.selectedAddress,
-            localGovernment: values.selectedLGA,
-            area: values.selectedCity,
-          },
-          price: values.price,
-          leaseHold: values.leaseHold,
-          owner: {
-            fullName: values.ownerFullName,
-            phoneNumber: values.ownerPhoneNumber,
-            email: values.ownerEmail,
-          },
-          areYouTheOwner: values.areYouTheOwner,
-          addtionalInfo: values.addtionalInfo,
-        };
-
-        console.log('Payload:', payload);
-
-        await toast.promise(
-          POST_REQUEST(url, payload).then((response) => {
-            console.log('response from brief', response);
-            if ((response as any).owner) {
-              toast.success('Property submitted successfully');
-              // router.push('/success');
-              setIsSubmittedSuccessfully(true);
-              setAreInputsDisabled(false);
-              return 'Property submitted successfully';
-            } else {
-              const errorMessage =
-                (response as any).error || 'Submission failed';
-              toast.error(errorMessage);
-              setAreInputsDisabled(false);
-              throw new Error(errorMessage);
-            }
-          }),
-          {
-            loading: 'Submitting...',
-            // success: 'Property submitted successfully',
-            // error: 'An error occurred, please try again',
-          }
-        );
-      } catch (error) {
-        console.error(error);
-        setAreInputsDisabled(false);
-        // toast.error('An error occurred, please try again');
-      } finally {
-        setAreInputsDisabled(false);
-      }
+      // No API call here, just validation
+      // Optionally set a flag if needed
     },
   });
+
+  const handleFinalSubmit = async () => {
+    setAreInputsDisabled(true);
+    try {
+      const url = URLS.BASE + URLS.listNewProperty;
+      const token = Cookies.get('token');
+
+      let briefType = '';
+      if (selectedCard === 'sell') briefType = 'Outright Sales';
+      else if (selectedCard === 'rent') briefType = 'Rent';
+      else if (selectedCard === 'jv') briefType = 'Joint Venture';
+
+      const values = formik.values;
+      const payload = {
+        propertyType: values.propertyType,
+        features: values.features,
+        docOnProperty: values.documents.map((doc) => ({
+          docName: doc,
+          isProvided: true, 
+        })),
+        propertyCondition: values.propertyCondition,
+        location: {
+          state: values.selectedState,
+          localGovernment: values.selectedLGA,
+          area: values.selectedCity,
+        },
+        price: values.price,
+        owner: {
+          fullName: values.ownerFullName,
+          phoneNumber: values.ownerPhoneNumber,
+          email: values.ownerEmail,
+        },
+        areYouTheOwner: values.areYouTheOwner,
+        landSize: {
+          measurementType: values.measurementType,
+          size: values.landSize,
+        },
+        briefType: briefType,
+        additionalFeatures: {
+          noOfBedroom: values.noOfBedroom,
+          noOfBathroom: values.noOfBathroom,
+          noOfToilet: values.noOfToilet,
+          noOfCarPark: values.noOfCarPark,
+        },
+        typeOfBuilding: values.typeOfBuilding,
+        usageOptions: values.usageOptions,
+        tenantCriteria: values.tenantCriteria,
+        leaseHold: values.leaseHold,
+        addtionalInfo: values.addtionalInfo,
+      };
+
+      await toast.promise(
+        POST_REQUEST(url, payload, token).then((response) => {
+          if ((response as any).owner) {
+            toast.success('Property submitted successfully');
+            setIsSubmittedSuccessfully(true);
+            setAreInputsDisabled(false);
+            return 'Property submitted successfully';
+          } else {
+            const errorMessage =
+              (response as any).error || 'Submission failed';
+            toast.error(errorMessage);
+            setAreInputsDisabled(false);
+            throw new Error(errorMessage);
+          }
+        }),
+        {
+          loading: 'Submitting...',
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      setAreInputsDisabled(false);
+    } finally {
+      setAreInputsDisabled(false);
+      setShowFinalSubmit(true);
+    }
+  };
+
+  const handleSummarySubmit = async () => {
+    // Mark all fields as touched
+    await formik.setTouched(
+      Object.keys(formik.initialValues).reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {} as Record<string, boolean>)
+    );
+    // Validate and submit
+    const errors = await formik.validateForm();
+      console.log('Formik validation errors:', errors); 
+    if (Object.keys(errors).length === 0) {
+      await formik.submitForm();
+      await handleFinalSubmit();
+    }
+    // If errors exist, Formik will show them
+  };
 
   useEffect(() => {
     console.log(isLegalOwner);
@@ -896,7 +924,8 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                         label='Full name'
                         isDisabled={!isLegalOwner}
                         name='ownerFullName'
-                        value={formik.values?.ownerFullName}
+                        // value={formik.values?.ownerFullName}
+                        value={user?.firstName + ' ' + user?.lastName}
                         onChange={formik.handleChange}
                         className='lg:w-1/2 w-full'
                         type='text'
@@ -930,7 +959,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                       name='ownerEmail'
                       isDisabled={!isLegalOwner}
                       className='w-full'
-                      value={formik.values?.ownerEmail}
+                      value={user?.email}
                       onChange={formik.handleChange}
                       type='email'
                     />
@@ -947,7 +976,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                       className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                     />
                     <Button
-                      value={currentStep === steps.length - 1 ? 'Submit' : 'Next'}
+                      value='Next'
                       type={currentStep === steps.length - 1 ? 'submit' : 'button'}
                       onClick={() => {
                             if (currentStep < steps.length - 1) {
@@ -969,8 +998,11 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     values={formik.values}
                     images={images}
                     onEdit={() => setShowSummary(false)}
-                    // onSubmit={formik.handleSubmit}
-                    onSubmit={() => setShowFinalSubmit(true)}
+                    onSubmit={handleSummarySubmit}
+                    // onSubmit={() => {
+                    //   console.log('Submitting form...');
+                    // }}
+                    // submitButtonType="submit"
                   />
               )}
 
@@ -990,7 +1022,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     // handle accept logic here
                   }}
                   commission={commision}
-                  userName="Emperor Ade"
+                  userName={user?.firstName + ' ' + user?.lastName}
                 />
               )}
         </div>
