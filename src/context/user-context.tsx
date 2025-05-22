@@ -22,6 +22,7 @@ export interface User {
   lastName?: string;
   phoneNumber?: string;
   selectedRegion?: string[];
+  userType?: string;
   address?: {
     localGovtArea: string;
     city: string;
