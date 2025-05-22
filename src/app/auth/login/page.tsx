@@ -58,7 +58,7 @@ const Login = () => {
     onSubmit: async (values) => {
       if (showForgotPassword) {
         try {
-          const url = URLS.BASE + URLS.agent + URLS.requestPasswordReset;
+          const url = URLS.BASE + URLS.user + URLS.requestPasswordReset;
           const payload = { ...values };
 
           await toast.promise(
@@ -87,12 +87,11 @@ const Login = () => {
         }
       } else {
         try {
-          const url = URLS.BASE + URLS.agentLogin;
+          const url = URLS.BASE + URLS.user +URLS.login;
           const payload = { ...values };
 
           await toast.promise(
             POST_REQUEST(url, payload).then((response) => {
-              console.log('response from signin', response);
               const user = {
                 firstName: response?.user?.firstName,
                 lastName: response?.user?.lastName,
@@ -103,12 +102,12 @@ const Login = () => {
               sessionStorage.setItem('user', JSON.stringify(user));
 
               if ((response as any)?.user?._id) {
-                if (response.user.accountApproved === false) {
-                  router.push('/agent/under-review');
-                } else if (!response.user.phoneNumber) {
+                if (response.user.userType === "Agent" && !response.user.agentType) {
                   router.push('/agent/onboard');
-                } else {
+                } else if (response.user.accountApproved === false) {
                   router.push('/agent/under-review');
+                } else {
+                  router.push('/my_listing');
                 }
 
                 toast.success('Sign in successful');
@@ -247,7 +246,7 @@ const Login = () => {
               Don&apos;t have an account?{' '}
               <Link
                 className='font-semibold text-[#09391C]'
-                href={'/agent/auth/register'}>
+                href={'/auth/register'}>
                 Sign Up
               </Link>
             </p>
