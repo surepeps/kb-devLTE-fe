@@ -38,6 +38,8 @@ const MyListing = () => {
   const router = useRouter();
   const { selectedType, setSelectedType } = usePageContext();
   const [propertyType, setPropertyType] = useState<string>('All');
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
 
   // Dummy list of property types for demonstration
   const propertyTypes = ['All', 'Land', 'Residential', 'Commercial', 'JV'];
@@ -52,10 +54,12 @@ const MyListing = () => {
         <JointVentureModalCard
           key={idx}
           onClick={() => {}}
+          isAddInspectionalModalOpened={isAddForInspectionModalOpened}
           isDisabled={false}
           cardData={dummyCardData}
           images={[sampleImage]}
           property={dummyCardData}
+          properties={dummyCardData}
           setPropertySelected={() => {}}
           isComingFromSubmitLol={false}
           setIsComingFromSubmitLol={() => {}}
@@ -66,6 +70,7 @@ const MyListing = () => {
     // Default card for Buy/Sell/Rent
     return (
       <Card
+        isAddForInspectionModalOpened={isAddForInspectionModalOpened}
         style={{ width: '300px' }}
         images={[sampleImage]}
         onClick={() => {}}
