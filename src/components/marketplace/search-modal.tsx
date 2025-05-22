@@ -85,18 +85,38 @@ const SearchModal = ({
     console.log(usageOptions);
   }, [usageOptions]);
 
-  useEffect(() => {
-    switch (userSelectedMarketPlace) {
-      case 'Buy a property':
-        return setBriefToFetch(URLS.buyersFetchBriefs);
-      case 'Find property for Joint Venture':
-        return setBriefToFetch(URLS.buyersFetchBriefs);
-      case 'Rent/Lease a property':
-        return setBriefToFetch('/properties/rents/all');
-      default:
-        return setBriefToFetch(URLS.buyersFetchBriefs);
-    }
-  }, [userSelectedMarketPlace]);
+  // useEffect(() => {
+  //   switch (userSelectedMarketPlace) {
+  //     case 'Buy a property':
+  //       return setBriefToFetch(URLS.buyersFetchBriefs);
+  //     case 'Find property for Joint Venture':
+  //       return setBriefToFetch(URLS.buyersFetchBriefs);
+  //     case 'Rent/Lease a property':
+  //       return setBriefToFetch('/properties/rents/all');
+  //     default:
+  //       return setBriefToFetch(URLS.buyersFetchBriefs);
+  //   }
+  // }, [userSelectedMarketPlace]);
+
+
+      useEffect(() => {
+      let briefType = '';
+      switch (userSelectedMarketPlace) {
+        case 'Buy a property':
+          briefType = 'Outright Sales';
+          break;
+        case 'Find property for Joint Venture':
+          briefType = 'Joint Venture';
+          break;
+        case 'Rent/Lease a property':
+          briefType = 'Rent';
+          break;
+        default:
+          briefType = 'Outright Sales';
+      }
+      // You can set default page and limit as needed
+      setBriefToFetch(`/properties/all?page=1&limit=10&briefType=${encodeURIComponent(briefType)}`);
+    }, [userSelectedMarketPlace]);
 
   const renderDynamicComponent = () => {
     switch (userSelectedMarketPlace) {
