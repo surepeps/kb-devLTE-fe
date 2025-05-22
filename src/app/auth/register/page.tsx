@@ -44,8 +44,6 @@ const Register = () => {
   const searchParams = useSearchParams();
   const userType = searchParams.get('type');
 
-  console.log('userType', userType);
-
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
 
@@ -143,9 +141,9 @@ const Register = () => {
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse: any) => {
-      const url = URLS.BASE + URLS.agent + URLS.googleSignup;
+      const url = URLS.BASE + URLS.user + URLS.googleSignup;
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(
+      await POST_REQUEST(url, { idToken: codeResponse.code }).then(
         async (response) => {
           if ((response as unknown as { id: string }).id) {
             Cookies.set(
@@ -169,7 +167,10 @@ const Register = () => {
   });
 
   useEffect(() => {
-    if (user) router.push('/agent/briefs');
+    if (user?.userType === "Agent") router.push('/agent/briefs') 
+      else {
+        router.push('/my_listing');
+      }
   }, [user]);
 
   if (isLoading) return <Loading />;

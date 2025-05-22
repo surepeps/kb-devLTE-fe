@@ -80,17 +80,17 @@ const Card = ({
               <span>Premium</span>
               <FontAwesomeIcon icon={faStarOfDavid} size='sm' />
             </div>
-            <Image
-              src={images[0] ?? randomImage.src}
-              alt=''
-              width={400}
-              height={200}
-              onClick={() => {
-                setImageData(images);
-                setViewImage(true);
-              }}
-              className='w-full h-[148px] object-cover cursor-pointer'
-            />
+              <Image
+                src={Array.isArray(images) && images[0] ? images[0] : randomImage.src}
+                alt=''
+                width={400}
+                height={200}
+                onClick={() => {
+                  setImageData(Array.isArray(images) ? images : []);
+                  setViewImage(true);
+                }}
+                className='w-full h-[148px] object-cover cursor-pointer'
+              />
           </div>
           <div className='flex flex-col gap-[2px] mt-6'>
             <div className='flex gap-[7px]'>
