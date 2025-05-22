@@ -9,6 +9,7 @@ import JointVentureModalCard from '../marketplace/joint-venture-card';
 import Card from '../general-components/card';
 import sampleImage from '@/assets/Agentpic.png';
 import Select from 'react-select';
+import { useRouter } from 'next/navigation';
 
 const dummyCardData = [
   {
@@ -34,6 +35,7 @@ const dummyCardData = [
 ];
 
 const MyListing = () => {
+  const router = useRouter();
   const { selectedType, setSelectedType } = usePageContext();
   const [propertyType, setPropertyType] = useState<string>('All');
 
@@ -128,7 +130,10 @@ const MyListing = () => {
             </div>
             <button
               className='h-[34px] w-full md:w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm mt-2 md:mt-0'
-              type='button'>
+              type='button'
+              onClick={() => {
+                router.push('/post_property');
+              }}>
               List property
             </button>
           </div>

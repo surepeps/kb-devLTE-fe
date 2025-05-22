@@ -5,7 +5,9 @@ interface PropertySummaryProps {
   values: Record<string, any>;
   images: (string | null)[];
   onEdit: () => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
+  submitButtonType?: "button" | "submit";
+  formik?: any; // add this if you want to pass formik
 }
 
 const FIELD_LABELS: Record<string, string> = {
@@ -38,6 +40,7 @@ const PropertySummary: React.FC<PropertySummaryProps> = ({
   images,
   onEdit,
   onSubmit,
+  submitButtonType,
 }) => {
   // 1. Get filtered entries
   const entries = Object.entries(FIELD_LABELS).filter(
@@ -123,7 +126,7 @@ const PropertySummary: React.FC<PropertySummaryProps> = ({
         />
         <Button
           value="Submit"
-          type="button"
+          type="submit"
           onClick={onSubmit}
           className="bg-[#8DDB90] w-[40%] text-white text-base font-bold min-h-[50px] py-[12px] px-[24px]"
         />
