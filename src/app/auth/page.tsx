@@ -33,9 +33,12 @@ const Register = () => {
     useEffect(() => {
     const fromHeader = window.localStorage.getItem('signupFromHeader');
     if (fromHeader === 'true') {
-      setSelectedUserType('landlord'); // Make "I'm a Landlord" default
-      setHideLandownerText(true);      // Hide the text
-      window.localStorage.removeItem('signupFromHeader'); // Clean up
+      setSelectedUserType('landlord');
+      setHideLandownerText(true); 
+      window.localStorage.removeItem('signupFromHeader');
+    } else {
+      setSelectedUserType('agent');
+      setHideLandownerText(false);  
     }
   }, []);
 
@@ -116,7 +119,13 @@ const Register = () => {
               type='button'
               value='Register Via E-mails or phone'
               onClick={() => {
-                window.location.href = '/auth/register';
+                if (selectedUserType === 'landlord') {
+                  window.location.href = '/auth/register?type=Landowners';
+                } else if (selectedUserType === 'agent') {
+                  window.location.href = '/auth/register?type=Agent';
+                } else {
+                  window.location.href = '/auth/register';
+                }
               }}
               className='bg-[#8DDB90] h-[65px] w-full py-[12px] px-[24px] text-[16px] leading-[25.6px] font-bold text-[#FAFAFA]'
             />
