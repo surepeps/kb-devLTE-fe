@@ -12,7 +12,7 @@ import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, Suspense, useEffect, useState } from 'react';
 import mailIcon from '@/svgs/envelope.svg';
 import phoneIcon from '@/svgs/phone.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
@@ -360,4 +360,10 @@ const Input: FC<InputProps> = ({
   );
 };
 
-export default Register;
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <Register />
+    </Suspense>
+  );
+}
