@@ -121,8 +121,10 @@ const ProductDetailsPage = () => {
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
-    const [selectedBriefs, setSelectedBriefs] = useState(2);
+  const [selectedBriefs, setSelectedBriefs] = useState(2);
   const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
   const is_mobile = IsMobile();
 
   const handlePreviousSlide = () => {
@@ -320,102 +322,99 @@ const ProductDetailsPage = () => {
           }`}>
           <div className='flex flex-col items-center gap-[20px] w-full mt-10'>
             <div className='min-h-[90px] container w-full flex flex-col items-start lg:px-[40px]'>
-            <div className='w-full flex justify-start mb-5'>
-              <BreadcrumbNav
-                point={point}
-                onBack={() => router.back()}
-                arrowIcon={arrowRightIcon}
-                backText="Home"
-              />
-            </div>
-                <h2
-                  className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold mt-6 text-black px-3 md:px-5`}>
-                  Newly Built 5 bedroom Duplex with BQ in a highly secured area in
-                  the heart of GRA
-                </h2>
+              <div className='w-full flex justify-start mb-5'>
+                <BreadcrumbNav
+                  point={point}
+                  onBack={() => router.back()}
+                  arrowIcon={arrowRightIcon}
+                  backText='Home'
+                />
+              </div>
+              <h2
+                className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold mt-6 text-black px-3 md:px-5`}>
+                Newly Built 5 bedroom Duplex with BQ in a highly secured area in
+                the heart of GRA
+              </h2>
             </div>
 
             {/* <div className='w-full flex justify-center items-center'> */}
-              <div className='flex flex-col md:flex-row justify-between items-start container px-[10px] md:px-[20px]'>
-                <div className='w-full md:w-[70%] flex flex-col'>
-                  <div className='lg:w-[837px] flex flex-col gap-[20px]'>
-                    <ImageSwiper
-                      images={
-                        details.pictures['length'] !== 0
-                          ? details.pictures
-                          : [sampleImage.src]
-                      }
-                    />
+            <div className='flex flex-col md:flex-row justify-between items-start container px-[10px] md:px-[20px]'>
+              <div className='w-full md:w-[70%] flex flex-col'>
+                <div className='lg:w-[837px] flex flex-col gap-[20px]'>
+                  <ImageSwiper
+                    images={
+                      details.pictures['length'] !== 0
+                        ? details.pictures
+                        : [sampleImage.src]
+                    }
+                  />
 
-                    <div className='w-full md:w-[90%] h-full flex flex-col gap-[20px]'>
+                  <div className='w-full md:w-[90%] h-full flex flex-col gap-[20px]'>
                     {details.pictures['length'] !== 0 ? (
-                        <div className="flex gap-[12px] overflow-x-auto w-full min-w-0">
+                      <div className='flex gap-[12px] overflow-x-auto w-full min-w-0'>
                         {details.pictures.map((src: string, idx: number) => (
                           <img
                             src={src}
                             key={idx}
                             width={200}
                             height={200}
-                            className="w-[80px] h-[60px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded"
+                            className='w-[80px] h-[60px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded'
                             // style={{ maxWidth: '100%', flex: '0 0 auto' }}
                             alt={'image'}
                           />
                         ))}
                       </div>
                     ) : null}
-                      {/**Details */}
-                      <div className='w-full min-h-[152px] py-[40px] border-b-[1px] border-[#C7CAD0]'>
-
-                       <div className='w-full min-h-[152px] grid grid-cols-2 md:grid-cols-3 gap-[10px]'>
-                          <BoxContainer
-                            heading='Property Type'
-                            subHeading={details.propertyType}
-                          />
-                          <BoxContainer
-                            heading='Location'
-                            subHeading={`${details.location.state}, ${details.location.localGovernment}`}
-                          />
-                          <BoxContainer
-                            heading='Price'
-                            subHeading={Number(details.price).toLocaleString()}
-                          />
-                        </div> 
+                    {/**Details */}
+                    <div className='w-full min-h-[152px] py-[40px] border-b-[1px] border-[#C7CAD0]'>
+                      <div className='w-full min-h-[152px] grid grid-cols-2 md:grid-cols-3 gap-[10px]'>
+                        <BoxContainer
+                          heading='Property Type'
+                          subHeading={details.propertyType}
+                        />
+                        <BoxContainer
+                          heading='Location'
+                          subHeading={`${details.location.state}, ${details.location.localGovernment}`}
+                        />
+                        <BoxContainer
+                          heading='Price'
+                          subHeading={Number(details.price).toLocaleString()}
+                        />
                       </div>
+                    </div>
 
-                      {/**Property Features */}
-                      {featureData['length'] !== 0 ? (
-                        <SimilarComponent
-                          heading='Property Features'
-                          data={featureData.map((item) => item?.featureName)}
-                        />
-                      ) : null}
+                    {/**Property Features */}
+                    {featureData['length'] !== 0 ? (
+                      <SimilarComponent
+                        heading='Property Features'
+                        data={featureData.map((item) => item?.featureName)}
+                      />
+                    ) : null}
 
-                      {details.tenantCriteria['length'] !== 0 ? (
-                        <SimilarComponent
-                          heading='Tenant Criteria'
-                          data={details.tenantCriteria.map(
-                            (item) => item?.criteria
-                          )}
-                        />
-                      ) : null}
+                    {details.tenantCriteria['length'] !== 0 ? (
+                      <SimilarComponent
+                        heading='Tenant Criteria'
+                        data={details.tenantCriteria.map(
+                          (item) => item?.criteria
+                        )}
+                      />
+                    ) : null}
 
-                        <div className="w-full flex flex-row items-center mt-10 gap-3 justify-between">
-                          <button
-                            type="button"
-                            className="w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white"
-                          >
-                            Select for inspection
-                          </button>
-                          <button
-                            type="button"
-                            className="w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white"
-                          >
-                            Price Negotiation
-                          </button>
-                        </div>
+                    <div className='w-full flex flex-row items-center mt-10 gap-3 justify-between'>
+                      <button
+                        type='button'
+                        className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
+                        Select for inspection
+                      </button>
+                      <button
+                        type='button'
+                        className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
+                        Price Negotiation
+                      </button>
+                    </div>
 
-                      {/**Contact Information */}
-                      {/* <div className='min-h-[152px] w-full py-[40px]'>
+                    {/**Contact Information */}
+                    {/* <div className='min-h-[152px] w-full py-[40px]'>
                         <h2
                           className={`text-[24px] leading-[38.4px] font-semibold font-epilogue`}>
                           Contact Information
@@ -552,135 +551,135 @@ const ProductDetailsPage = () => {
                           </div>
                         </form>
                       </div> */}
-                    </div>
                   </div>
                 </div>
-                <div className='hidden md:flex w-full md:w-[30%] flex-col items-end'>
-                  <div className='w-full lg:w-[282px] flex justify-center items-center'>
-                    <div className='flex justify-between items-start container'>
-                      <div className='w-full flex flex-col gap-[26px] h-[inherit]'>
-                        <div className='flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar'>
-                          <div className='flex gap-[10px] w-full'>
-                            <span className='text-base text-[#7C8493]'>
-                              Reference ID:
-                            </span>{' '}
-                            <span
-                              //onClick={() => copy(details.owner)}
-                              className={`${epilogue.className} text-lg text-clip text-[#25324B]`}>
-                              {details.owner}
-                            </span>
-                          </div>
-                          {/**Date Added */}
-                          <div className='flex gap-[10px] w-full'>
-                            <span className='text-base text-[#7C8493]'>
-                              Date added:
-                            </span>{' '}
-                            <span
-                              className={`${epilogue.className} text-lg text-[#25324B]`}>
-                              {details.createdAt.split('T')[0]}
-                            </span>
-                          </div>
-                          {/**Last Update */}
-                          <div className='flex gap-[10px] w-full'>
-                            <span className='text-base text-[#7C8493]'>
-                              Last Update:
-                            </span>{' '}
-                            <span
-                              className={`${epilogue.className} text-lg text-[#25324B]`}>
-                              {details.updatedAt.split('T')[0]}
-                            </span>
-                          </div>
-                          {/**Market Status */}
-                          <div className='flex gap-[10px] w-full'>
-                            <span className='text-base text-[#7C8493]'>
-                              Market Status
-                            </span>{' '}
-                            <span
-                              className={`${epilogue.className} text-lg text-[#25324B]`}>
-                              {details.isAvailable
-                                ? 'Available'
-                                : 'Not Available'}
-                            </span>
-                          </div>
+              </div>
+              <div className='hidden md:flex w-full md:w-[30%] flex-col items-end'>
+                <div className='w-full lg:w-[282px] flex justify-center items-center'>
+                  <div className='flex justify-between items-start container'>
+                    <div className='w-full flex flex-col gap-[26px] h-[inherit]'>
+                      <div className='flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar'>
+                        <div className='flex gap-[10px] w-full'>
+                          <span className='text-base text-[#7C8493]'>
+                            Reference ID:
+                          </span>{' '}
+                          <span
+                            //onClick={() => copy(details.owner)}
+                            className={`${epilogue.className} text-lg text-clip text-[#25324B]`}>
+                            {details.owner}
+                          </span>
                         </div>
+                        {/**Date Added */}
+                        <div className='flex gap-[10px] w-full'>
+                          <span className='text-base text-[#7C8493]'>
+                            Date added:
+                          </span>{' '}
+                          <span
+                            className={`${epilogue.className} text-lg text-[#25324B]`}>
+                            {details.createdAt.split('T')[0]}
+                          </span>
+                        </div>
+                        {/**Last Update */}
+                        <div className='flex gap-[10px] w-full'>
+                          <span className='text-base text-[#7C8493]'>
+                            Last Update:
+                          </span>{' '}
+                          <span
+                            className={`${epilogue.className} text-lg text-[#25324B]`}>
+                            {details.updatedAt.split('T')[0]}
+                          </span>
+                        </div>
+                        {/**Market Status */}
+                        <div className='flex gap-[10px] w-full'>
+                          <span className='text-base text-[#7C8493]'>
+                            Market Status
+                          </span>{' '}
+                          <span
+                            className={`${epilogue.className} text-lg text-[#25324B]`}>
+                            {details.isAvailable
+                              ? 'Available'
+                              : 'Not Available'}
+                          </span>
+                        </div>
+                      </div>
 
-                        <div className='w-full lg:w-[282px] flex flex-col gap-[15px]'>
-                          <h2 className='text-base text-black'>
-                            Click here to view the selected brief for inspection
-                          </h2>
-                          <button
-                            type='button'
-                            className='w-full h-[60px] border-[1px] border-[#FF3D00] text-[#FF3D00] font-medium text-lg'>
-                            {selectedBriefs} selected brief
-                          </button>
-                        </div>
-                        <div className='w-full items-end hidden h-full md:flex md:flex-col gap-[10px]'>
-                          {data.map((property, idx: number) => {
-                            return (
-                              <Card
-                                style={
-                                  is_mobile
-                                    ? { width: '100%' }
-                                    : { width: '281px' }
-                                }
-                                images={property?.pictures}
-                                onCardPageClick={() => {
-                                  router.push(`/property/Rent/${property._id}`);
-                                }}
-                                // onClick={() =>
-                                //   handlePropertiesSelection(idx.toLocaleString())
-                                // }
-                                cardData={[
-                                  {
-                                    header: 'Property Type',
-                                    value: property.propertyType,
-                                  },
-                                  {
-                                    header: 'Price',
-                                    value: `₦${Number(
-                                      property.rentalPrice
-                                    ).toLocaleString()}`,
-                                  },
-                                  {
-                                    header: 'Bedrooms',
-                                    value: property.noOfBedrooms || 'N/A',
-                                  },
-                                  {
-                                    header: 'Location',
-                                    value: `${property.location.state}, ${property.location.localGovernment}`,
-                                  },
-                                  {
-                                    header: 'Documents',
-                                    value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
-                                      (item: {
-                                        _id: string;
-                                        docName: string;
-                                      }) =>
-                                        `<li key={${item._id}>${item.docName}</li>`
-                                    )}<ol>`,
-                                  },
-                                ]}
-                                key={idx}
-                                // isDisabled={uniqueProperties.has(idx.toLocaleString())}
-                              />
-                            );
-                          })}
-                        </div>
+                      <div className='w-full lg:w-[282px] flex flex-col gap-[15px]'>
+                        <h2 className='text-base text-black'>
+                          Click here to view the selected brief for inspection
+                        </h2>
+                        <button
+                          type='button'
+                          className='w-full h-[60px] border-[1px] border-[#FF3D00] text-[#FF3D00] font-medium text-lg'>
+                          {selectedBriefs} selected brief
+                        </button>
+                      </div>
+                      <div className='w-full items-end hidden h-full md:flex md:flex-col gap-[10px]'>
+                        {data.map((property, idx: number) => {
+                          return (
+                            <Card
+                              isAddForInspectionModalOpened={
+                                isAddForInspectionModalOpened
+                              }
+                              style={
+                                is_mobile
+                                  ? { width: '100%' }
+                                  : { width: '281px' }
+                              }
+                              images={property?.pictures}
+                              onCardPageClick={() => {
+                                router.push(`/property/Rent/${property._id}`);
+                              }}
+                              // onClick={() =>
+                              //   handlePropertiesSelection(idx.toLocaleString())
+                              // }
+                              cardData={[
+                                {
+                                  header: 'Property Type',
+                                  value: property.propertyType,
+                                },
+                                {
+                                  header: 'Price',
+                                  value: `₦${Number(
+                                    property.rentalPrice
+                                  ).toLocaleString()}`,
+                                },
+                                {
+                                  header: 'Bedrooms',
+                                  value: property.noOfBedrooms || 'N/A',
+                                },
+                                {
+                                  header: 'Location',
+                                  value: `${property.location.state}, ${property.location.localGovernment}`,
+                                },
+                                {
+                                  header: 'Documents',
+                                  value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
+                                    (item: { _id: string; docName: string }) =>
+                                      `<li key={${item._id}>${item.docName}</li>`
+                                  )}<ol>`,
+                                },
+                              ]}
+                              key={idx}
+                              // isDisabled={uniqueProperties.has(idx.toLocaleString())}
+                            />
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <MobileSelectedBottomBar
-                selectedBriefs={selectedBriefs}
-                selectedBriefsList={selectedBriefsList}
-                onViewBrief={() => {
-                  console.log('View Briefs', selectedBriefsList);
-                }}
-                onSubmitForInspection={() => {
-                  console.log('Submit for inspection', selectedBriefsList);
-                }}
-              />
+            </div>
+            <MobileSelectedBottomBar
+              selectedBriefs={selectedBriefs}
+              selectedBriefsList={selectedBriefsList}
+              onViewBrief={() => {
+                console.log('View Briefs', selectedBriefsList);
+              }}
+              onSubmitForInspection={() => {
+                console.log('Submit for inspection', selectedBriefsList);
+              }}
+            />
           </div>
         </section>
       ) : (
@@ -869,8 +868,10 @@ const BoxContainer = ({
     }
   };
   return (
-  <div
-      className={`w-full ${heading && changeColorBehaviors().bg} h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
+    <div
+      className={`w-full ${
+        heading && changeColorBehaviors().bg
+      } h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
       <h4 className='text-lg text-[#7C8493]'>{heading}</h4>
       <h3
         className={`text-lg font-semibold ${
