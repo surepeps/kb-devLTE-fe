@@ -51,6 +51,7 @@ const MarketPlace = () => {
           setInspectionType={setInspectionType}
           isComingFromSubmitLol={isComingFromSubmitLol}
           setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+          isAddForInspectionModalOpened={isAddForInspectionModalOpened}
         />
       ) : (
         <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[20px]'>

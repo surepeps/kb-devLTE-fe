@@ -49,9 +49,11 @@ const AddForInspection = ({
   inspectionType,
   isComingFromSubmitLol,
   setIsComingFromSubmitLol,
+  isAddForInspectionModalOpened,
 }: {
   propertiesSelected: any[];
   setPropertiesSelected: (type: any[]) => void;
+  isAddForInspectionModalOpened: boolean;
   setIsAddForInspectionModalOpened: (type: boolean) => void;
   payload: PayloadProps;
   /**
@@ -123,11 +125,13 @@ const AddForInspection = ({
                   <Card
                     style={is_mobile ? { width: '100%' } : { width: '281px' }}
                     images={property?.pictures}
+                    isAddInspectionModalOpened={isAddForInspectionModalOpened}
                     //setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
                     setPropertySelected={setPropertiesSelected}
                     isComingFromPriceNeg={isComingFromPriceNeg}
                     setIsComingFromPriceNeg={comingFromPriceNegotiation}
                     property={property}
+                    allProperties={propertiesSelected}
                     onCardPageClick={() => {
                       router.push(`/property/Rent/${property._id}`);
                     }}
@@ -187,6 +191,8 @@ const AddForInspection = ({
                     setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                     images={[]}
                     property={property}
+                    properties={propertiesSelected}
+                    isAddInspectionalModalOpened={isAddForInspectionModalOpened}
                     setPropertySelected={setPropertiesSelected}
                     setIsAddInspectionModalOpened={
                       setIsAddForInspectionModalOpened
@@ -225,7 +231,9 @@ const AddForInspection = ({
                     setPropertySelected={setPropertiesSelected}
                     isComingFromPriceNeg={isComingFromPriceNeg}
                     setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                    isAddInspectionModalOpened={isAddForInspectionModalOpened}
                     property={property}
+                    allProperties={propertiesSelected}
                     onCardPageClick={() => {
                       router.push(`/property/Rent/${property._id}`);
                     }}
@@ -283,6 +291,8 @@ const AddForInspection = ({
                     isComingFromSubmitLol={isComingFromSubmitLol}
                     setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                     property={property}
+                    properties={propertiesSelected}
+                    isAddInspectionalModalOpened={isAddForInspectionModalOpened}
                     setPropertySelected={setPropertiesSelected}
                     setIsAddInspectionModalOpened={
                       setIsAddForInspectionModalOpened
@@ -434,8 +444,9 @@ const AddForInspection = ({
                     )}
                   </AnimatePresence>
                 ) : null}
-                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 mt-4 w-full">
-                  {propertiesSelected && renderCards({ length: propertiesSelected.length })}
+                <div className='flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 mt-4 w-full'>
+                  {propertiesSelected &&
+                    renderCards({ length: propertiesSelected.length })}
                 </div>
                 <div className='flex flex-col gap-[10px] justify-center items-center'>
                   <h2 className='text-lg text-black text-center items-center'>
@@ -504,7 +515,7 @@ const AddForInspection = ({
         {isComingFromPriceNeg && (
           <NegiotiatePriceWithSellerModal
             getID={propertiesSelected[0].id}
-            allNegotiation={propertiesSelected}
+            allNegotiation={propertiesSelected} //the first property
             closeModal={comingFromPriceNegotiation}
             actionTracker={actionTracker}
             setActionTracker={setActionTracker}
