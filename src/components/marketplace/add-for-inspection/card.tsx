@@ -12,6 +12,7 @@ import randomImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStarOfDavid } from '@fortawesome/free-solid-svg-icons';
 import markerSVG from '@/svgs/marker.svg';
+import { usePathname } from 'next/navigation';
 interface CardDataProps {
   isRed?: boolean;
   cardData: { header: string; value: string }[];
@@ -23,8 +24,10 @@ interface CardDataProps {
   isDisabled?: boolean;
   onCardPageClick?: () => void;
   onPriceNegotiation?: () => void;
+  isAddInspectionModalOpened: boolean;
   setIsAddInspectionModalOpened?: (type: boolean) => void;
   property: any;
+  allProperties: any[];
   setPropertySelected: (type: any[]) => void;
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (type: boolean) => void;
@@ -45,11 +48,15 @@ const Card = ({
   setPropertySelected,
   isComingFromPriceNeg,
   setIsComingFromPriceNeg,
+  isAddInspectionModalOpened,
+  allProperties,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
   const { setViewImage, setImageData } = usePageContext();
   const cardRef = useRef<HTMLDivElement | null>(null);
+
+  const path = usePathname();
 
   //const isCardInView = useInView(cardRef, { once: false });
 
@@ -216,9 +223,30 @@ const Card = ({
             // green={isRed ? false : true}
             red={isRed}
             onClick={() => {
-              // setIsAddInspectionModalOpened(true);
-              setPropertySelected([property]);
-              setIsComingFromPriceNeg?.(true);
+              if (isAddInspectionModalOpened) {
+                //preserving the selected properties, and keeping the current
+                // property selected
+                //check if the property selected is already in the list
+                const isPropertySelected = allProperties?.some(
+                  (item: any) => item?._id === property?._id
+                );
+                if (isPropertySelected) {
+                  //if the property is already in the list, show property selected first, before the others, without adding it again
+
+                  const newProperties = allProperties?.filter(
+                    (item: any) => item?._id !== property?._id
+                  );
+                  setIsComingFromPriceNeg?.(true);
+                  setPropertySelected([property, ...newProperties]);
+                } else {
+                  //if the property is not selected, add it to the list
+                  setPropertySelected([property, ...allProperties]);
+                }
+              } else {
+                // setIsAddInspectionModalOpened(true);
+                setPropertySelected([property]);
+                setIsComingFromPriceNeg?.(true);
+              }
             }}
             className='min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold'
           />

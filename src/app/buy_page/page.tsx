@@ -62,6 +62,8 @@ export default function Rent() {
   const [properties, setProperties] = useState<any[]>([]);
   const [isFetchingData, setFetchingData] = useState<boolean>(false);
   const [errMessage, setErrMessage] = useState<string>('');
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
 
   useEffect(() => {
     // Check sessionStorage for the previous page
@@ -218,6 +220,9 @@ export default function Rent() {
                   properties?.map((property, idx: number) => (
                     <Card
                       images={property.pictures}
+                      isAddForInspectionModalOpened={
+                        isAddForInspectionModalOpened
+                      }
                       onClick={() => {
                         if (selectedBriefs.has(property)) {
                           return toast.error(
@@ -294,6 +299,7 @@ export default function Rent() {
                 rentPage={rentPage}
                 data={selectedBriefs}
                 isViewBriefClicked={isSelectedBriefClicked}
+                isAddForInspectionModalOpened={isAddForInspectionModalOpened}
               />
             )}
           </div>
@@ -328,6 +334,7 @@ type SubmitForInspectionComponentsProps = {
   };
   setPropertyRefSelectedBriefs: (type: BriefType[]) => void;
   isViewBriefClicked: boolean;
+  isAddForInspectionModalOpened: boolean;
 };
 const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
   data,
@@ -336,6 +343,7 @@ const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
   rentPage,
   setPropertyRefSelectedBriefs,
   isViewBriefClicked,
+  isAddForInspectionModalOpened,
 }) => {
   const isMobile = IsMobile();
   return (
@@ -351,6 +359,7 @@ const SubmitForInspectionComponents: FC<SubmitForInspectionComponentsProps> = ({
         {[...data].map((selectedBrief: BriefType, idx: number) => (
           <Card
             key={idx}
+            isAddForInspectionModalOpened={isAddForInspectionModalOpened}
             images={Array(12).fill(imgSample)}
             onClick={() => {
               removeBrief(selectedBrief);

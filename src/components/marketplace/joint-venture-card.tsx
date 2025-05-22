@@ -35,6 +35,8 @@ interface CardDataProps {
   setIsComingFromSubmitLol: (type: boolean) => void;
   setPropertySelected: (type: any[]) => void;
   property: any;
+  properties: any[];
+  isAddInspectionalModalOpened: boolean;
   setIsAddInspectionModalOpened: (type: boolean) => void;
 }
 
@@ -52,6 +54,8 @@ const JointVentureModalCard = ({
   setPropertySelected,
   property,
   setIsAddInspectionModalOpened,
+  properties,
+  isAddInspectionalModalOpened,
 }: CardDataProps) => {
   const { setViewImage, setImageData } = usePageContext();
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -119,8 +123,29 @@ const JointVentureModalCard = ({
               value={`Submit LOI`}
               onClick={() => {
                 setIsAddInspectionModalOpened(true);
-                setPropertySelected([property]);
-                setIsComingFromSubmitLol?.(true);
+                if (isAddInspectionalModalOpened) {
+                  //preserving the selected properties, and keeping the current
+                  // property selected
+                  //check if the property selected is already in the list
+                  const isPropertySelected = properties?.some(
+                    (item: any) => item?._id === property?._id
+                  );
+                  if (isPropertySelected) {
+                    //if the property is already in the list, show property selected first, before the others, without adding it again
+
+                    const newProperties = properties?.filter(
+                      (item: any) => item?._id !== property?._id
+                    );
+                    setIsComingFromSubmitLol?.(true);
+                    setPropertySelected([property, ...newProperties]);
+                  } else {
+                    //if the property is not selected, add it to the list
+                    setPropertySelected([property, ...properties]);
+                  }
+                } else {
+                  setPropertySelected([property]);
+                  setIsComingFromSubmitLol?.(true);
+                }
               }}
               type='button'
               // green={isRed ? false : true}
