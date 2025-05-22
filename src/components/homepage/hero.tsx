@@ -53,7 +53,7 @@ const HeroSection: FC<HeroSectionProps> = ({
               className='h-[66px] w-full lg:w-[393px] py-[12px] px-[24px] text-white text-[14px] md:text-[16px] leading-[32px] font-bold'
               value={buttonText1}
               onClick={() => {
-                window.location.href = '/agent/auth';
+                window.location.href = '/auth';
               }}
             />
             <Button
@@ -61,7 +61,7 @@ const HeroSection: FC<HeroSectionProps> = ({
               className='h-[66px] w-full lg:w-[393px] py-[12px] px-[24px] text-[#8DDB90] text-[14px] md:text-[16px] leading-[32px] font-bold border-[2px] border-[#8DDB90]'
               value={buttonText2}
               onClick={() => {
-                window.location.href = '/agent/auth/login';
+                window.location.href = '/auth/login';
               }}
             />
           </div>

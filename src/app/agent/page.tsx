@@ -23,10 +23,9 @@ const Agent = () => {
   const { user } = useUserContext();
 
   useEffect(() => {
-    //Redirecting to the login page if the user is not logged in
     if (!user) {
       return;
-    } else if (!user.accountApproved) {
+    } else if (user.userType && !user.accountApproved) {
       router.push('/agent/under-review');
     } else {
       router.push('/agent/briefs');

@@ -2,9 +2,7 @@
 
 'use client';
 import React, { Fragment, Suspense, useEffect } from 'react';
-//import HeroSection from '@/components/hero';
 import Loading from '@/components/loading-component/loading';
-//import Section1 from '@/components/section1';
 import Section2 from '@/components/homepage/home_section2';
 import SeeWhatOthers from '@/components/homepage/section2';
 import Section3 from '@/components/homepage/section3';
@@ -12,17 +10,14 @@ import FAQs from '@/components/homepage/FAQs';
 import Feedback from '@/components/homepage/feedback';
 import HelpButton from '@/components/homepage/home_helpbutton';
 import { useLoading } from '@/hooks/useLoading';
-//import homeImage from '@/assets/assets.png';
 import HeroSection from '@/components/homepage/homepage_hero';
 import Section1 from '@/components/homepage/home_section1';
-import NewSection from '@/components/new_section';
 import EmailVerification from '@/components/EmailVerification';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { URLS } from '@/utils/URLS';
 import { GET_REQUEST } from '@/utils/requests';
 import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
-import Card from '@/components/homepage/how-it-works-card';
 import HowItWorksSection from '@/components/homepage/how-it-works-section';
 
 /**
@@ -50,15 +45,15 @@ const Homepage = () => {
 
   useEffect(() => {
     if (searchParams.get('access_token')) {
+
       const url =
         URLS.BASE +
-        URLS.agent +
+        URLS.user +
         URLS.verifyEmail +
         `?access_token=${searchParams.get('access_token')}`;
 
       (async () => {
         await GET_REQUEST(url).then((response) => {
-          // console.log('response from email verification', response);
           if ((response as unknown as { id: string; token: string }).id) {
             Cookies.set(
               'token',
@@ -73,6 +68,7 @@ const Homepage = () => {
               firstName: string;
               phoneNumber: string;
               accountApproved: boolean;
+              userType: string;
             };
             // const user = {
             //   id: (response as any).id,
@@ -83,8 +79,13 @@ const Homepage = () => {
             // };
 
             setUser(user);
-            router.push('/agent/onboard');
+            if (user.userType === 'Landowners') {
+              router.push('/auth/login');
+            }
+            if (user.userType === 'Agent') {
+              router.push('/agent/onboard');
           }
+        }
         });
       })();
     }
