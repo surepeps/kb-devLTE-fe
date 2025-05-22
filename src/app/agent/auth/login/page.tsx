@@ -87,7 +87,7 @@ const Login = () => {
         }
       } else {
         try {
-          const url = URLS.BASE + URLS.agentLogin;
+          const url = URLS.BASE + URLS.user + URLS.login;
           const payload = { ...values };
 
           await toast.promise(
