@@ -19,6 +19,7 @@ import Mobile from './for-mobile';
 import { URLS } from '@/utils/URLS';
 import { shuffleArray } from '@/utils/shuffleArray';
 import { useRouter } from 'next/navigation';
+import { POST_REQUEST } from '@/utils/requests';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -85,21 +86,43 @@ const SearchModal = ({
     console.log(usageOptions);
   }, [usageOptions]);
 
-  // useEffect(() => {
-  //   switch (userSelectedMarketPlace) {
-  //     case 'Buy a property':
-  //       return setBriefToFetch(URLS.buyersFetchBriefs);
-  //     case 'Find property for Joint Venture':
-  //       return setBriefToFetch(URLS.buyersFetchBriefs);
-  //     case 'Rent/Lease a property':
-  //       return setBriefToFetch('/properties/rents/all');
-  //     default:
-  //       return setBriefToFetch(URLS.buyersFetchBriefs);
-  //   }
-  // }, [userSelectedMarketPlace]);
+
+const handleSearch = async (searchPayload: any) => {
+  setFormikStatus('pending');
+    console.log("searchPayload", searchPayload);
+  try {
+    await toast.promise(
+      POST_REQUEST(URLS.BASE + URLS.searchBrief, {
+        ...searchPayload,
+      }).then((response) => {
+        const data = Array.isArray(response) ? response : response?.data;
+        if (!data) {
+          setErrMessage('Failed to fetch data');
+          setFormikStatus('failed');
+          throw new Error('Failed to fetch data');
+        }
+        setFormikStatus('success');
+        const shuffledData = shuffleArray(data);
+        setProperties(shuffledData.slice(0, 10));
+        // setUsageOptions(['All'])
+      }),
+      {
+        loading: 'Searching...',
+        success: 'Properties loaded!',
+        error: 'Failed to load properties',
+      }
+    );
+  } catch (err: any) {
+    if (err.name !== 'AbortError') {
+      console.error(err);
+      setErrMessage(err.message || 'An error occurred');
+      setFormikStatus('failed');
+    }
+  }
+};
 
 
-      useEffect(() => {
+    useEffect(() => {
       let briefType = '';
       switch (userSelectedMarketPlace) {
         case 'Buy a property':
@@ -115,7 +138,7 @@ const SearchModal = ({
           briefType = 'Outright Sales';
       }
       // You can set default page and limit as needed
-      setBriefToFetch(`/properties/all?page=1&limit=10&briefType=${encodeURIComponent(briefType)}`);
+      setBriefToFetch(`${URLS.fetchBriefs}?page=1&limit=10&briefType=${encodeURIComponent(briefType)}`);
     }, [userSelectedMarketPlace]);
 
   const renderDynamicComponent = () => {
@@ -132,6 +155,7 @@ const SearchModal = ({
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
+              onSearch={handleSearch}
             />
             <section className='w-full flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {(formikStatus || usageOptions) &&
@@ -154,6 +178,7 @@ const SearchModal = ({
               setUsageOptions={setUsageOptions}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
+              onSearch={handleSearch}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {formikStatus &&
@@ -210,7 +235,7 @@ const SearchModal = ({
               return (
                 <Card
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
-                  images={property?.pictures}
+                  images={property?.pictures || [sampleImage]}
                   isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
@@ -255,7 +280,8 @@ const SearchModal = ({
             } else if (
               /**If filters include all or none is selected, display all */
               filterBy?.includes('All') ||
-              filterBy?.['length'] === 0
+              filterBy?.length === 0
+              // filterBy?.['length'] === 0
             ) {
               return (
                 <Card
@@ -364,10 +390,10 @@ const SearchModal = ({
                       value: property.propertyType,
                     },
                     {
-                      header: 'Price',
-                      value: `₦${Number(
-                        property.rentalPrice
-                      ).toLocaleString()}`,
+                    header: 'Price',
+                    value: property.price
+                      ? `₦${Number(property.price).toLocaleString()}`
+                      : 'N/A',
                     },
                     {
                       header: 'Bedrooms',
@@ -416,12 +442,12 @@ const SearchModal = ({
                       header: 'Property Type',
                       value: property.propertyType,
                     },
-                    {
-                      header: 'Price',
-                      value: `₦${Number(
-                        property.rentalPrice
-                      ).toLocaleString()}`,
-                    },
+                      {
+                        header: 'Price',
+                        value: property.price
+                          ? `₦${Number(property.price).toLocaleString()}`
+                          : 'N/A',
+                      },
                     {
                       header: 'Bedrooms',
                       value: property.noOfBedrooms || 'N/A',
