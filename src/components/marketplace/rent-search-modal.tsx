@@ -32,6 +32,7 @@ const RentSearchModal = ({
   setSelectedBriefs,
   inspectionType,
   setInspectionType,
+  onSearch,
 }: {
   selectedBriefs: number;
   rentFilterBy: string[];
@@ -44,6 +45,7 @@ const RentSearchModal = ({
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
   setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
+   onSearch: (payload: any) => void;
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -75,8 +77,18 @@ const RentSearchModal = ({
     useState<boolean>(false);
   const [tenatCriteria, setTenantCriteria] = useState<string[]>([]);
 
+    const priceFormik = useFormik({
+    initialValues: {
+      minPrice: 0,
+      maxPrice: 0,
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
   //Where we will be making the http requests
-  const handleSubmit = () => {
+  // const handleSubmit = () => {
     const payload = {
       filters,
       homeCondition,
@@ -94,23 +106,48 @@ const RentSearchModal = ({
       desiresFeatures,
       tenatCriteria,
     };
-    console.log(payload);
-  };
 
-  const priceFormik = useFormik({
-    initialValues: {
-      minPrice: 0,
-      maxPrice: 0,
-    },
-    onSubmit: (values) => {
-      console.log(values);
-    },
-  });
+      function deepClean(obj: any): any {
+        if (typeof obj !== 'object' || obj === null) return obj;
+        if (Array.isArray(obj)) {
+          return obj
+            .map((item: any) => deepClean(item))
+            .filter(
+              (v: any) =>
+                v !== undefined &&
+                v !== '' &&
+                v !== null &&
+                !(Array.isArray(v) && v.length === 0)
+            );
+        }
+        return Object.fromEntries(
+          Object.entries(obj)
+            .map(([k, v]: [string, any]): [string, any] => [k, deepClean(v)])
+            .filter(([key, value]: [string, any]) => {
+              if (
+                value === undefined ||
+                value === '' ||
+                value === null ||
+                (Array.isArray(value) && value.length === 0) ||
+                (typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length === 0)
+              ) {
+                return false;
+              }
+              // Remove minPrice/maxPrice if 0
+              if ((key === 'minPrice' || key === 'maxPrice') && value === 0) {
+                return false;
+              }
+              return true;
+            })
+        );
+      }
 
-  useEffect(
-    () => handleSubmit(),
-    [priceRadioValue, formik.values, priceFormik.values]
-  );
+      const cleanedPayload = deepClean(payload);
+
+  // useEffect(
+  //   () => handleSubmit(),
+  //   [priceRadioValue, formik.values, priceFormik.values]
+  // );
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -312,7 +349,8 @@ const RentSearchModal = ({
           </div>
           <button
             type='button'
-            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'>
+            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
+            onClick={() => onSearch(cleanedPayload)}> 
             Search
           </button>
         </div>
