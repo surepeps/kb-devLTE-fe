@@ -24,7 +24,7 @@ const SelectPreferableInspectionDate = ({
   setDetails: (type: DetailsProps) => void;
 }) => {
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30'>
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 px-[10px]'>
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
@@ -52,15 +52,15 @@ const SelectPreferableInspectionDate = ({
             event.preventDefault();
             closeModal(false);
           }}
-          className=' bg-white h-[500px] overflow-y-auto w-full py-[36px] px-[32px] border-[1px] border-[#D9D9D9] flex flex-col gap-[25px] hide-scrollbar'>
+          className=' bg-white overflow-y-auto w-full py-[36px] px-[32px] border-[1px] border-[#D9D9D9] flex flex-col gap-[25px] hide-scrollbar'>
           {/**First div */}
-          <div className='flex flex-col gap-[18px]'>
+          <div className='flex flex-col gap-[5px] md:gap-[18px]'>
             <h2 className={`font-bold text-black ${archivo.className} text-xl`}>
               Select preferable inspection Date
             </h2>
           </div>
           {/**Second div */}
-          <div className='pb-[58px] overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
+          <div className=' overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
             {[
               'Jan 1, 2025',
               'Jan 2, 2025',
