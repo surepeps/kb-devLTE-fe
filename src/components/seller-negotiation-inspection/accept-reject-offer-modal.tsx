@@ -30,7 +30,7 @@ const AcceptRejectOfferModal = ({
         transition={{ delay: 0.2 }}
         viewport={{ once: true }}
         exit={{ y: 20, opacity: 0 }}
-        className='lg:w-[649px] flex flex-col gap-[26px]'>
+        className='lg:w-[649px] w-full flex flex-col gap-[26px]'>
         <div className='flex justify-end items-start'>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -46,7 +46,7 @@ const AcceptRejectOfferModal = ({
             />
           </motion.button>
         </div>
-        <div className='w-full bg-white py-[40px] px-[60px] rounded-[4px] shadow-md flex justify-center items-center'>
+        <div className='w-full bg-white py-[40px] px-[20px] md:px-[60px] rounded-[4px] shadow-md flex justify-center items-center'>
           <div className='w-full flex flex-col gap-[42px] items-center justify-center'>
             <div className='flex flex-col gap-[4px] items-center justify-center'>
               <h2

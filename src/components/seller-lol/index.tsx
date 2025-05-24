@@ -139,14 +139,14 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
   useEffect(() => console.log(props.contentTracker), [props.contentTracker]);
 
   return (
-    <motion.div className='w-full flex items-center justify-center flex-col gap-[40px] py-[50px]'>
-      <div className='flex gap-[40px] justify-center items-center flex-col'>
+    <motion.div className='w-full flex items-center justify-center flex-col gap-[20px] md:gap-[40px] md:py-[50px] px-[20px] pb-[20px]'>
+      <div className='flex gap-[20px] md:gap-[40px] justify-center items-center flex-col'>
         <motion.h2
           initial={{ y: 20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.2 }}
-          className='font-display text-4xl text-center font-semibold text-[#09391C]'>
+          className='font-display text-3xl md:text-4xl text-center font-semibold text-[#09391C]'>
           {props.contentTracker && props.renderDynamicContent().header}
         </motion.h2>
 
@@ -156,17 +156,19 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
           viewport={{ once: true }}
           transition={{ duration: 0.3 }}
           className='flex flex-col gap-[1px] items-center justify-center'>
-          <p className='text-center text-lg text-black'>
+          <p className='text-center text-base md:text-lg text-black'>
             Hi, Mr {firstName} {lastName},
           </p>
-          <p className='text-center text-lg text-black'>
+          <p className='text-center text-base md:text-lg text-black'>
             A potential client has submitted an offer and is waiting for your
             response
           </p>
-          <p className='text-center text-lg text-black'>
+          <p className='text-center text-base md:text-lg text-black'>
             Please reply within{' '}
-            <span className='text-lg text-[#FF3D00]'>48 hours</span> — the
-            countdown starts now.
+            <span className='text-base md:text-lg text-[#FF3D00]'>
+              48 hours
+            </span>{' '}
+            — the countdown starts now.
           </p>
         </motion.div>
       </div>
@@ -178,7 +180,7 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2 }}
-            className='lg:w-[933px] flex flex-col gap-[30px] bg-[#FFFFFF] py-[50px] px-[50px] border-[1px] border-[#C7CAD0]'>
+            className='lg:w-[933px] w-full flex flex-col gap-[30px] bg-[#FFFFFF] py-[30px] md:py-[50px] md:px-[50px] px-[30px] border-[1px] border-[#C7CAD0]'>
             <time
               dateTime=''
               className='font-semibold text-black font-display text-2xl text-center'>
@@ -328,18 +330,20 @@ const NegotiationPage = ({
         </div>
 
         {/**Lol Document */}
-        <div className='w-full flex flex-col gap-[25px] pt-[10px]'>
+        <div className='w-full flex flex-col gap-[10px] md:gap-[25px] pt-[10px]'>
           <div className='flex justify-between items-center'>
-            <h2 className='text-xl text-[#1E1E1E] font-medium'>LOI Document</h2>
+            <h2 className='text-base md:text-xl text-[#1E1E1E] font-medium'>
+              LOI Document
+            </h2>
             <span
-              className='text-base cursor-pointer text-[#1976D2] underline'
+              className='text-sm md:text-base cursor-pointer text-[#1976D2] underline'
               //onClick={() => setIsViewed(true)}
             >
               view property details
             </span>
           </div>
-          <div className='flex justify-between items-start'>
-            <h3 className='text-base font-semibold text-[#202430]'>
+          <div className='flex md:flex-row flex-col gap-[15px] justify-between items-start'>
+            <h3 className='text-sm md:text-base font-semibold text-[#202430]'>
               Developer LOI document: kindly click on the document before you
               <br />
               Accept or reject offer
@@ -465,7 +469,7 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
   };
   return (
     <Fragment>
-      <div className='w-full h-[325px] flex flex-col gap-[35px]'>
+      <div className='w-full flex flex-col gap-[20px] md:gap-[35px]'>
         <div className='w-full flex flex-col'>
           <p className='text-base font-semibold text-[#0C70D3]'>
             {' '}
@@ -493,18 +497,18 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
         </div>
         {/**Buyer Inspection Date */}
         <div className='w-full flex flex-col gap-[15px]'>
-          <div className='flex justify-between items-end'>
-            <h2 className='text-[#1E1E1E] text-xl font-medium'>
+          <div className='flex flex-col md:flex-row justify-between md:items-end'>
+            <h2 className='text-[#1E1E1E] text-lg md:text-xl font-medium'>
               Buyer Inspection Date
             </h2>
             <span
-              className='text-base cursor-pointer text-[#1976D2] underline'
+              className='text-sm md:text-base cursor-pointer text-[#1976D2] underline'
               //onClick={() => setIsViewed(true)}
             >
               view property details
             </span>
           </div>
-          <div className='w-full flex gap-[15px]'>
+          <div className='w-full flex md:flex-row flex-col gap-[15px]'>
             <ShowDateTimeSelected
               heading='Select Date'
               value={dateTimeObj.selectedDate ?? 'N/A'}
@@ -522,24 +526,24 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
               // setIsModalOpened={setIsModalOpened}
             />
           </div>
-          <div className='flex w-full justify-between gap-[35px] mt-6'>
+          <div className='flex flex-wrap w-full justify-between gap-[10px] md:gap-[35px] mt-6'>
             {isNegotiated ? (
               <>
                 <button
                   onClick={() => handleButtonClick('Available of Inspection')}
-                  className={`lg:w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Available
                 </button>
                 <button
                   onClick={() => handleButtonClick('Unavailable of Inspection')}
-                  className={`lg:w-[349px] bg-[#FF2539] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#FF2539] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Unavailable
                 </button>
                 <button
                   onClick={() => setIsModalOpened(true)}
-                  className={`lg:w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Update Inspection date
                 </button>
@@ -549,13 +553,13 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
                 {' '}
                 <button
                   onClick={() => setIsModalOpened(true)}
-                  className={`lg:w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Update Inspection date
                 </button>
                 <button
                   onClick={() => setIsProceedClicked(true)}
-                  className={`lg:w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Proceed
                 </button>
