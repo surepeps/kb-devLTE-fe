@@ -32,7 +32,7 @@ const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal, nextPage }) => {
         whileInView={{ y: 0, opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.2 }}
-        className='lg:w-[649px] flex flex-col gap-[26px]'>
+        className='lg:w-[649px] w-full flex flex-col gap-[26px]'>
         <div className='flex items-start justify-end'>
           <button
             type='button'
@@ -48,7 +48,7 @@ const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal, nextPage }) => {
             {''}
           </button>
         </div>
-        <div className='w-[649px] py-[40px] px-[80px] bg-white rounded-[4px] shadow-md flex items-center justify-center'>
+        <div className='lg:w-[649px] w-full py-[40px] px-[20px] md:px-[80px] bg-white rounded-[4px] shadow-md flex items-center justify-center'>
           <div className='w-full flex flex-col gap-[42px] items-center justify-center'>
             <div className='w-full flex flex-col gap-[4px] items-center justify-center'>
               <h2

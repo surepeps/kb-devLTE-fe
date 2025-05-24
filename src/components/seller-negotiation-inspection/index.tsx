@@ -132,8 +132,8 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
   useEffect(() => console.log(props.contentTracker), [props.contentTracker]);
 
   return (
-    <motion.div className='w-full flex items-center justify-center flex-col gap-[40px] py-[50px]'>
-      <div className='flex gap-[40px] justify-center items-center flex-col'>
+    <motion.div className='w-full flex items-center justify-center flex-col gap-[20px] md:gap-[40px] md:py-[50px] px-[20px] pb-[20px]'>
+      <div className='flex gap-[20px] md:gap-[40px] justify-center items-center flex-col'>
         <motion.h2
           initial={{ y: 20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
@@ -149,17 +149,19 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
           viewport={{ once: true }}
           transition={{ duration: 0.3 }}
           className='flex flex-col gap-[1px] items-center justify-center'>
-          <p className='text-center text-lg text-black'>
+          <p className='text-center text-base md:text-lg text-black'>
             Hi, Mr {firstName} {lastName},
           </p>
-          <p className='text-center text-lg text-black'>
+          <p className='text-center text-base md:text-lg text-black'>
             A potential client has submitted an offer and is waiting for your
             response
           </p>
-          <p className='text-center text-lg text-black'>
+          <p className='text-center text-base md:text-lg text-black'>
             Please reply within{' '}
-            <span className='text-lg text-[#FF3D00]'>48 hours</span> — the
-            countdown starts now.
+            <span className='text-base md:text-lg text-[#FF3D00]'>
+              48 hours
+            </span>{' '}
+            — the countdown starts now.
           </p>
         </motion.div>
       </div>
@@ -171,7 +173,7 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2 }}
-            className='lg:w-[933px] flex flex-col gap-[30px] bg-[#FFFFFF] py-[50px] px-[50px] border-[1px] border-[#C7CAD0]'>
+            className='lg:w-[933px] w-full flex flex-col gap-[30px] bg-[#FFFFFF] py-[30px] md:py-[50px] md:px-[50px] px-[30px] border-[1px] border-[#C7CAD0]'>
             <time
               dateTime=''
               className='font-semibold text-black font-display text-2xl text-center'>
@@ -206,8 +208,8 @@ const Price = ({
   useEffect(() => console.log(isViewed), [isViewed]);
   return (
     <Fragment>
-      <div className='w-full h-[127px] flex flex-col gap-[15px]'>
-        <div className='flex items-center justify-between'>
+      <div className='w-full flex flex-col gap-[15px]'>
+        <div className='flex md:flex-row flex-col md:items-center justify-between'>
           <h2 className='text-[#1E1E1E] font-medium text-xl'>{heading}</h2>
           {viewPropertyDetails ? (
             <span
@@ -266,7 +268,7 @@ const NegotiationPage = ({
   };
   return (
     <Fragment>
-      <div className='w-full h-[502px] flex flex-col gap-[35px]'>
+      <div className='w-full flex flex-col gap-[35px]'>
         <div className='w-full flex flex-col'>
           <p className='text-base font-semibold text-black'>
             {' '}
@@ -318,7 +320,7 @@ const NegotiationPage = ({
           ))}
         </div>
         {/**buttons */}
-        <div className='h-[50px] w-full flex justify-between gap-[35px]'>
+        <div className='w-full flex flex-wrap justify-between gap-[15px] md:gap-[35px]'>
           <button
             type='button'
             onClick={() => {
@@ -419,7 +421,7 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
   };
   return (
     <Fragment>
-      <div className='w-full h-[325px] flex flex-col gap-[35px]'>
+      <div className='w-full flex flex-col gap-[35px]'>
         <div className='w-full flex flex-col'>
           <p className='text-base font-semibold text-[#0C70D3]'>
             {' '}
@@ -447,7 +449,7 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
         </div>
         {/**Buyer Inspection Date */}
         <div className='w-full flex flex-col gap-[15px]'>
-          <div className='flex justify-between items-end'>
+          <div className='flex md:flex-row flex-col justify-between md:items-end'>
             <h2 className='text-[#1E1E1E] text-xl font-medium'>
               Buyer Inspection Date
             </h2>
@@ -458,7 +460,7 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
               view property details
             </span>
           </div>
-          <div className='w-full flex gap-[15px]'>
+          <div className='w-full flex md:flex-row flex-col gap-[15px]'>
             <ShowDateTimeSelected
               heading='Select Date'
               value={dateTimeObj.selectedDate ?? 'N/A'}
@@ -476,24 +478,24 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
               // setIsModalOpened={setIsModalOpened}
             />
           </div>
-          <div className='flex w-full justify-between gap-[35px] mt-6'>
+          <div className='flex flex-wrap w-full justify-between gap-[15px] md:gap-[35px] mt-6'>
             {isNegotiated ? (
               <>
                 <button
                   onClick={() => handleButtonClick('Available of Inspection')}
-                  className={`lg:w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Available
                 </button>
                 <button
                   onClick={() => handleButtonClick('Unavailable of Inspection')}
-                  className={`lg:w-[349px] bg-[#FF2539] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#FF2539] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Unavailable
                 </button>
                 <button
                   onClick={() => setIsModalOpened(true)}
-                  className={`lg:w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Update Inspection date
                 </button>
