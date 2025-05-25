@@ -11,6 +11,7 @@ import Card from './add-for-inspection/card';
 import AddForInspection from './add-for-inspection';
 
 const MarketPlace = () => {
+  const router = useRouter()
   const { selectedType, setSelectedType } = usePageContext();
   const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
     React.useState<boolean>(false);
@@ -96,7 +97,10 @@ const MarketPlace = () => {
               {/**button ~ Share your preference*/}
               <button
                 className='h-[34px] bg-transparent border-[1px] border-[#09391C] w-[221px] text-sm text-[#09391C]'
-                type='button'>
+                type='button'
+                onClick={()=> 
+                  router.push('preference')
+                }>
                 Share your preference
               </button>
             </div>

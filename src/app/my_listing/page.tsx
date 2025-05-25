@@ -6,10 +6,11 @@ import { useUserContext } from '@/context/user-context';
 
 const page = () => {
   const { user } = useUserContext();
+  console.log('User in My Listing Page:', user);
 
   useEffect(() => {
     if (!user) {
-      window.location.href = '/auth';
+      window.location.href = '/auth/login';
     } else if (user.userType !== 'Landowners') {
       window.location.href = '/agent';
     }

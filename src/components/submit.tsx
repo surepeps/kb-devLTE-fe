@@ -17,7 +17,7 @@ interface SubmitPopUpProps {
 }
 
 const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
-  title = 'Successfully Submit',
+  title = 'Successfully Submitted',
   subheader = 'We will be reach out to you soon',
   buttonText = 'Home',
   href = '/',

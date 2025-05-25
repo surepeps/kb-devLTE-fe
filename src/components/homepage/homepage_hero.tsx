@@ -70,7 +70,7 @@ const HeroSection = () => {
               className='h-[50px] md:h-[66px] w-full md:w-1/2 lg:w-[283px] py-[12px] px-[24px] text-white md:text-[20px] text-base md:leading-[32px] font-bold'
               value={'Search listing now'}
               onClick={() => {
-                //window.location.href = '/buy_page';
+                window.location.href = '/market-place';
               }}
             />
             <Button
@@ -78,7 +78,7 @@ const HeroSection = () => {
               className='h-[50px] md:h-[66px] w-full md:w-1/2 lg:w-[294px] py-[12px] px-[24px] text-white md:text-[20px] text-base md:leading-[32px] font-bold'
               value={'List a property'}
               onClick={() => {
-                //window.location.href = '/auth/agent';
+                window.location.href = '/my_listing';
               }}
             />
           </motion.div>
