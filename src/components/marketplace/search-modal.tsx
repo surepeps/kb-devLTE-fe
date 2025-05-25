@@ -589,6 +589,10 @@ const handleSearch = async (searchPayload: any) => {
           selectedBriefs={uniqueProperties.size}
           onSelectBrief={handlePropertiesSelection}
           selectedBriefsList={uniqueProperties} // pass the array
+          onSubmitForInspection={(selectedBriefsList: Set<any>) => {
+          setPropertiesSelected(Array.from(selectedBriefsList));
+          setIsAddInspectionModalOpened(true);
+        }}
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>

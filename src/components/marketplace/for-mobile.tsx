@@ -30,13 +30,15 @@ const Mobile = ({
   renderBrief,
   selectedBriefs,
   onSelectBrief,
-  selectedBriefsList, // new prop
+  selectedBriefsList,
+  onSubmitForInspection
 }: {
   selectedMarketPlace: string;
   renderBrief: (onSelectBrief: (id: string) => void) => React.JSX.Element;
+  onSubmitForInspection: (selectedBriefsList: Set<any>) => void;
   selectedBriefs: number;
   onSelectBrief: (id: string) => void;
-  selectedBriefsList: Set<any>; // new prop type
+  selectedBriefsList: Set<any>;
 }) => {
   const { selectedType, setSelectedType } = usePageContext();
   const [isFilterModalOpened, setIsFilterModalOpened] =
@@ -68,8 +70,6 @@ const Mobile = ({
 
   const isLoading = useLoading();
   if (isLoading) return <Loading />;
-
-  // const selectedBriefs = 5;
 
   return (
     <Fragment>
@@ -130,7 +130,7 @@ const Mobile = ({
         </div>
         <div
           className='flex-1 overflow-y-auto'
-          style={{ maxHeight: 'calc(100dvh - 180px)', marginBottom: '20px' }} // adjust 180px as needed for your header height
+          style={{ maxHeight: 'calc(100dvh - 180px)', marginBottom: '20px' }}
         >
           {selectedMarketPlace && renderBrief(onSelectBrief)}
         </div>
@@ -151,7 +151,7 @@ const Mobile = ({
           console.log('View Briefs', selectedBriefsList);
         }}
         onSubmitForInspection={() => {
-          console.log('Submit for inspection', selectedBriefsList);
+          onSubmitForInspection(selectedBriefsList);
         }}
       />
     </Fragment>

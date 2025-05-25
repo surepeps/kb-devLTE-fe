@@ -56,24 +56,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   const getAgent = async () => {
-    const url = URLS.BASE + URLS.agentProfile;
+    const url = URLS.BASE +  URLS.user + URLS.userProfile;
     await GET_REQUEST(url, Cookies.get('token'))
       .then((response) => {
-        if (response?.data?.id) {
-          setUser(response.data);
+        if (response?._id) {
+          setUser(response);
         } else {
           if (
-            response.message.toLowerCase().includes('unauthorized') ||
-            response.message.toLowerCase().includes('jwt') ||
-            response.message.toLowerCase().includes('expired') ||
-            response.message.toLowerCase().includes('valid') ||
-            response.message.toLowerCase().includes('not') ||
-            response.message.toLowerCase().includes('malformed')
+              typeof response?.message === 'string' && (
+                response.message.toLowerCase().includes('unauthorized') ||
+                response.message.toLowerCase().includes('jwt') ||
+                response.message.toLowerCase().includes('expired') ||
+                response.message.toLowerCase().includes('malformed')
+              )
           ) {
             Cookies.remove('token');
             toast.error('Session expired, please login again');
-            if (pathName.includes('/agent')) {
-              if (!pathName.includes('/auth')) router.push('/agent/auth/login');
+            if (pathName.includes('/auth')) {
+              if (!pathName.includes('/auth')) router.push('/auth/login');
             }
           }
         }
@@ -86,7 +86,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logout = (callback?: () => void) => {
     Cookies.remove('token');
     setUser(null);
-    router.push('/agent/auth/login');
+    router.push('/auth/login');
     if (callback) callback();
   };
 
@@ -94,8 +94,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (Cookies.get('token')) {
       getAgent();
     } else {
-      if (pathName.includes('/agent')) {
-        if (!pathName.includes('/auth')) router.push('/agent/auth/login');
+      if (pathName.includes('/auth')) {
+        if (!pathName.includes('/auth')) router.push('/auth/login');
       }
     }
   }, []);

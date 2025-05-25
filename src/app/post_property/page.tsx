@@ -10,14 +10,13 @@
 import Button from '@/components/general-components/button';
 import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
-// import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import React, { Fragment, useEffect, useState } from 'react';
 import RadioCheck from '@/components/general-components/radioCheck';
 import Input from '@/components/general-components/Input';
 import { usePageContext } from '@/context/page-context';
 import { useRouter } from 'next/navigation';
-import { POST_REQUEST } from '@/utils/requests';
+import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -63,7 +62,7 @@ const Sell = () => {
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [imageCardCount, setImageCardCount] = useState(4);
-  const [images, setImages] = useState<(string | null)[]>(Array(imageCardCount).fill(null));
+  const [images, setImages] = useState<(File | string| null)[]>(Array(imageCardCount).fill(null));
   const [showCommissionModal, setShowCommissionModal] = useState(false);
 
   const [selectedState, setSelectedState] = useState<Option | null>(null);
@@ -98,16 +97,6 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
 
     return numericValue ? Number(numericValue).toLocaleString() : '';
   };
-
-  // useEffect(() => {
-  //   // Load Nigerian states correctly
-  //   setStateOptions(
-  //     naijaStates.states().map((state: string) => ({
-  //       value: state,
-  //       label: state,
-  //     }))
-  //   );
-  // }, []);
   useEffect(() => {
     // Load Nigerian states correctly
     const sample = Object.keys(data);
@@ -118,6 +107,13 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
       }))
     );
   }, []);
+
+  useEffect(() => {
+  if (user) {
+    formik.setFieldValue('ownerFullName', `${user.firstName || ''} ${user.lastName || ''}`);
+    formik.setFieldValue('ownerEmail', user.email || '');
+  }
+}, [user]);
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
@@ -153,12 +149,18 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
     }
   };
 
+  const stepRequiredFields: { [key: number]: string[] } = {
+  1: ['propertyType', 'price', 'selectedState', 'selectedLGA', ],
+  2: ['documents', 'jvConditions', ],
+  // ...add for other steps as needed
+};
+
   const formik = useFormik({
     initialValues: {
       propertyType: '',
       propertyCondition: '',
       typeOfBuilding: '',
-      usageOptions: [] as string[],
+      // usageOptions: [] as string[],
       price: '',
       leaseHold: '',
       documents: [] as string[],
@@ -186,8 +188,8 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
       // propertyCondition: Yup.string().required('Property Condition is required'),
       // typeOfBuilding: Yup.string().required('Property Condition is required'),
       // usageOptions: Yup.array().min(1, 'At least one usage option is required'),
-      // price: Yup.string().required('Price is required'),
-      // documents: Yup.array().min(1, 'At least one document is required'),
+      price: Yup.string().required('Price is required'),
+      documents: Yup.array().min(1, 'At least one document is required'),
       landSize: Yup.string(),
       measurementType: Yup.string(),
       // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
@@ -225,6 +227,25 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
       else if (selectedCard === 'rent') briefType = 'Rent';
       else if (selectedCard === 'jv') briefType = 'Joint Venture';
 
+      // 1. Upload images and collect URLs
+      const uploadedImageUrls: string[] = [];
+      for (let i = 0; i < images.length; i++) {
+        const image = images[i];
+        if (image && typeof image !== 'string') {
+          // If image is a File object (not a preview URL)
+          const formData = new FormData();
+          formData.append('file', image as File);
+          const uploadUrl = URLS.BASE + URLS.uploadImg;
+          const response = await POST_REQUEST_FILE_UPLOAD(uploadUrl, formData);
+          if (response?.url) {
+            uploadedImageUrls.push(response.url);
+          }
+        } else if (typeof image === 'string' && image.startsWith('http')) {
+          // Already uploaded image URL (in case of edit)
+          uploadedImageUrls.push(image);
+        }
+      }
+
       const values = formik.values;
       const payload = {
         propertyType: values.propertyType,
@@ -258,11 +279,14 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
           noOfCarPark: values.noOfCarPark,
         },
         typeOfBuilding: values.typeOfBuilding,
-        usageOptions: values.usageOptions,
+        // usageOptions: values.usageOptions,
         tenantCriteria: values.tenantCriteria,
         leaseHold: values.leaseHold,
         addtionalInfo: values.addtionalInfo,
+        pictures: uploadedImageUrls,
       };
+
+      console.log('Payload:', payload); // Debugging
 
       await toast.promise(
         POST_REQUEST(url, payload, token).then((response) => {
@@ -270,6 +294,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
             toast.success('Property submitted successfully');
             setIsSubmittedSuccessfully(true);
             setAreInputsDisabled(false);
+            setShowFinalSubmit(true);
             return 'Property submitted successfully';
           } else {
             const errorMessage =
@@ -288,7 +313,6 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
       setAreInputsDisabled(false);
     } finally {
       setAreInputsDisabled(false);
-      setShowFinalSubmit(true);
     }
   };
 
@@ -678,7 +702,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Document on the property
                     </h2>
-                    <div className='grid lg:grid-cols-3 grid-cols-1 gap-[15px] w-full'>
+                    <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
                       {DocOnPropertyData.map((item: string, idx: number) => (
                         <RadioCheck
                           key={idx}
@@ -699,6 +723,9 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                         />
                       ))}
                     </div>
+                      {formik.touched.documents && formik.errors.documents && (
+                        <p className="text-red-500 text-sm mt-1">{formik.errors.documents}</p>
+                      )}
                   </div>
                   )}
                   {selectedCard === 'jv' && (
@@ -734,7 +761,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Features
                     </h2>
-                    <div className='grid lg:grid-cols-3 grid-cols-1 gap-[15px] w-full'>
+                    <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
                       {featuresData.map((item: string, idx: number) => (
                         <RadioCheck
                           key={idx}
@@ -762,7 +789,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Tenant Criteria
                     </h2>
-                    <div className='grid lg:grid-cols-3 gap-[15px] w-full'>
+                       <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
                       {tenantCriteriaData.map((item: string, idx: number) => (
                         <RadioCheck
                           key={idx}
@@ -833,7 +860,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                                     const url = URL.createObjectURL(file);
                                     setImages((prev) => {
                                       const updated = [...prev];
-                                      updated[idx] = url;
+                                      updated[idx] = file;
                                       return updated;
                                     });
                                   }
@@ -842,7 +869,13 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                               {images[idx] ? (
                                 <div className="w-full h-full">
                                   <img
-                                    src={images[idx] as string}
+                                      src={
+                                          images[idx]
+                                            ? images[idx] instanceof File
+                                              ? URL.createObjectURL(images[idx] as File)
+                                              : (images[idx] as string)
+                                            : ''
+                                        }
                                     alt="Preview"
                                     className="w-full h-full object-cover rounded"
                                     style={{ position: 'absolute', inset: 0 }}
@@ -913,19 +946,20 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     <RadioCheck
                       name='confirm'
                       type='checkbox'
-                      onClick={() => {
-                        setIsLegalOwner(!isLegalOwner);
-                      }}
+                      // onClick={() => {
+                      //   setIsLegalOwner(!isLegalOwner);
+                      // }}
+                      isChecked={isLegalOwner}
+                      handleChange={() => setIsLegalOwner(!isLegalOwner)}
                       isDisabled={areInputsDisabled}
                       value='I confirm that I am the legal owner of this property or authorized to submit this brief'
                     />
                     <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                       <Input
                         label='Full name'
-                        isDisabled={!isLegalOwner}
+                        isDisabled={true}
                         name='ownerFullName'
-                        // value={formik.values?.ownerFullName}
-                        value={user?.firstName + ' ' + user?.lastName}
+                        value={formik.values?.ownerFullName}
                         onChange={formik.handleChange}
                         className='lg:w-1/2 w-full'
                         type='text'
@@ -957,9 +991,9 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     <Input
                       label='Email'
                       name='ownerEmail'
-                      isDisabled={!isLegalOwner}
+                      isDisabled={true}
                       className='w-full'
-                      value={user?.email}
+                      value={formik.values.ownerEmail}
                       onChange={formik.handleChange}
                       type='email'
                     />
@@ -975,17 +1009,55 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                       onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
                       className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                     />
+                    {/* <Button
+                      value='Next'
+                      type={currentStep === steps.length - 1 ? 'submit' : 'button'}
+                      onClick={async () => {
+                        // Validate the form
+                        const errors = await formik.validateForm();
+                        // Only proceed if there are no errors for this step
+                        if (
+                          (currentStep === 2 && errors.documents) || // Example: step 2 is documents
+                          Object.keys(errors).length > 0
+                        ) {
+                          formik.setTouched({ documents: true }); // Show error message
+                          return;
+                        }
+                        if (currentStep < steps.length - 1) {
+                          setCurrentStep((prev) => prev + 1);
+                        } else if (currentStep === steps.length - 1) {
+                          setShowCommissionModal(true);
+                        }
+                      }}
+                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                       isDisabled={ (currentStep === 4 && !isLegalOwner || currentStep === 2 && !!formik.errors.documents)}
+                    /> */}
                     <Button
                       value='Next'
                       type={currentStep === steps.length - 1 ? 'submit' : 'button'}
-                      onClick={() => {
-                            if (currentStep < steps.length - 1) {
-                              setCurrentStep((prev) => prev + 1);
-                            } else if (currentStep === steps.length - 1) {
-                              setShowCommissionModal(true);
-                            }
+                      onClick={async () => {
+                        const errors = await formik.validateForm();
+                        // Only check errors for fields relevant to the current step
+                        const fieldsToCheck = stepRequiredFields[currentStep] || [];
+                        const hasStepError = fieldsToCheck.some(field => !!errors[field as keyof typeof formik.values]);
+                        if (hasStepError) {
+                          // Mark those fields as touched
+                          formik.setTouched(
+                            fieldsToCheck.reduce((acc, field) => ({ ...acc, [field]: true }), {})
+                          );
+                          return;
+                        }
+                        if (currentStep < steps.length - 1) {
+                          setCurrentStep((prev) => prev + 1);
+                        } else if (currentStep === steps.length - 1) {
+                          setShowCommissionModal(true);
+                        }
                       }}
-                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                    className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                      isDisabled={
+                        (currentStep === 4 && !isLegalOwner) ||
+                        (stepRequiredFields[currentStep] || []).some(field => !!formik.errors[field as keyof typeof formik.values])
+                      }
                     />
                   </div>
                 </form>
@@ -996,13 +1068,11 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
               {showSummary && (
                   <PropertySummary
                     values={formik.values}
-                    images={images}
+                      images={images.map(img =>
+                        img instanceof File ? URL.createObjectURL(img) : img
+                      )}
                     onEdit={() => setShowSummary(false)}
                     onSubmit={handleSummarySubmit}
-                    // onSubmit={() => {
-                    //   console.log('Submitting form...');
-                    // }}
-                    // submitButtonType="submit"
                   />
               )}
 
