@@ -4,6 +4,7 @@ export const URLS = {
   BASE: `${process.env.NEXT_PUBLIC_API_URL}`,
   agent: '/agent',
   user: '/user',
+  userProfile: '/me',
   userSignup: '/user/signup',
   userLogin: '/user/login',
   login: '/login',
