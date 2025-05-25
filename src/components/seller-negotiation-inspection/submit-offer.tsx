@@ -7,13 +7,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { archivo } from '@/styles/font';
 import Input from '../general-components/Input';
+import toast from 'react-hot-toast';
 
 type SubmitOfferProps = {
   closeModal: (type: boolean) => void;
+  nextPage?: (type: 'Negotiation' | 'Confirm Inspection Date') => void;
 };
 
-const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal }) => {
-  const [offerPrice, setOfferPrice] = useState<number>();
+const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal, nextPage }) => {
+  const [offerPrice, setOfferPrice] = useState<number | undefined>(undefined);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (offerPrice === undefined || offerPrice === 0)
+      return toast.error('Please, input a value before proceeding');
+
+    nextPage?.('Confirm Inspection Date');
+  };
   return (
     <PopUpModal>
       <motion.form
@@ -22,7 +32,7 @@ const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal }) => {
         whileInView={{ y: 0, opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.2 }}
-        className='lg:w-[649px] flex flex-col gap-[26px]'>
+        className='lg:w-[649px] w-full flex flex-col gap-[26px]'>
         <div className='flex items-start justify-end'>
           <button
             type='button'
@@ -38,7 +48,7 @@ const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal }) => {
             {''}
           </button>
         </div>
-        <div className='w-[649px] py-[40px] px-[80px] bg-white rounded-[4px] shadow-md flex items-center justify-center'>
+        <div className='lg:w-[649px] w-full py-[40px] px-[20px] md:px-[80px] bg-white rounded-[4px] shadow-md flex items-center justify-center'>
           <div className='w-full flex flex-col gap-[42px] items-center justify-center'>
             <div className='w-full flex flex-col gap-[4px] items-center justify-center'>
               <h2
@@ -79,11 +89,15 @@ const SubmitOffer: React.FC<SubmitOfferProps> = ({ closeModal }) => {
             {/**buttons */}
             <div className='w-full flex flex-col gap-[15px]'>
               <button
+                onClick={handleSubmit}
                 className={`w-full bg-[#8DDB90] text-white h-[57px] text-lg ${archivo.className} font-bold`}
                 type='button'>
                 Submit
               </button>
               <button
+                onClick={() => {
+                  closeModal(false);
+                }}
                 className={`w-full border-[1px] border-[#FF2539] text-[#FF2539] h-[57px] text-lg ${archivo.className} font-bold`}
                 type='button'>
                 Not sure

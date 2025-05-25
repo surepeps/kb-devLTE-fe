@@ -6,11 +6,13 @@ import React, { FC, useEffect, useState, Fragment } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Loading from '../loading-component/loading';
 import Input from '../general-components/Input';
-import SubmitOffer from './submit-offer';
-import SelectPreferableInspectionDate from './select-date-time';
-import AcceptRejectOfferModal from './accept-reject-offer-modal';
+import SubmitOffer from '../seller-negotiation-inspection/submit-offer';
+import SelectPreferableInspectionDate from '../seller-negotiation-inspection/select-date-time';
+import AcceptRejectOfferModal from '../seller-negotiation-inspection/accept-reject-offer-modal';
 import { archivo } from '@/styles/font';
 import SubmitPopUp from '../submit';
+import Image from 'next/image';
+import sampleImg from '@/assets/Agentpic.png';
 
 type MainEntryprops = {
   potentialClientID: string;
@@ -30,7 +32,7 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
   const [contentTracker, setContentTracker] = useState<
     'Negotiation' | 'Confirm Inspection Date'
   >('Negotiation');
-  const [isNegotiated, setIsNegotiated] = useState<boolean>(true);
+  const [isNegotiated, setIsNegotiated] = useState<boolean>(false);
 
   const renderModal = ({ props }: RenderModalProps): React.ReactNode => {
     switch (formStatus) {
@@ -60,7 +62,12 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
     switch (contentTracker) {
       case 'Negotiation':
         return {
-          content: <NegotiationPage setContentTracker={setContentTracker} />,
+          content: (
+            <NegotiationPage
+              setIsNegotiated={setIsNegotiated}
+              setContentTracker={setContentTracker}
+            />
+          ),
           header: contentTracker,
         };
       case 'Confirm Inspection Date':
@@ -139,7 +146,7 @@ const Negotiation = (props: NegotiationProps): React.ReactNode => {
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.2 }}
-          className='font-display text-4xl text-center font-semibold text-[#09391C]'>
+          className='font-display text-3xl md:text-4xl text-center font-semibold text-[#09391C]'>
           {props.contentTracker && props.renderDynamicContent().header}
         </motion.h2>
 
@@ -208,8 +215,8 @@ const Price = ({
   useEffect(() => console.log(isViewed), [isViewed]);
   return (
     <Fragment>
-      <div className='w-full flex flex-col gap-[15px]'>
-        <div className='flex md:flex-row flex-col md:items-center justify-between'>
+      <div className='w-full h-[127px] flex flex-col gap-[15px]'>
+        <div className='flex items-center justify-between'>
           <h2 className='text-[#1E1E1E] font-medium text-xl'>{heading}</h2>
           {viewPropertyDetails ? (
             <span
@@ -233,19 +240,26 @@ const Price = ({
 
 const NegotiationPage = ({
   setContentTracker,
+  setIsNegotiated,
 }: {
   setContentTracker?: (type: 'Negotiation' | 'Confirm Inspection Date') => void;
+  setIsNegotiated?: (type: boolean) => void;
 }) => {
   const [isViewed, setIsViewed] = useState<boolean>(false);
   const [contentToPass, setContentToPass] = useState<{
     heading: string;
-    passContent: string;
+    passContent: string | React.ReactNode;
     handleSubmitFunction: () => void;
   } | null>(null);
   const [isButtonClicked, setIsButtonClicked] = useState<boolean>(false);
 
-  const AcceptOffer = () => {};
-  const RejectOffer = () => {};
+  const AcceptOffer = () => {
+    return setContentTracker?.('Confirm Inspection Date');
+  };
+  const RejectOffer = () => {
+    setIsNegotiated?.(true);
+    return setContentTracker?.('Confirm Inspection Date');
+  };
 
   const handleButtonClick = (type: 'Accept offer' | 'Reject offer') => {
     setIsButtonClicked(true);
@@ -253,13 +267,37 @@ const NegotiationPage = ({
       case 'Accept offer':
         return setContentToPass({
           heading: type,
-          passContent: `Lorem ipsum dolor sit amet consectetur. Sed gravida nec molestie sociis vel amet. Metus penatibus facilisis eu eget.`,
+          passContent: (
+            <p
+              className={`text-lg text-[#515B6F] text-center ${archivo.className}`}>
+              <span
+                className={`text-lg text-black font-semibold ${archivo.className}`}>
+                {' '}
+                Have you reviewed the submitted LOI before accepting the offer?
+              </span>
+              <br />
+              Please note that your response will be communicated to the
+              developer.
+            </p>
+          ),
           handleSubmitFunction: AcceptOffer,
         });
       case 'Reject offer':
         return setContentToPass({
           heading: type,
-          passContent: `Lorem ipsum dolor sit amet consectetur. Sed gravida nec molestie sociis vel amet. Metus penatibus facilisis eu eget.`,
+          passContent: (
+            <p
+              className={`text-lg text-[#515B6F] text-center ${archivo.className}`}>
+              <span
+                className={`text-lg text-black font-semibold ${archivo.className}`}>
+                {' '}
+                Have you reviewed the submitted LOI before accepting the offer?
+              </span>
+              <br />
+              Please note that your response will be communicated to the
+              developer.
+            </p>
+          ),
           handleSubmitFunction: RejectOffer,
         });
       default:
@@ -270,11 +308,11 @@ const NegotiationPage = ({
     <Fragment>
       <div className='w-full flex flex-col gap-[35px]'>
         <div className='w-full flex flex-col'>
-          <p className='text-base font-semibold text-black'>
+          <p className='text-base font-semibold text-[#1976D2]'>
             {' '}
             Note: The buyer has made a deposit to initiate this negotiation.
           </p>
-          <p className='text-base font-semibold text-black'>
+          <p className='text-base font-semibold text-[#1976D2]'>
             {' '}
             Please respond to the proposed price—whether you{' '}
             <span className='text-[#34A853] text-base font-semibold'>
@@ -283,50 +321,60 @@ const NegotiationPage = ({
             ,{' '}
             <span className='text-[#FF2539] text-base font-semibold'>
               reject
-            </span>{' '}
-            , or make a{' '}
-            <span className='text-[#4285F4] text-base font-semibold'>
-              counter-offer
             </span>
             .{' '}
           </p>
-          <p className='text-base font-semibold text-black'>
+          <p className='text-base font-semibold text-[#1976D2]'>
             Your timely response is appreciated
           </p>
         </div>
-        {/**prices */}
-        <div className='w-full flex flex-col justify-between gap-[25px] border-t-[1px] pt-[30px] border-[#8D9096]/[50%]'>
-          {[
-            {
-              heading: 'Current property Price',
-              subHeading: 'Current amount',
-              viewPropertyDetails: true,
-              amount: 350000000,
-            },
-            {
-              heading: 'Buyer negotiation price',
-              subHeading: 'Buyer Offer',
-              viewPropertyDetails: false,
-              amount: 300000000,
-            },
-          ].map((item: PriceProps, idx: number) => (
-            <Price
-              isViewed={isViewed}
-              setIsViewed={setIsViewed}
-              setContentTracker={setContentTracker}
-              key={idx}
-              {...item}
-            />
-          ))}
+
+        {/**Lol Document */}
+        <div className='w-full flex flex-col gap-[10px] md:gap-[25px] pt-[10px]'>
+          <div className='flex justify-between items-center'>
+            <h2 className='text-base md:text-xl text-[#1E1E1E] font-medium'>
+              LOI Document
+            </h2>
+            <span
+              className='text-sm md:text-base cursor-pointer text-[#1976D2] underline'
+              //onClick={() => setIsViewed(true)}
+            >
+              view property details
+            </span>
+          </div>
+          <div className='flex md:flex-row flex-col gap-[15px] justify-between items-start'>
+            <h3 className='text-sm md:text-base font-semibold text-[#202430]'>
+              Developer LOI document: kindly click on the document before you
+              <br />
+              Accept or reject offer
+            </h3>
+            <div className='flex flex-col'>
+              <Image
+                style={{
+                  backgroundBlendMode: 'luminosity',
+                  backgroundColor: '',
+                }}
+                src={sampleImg}
+                className='w-[80px] h-[57px] object-cover'
+                alt=''
+                width={80}
+                height={57}
+              />
+              <p className='absolute text-xs mt-5 ml-2 text-white'>
+                View details
+              </p>
+            </div>
+          </div>
         </div>
+
         {/**buttons */}
-        <div className='w-full flex flex-wrap justify-between gap-[15px] md:gap-[35px]'>
+        <div className='h-[50px] w-full flex justify-between gap-[35px]'>
           <button
             type='button'
             onClick={() => {
               handleButtonClick('Accept offer');
             }}
-            className='bg-[#8DDB90] hover:bg-[#38723a] transition-all duration-200 w-[221px] h-[50px] text-base text-[#FAFAFA] font-bold'>
+            className='bg-[#8DDB90] hover:bg-[#38723a] transition-all duration-200 w-[349px] h-[50px] text-base text-[#FAFAFA] font-bold'>
             Accept offer
           </button>
           <button
@@ -334,15 +382,15 @@ const NegotiationPage = ({
             onClick={() => {
               handleButtonClick('Reject offer');
             }}
-            className='bg-[#FF3D00] hover:bg-[#993719] transition-all duration-200 w-[221px] h-[50px] text-base text-[#FAFAFA] font-bold'>
+            className='bg-[#FF3D00] hover:bg-[#993719] transition-all duration-200 w-[349px] h-[50px] text-base text-[#FAFAFA] font-bold'>
             Reject offer
           </button>
-          <button
+          {/* <button
             type='button'
             onClick={() => setIsViewed(true)}
             className='bg-[#1976D2] hover:bg-[#114d89] transition-all duration-200 w-[221px] h-[50px] text-base text-[#FAFAFA] font-bold'>
             Negotiation
-          </button>
+          </button> */}
         </div>
       </div>
       <AnimatePresence>
@@ -421,7 +469,7 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
   };
   return (
     <Fragment>
-      <div className='w-full flex flex-col gap-[35px]'>
+      <div className='w-full flex flex-col gap-[20px] md:gap-[35px]'>
         <div className='w-full flex flex-col'>
           <p className='text-base font-semibold text-[#0C70D3]'>
             {' '}
@@ -449,12 +497,12 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
         </div>
         {/**Buyer Inspection Date */}
         <div className='w-full flex flex-col gap-[15px]'>
-          <div className='flex md:flex-row flex-col justify-between md:items-end'>
-            <h2 className='text-[#1E1E1E] text-xl font-medium'>
+          <div className='flex flex-col md:flex-row justify-between md:items-end'>
+            <h2 className='text-[#1E1E1E] text-lg md:text-xl font-medium'>
               Buyer Inspection Date
             </h2>
             <span
-              className='text-base cursor-pointer text-[#1976D2] underline'
+              className='text-sm md:text-base cursor-pointer text-[#1976D2] underline'
               //onClick={() => setIsViewed(true)}
             >
               view property details
@@ -478,7 +526,7 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
               // setIsModalOpened={setIsModalOpened}
             />
           </div>
-          <div className='flex flex-wrap w-full justify-between gap-[15px] md:gap-[35px] mt-6'>
+          <div className='flex flex-wrap w-full justify-between gap-[10px] md:gap-[35px] mt-6'>
             {isNegotiated ? (
               <>
                 <button
@@ -505,13 +553,13 @@ const ConfirmInspectionDate = ({ isNegotiated }: { isNegotiated: boolean }) => {
                 {' '}
                 <button
                   onClick={() => setIsModalOpened(true)}
-                  className={`lg:w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#000000] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Update Inspection date
                 </button>
                 <button
                   onClick={() => setIsProceedClicked(true)}
-                  className={`lg:w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
+                  className={`w-[349px] bg-[#8DDB90] text-white h-[50px] text-lg ${archivo.className} font-bold`}
                   type='button'>
                   Proceed
                 </button>
