@@ -1,5 +1,6 @@
 /** @format */
 
+'use client';
 import Image from 'next/image';
 import React, { useRef } from 'react';
 import bigMarkIcon from '@/svgs/bigMark.svg';
@@ -7,6 +8,8 @@ import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
 import useClickOutside from '@/hooks/clickOutside';
 import { product_sans } from '@/styles/font';
+import { motion } from 'framer-motion';
+import PopUpModal from './pop-up-modal-reusability';
 
 interface SubmitPopUpProps {
   title?: string;
@@ -27,8 +30,16 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
   const { setIsSubmittedSuccessfully } = usePageContext();
   useClickOutside(ref, () => setIsSubmittedSuccessfully(false)); // Close modal on outside click
   return (
-    <section className='w-full h-screen flex justify-center items-center fixed top-0 z-40 px-[20px] bg-black bg-opacity-50'>
-      <div
+    // <motion.section className='w-full h-screen flex justify-center items-center fixed top-0 z-40 px-[20px] bg-black bg-opacity-50'>
+
+    // </motion.section>
+    <PopUpModal>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        viewport={{ once: true }}
+        exit={{ y: 20, opacity: 0 }}
         ref={ref}
         className='md:w-[488px] w-full h-[374px] p-[20px] md:p-[40px] gap-[10px] bg-white shadow-md '>
         <div className='w-full h-[294px] gap-[24px] flex flex-col justify-center items-center'>
@@ -59,8 +70,8 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
             {buttonText}
           </Link>
         </div>
-      </div>
-    </section>
+      </motion.div>
+    </PopUpModal>
   );
 };
 
