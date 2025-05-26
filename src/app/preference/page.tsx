@@ -4,7 +4,6 @@
 import Button from '@/components/general-components/button';
 import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
-// import { usePageContext } from '@/context/page-context';
 import { useLoading } from '@/hooks/useLoading';
 import React, { Fragment, useEffect, useState } from 'react';
 import RadioCheck from '@/components/general-components/radioCheck';
@@ -18,7 +17,8 @@ import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { usePageContext } from '@/context/page-context';
 import AttachFile from '@/components/multipleAttachFile';
 import 'react-phone-number-input/style.css';
-import naijaStates from 'naija-state-local-government';
+import { useRouter } from 'next/navigation';
+import arrowRightIcon from '@/svgs/arrowR.svg';
 
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
@@ -27,6 +27,8 @@ import MultiSelectionProcess from '@/components/multiSelectionProcess';
 import ImageContainer from '@/components/general-components/image-container';
 import axios from 'axios';
 import data from '@/data/state-lga';
+import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
+import Stepper from '@/components/post-property-components/Stepper';
 
 interface Option {
   value: string;
@@ -34,6 +36,7 @@ interface Option {
 }
 const Landlord = () => {
   const isLoading = useLoading();
+  const router = useRouter();
   const [isLegalOwner, setIsLegalOwner] = useState<boolean>(false);
   const { setIsSubmittedSuccessfully } = usePageContext();
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
@@ -48,6 +51,12 @@ const Landlord = () => {
   const [showBedroom, setShowBedroom] = useState<boolean>(false);
   const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
   const { setViewImage, setImageData } = usePageContext();
+  const [currentStep, setCurrentStep] = useState(0);
+
+const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
+  { label: "Submit preference details", status: currentStep > 0 ? "completed" : currentStep === 0 ? "active" : "pending" },
+  { label: "contact Detail", status: currentStep > 1 ? "completed" : currentStep === 1 ? "active" : "pending" },
+];
 
   useEffect(() => {
     const filteredArray: string[] = [];
@@ -235,21 +244,26 @@ const Landlord = () => {
       <section
         className={`min-h-[800px] bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500`}>
         <div className='container flex flex-col justify-center items-center gap-[10px] my-[20px] px-[20px]'>
-          <h2 className='text-[#09391C] lg:text-[40px] lg:leading-[64px] font-semibold font-display text-center text-[30px] leading-[41px]'>
-            Submit Your&nbsp;
-            <span className='text-[#8DDB90] font-display'>Landlord Brief</span>
-          </h2>
-          <div className='lg:w-[953px] w-full text-base md:text-xl text-[#5A5D63] font-normal text-center'>
-            Khabi-Teq connects you with{' '}
-            <span className='text-[#8DDB90]'>verified tenants</span> and
-            simplifies property management. From tenant onboarding to rent
-            collection and maintenance coordination, we handle it all so you can
-            focus on growing your property portfolio with confidence and ease
+          <div className='w-full flex justify-start'>
+            <BreadcrumbNav
+              point="Cancel"
+              onBack={() => router.back()}
+              arrowIcon={arrowRightIcon}
+              backText="MarketPlace"
+            />
           </div>
+          <div className='my-7'>
+            <Stepper steps={steps} />
+          </div>
+          <h2 className='text-[#0B0D0C] lg:text-[24px] font-semibold text-center text-[30px]'>
+            {currentStep === 1
+              ? 'Contact information'
+              : 'Enter the property you are looking for'}
+          </h2>
+          <h2 className='lg:w-[953px] w-full text-base md:text-lg text-[#515B6F] font-normal text-center'>
+              Please provide your contact details so we can get back to you.
+          </h2>
           <div className='lg:w-[877px] w-full'>
-            <h3 className='text-[24px] leading-[38.4px] font-semibold text-[#09391C] lg:py-[40px] py-[20px] lg:px-[80px] w-full'>
-              Brief Details
-            </h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -261,9 +275,10 @@ const Landlord = () => {
                   });
                 }
               }}
-              className='w-full border-t-[1px] border-[#8D909680] min-h-[1177px] flex flex-col'>
-              <div className='min-h-[629px] py-[40px] lg:px-[80px] border-[#8D909680] border-y-[1px] w-full'>
-                <div className='w-full min-h-[629px] flex flex-col gap-[46px]'>
+              className='w-full border-[#8D909680] flex flex-col'>
+              {currentStep === 0 && (
+              <div className='min-h-[629px] py-[40px] lg:px-[80px]  w-full'>
+                <div className='w-full flex flex-col gap-[30px]'>
                   <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Property Type
@@ -438,36 +453,11 @@ const Landlord = () => {
                         )}
                     </div>
                   </div>
-                  {/* <div className='w-full flex flex-col gap-[15px]'>
-                    <div className='min-h-[80px] flex gap-[15px] lg:flex-row flex-col'>
-                      <Input
-                        label='Price'
-                        placeholder='Enter property price'
-                        name='price'
-                        type='number'
-                        className='w-full'
-                        minNumber={0}
-                        value={formik.values?.price}
-                        onChange={formik.handleChange}
-                        isDisabled={areInputsDisabled}
-                      />
-                      <Input
-                        label='Number of Bedroom'
-                        name='noOfBedroom'
-                        type='number'
-                        className='w-full'
-                        minNumber={0}
-                        value={formik.values?.noOfBedroom}
-                        onChange={formik.handleChange}
-                        isDisabled={areInputsDisabled}
-                      />
-                    </div>
-                  </div> */}
-                  <div className='min-h-[73px] flex flex-col gap-[15px]'>
+                  <div className='flex flex-col gap-[15px]'>
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Features
                     </h2>
-                    <div className='grid lg:grid-cols-3 grid-cols-1 gap-[15px] w-full'>
+                    <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
                       {featuresData.map((item: string, idx: number) => (
                         <RadioCheck
                           key={idx}
@@ -493,7 +483,7 @@ const Landlord = () => {
                     <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                       Tenant Criteria
                     </h2>
-                    <div className='grid lg:grid-cols-2 gap-[15px] w-full'>
+                    <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
                       {tenantCriteriaData.map((item: string, idx: number) => (
                         <RadioCheck
                           key={idx}
@@ -517,19 +507,28 @@ const Landlord = () => {
                       ))}
                     </div>
                   </div>
-                  {/* <AttachFile
-                    heading='Upload image(optional)'
-                    id='image-upload'
-                    setFileUrl={setAddFileUrl}
-                  /> */}
+                  <div className='min-h-[73px] flex flex-col gap-[15px] mt-2'>
+                      <Input
+                        label='Addition information'
+                        name='addtionalInfo'
+                        type='textArea'
+                        className='w-full'
+                        multiline={true}
+                        rows={3}
+                        placeholder='Enter any additional information'
+                        // value={formik.values?.numberOfFloors}
+                        onChange={formik.handleChange}
+                        isDisabled={areInputsDisabled} 
+                      />
+                  </div>
                   {/**Upload Image | Documents */}
-                  <AttachFile
+                  {/* <AttachFile
                     setFileUrl={setFileUrl}
                     heading='Upload image(optional)'
                     id='image-upload'
-                  />
+                  /> */}
                   {/**Images selected */}
-                  {fileUrl.length !== 0 ? (
+                  {/* {fileUrl.length !== 0 ? (
                     <div className='flex justify-start items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
                       {typeof fileUrl === 'object' &&
                         fileUrl.map((image) => (
@@ -549,32 +548,17 @@ const Landlord = () => {
                           />
                         ))}
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </div>
               </div>
-              <div className='min-h-[348px] py-[40px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
+              )}
+            {currentStep === 1 && (
+             <div className='min-h-[348px] py-[10px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full'>
                 <div className='w-full min-h-[348px] flex flex-col gap-[20px]'>
-                  <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold'>
-                    Contact Detail
-                  </h2>
-                  <h3 className='text-[#1E1E1E] text-[18px] leading-[38.4px] font-semibold'>
-                    Ownership Declaration
-                  </h3>
-
                   <div className='w-full flex flex-col gap-[15px] min-h-[270px]'>
-                    <RadioCheck
-                      name='confirm'
-                      type='checkbox'
-                      handleChange={() => {
-                        setIsLegalOwner(!isLegalOwner);
-                      }}
-                      isDisabled={areInputsDisabled}
-                      value='I confirm that I am the legal owner of this property or authorized to submit this brief'
-                    />
                     <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                       <Input
                         label='Full name'
-                        isDisabled={!isLegalOwner}
                         name='ownerFullName'
                         value={formik.values?.ownerFullName}
                         onChange={formik.handleChange}
@@ -591,7 +575,6 @@ const Landlord = () => {
                         <PhoneInput
                           international
                           defaultCountry='NG'
-                          disabled={!isLegalOwner}
                           value={formik.values?.ownerPhoneNumber}
                           style={{
                             outline: 'none',
@@ -616,7 +599,6 @@ const Landlord = () => {
                     <Input
                       label='Email'
                       name='ownerEmail'
-                      isDisabled={!isLegalOwner}
                       className='w-full'
                       value={formik.values?.ownerEmail}
                       onChange={formik.handleChange}
@@ -624,29 +606,28 @@ const Landlord = () => {
                     />
                   </div>
                 </div>
-              </div>
-
-              <div className='w-full flex flex-col items-center mt-8'>
-                {Object.keys(formik.errors).length > 0 && (
-                  <div className='bg-red-100 text-red-600 p-4 rounded-md w-full max-w-[877px]'>
-                    <h3 className='font-bold mb-2'>
-                      Please enter the following information:
-                    </h3>
-                    <ul className='list-disc pl-5'>
-                      {Object.entries(formik.errors).map(([field, error]) => (
-                        <li key={field} className='text-sm'>
-                          {error}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <Button
-                  isDisabled={!isLegalOwner}
-                  value='Submit Brief'
-                  type='submit'
-                  className='bg-[#8DDB90] lg:w-[459px] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px]'
-                />
+              </div> 
+              )}
+              <div className='w-full flex items-center mt-8 justify-between' >
+                  <Button
+                      value='Cancel'
+                      // isDisabled={!isLegalOwner}
+                      type='button'
+                      onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+                      className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                    />
+                  <Button
+                      value='Next'
+                      type={currentStep === steps.length - 1 ? 'submit' : 'button'}
+                      onClick={() => {
+                            if (currentStep < steps.length - 1) {
+                              setCurrentStep((prev) => prev + 1);
+                            } else if (currentStep === steps.length - 1) {
+                              // setShowCommissionModal(true);
+                            }
+                      }}
+                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                    />
               </div>
             </form>
           </div>

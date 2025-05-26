@@ -31,6 +31,7 @@ const BuyAPropertySearchModal = ({
   setSelectedBriefs,
   inspectionType,
   setInspectionType,
+  onSearch
 }: {
   selectedBriefs: number;
   className?: string;
@@ -41,7 +42,8 @@ const BuyAPropertySearchModal = ({
   addForInspectionPayload: PayloadProps;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
-  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
+  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void; 
+  onSearch: (payload: any) => void;
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -82,28 +84,7 @@ const BuyAPropertySearchModal = ({
     desirer_features: [],
   });
 
-  const handleSubmit = () => {
-    const payload = {
-      usageOptions,
-      location: {
-        state: formik.values.selectedState,
-        lga: formik.values.selectedLGA,
-      },
-      price: {
-        minPrice: priceFormik.values.minPrice,
-        maxPrice: priceFormik.values.maxPrice,
-        actualRadioPrice: priceRadioValue,
-      },
-      docsOnProperty: documentsSelected,
-      bedroom: noOfBedrooms,
-      bathroom: filters.bathroom,
-      landSize: filters.landSize,
-      desirerFeatures: filters.desirer_features,
-    };
-    console.log(payload);
-  };
-
-  const priceFormik = useFormik({
+    const priceFormik = useFormik({
     initialValues: {
       minPrice: 0,
       maxPrice: 0,
@@ -113,18 +94,51 @@ const BuyAPropertySearchModal = ({
     },
   });
 
-  useEffect(
-    () => handleSubmit(),
-    [priceRadioValue, formik.values, priceFormik.values, documentsSelected]
-  );
+  const locationValue = [formik.values.selectedLGA, formik.values.selectedState]
+  .filter(Boolean)
+  .join(', ')
+  .trim();
+
+    const payload = {
+      usageOptions,
+      location: locationValue !== '' ? locationValue : undefined,
+      price:
+          priceFormik.values.maxPrice > 0
+            ? { $lte: priceFormik.values.maxPrice }
+            : undefined,
+      docsOnProperty: documentsSelected,
+      bedroom: noOfBedrooms,
+      bathroom: filters.bathroom,
+        landSize:
+      filters.landSize && filters.landSize.size
+        ? filters.landSize
+        : undefined,
+      desirerFeatures: filters.desirer_features,
+       briefType: 'Outright Sales', 
+    };
+
+    const cleanedPayload = Object.fromEntries(
+      Object.entries(payload).filter(
+        ([_, v]) =>
+          v !== undefined &&
+          v !== '' &&
+          !(Array.isArray(v) && v.length === 0) &&
+          !(typeof v === 'object' && v !== null && !Array.isArray(v) && Object.keys(v).length === 0)
+      )
+    );
+
+  // useEffect(
+  //   () => handleSubmit(),
+  //   [priceRadioValue, formik.values, priceFormik.values, documentsSelected]
+  // );
 
   const docsValues = documentsSelected.map((item: string) => item);
   return (
     <form
       onSubmit={formik.handleSubmit}
       className='container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20'>
-      <div className='w-full pb-[10px] flex justify-between items-center gap-[53px] border-b-[1px] border-[#C7CAD0]'>
-        <div className='flex gap-[15px]'>
+      <div className='w-full pb-[10px] flex  flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]'>
+        <div className='flex flex-wrap gap-[15px]'>
           <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
           {['All', 'Land', 'Residential', 'Commercial'].map(
             (item: string, idx: number) => (
@@ -286,7 +300,8 @@ const BuyAPropertySearchModal = ({
           </div>
           <button
             type='button'
-            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'>
+            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
+            onClick={() => onSearch(cleanedPayload)}>
             Search
           </button>
         </div>

@@ -22,6 +22,7 @@ interface CardDataProps {
   style?: React.CSSProperties;
   isDisabled?: boolean;
   onCardPageClick?: () => void;
+  isAddForInspectionModalOpened: boolean;
   setIsAddInspectionModalOpened?: (type: boolean) => void;
   property?: any;
   setPropertySelected?: (type: any[]) => void;
@@ -29,7 +30,7 @@ interface CardDataProps {
   setIsComingFromPriceNeg?: (type: boolean) => void;
 }
 
-const Card = ({
+const  Card = ({
   isRed,
   cardData,
   onClick,
@@ -43,6 +44,7 @@ const Card = ({
   setPropertySelected,
   isComingFromPriceNeg,
   setIsComingFromPriceNeg,
+  isAddForInspectionModalOpened,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
