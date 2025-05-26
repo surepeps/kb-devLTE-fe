@@ -3,14 +3,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Khabiteq | Landlord page',
+  title: 'Khabiteq | Preference page',
   description: `Simplifying real estate transactions in Lagos. Buy, sell, rent, and manage properties with ease through Khabi-Teq's trusted platform`,
   icons: {
     icon: '/khabi-teq.svg',
   },
 };
 
-export default function LandlordPageLayout({
+export default function PreferencePageLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

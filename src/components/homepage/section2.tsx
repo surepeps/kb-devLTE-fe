@@ -31,6 +31,8 @@ const Section2 = () => {
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -265,6 +267,7 @@ const Section2 = () => {
             properties?.map((property: any, idx: number) => {
               return (
                 <Card
+                  isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   images={property?.pictures}
                   onClick={() => {
                     handleSubmitInspection(property);

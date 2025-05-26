@@ -104,7 +104,7 @@ const Login = () => {
               if ((response as any)?.user?._id) {
                 if (response.user.userType === "Agent" && !response.user.agentType) {
                   router.push('/agent/onboard');
-                } else if (response.user.accountApproved === false) {
+                } else if (response.user.userType === "Agent" && response.user.accountApproved === false) {
                   router.push('/agent/under-review');
                 } else {
                   router.push('/my_listing');

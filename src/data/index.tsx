@@ -25,24 +25,24 @@ export const navData: {
     name: 'Marketplace',
     url: '/market-place',
     isClicked: false,
-    additionalLinks: [
-      {
-        name: 'list a property',
-        url: '#',
-      },
-      {
-        name: 'Buy a property',
-        url: '/market-place',
-      },
-      {
-        name: 'Rent a property',
-        url: '/market-place',
-      },
-      {
-        name: 'Property on joint venture',
-        url: '#',
-      },
-    ],
+    // additionalLinks: [
+    //   {
+    //     name: 'list a property',
+    //     url: '#',
+    //   },
+    //   {
+    //     name: 'Buy a property',
+    //     url: '/market-place',
+    //   },
+    //   {
+    //     name: 'Rent a property',
+    //     url: '/market-place',
+    //   },
+    //   {
+    //     name: 'Property on joint venture',
+    //     url: '#',
+    //   },
+    // ],
   },
   // {
   //   name: 'Landlord',
