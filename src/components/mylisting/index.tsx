@@ -3,7 +3,6 @@
 'use client';
 import React, { useState } from 'react';
 import { usePageContext } from '@/context/page-context';
-import { basic_styling_architecture } from '@/utils/tool';
 import RadioCheck from '../general-components/radioCheck';
 import JointVentureModalCard from '../marketplace/joint-venture-card';
 import Card from '../general-components/card';
@@ -34,10 +33,12 @@ const dummyCardData = [
   },
 ];
 
-const MyListing = () => {
+const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: boolean }) => {
   const router = useRouter();
   const { selectedType, setSelectedType } = usePageContext();
   const [propertyType, setPropertyType] = useState<string>('All');
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
 
   // Dummy list of property types for demonstration
   const propertyTypes = ['All', 'Land', 'Residential', 'Commercial', 'JV'];
@@ -46,16 +47,18 @@ const MyListing = () => {
   const dummyList = Array.from({ length: 12 });
 
   // Render the correct card based on propertyType
-  const renderCard = (idx: number) => {
+  const renderCard = (brief: any, idx: number) => {
     if (propertyType === 'JV') {
       return (
         <JointVentureModalCard
           key={idx}
           onClick={() => {}}
+          isAddInspectionalModalOpened={isAddForInspectionModalOpened}
           isDisabled={false}
           cardData={dummyCardData}
           images={[sampleImage]}
-          property={dummyCardData}
+          property={brief}
+          properties={briefs}
           setPropertySelected={() => {}}
           isComingFromSubmitLol={false}
           setIsComingFromSubmitLol={() => {}}
@@ -66,12 +69,15 @@ const MyListing = () => {
     // Default card for Buy/Sell/Rent
     return (
       <Card
+        isAddForInspectionModalOpened={isAddForInspectionModalOpened}
         style={{ width: '300px' }}
         images={[sampleImage]}
         onClick={() => {}}
-        cardData={dummyCardData}
+        cardData={briefs}
         key={idx}
         isDisabled={false}
+        property={brief}
+        // properties={briefs}
       />
     );
   };
@@ -141,7 +147,13 @@ const MyListing = () => {
         {/* Listing Cards */}
         <div className='w-full flex justify-center'>
           <div className='w-full sm:w-[95%] lg:w-[90%] mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[20px] md:gap-[37px] justify-items-center'>
-            {dummyList.map((_, idx) => renderCard(idx))}
+          {loading ? (
+            <div>Loading...</div>
+          ) : briefs.length === 0 ? (
+            <div>No listings found.</div>
+          ) : (
+            briefs.map((brief, idx) => renderCard(brief, idx))
+          )}
           </div>
         </div>
       </div>
