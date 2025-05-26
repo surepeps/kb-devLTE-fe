@@ -102,7 +102,7 @@ const BuyAPropertySearchModal = ({
     const payload = {
       usageOptions,
       location: locationValue !== '' ? locationValue : undefined,
-        price:
+      price:
           priceFormik.values.maxPrice > 0
             ? { $lte: priceFormik.values.maxPrice }
             : undefined,
@@ -114,6 +114,7 @@ const BuyAPropertySearchModal = ({
         ? filters.landSize
         : undefined,
       desirerFeatures: filters.desirer_features,
+       briefType: 'Outright Sales', 
     };
 
     const cleanedPayload = Object.fromEntries(
@@ -125,9 +126,6 @@ const BuyAPropertySearchModal = ({
           !(typeof v === 'object' && v !== null && !Array.isArray(v) && Object.keys(v).length === 0)
       )
     );
-
-
-
 
   // useEffect(
   //   () => handleSubmit(),

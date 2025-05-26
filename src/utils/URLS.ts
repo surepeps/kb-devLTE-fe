@@ -17,6 +17,7 @@ export const URLS = {
   verifyEmail: '/verify-email',
   agentCreateBrief: '/properties/sell/new',
   listNewProperty: '/properties/new',
+  getMyProperties: '/properties/mine/all',
   agentfetchTotalBriefs: '/agent/properties',
   landLordCreateBrief: '/properties/rents/rent/new',
   buyersFetchBriefs: '/properties/all',

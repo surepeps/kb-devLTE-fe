@@ -30,7 +30,7 @@ interface CardDataProps {
   setIsComingFromPriceNeg?: (type: boolean) => void;
 }
 
-const Card = ({
+const  Card = ({
   isRed,
   cardData,
   onClick,

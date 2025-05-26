@@ -75,6 +75,7 @@ const SearchModal = ({
   const [properties, setProperties] = useState<any[]>([]);
   const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const [rentFilterBy, setRentFilterBy] = useState<string[]>([]);
+  const [jvFilterBy, setJvFilterBy] = useState<string[]>(['All']);
   const [homeCondition, setHomeCondition] = useState<string>('');
   const [briefToFetch, setBriefToFetch] = useState<string>(
     URLS.buyersFetchBriefs
@@ -194,16 +195,19 @@ const handleSearch = async (searchPayload: any) => {
         return (
           <div className='relative w-full flex flex-col'>
             <JointVentureModal
+              onSearch={handleSearch}
               selectedBriefs={uniqueProperties.size}
               addForInspectionPayload={addForInspectionPayload}
-              setUsageOptions={setUsageOptions}
+              // setUsageOptions={setUsageOptions}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
+              usageOptions={jvFilterBy}
+              setUsageOptions={setJvFilterBy}
               setInspectionType={setInspectionType}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
-              {formikStatus && renderBriefs(userSelectedMarketPlace, [''])}
+              {formikStatus && renderBriefs(userSelectedMarketPlace, jvFilterBy)}
             </section>
           </div>
         );
@@ -231,7 +235,6 @@ const handleSearch = async (searchPayload: any) => {
               (filterBy?.includes('Commercial') &&
                 property.propertyType === 'Commercial')
             ) {
-              console.log(property.propertyType);
               return (
                 <Card
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
@@ -332,22 +335,53 @@ const handleSearch = async (searchPayload: any) => {
           });
         case 'Find property for Joint Venture':
           return properties?.map((property, idx: number) => {
-            return (
-              <JointVentureModalCard
-                key={idx}
-                onClick={() => handlePropertiesSelection(property)}
-                isDisabled={uniqueProperties.has(property)}
-                isComingFromSubmitLol={isComingFromSubmitLol}
-                setIsComingFromSubmitLol={setIsComingFromSubmitLol}
-                cardData={[]}
-                images={[]}
-                property={property}
-                properties={properties}
-                isAddInspectionalModalOpened={isAddForInspectionModalOpened}
-                setPropertySelected={setPropertiesSelected}
-                setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
-              />
-            );
+            if (
+              (filterBy?.includes('Land') &&
+                property.propertyType === 'Land') ||
+              (filterBy?.includes('Residential') &&
+                property.propertyType === 'Residential') ||
+              (filterBy?.includes('Commercial') &&
+                property.propertyType === 'Commercial')
+            ) {
+              return (
+                <JointVentureModalCard
+                  key={idx}
+                  onClick={() => handlePropertiesSelection(property)}
+                  isDisabled={uniqueProperties.has(property)}
+                  isComingFromSubmitLol={isComingFromSubmitLol}
+                  setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+                  cardData={[]}
+                  images={[]}
+                  property={property}
+                  properties={properties}
+                  isAddInspectionalModalOpened={isAddForInspectionModalOpened}
+                  setPropertySelected={setPropertiesSelected}
+                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                />
+              );
+            } else if (
+              /**If filters include all or none is selected, display all */
+              filterBy?.includes('All') ||
+              filterBy?.length === 0
+              // filterBy?.['length'] === 0
+            ) {
+              return (
+                <JointVentureModalCard
+                  key={idx}
+                  onClick={() => handlePropertiesSelection(property)}
+                  isDisabled={uniqueProperties.has(property)}
+                  isComingFromSubmitLol={isComingFromSubmitLol}
+                  setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+                  cardData={[]}
+                  images={[]}
+                  property={property}
+                  properties={properties}
+                  isAddInspectionalModalOpened={isAddForInspectionModalOpened}
+                  setPropertySelected={setPropertiesSelected}
+                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                />
+              );
+            }
           });
 
         case 'Rent/Lease a property':
