@@ -26,17 +26,22 @@ const JointVentureModal = ({
   setAddInspectionModal,
   setSelectedBriefs,
   inspectionType,
+  usageOptions,
+  setUsageOptions,
   setInspectionType,
+  onSearch,
 }: {
   selectedBriefs: number;
+  usageOptions: string[];
   addForInspectionPayload: PayloadProps;
   setUsageOptions: (type: string[]) => void;
   setAddInspectionModal?: (type: boolean) => void;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
   setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
+  onSearch: (payload: any) => void;
 }) => {
-  const [usageOptions, setUsageOptions] = useState<string[]>([]);
+  // const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
       selectedLGA: '',
@@ -46,6 +51,17 @@ const JointVentureModal = ({
       console.log(values);
     },
   });
+
+  const priceFormik = useFormik({
+    initialValues: {
+      minPrice: 0,
+      maxPrice: 0,
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
   const router = useRouter();
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] =
     useState<boolean>(false);
@@ -76,41 +92,43 @@ const JointVentureModal = ({
     desirer_features: [],
   });
 
-  const handleSubmit = () => {
+    // Removed duplicate priceFormik declaration
+
+  // const handleSubmit = () => {
     const payload = {
       usageOptions,
       location: {
         state: formik.values.selectedState,
         lga: formik.values.selectedLGA,
       },
-      price: {
-        minPrice: priceFormik.values.minPrice,
-        maxPrice: priceFormik.values.maxPrice,
-        actualRadioPrice: priceRadioValue,
-      },
+      price:priceFormik.values.maxPrice > 0
+            ? { $lte: priceFormik.values.maxPrice }
+            : undefined,
       docsOnProperty: documentsSelected,
       bedroom: noOfBedrooms,
       bathroom: filters.bathroom,
       landSize: filters.landSize,
       desirerFeatures: filters.desirer_features,
+      briefType: 'Joint Venture', 
     };
     console.log(payload);
-  };
+  // };
 
-  const priceFormik = useFormik({
-    initialValues: {
-      minPrice: 0,
-      maxPrice: 0,
-    },
-    onSubmit: (values) => {
-      console.log(values);
-    },
-  });
+const handleUsageOptionChange = (item: string) => {
+  if (item === 'All') {
+    setUsageOptions(['All']);
+  } else {
+    const newOptions = usageOptions.includes(item)
+      ? usageOptions.filter(opt => opt !== item)
+      : [...usageOptions.filter(opt => opt !== 'All'), item];
+    setUsageOptions(newOptions.length === 0 ? ['All'] : newOptions);
+  }
+};
 
-  useEffect(
-    () => handleSubmit(),
-    [priceRadioValue, formik.values, priceFormik.values, documentsSelected]
-  );
+  // useEffect(
+  //   () => handleSubmit(),
+  //   [priceRadioValue, formik.values, priceFormik.values, documentsSelected]
+  // );
 
   const docsValues = documentsSelected.map((item: string) => item);
   return (
@@ -127,16 +145,7 @@ const JointVentureModal = ({
                 type='checkbox'
                 name='usageOptions'
                 value={item}
-                handleChange={() => {
-                  const uniqueValues = new Set(usageOptions as Array<string>);
-                  if (uniqueValues.has(item)) {
-                    uniqueValues.delete(item);
-                    setUsageOptions([...uniqueValues]);
-                  } else {
-                    uniqueValues.add(item);
-                    setUsageOptions([...uniqueValues]);
-                  }
-                }}
+                handleChange={() => handleUsageOptionChange(item)}
               />
             )
           )}
@@ -279,7 +288,9 @@ const JointVentureModal = ({
           </div>
           <button
             type='button'
-            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'>
+            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
+            onClick={() => onSearch(payload)}
+            >
             Search
           </button>
         </div>

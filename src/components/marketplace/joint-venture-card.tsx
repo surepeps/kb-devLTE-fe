@@ -74,18 +74,18 @@ const JointVentureModalCard = ({
         <div className='md:w-[261px] w-full p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF] on'>
           <div className='min-h-[62px] w-full flex gap-[10px] items-end relative'>
             <Image
-              src={images[0] ?? imageSample}
+              src={property?.pictures?.[0] ?? imageSample}
               width={61}
               height={62}
               onClick={() => {
-                setImageData(images);
+                setImageData(property?.pictures ?? []);
                 setViewImage(true);
               }}
               className='w-[61px] h-[62px] object-cover'
               alt=''
             />
             <h3 className='font-semibold text-[#000000] text-lg'>
-              N {Number(300000000).toLocaleString()}
+               N {property?.price ? Number(property.price).toLocaleString() : 'N/A'}
             </h3>
             {/**Premium */}
             <div className=' w-[98px] top-0 right-0 md:right-auto absolute mb-[35px] ml-[151px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00]'>
@@ -102,18 +102,28 @@ const JointVentureModalCard = ({
                 height={16}
                 className='w-[16px] h-[16px]'
               />
-              <span className='text-xs text-[#000000]'>GRA, Ikeja, Lagos.</span>
+              <span className='text-xs text-[#000000]'>
+                {property?.location
+                  ? `${property.location.area || ''}, ${property.location.localGovernment || ''}, ${property.location.state || ''}`
+                  : 'N/A'}
+              </span>
             </div>
             <div className='flex flex-wrap gap-[2%] min-h-[57px]'>
               {/**Land sqft */}
               <div className='bg-[#E4EFE7] px-[7px] h-[26px] w-[59%] text-xs text-[#000000] flex items-center mb-2'>
-                4000 sqft
+                {property?.landSize?.size
+                  ? `${property.landSize.size} ${property.landSize.measurementType || ''}`
+                  : 'N/A'}
               </div>
               <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px]  w-[39%] flex items-center'>
-                Fence
+                  {property?.features && property.features.length > 0
+                  ? property.features.slice(0, 2).join(', ')
+                  : ''}
               </div>
               <div className='bg-[#E4EFE7] px-[7px] text-xs text-[#000000] h-[26px] w-[100%] flex items-center min-w-fit'>
-                deed of assignment
+                  {property?.docOnProperty && property.docOnProperty.length > 0
+                    ? property.docOnProperty.slice(0, 2).map((doc: any) => doc.docName).join(', ')
+                    : 'N/A'}
               </div>
             </div>
           </div>
