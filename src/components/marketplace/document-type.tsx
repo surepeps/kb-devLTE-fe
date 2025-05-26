@@ -9,12 +9,14 @@ interface DocumentTypeComponentProps {
   closeModal: (type: boolean) => void;
   setDocsSelected: (type: string[]) => void;
   docsSelected: string[];
+  style?: React.CSSProperties;
 }
 
 const DocumentTypeComponent: React.FC<DocumentTypeComponentProps> = ({
   closeModal,
   setDocsSelected,
   docsSelected,
+  style,
 }) => {
   const divRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(divRef, () => closeModal(false));
@@ -25,6 +27,7 @@ const DocumentTypeComponent: React.FC<DocumentTypeComponentProps> = ({
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}
       ref={divRef}
+      style={style}
       className='absolute mt-[100px] bg-white w-[286px] h-[327px] p-[19px] shadow-md flex flex-col gap-[13px] border-[1px] border-black'>
       <h2 className='text-base font-medium text-[#000000]'>Document type</h2>
       <div className='flex flex-col gap-[10px] mt-4'>
