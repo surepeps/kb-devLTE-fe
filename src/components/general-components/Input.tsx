@@ -69,6 +69,7 @@ interface InputProps {
   showDropdownIcon?: boolean;
   multiline?: boolean;
   rows?: number;
+  style?: React.CSSProperties;
 }
 
 const Input: FC<InputProps> = memo(
@@ -108,6 +109,7 @@ const Input: FC<InputProps> = memo(
     showDropdownIcon,
     multiline = false,
     rows = 3,
+    style,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -129,6 +131,7 @@ const Input: FC<InputProps> = memo(
     return (
       <Fragment>
         <label
+          style={style}
           htmlFor={id}
           className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}>
           <span
