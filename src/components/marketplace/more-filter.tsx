@@ -19,12 +19,14 @@ interface MoreFilterProps {
   closeModal: (type: boolean) => void;
   filters: FilterProps;
   setFilters: (type: FilterProps) => void;
+  style?: React.CSSProperties;
 }
 
 const MoreFilter: FC<MoreFilterProps> = ({
   closeModal,
   filters,
   setFilters,
+  style,
 }) => {
   const divRef = useRef<HTMLDivElement | null>(null);
   const [selectedLandType, setSelectedLandType] =
@@ -39,7 +41,8 @@ const MoreFilter: FC<MoreFilterProps> = ({
       transition={{ delay: 0.3 }}
       viewport={{ once: true }}
       ref={divRef}
-      className='w-[334px] min-h-[599px] bg-white border-[1px] border-black flex flex-col gap-[25px] p-[19px] shadow-md absolute mt-[70px]'>
+      style={style}
+      className='md:w-[334px] w-full min-h-[599px] bg-white border-[1px] border-black flex flex-col gap-[25px] p-[19px] shadow-md absolute mt-[70px]'>
       <h2 className='text-base text-[#000000] font-medium'>More Filter</h2>
       {/**Bathroom */}
       <div className='min-h-[90px] w-full flex flex-col gap-[10px]'>
