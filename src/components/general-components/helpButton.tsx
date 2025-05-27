@@ -14,7 +14,7 @@ const HelpButton: FC<HelpButtonProps> = ({ isHomePage }) => {
         type='button'
         onClick={() => {
           if (!isHomePage) {
-            window.location.href = '/auth/agent';
+            window.location.href = '/auth';
           }
         }}
         value={`${isHomePage ? 'How Can We Help You' : 'Partner With Us'}`}
