@@ -8,6 +8,7 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { archivo } from '@/styles/font';
 import { FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
+import { SubmitInspectionPayloadProp } from '../types/payload';
 
 type DetailsProps = {
   selectedDate: string;
@@ -25,12 +26,18 @@ const SelectPreferableInspectionDate = ({
   setIsProvideTransactionDetails,
   setActionTracker,
   actionTracker,
+  submitInspectionPayload,
+  setSubmitInspectionPayload,
 }: {
   closeModal: (type: boolean) => void;
   setIsProvideTransactionDetails: (type: boolean) => void;
   actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
   setActionTracker: React.Dispatch<
     React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
+  >;
+  submitInspectionPayload: SubmitInspectionPayloadProp;
+  setSubmitInspectionPayload: React.Dispatch<
+    React.SetStateAction<SubmitInspectionPayloadProp>
   >;
 }) => {
   const [details, setDetails] = useState<DetailsProps>({
@@ -54,6 +61,14 @@ const SelectPreferableInspectionDate = ({
         ...actionTracker,
         { lastPage: 'SelectPreferableInspectionDate' },
       ]);
+      setSubmitInspectionPayload({
+        ...submitInspectionPayload,
+        requestedBy: {
+          fullName: formik.values.fullName,
+          email: formik.values.email,
+          phoneNumber: formik.values.phoneNumber,
+        },
+      });
       setIsProvideTransactionDetails(true);
       closeModal(false);
     },
@@ -108,6 +123,10 @@ const SelectPreferableInspectionDate = ({
                     ...details,
                     selectedDate: date,
                   });
+                  setSubmitInspectionPayload({
+                    ...submitInspectionPayload,
+                    inspectionDate: date,
+                  });
                 }}
                 className={`h-[42px] ${
                   details.selectedDate === date && 'bg-[#8DDB90] text-white'
@@ -143,6 +162,10 @@ const SelectPreferableInspectionDate = ({
                   setDetails({
                     ...details,
                     selectedTime: time,
+                  });
+                  setSubmitInspectionPayload({
+                    ...submitInspectionPayload,
+                    inspectionTime: time,
                   });
                 }}
                 className={`border-[1px] border-[#A8ADB7] h-[57px] ${

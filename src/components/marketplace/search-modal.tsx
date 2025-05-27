@@ -20,6 +20,7 @@ import { URLS } from '@/utils/URLS';
 import { shuffleArray } from '@/utils/shuffleArray';
 import { useRouter } from 'next/navigation';
 import { POST_REQUEST } from '@/utils/requests';
+import { useSelectedBriefs } from '@/context/selected-briefs-context';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -63,8 +64,7 @@ const SearchModal = ({
 }) => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
-  // const [uniqueProperties, setUniqueProperties] = useState<Set<string>>(new Set());
-  const [selectedBriefs, setSelectedBriefs] = useState<any[]>([]); // Store selected briefs
+  const { selectedBriefs, setSelectedBriefs } = useSelectedBriefs();
   const [uniqueProperties, setUniqueProperties] = useState<Set<any>>(
     new Set(propertiesSelected)
   );
@@ -83,64 +83,67 @@ const SearchModal = ({
 
   const router = useRouter();
 
+  // Sync local selection to context
   useEffect(() => {
-    console.log(usageOptions);
-  }, [usageOptions]);
+    setSelectedBriefs(Array.from(uniqueProperties));
+  }, [uniqueProperties, setSelectedBriefs]);
 
-
-const handleSearch = async (searchPayload: any) => {
-  setFormikStatus('pending');
-    console.log("searchPayload", searchPayload);
-  try {
-    await toast.promise(
-      POST_REQUEST(URLS.BASE + URLS.searchBrief, {
-        ...searchPayload,
-      }).then((response) => {
-        const data = Array.isArray(response) ? response : response?.data;
-        if (!data) {
-          setErrMessage('Failed to fetch data');
-          setFormikStatus('failed');
-          throw new Error('Failed to fetch data');
+  const handleSearch = async (searchPayload: any) => {
+    setFormikStatus('pending');
+    // console.log("searchPayload", searchPayload);
+    try {
+      await toast.promise(
+        POST_REQUEST(URLS.BASE + URLS.searchBrief, {
+          ...searchPayload,
+        }).then((response) => {
+          const data = Array.isArray(response) ? response : response?.data;
+          if (!data) {
+            setErrMessage('Failed to fetch data');
+            setFormikStatus('failed');
+            throw new Error('Failed to fetch data');
+          }
+          setFormikStatus('success');
+          const shuffledData = shuffleArray(data);
+          setProperties(shuffledData.slice(0, 10));
+          // setUsageOptions(['All'])
+        }),
+        {
+          loading: 'Searching...',
+          success: 'Properties loaded!',
+          error: 'Failed to load properties',
         }
-        setFormikStatus('success');
-        const shuffledData = shuffleArray(data);
-        setProperties(shuffledData.slice(0, 10));
-        // setUsageOptions(['All'])
-      }),
-      {
-        loading: 'Searching...',
-        success: 'Properties loaded!',
-        error: 'Failed to load properties',
+      );
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error(err);
+        setErrMessage(err.message || 'An error occurred');
+        setFormikStatus('failed');
       }
-    );
-  } catch (err: any) {
-    if (err.name !== 'AbortError') {
-      console.error(err);
-      setErrMessage(err.message || 'An error occurred');
-      setFormikStatus('failed');
     }
-  }
-};
+  };
 
-
-    useEffect(() => {
-      let briefType = '';
-      switch (userSelectedMarketPlace) {
-        case 'Buy a property':
-          briefType = 'Outright Sales';
-          break;
-        case 'Find property for Joint Venture':
-          briefType = 'Joint Venture';
-          break;
-        case 'Rent/Lease a property':
-          briefType = 'Rent';
-          break;
-        default:
-          briefType = 'Outright Sales';
-      }
-      // You can set default page and limit as needed
-      setBriefToFetch(`${URLS.fetchBriefs}?page=1&limit=10&briefType=${encodeURIComponent(briefType)}`);
-    }, [userSelectedMarketPlace]);
+  useEffect(() => {
+    let briefType = '';
+    switch (userSelectedMarketPlace) {
+      case 'Buy a property':
+        briefType = 'Outright Sales';
+        break;
+      case 'Find property for Joint Venture':
+        briefType = 'Joint Venture';
+        break;
+      case 'Rent/Lease a property':
+        briefType = 'Rent';
+        break;
+      default:
+        briefType = 'Outright Sales';
+    }
+    // You can set default page and limit as needed
+    setBriefToFetch(
+      `${URLS.fetchBriefs}?page=1&limit=10&briefType=${encodeURIComponent(
+        briefType
+      )}`
+    );
+  }, [userSelectedMarketPlace]);
 
   const renderDynamicComponent = () => {
     switch (userSelectedMarketPlace) {
@@ -151,7 +154,9 @@ const handleSearch = async (searchPayload: any) => {
               usageOptions={usageOptions}
               addForInspectionPayload={addForInspectionPayload}
               setUsageOptions={setUsageOptions}
-              selectedBriefs={uniqueProperties.size}
+              // selectedBriefs={uniqueProperties.size}
+              selectedBriefs={selectedBriefs.length}
+              // setSelectedBriefs={setSelectedBriefs}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
@@ -207,7 +212,8 @@ const handleSearch = async (searchPayload: any) => {
               setInspectionType={setInspectionType}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
-              {formikStatus && renderBriefs(userSelectedMarketPlace, jvFilterBy)}
+              {formikStatus &&
+                renderBriefs(userSelectedMarketPlace, jvFilterBy)}
             </section>
           </div>
         );
@@ -246,7 +252,14 @@ const handleSearch = async (searchPayload: any) => {
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   property={property}
                   onCardPageClick={() => {
-                    router.push(`/property/${type}/${property._id}`);
+                    const selectedBriefsParam = encodeURIComponent(
+                      JSON.stringify(Array.from(uniqueProperties))
+                    );
+                    router.push(
+                      `/property/${'Buy'}/${
+                        property._id
+                      }?selectedBriefs=${selectedBriefsParam}`
+                    );
                   }}
                   onClick={() => {
                     handlePropertiesSelection(property);
@@ -424,10 +437,10 @@ const handleSearch = async (searchPayload: any) => {
                       value: property.propertyType,
                     },
                     {
-                    header: 'Price',
-                    value: property.price
-                      ? `₦${Number(property.price).toLocaleString()}`
-                      : 'N/A',
+                      header: 'Price',
+                      value: property.price
+                        ? `₦${Number(property.price).toLocaleString()}`
+                        : 'N/A',
                     },
                     {
                       header: 'Bedrooms',
@@ -476,12 +489,12 @@ const handleSearch = async (searchPayload: any) => {
                       header: 'Property Type',
                       value: property.propertyType,
                     },
-                      {
-                        header: 'Price',
-                        value: property.price
-                          ? `₦${Number(property.price).toLocaleString()}`
-                          : 'N/A',
-                      },
+                    {
+                      header: 'Price',
+                      value: property.price
+                        ? `₦${Number(property.price).toLocaleString()}`
+                        : 'N/A',
+                    },
                     {
                       header: 'Bedrooms',
                       value: property.noOfBedrooms || 'N/A',
@@ -529,13 +542,15 @@ const handleSearch = async (searchPayload: any) => {
   };
 
   const handlePropertiesSelection = (property: any) => {
-    //console.log('Clicked');
     const maximumSelection: number = 2;
     if (uniqueProperties.size === maximumSelection) {
       return toast.error(`Maximum of ${maximumSelection} reached`);
     }
-    uniqueProperties.add(property);
-    setPropertiesSelected(Array.from(uniqueProperties));
+    // Create a new Set to trigger state update
+    const newSet = new Set(uniqueProperties);
+    newSet.add(property);
+    setUniqueProperties(newSet);
+    setPropertiesSelected(Array.from(newSet));
     toast.success('Property selected');
   };
 
@@ -624,9 +639,9 @@ const handleSearch = async (searchPayload: any) => {
           onSelectBrief={handlePropertiesSelection}
           selectedBriefsList={uniqueProperties} // pass the array
           onSubmitForInspection={(selectedBriefsList: Set<any>) => {
-          setPropertiesSelected(Array.from(selectedBriefsList));
-          setIsAddInspectionModalOpened(true);
-        }}
+            setPropertiesSelected(Array.from(selectedBriefsList));
+            setIsAddInspectionModalOpened(true);
+          }}
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>

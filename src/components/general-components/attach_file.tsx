@@ -31,6 +31,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
 
     await toast.promise(
       POST_REQUEST_FILE_UPLOAD(url, fromData).then((response) => {
+        console.log('Response from file upload:', response);
         if ((response as unknown as { url: string }).url) {
           if (setFileUrl) {
             setFileUrl((response as unknown as { url: string }).url as string);

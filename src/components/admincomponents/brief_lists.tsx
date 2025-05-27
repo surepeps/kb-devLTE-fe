@@ -79,8 +79,8 @@ export default function BriefLists({
   const fetchIncomingBriefs = async () => {
     try {
       const payload = {
-        propertyType: 'all',
-        ownerType: 'PropertyOwner',
+        briefType: 'Joint Ventures',
+        // ownerType: 'PropertyOwner',
         page: currentPage,
         limit: 10,
       };
@@ -769,9 +769,9 @@ const TabButton = ({
 
 const tabs = [
   { text: 'Incoming Briefs' },
+  { text: 'Admin Briefs' },
   { text: 'Agents Briefs' },
-  { text: 'Sellers Briefs' },
-  { text: 'Transacted Briefs' },
+  { text: 'LandLord Briefs' },
 ];
 
 const statsOptions = [
