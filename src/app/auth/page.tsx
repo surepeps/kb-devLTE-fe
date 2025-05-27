@@ -30,15 +30,15 @@ const Register = () => {
     setSelectedUserType(type);
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const fromHeader = window.localStorage.getItem('signupFromHeader');
     if (fromHeader === 'true') {
       setSelectedUserType('landlord');
-      setHideLandownerText(true); 
+      setHideLandownerText(true);
       window.localStorage.removeItem('signupFromHeader');
     } else {
       setSelectedUserType('agent');
-      setHideLandownerText(false);  
+      setHideLandownerText(false);
     }
   }, []);
 
@@ -77,18 +77,20 @@ const Register = () => {
       }`}>
       <div className='container slide-from-right min-h-[400px] lg:w-[603px] w-full flex flex-col justify-center gap-[40px] items-center px-[20px] '>
         <div>
-            <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold font-display text-center'>
-            Register with <span className='text-[#8DDB90]'>Khabiteq realty</span>
-            </h2>
-            <p className='text-[#5A5D63] text-[16px] mt-1 text-center'>
+          <h2 className='text-[#09391C] text-[24px] leading-[38.4px] font-semibold font-display text-center'>
+            Register with{' '}
+            <span className='text-[#8DDB90] font-display'>Khabiteq realty</span>
+          </h2>
+          <p className='text-[#5A5D63] text-[16px] mt-1 text-center'>
             How do you want to sign up an agent or land owner
-            </p> 
-            {!hideLandownerText && (
-                <p className='text-[#5A5D63] text-[16px] mt-1 text-center'>
-                Are you a landowner looking to sell, rent, or explore joint ventures? <br />
-                Register with us today and start closing deals!
-                </p>
-            )}
+          </p>
+          {!hideLandownerText && (
+            <p className='text-[#5A5D63] text-[16px] mt-1 text-center'>
+              Are you a landowner looking to sell, rent, or explore joint
+              ventures? <br />
+              Register with us today and start closing deals!
+            </p>
+          )}
         </div>
 
         <div className='w-full min-h-[237px] flex flex-col justify-center items-center gap-[19px]'>
@@ -100,8 +102,8 @@ const Register = () => {
                 onClick={() => handleUserTypeSelect('landlord')}
                 bgColor={selectedUserType === 'landlord' ? '#8DDB90' : ''}
               />
-              <UserType 
-                text="I'm an Agent" 
+              <UserType
+                text="I'm an Agent"
                 onClick={() => handleUserTypeSelect('agent')}
                 bgColor={selectedUserType === 'agent' ? '#8DDB90' : ''}
               />
@@ -132,9 +134,7 @@ const Register = () => {
           </div>
           <span className='text-base text-center leading-[25.6px] font-normal'>
             Already have an account?{' '}
-            <Link
-              className='font-semibold text-[#09391C]'
-              href={'/auth/login'}>
+            <Link className='font-semibold text-[#09391C]' href={'/auth/login'}>
               Sign In
             </Link>
           </span>
