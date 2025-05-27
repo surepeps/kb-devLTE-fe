@@ -92,7 +92,7 @@ const Login = () => {
 
           await toast.promise(
             POST_REQUEST(url, payload).then((response) => {
-              console.log('response from signin', response);
+              // console.log('response from signin', response);
               const user = {
                 firstName: response?.user?.firstName,
                 lastName: response?.user?.lastName,

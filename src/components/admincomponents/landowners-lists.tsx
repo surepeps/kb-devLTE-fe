@@ -21,9 +21,6 @@ import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import Loading from '@/components/loading-component/loading';
-import { calculateAgentCounts } from '@/utils/agentUtils';
-import { truncateId } from '@/utils/stringUtils';
-import EllipsisOptions from './ellipsisOptions';
 import ApproveBriefs from './approveBriefs';
 import DeleteBriefs from './deleteBriefs';
 import RejectBriefs from './rejectBriefs';
@@ -31,6 +28,7 @@ import { string } from 'yup';
 import OnboardAgentBar from './OnboardAgentbar';
 import Pagination from '../pagination';
 interface Agent {
+  accountId: string;
   id: string;
   email: string;
   firstName: string;
@@ -64,7 +62,7 @@ type AgentManagementTabsProps = {
 };
 
 export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
-  const [active, setActive] = useState('All Agents');
+  const [active, setActive] = useState('All Landlords');
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
     isLoading: false,
@@ -85,7 +83,10 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
       message: 'Loading...',
     });
     try {
-      const response = await GET_REQUEST(URLS.BASE + URLS.getAllUsers,
+      const response = await GET_REQUEST(
+        `${
+          URLS.BASE + URLS.getAllAgents
+        }?page=${page}&limit=${limit}&type=${type}`,
         Cookies.get('token')
       );
 
@@ -96,22 +97,26 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
           message: 'Failed to get data',
         });
       }
-      const data = response.users.agents;
-      const filteredAgents = data.filter((agent: any) => agent.userType === "Agent");
-      setAgents(filteredAgents);
-      // console.log(data);
+      const data = response.agents.data;
+      const filteredLandowners = data.filter((agent: any) => agent.userType === "Landowners");
+      setAgents(filteredLandowners);
+
+      const totalAgents = filteredLandowners.length;
+      const activeAgents = filteredLandowners.filter((l: { isInActive: any; isDeleted: any; }) => !l.isInActive && !l.isDeleted).length;
+      const inActiveAgents = filteredLandowners.filter((l: { isInActive: any; isDeleted: any; }) => l.isInActive && !l.isDeleted).length;
+      const bannedAgents = filteredLandowners.filter((l: { isDeleted: any; }) => l.isDeleted).length;
+      const flaggedAgents = filteredLandowners.filter((l: { isFlagged: any; }) => l.isFlagged).length;
       setIsLoadingDetails({
         isLoading: false,
         message: 'Data Loaded',
       });
       setDetails?.({
-        totalAgents: response.agents.totalAgents || 0,
-        activeAgents: response.agents.totalActiveAgents || 0,
-        inActiveAgents: response.agents.totalInactiveAgents || 0,
-        bannedAgents: 0,
-        flaggedAgents: response.agents.totalFlaggedAgents || 0,
+        totalAgents,
+        activeAgents,
+        inActiveAgents,
+        bannedAgents,
+        flaggedAgents,
       });
-      // console.log(data);
     } catch (error: any) {
       setIsLoadingDetails({
         isLoading: false,
@@ -126,7 +131,6 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   };
 
   const confirmApproveAgent = async (agentId: string) => {
-    console.log('Approving agent with ID:', agentId);
     try {
       const response = await POST_REQUEST(`${URLS.BASE + URLS.agentApproval}`, {
         agentId,
@@ -190,10 +194,9 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   useEffect(() => {
     const fetchAgents = () => {
       let type = 'all';
-      if (active === 'Onboarding Agents') type = 'onboarding';
-      if (active === 'Active Agents') type = 'active';
-      if (active === 'Inactive Agents') type = 'inactive';
-      if (active === 'Flagged Agents') type = 'flagged';
+      if (active === 'Active Landlords') type = 'active';
+      if (active === 'Inactive Landlords') type = 'inactive';
+      if (active === 'Flagged Landlords') type = 'flagged';
       getAgentsData(1, 10, type);
     };
 
@@ -209,28 +212,18 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
     };
   }, [active]);
 
-  const filteredAgents = agents.filter((agent) => {
-  if (active === 'Onboarding Agents') {
-    const activeAgent =  agent.accountApproved === false;
-    return activeAgent;
-  }
-  if (active === 'All Agents') {
+const filteredLandowners = agents.filter((landowner) => {
+  if (active === 'All Landlords') {
     return true;
   }
-  if (active === 'Active Agents') {
-    // Show agents that are approved and not inactive
-    return agent.accountApproved && !agent.isInActive;
+  if (active === 'Active Landlords') {
+    return !landowner.isInActive && !landowner.isDeleted;
   }
-  if (active === 'Inactive Agents') {
-    // Show agents that are approved and inactive
-    return agent.accountApproved && agent.isInActive;
+  if (active === 'Inactive Landlords') {
+    return landowner.isInActive && !landowner.isDeleted;
   }
-  // if (active === 'Banned Agents') {
-  //   // If you have a banned property, use it here
-  //   return agent.isBanned;
-  // }
-  if (active === 'Flagged Agents') {
-    return agent.isFlagged;
+  if (active === 'Banned Landlords') {
+    return landowner.isDeleted;
   }
   return false;
 });
@@ -297,40 +290,52 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
                   </th>
                   <th className='p-3'>ID</th>
                   <th className='p-3'>Legal Name</th>
-                  <th className='p-3'>Total Briefs</th>
-                  <th className='p-3'>Type of Agent</th>
-                  <th className='p-3'>Area of operation</th>
+                  <th className='p-3'>Email</th>
+                  <th className='p-3'>Deal closed</th>
+                  <th className='p-3'>Total Brief Listed</th>
+                  <th className='p-3'>Status</th>
                   <th className='p-3'>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredAgents.map((item, index) => (
+                {filteredLandowners.map((item, index) => (
                   <tr
                     key={index}
                     className='border-b text-sm text-gray-700 hover:bg-gray-50'>
                     <td className='p-3'>
                       <input title='checkbox' type='checkbox' />
                     </td>
-                    <td className='p-3'>{truncateId(item.id)}</td>
-                    <td className='p-3'>
+                    <td className='p-3 text-center'>{item.accountId}</td>
+                    <td className='p-3 text-start'>
                       {item.firstName && item.lastName
                         ? `${item.firstName} ${item.lastName}`
                         : item.fullName}
                     </td>
-                    <td className='p-3'>1000</td>
-                    <td
-                      className={`p-3 font-semibold ${
-                        item.agentType?.toLowerCase() === 'individual'
-                          ? 'text-red-500'
-                          : 'text-green-500'
-                      }`}>
-                      {item.agentType || 'N/A'}
-                    </td>
-                    <td className='p-3'>
+                    <td>{item.email || 'N/A'}</td>
+                    <td className='text-center'>200,000</td>
+                    <td className='text-center'>100</td>
+                      <td
+                        className={`p-2 font-semibold border-2 text-center
+                          ${
+                            item.isDeleted
+                              ? 'text-red-500 border-red-500'
+                              : item.isInActive
+                              ? 'text-[#5F6368] border-[#5F6368]'
+                              : 'text-green-500 border-green-500'
+                          }
+                        `}
+                      >
+                        {item.isDeleted
+                          ? 'Banned'
+                          : item.isInActive
+                          ? 'Inactive'
+                          : 'Active'}
+                      </td>
+                    {/* <td className='p-3'>
                       {item.address
                         ? `${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`
                         : 'N/A'}
-                    </td>
+                    </td> */}
                     <td className='p-3 cursor-pointer text-2xl'>
                       <FontAwesomeIcon
                         onClick={() => {
@@ -424,18 +429,9 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         <OnboardAgentBar
           user={selectedUser}
           onClose={closeSidebar}
-          onApprove={() => {
-              closeSidebar();
-              setAgentToApprove(selectedUser);
-          }}
-          onReject={() => {
-            closeSidebar();
-            setAgentToReject(selectedUser)
-            }} 
-          onDelete={() => {
-            closeSidebar();
-            setAgentToDelete(selectedUser)
-          }}
+          onApprove={() => setAgentToApprove(selectedUser)} // Trigger ApproveBriefs
+          onReject={() => setAgentToReject(selectedUser)} // Trigger RejectBriefs
+          onDelete={() => setAgentToDelete(selectedUser)} // Trigger DeleteBriefs
         />
       )}
       {selectedUser && active !== 'Onboarding Agents' && (
@@ -495,11 +491,10 @@ const TabButton = ({
 };
 
 const tabs = [
-  { text: 'Onboarding Agents' },
-  { text: 'All Agents' },
-  { text: 'Active Agents' },
-  { text: 'Inactive Agents' },
-  { text: 'Banned Agents' },
+  { text: 'All Landlords' },
+  { text: 'Active Landlords' },
+  { text: 'Inactive Landlords' },
+  { text: 'Banned Landlords' },
 ];
 
 const statsOptions = [

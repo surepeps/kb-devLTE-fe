@@ -32,7 +32,7 @@ const Settings = () => {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },
       });
-      console.log(response);
+      console.log("response", response);
       if (response.status === 200) {
         setIsLoading(false);
         setFormikStatus('success');

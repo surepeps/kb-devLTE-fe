@@ -176,7 +176,7 @@ useEffect(() => {
       </div>
       {/* Conditional Rendering of Overviews */}
       <div className='w-full'>
-        <AgentManagements setDetails={setDetails} />
+        <AgentManagements setDetails={setDetails} activeUserType={activeUserType} />
       </div>
     </section>
   );
