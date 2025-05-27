@@ -112,6 +112,8 @@ const Register = () => {
                 );
               }, 2000);
               setIsDisabled(false);
+              formik.resetForm();         // <-- Clear all form fields
+              setAgreed(false);  
               router.push('/verify-email');
               return 'Registration successful';
             } else {
@@ -164,12 +166,12 @@ const Register = () => {
     onError: (errorResponse: any) => toast.error(errorResponse.message),
   });
 
-  useEffect(() => {
-    if (user?.userType === "Agent") router.push('/agent/briefs') 
-      else {
-        router.push('/my_listing');
-      }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user?.userType === "Agent") router.push('/agent/briefs') 
+  //     else {
+  //       router.push('/my_listing');
+  //     }
+  // }, [user]);
 
   if (isLoading) return <Loading />;
   return (
@@ -248,9 +250,11 @@ const Register = () => {
           <div className='flex justify-center items-center w-full lg:px-[60px]'>
             <RadioCheck
               isDisabled={isDisabled}
-              onClick={() => {
-                setAgreed(!agreed);
-              }}
+              isChecked={agreed}
+              handleChange={() => setAgreed(!agreed)}
+              // onClick={() => {
+              //   setAgreed(!agreed);
+              // }}
               type='checkbox'
               name='agree'
               className='w-full'

@@ -102,10 +102,15 @@ const Login = () => {
               sessionStorage.setItem('user', JSON.stringify(user));
 
               if ((response as any)?.user?._id) {
-                if (response.user.userType === "Agent" && !response.user.agentType) {
-                  router.push('/agent/onboard');
-                } else if (response.user.userType === "Agent" && response.user.accountApproved === false) {
-                  router.push('/agent/under-review');
+
+                if (response.user.userType === 'Agent') {
+                  if (!response.user.agentData?.agentType) {
+                    router.push('/agent/onboard');
+                  } else if (response.user.accountApproved === false) {
+                    router.push('/agent/under-review');
+                  } else if (response.user.phoneNumber && response.user.agentData.agentType) {
+                    router.push('/agent/briefs');
+                  }
                 } else {
                   router.push('/my_listing');
                 }
@@ -196,6 +201,13 @@ const Login = () => {
   //     }
   //   }
   // }, [user]);
+
+    // useEffect(() => {
+    //   if (user?.userType === "Agent") router.push('/agent/briefs') 
+    //     else {
+    //       router.push('/my_listing');
+    //     }
+    // }, [user]);
 
   if (isLoading) return <Loading />;
 

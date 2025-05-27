@@ -26,6 +26,7 @@ import { Span } from 'next/dist/trace';
 import LetterOfIntention from './letter-of-intention';
 import UploadLolDocumentModal from './upload-your-lol-document';
 import { usePageContext } from '@/context/page-context';
+import { SubmitInspectionPayloadProp } from '../types/payload';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -103,6 +104,9 @@ const AddForInspection = ({
   const [totalAmount, setTotalAmount] = useState<number>(
     payload.initialAmount + payload.toBeIncreaseBy
   );
+
+  const [submitPayload, setSubmitPayload] =
+    useState<SubmitInspectionPayloadProp>({} as SubmitInspectionPayloadProp);
 
   useEffect(() => {
     setTotalAmount(payload.initialAmount + payload.toBeIncreaseBy);
@@ -328,6 +332,10 @@ const AddForInspection = ({
 
   useEffect(() => console.log(isComingFromSubmitLol), [isComingFromSubmitLol]);
 
+  useEffect(() => {
+    console.log(submitPayload);
+  }, [submitPayload, setSubmitPayload]);
+
   return (
     <Fragment>
       <div className='w-full flex justify-center items-center py-[30px] px-[30px]'>
@@ -366,6 +374,8 @@ const AddForInspection = ({
             {isProvideTransactionDetails ? (
               <ProvideTransactionDetails
                 amountToPay={payload.initialAmount + payload.toBeIncreaseBy}
+                setSubmitInspectionPayload={setSubmitPayload}
+                submitInspectionPayload={submitPayload}
               />
             ) : (
               <Fragment>
@@ -504,6 +514,8 @@ const AddForInspection = ({
             setSelectPreferableInspectionDateModalOpened={
               setSelectPreferableInspectionDateModalOpened
             }
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
           />
         )}
         {isSelectPreferableInspectionDateModalOpened && (
@@ -512,6 +524,8 @@ const AddForInspection = ({
             setActionTracker={setActionTracker}
             setIsProvideTransactionDetails={setIsProvideTransactionDetails}
             closeModal={setSelectPreferableInspectionDateModalOpened}
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
           />
         )}
         {isComingFromPriceNeg && (
@@ -522,6 +536,8 @@ const AddForInspection = ({
             allNegotiation={
               propertiesSelected ?? [propertySelectedForInspection]
             } //the first property
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
             closeModal={comingFromPriceNegotiation}
             actionTracker={actionTracker}
             setActionTracker={setActionTracker}
