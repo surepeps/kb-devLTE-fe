@@ -259,25 +259,31 @@ const ProductDetailsPage = () => {
     // console.log(id);
     const getProductDetails = async () => {
       try {
-        const res = await axios.get(URLS.BASE + `/properties/rents/rent/${id}`);
-        console.log(res);
+        const res = await axios.get(URLS.BASE + URLS.getOneProperty + id);
         if (res.status === 200) {
           if (typeof res.data === 'object') {
-            setDetails({
-              price: res.data.rentalPrice,
-              propertyType: res.data.propertyType,
-              bedRoom: res.data.noOfBedrooms,
-              propertyStatus: res.data.propertyCondition,
-              location: res.data.location,
-              tenantCriteria: res.data.tenantCriteria,
-              pictures: res.data.pictures,
-              propertyId: res.data._id,
-              createdAt: res.data.createdAt,
-              owner: res.data.owner,
-              updatedAt: res.data.updatedAt,
-              isAvailable: res.data.isAvailable,
-            });
-            setFeatureData(res.data.features);
+          setDetails({
+            price: res.data.price,
+            propertyType: res.data.propertyType,
+            bedRoom: res.data.bedRoom || res.data.noOfBedrooms || 0,
+            propertyStatus: res.data.propertyCondition || '',
+            location: res.data.location,
+            tenantCriteria: res.data.tenantCriteria || [],
+            pictures: res.data.pictures && res.data.pictures.length > 0 ? res.data.pictures : [sampleImage.src],
+            propertyId: res.data._id,
+            createdAt: res.data.createdAt,
+            owner: res.data.owner,
+            updatedAt: res.data.updatedAt,
+            isAvailable: res.data.isAvailable === 'yes' || res.data.isAvailable === true,
+          });
+            setFeatureData(
+              Array.isArray(res.data.features)
+                ? res.data.features.map((feature: string, idx: number) => ({
+                    _id: String(idx),
+                    featureName: feature,
+                  }))
+                : []
+            );
           }
         }
       } catch (error) {
@@ -412,145 +418,6 @@ const ProductDetailsPage = () => {
                         Price Negotiation
                       </button>
                     </div>
-
-                    {/**Contact Information */}
-                    {/* <div className='min-h-[152px] w-full py-[40px]'>
-                        <h2
-                          className={`text-[24px] leading-[38.4px] font-semibold font-epilogue`}>
-                          Contact Information
-                        </h2>
-
-                        <form
-                          onSubmit={formik.handleSubmit}
-                          method='post'
-                          className='w-full min-h-[270px] mt-[10px] flex flex-col gap-[15px]'>
-                          <section className='md:grid md:grid-cols-2 gap-[15px] flex flex-col'>
-                            <Input
-                              label='name'
-                              name='
-                  Name'
-                              placeholder='This is a placeholder'
-                              type='text'
-                              formik={formik}
-                            />
-                            <Input
-                              label='phoneNumber'
-                              name='
-                  Phone Number'
-                              placeholder='This is a placeholder'
-                              type='number'
-                              formik={formik}
-                            />
-                            <Input
-                              label='email'
-                              name='
-                  Email'
-                              placeholder='This is a placeholder'
-                              type='email'
-                              formik={formik}
-                            />
-                            <label
-                              className=' w-full min-h-[80px] gap-[4px] flex flex-col'
-                              htmlFor={'gender'}>
-                              <h2 className='text-base leading-[25.6px] text-[#1E1E1E] font-medium'>
-                                I am
-                              </h2>
-                              <Select
-                                name='gender'
-                                styles={customStyles}
-                                options={[
-                                  { value: 'Male', label: 'Male' },
-                                  { value: 'Female', label: 'Female' },
-                                  {
-                                    value: 'Prefer not to say',
-                                    label: 'Prefer not to say',
-                                  },
-                                ]}
-                                value={
-                                  formik.values.gender
-                                    ? {
-                                        value: formik.values.gender,
-                                        label: formik.values.gender,
-                                      }
-                                    : null
-                                }
-                                onChange={(
-                                  option: SingleValue<{
-                                    value: string;
-                                    label: string;
-                                  }>
-                                ) => {
-                                  formik.setFieldValue(
-                                    'gender',
-                                    option?.value || ''
-                                  );
-                                }}
-                                onBlur={() =>
-                                  formik.setFieldTouched('gender', true)
-                                }
-                                className='bg-white'
-                                isClearable
-                              />
-                              {formik.errors.gender &&
-                                formik.touched.gender && (
-                                  <span className='text-sm text-red-500'>
-                                    {formik.errors.gender}
-                                  </span>
-                                )}
-                            </label>
-                          </section>
-
-                          <label
-                            className='w-full min-h-[80px] gap-[4px] flex flex-col'
-                            htmlFor={'message'}>
-                            <h2 className='text-base leading-[25.6px] text-[#1E1E1E] font-medium'>
-                              Message
-                            </h2>
-                            <textarea
-                              value={formik.values.message}
-                              onBlur={formik.handleBlur}
-                              id='message'
-                              onChange={formik.handleChange}
-                              placeholder={'Enter your message here'}
-                              className='min-h-[93px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] resize-none py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'></textarea>
-                          </label>
-                          {formik.errors.message && formik.touched.message && (
-                            <span className='text-sm text-red-500'>
-                              {formik.errors.message}
-                            </span>
-                          )}
-
-                        
-                          <div className='flex items-center gap-[10px] mt-[10px]'>
-                            <input
-                              title='checkbox'
-                              style={{
-                                accentColor: '#8DDB90',
-                                backgroundColor: 'transparent',
-                                width: '24px',
-                                height: '24px',
-                              }}
-                              type='checkbox'
-                              onChange={() => {
-                                setAgreedToTermsUse(!agreedToTermsOfUse);
-                              }}
-                            />
-                            <p className='text-base leading-[25.6px] text-[#0B423D] font-semibold'>
-                              By submitting this form I agree to Terms of Use
-                            </p>
-                          </div>
-
-                          <div className='flex md:justify-start md:items-start items-center justify-center'>
-                            <Button
-                              green={true}
-                              type='submit'
-                              onSubmit={formik.handleSubmit}
-                              value='Submit for inspection'
-                              className='text-base cursor-pointer leading-[25.6px] text-[#FFFFFF] font-bold w-[244px] min-h-[50px] py-[12px] px-[24px] mt-[10px]'
-                            />
-                          </div>
-                        </form>
-                      </div> */}
                   </div>
                 </div>
               </div>
@@ -559,13 +426,15 @@ const ProductDetailsPage = () => {
                   <div className='flex justify-between items-start container'>
                     <div className='w-full flex flex-col gap-[26px] h-[inherit]'>
                       <div className='flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar'>
-                        <div className='flex gap-[10px] w-full'>
-                          <span className='text-base text-[#7C8493]'>
+                        <div className="flex w-full gap-[10px] flex-nowrap items-center">
+                          <span className="text-base text-[#7C8493] whitespace-nowrap">
                             Reference ID:
-                          </span>{' '}
+                          </span>
                           <span
-                            //onClick={() => copy(details.owner)}
-                            className={`${epilogue.className} text-lg text-clip text-[#25324B]`}>
+                            // onClick={() => copy(details.owner)}
+                            className={`${epilogue.className} text-base text-clip text-[#25324B] break-all min-w-0 flex-1`}
+                            style={{ wordBreak: 'break-all' }}
+                          >
                             {details.owner}
                           </span>
                         </div>

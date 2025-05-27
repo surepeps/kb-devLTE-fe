@@ -253,7 +253,7 @@ export default function AgentDetailsBar({
   const [selectedTab, setSelectedTab] = useState<string>('Briefs');
 
   return (
-    <div className='fixed top-0 right-0 h-full lg:w-[837px] w-[90%] bg-white shadow-lg z-50'>
+    <div className='fixed top-0 right-0 h-full w-[81%] bg-white shadow-lg z-50'>
       <div className='h-full overflow-y-auto p-[40px]'>
         <div className='w-full flex flex-col gap-[20px]'>
           {/**Close Modal Section */}
