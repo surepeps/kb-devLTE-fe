@@ -108,7 +108,7 @@ const JointVentureModalCard = ({
                   : 'N/A'}
               </span>
             </div>
-            <div className='flex flex-wrap gap-[2%] min-h-[57px]'>
+            <div className='flex flex-wrap gap-[2%] min-h-[57px] cursor-pointer'>
               {/**Land sqft */}
               <div className='bg-[#E4EFE7] px-[7px] h-[26px] w-[59%] text-xs text-[#000000] flex items-center mb-2'>
                 {property?.landSize?.size
