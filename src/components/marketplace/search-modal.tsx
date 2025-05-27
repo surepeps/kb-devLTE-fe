@@ -20,6 +20,7 @@ import { URLS } from '@/utils/URLS';
 import { shuffleArray } from '@/utils/shuffleArray';
 import { useRouter } from 'next/navigation';
 import { POST_REQUEST } from '@/utils/requests';
+import { useSelectedBriefs } from '@/context/selected-briefs-context';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -63,8 +64,7 @@ const SearchModal = ({
 }) => {
   const [selectedType, setSelectedType] = useState<string>('Land');
   const { selectedType: userSelectedMarketPlace } = usePageContext();
-  // const [uniqueProperties, setUniqueProperties] = useState<Set<string>>(new Set());
-  const [selectedBriefs, setSelectedBriefs] = useState<any[]>([]); // Store selected briefs
+  const { selectedBriefs, setSelectedBriefs } = useSelectedBriefs();
   const [uniqueProperties, setUniqueProperties] = useState<Set<any>>(
     new Set(propertiesSelected)
   );
@@ -83,14 +83,15 @@ const SearchModal = ({
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   console.log(usageOptions);
-  // }, [usageOptions]);
+ // Sync local selection to context
+useEffect(() => {
+  setSelectedBriefs(Array.from(uniqueProperties));
+}, [uniqueProperties, setSelectedBriefs]);
 
 
 const handleSearch = async (searchPayload: any) => {
   setFormikStatus('pending');
-    console.log("searchPayload", searchPayload);
+    // console.log("searchPayload", searchPayload);
   try {
     await toast.promise(
       POST_REQUEST(URLS.BASE + URLS.searchBrief, {
@@ -151,7 +152,9 @@ const handleSearch = async (searchPayload: any) => {
               usageOptions={usageOptions}
               addForInspectionPayload={addForInspectionPayload}
               setUsageOptions={setUsageOptions}
-              selectedBriefs={uniqueProperties.size}
+              // selectedBriefs={uniqueProperties.size}
+              selectedBriefs={selectedBriefs.length}
+              // setSelectedBriefs={setSelectedBriefs}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
@@ -245,9 +248,10 @@ const handleSearch = async (searchPayload: any) => {
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   property={property}
-                  onCardPageClick={() => {
-                    router.push(`/property/${type}/${property._id}`);
-                  }}
+                    onCardPageClick={() => {
+                      const selectedBriefsParam = encodeURIComponent(JSON.stringify(Array.from(uniqueProperties)));
+                      router.push(`/property/${type}/${property._id}?selectedBriefs=${selectedBriefsParam}`);
+                    }}
                   onClick={() => {
                     handlePropertiesSelection(property);
                   }}
@@ -529,14 +533,16 @@ const handleSearch = async (searchPayload: any) => {
   };
 
   const handlePropertiesSelection = (property: any) => {
-    //console.log('Clicked');
-    const maximumSelection: number = 2;
-    if (uniqueProperties.size === maximumSelection) {
-      return toast.error(`Maximum of ${maximumSelection} reached`);
-    }
-    uniqueProperties.add(property);
-    setPropertiesSelected(Array.from(uniqueProperties));
-    toast.success('Property selected');
+  const maximumSelection: number = 2;
+  if (uniqueProperties.size === maximumSelection) {
+    return toast.error(`Maximum of ${maximumSelection} reached`);
+  }
+  // Create a new Set to trigger state update
+  const newSet = new Set(uniqueProperties);
+  newSet.add(property);
+  setUniqueProperties(newSet);
+  setPropertiesSelected(Array.from(newSet));
+  toast.success('Property selected');
   };
 
   useEffect(() => {
