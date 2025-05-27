@@ -17,22 +17,22 @@ import CreateBrief from '@/components/admincomponents/createBrief';
 
 const boxData: BoxNotificationProps[] = [
   {
-    name: 'Incoming Briefs',
+    name: 'Total Briefs',
     total: 0,
     type: 'initial',
   },
   {
-    name: 'Agents Briefs',
+    name: 'Active Briefs',
     total: 0,
     type: 'active',
   },
   {
-    name: 'Sellers Briefs',
+    name: 'Pending Briefs',
     total: 0,
     type: 'flagged',
   },
   {
-    name: 'Transacted Briefs',
+    name: 'Closed Deal Briefs',
     total: 0,
     type: 'banned',
   },
@@ -77,14 +77,7 @@ export default function BriefManagement() {
   const [briefSelected, setBriefSelected] = useState<string>('External brief');
 
   const renderDynamicTableContent = () => {
-    switch (briefSelected) {
-      case 'External brief':
         return <BriefLists setBriefTotals={updateBriefTotals} />;
-      case 'Internal brief':
-        return <>{briefSelected}</>; //To be worked on later
-      default:
-        return <BriefLists setBriefTotals={updateBriefTotals} />;
-    }
   };
 
   return isLoading ? (
@@ -168,28 +161,6 @@ export default function BriefManagement() {
               </div>
             </div>
           </div>
-        </div>
-        {/**
-         * External and Internal Briefs Buttons
-         */}
-        <div className='mt-6 lg:w-[265px] flex gap-[30px]'>
-          {['External brief', 'Internal brief'].map(
-            (item: string, idx: number) => (
-              <button
-                onClick={() => setBriefSelected(item)}
-                type='button'
-                className={`${
-                  item === briefSelected
-                    ? 'bg-[#8DDB90] font-semibold text-[#FFFFFF]'
-                    : 'bg-gray-200 font-normal text-[#000000]'
-                } rounded-[4px] py-[12px] px-[7px] w-[121px] text-base transition-all duration-500 ${
-                  archivo.className
-                }`}
-                key={idx}>
-                {item}
-              </button>
-            )
-          )}
         </div>
         <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
           {data.map((item: BoxNotificationProps, index: number) => (
