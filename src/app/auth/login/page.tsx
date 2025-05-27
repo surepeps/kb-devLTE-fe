@@ -197,6 +197,13 @@ const Login = () => {
   //   }
   // }, [user]);
 
+    // useEffect(() => {
+    //   if (user?.userType === "Agent") router.push('/agent/briefs') 
+    //     else {
+    //       router.push('/my_listing');
+    //     }
+    // }, [user]);
+
   if (isLoading) return <Loading />;
 
   return (
