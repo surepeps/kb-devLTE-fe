@@ -6,34 +6,24 @@
 import React, { Fragment, MouseEventHandler, useEffect, useState } from 'react';
 import arrowRightIcon from '@/svgs/arrowR.svg';
 import Image from 'next/image';
-import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
-import { motion } from 'framer-motion';
-import arrow from '@/svgs/arrowRight.svg';
-import HouseFrame from '@/components/general-components/house-frame';
-import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { useLoading } from '@/hooks/useLoading';
 import Loading from '@/components/loading-component/loading';
 import { epilogue } from '@/styles/font';
-import { featuresData } from '@/data/buy_data';
 import checkIcon from '@/svgs/checkIcon.svg';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Button from '@/components/general-components/button';
 import PhoneInput, {
   Country,
   isValidPhoneNumber,
 } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
-import Select, { SingleValue } from 'react-select';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
-import customStyles from '@/styles/inputStyle';
-import RadioCheck from '@/components/general-components/radioCheck';
+import { useSelectedBriefs } from '@/context/selected-briefs-context';
 import toast from 'react-hot-toast';
 import { shuffleArray } from '@/utils/shuffleArray';
-import { requestFormReset } from 'react-dom';
 import sampleImage from '@/assets/Rectangle.png';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -89,6 +79,13 @@ type HouseFrameProps = {
 };
 
 const ProductDetailsPage = () => {
+const { selectedBriefs, setSelectedBriefs } = useSelectedBriefs();
+// const searchParams = useSearchParams();
+// const selectedBriefsList = JSON.parse(searchParams.get('selectedBriefs') || '[]');
+// const selectedBriefs = selectedBriefsList.length;
+
+console.log('Selected Briefs:', selectedBriefs);
+
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
     usePageContext();
@@ -121,8 +118,8 @@ const ProductDetailsPage = () => {
   const [isDataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
-  const [selectedBriefs, setSelectedBriefs] = useState(2);
-  const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
+  // const [selectedBriefs, setSelectedBriefs] = useState(2);
+  // const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
   const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
     useState<boolean>(false);
   const is_mobile = IsMobile();
@@ -479,7 +476,7 @@ const ProductDetailsPage = () => {
                         <button
                           type='button'
                           className='w-full h-[60px] border-[1px] border-[#FF3D00] text-[#FF3D00] font-medium text-lg'>
-                          {selectedBriefs} selected brief
+                          {Array.from(selectedBriefs).length} selected brief
                         </button>
                       </div>
                       <div className='w-full items-end hidden h-full md:flex md:flex-col gap-[10px]'>
@@ -540,13 +537,13 @@ const ProductDetailsPage = () => {
               </div>
             </div>
             <MobileSelectedBottomBar
-              selectedBriefs={selectedBriefs}
-              selectedBriefsList={selectedBriefsList}
+              selectedBriefs={selectedBriefs.length}
+              selectedBriefsList={selectedBriefs}
               onViewBrief={() => {
-                console.log('View Briefs', selectedBriefsList);
+                console.log('View Briefs', selectedBriefs);
               }}
               onSubmitForInspection={() => {
-                console.log('Submit for inspection', selectedBriefsList);
+                console.log('Submit for inspection', selectedBriefs);
               }}
             />
           </div>
