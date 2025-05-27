@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePageContext } from '@/context/page-context';
 import RadioCheck from '../general-components/radioCheck';
 import JointVentureModalCard from '../marketplace/joint-venture-card';
@@ -46,16 +46,37 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
   // Dummy list of cards (replace with real data later)
   const dummyList = Array.from({ length: 12 });
 
+  useEffect(() => {
+      console.log('Selected Type:', briefs);
+  }, [briefs]);
+
+  const mapBriefToCardData = (brief: any) => [
+    { header: 'Property Type', value: brief.propertyType || 'N/A' },
+    { header: 'Price', value: brief.price ? `₦${Number(brief.price).toLocaleString()}` : 'N/A' },
+    { header: 'Bedrooms', value: brief.bedrooms || 'N/A' },
+  {
+    header: 'Location',
+    value: typeof brief.location === 'object' && brief.location !== null
+      ? [brief.location.state, brief.location.localGovernment, brief.location.area]
+          .filter(Boolean)
+          .join(', ')
+      : brief.location || 'N/A'
+  },
+    { header: 'Documents', value: brief.documents || 'N/A' },
+  ];
+
   // Render the correct card based on propertyType
   const renderCard = (brief: any, idx: number) => {
-    if (propertyType === 'JV') {
+    const cardData = mapBriefToCardData(brief);
+
+    if (brief.briefType === 'Joint Venture') {
       return (
         <JointVentureModalCard
           key={idx}
           onClick={() => {}}
           isAddInspectionalModalOpened={isAddForInspectionModalOpened}
           isDisabled={false}
-          cardData={dummyCardData}
+          cardData={cardData}
           images={[sampleImage]}
           property={brief}
           properties={briefs}
@@ -63,6 +84,10 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
           isComingFromSubmitLol={false}
           setIsComingFromSubmitLol={() => {}}
           setIsAddInspectionModalOpened={() => {}}
+          onCardPageClick={() => {
+          // Use the correct route for your property
+          router.push(`/property/${brief?.briefType || 'type'}/${brief?._id}`);
+        }}
         />
       );
     }
@@ -70,14 +95,15 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
     return (
       <Card
         isAddForInspectionModalOpened={isAddForInspectionModalOpened}
-        style={{ width: '300px' }}
         images={[sampleImage]}
         onClick={() => {}}
-        cardData={briefs}
+        onCardPageClick={() => {
+          router.push(`/property/${brief?.briefType || 'type'}/${brief?._id}`);
+        }}
+        cardData={cardData}
         key={idx}
         isDisabled={false}
         property={brief}
-        // properties={briefs}
       />
     );
   };
@@ -146,14 +172,14 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
         </div>
         {/* Listing Cards */}
         <div className='w-full flex justify-center'>
-          <div className='w-full sm:w-[95%] lg:w-[90%] mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[20px] md:gap-[37px] justify-items-center'>
-          {loading ? (
-            <div>Loading...</div>
-          ) : briefs.length === 0 ? (
-            <div>No listings found.</div>
-          ) : (
-            briefs.map((brief, idx) => renderCard(brief, idx))
-          )}
+          <div className='w-full overflow-y-auto flex items-start md:mt-[20px] md:gap-[10px] gap-[10px] flex-wrap'>
+            {loading ? (
+              <div>Loading...</div>
+            ) : briefs.length === 0 ? (
+              <div>No listings found.</div>
+            ) : (
+              briefs.map((brief, idx) => renderCard(brief, idx))
+            )}
           </div>
         </div>
       </div>
