@@ -83,9 +83,9 @@ const SearchModal = ({
 
   const router = useRouter();
 
-  useEffect(() => {
-    console.log(usageOptions);
-  }, [usageOptions]);
+  // useEffect(() => {
+  //   console.log(usageOptions);
+  // }, [usageOptions]);
 
 
 const handleSearch = async (searchPayload: any) => {

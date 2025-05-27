@@ -100,17 +100,19 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         });
       }
       const data = response.agents.data;
+       // Filter only agents with userType === "Agent"
+      const filteredAgents = data.filter((agent: any) => agent.userType === "Agent");
+      setAgents(filteredAgents);
       // console.log(data);
       setIsLoadingDetails({
         isLoading: false,
         message: 'Data Loaded',
       });
-      setAgents(data);
       setDetails?.({
         totalAgents: response.agents.totalAgents || 0,
         activeAgents: response.agents.totalActiveAgents || 0,
         inActiveAgents: response.agents.totalInactiveAgents || 0,
-        bannedAgents: 0, // Update if banned agents data is available
+        bannedAgents: 0,
         flaggedAgents: response.agents.totalFlaggedAgents || 0,
       });
       // console.log(data);
@@ -210,11 +212,29 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   }, [active]);
 
   const filteredAgents = agents.filter((agent) => {
-    if (active === 'Onboarding Agents') {
-      return !agent.accountApproved;
-    }
-    return agent.meansOfId.length > 0;
-  });
+  if (active === 'Onboarding Agents') {
+    return !agent.accountApproved;
+  }
+  if (active === 'All Agents') {
+    return true;
+  }
+  if (active === 'Active Agents') {
+    // Show agents that are approved and not inactive
+    return agent.accountApproved && !agent.isInActive;
+  }
+  if (active === 'Inactive Agents') {
+    // Show agents that are approved and inactive
+    return agent.accountApproved && agent.isInActive;
+  }
+  // if (active === 'Banned Agents') {
+  //   // If you have a banned property, use it here
+  //   return agent.isBanned;
+  // }
+  if (active === 'Flagged Agents') {
+    return agent.isFlagged;
+  }
+  return false;
+});
 
   const handleActionClick = (user: any) => {
     setSelectedUser(user);
@@ -278,9 +298,9 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
                   </th>
                   <th className='p-3'>ID</th>
                   <th className='p-3'>Legal Name</th>
-                  <th className='p-3'>Email</th>
-                  <th className='p-3'>Agent Type</th>
-                  <th className='p-3'>Address</th>
+                  <th className='p-3'>Total Briefs</th>
+                  <th className='p-3'>Type of Agent</th>
+                  <th className='p-3'>Area of operation</th>
                   <th className='p-3'>Action</th>
                 </tr>
               </thead>
@@ -298,7 +318,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
                         ? `${item.firstName} ${item.lastName}`
                         : item.fullName}
                     </td>
-                    <td className='p-3'>{item.email}</td>
+                    <td className='p-3'>1000</td>
                     <td
                       className={`p-3 font-semibold ${
                         item.agentType?.toLowerCase() === 'individual'
@@ -471,7 +491,7 @@ const tabs = [
   { text: 'All Agents' },
   { text: 'Active Agents' },
   { text: 'Inactive Agents' },
-  { text: 'Flagged Agents' },
+  { text: 'Banned Agents' },
 ];
 
 const statsOptions = [

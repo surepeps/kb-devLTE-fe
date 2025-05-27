@@ -14,31 +14,9 @@ import Loading from '@/components/loading-component/loading';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 
-const boxData: BoxNotificationProps[] = [
-  {
-    name: 'Active Agents',
-    total: 0,
-    type: 'active',
-  },
-  {
-    name: 'Total Agents',
-    total: 0,
-    type: 'initial',
-  },
-  {
-    name: 'Ban Agents',
-    total: 0,
-    type: 'banned',
-  },
-  {
-    name: 'Flagged Agents',
-    total: 0,
-    type: 'flagged',
-  },
-];
-
 export default function AgentManagement() {
   const isLoading = useLoading();
+  const [activeUserType, setActiveUserType] = useState<'agent' | 'landlord'>('agent');
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -52,7 +30,8 @@ export default function AgentManagement() {
     flaggedAgents: 0,
   });
 
-  const [data, setData] = useState<BoxNotificationProps[]>(boxData);
+  const [data, setData] = useState<BoxNotificationProps[]>();
+  const [subData, setSubData] = useState<BoxNotificationProps[]>();
 
   const formik = useFormik({
     initialValues: {
@@ -63,30 +42,42 @@ export default function AgentManagement() {
     },
   });
 
-  useEffect(() => {
-    setData([
-      {
-        name: 'Active Agents',
-        total: details.activeAgents || 0,
-        type: 'active',
-      },
-      {
-        name: 'Total Agents',
-        total: details.totalAgents || 0,
-        type: 'initial',
-      },
-      {
-        name: 'Ban Agents',
-        total: details.bannedAgents || 0,
-        type: 'banned',
-      },
-      {
-        name: 'Flagged Agents',
-        total: details.flaggedAgents || 0,
-        type: 'flagged',
-      },
+const fixedBoxData: BoxNotificationProps[] = [
+  { name: 'Total Agents', total: 1200, type: 'initial' },
+  { name: 'Active Agents', total: 900, type: 'active' },
+  { name: 'Flagged Agents', total: 50, type: 'flagged' },
+  { name: 'Banned Agents', total: 10, type: 'banned' },
+];
+
+const agentBoxData: BoxNotificationProps[] = [
+  { name: 'Total Active Agents', total: details.activeAgents || 0, type: 'active' },
+  { name: 'Flagged Agents', total: details.flaggedAgents || 0, type: 'flagged' },
+  { name: 'Banned Agents', total: details.bannedAgents || 0, type: 'banned' },
+];
+
+const landlordBoxData: BoxNotificationProps[] = [
+  { name: 'Total Active Landlords', total: details.activeAgents || 0, type: 'active' },
+  { name: 'Flagged Landlords', total: details.flaggedAgents || 0, type: 'flagged' },
+  { name: 'Banned Landlords', total: details.bannedAgents || 0, type: 'banned' },
+];
+
+useEffect(() => {
+  if (activeUserType === 'agent') {
+    setData(agentBoxData); // Main boxes
+    setSubData([
+      { name: 'Total Active Agents', total: details.totalAgents || 0, type: 'initial' },
+      { name: 'Flagged Agents', total: details.flaggedAgents || 0, type: 'flagged' },
+      { name: 'Banned Agents', total: details.bannedAgents || 0, type: 'banned' },
     ]);
-  }, [details]);
+  } else {
+    setData(landlordBoxData); // Main boxes
+    setSubData([
+      { name: 'Total Landlords', total: details.totalAgents || 0, type: 'initial' },
+      { name: 'Flagged Landlords', total: details.flaggedAgents || 0, type: 'flagged' },
+      { name: 'Banned Landlords', total: details.bannedAgents || 0, type: 'banned' },
+    ]);
+  }
+}, [activeUserType, details]);
 
   if (isLoading) return <Loading />;
 
@@ -126,7 +117,7 @@ export default function AgentManagement() {
         <div className='flex flex-col gap-1 md:gap-0'>
           <h2
             className={`text-3xl font-bold text-[#2E2C34] ${archivo.className}`}>
-            Agent Management
+            Account Management
           </h2>
           <p className={`text-sm text-[#84818A] ${archivo.className}`}>
             Showing your Account metrics from{' '}
@@ -159,7 +150,27 @@ export default function AgentManagement() {
         </div>
       </div>
       <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full mt-6'>
-        {data.map((item: BoxNotificationProps, index: number) => (
+        {fixedBoxData.map((item, index) => (
+          <BoxNotification key={index} {...item} />
+        ))}
+      </div>
+            {/* Tab Buttons */}
+      <div className="flex items-center my-6 gap-4">
+        <button
+          className={`px-6 py-4 rounded font-semibold border ${activeUserType === 'agent' ? 'bg-[#8DDB90] text-white' : 'bg-white text-[#2E2C34]'}`}
+          onClick={() => setActiveUserType('agent')}
+        >
+          Agent Overview
+        </button>
+        <button
+          className={`px-6 py-4 rounded font-semibold border ${activeUserType === 'landlord' ? 'bg-[#8DDB90] text-white' : 'bg-white text-[#2E2C34]'}`}
+          onClick={() => setActiveUserType('landlord')}
+        >
+          Landlord Overview
+        </button>
+      </div>
+      <div className='flex overflow-x-auto hide-scrollbar gap-[30px] w-full'>
+        {subData && subData.map((item: BoxNotificationProps, index: number) => (
           <BoxNotification key={index} {...item} />
         ))}
       </div>
