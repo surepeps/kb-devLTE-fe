@@ -2,6 +2,7 @@
 //import { useRouter } from 'next/router';
 
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { PropertyProps } from './property.types';
 
 interface Option {
   value: string;
@@ -126,6 +127,22 @@ export interface GlobalContextTypes {
   /**Market Place */
   selectedType: string;
   setSelectedType: (type: string) => void;
+
+  /**
+   * Property selected for inspection from the property detailss page
+   */
+  propertySelectedForInspection: PropertyProps | undefined;
+  setPropertySelectedForInspection: (
+    property: PropertyProps | undefined
+  ) => void;
+
+  //add for inspection modal
+  isAddForInspectionModalOpened: boolean;
+  setIsAddForInspectionModalOpened: (type: boolean) => void;
+
+  //price negotiation button
+  isComingFromPriceNeg: boolean;
+  setIsComingFromPriceNeg: (type: boolean) => void;
 }
 
 export type BriefType = {
