@@ -9,14 +9,17 @@
 'use client';
 
 import AgentLists from '@/components/admincomponents/agent_lists';
+import LandOwnersLists from './landowners-lists';
 import { motion } from 'framer-motion';
 
 type AgentManagementTabsProps = {
   setDetails?: (details: any) => void;
+  activeUserType?: 'agent' | 'landlord';
 };
 
 export default function AgentManagementTabs({
   setDetails,
+  activeUserType = 'agent',
 }: AgentManagementTabsProps) {
   return (
     <motion.div
@@ -27,7 +30,11 @@ export default function AgentManagementTabs({
       viewport={{ once: true }}>
       <div className='flex flex-col w-full'>
         <div className='w-full'>
-          <AgentLists setDetails={setDetails} />
+          {activeUserType === 'agent' ? (
+            <AgentLists setDetails={setDetails} />
+          ) : (
+            <LandOwnersLists setDetails={setDetails} />
+          )}
         </div>
       </div>
     </motion.div>
