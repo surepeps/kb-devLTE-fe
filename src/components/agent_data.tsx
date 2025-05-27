@@ -140,6 +140,7 @@ const steps: Step[] = [
       firstName: user?.firstName,
       lastName: user?.lastName,
       phoneNumber: user?.phoneNumber,
+      email: user?.email,
     },
     onSubmit: async () => {
       if (!idFileUrl) {
@@ -149,6 +150,9 @@ const steps: Step[] = [
         return toast.error(
           'Please upload your utility bill for address verification'
         );
+      }
+      if (!user?.email) {
+        return toast.error('User email is required. Please log in again.');
       }
 
       const payload = {
@@ -163,16 +167,22 @@ const steps: Step[] = [
         agentType:
           selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
         ...(selectedAgentType === 'Individual Agent'
-          ? {
-              individualAgent: {
-                typeOfId: formik.values.typeOfID,
-              },
-            }
-          : {
-              companyAgent: {
-                companyName: formik.values.companyName,
-              },
-            }),
+        ? {
+            individualAgent: {
+              typeOfId: formik.values.typeOfID,
+            },
+          }
+        : {
+            companyAgent: {
+              companyName: formik.values.companyName,
+              cacNumber: formik.values.cacNumber,
+            },
+            // Do NOT include govtId for company
+          }),
+          govtId: {
+            typeOfId: formik.values.typeOfID,
+            idNumber: formik.values.IdNumber,
+          },
         firstName: formik.values.firstName,
         lastName: formik.values.lastName,
         phoneNumber: formik.values.phoneNumber,
@@ -188,7 +198,7 @@ const steps: Step[] = [
           },
         ],
       };
-      console.log('Payload:', payload);
+      // console.log('Payload:', payload);
       await toast.promise(
         PUT_REQUEST(
           URLS.BASE + URLS.agentOnboarding,
@@ -254,6 +264,7 @@ const steps: Step[] = [
         houseNumber: '',
         IdNumber: '',
         cacNumber: '',
+        email: user.email,
       });
     }
   }, [user]);
