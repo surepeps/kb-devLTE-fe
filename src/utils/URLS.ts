@@ -18,6 +18,7 @@ export const URLS = {
   agentCreateBrief: '/properties/sell/new',
   listNewProperty: '/properties/new',
   getMyProperties: '/properties/mine/all',
+  getOneProperty: '/properties/',
   agentfetchTotalBriefs: '/agent/properties',
   landLordCreateBrief: '/properties/rents/rent/new',
   buyersFetchBriefs: '/properties/all',

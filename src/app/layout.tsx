@@ -11,6 +11,7 @@ import Body from '@/components/general-components/body';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from '@/context/user-context';
 import { CreateBriefProvider } from '@/context/create-brief-context';
+import { SelectedBriefsProvider } from '@/context/selected-briefs-context';
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -30,6 +31,7 @@ export default function RootLayout({
     <UserProvider>
       <PageContextProvider>
         <CreateBriefProvider>
+          <SelectedBriefsProvider>
           <html lang='en'>
             <body
               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
@@ -46,6 +48,7 @@ export default function RootLayout({
               <Toaster />
             </body>
           </html>
+          </SelectedBriefsProvider>
         </CreateBriefProvider>
       </PageContextProvider>
     </UserProvider>
