@@ -65,6 +65,9 @@ interface DetailsProps {
   owner: string;
   updatedAt: string;
   isAvailable: boolean;
+  docOnProperty: string[];
+  _id?: string;
+  id?: string;
 }
 
 interface FormProps {
@@ -111,6 +114,7 @@ const ProductDetailsPage = () => {
     owner: '',
     updatedAt: '',
     isAvailable: false,
+    docOnProperty: [],
   });
   const [featureData, setFeatureData] = useState<
     { _id: string; featureName: string }[]
@@ -123,8 +127,13 @@ const ProductDetailsPage = () => {
   const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
   const [selectedBriefs, setSelectedBriefs] = useState(2);
   const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
-  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
-    useState<boolean>(false);
+
+  const {
+    setPropertySelectedForInspection,
+    isAddForInspectionModalOpened,
+    setIsAddForInspectionModalOpened,
+    setIsComingFromPriceNeg,
+  } = usePageContext();
   const is_mobile = IsMobile();
 
   const handlePreviousSlide = () => {
@@ -276,6 +285,9 @@ const ProductDetailsPage = () => {
               owner: res.data.owner,
               updatedAt: res.data.updatedAt,
               isAvailable: res.data.isAvailable,
+              id: res.data._id,
+              _id: res.data._id,
+              docOnProperty: [],
             });
             setFeatureData(res.data.features);
           }
@@ -401,16 +413,29 @@ const ProductDetailsPage = () => {
                     ) : null}
 
                     <div className='w-full flex flex-row items-center mt-10 gap-3 justify-between'>
-                      <button
-                        type='button'
-                        className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
-                        Select for inspection
-                      </button>
-                      <button
-                        type='button'
-                        className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
-                        Price Negotiation
-                      </button>
+                      <Link href={'/market-place'}>
+                        <button
+                          type='button'
+                          onClick={() => {
+                            setPropertySelectedForInspection(details);
+                            setIsAddForInspectionModalOpened(true);
+                          }}
+                          className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
+                          Select for inspection
+                        </button>
+                      </Link>
+                      <Link href={'/market-place'}>
+                        <button
+                          onClick={() => {
+                            setPropertySelectedForInspection(details);
+                            setIsAddForInspectionModalOpened(true);
+                            setIsComingFromPriceNeg(true);
+                          }}
+                          type='button'
+                          className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
+                          Price Negotiation
+                        </button>
+                      </Link>
                     </div>
 
                     {/**Contact Information */}

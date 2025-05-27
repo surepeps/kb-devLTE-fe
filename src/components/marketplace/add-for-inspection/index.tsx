@@ -25,6 +25,7 @@ import JointVentureModalCard from '../joint-venture-card';
 import { Span } from 'next/dist/trace';
 import LetterOfIntention from './letter-of-intention';
 import UploadLolDocumentModal from './upload-your-lol-document';
+import { usePageContext } from '@/context/page-context';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -93,6 +94,7 @@ const AddForInspection = ({
   >([]);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const { propertySelectedForInspection } = usePageContext();
 
   const [isLolGuidelineModalOpened, setIsLolGuidelineModalOpened] =
     useState<boolean>(true);
@@ -514,8 +516,12 @@ const AddForInspection = ({
         )}
         {isComingFromPriceNeg && (
           <NegiotiatePriceWithSellerModal
-            getID={propertiesSelected[0].id}
-            allNegotiation={propertiesSelected} //the first property
+            getID={
+              propertiesSelected[0].id ?? propertySelectedForInspection?._id
+            }
+            allNegotiation={
+              propertiesSelected ?? [propertySelectedForInspection]
+            } //the first property
             closeModal={comingFromPriceNegotiation}
             actionTracker={actionTracker}
             setActionTracker={setActionTracker}
