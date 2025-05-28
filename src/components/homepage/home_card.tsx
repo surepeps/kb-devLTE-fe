@@ -4,6 +4,7 @@ import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import Image from 'next/image';
 import React, { FC } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation'; 
 
 interface CardProps {
   heading: string;
@@ -24,6 +25,8 @@ const Card: FC<CardProps> = ({
   buttonText,
   link,
 }) => {
+  const router = useRouter();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -81,6 +84,7 @@ const Card: FC<CardProps> = ({
             backgroundColor: color,
           }}
           type='button'
+          onClick={() => router.push(link)}
           className='h-[54px] flex items-center justify-center w-[100%] text-base font-bold text-white flex-shrink-0 break-words whitespace-normal mt-2 md:mt-0'>
           {buttonText}
         </button>
