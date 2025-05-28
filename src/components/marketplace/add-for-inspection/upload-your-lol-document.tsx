@@ -14,6 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Input from '@/components/general-components/Input';
 import AttachFile from '@/components/general-components/attach_file';
+import { SubmitInspectionPayloadProp } from '../types/payload';
 
 type UploadLolDocumentProps = {
   closeModal?: (type: boolean) => void;
@@ -24,6 +25,10 @@ type UploadLolDocumentProps = {
   actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
   setActionTracker: React.Dispatch<
     React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
+  >;
+  submitInspectionPayload: SubmitInspectionPayloadProp;
+  setSubmitInspectionPayload: React.Dispatch<
+    React.SetStateAction<SubmitInspectionPayloadProp>
   >;
 };
 
@@ -51,6 +56,8 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
   setActionTracker,
   actionTracker,
   closeSelectPreferableModal,
+  submitInspectionPayload,
+  setSubmitInspectionPayload,
 }): React.JSX.Element => {
   const [selectedProperty, setSelectedProperty] =
     useState<SelectedPropertyProps>({
@@ -79,6 +86,18 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
         ...actionTracker,
         { lastPage: 'SelectPreferableInspectionDate' },
       ]);
+      setSubmitInspectionPayload({
+        ...submitInspectionPayload,
+        requestedBy: {
+          fullName: formik.values.fullName,
+          email: formik.values.email,
+          phoneNumber: formik.values.phoneNumber,
+        },
+        transaction: {
+          ...submitInspectionPayload.transaction,
+          transactionReceipt: fileUrl as string,
+        },
+      });
       setIsProvideTransactionDetails(true);
       closeSelectPreferableModal(false);
       closeModal?.(false);
@@ -213,6 +232,10 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
                               ...details,
                               selectedDate: date,
                             });
+                            setSubmitInspectionPayload({
+                              ...submitInspectionPayload,
+                              inspectionDate: date,
+                            });
                           }}
                           className={`h-[42px] ${
                             details.selectedDate === date &&
@@ -251,6 +274,10 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
                             setDetails({
                               ...details,
                               selectedTime: time,
+                            });
+                            setSubmitInspectionPayload({
+                              ...submitInspectionPayload,
+                              inspectionTime: time,
                             });
                           }}
                           className={`border-[1px] border-[#A8ADB7] h-[57px] ${
