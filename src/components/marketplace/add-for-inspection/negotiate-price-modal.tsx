@@ -13,6 +13,7 @@ import { archivo } from '@/styles/font';
 import Input from '@/components/general-components/Input';
 import { FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
+import { SubmitInspectionPayloadProp } from '../types/payload';
 
 type NegotiationModalProps = {
   id: string | null;
@@ -28,6 +29,8 @@ const NegiotiatePrice = ({
   currentIndex,
   setCurrentIndex,
   setSelectPreferableInspectionDateModalOpened,
+  submitInspectionPayload,
+  setSubmitInspectionPayload,
 }: {
   getID: string | null;
   allNegotiation: NegotiationModalProps[];
@@ -35,6 +38,10 @@ const NegiotiatePrice = ({
   currentIndex: number;
   setCurrentIndex: (type: number) => void;
   setSelectPreferableInspectionDateModalOpened: (type: boolean) => void;
+  submitInspectionPayload: SubmitInspectionPayloadProp;
+  setSubmitInspectionPayload: React.Dispatch<
+    React.SetStateAction<SubmitInspectionPayloadProp>
+  >;
 }): React.JSX.Element => {
   //const [inputValue, setInputValue] = useState<string>('');
   const [selectedProperty, setSelectedProperty] =
@@ -157,6 +164,10 @@ const NegiotiatePrice = ({
                   ...selectedProperty,
                   yourPrice: value,
                 });
+                setSubmitInspectionPayload({
+                  ...submitInspectionPayload,
+                  negotiationPrice: Number(value),
+                });
               }}
             />
             {/** Submit and Cancel buttons */}
@@ -195,6 +206,10 @@ type NegotiateWithSellerProps = {
   setActionTracker: React.Dispatch<
     React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
   >;
+  submitInspectionPayload: SubmitInspectionPayloadProp;
+  setSubmitInspectionPayload: React.Dispatch<
+    React.SetStateAction<SubmitInspectionPayloadProp>
+  >;
 };
 
 type DetailsProps = {
@@ -216,6 +231,8 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
   setActionTracker,
   actionTracker,
   closeSelectPreferableModal,
+  submitInspectionPayload,
+  setSubmitInspectionPayload,
 }): React.JSX.Element => {
   const [selectedProperty, setSelectedProperty] =
     useState<NegotiationModalProps>({
@@ -246,6 +263,14 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
         ...actionTracker,
         { lastPage: 'SelectPreferableInspectionDate' },
       ]);
+      setSubmitInspectionPayload({
+        ...submitInspectionPayload,
+        requestedBy: {
+          fullName: formik.values.fullName,
+          email: formik.values.email,
+          phoneNumber: formik.values.phoneNumber,
+        },
+      });
       setIsProvideTransactionDetails(true);
       closeSelectPreferableModal(false);
       closeModal?.(false);
@@ -342,6 +367,10 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
                   ...selectedProperty,
                   yourPrice: event.target.value,
                 });
+                setSubmitInspectionPayload({
+                  ...submitInspectionPayload,
+                  negotiationPrice: Number(event.target.value),
+                });
               }}
             />
             <p className='text-[#1976D2] font-medium text-lg'>
@@ -390,6 +419,10 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
                               ...details,
                               selectedDate: date,
                             });
+                            setSubmitInspectionPayload({
+                              ...submitInspectionPayload,
+                              inspectionDate: date,
+                            });
                           }}
                           className={`h-[42px] ${
                             details.selectedDate === date &&
@@ -428,6 +461,10 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
                             setDetails({
                               ...details,
                               selectedTime: time,
+                            });
+                            setSubmitInspectionPayload({
+                              ...submitInspectionPayload,
+                              inspectionTime: time,
                             });
                           }}
                           className={`border-[1px] border-[#A8ADB7] h-[57px] ${

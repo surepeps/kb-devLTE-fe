@@ -25,6 +25,8 @@ import JointVentureModalCard from '../joint-venture-card';
 import { Span } from 'next/dist/trace';
 import LetterOfIntention from './letter-of-intention';
 import UploadLolDocumentModal from './upload-your-lol-document';
+import { usePageContext } from '@/context/page-context';
+import { SubmitInspectionPayloadProp } from '../types/payload';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -93,6 +95,7 @@ const AddForInspection = ({
   >([]);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const { propertySelectedForInspection } = usePageContext();
 
   const [isLolGuidelineModalOpened, setIsLolGuidelineModalOpened] =
     useState<boolean>(true);
@@ -101,6 +104,9 @@ const AddForInspection = ({
   const [totalAmount, setTotalAmount] = useState<number>(
     payload.initialAmount + payload.toBeIncreaseBy
   );
+
+  const [submitPayload, setSubmitPayload] =
+    useState<SubmitInspectionPayloadProp>({} as SubmitInspectionPayloadProp);
 
   useEffect(() => {
     setTotalAmount(payload.initialAmount + payload.toBeIncreaseBy);
@@ -326,6 +332,10 @@ const AddForInspection = ({
 
   useEffect(() => console.log(isComingFromSubmitLol), [isComingFromSubmitLol]);
 
+  useEffect(() => {
+    console.log(submitPayload);
+  }, [submitPayload, setSubmitPayload]);
+
   return (
     <Fragment>
       <div className='w-full flex justify-center items-center py-[30px] px-[30px]'>
@@ -364,6 +374,8 @@ const AddForInspection = ({
             {isProvideTransactionDetails ? (
               <ProvideTransactionDetails
                 amountToPay={payload.initialAmount + payload.toBeIncreaseBy}
+                setSubmitInspectionPayload={setSubmitPayload}
+                submitInspectionPayload={submitPayload}
               />
             ) : (
               <Fragment>
@@ -502,6 +514,8 @@ const AddForInspection = ({
             setSelectPreferableInspectionDateModalOpened={
               setSelectPreferableInspectionDateModalOpened
             }
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
           />
         )}
         {isSelectPreferableInspectionDateModalOpened && (
@@ -510,12 +524,20 @@ const AddForInspection = ({
             setActionTracker={setActionTracker}
             setIsProvideTransactionDetails={setIsProvideTransactionDetails}
             closeModal={setSelectPreferableInspectionDateModalOpened}
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
           />
         )}
         {isComingFromPriceNeg && (
           <NegiotiatePriceWithSellerModal
-            getID={propertiesSelected[0].id}
-            allNegotiation={propertiesSelected} //the first property
+            getID={
+              propertiesSelected[0].id ?? propertySelectedForInspection?._id
+            }
+            allNegotiation={
+              propertiesSelected ?? [propertySelectedForInspection]
+            } //the first property
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
             closeModal={comingFromPriceNegotiation}
             actionTracker={actionTracker}
             setActionTracker={setActionTracker}
@@ -544,6 +566,8 @@ const AddForInspection = ({
             closeSelectPreferableModal={
               setSelectPreferableInspectionDateModalOpened
             }
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
           />
         )}
       </AnimatePresence>
