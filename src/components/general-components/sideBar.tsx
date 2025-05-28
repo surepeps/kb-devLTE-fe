@@ -66,7 +66,7 @@ const SideBar = ({
                     className='h-full w-[50%] text-base font-bold text-[#8DDB90] border-r-[1px] border-[#A8ADB7] pr-[10px]'
                     onClick={() => {
                       setIsModalOpened(false);
-                      router.push('/auth/register');
+                      router.push('/auth');
                     }}
                     type='button'>
                     Sign Up

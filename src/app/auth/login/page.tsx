@@ -258,7 +258,7 @@ const Login = () => {
               Don&apos;t have an account?{' '}
               <Link
                 className='font-semibold text-[#09391C]'
-                href={'/auth/register'}>
+                href={'/auth'}>
                 Sign Up
               </Link>
             </p>
