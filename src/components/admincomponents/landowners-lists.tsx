@@ -98,6 +98,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         });
       }
       const data = response.agents.data;
+      console.log('Agents Data:', data);
       const filteredLandowners = data.filter((agent: any) => agent.userType === "Landowners");
       setAgents(filteredLandowners);
 
