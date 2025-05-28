@@ -25,24 +25,24 @@ export const navData: {
     name: 'Marketplace',
     url: '/market-place',
     isClicked: false,
-    // additionalLinks: [
-    //   {
-    //     name: 'list a property',
-    //     url: '#',
-    //   },
-    //   {
-    //     name: 'Buy a property',
-    //     url: '/market-place',
-    //   },
-    //   {
-    //     name: 'Rent a property',
-    //     url: '/market-place',
-    //   },
-    //   {
-    //     name: 'Property on joint venture',
-    //     url: '#',
-    //   },
-    // ],
+    additionalLinks: [
+      {
+        name: 'list a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Buy a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Rent a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Property on joint venture',
+        url: '/market-place',
+      },
+    ],
   },
   // {
   //   name: 'Landlord',
@@ -81,17 +81,17 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
   [
     {
       name: 'List a property',
-      url: '/buy_page',
+      url: '/my_listing',
       isClicked: false,
     },
     {
       name: 'Buy a property',
-      url: '/sell_page',
+      url: '/market-place',
       isClicked: false,
     },
     {
       name: 'Become an Agent',
-      url: '/agent_page',
+      url: '/agent',
       isClicked: false,
     },
     {
@@ -104,34 +104,34 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
 export const servicesData: { name: string; url: string }[] = [
   {
     name: 'Property Sales',
-    url: '#',
+    url: '/my_listing',
   },
   {
     name: 'Property Rental',
-    url: '#',
+    url: '/market-place',
   },
   {
     name: 'Agent Partnership Program',
-    url: '#',
+    url: '/agent',
   },
   {
     name: 'Property Management',
-    url: '#',
+    url: '/contact-us',
   },
   {
     name: 'Market Insights and Analytic',
-    url: '#',
+    url: '/contact-us',
   },
 ];
 
 export const supportData: { name: string; url: string }[] = [
   {
     name: 'FAQ',
-    url: '#',
+    url: '/',
   },
   {
     name: 'Contact us',
-    url: '#',
+    url: '/contact-us',
   },
   {
     name: 'Policies',
