@@ -2,6 +2,7 @@
 
 'use client';
 import { BriefType, GlobalContextTypes } from '@/types';
+import { PropertyProps } from '@/types/property.types';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState } from 'react';
 
@@ -174,6 +175,22 @@ export const PageContextProvider = ({
    */
   const [selectedType, setSelectedType] = useState<string>('Buy a property');
 
+  /**
+   * Property selected for inspection from the property detailss page
+   */
+  const [propertySelectedForInspection, setPropertySelectedForInspection] =
+    useState<PropertyProps | undefined>(undefined);
+
+  /**
+   * ismodalforInspection Opened
+   */
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
+
+  //handle is coming from price negotiation
+  const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
+    useState<boolean>(false);
+
   return (
     <PageContext.Provider
       value={{
@@ -211,6 +228,12 @@ export const PageContextProvider = ({
         setUserDetails,
         selectedType,
         setSelectedType,
+        propertySelectedForInspection,
+        setPropertySelectedForInspection,
+        isAddForInspectionModalOpened,
+        setIsAddForInspectionModalOpened,
+        isComingFromPriceNeg,
+        setIsComingFromPriceNeg,
       }}>
       {children}
     </PageContext.Provider>
