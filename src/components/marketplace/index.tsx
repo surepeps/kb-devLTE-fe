@@ -11,10 +11,19 @@ import Card from './add-for-inspection/card';
 import AddForInspection from './add-for-inspection';
 
 const MarketPlace = () => {
-  const router = useRouter()
-  const { selectedType, setSelectedType } = usePageContext();
-  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
-    React.useState<boolean>(false);
+  const router = useRouter();
+  const {
+    selectedType,
+    setSelectedType,
+    isAddForInspectionModalOpened,
+    setIsAddForInspectionModalOpened,
+    isComingFromPriceNeg,
+    setIsComingFromPriceNeg,
+    propertySelectedForInspection,
+    setPropertySelectedForInspection,
+  } = usePageContext();
+  // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+  //   React.useState<boolean>(false);
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
   const [addForInspectionPayload, setAddInspectionPayload] = React.useState<{
     twoDifferentInspectionAreas: boolean;
@@ -25,18 +34,30 @@ const MarketPlace = () => {
     initialAmount: 10000,
     toBeIncreaseBy: 0,
   });
-  const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
-    React.useState<boolean>(false);
+  // const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
+  //   React.useState<boolean>(false);
   const [inspectionType, setInspectionType] = useState<
     'Buy' | 'JV' | 'Rent/Lease'
   >('Buy');
   const [isComingFromSubmitLol, setIsComingFromSubmitLol] =
     React.useState<boolean>(false);
 
-  useEffect(
-    () => console.log(propertiesSelected, addForInspectionPayload),
-    [propertiesSelected]
-  );
+  useEffect(() => {
+    if (propertySelectedForInspection) {
+      console.log(propertySelectedForInspection);
+      setPropertiesSelected([
+        {
+          ...propertySelectedForInspection,
+          _id: propertySelectedForInspection.propertyId,
+          price: propertySelectedForInspection.price,
+          propertyType: propertySelectedForInspection.propertyType,
+          noOfBedrooms: propertySelectedForInspection.bedRoom,
+          location: propertySelectedForInspection.location,
+          docOnProperty: [],
+        },
+      ]);
+    }
+  }, [propertySelectedForInspection]);
 
   return (
     <section className='flex flex-col justify-center items-center w-full h-auto'>
@@ -98,9 +119,7 @@ const MarketPlace = () => {
               <button
                 className='h-[34px] bg-transparent border-[1px] border-[#09391C] w-[221px] text-sm text-[#09391C]'
                 type='button'
-                onClick={()=> 
-                  router.push('preference')
-                }>
+                onClick={() => router.push('preference')}>
                 Share your preference
               </button>
             </div>
