@@ -71,7 +71,7 @@ const navItems = [
 
 export default function AdminNavbar() {
   const pathname = usePathname();
-  const router = useRouter(); // Added useRouter hook
+  const router = useRouter();
 
   return (
     <Fragment>

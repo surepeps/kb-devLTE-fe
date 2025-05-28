@@ -97,40 +97,40 @@ const Header = () => {
                 item: { name: string; url: string; isClicked: boolean },
                 idx: number
               ) => {
-                // if (item.name === 'Marketplace') {
-                //   return (
-                //     <div
-                //       key={idx}
-                //       className='flex flex-col'
-                //       onMouseEnter={() => setIsMarketplaceModalOpened(true)}
-                //       // onMouseLeave={() =>
-                //       //   setIsMarketplaceModalOpened(false)
-                //       // }
-                //     >
-                //       <div className='flex items-center gap-1 cursor-pointer'>
-                //         <span
-                //           className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                //             item.url === pathName
-                //               ? 'text-[#8DDB90]'
-                //               : 'text-[#000000]'
-                //           }`}>
-                //           {item.name}
-                //         </span>
-                //         {/* <FaCaretDown
-                //           size={'sm'}
-                //           width={16}
-                //           height={16}
-                //           className='w-[16px] h-[16px]'
-                //         /> */}
-                //       </div>
-                //       {isMarketplaceModalOpened && (
-                //         <MarketplaceOptions
-                //           setModal={setIsMarketplaceModalOpened}
-                //         />
-                //       )}
-                //     </div>
-                //   );
-                // }
+                if (item.name === 'Marketplace') {
+                  return (
+                    <div
+                      key={idx}
+                      className='flex flex-col'
+                      onMouseEnter={() => setIsMarketplaceModalOpened(true)}
+                      // onMouseLeave={() =>
+                      //   setIsMarketplaceModalOpened(false)
+                      // }
+                    >
+                      <div className='flex items-center gap-1 cursor-pointer'>
+                        <span
+                          className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                            item.url === pathName
+                              ? 'text-[#8DDB90]'
+                              : 'text-[#000000]'
+                          }`}>
+                          {item.name}
+                        </span>
+                        {/* <FaCaretDown
+                          size={'sm'}
+                          width={16}
+                          height={16}
+                          className='w-[16px] h-[16px]'
+                        /> */}
+                      </div>
+                      {isMarketplaceModalOpened && (
+                        <MarketplaceOptions
+                          setModal={setIsMarketplaceModalOpened}
+                        />
+                      )}
+                    </div>
+                  );
+                }
                 return (
                   <Link
                     key={idx}
@@ -288,7 +288,7 @@ const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: 'Property Joint Venture',
-    url: '/joint_ventures',
+    url: '/market-place',
     isClicked: false,
   },
 ];
@@ -309,7 +309,7 @@ const MarketplaceOptions = ({
       transition={{ duration: 0.2 }}
       viewport={{ once: true }}
       ref={ref}
-      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute'>
+      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-10'>
       {marketPlaceData.map(
         (
           item: { name: string; url: string; isClicked: boolean },
@@ -324,8 +324,9 @@ const MarketplaceOptions = ({
                 setSelectedType('Buy a property');
               } else if (item.name === 'Rent a Property') {
                 setSelectedType('Rent/Lease a property');
+              } else if (item.name === 'Property Joint Venture') {
+                setSelectedType('Find property for Joint Venture');
               }
-
               setModal(false);
             }}
             className='text-base font-medium text-[#000000] hover:text-[#8DDB90]'
