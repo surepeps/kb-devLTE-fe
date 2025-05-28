@@ -277,8 +277,8 @@ const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
   },
 
   {
-    name: 'Sell a Property',
-    url: '/market-place',
+    name: 'List a Property',
+    url: '/my_listing',
     isClicked: false,
   },
   {
@@ -309,7 +309,7 @@ const MarketplaceOptions = ({
       transition={{ duration: 0.2 }}
       viewport={{ once: true }}
       ref={ref}
-      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-10'>
+      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]'>
       {marketPlaceData.map(
         (
           item: { name: string; url: string; isClicked: boolean },

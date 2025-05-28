@@ -291,7 +291,7 @@ const handleUsageOptionChange = (item: string) => {
             className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
             onClick={() => onSearch(payload)}
             >
-            Search
+            Apply
           </button>
         </div>
       </div>
