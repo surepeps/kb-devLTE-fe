@@ -11,11 +11,10 @@ const page = () => {
   const { user } = useUserContext();
   const [briefs, setBriefs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log('User in My Listing Page:', user);
 
   useEffect(() => {
     if (!user) {
-      window.location.href = '/auth/login';
+      window.location.href = '/auth';
     } else if (user.userType !== 'Landowners') {
       window.location.href = '/agent';
     } else {

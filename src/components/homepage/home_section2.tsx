@@ -56,7 +56,7 @@ const cardData: CardProps[] = [
     color: '#8DDB90',
     secondaryColor: '#F2FFF8',
     buttonText: 'Go to Marketplace',
-    link: '#',
+    link: '/market-place',
   },
   {
     heading: 'Property Rentals',
@@ -67,7 +67,7 @@ const cardData: CardProps[] = [
     color: '#9E9E0B',
     secondaryColor: '#FFFFF2',
     buttonText: 'Go to Marketplace',
-    link: '#',
+    link: '/market-place',
   },
   {
     heading: 'Agent Partnership Program',
@@ -78,7 +78,7 @@ const cardData: CardProps[] = [
     color: '#137ADF',
     secondaryColor: '#dbedff',
     buttonText: 'Register',
-    link: '#',
+    link: '/auth',
   },
   {
     heading: 'Property Management',
@@ -89,7 +89,7 @@ const cardData: CardProps[] = [
     color: '#F9701A',
     secondaryColor: '#FFEBCA',
     buttonText: 'Contact us',
-    link: '#',
+    link: '/contact-us',
   },
   {
     heading: 'Market Insights and Analytics',
@@ -100,7 +100,7 @@ const cardData: CardProps[] = [
     color: '#F00952',
     secondaryColor: '#FFF2FB',
     buttonText: 'Contact us',
-    link: '#',
+    link: '/contact-us',
   },
 ];
 
