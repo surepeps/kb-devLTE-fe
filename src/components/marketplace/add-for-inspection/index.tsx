@@ -566,6 +566,8 @@ const AddForInspection = ({
             closeSelectPreferableModal={
               setSelectPreferableInspectionDateModalOpened
             }
+            setSubmitInspectionPayload={setSubmitPayload}
+            submitInspectionPayload={submitPayload}
           />
         )}
       </AnimatePresence>
