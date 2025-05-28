@@ -60,10 +60,12 @@ export default function BriefLists({
 }: {
   setBriefTotals: (totals: Record<string, number>) => void;
 }) {
-  const [active, setActive] = useState('Incoming Briefs');
+  type TabKey = 'Incoming Briefs' | 'Admin Briefs' | 'Agents Briefs' | 'LandLord Briefs';
+  const [active, setActive] = useState<TabKey>('Incoming Briefs');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedBrief, setSelectedBrief] = useState<any | null>(null);
   const [incomingBriefsData, setIncomingBriefsData] = useState<any[]>([]);
+  const [briefsData, setBriefsData] = useState<any[]>([]);
   const [agentsBriefsData, setAgentsBriefsData] = useState<any[]>([]);
   const [sellerBriefsData, setSellerBriefsData] = useState<any[]>([]);
   const [transactedBriefsData, setTransactedBriefsData] = useState<any[]>([]);
@@ -76,11 +78,128 @@ export default function BriefLists({
   const [totalPages, setTotalPages] = useState<number>(3);
   const isMounted = useRef(false); // Track if the component is mounted
 
+  const tabConfigs = {
+  'Incoming Briefs': { briefType: 'Joint Venture', ownerType: 'all' },
+  'Admin Briefs': { briefType: 'Admin', ownerType: 'Admin' },
+  'Agents Briefs': { briefType: 'Outright Sales', ownerType: 'Agent' },
+  'LandLord Briefs': { briefType: 'sell', ownerType: 'Landowners' },
+  // Add more as needed
+};
+
+const BRIEF_TYPES = ['Joint Venture', 'Outright Sales', 'Rent'];
+
+const fetchAllBriefTypes = async (ownerType: string) => {
+  try {
+    // Fetch all brief types in parallel
+    const allResponses = await Promise.all(
+      BRIEF_TYPES.map((briefType) =>
+        POST_REQUEST(URLS.BASE + URLS.adminGetAllBriefs, {
+          briefType,
+          ownerType,
+          page: currentPage,
+          limit: 10,
+        })
+      )
+    );
+
+    console.log('All Responses:', allResponses);
+
+    // Merge all data arrays
+    let allBriefs: any[] = [];
+    allResponses.forEach((response, idx) => {
+      if (response?.success !== false) {
+        const data = Array.isArray(response?.properties?.data)
+          ? response.properties.data
+          : [];
+        allBriefs = allBriefs.concat(
+          data.map((item: any) => ({
+            id: item._id?.slice(0, 8) || '--',
+            legalName: item.owner
+              ? item.owner.fullName ||
+                `${item.owner.firstName || ''} ${item.owner.lastName || ''}`.trim() ||
+                '--'
+              : '--',
+            email: item.owner?.email || '--',
+            phoneNumber: item.owner?.phoneNumber || '--',
+            agentType: item.owner
+              ? item.owner.agentType === 'Company'
+                ? 'Incorporated Agent'
+                : item.owner.agentType || '--'
+              : '--',
+            location: item.location
+              ? `${item.location.state || '--'}, ${item.location.localGovernment || '--'}, ${item.location.area || '--'}`
+              : '--',
+            landSize:
+              item.landSize && item.landSize.size !== 'N/A'
+                ? `${item.landSize.size || '--'} ${item.landSize.measurementType || '--'}`
+                : '--',
+            amount: item.price ? `₦${item.price.toLocaleString()}` : '--',
+            document: item.docOnProperty?.length
+              ? item.docOnProperty
+                  .filter((doc: any) => doc?.isProvided)
+                  .map((doc: any) => doc?.docName)
+                  .join(', ') || '--'
+              : '--',
+            createdAt: item.createdAt || '--',
+            propertyId: item._id || '--',
+            briefType: item.briefType || BRIEF_TYPES[idx],
+            isApproved: item.isApproved || false,
+            isRejected: item.isRejected || false,
+            noOfBedrooms: item.additionalFeatures?.noOfBedrooms || '--',
+            usageOptions:
+              Array.isArray(item.usageOptions) && item.usageOptions.length > 0
+                ? item.usageOptions.join(', ')
+                : '--',
+            features:
+              Array.isArray(item.additionalFeatures?.additionalFeatures) &&
+              item.additionalFeatures.additionalFeatures.length > 0
+                ? item.additionalFeatures.additionalFeatures.join(', ')
+                : '--',
+            pictures:
+              Array.isArray(item.pictures) && item.pictures.length > 0
+                ? item.pictures
+                : [],
+            propertyType: item.propertyType || '--',
+            propertyCondition: item.propertyCondition || '--',
+            tenantCriteria:
+              Array.isArray(item.tenantCriteria) && item.tenantCriteria.length > 0
+                ? item.tenantCriteria.join(', ')
+                : '--',
+          }))
+        );
+      }
+    });
+
+    // Sort by createdAt descending
+    return allBriefs.sort(
+      (a: any, b: any) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  } catch (error) {
+    console.error('Error fetching briefs:', error);
+    return [];
+  }
+};
+
+useEffect(() => {
+  const fetchData = async () => {
+    setIsLoading(true);
+    // Get ownerType from tabConfigs
+    const config = tabConfigs[active];
+    if (!config) return;
+    const briefs = await fetchAllBriefTypes(config.ownerType);
+    setBriefsData(briefs);
+    setIsLoading(false);
+  };
+  fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [active, currentPage]);
+
   const fetchIncomingBriefs = async () => {
     try {
       const payload = {
         briefType: 'Joint Ventures',
-        // ownerType: 'PropertyOwner',
+        ownerType: 'all',
         page: currentPage,
         limit: 10,
       };
@@ -244,7 +363,7 @@ export default function BriefLists({
   const fetchAgentsBriefs = async () => {
     try {
       const payload = {
-        propertyType: 'sell',
+        briefType: 'sell',
         ownerType: 'Agent',
         page: currentPage,
         limit: 10,
@@ -479,61 +598,61 @@ export default function BriefLists({
     }
   };
 
-  useEffect(() => {
-    const fetchAllBriefs = async () => {
-      setIsLoading(true);
-      try {
-        const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] =
-          await Promise.all([
-            fetchIncomingBriefs(),
-            fetchAgentsBriefs(),
-            fetchSellerBriefs(),
-            fetchTransactedBriefs(),
-          ]);
+  // useEffect(() => {
+  //   const fetchAllBriefs = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const [incomingBriefs, agentsBriefs, sellerBriefs, transactedBriefs] =
+  //         await Promise.all([
+  //           fetchIncomingBriefs(),
+  //           fetchAgentsBriefs(),
+  //           fetchSellerBriefs(),
+  //           fetchTransactedBriefs(),
+  //         ]);
 
-        // Avoid redundant state updates by checking if data has changed
-        setIncomingBriefsData((prev) =>
-          JSON.stringify(prev) !== JSON.stringify(incomingBriefs)
-            ? incomingBriefs
-            : prev
-        );
-        setAgentsBriefsData((prev) =>
-          JSON.stringify(prev) !== JSON.stringify(agentsBriefs)
-            ? agentsBriefs
-            : prev
-        );
-        setSellerBriefsData((prev) =>
-          JSON.stringify(prev) !== JSON.stringify(sellerBriefs)
-            ? sellerBriefs
-            : prev
-        );
-        setTransactedBriefsData((prev) =>
-          JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
-            ? transactedBriefs
-            : prev
-        );
+  //       // Avoid redundant state updates by checking if data has changed
+  //       setIncomingBriefsData((prev) =>
+  //         JSON.stringify(prev) !== JSON.stringify(incomingBriefs)
+  //           ? incomingBriefs
+  //           : prev
+  //       );
+  //       setAgentsBriefsData((prev) =>
+  //         JSON.stringify(prev) !== JSON.stringify(agentsBriefs)
+  //           ? agentsBriefs
+  //           : prev
+  //       );
+  //       setSellerBriefsData((prev) =>
+  //         JSON.stringify(prev) !== JSON.stringify(sellerBriefs)
+  //           ? sellerBriefs
+  //           : prev
+  //       );
+  //       setTransactedBriefsData((prev) =>
+  //         JSON.stringify(prev) !== JSON.stringify(transactedBriefs)
+  //           ? transactedBriefs
+  //           : prev
+  //       );
 
-        // Calculate totals and pass them to the parent component
-        const totals = {
-          'Incoming Briefs': incomingBriefs.length,
-          'Agents Briefs': agentsBriefs.length,
-          'Sellers Briefs': sellerBriefs.length,
-          'Transacted Briefs': transactedBriefs.length,
-        };
+  //       // Calculate totals and pass them to the parent component
+  //       const totals = {
+  //         'Incoming Briefs': incomingBriefs.length,
+  //         'Agents Briefs': agentsBriefs.length,
+  //         'Sellers Briefs': sellerBriefs.length,
+  //         'Transacted Briefs': transactedBriefs.length,
+  //       };
 
-        setBriefTotals(totals);
-      } catch (error) {
-        console.error('Error fetching briefs:', error);
-        toast.error('Failed to fetch briefs');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  //       setBriefTotals(totals);
+  //     } catch (error) {
+  //       console.error('Error fetching briefs:', error);
+  //       toast.error('Failed to fetch briefs');
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    fetchAllBriefs();
-  }, [currentPage]); // Ensure dependencies are stable
+  //   fetchAllBriefs();
+  // }, [currentPage]); 
 
-  const handleTabClick = (tab: string) => {
+  const handleTabClick = (tab: TabKey) => {
     setActive(tab);
   };
 
@@ -580,10 +699,8 @@ export default function BriefLists({
       dataToRender = incomingBriefsData;
     } else if (active === 'Agents Briefs') {
       dataToRender = agentsBriefsData;
-    } else if (active === 'Sellers Briefs') {
+    } else if (active === 'LandLord Briefs') {
       dataToRender = sellerBriefsData;
-    } else if (active === 'Transacted Briefs') {
-      dataToRender = transactedBriefsData;
     }
 
     const tableContent = (
@@ -639,7 +756,7 @@ export default function BriefLists({
                 <th className='p-3' style={{ width: '10%' }}>
                   Legal Name
                 </th>
-                {!['Seller Briefs'].includes(active) && (
+                {!['LandLord Briefs'].includes(active) && (
                   <th className='p-3' style={{ width: '10%' }}>
                     Agent Type
                   </th>
@@ -662,7 +779,7 @@ export default function BriefLists({
               </tr>
             </thead>
             <tbody>
-              {dataToRender.map((item, index) => (
+              {briefsData.map((item, index) => (
                 <tr
                   key={index}
                   className='border-b text-sm text-center text-gray-700 hover:bg-gray-50'>
@@ -671,7 +788,7 @@ export default function BriefLists({
                   </td>
                   <td className='p-3'>{item.id}</td>
                   <td className='p-3'>{item.legalName}</td>
-                  {!['Seller Briefs'].includes(active) && (
+                  {!['LandLord Briefs'].includes(active) && (
                     <td
                       className={`p-3 font-semibold ${
                         item.agentType === 'Individual'
@@ -730,7 +847,7 @@ export default function BriefLists({
             <TabButton
               key={index}
               text={item.text}
-              onClick={() => handleTabClick(item.text)}
+              onClick={() => handleTabClick(item.text as TabKey)}
               active={active}
             />
           ))}
