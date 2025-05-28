@@ -37,7 +37,7 @@ const Section1 = () => {
               viewport={{ once: true }}
               type='button'
               className='bg-[#8DDB90] h-[40px] md:h-[50px] w-fit md:w-[207px] px-[12px] text-[14px] md:text-base font-bold text-white flex items-center justify-center'>
-              <Link href={'/agent/auth'}>Partner with us</Link>
+              <Link href={'/auth'}>Partner with us</Link>
             </motion.button>
           </div>
           <div className='w-[300px] h-full blended-image2'>
