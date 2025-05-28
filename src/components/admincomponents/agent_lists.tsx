@@ -96,10 +96,11 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
           message: 'Failed to get data',
         });
       }
-      const data = response.users.agents;
+      const data = response.users.users;
       const filteredAgents = data.filter((agent: any) => agent.userType === "Agent");
       setAgents(filteredAgents);
-      // console.log(data);
+      console.log("Agentdata", filteredAgents);
+
       setIsLoadingDetails({
         isLoading: false,
         message: 'Data Loaded',
@@ -211,8 +212,7 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
 
   const filteredAgents = agents.filter((agent) => {
   if (active === 'Onboarding Agents') {
-    const activeAgent =  agent.accountApproved === false;
-    return activeAgent;
+    return agent.accountApproved === false;
   }
   if (active === 'All Agents') {
     return true;
