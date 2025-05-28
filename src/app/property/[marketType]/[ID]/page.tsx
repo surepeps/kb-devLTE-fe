@@ -35,6 +35,7 @@ import Card from '@/components/general-components/card';
 import { IsMobile } from '@/hooks/isMobile';
 import MobileSelectedBottomBar from '@/components/marketplace/MobileSelectedBottomBar';
 import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
+import Link from 'next/link';
 
 // const selectedBriefs = 9;
 
@@ -55,6 +56,9 @@ interface DetailsProps {
   owner: string;
   updatedAt: string;
   isAvailable: boolean;
+  docOnProperty: string[];
+  _id?: string;
+  id?: string;
 }
 
 interface FormProps {
@@ -79,12 +83,12 @@ type HouseFrameProps = {
 };
 
 const ProductDetailsPage = () => {
-const { selectedBriefs, setSelectedBriefs } = useSelectedBriefs();
-// const searchParams = useSearchParams();
-// const selectedBriefsList = JSON.parse(searchParams.get('selectedBriefs') || '[]');
-// const selectedBriefs = selectedBriefsList.length;
+  const { selectedBriefs, setSelectedBriefs } = useSelectedBriefs();
+  // const searchParams = useSearchParams();
+  // const selectedBriefsList = JSON.parse(searchParams.get('selectedBriefs') || '[]');
+  // const selectedBriefs = selectedBriefsList.length;
 
-console.log('Selected Briefs:', selectedBriefs);
+  console.log('Selected Briefs:', selectedBriefs);
 
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
@@ -108,6 +112,7 @@ console.log('Selected Briefs:', selectedBriefs);
     owner: '',
     updatedAt: '',
     isAvailable: false,
+    docOnProperty: [],
   });
   const [featureData, setFeatureData] = useState<
     { _id: string; featureName: string }[]
@@ -123,6 +128,8 @@ console.log('Selected Briefs:', selectedBriefs);
   const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
     useState<boolean>(false);
   const is_mobile = IsMobile();
+  const { setPropertySelectedForInspection, setIsComingFromPriceNeg } =
+    usePageContext();
 
   const handlePreviousSlide = () => {
     const scrollableElement = document.getElementById(
@@ -259,20 +266,25 @@ console.log('Selected Briefs:', selectedBriefs);
         const res = await axios.get(URLS.BASE + URLS.getOneProperty + id);
         if (res.status === 200) {
           if (typeof res.data === 'object') {
-          setDetails({
-            price: res.data.price,
-            propertyType: res.data.propertyType,
-            bedRoom: res.data.bedRoom || res.data.noOfBedrooms || 0,
-            propertyStatus: res.data.propertyCondition || '',
-            location: res.data.location,
-            tenantCriteria: res.data.tenantCriteria || [],
-            pictures: res.data.pictures && res.data.pictures.length > 0 ? res.data.pictures : [sampleImage.src],
-            propertyId: res.data._id,
-            createdAt: res.data.createdAt,
-            owner: res.data.owner,
-            updatedAt: res.data.updatedAt,
-            isAvailable: res.data.isAvailable === 'yes' || res.data.isAvailable === true,
-          });
+            setDetails({
+              price: res.data.price,
+              propertyType: res.data.propertyType,
+              bedRoom: res.data.bedRoom || res.data.noOfBedrooms || 0,
+              propertyStatus: res.data.propertyCondition || '',
+              location: res.data.location,
+              tenantCriteria: res.data.tenantCriteria || [],
+              pictures:
+                res.data.pictures && res.data.pictures.length > 0
+                  ? res.data.pictures
+                  : [sampleImage.src],
+              propertyId: res.data._id,
+              createdAt: res.data.createdAt,
+              owner: res.data.owner,
+              updatedAt: res.data.updatedAt,
+              isAvailable:
+                res.data.isAvailable === 'yes' || res.data.isAvailable === true,
+              docOnProperty: res.data.docOnProperty || [],
+            });
             setFeatureData(
               Array.isArray(res.data.features)
                 ? res.data.features.map((feature: string, idx: number) => ({
@@ -404,16 +416,29 @@ console.log('Selected Briefs:', selectedBriefs);
                     ) : null}
 
                     <div className='w-full flex flex-row items-center mt-10 gap-3 justify-between'>
-                      <button
-                        type='button'
-                        className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
-                        Select for inspection
-                      </button>
-                      <button
-                        type='button'
-                        className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
-                        Price Negotiation
-                      </button>
+                      <Link href={'/market-place'}>
+                        <button
+                          type='button'
+                          onClick={() => {
+                            setPropertySelectedForInspection(details);
+                            setIsAddForInspectionModalOpened(true);
+                          }}
+                          className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
+                          Select for inspection
+                        </button>
+                      </Link>
+                      <Link href={'/market-place'}>
+                        <button
+                          onClick={() => {
+                            setPropertySelectedForInspection(details);
+                            setIsAddForInspectionModalOpened(true);
+                            setIsComingFromPriceNeg(true);
+                          }}
+                          type='button'
+                          className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
+                          Price Negotiation
+                        </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -423,15 +448,14 @@ console.log('Selected Briefs:', selectedBriefs);
                   <div className='flex justify-between items-start container'>
                     <div className='w-full flex flex-col gap-[26px] h-[inherit]'>
                       <div className='flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar'>
-                        <div className="flex w-full gap-[10px] flex-nowrap items-center">
-                          <span className="text-base text-[#7C8493] whitespace-nowrap">
+                        <div className='flex w-full gap-[10px] flex-nowrap items-center'>
+                          <span className='text-base text-[#7C8493] whitespace-nowrap'>
                             Reference ID:
                           </span>
                           <span
                             // onClick={() => copy(details.owner)}
                             className={`${epilogue.className} text-base text-clip text-[#25324B] break-all min-w-0 flex-1`}
-                            style={{ wordBreak: 'break-all' }}
-                          >
+                            style={{ wordBreak: 'break-all' }}>
                             {details.owner}
                           </span>
                         </div>
