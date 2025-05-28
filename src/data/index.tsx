@@ -28,7 +28,7 @@ export const navData: {
     additionalLinks: [
       {
         name: 'list a property',
-        url: '/market-place',
+        url: '/my_listing',
       },
       {
         name: 'Buy a property',
