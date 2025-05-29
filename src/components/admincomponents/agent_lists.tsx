@@ -99,7 +99,6 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
       const data = response.users.users;
       const filteredAgents = data.filter((agent: any) => agent.userType === "Agent");
       setAgents(filteredAgents);
-      console.log("Agentdata", filteredAgents);
 
       setIsLoadingDetails({
         isLoading: false,
