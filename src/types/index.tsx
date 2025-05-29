@@ -143,7 +143,17 @@ export interface GlobalContextTypes {
   //price negotiation button
   isComingFromPriceNeg: boolean;
   setIsComingFromPriceNeg: (type: boolean) => void;
+
+  //commission
+  commission: CommissionType;
+  setCommission: (type: CommissionType) => void;
 }
+
+type CommissionType = {
+  userType: 'agent' | 'land_owners';
+  commission: string;
+  payload: any;
+};
 
 export type BriefType = {
   id: string;

@@ -3,10 +3,12 @@
 'use client';
 import { usePageContext } from '@/context/page-context';
 import { AgentNavData } from '@/enums';
+import { useRouter } from 'next/navigation';
 import React, { Fragment } from 'react';
 
 const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
-  const { selectedNav, setSelectedNav } = usePageContext();
+  const { selectedNav, setSelectedNav, setCommission } = usePageContext();
+  const router = useRouter();
 
   const handleSelect = (text: string) => {
     if (!isDisabled) {
@@ -22,7 +24,16 @@ const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
             className={`${idx === 0 ? 'col-span-2' : 'shrink-0'}`}
             selectedText={selectedNav}
             onClick={() => {
-              handleSelect(item);
+              if (idx === 0) {
+                setCommission({
+                  commission: '20%',
+                  userType: 'agent',
+                  payload: {},
+                });
+                router.push('/post_property');
+              } else {
+                handleSelect(item);
+              }
             }}
             key={idx}
             name={item}
