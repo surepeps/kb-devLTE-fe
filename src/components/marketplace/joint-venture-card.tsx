@@ -38,6 +38,7 @@ interface CardDataProps {
   properties: any[];
   isAddInspectionalModalOpened: boolean;
   setIsAddInspectionModalOpened: (type: boolean) => void;
+  onSubmitLoi?: () => void;
 }
 
 const JointVentureModalCard = ({
@@ -56,6 +57,7 @@ const JointVentureModalCard = ({
   setIsAddInspectionModalOpened,
   properties,
   isAddInspectionalModalOpened,
+  onSubmitLoi,
 }: CardDataProps) => {
   const { setViewImage, setImageData } = usePageContext();
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -133,6 +135,9 @@ const JointVentureModalCard = ({
               value={`Submit LOI`}
               onClick={() => {
                 setIsAddInspectionModalOpened(true);
+                  if (onSubmitLoi) {
+                      onSubmitLoi();
+                  }
                 if (isAddInspectionalModalOpened) {
                   //preserving the selected properties, and keeping the current
                   // property selected
@@ -146,7 +151,7 @@ const JointVentureModalCard = ({
                     const newProperties = properties?.filter(
                       (item: any) => item?._id !== property?._id
                     );
-                    setIsComingFromSubmitLol?.(true);
+                    // setIsComingFromSubmitLol?.(true);
                     setPropertySelected([property, ...newProperties]);
                   } else {
                     //if the property is not selected, add it to the list
