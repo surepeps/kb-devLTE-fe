@@ -41,7 +41,6 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] =
     useState<boolean>(false);
 
-  const [fileURL, setFileURL] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
