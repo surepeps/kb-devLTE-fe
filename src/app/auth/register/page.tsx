@@ -33,12 +33,16 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGoogleLogin } from '@react-oauth/google';
 import CustomToast from '@/components/general-components/CustomToast';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Register = () => {
   const isLoading = useLoading();
   const { setUser, user } = useUserContext();
   const { isContactUsClicked } = usePageContext();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const userType = searchParams.get('type');
 
@@ -217,6 +221,8 @@ const Register = () => {
               formik={formik}
               title="Password"
               isDisabled={isDisabled}
+              seePassword={setShowPassword}
+              isSeePassword={showPassword}
               id="password"
               icon={''}
               type="password"
@@ -226,6 +232,8 @@ const Register = () => {
               formik={formik}
               title="Confirm Password"
               isDisabled={isDisabled}
+              seePassword={setShowConfirmPassword}
+              isSeePassword={showConfirmPassword}
               id="confirmPassword"
               icon={''}
               type="password"
@@ -290,26 +298,55 @@ interface InputProps {
   icon: StaticImport | string;
   formik: any;
   isDisabled?: boolean;
+  seePassword?: (type: boolean) => void;
+  isSeePassword?: boolean;
 }
 
-const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, formik, isDisabled }) => {
+const Input: FC<InputProps> = ({
+  className,
+  id,
+  title,
+  type,
+  placeholder,
+  icon,
+  formik,
+  isDisabled,
+  seePassword,
+  isSeePassword,
+}) => {
   const fieldError = formik.errors[id];
   const fieldTouched = formik.touched[id];
   return (
     <label htmlFor={id} className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
       <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">{title}</span>
-      <div className="flex">
+      <div className="flex items-center">
         <input
           name={id}
-          type={type}
-          value={formik.values[title]}
+          type={
+            type === 'password' ? (isSeePassword ? 'text' : 'password') : type
+          }
+          value={formik.values[id]}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           disabled={isDisabled}
           placeholder={placeholder ?? 'This is placeholder'}
           className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar disabled:bg-gray-200"
         />
-        {icon ? (
+        {type === 'password' && (
+          <div className="bg-[#FAFAFA] w-[50px] h-[50px] border-l-0 flex items-center justify-center">
+            <FontAwesomeIcon
+              title={isSeePassword ? 'Hide password' : 'See password'}
+              className="cursor-pointer transition duration-500"
+              icon={isSeePassword ? faEye : faEyeSlash}
+              size="sm"
+              color="black"
+              onClick={() => {
+                seePassword?.(!isSeePassword);
+              }}
+            />
+          </div>
+        )}
+        {icon && type !== 'password' ? (
           <Image
             src={icon}
             alt=""
