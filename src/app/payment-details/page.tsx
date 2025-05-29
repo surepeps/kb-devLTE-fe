@@ -24,7 +24,7 @@ type ProvideTransactionDetailsProps = {
 const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   amountToPay = 10000,
   payload = {},
-}) => {
+}): React.JSX.Element => {
   const [allBanks, setAllBanks] = useState<Option[]>([
     {
       label: '',
@@ -305,4 +305,9 @@ const Input: React.FC<InputProps> = ({
   );
 };
 
-export default ProvideTransactionDetails;
+const PaymentDetailsPage = () => {
+  // You can fetch or calculate amountToPay/payload here if needed
+  return <ProvideTransactionDetails amountToPay={0} />;
+};
+
+export default PaymentDetailsPage;
