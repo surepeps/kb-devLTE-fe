@@ -69,7 +69,7 @@ const Register = () => {
 
   return (
     <section
-      className={`min-h-[500px] overflow-hidden bg-[#EEF1F1] flex justify-center items-center w-full transition-all duration-500 my-20 ${
+      className={`min-h-[500px] overflow-hidden bg-[#EEF1F1] flex justify-center items-center w-full transition-all duration-500 my-10 ${
         (isContactUsClicked ||
           rentPage.isSubmitForInspectionClicked ||
           isModalOpened) &&

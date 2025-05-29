@@ -1238,7 +1238,9 @@ const Sell = () => {
                       className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                       isDisabled={
                         (currentStep === 4 && !isLegalOwner) ||
-                        (currentStep === 4 && !isAuthorized) ||
+                        (commission['userType'] === 'agent' &&
+                          currentStep === 4 &&
+                          !isAuthorized) ||
                         (stepRequiredFields[currentStep] || []).some(
                           (field) =>
                             !!formik.errors[field as keyof typeof formik.values]
