@@ -14,6 +14,8 @@ import Input from '@/components/general-components/Input';
 import { FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
 import { SubmitInspectionPayloadProp } from '../types/payload';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { format } from 'date-fns';
 
 type NegotiationModalProps = {
   id: string | null;
@@ -64,18 +66,18 @@ const NegiotiatePrice = ({
       console.log("Doesn't exist");
       throw new Error('Property does not exist');
     }
-    console.log('FOUND');
 
-    //if the card exists, modify
-    //update the state
     findSelectedCard.yourPrice = selectedProperty.yourPrice;
 
-    //check if the maximum selected has reached
-    //then pop up the next modal for select preference
-    if (currentIndex === allNegotiation.length - 1) {
-      setSelectPreferableInspectionDateModalOpened(true);
-    }
+    // Set propertyId and negotiationPrice in the payload
+      setSubmitInspectionPayload((prev) => ({
+      ...prev,
+      propertyId: getID,
+      negotiationPrice: Number(selectedProperty.yourPrice),
+    }));
 
+    // Open the inspection date modal after negotiation
+    setSelectPreferableInspectionDateModalOpened(true);
     //set the current index to the next one
     setCurrentIndex(currentIndex + 1);
   };
@@ -113,7 +115,7 @@ const NegiotiatePrice = ({
               width={24}
               height={24}
               onClick={() => {
-                setCurrentIndex(allNegotiation.length + 1); //just to close the modal
+                setCurrentIndex(allNegotiation.length + 1);
               }}
               className='w-[24px] h-[24px]'
               color='#181336'
@@ -242,10 +244,39 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
       isOpened: false,
     });
 
-  const [details, setDetails] = useState<DetailsProps>({
-    selectedDate: 'Jan 1, 2025',
-    selectedTime: '9:00 AM',
-  });
+    const getAvailableDates = () => {
+      const dates: string[] = [];
+      let date = new Date();
+      date.setDate(date.getDate() + 3);
+    
+      while (dates.length < 6) {
+        if (date.getDay() !== 0) {
+          dates.push(format(date, 'MMM d, yyyy'));
+        }
+        date.setDate(date.getDate() + 1);
+      }
+      return dates;
+    };
+    
+    const availableDates = getAvailableDates();
+    
+    const [details, setDetails] = useState<DetailsProps>({
+      selectedDate: availableDates[0],
+      selectedTime: '9:00 AM',
+      });
+    
+      useEffect(() => {
+      setSubmitInspectionPayload({
+        ...submitInspectionPayload,
+        inspectionDate: availableDates[0],
+        inspectionTime: '9:00 AM',
+      });
+    }, []);
+
+  // const [details, setDetails] = useState<DetailsProps>({
+  //   selectedDate: 'Jan 1, 2025',
+  //   selectedTime: '9:00 AM',
+  // });
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full Name is required'),
     phoneNumber: Yup.string().required('Phone number is required'),
@@ -258,18 +289,21 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     },
     validationSchema,
     onSubmit: (values: ContactProps) => {
-      console.log(values);
       setActionTracker([
         ...actionTracker,
         { lastPage: 'SelectPreferableInspectionDate' },
       ]);
       setSubmitInspectionPayload({
         ...submitInspectionPayload,
+        propertyId: selectedProperty.id ?? '', 
         requestedBy: {
           fullName: formik.values.fullName,
           email: formik.values.email,
           phoneNumber: formik.values.phoneNumber,
         },
+      negotiationPrice: Number(selectedProperty.yourPrice),
+      inspectionDate: details.selectedDate,
+      inspectionTime: details.selectedTime,
       });
       setIsProvideTransactionDetails(true);
       closeSelectPreferableModal(false);
@@ -286,11 +320,12 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     if (!findSelectedCard) {
       throw new Error('Not found');
     }
-
-    console.log(findSelectedCard);
-    console.warn(selectedProperty);
+    setSubmitInspectionPayload((prev) => ({
+      ...prev,
+      propertyId: findSelectedCard._id,
+    }));
     setSelectedProperty({
-      id: findSelectedCard.id,
+      id: findSelectedCard._id,
       askingPrice: findSelectedCard?.price ?? findSelectedCard?.rentalPrice,
       yourPrice: '',
       isOpened: false,
@@ -305,7 +340,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
         exit={{ opacity: 0, y: 20 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true }}
-        className='lg:w-[615px] w-full flex flex-col gap-[26px]'>
+        className='relative lg:w-[615px] w-full flex flex-col gap-[26px]'>
         <div className='flex items-center justify-end'>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -361,8 +396,6 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
               placeholder='Enter amount'
               value={selectedProperty.yourPrice}
               onChange={(event: any) => {
-                //setInputValue(event.target.value);
-                console.log('clicked');
                 setSelectedProperty({
                   ...selectedProperty,
                   yourPrice: event.target.value,
@@ -371,6 +404,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
                   ...submitInspectionPayload,
                   negotiationPrice: Number(event.target.value),
                 });
+                setIsModalOpened(true);
               }}
             />
             <p className='text-[#1976D2] font-medium text-lg'>
@@ -404,14 +438,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
                     className='flex flex-col gap-[20px]'>
                     {/**Second div */}
                     <div className=' overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
-                      {[
-                        'Jan 1, 2025',
-                        'Jan 2, 2025',
-                        'Jan 3, 2025',
-                        'Jan 4, 2025',
-                        'Jan 5, 2025',
-                        'Jan 6, 2025',
-                      ].map((date: string, idx: number) => (
+                      {availableDates.map((date: string, idx: number) => (
                         <button
                           type='button'
                           onClick={() => {
@@ -557,23 +584,18 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
                 </button>
               </div>
             </div>
-            {/** Submit and Cancel buttons */}
-            {/* <div className='w-full flex gap-[15px]'>
-              <button
-                //onClick={handleSubmit}
-                className={`h-[57px] bg-[#8DDB90] w-[260px] text-lg text-[#FFFFFF] font-bold ${archivo.className}`}
-                type='submit'>
-                Submit
-              </button>
-              <button
-                //onClick={() => setCurrentIndex(allNegotiation.length + 1)}
-                className={`h-[57px] bg-white border-[1px] border-[#5A5D63] w-[260px] text-lg text-[#5A5D63] font-bold ${archivo.className}`}
-                type='button'>
-                Cancel
-              </button>
-            </div> */}
           </div>
         </form>
+        {/* Arrow down indicator */}
+        <div className="absolute right-6 bottom-6 z-10">
+          <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className="text-white"
+              size="lg"
+            />
+          </div>
+        </div>
       </motion.div>
     </div>
   );

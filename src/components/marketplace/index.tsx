@@ -25,6 +25,7 @@ const MarketPlace = () => {
   // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
   //   React.useState<boolean>(false);
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
+  const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] = useState(false);
   const [addForInspectionPayload, setAddInspectionPayload] = React.useState<{
     twoDifferentInspectionAreas: boolean;
     initialAmount: number;
@@ -139,6 +140,8 @@ const MarketPlace = () => {
               setInspectionType={setInspectionType}
               isComingFromSubmitLol={isComingFromSubmitLol}
               setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+              isLetterOfIntentionModalOpened={isLetterOfIntentionModalOpened}
+              setIsLetterOfIntentionModalOpened={setIsLetterOfIntentionModalOpened}
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +9,8 @@ import { archivo } from '@/styles/font';
 import { FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
 import { SubmitInspectionPayloadProp } from '../types/payload';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { format } from 'date-fns';
 
 type DetailsProps = {
   selectedDate: string;
@@ -40,10 +42,36 @@ const SelectPreferableInspectionDate = ({
     React.SetStateAction<SubmitInspectionPayloadProp>
   >;
 }) => {
+const getAvailableDates = () => {
+  const dates: string[] = [];
+  let date = new Date();
+  date.setDate(date.getDate() + 3);
+
+  while (dates.length < 6) {
+    if (date.getDay() !== 0) {
+      dates.push(format(date, 'MMM d, yyyy'));
+    }
+    date.setDate(date.getDate() + 1);
+  }
+  return dates;
+};
+
+const availableDates = getAvailableDates();
+
   const [details, setDetails] = useState<DetailsProps>({
-    selectedDate: 'Jan 1, 2025',
-    selectedTime: '9:00 AM',
+  selectedDate: availableDates[0],
+  selectedTime: '9:00 AM',
   });
+
+  useEffect(() => {
+  setSubmitInspectionPayload({
+    ...submitInspectionPayload,
+    inspectionDate: availableDates[0],
+    inspectionTime: '9:00 AM',
+  });
+}, []);
+
+
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full Name is required'),
     phoneNumber: Yup.string().required('Phone number is required'),
@@ -81,7 +109,7 @@ const SelectPreferableInspectionDate = ({
         exit={{ opacity: 0, y: 20 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true }}
-        className='lg:w-[658px] w-full flex flex-col gap-[26px] rounded-md overflow-hidden'>
+        className='relative lg:w-[658px] w-full flex flex-col gap-[26px] rounded-md overflow-hidden'>
         <div className='flex items-center justify-end'>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -99,7 +127,7 @@ const SelectPreferableInspectionDate = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className=' bg-white h-[500px] overflow-y-auto w-full py-[36px] px-[32px] border-[1px] border-[#D9D9D9] flex flex-col gap-[25px] hide-scrollbar'>
+          className=' bg-white h-[600px] overflow-y-auto w-full py-[36px] px-[32px] border-[1px] border-[#D9D9D9] flex flex-col gap-[25px] hide-scrollbar'>
           {/**First div */}
           <div className='flex flex-col gap-[18px]'>
             <h2 className={`font-bold text-black ${archivo.className} text-xl`}>
@@ -108,14 +136,7 @@ const SelectPreferableInspectionDate = ({
           </div>
           {/**Second div */}
           <div className='pb-[58px] overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
-            {[
-              'Jan 1, 2025',
-              'Jan 2, 2025',
-              'Jan 3, 2025',
-              'Jan 4, 2025',
-              'Jan 5, 2025',
-              'Jan 6, 2025',
-            ].map((date: string, idx: number) => (
+            {availableDates.map((date: string, idx: number) => (
               <button
                 type='button'
                 onClick={() => {
@@ -239,7 +260,11 @@ const SelectPreferableInspectionDate = ({
           <div className='lg:w-[569px] w-full flex gap-[15px] h-[57px]'>
             <button
               type='submit'
-              className={`w-[277px] h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${archivo.className}`}>
+              className={`w-[277px] h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${archivo.className} ${
+                !(formik.isValid && formik.dirty) ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={!(formik.isValid && formik.dirty)}
+            >
               Submit
             </button>
             <button
@@ -250,6 +275,16 @@ const SelectPreferableInspectionDate = ({
             </button>
           </div>
         </form>
+                {/* Arrow down indicator */}
+        <div className="absolute right-6 bottom-6 z-10">
+          <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className="text-white"
+              size="lg"
+            />
+          </div>
+        </div>
       </motion.div>
     </div>
   );
