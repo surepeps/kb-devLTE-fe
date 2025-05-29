@@ -15,7 +15,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import RadioCheck from '@/components/general-components/radioCheck';
 import Input from '@/components/general-components/Input';
 import { usePageContext } from '@/context/page-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { useFormik } from 'formik';
@@ -28,7 +28,7 @@ import Stepper from '@/components/post-property-components/Stepper';
 import ClickableCard from '@/components/post-property-components/ClickableCard';
 import 'react-phone-number-input/style.css';
 import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
-import CommissionModal from "@/components/post-property-components/CommissionModal";
+import CommissionModal from '@/components/post-property-components/CommissionModal';
 import { useUserContext } from '@/context/user-context';
 import Cookies from 'js-cookie';
 
@@ -43,7 +43,11 @@ import Green from '@/assets/green.png';
 import { epilogue } from '@/styles/font';
 import customStyles from '@/styles/inputStyle';
 import data from '@/data/state-lga';
-import { DocOnPropertyData, featuresData, JvConditionData } from '@/data/buy_data';
+import {
+  DocOnPropertyData,
+  featuresData,
+  JvConditionData,
+} from '@/data/buy_data';
 import { tenantCriteriaData } from '@/data/landlord';
 import { features } from 'process';
 import PropertySummary from '@/components/post-property-components/PropertySummary';
@@ -62,7 +66,9 @@ const Sell = () => {
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [imageCardCount, setImageCardCount] = useState(4);
-  const [images, setImages] = useState<(File | string| null)[]>(Array(imageCardCount).fill(null));
+  const [images, setImages] = useState<(File | string | null)[]>(
+    Array(imageCardCount).fill(null)
+  );
   const [showCommissionModal, setShowCommissionModal] = useState(false);
 
   const [selectedState, setSelectedState] = useState<Option | null>(null);
@@ -73,19 +79,57 @@ const Sell = () => {
   const [formatedHold, setFormatedHold] = useState<string>('');
   const [formatedPrice, setFormatedPrice] = useState<string>('');
   const [isComingSoon, setIsComingSoon] = useState<boolean>(false);
-  const [selectedCard, setSelectedCard] = useState<'' | 'sell' | 'rent' | 'jv'>('');
+  const [selectedCard, setSelectedCard] = useState<'' | 'sell' | 'rent' | 'jv'>(
+    ''
+  );
   const [showSummary, setShowSummary] = useState(false);
   const [showFinalSubmit, setShowFinalSubmit] = useState(false);
-  const commision = '10%';
+  const { commission, setCommission } = usePageContext();
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
-
-const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
-  { label: "Type of brief", status: currentStep > 0 ? "completed" : currentStep === 0 ? "active" : "pending" },
-  { label: "Submit brief details", status: currentStep > 1 ? "completed" : currentStep === 1 ? "active" : "pending" },
-  { label: "Feature & Conditions", status: currentStep > 2 ? "completed" : currentStep === 2 ? "active" : "pending" },
-  { label: "Upload Picture", status: currentStep > 3 ? "completed" : currentStep === 3 ? "active" : "pending" },
-  { label: "Owners Declaration", status: currentStep === 4 ? "active" : "pending" },
-];
+  const steps: { label: string; status: 'completed' | 'active' | 'pending' }[] =
+    [
+      {
+        label: 'Type of brief',
+        status:
+          currentStep > 0
+            ? 'completed'
+            : currentStep === 0
+            ? 'active'
+            : 'pending',
+      },
+      {
+        label: 'Submit brief details',
+        status:
+          currentStep > 1
+            ? 'completed'
+            : currentStep === 1
+            ? 'active'
+            : 'pending',
+      },
+      {
+        label: 'Feature & Conditions',
+        status:
+          currentStep > 2
+            ? 'completed'
+            : currentStep === 2
+            ? 'active'
+            : 'pending',
+      },
+      {
+        label: 'Upload Picture',
+        status:
+          currentStep > 3
+            ? 'completed'
+            : currentStep === 3
+            ? 'active'
+            : 'pending',
+      },
+      {
+        label: 'Owners Declaration',
+        status: currentStep === 4 ? 'active' : 'pending',
+      },
+    ];
 
   const formatNumber = (val: string) => {
     const containsLetters = /[A-Za-z]/.test(val);
@@ -109,11 +153,14 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
   }, []);
 
   useEffect(() => {
-  if (user) {
-    formik.setFieldValue('ownerFullName', `${user.firstName || ''} ${user.lastName || ''}`);
-    formik.setFieldValue('ownerEmail', user.email || '');
-  }
-}, [user]);
+    if (user) {
+      formik.setFieldValue(
+        'ownerFullName',
+        `${user.firstName || ''} ${user.lastName || ''}`
+      );
+      formik.setFieldValue('ownerEmail', user.email || '');
+    }
+  }, [user]);
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
@@ -150,10 +197,10 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
   };
 
   const stepRequiredFields: { [key: number]: string[] } = {
-  1: ['propertyType', 'price', 'selectedState', 'selectedLGA', ],
-  2: ['documents', 'jvConditions', ],
-  // ...add for other steps as needed
-};
+    1: ['propertyType', 'price', 'selectedState', 'selectedLGA'],
+    2: ['documents', 'jvConditions'],
+    // ...add for other steps as needed
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -195,7 +242,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
       // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
       // additionalFeatures: Yup.array()
       //   .of(Yup.string())
-      //   .min(1, 'At least one additional feature is required'), 
+      //   .min(1, 'At least one additional feature is required'),
       // selectedState: Yup.string().required('State is required'),
       // selectedAddress: Yup.string().required('Address is required'),
       // selectedCity: Yup.string().required('City is required'),
@@ -206,9 +253,8 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
         .test('is-valid-phone', 'Invalid phone number', (value) =>
           value ? isValidPhoneNumber(value) : false
         ),
-      ownerEmail: Yup.string()
-        .email('Invalid email')
-        // .required('Owner email is required'),
+      ownerEmail: Yup.string().email('Invalid email'),
+      // .required('Owner email is required'),
     }),
     onSubmit: async (values) => {
       // No API call here, just validation
@@ -252,7 +298,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
         features: values.features,
         docOnProperty: values.documents.map((doc) => ({
           docName: doc,
-          isProvided: true, 
+          isProvided: true,
         })),
         propertyCondition: values.propertyCondition,
         location: {
@@ -288,6 +334,10 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
 
       console.log('Payload:', payload); // Debugging
 
+      // if (commission.userType === 'agent') {
+
+      // }
+
       await toast.promise(
         POST_REQUEST(url, payload, token).then((response) => {
           if ((response as any).owner) {
@@ -297,8 +347,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
             setShowFinalSubmit(true);
             return 'Property submitted successfully';
           } else {
-            const errorMessage =
-              (response as any).error || 'Submission failed';
+            const errorMessage = (response as any).error || 'Submission failed';
             toast.error(errorMessage);
             setAreInputsDisabled(false);
             throw new Error(errorMessage);
@@ -326,7 +375,7 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
     );
     // Validate and submit
     const errors = await formik.validateForm();
-      console.log('Formik validation errors:', errors); 
+    console.log('Formik validation errors:', errors);
     if (Object.keys(errors).length === 0) {
       await formik.submitForm();
       await handleFinalSubmit();
@@ -342,17 +391,17 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
   if (isComingSoon) return <UseIsComingPage />;
 
   const getFormTitle = () => {
-  switch (selectedCard) {
-    case 'sell':
-      return 'Submit your property brief';
-    case 'rent':
-      return 'Provide your Rental Details';
-    case 'jv':
-      return 'Submit your property brief';
-    default:
-      return '';
-  }
-};
+    switch (selectedCard) {
+      case 'sell':
+        return 'Submit your property brief';
+      case 'rent':
+        return 'Provide your Rental Details';
+      case 'jv':
+        return 'Submit your property brief';
+      default:
+        return '';
+    }
+  };
   return (
     <Fragment>
       <section
@@ -360,475 +409,548 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
         <div className='container flex flex-col justify-center items-center gap-[10px] px-[10px]'>
           <div className='w-full flex justify-start mb-5'>
             <BreadcrumbNav
-              point="Cancel"
+              point='Cancel'
               onBack={() => router.back()}
               arrowIcon={arrowRightIcon}
-              backText="MarketPlace"
+              backText='MarketPlace'
             />
           </div>
 
-       {!showSummary && (
-        <>
-          <Stepper steps={steps} />
-            {currentStep === 0 && !selectedCard && (
-              <div>
-                <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[24px] leading-[40.4px] mt-7'>
-                  Select type of Property
-                </h2>
-                <div className='lg:w-[953px] w-full text-xl text-[#5A5D63] font-normal text-center'>
-                  Khabi-Teq helps you reach a wide network of potential buyers and simplifies the property selling process. Our platform ensures your property is showcased effectively, connects you with verified buyers, and streamlines negotiations for a smooth and successful sale
-                </div>
-                <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px] mt-[20px]'>
+          {!showSummary && (
+            <>
+              <Stepper steps={steps} />
+              {currentStep === 0 && !selectedCard && (
+                <div>
+                  <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[24px] leading-[40.4px] mt-7'>
+                    Select type of Property
+                  </h2>
+                  <div className='lg:w-[953px] w-full text-xl text-[#5A5D63] font-normal text-center'>
+                    Khabi-Teq helps you reach a wide network of potential buyers
+                    and simplifies the property selling process. Our platform
+                    ensures your property is showcased effectively, connects you
+                    with verified buyers, and streamlines negotiations for a
+                    smooth and successful sale
+                  </div>
+                  <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px] mt-[20px]'>
                     <ClickableCard
                       imageSrc={Green}
-                      text="Do you have a property you want to Sell?"
-                      href="#"
+                      text='Do you have a property you want to Sell?'
+                      href='#'
                       onClick={() => {
-                      setSelectedCard('sell');
-                      setCurrentStep(1);
-                    }}
+                        setSelectedCard('sell');
+                        setCurrentStep(1);
+                      }}
                     />
                     <ClickableCard
                       imageSrc={Blue}
-                      text="Do you have a property you want to Rent?"
-                      href="#"
+                      text='Do you have a property you want to Rent?'
+                      href='#'
                       onClick={() => {
-                      setSelectedCard('rent');
-                      setCurrentStep(1);
-                    }}
+                        setSelectedCard('rent');
+                        setCurrentStep(1);
+                      }}
                     />
                     <ClickableCard
                       imageSrc={Red}
-                      text="Do you have a property you joint venture?"
-                      href="#"
+                      text='Do you have a property you joint venture?'
+                      href='#'
                       onClick={() => {
-                      setSelectedCard('jv');
-                      setCurrentStep(1);
-                    }}
+                        setSelectedCard('jv');
+                        setCurrentStep(1);
+                      }}
                     />
 
                     <div className='lg:w-[953px] w-full text-xl text-[#FF3D00] font-normal text-center mt-5'>
-                        Note: Only property owners are allowed to submit listings. Submissions from non-owners will be automatically rejected."
+                      Note: Only property owners are allowed to submit listings.
+                      Submissions from non-owners will be automatically
+                      rejected."
                     </div>
                   </div>
-              </div>
-            )}
+                </div>
+              )}
               {/* Show the form only if a card is selected */}
               {selectedCard && (
                 <form
                   onSubmit={formik.handleSubmit}
                   className='w-full lg:w-[953px] border-[#8D909680] flex flex-col mb-20'>
                   {currentStep === 1 && (
-                  <div className='min-h-[629px] py-[10px] lg:px-[80px] border-[#8D909680] w-full'>
-                  <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'> {getFormTitle()}</h2>
-                    <div className='w-full min-h-[629px] flex flex-col gap-[30px]'>
-                      <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
-                        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                          Property Type
-                        </h2>
+                    <div className='min-h-[629px] py-[10px] lg:px-[80px] border-[#8D909680] w-full'>
+                      <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>
+                        {' '}
+                        {getFormTitle()}
+                      </h2>
+                      <div className='w-full min-h-[629px] flex flex-col gap-[30px]'>
+                        <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
+                          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                            Property Type
+                          </h2>
                           <div className='w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap'>
                             {(selectedCard === 'jv'
-                              ? ['Residential', 'Commercial', 'Mixed Development']
+                              ? [
+                                  'Residential',
+                                  'Commercial',
+                                  'Mixed Development',
+                                ]
                               : ['Residential', 'Commercial', 'Land']
                             ).map((type) => (
                               <div
                                 key={type}
                                 className={`border-[#8D909680] border-[1px] rounded-[2px] w-full lg:w-[200px] h-[50px] flex items-center justify-center cursor-pointer
-                                  ${formik.values.propertyType === type ? 'bg-[#8DDB90] text-white font-bold border-[#8DDB90]' : ' text-[#1E1E1E]'}`}
-                                onClick={() => formik.setFieldValue('propertyType', type)}
-                              >
+                                  ${
+                                    formik.values.propertyType === type
+                                      ? 'bg-[#8DDB90] text-white font-bold border-[#8DDB90]'
+                                      : ' text-[#1E1E1E]'
+                                  }`}
+                                onClick={() =>
+                                  formik.setFieldValue('propertyType', type)
+                                }>
                                 {type}
                               </div>
                             ))}
                           </div>
-                        {formik.touched.propertyType &&
-                          formik.errors.propertyType && (
-                            <span className='text-red-600 text-sm'>
-                              {formik.errors.propertyType}
-                            </span>
-                          )}
-                      </div>
-                    {selectedCard === 'rent' && formik.values.propertyType !== 'Land' && (
-                      <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
-                        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                          Property Condition
-                        </h2>
-                        <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
-                          <RadioCheck
-                            // isDisabled={formik.values?.propertyType ? true : false}
-                            selectedValue={formik.values?.propertyCondition}
-                            handleChange={() => {
-                              formik.setFieldValue('propertyCondition', 'Brand New');
-                            }}
-                            type='radio'
-                            value='Brand New'
-                            name='propertyCondition'
-                          />
-                          <RadioCheck
-                            // isDisabled={formik.values?.propertyType ? true : false}
-                            selectedValue={formik.values?.propertyCondition}
-                            handleChange={() => {
-                              formik.setFieldValue('propertyCondition', 'Good Condition');
-                            }}
-                            type='radio'
-                            name='propertyCondition'
-                            value='Good Condition'
-                          />
-                          <RadioCheck
-                            // isDisabled={formik.values?.propertyType ? true : false}
-                            selectedValue={formik.values?.propertyCondition}
-                            handleChange={() => {
-                              formik.setFieldValue('propertyCondition', 'Needs Renovation');
-                            }}
-                            type='radio'
-                            name='propertyCondition'
-                            value='Needs Renovation'
-                          />
+                          {formik.touched.propertyType &&
+                            formik.errors.propertyType && (
+                              <span className='text-red-600 text-sm'>
+                                {formik.errors.propertyType}
+                              </span>
+                            )}
                         </div>
-                        {formik.touched.propertyCondition &&
-                          formik.errors.propertyCondition && (
-                            <span className='text-red-600 text-sm'>
-                              {formik.errors.propertyCondition}
-                            </span>
+                        {selectedCard === 'rent' &&
+                          formik.values.propertyType !== 'Land' && (
+                            <div className='min-h-[73px] gap-[15px] flex flex-col w-full'>
+                              <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                                Property Condition
+                              </h2>
+                              <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
+                                <RadioCheck
+                                  // isDisabled={formik.values?.propertyType ? true : false}
+                                  selectedValue={
+                                    formik.values?.propertyCondition
+                                  }
+                                  handleChange={() => {
+                                    formik.setFieldValue(
+                                      'propertyCondition',
+                                      'Brand New'
+                                    );
+                                  }}
+                                  type='radio'
+                                  value='Brand New'
+                                  name='propertyCondition'
+                                />
+                                <RadioCheck
+                                  // isDisabled={formik.values?.propertyType ? true : false}
+                                  selectedValue={
+                                    formik.values?.propertyCondition
+                                  }
+                                  handleChange={() => {
+                                    formik.setFieldValue(
+                                      'propertyCondition',
+                                      'Good Condition'
+                                    );
+                                  }}
+                                  type='radio'
+                                  name='propertyCondition'
+                                  value='Good Condition'
+                                />
+                                <RadioCheck
+                                  // isDisabled={formik.values?.propertyType ? true : false}
+                                  selectedValue={
+                                    formik.values?.propertyCondition
+                                  }
+                                  handleChange={() => {
+                                    formik.setFieldValue(
+                                      'propertyCondition',
+                                      'Needs Renovation'
+                                    );
+                                  }}
+                                  type='radio'
+                                  name='propertyCondition'
+                                  value='Needs Renovation'
+                                />
+                              </div>
+                              {formik.touched.propertyCondition &&
+                                formik.errors.propertyCondition && (
+                                  <span className='text-red-600 text-sm'>
+                                    {formik.errors.propertyCondition}
+                                  </span>
+                                )}
+                            </div>
                           )}
-                      </div>
-                    )}
-                      <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
-                        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                          Location
-                        </h2>
-                        <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-3 flex-col'>
-                          <Input
-                            label='State'
-                            name='selectedState'
-                            forState={true}
-                            forLGA={false}
-                            type='text'
-                            placeholder='Select State'
-                            formik={formik}
-                            selectedState={selectedState}
-                            stateOptions={stateOptions}
-                            setSelectedState={handleStateChange}
-                            isDisabled={areInputsDisabled}
-                          />
-                          <Input
-                            label='Local Government'
-                            name='selectedLGA'
-                            type='text'
-                            formik={formik}
-                            forLGA={true}
-                            forState={false}
-                            selectedLGA={selectedLGA}
-                            stateValue={selectedState?.label}
-                            lgasOptions={lgaOptions}
-                            setSelectedLGA={handleLGAChange}
-                            isDisabled={areInputsDisabled}
-                          />
-                          <Input
-                            label='Area'
-                            name='selectedCity'
-                            placeholder='Enter Area or Neighbourhood'
-                            forState={false}
-                            forLGA={false}
-                            onChange={formik.handleChange}
-                            type='text'
-                            isDisabled={areInputsDisabled}
-                          />
-                        </div>
-                      </div>
-                    {(formik.values.propertyType === 'Land' || selectedCard === 'sell' || selectedCard === 'jv') && (
-                      <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
+                        <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
                           <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                            Land Size
+                            Location
                           </h2>
-                          <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
-                            <Select
-                              name='Type of Measurement'
-                              heading='measurementType'
-                              options={['Plot', 'Acres', 'Square Meter']}
+                          <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-3 flex-col'>
+                            <Input
+                              label='State'
+                              name='selectedState'
+                              forState={true}
+                              forLGA={false}
+                              type='text'
+                              placeholder='Select State'
                               formik={formik}
+                              selectedState={selectedState}
+                              stateOptions={stateOptions}
+                              setSelectedState={handleStateChange}
+                              isDisabled={areInputsDisabled}
                             />
                             <Input
-                              label='Enter Land Size'
-                              name='landSize'
+                              label='Local Government'
+                              name='selectedLGA'
+                              type='text'
+                              formik={formik}
+                              forLGA={true}
+                              forState={false}
+                              selectedLGA={selectedLGA}
+                              stateValue={selectedState?.label}
+                              lgasOptions={lgaOptions}
+                              setSelectedLGA={handleLGAChange}
+                              isDisabled={areInputsDisabled}
+                            />
+                            <Input
+                              label='Area'
+                              name='selectedCity'
+                              placeholder='Enter Area or Neighbourhood'
                               forState={false}
                               forLGA={false}
                               onChange={formik.handleChange}
-                              type='number'
+                              type='text'
                               isDisabled={areInputsDisabled}
                             />
                           </div>
-                          {formik.touched.landSize && formik.errors.landSize && (
-                            <span className='text-red-600 text-sm'>
-                              {formik.errors.landSize}
-                            </span>
-                          )}
                         </div>
-                      )}
-                      <div className='min-h-[50px] flex flex-col gap-[15px]'>
-                        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                          Price Details
-                        </h2>
-                        <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
-                        <Input
-                          label='Rental Price'
-                          placeholder='Enter property price'
-                          name='price'
-                          type='text'
-                          className={selectedCard === 'jv' ? 'w-full col-span-2' : 'w-full'}
-                          minNumber={0}
-                          value={formatedPrice}
-                          onChange={(e) => {
-                            const rawValue = (e.target as HTMLInputElement | HTMLTextAreaElement).value;
-                            setFormatedPrice(formatNumber?.(rawValue) ?? '');
-                            formik.setFieldValue(
-                              'price',
-                              rawValue.replace(/,/g, '')
-                            );
-                          }}
-                          isDisabled={areInputsDisabled}
-                        />
-
-                        {selectedCard !== 'jv' && (
-                        <Input
-                          label='Lease Hold'
-                          placeholder='Enter lease hold'
-                          name='leaseHold'
-                          type='text'
-                          className='w-full'
-                          minNumber={0}
-                          value={formatedHold}
-                          onChange={(e) => {
-                            const rawValue = (e.target as HTMLInputElement | HTMLTextAreaElement).value;
-                            setFormatedHold(formatNumber?.(rawValue) ?? '');
-                            formik.setFieldValue(
-                              'leaseHold',
-                              rawValue.replace(/,/g, '')
-                            );
-                          }}
-                          isDisabled={areInputsDisabled}
-                        />
+                        {(formik.values.propertyType === 'Land' ||
+                          selectedCard === 'sell' ||
+                          selectedCard === 'jv') && (
+                          <div className='min-h-[127px] w-full flex flex-col gap-[15px]'>
+                            <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                              Land Size
+                            </h2>
+                            <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                              <Select
+                                name='Type of Measurement'
+                                heading='measurementType'
+                                options={['Plot', 'Acres', 'Square Meter']}
+                                formik={formik}
+                              />
+                              <Input
+                                label='Enter Land Size'
+                                name='landSize'
+                                forState={false}
+                                forLGA={false}
+                                onChange={formik.handleChange}
+                                type='number'
+                                isDisabled={areInputsDisabled}
+                              />
+                            </div>
+                            {formik.touched.landSize &&
+                              formik.errors.landSize && (
+                                <span className='text-red-600 text-sm'>
+                                  {formik.errors.landSize}
+                                </span>
+                              )}
+                          </div>
                         )}
+                        <div className='min-h-[50px] flex flex-col gap-[15px]'>
+                          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                            Price Details
+                          </h2>
+                          <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                            <Input
+                              label='Rental Price'
+                              placeholder='Enter property price'
+                              name='price'
+                              type='text'
+                              className={
+                                selectedCard === 'jv'
+                                  ? 'w-full col-span-2'
+                                  : 'w-full'
+                              }
+                              minNumber={0}
+                              value={formatedPrice}
+                              onChange={(e) => {
+                                const rawValue = (
+                                  e.target as
+                                    | HTMLInputElement
+                                    | HTMLTextAreaElement
+                                ).value;
+                                setFormatedPrice(
+                                  formatNumber?.(rawValue) ?? ''
+                                );
+                                formik.setFieldValue(
+                                  'price',
+                                  rawValue.replace(/,/g, '')
+                                );
+                              }}
+                              isDisabled={areInputsDisabled}
+                            />
+
+                            {selectedCard !== 'jv' && (
+                              <Input
+                                label='Lease Hold'
+                                placeholder='Enter lease hold'
+                                name='leaseHold'
+                                type='text'
+                                className='w-full'
+                                minNumber={0}
+                                value={formatedHold}
+                                onChange={(e) => {
+                                  const rawValue = (
+                                    e.target as
+                                      | HTMLInputElement
+                                      | HTMLTextAreaElement
+                                  ).value;
+                                  setFormatedHold(
+                                    formatNumber?.(rawValue) ?? ''
+                                  );
+                                  formik.setFieldValue(
+                                    'leaseHold',
+                                    rawValue.replace(/,/g, '')
+                                  );
+                                }}
+                                isDisabled={areInputsDisabled}
+                              />
+                            )}
+                          </div>
                         </div>
+                        {formik.values.propertyType !== 'Land' &&
+                          selectedCard !== 'jv' && (
+                            <div className='min-h-[129px] gap-[15px] flex flex-col w-full'>
+                              <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                                Property Details
+                              </h2>
+                              <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                                <Select
+                                  label='Type of Building'
+                                  name='Type of Building'
+                                  heading='typeOfBuilding'
+                                  allowMultiple={false}
+                                  options={
+                                    formik.values.propertyType === 'Residential'
+                                      ? propertyReferenceData[0].options
+                                      : formik.values.propertyType ===
+                                        'Commercial'
+                                      ? propertyReferenceData[1].options
+                                      : []
+                                  }
+                                  formik={formik}
+                                  isDisabled={areInputsDisabled}
+                                />
+                                <Select
+                                  label='Number of Bedroom'
+                                  name='Number of Bedroom'
+                                  heading='noOfBedroom'
+                                  allowMultiple={false}
+                                  options={
+                                    propertyReferenceData[
+                                      propertyReferenceData.length - 2
+                                    ].options
+                                  }
+                                  formik={formik}
+                                  isDisabled={areInputsDisabled}
+                                />
+                              </div>
+                              <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-3 flex-col mt-2'>
+                                <Select
+                                  label='Number of Bathroom'
+                                  name='Number of Bathroom'
+                                  heading='noOfBathroom'
+                                  allowMultiple={false}
+                                  options={
+                                    propertyReferenceData[
+                                      propertyReferenceData.length - 2
+                                    ].options
+                                  }
+                                  formik={formik}
+                                  isDisabled={areInputsDisabled}
+                                />
+                                <Select
+                                  label='Number of Toilet'
+                                  name='Number of Toilet'
+                                  heading='noOfToilet'
+                                  allowMultiple={false}
+                                  options={
+                                    propertyReferenceData[
+                                      propertyReferenceData.length - 2
+                                    ].options
+                                  }
+                                  formik={formik}
+                                  isDisabled={areInputsDisabled}
+                                />
+                                <Select
+                                  label='Number of Car Park'
+                                  name='Number of Car Park'
+                                  heading='noOfCarPark'
+                                  allowMultiple={false}
+                                  options={
+                                    propertyReferenceData[
+                                      propertyReferenceData.length - 2
+                                    ].options
+                                  }
+                                  formik={formik}
+                                  isDisabled={areInputsDisabled}
+                                />
+                              </div>
+                            </div>
+                          )}
                       </div>
-                    {formik.values.propertyType !== 'Land' && selectedCard !== 'jv' && (
-                      <div className='min-h-[129px] gap-[15px] flex flex-col w-full'>
-                        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                          Property Details
-                        </h2>
-                        <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
-                          <Select
-                            label='Type of Building'
-                            name='Type of Building'
-                            heading='typeOfBuilding'
-                            allowMultiple={false}
-                            options={
-                              formik.values.propertyType === 'Residential'
-                              ? propertyReferenceData[0].options
-                              : formik.values.propertyType === 'Commercial'
-                                ? propertyReferenceData[1].options
-                                : []
-                            }
-                            formik={formik}
-                            isDisabled={areInputsDisabled}
-                          />
-                          <Select
-                            label='Number of Bedroom'
-                            name='Number of Bedroom'
-                            heading='noOfBedroom'
-                            allowMultiple={false}
-                            options={
-                              propertyReferenceData[
-                                propertyReferenceData.length - 2
-                              ].options
-                            }
-                            formik={formik}
-                            isDisabled={areInputsDisabled}
-                          />
-                        </div>
-                        <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-3 flex-col mt-2'>
-                          <Select
-                            label='Number of Bathroom'
-                            name='Number of Bathroom'
-                            heading='noOfBathroom'
-                            allowMultiple={false}
-                            options={
-                              propertyReferenceData[
-                                propertyReferenceData.length - 2
-                              ].options
-                            }
-                            formik={formik}
-                            isDisabled={areInputsDisabled}
-                          />
-                          <Select
-                            label='Number of Toilet'
-                            name='Number of Toilet'
-                            heading='noOfToilet'
-                            allowMultiple={false}
-                            options={
-                              propertyReferenceData[
-                                propertyReferenceData.length - 2
-                              ].options
-                            }
-                            formik={formik}
-                            isDisabled={areInputsDisabled}
-                          />
-                          <Select
-                            label='Number of Car Park'
-                            name='Number of Car Park'
-                            heading='noOfCarPark'
-                            allowMultiple={false}
-                            options={
-                              propertyReferenceData[
-                                propertyReferenceData.length - 2
-                              ].options
-                            }
-                            formik={formik}
-                            isDisabled={areInputsDisabled}
-                          />
-                        </div>
-                      </div>
-                    )}
                     </div>
-                    
-                  </div>
-                   )}
+                  )}
                   {currentStep === 2 && (
-                  // {/* Feature & Conditions */}
-                  <div className='min-h-[629px] py-[40px] lg:px-[80px] w-full'>
-                  <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>Feature & Conditions</h2>
-                  {selectedCard !== 'rent' && (
-                  <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
-                    <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                      Document on the property
-                    </h2>
-                    <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
-                      {DocOnPropertyData.map((item: string, idx: number) => (
-                        <RadioCheck
-                          key={idx}
-                          type='checkbox'
-                          value={item}
-                          name='documents'
-                          handleChange={() => {
-                            const documents = formik.values.documents.includes(
-                              item
-                            )
-                              ? formik.values.documents.filter(
-                                  (doc) => doc !== item
-                                )
-                              : [...formik.values.documents, item];
-                            formik.setFieldValue('documents', documents);
-                          }}
-                          isDisabled={areInputsDisabled}
-                        />
-                      ))}
-                    </div>
-                      {formik.touched.documents && formik.errors.documents && (
-                        <p className="text-red-500 text-sm mt-1">{formik.errors.documents}</p>
+                    // {/* Feature & Conditions */}
+                    <div className='min-h-[629px] py-[40px] lg:px-[80px] w-full'>
+                      <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>
+                        Feature & Conditions
+                      </h2>
+                      {selectedCard !== 'rent' && (
+                        <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
+                          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                            Document on the property
+                          </h2>
+                          <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
+                            {DocOnPropertyData.map(
+                              (item: string, idx: number) => (
+                                <RadioCheck
+                                  key={idx}
+                                  type='checkbox'
+                                  value={item}
+                                  name='documents'
+                                  handleChange={() => {
+                                    const documents =
+                                      formik.values.documents.includes(item)
+                                        ? formik.values.documents.filter(
+                                            (doc) => doc !== item
+                                          )
+                                        : [...formik.values.documents, item];
+                                    formik.setFieldValue(
+                                      'documents',
+                                      documents
+                                    );
+                                  }}
+                                  isDisabled={areInputsDisabled}
+                                />
+                              )
+                            )}
+                          </div>
+                          {formik.touched.documents &&
+                            formik.errors.documents && (
+                              <p className='text-red-500 text-sm mt-1'>
+                                {formik.errors.documents}
+                              </p>
+                            )}
+                        </div>
                       )}
-                  </div>
-                  )}
-                  {selectedCard === 'jv' && (
-                  <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
-                    <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                      Condition
-                    </h2>
-                    <div className='grid lg:grid-cols-3 grid-cols-1 gap-[15px] w-full'>
-                      {JvConditionData.map((item: string, idx: number) => (
-                        <RadioCheck
-                          key={idx}
-                          type='checkbox'
-                          value={item}
-                          name='jvConditions'
-                          handleChange={() => {
-                            const jvConditions = formik.values.jvConditions.includes(
-                              item
-                            )
-                              ? formik.values.jvConditions.filter(
-                                  (doc) => doc !== item
-                                )
-                              : [...formik.values.jvConditions, item];
-                            formik.setFieldValue('jvConditions', jvConditions);
-                          }}
+                      {selectedCard === 'jv' && (
+                        <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
+                          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                            Condition
+                          </h2>
+                          <div className='grid lg:grid-cols-3 grid-cols-1 gap-[15px] w-full'>
+                            {JvConditionData.map(
+                              (item: string, idx: number) => (
+                                <RadioCheck
+                                  key={idx}
+                                  type='checkbox'
+                                  value={item}
+                                  name='jvConditions'
+                                  handleChange={() => {
+                                    const jvConditions =
+                                      formik.values.jvConditions.includes(item)
+                                        ? formik.values.jvConditions.filter(
+                                            (doc) => doc !== item
+                                          )
+                                        : [...formik.values.jvConditions, item];
+                                    formik.setFieldValue(
+                                      'jvConditions',
+                                      jvConditions
+                                    );
+                                  }}
+                                  isDisabled={areInputsDisabled}
+                                />
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {selectedCard !== 'jv' && (
+                        <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
+                          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                            Features
+                          </h2>
+                          <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
+                            {featuresData.map((item: string, idx: number) => (
+                              <RadioCheck
+                                key={idx}
+                                type='checkbox'
+                                value={item}
+                                name='features'
+                                handleChange={() => {
+                                  const features =
+                                    formik.values.features.includes(item)
+                                      ? formik.values.features.filter(
+                                          (doc) => doc !== item
+                                        )
+                                      : [...formik.values.features, item];
+                                  formik.setFieldValue('features', features);
+                                }}
+                                isDisabled={areInputsDisabled}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {selectedCard === 'rent' && (
+                        <div className='min-h-[73px] flex flex-col gap-[15px] mt-8'>
+                          <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
+                            Tenant Criteria
+                          </h2>
+                          <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
+                            {tenantCriteriaData.map(
+                              (item: string, idx: number) => (
+                                <RadioCheck
+                                  key={idx}
+                                  type='checkbox'
+                                  value={item}
+                                  name='tenantCriteria'
+                                  handleChange={() => {
+                                    const tenantCriteria =
+                                      formik.values.tenantCriteria.includes(
+                                        item
+                                      )
+                                        ? formik.values.tenantCriteria.filter(
+                                            (doc) => doc !== item
+                                          )
+                                        : [
+                                            ...formik.values.tenantCriteria,
+                                            item,
+                                          ];
+                                    formik.setFieldValue(
+                                      'tenantCriteria',
+                                      tenantCriteria
+                                    );
+                                  }}
+                                  isDisabled={areInputsDisabled}
+                                />
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      <div className='min-h-[73px] flex flex-col gap-[15px] mt-8'>
+                        <Input
+                          label='Addition information'
+                          name='addtionalInfo'
+                          type='textArea'
+                          className='w-full'
+                          multiline={true}
+                          rows={3}
+                          placeholder='Enter any additional information'
+                          // value={formik.values?.numberOfFloors}
+                          onChange={formik.handleChange}
                           isDisabled={areInputsDisabled}
                         />
-                      ))}
+                      </div>
                     </div>
-                  </div>
-                  )}
-                  {selectedCard !== 'jv' && (
-                   <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
-                    <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                      Features
-                    </h2>
-                    <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
-                      {featuresData.map((item: string, idx: number) => (
-                        <RadioCheck
-                          key={idx}
-                          type='checkbox'
-                          value={item}
-                          name='features'
-                          handleChange={() => {
-                            const features = formik.values.features.includes(
-                              item
-                            )
-                              ? formik.values.features.filter(
-                                  (doc) => doc !== item
-                                )
-                              : [...formik.values.features, item];
-                            formik.setFieldValue('features', features);
-                          }}
-                          isDisabled={areInputsDisabled}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  )}
-                   {selectedCard === 'rent' && (
-                  <div className='min-h-[73px] flex flex-col gap-[15px] mt-8'>
-                    <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-                      Tenant Criteria
-                    </h2>
-                       <div className='grid lg:grid-cols-3 grid-cols-2 gap-[15px] w-full'>
-                      {tenantCriteriaData.map((item: string, idx: number) => (
-                        <RadioCheck
-                          key={idx}
-                          type='checkbox'
-                          value={item}
-                          name='tenantCriteria'
-                          handleChange={() => {
-                            const tenantCriteria =
-                              formik.values.tenantCriteria.includes(item)
-                                ? formik.values.tenantCriteria.filter(
-                                    (doc) => doc !== item
-                                  )
-                                : [...formik.values.tenantCriteria, item];
-                            formik.setFieldValue(
-                              'tenantCriteria',
-                              tenantCriteria
-                            );
-                          }}
-                          isDisabled={areInputsDisabled}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  )}
-                  <div className='min-h-[73px] flex flex-col gap-[15px] mt-8'>
-                      <Input
-                        label='Addition information'
-                        name='addtionalInfo'
-                        type='textArea'
-                        className='w-full'
-                        multiline={true}
-                        rows={3}
-                        placeholder='Enter any additional information'
-                        // value={formik.values?.numberOfFloors}
-                        onChange={formik.handleChange}
-                        isDisabled={areInputsDisabled} 
-                      />
-                  </div>
-                  </div>
                   )}
 
                   {currentStep === 3 && (
@@ -837,168 +959,217 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                         Upload property Picture
                       </h2>
                       <div className='lg:w-[953px] w-full text-xl text-[#5A5D63] font-normal text-center mt-2'>
-                        Note: Please upload high-quality images of your property. The photos must be clear, well-lit, and should fully capture the key areas of the property. Submissions with poor or incomplete images may be rejected."
+                        Note: Please upload high-quality images of your
+                        property. The photos must be clear, well-lit, and should
+                        fully capture the key areas of the property. Submissions
+                        with poor or incomplete images may be rejected."
                       </div>
-                    <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px]  my-10'>
-                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[25px]'>
-                         {Array.from({ length: imageCardCount }).map((_, idx) => (
-                          <label
-                            key={idx}
-                            htmlFor={`property-image-${idx}`}
-                            className='h-[166px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center'
-                            style={{ position: 'relative' }}
-                          >
-                              {/* Hidden file input */}
-                              <input
-                                id={`property-image-${idx}`}
-                                type="file"
-                                accept="image/png, image/jpeg"
-                                className="hidden"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    const url = URL.createObjectURL(file);
-                                    setImages((prev) => {
-                                      const updated = [...prev];
-                                      updated[idx] = file;
-                                      return updated;
-                                    });
-                                  }
-                                }}
-                              />
-                              {images[idx] ? (
-                                <div className="w-full h-full">
-                                  <img
-                                      src={
-                                          images[idx]
-                                            ? images[idx] instanceof File
-                                              ? URL.createObjectURL(images[idx] as File)
-                                              : (images[idx] as string)
-                                            : ''
-                                        }
-                                    alt="Preview"
-                                    className="w-full h-full object-cover rounded"
-                                    style={{ position: 'absolute', inset: 0 }}
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      e.preventDefault();
+                      <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px]  my-10'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[25px]'>
+                          {Array.from({ length: imageCardCount }).map(
+                            (_, idx) => (
+                              <label
+                                key={idx}
+                                htmlFor={`property-image-${idx}`}
+                                className='h-[166px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center'
+                                style={{ position: 'relative' }}>
+                                {/* Hidden file input */}
+                                <input
+                                  id={`property-image-${idx}`}
+                                  type='file'
+                                  accept='image/png, image/jpeg'
+                                  className='hidden'
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const url = URL.createObjectURL(file);
                                       setImages((prev) => {
                                         const updated = [...prev];
-                                        updated[idx] = null;
+                                        updated[idx] = file;
                                         return updated;
                                       });
-                                    }}
-                                    className="absolute top-2 right-2 z-20 flex items-center justify-center w-8 h-8  bg-white shadow hover:bg-gray-100"
-                                    style={{ border: 'none', padding: 0 }}
-                                    title="Delete image"
-                                  >
-                                    {/* Trash icon (SVG) */}
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                      <path d="M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12z" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                      <path d="M10 11v6M14 11v6" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/>
-                                    </svg>
-                                  </button>
-                                </div>
-                              ) : (                            
-                            // {/* Green plus icon in a circle */}
-                            <div className='flex flex-col items-center justify-center'>
-                              <span className="flex items-center justify-center w-12 h-12 rounded-full bg-white border mb-2 cursor-pointer">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                                      <path d="M12 5v14M5 12h14" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"/>
-                                    </svg>
-                                </span>
-                                <span
-                                    title='Click to add images'
-                                    className='text-sm text-black cursor-pointer font-medium'
-                                  >
-                                    Format: png, jpeg
-                                </span>
-                            </div>
-                              )}
-                          </label>
-                        ))}
+                                    }
+                                  }}
+                                />
+                                {images[idx] ? (
+                                  <div className='w-full h-full'>
+                                    <img
+                                      src={
+                                        images[idx]
+                                          ? images[idx] instanceof File
+                                            ? URL.createObjectURL(
+                                                images[idx] as File
+                                              )
+                                            : (images[idx] as string)
+                                          : ''
+                                      }
+                                      alt='Preview'
+                                      className='w-full h-full object-cover rounded'
+                                      style={{ position: 'absolute', inset: 0 }}
+                                    />
+                                    <button
+                                      type='button'
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setImages((prev) => {
+                                          const updated = [...prev];
+                                          updated[idx] = null;
+                                          return updated;
+                                        });
+                                      }}
+                                      className='absolute top-2 right-2 z-20 flex items-center justify-center w-8 h-8  bg-white shadow hover:bg-gray-100'
+                                      style={{ border: 'none', padding: 0 }}
+                                      title='Delete image'>
+                                      {/* Trash icon (SVG) */}
+                                      <svg
+                                        width='20'
+                                        height='20'
+                                        viewBox='0 0 24 24'
+                                        fill='none'>
+                                        <path
+                                          d='M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12z'
+                                          stroke='#ef4444'
+                                          strokeWidth='2'
+                                          strokeLinecap='round'
+                                          strokeLinejoin='round'
+                                        />
+                                        <path
+                                          d='M10 11v6M14 11v6'
+                                          stroke='#ef4444'
+                                          strokeWidth='2'
+                                          strokeLinecap='round'
+                                        />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  // {/* Green plus icon in a circle */}
+                                  <div className='flex flex-col items-center justify-center'>
+                                    <span className='flex items-center justify-center w-12 h-12 rounded-full bg-white border mb-2 cursor-pointer'>
+                                      <svg
+                                        width='28'
+                                        height='28'
+                                        viewBox='0 0 24 24'
+                                        fill='none'>
+                                        <path
+                                          d='M12 5v14M5 12h14'
+                                          stroke='#22c55e'
+                                          strokeWidth='2.5'
+                                          strokeLinecap='round'
+                                        />
+                                      </svg>
+                                    </span>
+                                    <span
+                                      title='Click to add images'
+                                      className='text-sm text-black cursor-pointer font-medium'>
+                                      Format: png, jpeg
+                                    </span>
+                                  </div>
+                                )}
+                              </label>
+                            )
+                          )}
+                        </div>
+                        {/* Add More Button */}
+                        <button
+                          type='button'
+                          onClick={() => setImageCardCount((prev) => prev + 1)}
+                          className='flex items-center gap-2 mt-6 px-6 py-3 rounded text-[#515B6F] font-semibold hover:bg-[#8DDB90] transition w-max mx-auto border-[1px] border-dashed border-[#5A5D63]'>
+                          <svg
+                            width='20'
+                            height='20'
+                            viewBox='0 0 24 24'
+                            fill='none'>
+                            <path
+                              d='M12 5v14M5 12h14'
+                              stroke='#515B6F'
+                              strokeWidth='2.5'
+                              strokeLinecap='round'
+                            />
+                          </svg>
+                          Add More
+                        </button>
                       </div>
-                      {/* Add More Button */}
-                      <button
-                        type="button"
-                        onClick={() => setImageCardCount((prev) => prev + 1)}
-                        className="flex items-center gap-2 mt-6 px-6 py-3 rounded text-[#515B6F] font-semibold hover:bg-[#8DDB90] transition w-max mx-auto border-[1px] border-dashed border-[#5A5D63]"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <path d="M12 5v14M5 12h14" stroke="#515B6F" strokeWidth="2.5" strokeLinecap="round"/>
-                        </svg>
-                        Add More
-                      </button>
-                    </div>
                     </div>
                   )}
-      
-                   {currentStep === 4 && (
-                  // {/* Ownership Declaration */}
+
+                  {currentStep === 4 && (
+                    // {/* Ownership Declaration */}
                     <div className='w-full min-h-[348px] flex flex-col gap-[20px] py-[40px] lg:px-[80px]'>
-                  <h3 className='text-[#1E1E1E] text-[18px] leading-[38.4px] font-semibold'>
-                    Ownership Declaration
-                  </h3>
-                  <div className='w-full flex flex-col gap-[15px] min-h-[270px] '>
-                    <RadioCheck
-                      name='confirm'
-                      type='checkbox'
-                      // onClick={() => {
-                      //   setIsLegalOwner(!isLegalOwner);
-                      // }}
-                      isChecked={isLegalOwner}
-                      handleChange={() => setIsLegalOwner(!isLegalOwner)}
-                      isDisabled={areInputsDisabled}
-                      value='I confirm that I am the legal owner of this property or authorized to submit this brief'
-                    />
-                    <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
-                      <Input
-                        label='Full name'
-                        isDisabled={true}
-                        name='ownerFullName'
-                        value={formik.values?.ownerFullName}
-                        onChange={formik.handleChange}
-                        className='lg:w-1/2 w-full'
-                        type='text'
-                      />
-                      <div className='flex flex-col gap-2'>
-                        <label className='block text-sm font-medium'>
-                          Phone Number
-                        </label>
-                        <PhoneInput
-                          international
-                          defaultCountry='NG'
-                          disabled={!isLegalOwner}
-                          value={formik.values?.ownerPhoneNumber}
-                          style={{ outline: 'none' }}
-                          onChange={(value) =>
-                            formik.setFieldValue('ownerPhoneNumber', value)
-                          }
-                          placeholder='Enter phone number'
-                          className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] focus:outline-none focus:ring-0'
+                      <h3 className='text-[#1E1E1E] text-[18px] leading-[38.4px] font-semibold'>
+                        Ownership Declaration
+                      </h3>
+                      <div className='w-full flex flex-col gap-[15px] min-h-[270px] '>
+                        <RadioCheck
+                          name='confirm'
+                          type='checkbox'
+                          // onClick={() => {
+                          //   setIsLegalOwner(!isLegalOwner);
+                          // }}
+                          isChecked={isLegalOwner}
+                          handleChange={() => setIsLegalOwner(!isLegalOwner)}
+                          isDisabled={areInputsDisabled}
+                          value='I confirm that I am the legal owner of this property or authorized to submit this brief'
                         />
-                        {(formik.touched.ownerPhoneNumber ||
-                          formik.errors.ownerPhoneNumber) && (
-                          <p className='text-red-500 text-sm mt-1'>
-                            {formik.errors.ownerPhoneNumber}
-                          </p>
-                        )}
+                        {commission['userType'] === 'agent' ? (
+                          <RadioCheck
+                            name='confirm'
+                            type='checkbox'
+                            // onClick={() => {
+                            //   setIsLegalOwner(!isLegalOwner);
+                            // }}
+                            isChecked={isAuthorized}
+                            handleChange={() => setIsAuthorized(!isAuthorized)}
+                            isDisabled={areInputsDisabled}
+                            value='I confirm that I am authorized to list the property'
+                          />
+                        ) : null}
+                        <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
+                          <Input
+                            label='Full name'
+                            isDisabled={true}
+                            name='ownerFullName'
+                            value={formik.values?.ownerFullName}
+                            onChange={formik.handleChange}
+                            className='lg:w-1/2 w-full'
+                            type='text'
+                          />
+                          <div className='flex flex-col gap-2'>
+                            <label className='block text-sm font-medium'>
+                              Phone Number
+                            </label>
+                            <PhoneInput
+                              international
+                              defaultCountry='NG'
+                              disabled={!isLegalOwner}
+                              value={formik.values?.ownerPhoneNumber}
+                              style={{ outline: 'none' }}
+                              onChange={(value) =>
+                                formik.setFieldValue('ownerPhoneNumber', value)
+                              }
+                              placeholder='Enter phone number'
+                              className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] focus:outline-none focus:ring-0'
+                            />
+                            {(formik.touched.ownerPhoneNumber ||
+                              formik.errors.ownerPhoneNumber) && (
+                              <p className='text-red-500 text-sm mt-1'>
+                                {formik.errors.ownerPhoneNumber}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <Input
+                          label='Email'
+                          name='ownerEmail'
+                          isDisabled={true}
+                          className='w-full'
+                          value={formik.values.ownerEmail}
+                          onChange={formik.handleChange}
+                          type='email'
+                        />
                       </div>
                     </div>
-                    <Input
-                      label='Email'
-                      name='ownerEmail'
-                      isDisabled={true}
-                      className='w-full'
-                      value={formik.values.ownerEmail}
-                      onChange={formik.handleChange}
-                      type='email'
-                    />
-                  </div>
-                   </div>
                   )}
 
                   <div className='w-full flex items-center mt-8 gap-5 justify-between lg:px-[80px]'>
@@ -1006,7 +1177,9 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                       value='Cancel'
                       // isDisabled={!isLegalOwner}
                       type='button'
-                      onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+                      onClick={() =>
+                        setCurrentStep((prev) => Math.max(prev - 1, 0))
+                      }
                       className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                     />
                     {/* <Button
@@ -1034,16 +1207,25 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                     /> */}
                     <Button
                       value='Next'
-                      type={currentStep === steps.length - 1 ? 'submit' : 'button'}
+                      type={
+                        currentStep === steps.length - 1 ? 'submit' : 'button'
+                      }
                       onClick={async () => {
                         const errors = await formik.validateForm();
                         // Only check errors for fields relevant to the current step
-                        const fieldsToCheck = stepRequiredFields[currentStep] || [];
-                        const hasStepError = fieldsToCheck.some(field => !!errors[field as keyof typeof formik.values]);
+                        const fieldsToCheck =
+                          stepRequiredFields[currentStep] || [];
+                        const hasStepError = fieldsToCheck.some(
+                          (field) =>
+                            !!errors[field as keyof typeof formik.values]
+                        );
                         if (hasStepError) {
                           // Mark those fields as touched
                           formik.setTouched(
-                            fieldsToCheck.reduce((acc, field) => ({ ...acc, [field]: true }), {})
+                            fieldsToCheck.reduce(
+                              (acc, field) => ({ ...acc, [field]: true }),
+                              {}
+                            )
                           );
                           return;
                         }
@@ -1053,48 +1235,48 @@ const steps: { label: string; status: "completed" | "active" | "pending" }[] = [
                           setShowCommissionModal(true);
                         }
                       }}
-                    className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                       isDisabled={
                         (currentStep === 4 && !isLegalOwner) ||
-                        (stepRequiredFields[currentStep] || []).some(field => !!formik.errors[field as keyof typeof formik.values])
+                        (currentStep === 4 && !isAuthorized) ||
+                        (stepRequiredFields[currentStep] || []).some(
+                          (field) =>
+                            !!formik.errors[field as keyof typeof formik.values]
+                        )
                       }
                     />
                   </div>
                 </form>
-              )} 
-              </>
-            )}
-
-              {showSummary && (
-                  <PropertySummary
-                    values={formik.values}
-                      images={images.map(img =>
-                        img instanceof File ? URL.createObjectURL(img) : img
-                      )}
-                    onEdit={() => setShowSummary(false)}
-                    onSubmit={handleSummarySubmit}
-                  />
               )}
+            </>
+          )}
 
-              {showFinalSubmit && 
-                <Submit
-                  href = '/my_listing'
-                />
-                }
-        
-              {showCommissionModal && (
-                <CommissionModal
-                  open={showCommissionModal}
-                  onClose={() => setShowCommissionModal(false)}
-                  onAccept={() => {
-                    setShowCommissionModal(false);
-                     setShowSummary(true);
-                    // handle accept logic here
-                  }}
-                  commission={commision}
-                  userName={user?.firstName + ' ' + user?.lastName}
-                />
+          {showSummary && (
+            <PropertySummary
+              values={formik.values}
+              images={images.map((img) =>
+                img instanceof File ? URL.createObjectURL(img) : img
               )}
+              onEdit={() => setShowSummary(false)}
+              onSubmit={handleSummarySubmit}
+            />
+          )}
+
+          {showFinalSubmit && <Submit href='/my_listing' />}
+
+          {showCommissionModal && (
+            <CommissionModal
+              open={showCommissionModal}
+              onClose={() => setShowCommissionModal(false)}
+              onAccept={() => {
+                setShowCommissionModal(false);
+                setShowSummary(true);
+                // handle accept logic here
+              }}
+              commission={commission.commission}
+              userName={user?.firstName + ' ' + user?.lastName}
+            />
+          )}
         </div>
       </section>
     </Fragment>

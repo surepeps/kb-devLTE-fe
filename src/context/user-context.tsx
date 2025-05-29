@@ -16,6 +16,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 export interface User {
   accountApproved: boolean;
+  _id?: string;
   id?: string;
   email?: string;
   firstName?: string;
@@ -56,19 +57,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   const getAgent = async () => {
-    const url = URLS.BASE +  URLS.user + URLS.userProfile;
+    const url = URLS.BASE + URLS.user + URLS.userProfile;
     await GET_REQUEST(url, Cookies.get('token'))
       .then((response) => {
         if (response?._id) {
+          //console.log('User data:', response);
           setUser(response);
         } else {
           if (
-              typeof response?.message === 'string' && (
-                response.message.toLowerCase().includes('unauthorized') ||
-                response.message.toLowerCase().includes('jwt') ||
-                response.message.toLowerCase().includes('expired') ||
-                response.message.toLowerCase().includes('malformed')
-              )
+            typeof response?.message === 'string' &&
+            (response.message.toLowerCase().includes('unauthorized') ||
+              response.message.toLowerCase().includes('jwt') ||
+              response.message.toLowerCase().includes('expired') ||
+              response.message.toLowerCase().includes('malformed'))
           ) {
             Cookies.remove('token');
             toast.error('Session expired, please login again');

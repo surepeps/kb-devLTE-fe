@@ -41,6 +41,8 @@ const SearchModal = ({
   setInspectionType,
   isComingFromSubmitLol,
   setIsComingFromSubmitLol,
+  isLetterOfIntentionModalOpened,
+  setIsLetterOfIntentionModalOpened,
 }: {
   isAddForInspectionModalOpened: boolean;
   setIsAddInspectionModalOpened: (type: boolean) => void;
@@ -48,6 +50,8 @@ const SearchModal = ({
   setPropertiesSelected: (type: any[]) => void;
   addForInspectionPayload: PayloadProps;
   setAddForInspectionPayload: (type: PayloadProps) => void;
+  isLetterOfIntentionModalOpened: boolean;
+  setIsLetterOfIntentionModalOpened: (type: boolean) => void;
   /**
    * coming from the price negotiation button
    */
@@ -370,6 +374,7 @@ const SearchModal = ({
                   isAddInspectionalModalOpened={isAddForInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
                   setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                  onSubmitLoi={() => setIsLetterOfIntentionModalOpened(true)}
                 />
               );
             } else if (
@@ -392,6 +397,7 @@ const SearchModal = ({
                   isAddInspectionalModalOpened={isAddForInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
                   setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
+                  onSubmitLoi={() => setIsLetterOfIntentionModalOpened(true)}
                 />
               );
             }

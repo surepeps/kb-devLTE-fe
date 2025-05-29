@@ -114,10 +114,10 @@ const Section2 = () => {
   };
 
   const handleShowMoreClick = () => {
-    if (buttons.button1) return (window.location.href = '/buy_page');
-    if (buttons.button2) return (window.location.href = '/buy_page');
-    if (buttons.button3) return (window.location.href = '/rent_page');
-    if (buttons.button4) return (window.location.href = '/rent_page');
+    if (buttons.button1) return (window.location.href = '/market-place');
+    if (buttons.button2) return (window.location.href = '/market-place');
+    if (buttons.button3) return (window.location.href = '/market-place');
+    if (buttons.button4) return (window.location.href = '/market-place');
   };
 
   const handleSubmitInspection = (property: any) => {
