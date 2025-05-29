@@ -155,7 +155,7 @@ const Header = () => {
           </div>
           {/**Buttons for laptop and bigger screens */}
           <div className='hidden lg:flex'>
-            {user?.id ? (
+            {user?._id ? (
               <div className='flex gap-[30px]'>
                 <div className='flex flex-col '>
                   <button
@@ -309,7 +309,9 @@ const MarketplaceOptions = ({
       transition={{ duration: 0.2 }}
       viewport={{ once: true }}
       ref={ref}
-      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]'>
+      className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]'
+      onMouseLeave={() => setModal(false)} 
+      >
       {marketPlaceData.map(
         (
           item: { name: string; url: string; isClicked: boolean },

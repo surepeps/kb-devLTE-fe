@@ -3,33 +3,27 @@
 'use client';
 import { archivo } from '@/styles/font';
 import { FormikProps, useFormik } from 'formik';
-import React, { Fragment, use, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import banks from '@/data/nigeria-banks.json';
-import { Option } from '../types/option';
+import { Option } from '@/components/marketplace/types/option';
 import Select, { SingleValue } from 'react-select';
-import { POST_REQUEST } from '@/utils/requests';
 import customStyles from '@/styles/inputStyle';
 import AttachFile from '@/components/general-components/attach_file';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import { motion } from 'framer-motion';
 import SubmitPopUp from '@/components/submit';
-import { SubmitInspectionPayloadProp } from '../types/payload';
-import toast from 'react-hot-toast';
+import { usePageContext } from '@/context/page-context';
 
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
-  submitInspectionPayload: SubmitInspectionPayloadProp;
-  setSubmitInspectionPayload: React.Dispatch<
-    React.SetStateAction<SubmitInspectionPayloadProp>
-  >;
+  payload?: any;
 };
 
 const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
-  amountToPay,
-  submitInspectionPayload,
-  setSubmitInspectionPayload,
+  amountToPay = 10000,
+  payload = {},
 }) => {
   const [allBanks, setAllBanks] = useState<Option[]>([
     {
@@ -40,14 +34,13 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
 
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] =
     useState<boolean>(false);
-
-  const [fileURL, setFileURL] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); 
+  const { commission } = usePageContext();
 
   useEffect(() => {
-    console.log("inpection payload", submitInspectionPayload);
-  }
-  , [submitInspectionPayload]);
+    console.log(commission);
+  }, [commission]);
+
+  const [fileURL, setFileURL] = useState<string | null>(null); //get uploaded receipt
 
   const validationSchema = Yup.object({
     bankName: Yup.string().required('Bank Name is a required field'),
@@ -60,74 +53,30 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   const formik = useFormik({
     initialValues: {
       bankName: '',
-      accountNumber: 0,
+      accountNumber: undefined,
       accountName: '',
       transactionReference: '',
     },
     validationSchema,
     onSubmit: async (values: TransactionDetailsProps) => {
-      setIsSubmitting(true); 
+      console.log(values);
+
       const payload = {
         ...values,
         imageReceipt: fileURL,
       };
 
-      setSubmitInspectionPayload?.({
-        ...submitInspectionPayload,
-        transaction: {
-          ...submitInspectionPayload.transaction,
-          accountNumber: formik.values.accountNumber.toString(),
-          accountName: formik.values.accountName,
-          transactionReceipt: fileURL as string,
-          transactionReference: formik.values.transactionReference,
-        },
-        status: 'pending',
-        isNegotiating: false,
-      });
-      try {
-      const response = await toast.promise(
-      POST_REQUEST(
-          URLS.BASE + URLS.requestInspection, 
-            {
-              propertyId: submitInspectionPayload.propertyId,
-              inspectionDate: submitInspectionPayload.inspectionDate,
-              inspectionTime: submitInspectionPayload.inspectionTime,
-              status: 'pending',
-              requestedBy: submitInspectionPayload.requestedBy,
-              transaction: {
-                bank: formik.values.bankName,
-                accountNumber: formik.values.accountNumber.toString(),
-                accountName: formik.values.accountName,
-                transactionReference: formik.values.transactionReference,
-                transactionReceipt: fileURL as string,
-              },
-              letterOfIntention: submitInspectionPayload.letterOfIntention || '',
-            }
-        ),
-      {
-        loading: 'Submitting...',
-        success: (data) => {
-          // If API returns error in body, show error instead
-          if (data?.error) {
-            throw new Error(data.error);
-          }
-          return 'Request submitted successfully!';
-        },
-        error: (err) => err?.message || 'Failed to submit request.',
-      }
-      );  // Only set success if no error in response
-        if (!response?.error) {
-          setIsSuccessfullySubmitted(true);
-        } else {
-          setIsSuccessfullySubmitted(false);
-        }
-      } catch (err) {
-        console.log(err);
-        setIsSuccessfullySubmitted(false);
-    } finally {
-        setIsSubmitting(false);
-      }
-    }
+      // try {
+      //   const response = await axios.post(URLS.BASE + '/', payload);
+      //   if (response.status === 200) {
+      //     //do something
+      //   }
+      // } catch (err) {
+      //   console.log(err);
+      // }
+      console.log(payload);
+      setIsSuccessfullySubmitted(true);
+    },
   });
 
   useEffect(() => {
@@ -237,13 +186,6 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
                     event: SingleValue<{ value: string; label: string }>
                   ) => {
                     formik.setFieldValue('bankName', event?.label);
-                    setSubmitInspectionPayload?.({
-                      ...submitInspectionPayload,
-                      transaction: {
-                        ...submitInspectionPayload.transaction,
-                        bank: event?.label as string,
-                      },
-                    });
                   }}
                 />
                 {(formik.errors.bankName || formik.touched.bankName) && (
@@ -294,12 +236,8 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             {/* button to submit */}
             <button
               type='submit'
-              className={`h-[50px] sm:h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA] rounded ${
-                (!formik.isValid || !formik.dirty || isSubmitting || !fileURL) ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              disabled={!formik.isValid || !formik.dirty || isSubmitting || !fileURL}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              className='h-[50px] sm:h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA] rounded'>
+              Submit
             </button>
           </motion.form>
         </div>
@@ -311,7 +249,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
 
 interface TransactionDetailsProps {
   bankName: string;
-  accountNumber: number;
+  accountNumber: number | undefined;
   accountName: string;
   transactionReference: string;
 }
