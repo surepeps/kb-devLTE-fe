@@ -19,6 +19,8 @@ import { GET_REQUEST } from '@/utils/requests';
 import Cookies from 'js-cookie';
 import { useUserContext } from '@/context/user-context';
 import HowItWorksSection from '@/components/homepage/how-it-works-section';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 /**
  * @Homepage - A function that returns the web homepage
@@ -45,7 +47,6 @@ const Homepage = () => {
 
   useEffect(() => {
     if (searchParams.get('access_token')) {
-
       const url =
         URLS.BASE +
         URLS.user +
@@ -84,8 +85,8 @@ const Homepage = () => {
             }
             if (user.userType === 'Agent') {
               router.push('/agent/onboard');
+            }
           }
-        }
         });
       })();
     }
@@ -111,6 +112,40 @@ const Homepage = () => {
            * Takes no props
            */}
           <Section2 />
+          <div className='flex justify-center items-center'>
+            <div className='container min-h-[135px] flex md:flex-row flex-col gap-[10px] items-start py-[20px] md:items-center justify-between bg-[#093B6D] px-[20px] md:px-[30px]'>
+              <div className='flex flex-col gap-[10px]'>
+                <motion.h2
+                  initial={{ y: 10, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  viewport={{ once: true }}
+                  className='text-2xl md:text-3xl text-[#FFFFFF] font-bold'>
+                  Find Your Ideal Property, Effortlessly
+                </motion.h2>
+                <motion.h3
+                  initial={{ y: 10, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  viewport={{ once: true }}
+                  className='text-lg md:text-xl font-bold text-[#FFFFFF]'>
+                  Tell us what you need — we&apos;ll bring you the listings that
+                  match.
+                </motion.h3>
+              </div>
+              <Link href={'/preference'}>
+                <motion.button
+                  initial={{ y: 10, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  viewport={{ once: true }}
+                  type='button'
+                  className='h-[50px] lg:w-[275px] px-[12px] md:px-0 bg-[#8DDB90] text-base font-bold text-white'>
+                  Submit Your Preference
+                </motion.button>
+              </Link>
+            </div>
+          </div>
           {/* <NewSection /> */}
           <HowItWorksSection />
           <SeeWhatOthers />

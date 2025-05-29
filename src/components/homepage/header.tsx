@@ -155,7 +155,7 @@ const Header = () => {
           </div>
           {/**Buttons for laptop and bigger screens */}
           <div className='hidden lg:flex'>
-            {user?.id ? (
+            {user?._id ? (
               <div className='flex gap-[30px]'>
                 <div className='flex flex-col '>
                   <button
