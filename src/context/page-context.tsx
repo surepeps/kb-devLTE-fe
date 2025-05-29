@@ -191,6 +191,18 @@ export const PageContextProvider = ({
   const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
     useState<boolean>(false);
 
+  //commission
+  type CommissionType = {
+    userType: 'agent' | 'land_owners';
+    commission: string;
+    payload: any;
+  };
+  const [commission, setCommission] = useState<CommissionType>({
+    userType: 'land_owners',
+    commission: '10%',
+    payload: {},
+  }); //default for land owners, agent is 20%
+
   return (
     <PageContext.Provider
       value={{
@@ -234,6 +246,8 @@ export const PageContextProvider = ({
         setIsAddForInspectionModalOpened,
         isComingFromPriceNeg,
         setIsComingFromPriceNeg,
+        commission,
+        setCommission,
       }}>
       {children}
     </PageContext.Provider>

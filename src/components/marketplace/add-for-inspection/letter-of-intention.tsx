@@ -11,11 +11,17 @@ import { archivo } from '@/styles/font';
 type LetterOfIntentionProps = {
   setIsModalClosed: (type: boolean) => void;
   closeSelectPreferableModal: (type: boolean) => void;
+  propertyId: string;
+  submitInspectionPayload: any;
+  setSubmitInspectionPayload: (payload: any) => void;
 };
 
 const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
   setIsModalClosed,
   closeSelectPreferableModal,
+  propertyId,
+  submitInspectionPayload,
+  setSubmitInspectionPayload,
 }) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   return (
@@ -71,15 +77,26 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             </div>
             {/**Submit and cancel buttons */}
             <div className='w-full flex gap-[15px]'>
-              <button
-                onClick={() => {
-                  setIsModalClosed(false);
-                  closeSelectPreferableModal(true);
-                }}
-                type='button'
-                className={`h-[57px] lg:w-[285px] bg-[#8DDB90] text-white font-bold text-lg ${archivo.className}`}>
-                Submit
-              </button>
+            <button
+              onClick={() => {
+                setSubmitInspectionPayload({
+                  ...submitInspectionPayload,
+                  propertyId,
+                  transaction: {
+                    ...submitInspectionPayload.transaction,
+                    transactionReceipt: fileUrl,
+                  },
+                });
+                setIsModalClosed(false);
+                closeSelectPreferableModal(true);
+              }}
+              type='button'
+              disabled={!fileUrl}
+              className={`h-[57px] lg:w-[285px] ${
+                  !fileUrl ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#8DDB90]'
+                } text-white font-bold text-lg ${archivo.className}`}>
+              Submit
+            </button>
               <button
                 type='button'
                 className={`h-[57px] lg:w-[285px] bg-transparent border-[1px] border-[#5A5D63] text-[#5A5D63] font-bold text-lg ${archivo.className}`}>
