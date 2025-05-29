@@ -30,6 +30,7 @@ export const URLS = {
   requestPasswordReset: '/request-password-reset',
   allAvailableSLots: '/all/inspection-slots',
   scheduleInspection: '/property/schedule-inspection',
+  requestInspection: '/buyers/request-inspection',
   getAllRequests: '/requests',
   confirmAvailability: '/confirm-property',
   agentGetUserPreferences: '/agent/preferences',
