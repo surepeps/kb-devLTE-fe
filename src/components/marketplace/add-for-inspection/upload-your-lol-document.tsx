@@ -15,11 +15,14 @@ import {
 import Input from '@/components/general-components/Input';
 import AttachFile from '@/components/general-components/attach_file';
 import { SubmitInspectionPayloadProp } from '../types/payload';
+import { format } from 'date-fns';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 type UploadLolDocumentProps = {
   closeModal?: (type: boolean) => void;
   allNegotiation: any[];
   getID: string | null;
+  propertyId?: string;
   closeSelectPreferableModal: (type: boolean) => void;
   setIsProvideTransactionDetails: (type: boolean) => void;
   actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
@@ -52,6 +55,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
   closeModal,
   allNegotiation,
   getID,
+  propertyId,
   setIsProvideTransactionDetails,
   setActionTracker,
   actionTracker,
@@ -61,18 +65,61 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
 }): React.JSX.Element => {
   const [selectedProperty, setSelectedProperty] =
     useState<SelectedPropertyProps>({
-      id: null,
+      id: propertyId ?? null,
       document: null,
     });
 
+  const getAvailableDates = () => {
+    const dates: string[] = [];
+    let date = new Date();
+    date.setDate(date.getDate() + 3);
+  
+    while (dates.length < 6) {
+      if (date.getDay() !== 0) {
+        dates.push(format(date, 'MMM d, yyyy'));
+      }
+      date.setDate(date.getDate() + 1);
+    }
+    return dates;
+  };
+  
+  const availableDates = getAvailableDates();
+
   const [details, setDetails] = useState<DetailsProps>({
-    selectedDate: 'Jan 1, 2025',
-    selectedTime: '9:00 AM',
+  selectedDate: availableDates[0],
+  selectedTime: '9:00 AM',
   });
+
+  useEffect(() => {
+  setSubmitInspectionPayload({
+    ...submitInspectionPayload,
+    inspectionDate: availableDates[0],
+    inspectionTime: '9:00 AM',
+  });
+}, []);
+
+  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+
+    // Set selectedProperty.id from allNegotiation/getID if not passed as prop
+  useEffect(() => {
+    if (!propertyId && getID && allNegotiation.length > 0) {
+      const found = allNegotiation.find((item) => item.id === getID);
+      if (found) {
+        setSelectedProperty((prev) => ({
+          ...prev,
+          id: found.id,
+        }));
+      }
+    }
+  }, [propertyId, getID, allNegotiation]);
+
+  
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full Name is required'),
     phoneNumber: Yup.string().required('Phone number is required'),
   });
+
   const formik = useFormik({
     initialValues: {
       fullName: '',
@@ -81,13 +128,24 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
     },
     validationSchema,
     onSubmit: (values: ContactProps) => {
+
       console.log(values);
+      const finalPropertyId = propertyId || selectedProperty.id || '';
+      if (!finalPropertyId) {
+        alert('Property ID is required');
+        return;
+      }
+      if (!fileUrl) {
+        alert('Please upload your LOI document.');
+        return;
+      }
       setActionTracker([
         ...actionTracker,
         { lastPage: 'SelectPreferableInspectionDate' },
       ]);
       setSubmitInspectionPayload({
         ...submitInspectionPayload,
+        propertyId: finalPropertyId,
         requestedBy: {
           fullName: formik.values.fullName,
           email: formik.values.email,
@@ -103,8 +161,6 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
       closeModal?.(false);
     },
   });
-  const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const allFilled = Object.values(formik.values).every((value) => value !== '');
 
@@ -117,12 +173,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
 
     console.log(findSelectedCard);
     console.warn(selectedProperty);
-    // setSelectedProperty({
-    //   id: findSelectedCard.id,
-    //   askingPrice: findSelectedCard?.price ?? findSelectedCard?.rentalPrice,
-    //   yourPrice: '',
-    //   isOpened: false,
-    // });
+
   }, []);
 
   return (
@@ -133,7 +184,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
         exit={{ opacity: 0, y: 20 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true }}
-        className='lg:w-[615px] w-full flex flex-col gap-[26px]'>
+        className='relative lg:w-[615px] w-full flex flex-col gap-[26px]'>
         <div className='flex items-center justify-end'>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -178,7 +229,10 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
                   width: '283px',
                 }}
                 id='attach_file'
-                setFileUrl={setFileUrl}
+                setFileUrl={(url) => {
+                  setFileUrl(url);
+                  setIsModalOpened(true);
+                }}
                 heading='Upload your LOI'
               />
             </div>
@@ -217,14 +271,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
                     className='flex flex-col gap-[20px]'>
                     {/**Second div */}
                     <div className=' overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
-                      {[
-                        'Jan 1, 2025',
-                        'Jan 2, 2025',
-                        'Jan 3, 2025',
-                        'Jan 4, 2025',
-                        'Jan 5, 2025',
-                        'Jan 6, 2025',
-                      ].map((date: string, idx: number) => (
+                      {availableDates.map((date: string, idx: number) => (
                         <button
                           type='button'
                           onClick={() => {
@@ -370,23 +417,18 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
                 </button>
               </div>
             </div>
-            {/** Submit and Cancel buttons */}
-            {/* <div className='w-full flex gap-[15px]'>
-              <button
-                //onClick={handleSubmit}
-                className={`h-[57px] bg-[#8DDB90] w-[260px] text-lg text-[#FFFFFF] font-bold ${archivo.className}`}
-                type='submit'>
-                Submit
-              </button>
-              <button
-                //onClick={() => setCurrentIndex(allNegotiation.length + 1)}
-                className={`h-[57px] bg-white border-[1px] border-[#5A5D63] w-[260px] text-lg text-[#5A5D63] font-bold ${archivo.className}`}
-                type='button'>
-                Cancel
-              </button>
-            </div> */}
           </div>
         </form>
+                        {/* Arrow down indicator */}
+                <div className="absolute right-6 bottom-6 z-10">
+                  <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
+                    <FontAwesomeIcon
+                      icon={faChevronDown}
+                      className="text-white"
+                      size="lg"
+                    />
+                  </div>
+                </div>
       </motion.div>
     </div>
   );

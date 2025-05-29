@@ -134,7 +134,7 @@ const AddForInspection = ({
                     isAddInspectionModalOpened={isAddForInspectionModalOpened}
                     //setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
                     setPropertySelected={setPropertiesSelected}
-                    isComingFromPriceNeg={isComingFromPriceNeg}
+                    // isComingFromPriceNeg={isComingFromPriceNeg}
                     setIsComingFromPriceNeg={comingFromPriceNegotiation}
                     property={property}
                     allProperties={propertiesSelected}
@@ -149,6 +149,8 @@ const AddForInspection = ({
                       setPropertiesSelected(filteredArray);
                     }}
                     onPriceNegotiation={() => {
+                      setAllNegotiations(arrayOfPropertiesSelected);
+                      setCurrentIndex(idx);
                       setNegationModal({
                         isOpened: true,
                         id: property._id,
@@ -184,7 +186,6 @@ const AddForInspection = ({
                       },
                     ]}
                     key={idx}
-                    //isDisabled={uniqueProperties.has(property._id)}
                   />
                 );
               } else if (inspectionType === 'JV') {
@@ -203,6 +204,7 @@ const AddForInspection = ({
                     setIsAddInspectionModalOpened={
                       setIsAddForInspectionModalOpened
                     }
+                    onSubmitLoi={() => setIsLetterOfIntentionModalOpened(true)}
                   />
                 );
               }
@@ -215,13 +217,6 @@ const AddForInspection = ({
               setPropertiesSelected={setPropertiesSelected}
               inspectionType={inspectionType}
             />
-            {/* <Slot
-              propertiesSelected={propertiesSelected}
-              setIsAddForInspectionModalOpened={
-                setIsAddForInspectionModalOpened
-              }
-              setPropertiesSelected={setPropertiesSelected}
-            /> */}
           </Fragment>
         );
 
@@ -235,7 +230,7 @@ const AddForInspection = ({
                     style={is_mobile ? { width: '100%' } : { width: '281px' }}
                     images={property?.pictures}
                     setPropertySelected={setPropertiesSelected}
-                    isComingFromPriceNeg={isComingFromPriceNeg}
+                    // isComingFromPriceNeg={isComingFromPriceNeg}
                     setIsComingFromPriceNeg={comingFromPriceNegotiation}
                     isAddInspectionModalOpened={isAddForInspectionModalOpened}
                     property={property}
@@ -244,6 +239,8 @@ const AddForInspection = ({
                       router.push(`/property/Rent/${property._id}`);
                     }}
                     onPriceNegotiation={() => {
+                      setAllNegotiations(arrayOfPropertiesSelected);
+                      setCurrentIndex(idx);
                       setNegationModal({
                         isOpened: true,
                         id: property._id,
@@ -303,6 +300,7 @@ const AddForInspection = ({
                     setIsAddInspectionModalOpened={
                       setIsAddForInspectionModalOpened
                     }
+                    onSubmitLoi={() => setIsLetterOfIntentionModalOpened(true)}
                   />
                 );
               }
@@ -326,15 +324,15 @@ const AddForInspection = ({
     };
   });
 
-  useEffect(() => {
-    console.log(allNegotiations);
-  }, [allNegotiations]);
+  // useEffect(() => {
+  //   console.log(allNegotiations);
+  // }, [allNegotiations]);
 
-  useEffect(() => console.log(isComingFromSubmitLol), [isComingFromSubmitLol]);
+  // useEffect(() => console.log(isComingFromSubmitLol), [isComingFromSubmitLol]);
 
-  useEffect(() => {
-    console.log(submitPayload);
-  }, [submitPayload, setSubmitPayload]);
+  // useEffect(() => {
+  //   console.log(submitPayload);
+  // }, [submitPayload, setSubmitPayload]);
 
   return (
     <Fragment>
@@ -362,7 +360,7 @@ const AddForInspection = ({
               title='Back'
             />
             <div className='flex gap-[10px] items-center'>
-              <span className='text-xl text-[#25324B]'>marketplace</span>
+              <span className='text-xl text-[#25324B]'>Market place</span>
               <span>.</span>
               <span
                 className={`text-xl text-[#25324B] ${epilogue.className} font-semibold`}>
@@ -477,20 +475,25 @@ const AddForInspection = ({
                   </h2>
                   {/**Submit */}
                   <button
+                    // onClick={() => {
+                    //   if (
+                    //     inspectionType === 'Buy' ||
+                    //     inspectionType === 'Rent/Lease'
+                    //   ) {
+                    //     setSubmitPayload((prev) => ({
+                    //       ...prev,
+                    //       propertyId: propertiesSelected[0]?._id, 
+                    //     }));
+                    //     setSelectPreferableInspectionDateModalOpened(true);
+                    //   } else if (inspectionType === 'JV')
+                    //     return setIsLetterOfIntentionModalOpened(true);
+                    // }}
                     onClick={() => {
-                      if (
-                        inspectionType === 'Buy' ||
-                        inspectionType === 'Rent/Lease'
-                      ) {
-                        //setSelectPreferableInspectionDateModalOpened(true);
-                        setCurrentIndex(0);
-                        // console.log(allNegotiations);
-                        if (allNegotiations.length !== 0) {
-                          return setAllNegotiations(allNegotiations);
-                        }
-                        setAllNegotiations(arrayOfPropertiesSelected);
-                      } else if (inspectionType === 'JV')
-                        return setIsLetterOfIntentionModalOpened(true);
+                        setSubmitPayload((prev) => ({
+                          ...prev,
+                          propertyId: propertiesSelected[0]?._id, 
+                        }));
+                        setSelectPreferableInspectionDateModalOpened(true);
                     }}
                     className='h-[65px] w-[292px] bg-[#8DDB90] text-lg font-bold text-[#FAFAFA]'
                     type='button'>
@@ -553,11 +556,15 @@ const AddForInspection = ({
             closeSelectPreferableModal={
               setSelectPreferableInspectionDateModalOpened
             }
+            propertyId={propertiesSelected[0]?._id}
+            submitInspectionPayload={submitPayload}
+            setSubmitInspectionPayload={setSubmitPayload}
           />
         )}
         {isComingFromSubmitLol && (
           <UploadLolDocumentModal
             getID={propertiesSelected[0].id}
+            propertyId={propertiesSelected[0]?._id}
             allNegotiation={propertiesSelected}
             closeModal={setIsComingFromSubmitLol}
             actionTracker={actionTracker}

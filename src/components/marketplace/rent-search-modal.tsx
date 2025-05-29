@@ -351,7 +351,7 @@ const RentSearchModal = ({
             type='button'
             className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
             onClick={() => onSearch(cleanedPayload)}> 
-            Search
+            Apply
           </button>
         </div>
       </div>
