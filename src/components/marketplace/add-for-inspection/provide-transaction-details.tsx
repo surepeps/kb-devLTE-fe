@@ -15,6 +15,7 @@ import { URLS } from '@/utils/URLS';
 import { motion } from 'framer-motion';
 import SubmitPopUp from '@/components/submit';
 import { SubmitInspectionPayloadProp } from '../types/payload';
+import toast from 'react-hot-toast';
 
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
@@ -40,6 +41,9 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
     useState<boolean>(false);
 
   const [fileURL, setFileURL] = useState<string | null>(null); //get uploaded receipt
+  const [formStatus, setFormStatus] = useState<
+    'success' | 'pending' | 'failed' | 'idle'
+  >('idle');
 
   const validationSchema = Yup.object({
     bankName: Yup.string().required('Bank Name is a required field'),
@@ -77,6 +81,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
         status: 'pending',
         isNegotiating: true,
       });
+      setFormStatus('pending');
       try {
         const response = await axios.post(
           URLS.BASE + '/buyers/request-inspection',
@@ -86,10 +91,15 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
           //do something
           console.log(response);
           setIsSuccessfullySubmitted(true);
+          setFormStatus('success');
         }
       } catch (err) {
         console.log(err);
         setIsSuccessfullySubmitted(false);
+        setFormStatus('failed');
+        toast.error(
+          'An error occurred while submitting your transaction details. Please try again.'
+        );
       }
       console.log(payload);
     },
@@ -260,7 +270,14 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             <button
               type='submit'
               className='h-[50px] sm:h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA] rounded'>
-              Submit
+              {formStatus === 'pending' ? (
+                <span className='flex items-center justify-center gap-2'>
+                  <span>Submitting </span>
+                  <div className='w-8 h-8 rounded-full border-r-2 border-white border-t-transparent animate-spin'></div>
+                </span>
+              ) : (
+                <span>Submit</span>
+              )}
             </button>
           </motion.form>
         </div>
