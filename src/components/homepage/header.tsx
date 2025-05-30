@@ -287,7 +287,7 @@ const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
     isClicked: false,
   },
   {
-    name: 'Property Joint Venture',
+    name: 'Property for Joint Venture',
     url: '/market-place',
     isClicked: false,
   },
@@ -326,7 +326,7 @@ const MarketplaceOptions = ({
               } else if (item.name === 'Rent a Property') {
                 setSelectedType('Rent/Lease a property');
               } else if (item.name === 'Property Joint Venture') {
-                setSelectedType('Find property for Joint Venture');
+                setSelectedType('Find property for joint venture');
               }
               setModal(false);
             }}
