@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { archivo } from '@/styles/font';
+import { format } from 'date-fns';
 import { FormikProps, useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -14,15 +15,37 @@ type DetailsProps = {
   selectedTime: string;
 };
 
+type SelectPreferableInspectionDateProps = {
+  closeModal: (type: boolean) => void;
+  details: DetailsProps;
+  setDetails: (type: DetailsProps) => void;
+  isSubmitting: boolean;
+  onSubmit: () => void;
+};
+
 const SelectPreferableInspectionDate = ({
   closeModal,
   details,
   setDetails,
-}: {
-  closeModal: (type: boolean) => void;
-  details: DetailsProps;
-  setDetails: (type: DetailsProps) => void;
-}) => {
+  isSubmitting,
+  onSubmit,
+}: SelectPreferableInspectionDateProps) => {
+
+  const getAvailableDates = () => {
+  const dates: string[] = [];
+  let date = new Date();
+  date.setDate(date.getDate() + 1);
+  while (dates.length < 6) {
+    if (date.getDay() !== 0) {
+      dates.push(format(date, 'MMM d, yyyy'));
+    }
+    date.setDate(date.getDate() + 1);
+  }
+  return dates;
+};
+
+const availableDates = getAvailableDates();
+
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 px-[10px]'>
       <motion.div
@@ -61,14 +84,7 @@ const SelectPreferableInspectionDate = ({
           </div>
           {/**Second div */}
           <div className=' overflow-x-auto w-full flex gap-[21px] hide-scrollbar border-b-[1px] border-[#C7CAD0]'>
-            {[
-              'Jan 1, 2025',
-              'Jan 2, 2025',
-              'Jan 3, 2025',
-              'Jan 4, 2025',
-              'Jan 5, 2025',
-              'Jan 6, 2025',
-            ].map((date: string, idx: number) => (
+            {availableDates.map((date: string, idx: number) => (
               <button
                 type='button'
                 onClick={() => {
@@ -143,14 +159,14 @@ const SelectPreferableInspectionDate = ({
             </p>
           </div>
           <div className='lg:w-[569px] w-full flex gap-[15px] h-[57px]'>
-            <button
-              onSubmit={() => {
-                closeModal(false);
-              }}
-              type='submit'
-              className={`w-[277px] h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${archivo.className}`}>
-              Proceed
-            </button>
+          <button
+            onClick={onSubmit}
+            disabled={isSubmitting}
+            className="w-full bg-[#8DDB90] text-white h-[50px] text-lg font-bold"
+            type="button"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </button>
             <button
               onClick={() => closeModal(false)}
               type='button'

@@ -95,7 +95,6 @@ const steps: Step[] = [
   };
 
   const handleStateChange = (selected: Option | null) => {
-    console.log(formik.values);
     formik.setFieldValue('state', selected?.value);
     setSelectedState?.(selected);
 

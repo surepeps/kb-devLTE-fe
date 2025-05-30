@@ -62,7 +62,6 @@ const Login = () => {
 
         await toast.promise(
           POST_REQUEST(url, payload).then((response) => {
-            console.log('response from signin', response);
             if (response.success) {
               if ((response as any)?.admin?.admin?._id) {
                 if ((response as any)?.admin?.admin?.isAccountVerified) {
@@ -80,31 +79,6 @@ const Login = () => {
             } else {
               throw new Error((response as any).error || 'Sign In failed');
             }
-            // const user = {
-            //   firstName: response?.user?.firstName,
-            //   lastName: response?.user?.lastName,
-            //   phoneNumber: response?.user?.phoneNumber,
-            //   email: response?.user?.email,
-            // };
-            // sessionStorage.setItem('user', JSON.stringify(user));
-
-            // if ((response as any)?.user?._id) {
-            //   if (response.user.accountApproved === false) {
-            //     router.push('/agent/under-review');
-            //   } else if (!response.user.phoneNumber) {
-            //     router.push('/agent/onboard');
-            //   } else {
-            //     router.push('/agent/under-review');
-            //   }
-
-            //   toast.success('Sign in successful');
-            //   Cookies.set('token', (response as any).token);
-            //   setUser((response as any).user);
-
-            //   return 'Sign in successful';
-            // } else {
-            //   throw new Error((response as any).error || 'Sign In failed');
-            // }
           }),
           {
             loading: 'Logging in...',

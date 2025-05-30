@@ -21,6 +21,7 @@ import { useUserContext } from '@/context/user-context';
 import HowItWorksSection from '@/components/homepage/how-it-works-section';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Countdown from '../coming-soon-modal/page';
 
 /**
  * @Homepage - A function that returns the web homepage
@@ -92,7 +93,7 @@ const Homepage = () => {
 
   return (
     <Fragment>
-      <section className={`w-full`}>
+      <section className={`w-full filter blur-sm`}>
         <main className='w-full bg-[#EEF1F1]'>
           {/**
            * Hero Section Component ~ Takes no props
@@ -164,6 +165,7 @@ const Homepage = () => {
 const HomepageWrapper = () => (
   <Suspense fallback={<Loading />}>
     <Homepage />
+    <Countdown />
   </Suspense>
 );
 
