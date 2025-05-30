@@ -28,7 +28,7 @@ const Filter = ({
   });
   const [buildingTypeValues, setBuildingTypeValues] = useState<string[]>([]);
   const [docValues, setDocValues] = useState<string[]>([]);
-  const [bedroom, setBedroom] = useState<string[]>([]);
+  const [bedroom, setBedroom] = useState<number>(0);
   const [bathroom, setBathroom] = useState<string | number>('');
   const [landSize, setLandSize] = useState<{
     type: string;
@@ -45,6 +45,8 @@ const Filter = ({
 
   const handleSubmit = () => {
     const payload = {
+      ...landSize,
+      desirer_features: desirerFeatures,
       actualPrice: radioValue,
       prices: {
         minPrice: formik.values.minPrice,
@@ -52,7 +54,7 @@ const Filter = ({
       },
       building: buildingTypeValues,
       doc: docValues,
-      bedroom: Number(bedroom[0]),
+      bedroom: Number(bedroom),
       bathroom,
     };
     console.log(payload);
@@ -171,13 +173,70 @@ const Filter = ({
         setSelectedValues={setDocValues}
       />
       {/**Bedroom count */}
-      <SimilarComponent
-        type='radio'
-        heading='Bedroom'
-        data={Array.from({ length: 5 })}
-        selectedValues={bedroom}
-        setSelectedValues={setBedroom}
-      />
+      <div className='w-full bg-white min-h-fit p-[19px] flex flex-col gap-[13px] shadow-sm'>
+        <h2 className='text-black font-medium text-base'>Bedroom</h2>
+        <div className='flex gap-[10px] flex-wrap'>
+          <RadioCheck
+            modifyStyle={{
+              fontSize: '14px',
+            }}
+            type='radio'
+            value='1'
+            isChecked={bedroom === 1}
+            onClick={() => setBedroom(1)}
+            name='bedroom'
+          />
+          <RadioCheck
+            modifyStyle={{
+              fontSize: '14px',
+            }}
+            type='radio'
+            value='2'
+            isChecked={bedroom === 2}
+            onClick={() => setBedroom(2)}
+            name='bedroom'
+          />
+          <RadioCheck
+            modifyStyle={{
+              fontSize: '14px',
+            }}
+            type='radio'
+            value='3'
+            isChecked={bedroom === 3}
+            onClick={() => setBedroom(3)}
+            name='bedroom'
+          />
+          <RadioCheck
+            modifyStyle={{
+              fontSize: '14px',
+            }}
+            type='radio'
+            value='4'
+            isChecked={bedroom === 4}
+            onClick={() => setBedroom(4)}
+            name='bedroom'
+          />
+          <RadioCheck
+            modifyStyle={{
+              fontSize: '14px',
+            }}
+            type='radio'
+            value='5+'
+            isChecked={bedroom === 5}
+            onClick={() => setBedroom(5)}
+            name='bedroom'
+          />
+        </div>
+      </div>
+      {/* {Array.from({ length: 10 }).map((__, idx: number) => (
+        <SimilarComponent
+          key={idx}
+          type='radio'
+          heading='Bedroom'
+          value={idx + 1}
+          setValue={setBedroom}
+        />
+      ))} */}
       {/**More filter */}
       <div className='w-full min-h-fit flex flex-col p-[19px] gap-[25px] bg-white shadow-sm'>
         <h2 className='text-black text-base font-medium'>More Filter</h2>
@@ -311,7 +370,7 @@ const Filter = ({
                   type: '',
                 });
                 setBathroom('');
-                setBedroom([]);
+                setBedroom(1);
                 setDocValues([]);
                 setBuildingTypeValues([]);
                 setRadioValue('');
@@ -341,13 +400,13 @@ const SimilarComponent = ({
   type,
 }: {
   heading: string;
-  data: string[];
-  selectedValues: string[];
-  setSelectedValues: (type: string[]) => void;
+  data?: string[];
+  selectedValues?: string[];
+  setSelectedValues?: (type: string[]) => void;
   type: 'checkbox' | 'radio';
 }) => {
   const renderData = () => {
-    if (data['length'] !== 0) {
+    if (data?.['length'] !== 0) {
       return data;
     }
     throw new Error('Array has no content');
@@ -358,27 +417,32 @@ const SimilarComponent = ({
       <h2 className='text-black font-medium text-base'>{heading}</h2>
       <div className='flex gap-[10px] flex-wrap'>
         {data &&
-          renderData().map((item: string, idx: number) => (
+          renderData()?.map((item: string, idx: number) => (
             <RadioCheck
-              isChecked={selectedValues.some((text: string) => item === text)}
+              isChecked={
+                Array.isArray(selectedValues) &&
+                selectedValues.some((text: string) => item === text)
+              }
               modifyStyle={{
                 fontSize: '14px',
               }}
               type={type}
               onClick={() => {
-                if (type === 'checkbox') {
-                  const uniqueValues = new Set([...selectedValues]);
-                  if (uniqueValues.has(item)) {
-                    uniqueValues.delete(item);
-                    setSelectedValues(Array.from(uniqueValues));
+                if (Array.isArray(selectedValues)) {
+                  if (type === 'checkbox') {
+                    const uniqueValues = new Set([...selectedValues]);
+                    if (uniqueValues.has(item)) {
+                      uniqueValues.delete(item);
+                      setSelectedValues?.(Array.from(uniqueValues));
+                    } else {
+                      uniqueValues.add(item);
+                      setSelectedValues?.(Array.from(uniqueValues));
+                    }
+                  } else if (type === 'radio') {
+                    setSelectedValues?.([(idx + 1).toString()]);
                   } else {
-                    uniqueValues.add(item);
-                    setSelectedValues(Array.from(uniqueValues));
+                    return null;
                   }
-                } else if (type === 'radio') {
-                  setSelectedValues([(idx + 1).toString()]);
-                } else {
-                  return null;
                 }
               }}
               key={idx}
