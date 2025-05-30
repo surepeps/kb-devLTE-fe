@@ -32,6 +32,7 @@ const Mobile = ({
   onSelectBrief,
   selectedBriefsList,
   onSubmitForInspection,
+  handleSearch,
 }: {
   selectedMarketPlace: string;
   renderBrief: (onSelectBrief: (id: string) => void) => React.JSX.Element;
@@ -39,6 +40,7 @@ const Mobile = ({
   selectedBriefs: number;
   onSelectBrief: (id: string) => void;
   selectedBriefsList: Set<any>;
+  handleSearch?: (payload: any) => void;
 }) => {
   const { selectedType, setSelectedType } = usePageContext();
   const [isFilterModalOpened, setIsFilterModalOpened] =
@@ -67,6 +69,44 @@ const Mobile = ({
     //  console.log(error)
     // }
   };
+
+  const locationValue = [formik.values.selectedLGA, formik.values.selectedState]
+    .filter(Boolean)
+    .join(', ')
+    .trim();
+
+  const payload = {
+    // usageOptions,
+    location: locationValue !== '' ? locationValue : undefined,
+    price:
+      payloadFromFilter?.prices?.maxPrice > 0
+        ? { $lte: payloadFromFilter?.prices?.maxPrice }
+        : undefined,
+    docsOnProperty: payloadFromFilter?.doc,
+    bedroom: payloadFromFilter?.bedroom,
+    bathroom: payloadFromFilter?.bathroom,
+    landSize:
+      payloadFromFilter?.landSize && payloadFromFilter?.landSize?.size
+        ? payloadFromFilter?.landSize
+        : undefined,
+    desirerFeatures: payloadFromFilter?.desirer_features,
+    briefType: 'Outright Sales',
+  };
+
+  const cleanedPayload = Object.fromEntries(
+    Object.entries(payload).filter(
+      ([_, v]) =>
+        v !== undefined &&
+        v !== '' &&
+        !(Array.isArray(v) && v.length === 0) &&
+        !(
+          typeof v === 'object' &&
+          v !== null &&
+          !Array.isArray(v) &&
+          Object.keys(v).length === 0
+        )
+    )
+  );
 
   const isLoading = useLoading();
   if (isLoading) return <Loading />;
@@ -114,7 +154,7 @@ const Mobile = ({
 
             <div className='grid grid-cols-2 gap-[10px]'>
               <button
-                onClick={handleSubmit}
+                onClick={() => handleSearch?.(cleanedPayload)}
                 className='h-[34px] w-full bg-[#8DDB90] px-[12px] text-white text-xs font-bold'
                 type='button'>
                 Search
