@@ -16,7 +16,7 @@ interface SubmitPopUpProps {
   subheader?: string;
   buttonText?: string;
   href?: string;
-  onClick?: () => void; // Add onClick prop
+  onClick?: () => void;
 }
 
 const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
@@ -24,7 +24,7 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
   subheader = 'We will be reach out to you soon',
   buttonText = 'Home',
   href = '/',
-  onClick, // Destructure onClick
+  onClick,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { setIsSubmittedSuccessfully } = usePageContext();

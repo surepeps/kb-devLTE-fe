@@ -31,6 +31,7 @@ export const URLS = {
   allAvailableSLots: '/all/inspection-slots',
   scheduleInspection: '/property/schedule-inspection',
   requestInspection: '/buyers/request-inspection',
+  getOneInspection: '/buyers/inspection',
   getAllRequests: '/requests',
   confirmAvailability: '/confirm-property',
   agentGetUserPreferences: '/agent/preferences',
