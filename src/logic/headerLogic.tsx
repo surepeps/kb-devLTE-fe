@@ -6,7 +6,7 @@ import Header from '@/components/homepage/header';
 import AgentHeader from '@/components/agent-page-components/agent_header';
 import { usePathname } from 'next/navigation';
 
-const HeaderLogic = () => {
+const HeaderLogic = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const pathname = usePathname();
   return (
     <Fragment>
@@ -16,7 +16,7 @@ const HeaderLogic = () => {
         pathname.includes('under-review')) ? (
         <AgentHeader />
       ) : (
-        <Header />
+        <Header isComingSoon={isComingSoon} />
       )}
     </Fragment>
   );
