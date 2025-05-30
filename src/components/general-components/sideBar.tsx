@@ -38,7 +38,7 @@ const SideBar = ({
         <nav className='w-full h-[100%] pt-[10px] flex flex-col justify-between'>
           <div>
             <div className='flex justify-between w-full'>
-              {user?.id ? (
+              {user?._id ? (
                 <div className='flex items-center gap-[10px]'>
                   <button
                     type='button'
@@ -57,7 +57,7 @@ const SideBar = ({
                     <h2 className='text-base text-black font-medium'>
                       {user.firstName} {user.lastName}
                     </h2>
-                    <p className='text-sm text-[#5A5D63]'>{user.agentType}</p>
+                    <p className='text-sm text-[#5A5D63]'>{user.userType}</p>
                   </div>
                 </div>
               ) : (
