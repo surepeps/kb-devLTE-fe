@@ -109,7 +109,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
         onClick={() => {
           logout();
         }}
-        className='w-full h-[50px] border-[1px] border-[#5A5D63] text-base font-medium text-[#FF2539]'>
+        className='w-full h-[50px] border-[1px] text-base font-medium border-[#FF3D00] text-[#FF2539]'>
         Sign out
       </button>
     </motion.div>
