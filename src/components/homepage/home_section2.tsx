@@ -78,7 +78,7 @@ const cardData: CardProps[] = [
     color: '#137ADF',
     secondaryColor: '#dbedff',
     buttonText: 'Register',
-    link: '/auth',
+    link: '/agent',
   },
   {
     heading: 'Property Management',

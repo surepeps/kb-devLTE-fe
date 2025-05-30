@@ -26,13 +26,14 @@ const Settings = () => {
   const getUserAccount = async () => {
     setIsLoading(true);
     setFormikStatus('pending');
+    console.log(Cookies.get('token'));
     try {
       const response = await axios.get(URLS.BASE + URLS.userAccount, {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },
       });
-      console.log("response", response);
+      //console.log('response', response);
       if (response.status === 200) {
         setIsLoading(false);
         setFormikStatus('success');
