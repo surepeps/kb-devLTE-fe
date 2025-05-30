@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import PopUpModal from '../pop-up-modal-reusability';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +14,7 @@ type AcceptRejectOfferModalProps = {
   passContent?: string | React.ReactNode;
   handleSubmitFunction?: () => void;
   headerTextStyling?: React.CSSProperties;
+  isSubmitting?: boolean;
 };
 const AcceptRejectOfferModal = ({
   closeModal,
@@ -21,7 +22,9 @@ const AcceptRejectOfferModal = ({
   passContent,
   handleSubmitFunction,
   headerTextStyling,
+  isSubmitting = false,
 }: AcceptRejectOfferModalProps) => {
+
   return (
     <PopUpModal>
       <motion.div
@@ -59,7 +62,7 @@ const AcceptRejectOfferModal = ({
                 {heading}
               </h2>
               {typeof passContent !== 'string' ? (
-                passContent
+                <div className="text-center w-full">{passContent}</div>
               ) : (
                 <p
                   className={`text-[#515B6F] ${archivo.className} text-lg text-center`}>
@@ -72,8 +75,10 @@ const AcceptRejectOfferModal = ({
               <button
                 onClick={handleSubmitFunction}
                 className={`w-full bg-[#8DDB90] text-white h-[57px] text-lg ${archivo.className} font-bold`}
-                type='button'>
-                Submit
+                type='button'
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
               <button
                 onClick={() => {
