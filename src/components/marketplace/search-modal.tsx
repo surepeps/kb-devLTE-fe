@@ -675,6 +675,7 @@ const SearchModal = ({
             setPropertiesSelected(Array.from(selectedBriefsList));
             setIsAddInspectionModalOpened(true);
           }}
+          handleSearch={handleSearch}
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>
