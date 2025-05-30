@@ -28,7 +28,7 @@ import userIcon from '@/svgs/user.svg';
 import UserNotifications from './user-notifications';
 import UserProfile from './my-profile';
 
-const Header = () => {
+const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const {
     isContactUsClicked,
     rentPage,
@@ -74,7 +74,9 @@ const Header = () => {
   return (
     <Fragment>
       <header
-        className={`w-full flex justify-center filter blur-sm items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
+        className={`w-full flex justify-center ${
+          isComingSoon && 'filter blur-sm'
+        } items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||

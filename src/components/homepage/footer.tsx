@@ -11,7 +11,7 @@ import { reducer } from '@/hooks/reducer';
 import { epilogue } from '@/styles/font';
 //import { useVisibility } from '@/utils/useVisibility';
 
-const Footer = () => {
+const Footer = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const [state, dispatch] = useReducer(reducer, exploreData);
   // const footerRef = React.useRef<HTMLElement>(null);
 
@@ -33,7 +33,9 @@ const Footer = () => {
   return (
     <React.Fragment>
       <footer
-        className={`bg-[#0B423D] filter blur-sm flex items-center justify-center min-h-[497px] w-full ${
+        className={`bg-[#0B423D] ${
+          isComingSoon && 'filter blur-sm'
+        } flex items-center justify-center min-h-[497px] w-full ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||

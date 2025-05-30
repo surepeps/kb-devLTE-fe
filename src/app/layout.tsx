@@ -13,8 +13,9 @@ import { UserProvider } from '@/context/user-context';
 import { CreateBriefProvider } from '@/context/create-brief-context';
 import { SelectedBriefsProvider } from '@/context/selected-briefs-context';
 import Homepage from '@/app/homepage/page';
+import Countdown from './coming-soon-modal/page';
 
-const SHOW_COMING_SOON = false;
+const SHOW_COMING_SOON = true;
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -42,7 +43,8 @@ export default function RootLayout({
                   {' '}
                   {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
                   <HeaderFooterWrapper>
-                    <Homepage />
+                    <Homepage isComingSoon={SHOW_COMING_SOON} />
+                    <Countdown />
                     {/* <Body>
                       <GoogleOAuthProvider
                         clientId={
