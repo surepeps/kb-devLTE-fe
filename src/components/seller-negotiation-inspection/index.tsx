@@ -25,7 +25,7 @@ type RenderModalProps = {
   props?: Record<string, any>;
 };
 
-type NegotiationType = 'NORMAL' | 'LOL' | null;
+type NegotiationType = 'NORMAL' | 'LOI' | null;
 
 const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
   const [formStatus, setFormStatus] = useState<
@@ -60,7 +60,7 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
         setFormStatus('success');
         const briefType = response.data.propertyId?.briefType;
         setNegotiationType(
-          briefType === 'Outright Sales' || briefType === 'Rent' ? 'NORMAL' : 'LOL'
+          briefType === 'Outright Sales' || briefType === 'Rent' ? 'NORMAL' : 'LOI'
         );
 
         const user = response.data.requestedBy || {};
@@ -116,7 +116,7 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
         </div>
       );
     // Render based on negotiationType
-    if (negotiationType === 'LOL') {
+    if (negotiationType === 'LOI') {
       return (
         <LolNegotiation
           {...(props as NegotiationProps)}
@@ -140,7 +140,7 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
   const renderContentDynamically = (): { content: any; header: string } => {
     switch (contentTracker) {
       case 'Negotiation':
-        if (negotiationType === 'LOL') {
+        if (negotiationType === 'LOI') {
           return {
             content: (
               <LolNegotiationPage
