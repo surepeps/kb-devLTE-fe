@@ -352,7 +352,7 @@ export const contactUsData: {
     type: 'mail',
   },
   {
-    value: '08132108659',
+    value: '02013306352',
     icon: phoneIcon,
     type: 'call',
   },
