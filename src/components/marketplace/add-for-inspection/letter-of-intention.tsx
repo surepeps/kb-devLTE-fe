@@ -82,9 +82,9 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
                 setSubmitInspectionPayload({
                   ...submitInspectionPayload,
                   propertyId,
+                  letterOfIntention: fileUrl, 
                   transaction: {
                     ...submitInspectionPayload.transaction,
-                    transactionReceipt: fileUrl,
                   },
                 });
                 setIsModalClosed(false);

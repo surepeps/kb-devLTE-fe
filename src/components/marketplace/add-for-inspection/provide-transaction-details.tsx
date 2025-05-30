@@ -7,16 +7,14 @@ import React, { Fragment, use, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import banks from '@/data/nigeria-banks.json';
 import { Option } from '../types/option';
-import Select, { SingleValue } from 'react-select';
-import { POST_REQUEST } from '@/utils/requests';
-import customStyles from '@/styles/inputStyle';
 import AttachFile from '@/components/general-components/attach_file';
-import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import { motion } from 'framer-motion';
 import SubmitPopUp from '@/components/submit';
 import { SubmitInspectionPayloadProp } from '../types/payload';
 import toast from 'react-hot-toast';
+import { POST_REQUEST } from '@/utils/requests';
+import { set } from 'date-fns';
 
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
@@ -31,12 +29,6 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   submitInspectionPayload,
   setSubmitInspectionPayload,
 }) => {
-  const [allBanks, setAllBanks] = useState<Option[]>([
-    {
-      label: '',
-      value: '',
-    },
-  ]);
 
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] =
     useState<boolean>(false);
@@ -46,47 +38,33 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   useEffect(() => {
     console.log('inpection payload', submitInspectionPayload);
   }, [submitInspectionPayload]);
-  const [fileURL, setFileURL] = useState<string | null>(null); //get uploaded receipt
+  const [fileURL, setFileURL] = useState<string | null>(null); 
   const [formStatus, setFormStatus] = useState<
     'success' | 'pending' | 'failed' | 'idle'
   >('idle');
 
   const validationSchema = Yup.object({
-    bankName: Yup.string().required('Bank Name is a required field'),
-    accountNumber: Yup.number().required('Account Number is a required field'),
-    accountName: Yup.string().required('Account Name is a required field'),
-    transactionReference: Yup.string().required(
-      'Transaction Reference is a required field'
-    ),
+    fullName: Yup.string().required('Full Name is a required field'),
   });
   const formik = useFormik({
     initialValues: {
-      bankName: '',
-      accountNumber: 0,
-      accountName: '',
-      transactionReference: '',
+      fullName: '',
     },
     validationSchema,
     onSubmit: async (values: TransactionDetailsProps) => {
+      setFormStatus('pending');
       setIsSubmitting(true);
-      const payload = {
-        ...values,
-        imageReceipt: fileURL,
-      };
 
       setSubmitInspectionPayload?.({
         ...submitInspectionPayload,
         transaction: {
           ...submitInspectionPayload.transaction,
-          accountNumber: formik.values.accountNumber.toString(),
-          accountName: formik.values.accountName,
+          fullName: formik.values.fullName,
           transactionReceipt: fileURL as string,
-          transactionReference: formik.values.transactionReference,
         },
         status: 'pending',
         isNegotiating: false,
       });
-      setFormStatus('pending');
       try {
         const response = await toast.promise(
           POST_REQUEST(URLS.BASE + URLS.requestInspection, {
@@ -96,10 +74,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             status: 'pending',
             requestedBy: submitInspectionPayload.requestedBy,
             transaction: {
-              bank: formik.values.bankName,
-              accountNumber: formik.values.accountNumber.toString(),
-              accountName: formik.values.accountName,
-              transactionReference: formik.values.transactionReference,
+              fullName: formik.values.fullName,
               transactionReceipt: fileURL as string,
             },
             letterOfIntention: submitInspectionPayload.letterOfIntention || '',
@@ -119,23 +94,21 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
         if (!response?.error) {
           setIsSuccessfullySubmitted(true);
           setFormStatus('success');
-        }
+        } else {
+            setIsSuccessfullySubmitted(false);
+            setFormStatus('failed');
+            setIsSubmitting(false);
+          }
       } catch (err) {
         console.log(err);
         setIsSuccessfullySubmitted(false);
+        setFormStatus('failed');
       } finally {
         setIsSubmitting(false);
       }
     },
   });
 
-  useEffect(() => {
-    const options = banks.map((bank) => ({
-      value: bank.code,
-      label: bank.name,
-    }));
-    if (options.length > 0) return setAllBanks(options);
-  }, []);
   return (
     <Fragment>
       <aside className='w-full flex justify-center items-center py-6 sm:py-8 md:py-10'>
@@ -212,73 +185,20 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             viewport={{ once: true }}
             onSubmit={formik.handleSubmit}
             className='w-full lg:w-[602px] flex flex-col gap-5'>
-            {/* Provide the Transaction Details */}
             <h2 className='text-xl text-[#09391C] font-semibold'>
               Provide Transaction Details
             </h2>
-            <div className='w-full grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3'>
-              {/* Select Bank */}
-              <label
-                htmlFor={'bankName'}
-                className='w-full flex flex-col gap-1'>
-                <span
-                  className={`text-base text-[#24272C] ${archivo.className} font-medium`}>
-                  Enter Bank
-                </span>
-                <Select
-                  styles={customStyles}
-                  name='bankName'
-                  options={allBanks}
-                  id='bankName'
-                  placeholder='Select Bank'
-                  onBlur={formik.handleBlur}
-                  onChange={(
-                    event: SingleValue<{ value: string; label: string }>
-                  ) => {
-                    formik.setFieldValue('bankName', event?.label);
-                    setSubmitInspectionPayload?.({
-                      ...submitInspectionPayload,
-                      transaction: {
-                        ...submitInspectionPayload.transaction,
-                        bank: event?.label as string,
-                      },
-                    });
-                  }}
-                />
-                {(formik.errors.bankName || formik.touched.bankName) && (
-                  <span className={`${archivo.className} text-xs text-red-500`}>
-                    {formik.errors.bankName}
-                  </span>
-                )}
-              </label>
-              {/* Enter Account Number */}
-              <Input
-                formikType={formik}
-                id='accountNumber'
-                type='number'
-                name='accountNumber'
-                placeholder='Enter Account Number'
-                heading='Enter Account Number'
-              />
+
               {/* Enter Account Name */}
               <Input
                 formikType={formik}
-                id='accountName'
+                id='fullName'
                 type='text'
-                name='accountName'
-                placeholder='Enter Account Name'
-                heading='Enter Account Name'
+                name='fullName'
+                placeholder='Enter Full Name'
+                heading='Enter Full Name'
+                className="col-span-1 sm:col-span-2" 
               />
-              {/* Insert Transaction Reference */}
-              <Input
-                formikType={formik}
-                id='transactionReference'
-                type='text'
-                name='transactionReference'
-                placeholder='Insert Transaction Reference'
-                heading='Insert Transaction Reference'
-              />
-            </div>
             {/* Attach Receipt */}
             <div className='h-[58px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'>
               <AttachFile
@@ -319,14 +239,11 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
 };
 
 interface TransactionDetailsProps {
-  bankName: string;
-  accountNumber: number;
-  accountName: string;
-  transactionReference: string;
+  fullName: string;
 }
 
 type InputProps = {
-  id: 'bankName' | 'accountNumber' | 'accountName' | 'transactionReference';
+  id: 'fullName';
   placeholder?: string;
   type: 'number' | 'text';
   name: string;
