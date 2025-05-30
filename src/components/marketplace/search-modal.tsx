@@ -94,7 +94,6 @@ const SearchModal = ({
 
   const handleSearch = async (searchPayload: any) => {
     setFormikStatus('pending');
-    // console.log("searchPayload", searchPayload);
     try {
       await toast.promise(
         POST_REQUEST(URLS.BASE + URLS.searchBrief, {
@@ -107,6 +106,7 @@ const SearchModal = ({
             throw new Error('Failed to fetch data');
           }
           setFormikStatus('success');
+          console.log(data);
           const shuffledData = shuffleArray(data);
           setProperties(shuffledData.slice(0, 10));
           // setUsageOptions(['All'])

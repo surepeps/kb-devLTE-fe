@@ -73,9 +73,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           ) {
             Cookies.remove('token');
             toast.error('Session expired, please login again');
-            if (pathName.includes('/auth')) {
-              if (!pathName.includes('/auth')) router.push('/auth/login');
-            }
+            router.push('/auth/login');     
           }
         }
       })

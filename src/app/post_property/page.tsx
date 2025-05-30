@@ -338,6 +338,7 @@ const Sell = () => {
             toast.success('Property submitted successfully');
             setIsSubmittedSuccessfully(true);
             setAreInputsDisabled(false);
+            setShowSummary(false);   
             setShowFinalSubmit(true);
             return 'Property submitted successfully';
           } else {
