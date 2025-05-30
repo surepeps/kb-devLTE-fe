@@ -42,35 +42,34 @@ const SelectPreferableInspectionDate = ({
     React.SetStateAction<SubmitInspectionPayloadProp>
   >;
 }) => {
-const getAvailableDates = () => {
-  const dates: string[] = [];
-  let date = new Date();
-  date.setDate(date.getDate() + 3);
+  const getAvailableDates = () => {
+    const dates: string[] = [];
+    let date = new Date();
+    date.setDate(date.getDate() + 3);
 
-  while (dates.length < 6) {
-    if (date.getDay() !== 0) {
-      dates.push(format(date, 'MMM d, yyyy'));
+    while (dates.length < 6) {
+      if (date.getDay() !== 0) {
+        dates.push(format(date, 'MMM d, yyyy'));
+      }
+      date.setDate(date.getDate() + 1);
     }
-    date.setDate(date.getDate() + 1);
-  }
-  return dates;
-};
+    return dates;
+  };
 
-const availableDates = getAvailableDates();
+  const availableDates = getAvailableDates();
 
   const [details, setDetails] = useState<DetailsProps>({
-  selectedDate: availableDates[0],
-  selectedTime: '9:00 AM',
+    selectedDate: availableDates[0],
+    selectedTime: '9:00 AM',
   });
 
   useEffect(() => {
-  setSubmitInspectionPayload({
-    ...submitInspectionPayload,
-    inspectionDate: availableDates[0],
-    inspectionTime: '9:00 AM',
-  });
-}, []);
-
+    setSubmitInspectionPayload({
+      ...submitInspectionPayload,
+      inspectionDate: availableDates[0],
+      inspectionTime: '9:00 AM',
+    });
+  }, []);
 
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full Name is required'),
@@ -169,14 +168,14 @@ const availableDates = getAvailableDates();
           <div className='grid grid-cols-3 gap-[14px]'>
             {[
               '9:00 AM',
+              '10:00 AM',
               '11:00 AM',
+              '12:00 AM',
               '1:00 PM',
+              '2:00 PM',
               '3:00 PM',
+              '4:00 PM',
               '5:00 PM',
-              '7:00 PM',
-              '9:00 PM',
-              '11:00 PM',
-              '1:00 AM',
             ].map((time, idx: number) => (
               <button
                 onClick={() => {
@@ -260,11 +259,14 @@ const availableDates = getAvailableDates();
           <div className='lg:w-[569px] w-full flex gap-[15px] h-[57px]'>
             <button
               type='submit'
-              className={`w-[277px] h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${archivo.className} ${
-                !(formik.isValid && formik.dirty) ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-[277px] h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${
+                archivo.className
+              } ${
+                !(formik.isValid && formik.dirty)
+                  ? 'opacity-50 cursor-not-allowed'
+                  : ''
               }`}
-              disabled={!(formik.isValid && formik.dirty)}
-            >
+              disabled={!(formik.isValid && formik.dirty)}>
               Submit
             </button>
             <button
@@ -275,13 +277,13 @@ const availableDates = getAvailableDates();
             </button>
           </div>
         </form>
-                {/* Arrow down indicator */}
-        <div className="absolute right-6 bottom-6 z-10">
-          <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
+        {/* Arrow down indicator */}
+        <div className='absolute right-6 bottom-6 z-10'>
+          <div className='w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg'>
             <FontAwesomeIcon
               icon={faChevronDown}
-              className="text-white"
-              size="lg"
+              className='text-white'
+              size='lg'
             />
           </div>
         </div>
