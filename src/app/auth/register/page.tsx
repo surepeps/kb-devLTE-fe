@@ -106,7 +106,7 @@ const Register = () => {
                 );
               }, 2000);
               setIsDisabled(false);
-              formik.resetForm(); // <-- Clear all form fields
+              formik.resetForm(); 
               setAgreed(false);
               router.push('/verify-email');
               return 'Registration successful';

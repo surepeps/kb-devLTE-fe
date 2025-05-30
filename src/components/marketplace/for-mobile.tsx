@@ -95,7 +95,7 @@ const Mobile = ({
                   id='market_place_type'>
                   {[
                     'Buy a property',
-                    'Find property for Joint Venture',
+                    'Find property for joint venture',
                     'Rent/Lease a property',
                   ].map((item: string, idx: number) => (
                     <option key={idx} value={item}>

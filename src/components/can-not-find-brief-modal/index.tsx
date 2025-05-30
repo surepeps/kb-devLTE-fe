@@ -4,17 +4,21 @@ import React, { FC, Fragment, MouseEvent } from 'react';
 
 type ModalProps = {
   formik: any;
+  header?: string;
+  footer?: string;
   submitPreference: (event: MouseEvent<HTMLButtonElement>) => void;
 };
-const SubmitPrefrenceModal: FC<ModalProps> = ({ formik, submitPreference }) => {
+const SubmitPrefrenceModal: FC<ModalProps> = ({
+  formik,
+  submitPreference,
+  header,
+  footer,
+}) => {
   return (
     <div className='min-h-[106px] w-full lg:w-[1153px] py-[23px] px-[20px] md:px-[40px] gap-[10px] bg-white'>
       <div className='w-full min-h-[60px] flex md:flex-row flex-col gap-[20px] justify-between md:gap-0'>
         <div className='flex flex-col'>
-          <h2 className='text-[18px] text-[#09391C] leading-[28.8px] font-medium'>
-            Can&apos;t find the brief you&apos;re looking for? Don&apos;t worry!
-            We&apos;ll provide a reference brief for you
-          </h2>
+          {header}
           <div className='flex gap-[5px] flex-wrap'>
             {Object.entries(formik.values).map(
               ([, items]: [unknown: any, items: any], idx: number) => {
@@ -32,6 +36,7 @@ const SubmitPrefrenceModal: FC<ModalProps> = ({ formik, submitPreference }) => {
               }
             )}
           </div>
+          <span className='text-sm font-medium text-[#1976D2]'>{footer}</span>
         </div>
         <button
           type='button'

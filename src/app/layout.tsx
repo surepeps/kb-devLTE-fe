@@ -12,6 +12,9 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from '@/context/user-context';
 import { CreateBriefProvider } from '@/context/create-brief-context';
 import { SelectedBriefsProvider } from '@/context/selected-briefs-context';
+import Homepage from '@/app/homepage/page';
+
+const SHOW_COMING_SOON = true;
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -27,27 +30,58 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (SHOW_COMING_SOON) {
+    return (
+      <UserProvider>
+        <PageContextProvider>
+          <CreateBriefProvider>
+            <SelectedBriefsProvider>
+              <html lang='en'>
+                <body
+                  className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
+                  {' '}
+                  {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
+                  <HeaderFooterWrapper>
+                    <Homepage />
+                    {/* <Body>
+                      <GoogleOAuthProvider
+                        clientId={
+                          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
+                        }>
+                        {children}
+                      </GoogleOAuthProvider>
+                    </Body> */}
+                  </HeaderFooterWrapper>
+                  <Toaster />
+                </body>
+              </html>
+            </SelectedBriefsProvider>
+          </CreateBriefProvider>
+        </PageContextProvider>
+      </UserProvider>
+    );
+  }
   return (
     <UserProvider>
       <PageContextProvider>
         <CreateBriefProvider>
           <SelectedBriefsProvider>
-          <html lang='en'>
-            <body
-              className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
-              {' '}
-              {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-              <HeaderFooterWrapper>
-                <Body>
-                  <GoogleOAuthProvider
-                    clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-                    {children}
-                  </GoogleOAuthProvider>
-                </Body>
-              </HeaderFooterWrapper>
-              <Toaster />
-            </body>
-          </html>
+            <html lang='en'>
+              <body
+                className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
+                {' '}
+                {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
+                <HeaderFooterWrapper>
+                  <Body>
+                    <GoogleOAuthProvider
+                      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                      {children}
+                    </GoogleOAuthProvider>
+                  </Body>
+                </HeaderFooterWrapper>
+                <Toaster />
+              </body>
+            </html>
           </SelectedBriefsProvider>
         </CreateBriefProvider>
       </PageContextProvider>

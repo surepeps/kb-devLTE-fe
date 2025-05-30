@@ -234,7 +234,7 @@ const Landlord = () => {
                 </label>
                 {showBedroom && (
                   <MultiSelectionProcess
-                    name='bedroom'
+                    name='Bedroom'
                     formik={formik}
                     options={[{ label: 'Bedroom', value: 'Bedroom' }]}
                     closeModalFunction={setShowBedroom}
@@ -257,7 +257,7 @@ const Landlord = () => {
           ),
           priceRangeDocType: null,
         };
-      case 'Find property for Joint Ventures':
+      case 'Find property for joint ventures':
         return {
           propertyConditionComponent: null,
           priceComponent: null,
@@ -493,7 +493,7 @@ const Landlord = () => {
                   <div className='flex flex-wrap gap-[20px]'>
                     {[
                       'Buy a property',
-                      'Find property for Joint Ventures',
+                      'Find property for joint ventures',
                       'Rent/Lease a property',
                     ].map((item: string, idx: number) => (
                       <button
