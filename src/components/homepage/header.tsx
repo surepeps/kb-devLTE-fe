@@ -82,7 +82,7 @@ const Header = () => {
             isSubmittedSuccessfully ||
             rentPage.submitPreference) &&
           'filter brightness-[30%] transition-all duration-500 overflow-hidden'
-        } ${'slide-from-top'}`}>
+        }`}>
         <nav className={`h-[50px] container flex justify-between items-center`}>
           <Image
             src={khabiteqIcon}
@@ -310,8 +310,7 @@ const MarketplaceOptions = ({
       viewport={{ once: true }}
       ref={ref}
       className='w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]'
-      onMouseLeave={() => setModal(false)} 
-      >
+      onMouseLeave={() => setModal(false)}>
       {marketPlaceData.map(
         (
           item: { name: string; url: string; isClicked: boolean },

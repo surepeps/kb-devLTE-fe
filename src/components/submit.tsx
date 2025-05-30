@@ -10,13 +10,14 @@ import useClickOutside from '@/hooks/clickOutside';
 import { product_sans } from '@/styles/font';
 import { motion } from 'framer-motion';
 import PopUpModal from './pop-up-modal-reusability';
+import { useRouter } from 'next/navigation';
 
 interface SubmitPopUpProps {
   title?: string;
   subheader?: string;
   buttonText?: string;
   href?: string;
-  onClick?: () => void; // Add onClick prop
+  onClick?: () => void;
 }
 
 const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
@@ -24,8 +25,9 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
   subheader = 'We will be reach out to you soon',
   buttonText = 'Home',
   href = '/',
-  onClick, // Destructure onClick
+  onClick,
 }) => {
+  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const { setIsSubmittedSuccessfully } = usePageContext();
   useClickOutside(ref, () => setIsSubmittedSuccessfully(false)); // Close modal on outside click
@@ -64,7 +66,8 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
             onClick={(e) => {
               e.preventDefault(); // Prevent default navigation
               // Invoke onClick to close modal
-              window.location.href = href;
+              router.push(href);
+              //window.location.href = href;
             }}
             className={`min-h-[57px] w-full rounded-[5px] py-[14px] px-[27px] gap-[10px] bg-[#8DDB90] text-white text-[18px] leading-[28.8px] font-bold text-center text-whitespace-nowrap ${product_sans.className}`}>
             {buttonText}

@@ -332,12 +332,6 @@ const Sell = () => {
         pictures: uploadedImageUrls,
       };
 
-      console.log('Payload:', payload); // Debugging
-
-      // if (commission.userType === 'agent') {
-
-      // }
-
       await toast.promise(
         POST_REQUEST(url, payload, token).then((response) => {
           if ((response as any).owner) {
@@ -375,7 +369,6 @@ const Sell = () => {
     );
     // Validate and submit
     const errors = await formik.validateForm();
-    console.log('Formik validation errors:', errors);
     if (Object.keys(errors).length === 0) {
       await formik.submitForm();
       await handleFinalSubmit();
@@ -657,7 +650,7 @@ const Sell = () => {
                           </h2>
                           <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
                             <Input
-                              label='Rental Price'
+                              label='Price'
                               placeholder='Enter property price'
                               name='price'
                               type='text'
@@ -962,114 +955,123 @@ const Sell = () => {
                         Note: Please upload high-quality images of your
                         property. The photos must be clear, well-lit, and should
                         fully capture the key areas of the property. Submissions
-                        with poor or incomplete images may be rejected."
+                        with poor or incomplete images may be <span className='text-red-500'>rejected</span>."
                       </div>
                       <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px]  my-10'>
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[25px]'>
-                          {Array.from({ length: imageCardCount }).map(
-                            (_, idx) => (
-                              <label
-                                key={idx}
-                                htmlFor={`property-image-${idx}`}
-                                className='h-[166px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center'
-                                style={{ position: 'relative' }}>
-                                {/* Hidden file input */}
-                                <input
-                                  id={`property-image-${idx}`}
-                                  type='file'
-                                  accept='image/png, image/jpeg'
-                                  className='hidden'
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      const url = URL.createObjectURL(file);
+                          {Array.from({ length: imageCardCount }).map((_, idx) => (
+                            <label
+                              key={idx}
+                              htmlFor={`property-image-${idx}`}
+                              className='h-[166px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center relative'
+                              style={{ position: 'relative' }}>
+                              {/* Upload text at the top */}
+                              {idx < 4 && (
+                                <span
+                                  className="absolute top-2 text-sm font-semibold"
+                                  style={{
+                                    color:
+                                      idx < 2
+                                        ? '#1976D2'
+                                        : '#FF2539',
+                                  }}
+                                >
+                                  {idx < 2 ? 'Upload Exterior Image' : 'Upload Interior Image'}
+                                </span>
+                              )}
+                              {/* Hidden file input */}
+                              <input
+                                id={`property-image-${idx}`}
+                                type='file'
+                                accept='image/png, image/jpeg'
+                                className='hidden'
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const url = URL.createObjectURL(file);
+                                    setImages((prev) => {
+                                      const updated = [...prev];
+                                      updated[idx] = file;
+                                      return updated;
+                                    });
+                                  }
+                                }}
+                              />
+                              {images[idx] ? (
+                                <div className='w-full h-full'>
+                                  <img
+                                    src={
+                                      images[idx]
+                                        ? images[idx] instanceof File
+                                          ? URL.createObjectURL(images[idx] as File)
+                                          : (images[idx] as string)
+                                        : ''
+                                    }
+                                    alt='Preview'
+                                    className='w-full h-full object-cover rounded'
+                                    style={{ position: 'absolute', inset: 0 }}
+                                  />
+                                  <button
+                                    type='button'
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
                                       setImages((prev) => {
                                         const updated = [...prev];
-                                        updated[idx] = file;
+                                        updated[idx] = null;
                                         return updated;
                                       });
-                                    }
-                                  }}
-                                />
-                                {images[idx] ? (
-                                  <div className='w-full h-full'>
-                                    <img
-                                      src={
-                                        images[idx]
-                                          ? images[idx] instanceof File
-                                            ? URL.createObjectURL(
-                                                images[idx] as File
-                                              )
-                                            : (images[idx] as string)
-                                          : ''
-                                      }
-                                      alt='Preview'
-                                      className='w-full h-full object-cover rounded'
-                                      style={{ position: 'absolute', inset: 0 }}
-                                    />
-                                    <button
-                                      type='button'
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setImages((prev) => {
-                                          const updated = [...prev];
-                                          updated[idx] = null;
-                                          return updated;
-                                        });
-                                      }}
-                                      className='absolute top-2 right-2 z-20 flex items-center justify-center w-8 h-8  bg-white shadow hover:bg-gray-100'
-                                      style={{ border: 'none', padding: 0 }}
-                                      title='Delete image'>
-                                      {/* Trash icon (SVG) */}
-                                      <svg
-                                        width='20'
-                                        height='20'
-                                        viewBox='0 0 24 24'
-                                        fill='none'>
-                                        <path
-                                          d='M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12z'
-                                          stroke='#ef4444'
-                                          strokeWidth='2'
-                                          strokeLinecap='round'
-                                          strokeLinejoin='round'
-                                        />
-                                        <path
-                                          d='M10 11v6M14 11v6'
-                                          stroke='#ef4444'
-                                          strokeWidth='2'
-                                          strokeLinecap='round'
-                                        />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                ) : (
-                                  // {/* Green plus icon in a circle */}
-                                  <div className='flex flex-col items-center justify-center'>
-                                    <span className='flex items-center justify-center w-12 h-12 rounded-full bg-white border mb-2 cursor-pointer'>
-                                      <svg
-                                        width='28'
-                                        height='28'
-                                        viewBox='0 0 24 24'
-                                        fill='none'>
-                                        <path
-                                          d='M12 5v14M5 12h14'
-                                          stroke='#22c55e'
-                                          strokeWidth='2.5'
-                                          strokeLinecap='round'
-                                        />
-                                      </svg>
-                                    </span>
-                                    <span
-                                      title='Click to add images'
-                                      className='text-sm text-black cursor-pointer font-medium'>
-                                      Format: png, jpeg
-                                    </span>
-                                  </div>
-                                )}
-                              </label>
-                            )
-                          )}
+                                    }}
+                                    className='absolute top-2 right-2 z-20 flex items-center justify-center w-8 h-8  bg-white shadow hover:bg-gray-100'
+                                    style={{ border: 'none', padding: 0 }}
+                                    title='Delete image'>
+                                    {/* Trash icon (SVG) */}
+                                    <svg
+                                      width='20'
+                                      height='20'
+                                      viewBox='0 0 24 24'
+                                      fill='none'>
+                                      <path
+                                        d='M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12z'
+                                        stroke='#ef4444'
+                                        strokeWidth='2'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M10 11v6M14 11v6'
+                                        stroke='#ef4444'
+                                        strokeWidth='2'
+                                        strokeLinecap='round'
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className='flex flex-col items-center justify-center'>
+                                  <span className='flex items-center justify-center w-12 h-12 rounded-full bg-white border mb-2 cursor-pointer'>
+                                    <svg
+                                      width='28'
+                                      height='28'
+                                      viewBox='0 0 24 24'
+                                      fill='none'>
+                                      <path
+                                        d='M12 5v14M5 12h14'
+                                        stroke='#22c55e'
+                                        strokeWidth='2.5'
+                                        strokeLinecap='round'
+                                      />
+                                    </svg>
+                                  </span>
+                                  <span
+                                    title='Click to add images'
+                                    className='text-sm text-black cursor-pointer font-medium'>
+                                    Format: png, jpeg
+                                  </span>
+                                </div>
+                              )}
+                            </label>
+                          ))}
                         </div>
                         {/* Add More Button */}
                         <button
@@ -1177,34 +1179,16 @@ const Sell = () => {
                       value='Cancel'
                       // isDisabled={!isLegalOwner}
                       type='button'
-                      onClick={() =>
-                        setCurrentStep((prev) => Math.max(prev - 1, 0))
-                      }
-                      className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
-                    />
-                    {/* <Button
-                      value='Next'
-                      type={currentStep === steps.length - 1 ? 'submit' : 'button'}
-                      onClick={async () => {
-                        // Validate the form
-                        const errors = await formik.validateForm();
-                        // Only proceed if there are no errors for this step
-                        if (
-                          (currentStep === 2 && errors.documents) || // Example: step 2 is documents
-                          Object.keys(errors).length > 0
-                        ) {
-                          formik.setTouched({ documents: true }); // Show error message
-                          return;
-                        }
-                        if (currentStep < steps.length - 1) {
-                          setCurrentStep((prev) => prev + 1);
-                        } else if (currentStep === steps.length - 1) {
-                          setShowCommissionModal(true);
+                      onClick={() => {
+                        if (currentStep === 1) {
+                          setSelectedCard('');
+                          setCurrentStep(0);
+                        } else {
+                          setCurrentStep((prev) => Math.max(prev - 1, 0));
                         }
                       }}
-                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
-                       isDisabled={ (currentStep === 4 && !isLegalOwner || currentStep === 2 && !!formik.errors.documents)}
-                    /> */}
+                      className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                    />
                     <Button
                       value='Next'
                       type={
@@ -1235,10 +1219,11 @@ const Sell = () => {
                           setShowCommissionModal(true);
                         }
                       }}
-                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
+                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
                       isDisabled={
                         (currentStep === 4 && !isLegalOwner) ||
-                        (currentStep === 4 && !isAuthorized) ||
+                        (currentStep === 4 && commission['userType'] === 'agent' && !isAuthorized) ||
+                        (currentStep === 4 && !!formik.errors.ownerPhoneNumber) ||
                         (stepRequiredFields[currentStep] || []).some(
                           (field) =>
                             !!formik.errors[field as keyof typeof formik.values]

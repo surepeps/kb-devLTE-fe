@@ -6,25 +6,29 @@ import { useUserContext } from '@/context/user-context';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import { GET_REQUEST } from '@/utils/requests';
+import { useRouter } from 'next/navigation';
 
 const page = () => {
   const { user } = useUserContext();
   const [briefs, setBriefs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
+  // Only run redirect logic after user context is loaded (not undefined/null)
   useEffect(() => {
     if (!user) {
-      window.location.href = '/auth';
+      router.push('/auth');
     } else if (user.userType !== 'Landowners') {
-      window.location.href = '/agent';
+      router.push('/agent');
     } else {
-    document.title = 'My Listing';
+      document.title = 'My Listing';
 
-    const fetchBriefs = async () => {
-      setLoading(true);
+      const fetchBriefs = async () => {
+        setLoading(true);
         try {
-        const response = await GET_REQUEST(URLS.BASE + URLS.getMyProperties,
-          Cookies.get('token')
+          const response = await GET_REQUEST(
+            URLS.BASE + URLS.getMyProperties,
+            Cookies.get('token')
           );
           setBriefs(response || []);
         } catch (err) {
@@ -33,14 +37,14 @@ const page = () => {
           setLoading(false);
         }
       };
-      fetchBriefs()
-    }  
+      fetchBriefs();
+    }
   }, [user]);
 
-    // Only render if user exists
+  // Only render if user exists
   if (!user) return null;
-  
-  return <MyListing briefs={briefs} loading={loading}/>;
+
+  return <MyListing briefs={briefs} loading={loading} />;
 };
 
 export default page;

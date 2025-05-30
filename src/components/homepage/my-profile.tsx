@@ -16,6 +16,7 @@ type userDetailsProps = {
   phoneNumber: string;
   email: string;
   id: string;
+  _id: string;
 } | null;
 interface UserProfileModalProps {
   closeUserProfileModal: (type: boolean) => void;
@@ -48,7 +49,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           <div className='flex items-end gap-[10px]'>
             <span className='text-base text-[#7C8493]'>User ID</span>
             <span className='text-base text-[#25324B]'>
-              {userDetails?.id?.slice(0, 15)}...
+              {userDetails?._id?.slice(0, 15)}...
             </span>
           </div>
           {/**Name */}
