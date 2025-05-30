@@ -245,7 +245,7 @@ const Input: FC<InputProps> = memo(
                     readOnly={readOnly}
                     placeholder={placeholder ?? 'This is placeholder'}
                     rows={rows}
-                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
+                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer resize-none'
                   />
                 ) : (
                   <input
