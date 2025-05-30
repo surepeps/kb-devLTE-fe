@@ -264,7 +264,7 @@ const BuyAPropertySearchModal = ({
         <div className='flex flex-col gap-[10px]'>
           <Input
             className='w-[189px] text-sm'
-            placeholder='bedroom'
+            placeholder='Bedroom'
             type='text'
             label=''
             readOnly

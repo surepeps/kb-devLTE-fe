@@ -576,26 +576,6 @@ const RentalBrief = ({
             }}
             type='number'
           />
-          {/* <label className='flex flex-col gap-[7px]' htmlFor='bedroom'>
-            <span>Number of Bedroom</span>
-            <input
-              value={formik.values.bedroom}
-              type='text'
-              onClick={() => setIsBedroomModalOpened(!isBedroomModalOpend)}
-              //disabled
-              className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
-            />
-            {isBedroomModalOpend && (
-              <MultiSelectionProcess
-                heading='Bedroom'
-                closeModalFunction={setIsBedroomModalOpened}
-                options={[{ value: 'bedroom', label: 'bedroom' }]}
-                formik={formik}
-                name='bedroom'
-                type='Bedroom'
-              />
-            )}
-          </label> */}
           <Input
             label='Number of Bedroom'
             name='noOfBedroom'
@@ -609,16 +589,6 @@ const RentalBrief = ({
             type='number'
           />
         </div>
-        {/* {formik.touched.selectedState && formik.errors.selectedState && (
-              <span className='text-red-600 text-sm'>
-                {formik.errors.selectedState}
-              </span>
-            )}
-            {formik.touched.selectedCity && formik.errors.selectedCity && (
-              <span className='text-red-600 text-sm'>
-                {formik.errors.selectedCity}
-              </span>
-            )} */}
       </div>
 
       {/**Property Features */}

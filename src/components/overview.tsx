@@ -83,7 +83,7 @@ const Overview = () => {
   });
 
   const [selectedOption, setSelectedOption] =
-    useState<string>('recently publish');
+    useState<string>('Recently Published');
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
@@ -435,7 +435,7 @@ const Options: FC<OptionType> = ({ text, onClick, className }) => {
 
 const OptionData: string[] = [
   'Require Attention',
-  'recently publish',
+  'Recently Published',
   // 'Total referred Agent',
   // '3 month ago Brief',
   'Inspection Requests',
@@ -556,7 +556,7 @@ const Table: FC<TableProps> = ({
 
 enum SELECTED_OPTIONS {
   REQUIRE_ATTENTION = 'Require Attention',
-  RECENTLY_PUBLISH = 'recently publish',
+  RECENTLY_PUBLISH = 'Recently Published',
   INSPECTION_REQUESTS = 'Inspection Requests',
   THREE_MONTHS_AGO_BRIEF = '3 month ago Brief',
 }
