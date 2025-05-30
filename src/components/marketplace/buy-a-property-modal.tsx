@@ -2,7 +2,7 @@
 
 'use client';
 import { useFormik } from 'formik';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import SelectStateLGA from './select-state-lga';
 import Input from '../general-components/Input';
 import PriceRange from './price-range';
@@ -13,6 +13,9 @@ import React from 'react';
 import RadioCheck from '../general-components/radioCheck';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import SubmitPrefrenceModal from '../can-not-find-brief-modal';
+import { AnimatePresence, motion } from 'framer-motion';
+import ContactInformation from './contact-information';
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -31,7 +34,8 @@ const BuyAPropertySearchModal = ({
   setSelectedBriefs,
   inspectionType,
   setInspectionType,
-  onSearch
+  onSearch,
+  searchStatus,
 }: {
   selectedBriefs: number;
   className?: string;
@@ -42,8 +46,12 @@ const BuyAPropertySearchModal = ({
   addForInspectionPayload: PayloadProps;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
   inspectionType: 'Buy' | 'JV' | 'Rent/Lease';
-  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void; 
+  setInspectionType: (type: 'Buy' | 'JV' | 'Rent/Lease') => void;
   onSearch: (payload: any) => void;
+  searchStatus: {
+    status: 'pending' | 'success' | 'failed' | 'idle';
+    couldNotFindAProperty: boolean;
+  };
 }) => {
   const formik = useFormik({
     initialValues: {
@@ -55,6 +63,8 @@ const BuyAPropertySearchModal = ({
     },
   });
   const router = useRouter();
+  const [isContactInformationModalOpened, setIsContactInformationModalOpened] =
+    useState<boolean>(false);
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] =
     useState<boolean>(false);
   const [priceRadioValue, setPriceRadioValue] = useState<string>('');
@@ -84,7 +94,7 @@ const BuyAPropertySearchModal = ({
     desirer_features: [],
   });
 
-    const priceFormik = useFormik({
+  const priceFormik = useFormik({
     initialValues: {
       minPrice: 0,
       maxPrice: 0,
@@ -95,37 +105,67 @@ const BuyAPropertySearchModal = ({
   });
 
   const locationValue = [formik.values.selectedLGA, formik.values.selectedState]
-  .filter(Boolean)
-  .join(', ')
-  .trim();
+    .filter(Boolean)
+    .join(', ')
+    .trim();
 
-    const payload = {
-      usageOptions,
-      location: locationValue !== '' ? locationValue : undefined,
-      price:
-          priceFormik.values.maxPrice > 0
-            ? { $lte: priceFormik.values.maxPrice }
-            : undefined,
-      docsOnProperty: documentsSelected,
-      bedroom: noOfBedrooms,
-      bathroom: filters.bathroom,
-        landSize:
-      filters.landSize && filters.landSize.size
-        ? filters.landSize
+  const payload = {
+    usageOptions,
+    location: locationValue !== '' ? locationValue : undefined,
+    price:
+      priceFormik.values.maxPrice > 0
+        ? { $lte: priceFormik.values.maxPrice }
         : undefined,
-      desirerFeatures: filters.desirer_features,
-       briefType: 'Outright Sales', 
-    };
+    docsOnProperty: documentsSelected,
+    bedroom: noOfBedrooms,
+    bathroom: filters.bathroom,
+    landSize:
+      filters.landSize && filters.landSize.size ? filters.landSize : undefined,
+    desirerFeatures: filters.desirer_features,
+    briefType: 'Outright Sales',
+  };
 
-    const cleanedPayload = Object.fromEntries(
-      Object.entries(payload).filter(
-        ([_, v]) =>
-          v !== undefined &&
-          v !== '' &&
-          !(Array.isArray(v) && v.length === 0) &&
-          !(typeof v === 'object' && v !== null && !Array.isArray(v) && Object.keys(v).length === 0)
-      )
-    );
+  const cleanedPayload = Object.fromEntries(
+    Object.entries(payload).filter(
+      ([_, v]) =>
+        v !== undefined &&
+        v !== '' &&
+        !(Array.isArray(v) && v.length === 0) &&
+        !(
+          typeof v === 'object' &&
+          v !== null &&
+          !Array.isArray(v) &&
+          Object.keys(v).length === 0
+        )
+    )
+  );
+
+  const [isSearchButtonClicked, setIsSearchButtonClicked] =
+    useState<boolean>(false);
+
+  //applying other values of payload to the formik values only, not using cleanedPayload
+  //mimicking the formik values to another useFormik hook so it can be passed
+  const formikToPass = useFormik({
+    initialValues: {
+      ...cleanedPayload,
+    },
+    onSubmit: () => {},
+  });
+
+  useEffect(() => {
+    formikToPass.setValues({
+      ...cleanedPayload,
+    });
+  }, [
+    priceFormik.values,
+    formik.values,
+    priceRadioValue,
+    documentsSelected,
+    filters,
+    noOfBedrooms,
+    usageOptions,
+    locationValue,
+  ]);
 
   // useEffect(
   //   () => handleSubmit(),
@@ -134,179 +174,220 @@ const BuyAPropertySearchModal = ({
 
   const docsValues = documentsSelected.map((item: string) => item);
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className='container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20'>
-      <div className='w-full pb-[10px] flex  flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]'>
-        <div className='flex flex-wrap gap-[15px]'>
-          <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
-          {['All', 'Land', 'Residential', 'Commercial'].map(
-            (item: string, idx: number) => (
-              <RadioCheck
-                key={idx}
-                isChecked={usageOptions.some((text: string) => text === item)}
-                type='checkbox'
-                name='usageOptions'
-                value={item}
-                handleChange={() => {
-                  const uniqueValues = new Set(usageOptions as Array<string>);
-                  if (uniqueValues.has(item)) {
-                    uniqueValues.delete(item);
-                    setUsageOptions([...uniqueValues]);
-                  } else {
-                    uniqueValues.add(item);
-                    setUsageOptions([...uniqueValues]);
-                  }
-                }}
-              />
-            )
-          )}
-        </div>
-        <div className='flex gap-[30px]'>
-          <button
-            className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
-            type='button'
-            onClick={() => {
-              router.push('/post_property');
-            }}>
-            List property
-          </button>
-          <button
-            className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
-            type='button'
-            onClick={() => {
-              setInspectionType('Buy');
-              if (addForInspectionPayload.initialAmount === 0) {
-                setAddInspectionModal?.(false);
-                return toast.error('All states can not be different');
-              }
-              if (selectedBriefs === 0) {
-                return toast.error(
-                  'Please, Select at least one for inspection before listing'
-                );
-              }
-              setAddInspectionModal?.(true);
-            }}>
-            {selectedBriefs} selected briefs
-          </button>
-          {selectedBriefs > 0 && (
+    <Fragment>
+      <form
+        onSubmit={formik.handleSubmit}
+        className='container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20'>
+        <div className='w-full pb-[10px] flex  flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]'>
+          <div className='flex flex-wrap gap-[15px]'>
+            <h3 className='font-semibold text-[#1E1E1E]'>Usage Options</h3>
+            {['All', 'Land', 'Residential', 'Commercial'].map(
+              (item: string, idx: number) => (
+                <RadioCheck
+                  key={idx}
+                  isChecked={usageOptions.some((text: string) => text === item)}
+                  type='checkbox'
+                  name='usageOptions'
+                  value={item}
+                  handleChange={() => {
+                    const uniqueValues = new Set(usageOptions as Array<string>);
+                    if (uniqueValues.has(item)) {
+                      uniqueValues.delete(item);
+                      setUsageOptions([...uniqueValues]);
+                    } else {
+                      uniqueValues.add(item);
+                      setUsageOptions([...uniqueValues]);
+                    }
+                  }}
+                />
+              )
+            )}
+          </div>
+          <div className='flex gap-[30px]'>
             <button
-              onClick={() => setSelectedBriefs(new Set([]))}
-              className='h-[34px] w-[133px] bg-transparent text-black border-[1px] border-zinc-800 font-medium text-sm'
-              type='button'>
-              reset
-            </button>
-          )}
-        </div>
-      </div>
-      <div className='flex gap-[20px] items-end'>
-        {/**Preferred Location */}
-        <SelectStateLGA
-          placeholder='Enter state, lga, city....'
-          formik={formik}
-          heading='Preferred Location'
-        />
-        {/**Price Range */}
-        <div className='flex flex-col gap-[10px]'>
-          <Input
-            className='w-[189px]'
-            placeholder='Price Range'
-            type='text'
-            label=''
-            readOnly
-            showDropdownIcon={true}
-            value={
-              priceRadioValue !== ''
-                ? priceRadioValue
-                : priceFormik.values.minPrice === 0 &&
-                  priceFormik.values.maxPrice === 0
-                ? undefined // Allow placeholder to show
-                : `${Number(
-                    priceFormik.values.minPrice
-                  ).toLocaleString()} - ${Number(
-                    priceFormik.values.maxPrice
-                  ).toLocaleString()}`
-            }
-            name=''
-            onClick={() => setIsPriceRangeModalOpened(true)}
-          />
-          {isPriceRangeModalOpened && (
-            <PriceRange
-              setSlectedRadioValue={setPriceRadioValue}
-              formik={priceFormik}
-              closeModal={setIsPriceRangeModalOpened}
-              heading='Price Range'
-            />
-          )}
-        </div>
-        {/**Document Type */}
-        <div className='flex flex-col gap-[10px]'>
-          <Input
-            className='w-[189px] text-sm'
-            placeholder='Document Type'
-            type='text'
-            label=''
-            readOnly
-            showDropdownIcon={true}
-            name=''
-            value={docsValues.toString()}
-            onClick={() => setIsDocumentModalOpened(true)}
-          />
-          {isDocumentModalOpened && (
-            <DocumentTypeComponent
-              docsSelected={documentsSelected}
-              setDocsSelected={setDocumentsSelected}
-              closeModal={setIsDocumentModalOpened}
-            />
-          )}
-        </div>
-        {/**Bedroom Component */}
-        <div className='flex flex-col gap-[10px]'>
-          <Input
-            className='w-[189px] text-sm'
-            placeholder='Bedroom'
-            type='text'
-            label=''
-            readOnly
-            showDropdownIcon={true}
-            name=''
-            value={noOfBedrooms}
-            onClick={() => setIsBedroomModalOpened(true)}
-          />
-          {isBedroomModalOpened && (
-            <BedroomComponent
-              noOfBedrooms={noOfBedrooms}
-              closeModal={setIsBedroomModalOpened}
-              setNumberOfBedrooms={setNoOfBedrooms}
-            />
-          )}
-        </div>
-        {/**Buttons ~ More Filter and Search */}
-        <div className='flex gap-[20px]'>
-          <div className='flex flex-col gap-[10px]'>
-            <button
+              className='h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm'
               type='button'
-              onClick={() => setIsMoreFilterModalOpened(true)}
-              className='w-[133px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C]'>
-              More filter
+              onClick={() => {
+                router.push('/post_property');
+              }}>
+              List property
             </button>
-            {isMoreFilterModalOpened && (
-              <MoreFilter
-                filters={filters}
-                setFilters={setFilters}
-                closeModal={setIsMoreFilterModalOpened}
+            <button
+              className='h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm'
+              type='button'
+              onClick={() => {
+                setInspectionType('Buy');
+                if (addForInspectionPayload.initialAmount === 0) {
+                  setAddInspectionModal?.(false);
+                  return toast.error('All states can not be different');
+                }
+                if (selectedBriefs === 0) {
+                  return toast.error(
+                    'Please, Select at least one for inspection before listing'
+                  );
+                }
+                setAddInspectionModal?.(true);
+              }}>
+              {selectedBriefs} selected briefs
+            </button>
+            {selectedBriefs > 0 && (
+              <button
+                onClick={() => setSelectedBriefs(new Set([]))}
+                className='h-[34px] w-[133px] bg-transparent text-black border-[1px] border-zinc-800 font-medium text-sm'
+                type='button'>
+                reset
+              </button>
+            )}
+          </div>
+        </div>
+        <div className='flex gap-[20px] items-end'>
+          {/**Preferred Location */}
+          <SelectStateLGA
+            placeholder='Enter state, lga, city....'
+            formik={formik}
+            heading='Preferred Location'
+          />
+          {/**Price Range */}
+          <div className='flex flex-col gap-[10px]'>
+            <Input
+              className='w-[189px]'
+              placeholder='Price Range'
+              type='text'
+              label=''
+              readOnly
+              showDropdownIcon={true}
+              value={
+                priceRadioValue !== ''
+                  ? priceRadioValue
+                  : priceFormik.values.minPrice === 0 &&
+                    priceFormik.values.maxPrice === 0
+                  ? undefined // Allow placeholder to show
+                  : `${Number(
+                      priceFormik.values.minPrice
+                    ).toLocaleString()} - ${Number(
+                      priceFormik.values.maxPrice
+                    ).toLocaleString()}`
+              }
+              name=''
+              onClick={() => setIsPriceRangeModalOpened(true)}
+            />
+            {isPriceRangeModalOpened && (
+              <PriceRange
+                setSlectedRadioValue={setPriceRadioValue}
+                formik={priceFormik}
+                closeModal={setIsPriceRangeModalOpened}
+                heading='Price Range'
               />
             )}
           </div>
-          <button
-            type='button'
-            className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
-            onClick={() => onSearch(cleanedPayload)}>
-            Apply
-          </button>
+          {/**Document Type */}
+          <div className='flex flex-col gap-[10px]'>
+            <Input
+              className='w-[189px] text-sm'
+              placeholder='Document Type'
+              type='text'
+              label=''
+              readOnly
+              showDropdownIcon={true}
+              name=''
+              value={docsValues.toString()}
+              onClick={() => setIsDocumentModalOpened(true)}
+            />
+            {isDocumentModalOpened && (
+              <DocumentTypeComponent
+                docsSelected={documentsSelected}
+                setDocsSelected={setDocumentsSelected}
+                closeModal={setIsDocumentModalOpened}
+              />
+            )}
+          </div>
+          {/**Bedroom Component */}
+          <div className='flex flex-col gap-[10px]'>
+            <Input
+              className='w-[189px] text-sm'
+              placeholder='bedroom'
+              type='text'
+              label=''
+              readOnly
+              showDropdownIcon={true}
+              name=''
+              value={noOfBedrooms}
+              onClick={() => setIsBedroomModalOpened(true)}
+            />
+            {isBedroomModalOpened && (
+              <BedroomComponent
+                noOfBedrooms={noOfBedrooms}
+                closeModal={setIsBedroomModalOpened}
+                setNumberOfBedrooms={setNoOfBedrooms}
+              />
+            )}
+          </div>
+          {/**Buttons ~ More Filter and Search */}
+          <div className='flex gap-[20px]'>
+            <div className='flex flex-col gap-[10px]'>
+              <button
+                type='button'
+                onClick={() => setIsMoreFilterModalOpened(true)}
+                className='w-[133px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C]'>
+                More filter
+              </button>
+              {isMoreFilterModalOpened && (
+                <MoreFilter
+                  filters={filters}
+                  setFilters={setFilters}
+                  closeModal={setIsMoreFilterModalOpened}
+                />
+              )}
+            </div>
+            <button
+              type='button'
+              className='w-[153px] h-[50px] bg-[#8DDB90] text-base text-white font-bold'
+              onClick={() => {
+                onSearch(cleanedPayload);
+                setIsSearchButtonClicked(true);
+              }}>
+              Search
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+      <AnimatePresence>
+        {isSearchButtonClicked && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            viewport={{ once: true }}
+            className='w-full flex items-center justify-center pt-[20px]'>
+            <SubmitPrefrenceModal
+              formik={formikToPass}
+              header={
+                searchStatus.couldNotFindAProperty
+                  ? "We couldn't find a property matching your preferences. kindly submit your preferences."
+                  : "Can't find the brief you're looking for? Don't worry! We'll provide a reference brief for you"
+              }
+              footer={
+                searchStatus.couldNotFindAProperty
+                  ? "We'll source the perfect brief for you and share it soon"
+                  : ''
+              }
+              submitPreference={() => setIsContactInformationModalOpened(true)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isContactInformationModalOpened && (
+          <ContactInformation
+            type='buyer'
+            setIsContactInformationModalOpened={
+              setIsContactInformationModalOpened
+            }
+          />
+        )}
+      </AnimatePresence>
+    </Fragment>
   );
 };
 
