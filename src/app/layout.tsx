@@ -15,7 +15,7 @@ import { SelectedBriefsProvider } from '@/context/selected-briefs-context';
 import Homepage from '@/app/homepage/page';
 import Countdown from './coming-soon-modal/page';
 
-const SHOW_COMING_SOON = true;
+const SHOW_COMING_SOON = false;
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
