@@ -29,7 +29,7 @@ import Countdown from '../coming-soon-modal/page';
  *
  * @returns - Homepage contents
  */
-const Homepage = () => {
+const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   //Simulating the loading page
   const isLoading = useLoading();
 
@@ -93,7 +93,7 @@ const Homepage = () => {
 
   return (
     <Fragment>
-      <section className={`w-full filter blur-sm`}>
+      <section className={`w-full filter ${isComingSoon && 'blur-sm'}`}>
         <main className='w-full bg-[#EEF1F1]'>
           {/**
            * Hero Section Component ~ Takes no props
@@ -162,10 +162,9 @@ const Homepage = () => {
   );
 };
 
-const HomepageWrapper = () => (
+const HomepageWrapper = ({ isComingSoon }: { isComingSoon?: boolean }) => (
   <Suspense fallback={<Loading />}>
-    <Homepage />
-    <Countdown />
+    <Homepage isComingSoon={isComingSoon} />
   </Suspense>
 );
 
