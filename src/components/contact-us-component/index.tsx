@@ -64,11 +64,11 @@ const ContactUs = () => {
   });
   return (
     <div className='w-full flex items-center justify-center'>
-      <div className='container flex flex-col justify-center items-center gap-[30px] md:gap-[60px] pb-[60px] pt-[20px] md:py-[40px] px-[17px]'>
+      <div className='container flex flex-col justify-center items-center gap-[30px] md:gap-[60px] pb-[60px] pt-[20px] lg:py-[40px] px-[17px]'>
         <div className='flex flex-col justify-center items-center'>
-          <h2 className='md:text-4xl text-2xl font-display text-center font-semibold text-[#09391C]'>
+          <h2 className='md:text-4xl text-3xl font-display text-center font-semibold text-[#09391C]'>
             Let's{' '}
-            <span className='md:text-4xl text-2xl font-display font-semibold text-[#8DDB90]'>
+            <span className='md:text-4xl text-3xl font-display font-semibold text-[#8DDB90]'>
               chat
             </span>
             , reach out to us
@@ -80,7 +80,7 @@ const ContactUs = () => {
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='w-full flex md:flex-row flex-col gap-[40px] items-center justify-center'>
+          className='w-full flex lg:flex-row flex-col gap-[40px] items-center justify-center'>
           <div className='w-full md:w-[561px] flex flex-col gap-[40px]'>
             <div className='w-full grid grid-cols-2 gap-x-[15px] md:gap-x-[45px] gap-y-[20px]'>
               <Input
