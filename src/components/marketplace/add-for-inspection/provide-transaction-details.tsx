@@ -41,13 +41,15 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] =
     useState<boolean>(false);
 
-  const [fileURL, setFileURL] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("inpection payload", submitInspectionPayload);
-  }
-  , [submitInspectionPayload]);
+    console.log('inpection payload', submitInspectionPayload);
+  }, [submitInspectionPayload]);
+  const [fileURL, setFileURL] = useState<string | null>(null); //get uploaded receipt
+  const [formStatus, setFormStatus] = useState<
+    'success' | 'pending' | 'failed' | 'idle'
+  >('idle');
 
   const validationSchema = Yup.object({
     bankName: Yup.string().required('Bank Name is a required field'),
@@ -66,7 +68,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
     },
     validationSchema,
     onSubmit: async (values: TransactionDetailsProps) => {
-      setIsSubmitting(true); 
+      setIsSubmitting(true);
       const payload = {
         ...values,
         imageReceipt: fileURL,
@@ -84,50 +86,47 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
         status: 'pending',
         isNegotiating: false,
       });
+      setFormStatus('pending');
       try {
-      const response = await toast.promise(
-      POST_REQUEST(
-          URLS.BASE + URLS.requestInspection, 
-            {
-              propertyId: submitInspectionPayload.propertyId,
-              inspectionDate: submitInspectionPayload.inspectionDate,
-              inspectionTime: submitInspectionPayload.inspectionTime,
-              status: 'pending',
-              requestedBy: submitInspectionPayload.requestedBy,
-              transaction: {
-                bank: formik.values.bankName,
-                accountNumber: formik.values.accountNumber.toString(),
-                accountName: formik.values.accountName,
-                transactionReference: formik.values.transactionReference,
-                transactionReceipt: fileURL as string,
-              },
-              letterOfIntention: submitInspectionPayload.letterOfIntention || '',
-            }
-        ),
-      {
-        loading: 'Submitting...',
-        success: (data) => {
-          // If API returns error in body, show error instead
-          if (data?.error) {
-            throw new Error(data.error);
+        const response = await toast.promise(
+          POST_REQUEST(URLS.BASE + URLS.requestInspection, {
+            propertyId: submitInspectionPayload.propertyId,
+            inspectionDate: submitInspectionPayload.inspectionDate,
+            inspectionTime: submitInspectionPayload.inspectionTime,
+            status: 'pending',
+            requestedBy: submitInspectionPayload.requestedBy,
+            transaction: {
+              bank: formik.values.bankName,
+              accountNumber: formik.values.accountNumber.toString(),
+              accountName: formik.values.accountName,
+              transactionReference: formik.values.transactionReference,
+              transactionReceipt: fileURL as string,
+            },
+            letterOfIntention: submitInspectionPayload.letterOfIntention || '',
+          }),
+          {
+            loading: 'Submitting...',
+            success: (data) => {
+              // If API returns error in body, show error instead
+              if (data?.error) {
+                throw new Error(data.error);
+              }
+              return 'Request submitted successfully!';
+            },
+            error: (err) => err?.message || 'Failed to submit request.',
           }
-          return 'Request submitted successfully!';
-        },
-        error: (err) => err?.message || 'Failed to submit request.',
-      }
-      );  // Only set success if no error in response
+        ); // Only set success if no error in response
         if (!response?.error) {
           setIsSuccessfullySubmitted(true);
-        } else {
-          setIsSuccessfullySubmitted(false);
+          setFormStatus('success');
         }
       } catch (err) {
         console.log(err);
         setIsSuccessfullySubmitted(false);
-    } finally {
+      } finally {
         setIsSubmitting(false);
       }
-    }
+    },
   });
 
   useEffect(() => {
@@ -295,11 +294,21 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             <button
               type='submit'
               className={`h-[50px] sm:h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA] rounded ${
-                (!formik.isValid || !formik.dirty || isSubmitting || !fileURL) ? 'opacity-50 cursor-not-allowed' : ''
+                !formik.isValid || !formik.dirty || isSubmitting || !fileURL
+                  ? 'opacity-50 cursor-not-allowed'
+                  : ''
               }`}
-              disabled={!formik.isValid || !formik.dirty || isSubmitting || !fileURL}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              disabled={
+                !formik.isValid || !formik.dirty || isSubmitting || !fileURL
+              }>
+              {formStatus === 'pending' ? (
+                <span className='flex items-center justify-center gap-2'>
+                  <span>Submitting </span>
+                  <div className='w-8 h-8 rounded-full border-r-2 border-white border-t-transparent animate-spin'></div>
+                </span>
+              ) : (
+                <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
+              )}
             </button>
           </motion.form>
         </div>
