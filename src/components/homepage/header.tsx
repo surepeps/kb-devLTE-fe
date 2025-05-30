@@ -74,7 +74,7 @@ const Header = () => {
   return (
     <Fragment>
       <header
-        className={`w-full flex justify-center items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
+        className={`w-full flex justify-center filter blur-sm items-center py-[20px] pl-[10px] bg-[#EEF1F1] pr-[20px] ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||

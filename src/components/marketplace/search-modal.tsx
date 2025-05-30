@@ -85,6 +85,14 @@ const SearchModal = ({
     URLS.buyersFetchBriefs
   );
 
+  const [searchStatus, setSearchStatus] = useState<{
+    status: 'pending' | 'success' | 'failed' | 'idle';
+    couldNotFindAProperty: boolean;
+  }>({
+    status: 'idle',
+    couldNotFindAProperty: false,
+  });
+
   const router = useRouter();
 
   // Sync local selection to context
@@ -94,6 +102,11 @@ const SearchModal = ({
 
   const handleSearch = async (searchPayload: any) => {
     setFormikStatus('pending');
+    setSearchStatus({
+      status: 'pending',
+      couldNotFindAProperty: false,
+    });
+    // console.log("searchPayload", searchPayload);
     try {
       await toast.promise(
         POST_REQUEST(URLS.BASE + URLS.searchBrief, {
@@ -103,12 +116,20 @@ const SearchModal = ({
           if (!data) {
             setErrMessage('Failed to fetch data');
             setFormikStatus('failed');
+            setSearchStatus({
+              status: 'failed',
+              couldNotFindAProperty: true,
+            });
             throw new Error('Failed to fetch data');
           }
           setFormikStatus('success');
-          console.log(data);
           const shuffledData = shuffleArray(data);
           setProperties(shuffledData.slice(0, 10));
+          setSearchStatus({
+            status: 'success',
+            couldNotFindAProperty: properties['length'] === 0,
+          });
+          console.log(`Properties: ${properties.length}`);
           // setUsageOptions(['All'])
         }),
         {
@@ -122,6 +143,10 @@ const SearchModal = ({
         console.error(err);
         setErrMessage(err.message || 'An error occurred');
         setFormikStatus('failed');
+        setSearchStatus({
+          status: 'failed',
+          couldNotFindAProperty: true,
+        });
       }
     }
   };
@@ -166,6 +191,7 @@ const SearchModal = ({
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
               onSearch={handleSearch}
+              searchStatus={searchStatus}
             />
             <section className='w-full flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {(formikStatus || usageOptions) &&

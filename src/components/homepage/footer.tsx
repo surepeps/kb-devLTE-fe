@@ -33,7 +33,7 @@ const Footer = () => {
   return (
     <React.Fragment>
       <footer
-        className={`bg-[#0B423D] flex items-center justify-center min-h-[497px] w-full ${
+        className={`bg-[#0B423D] filter blur-sm flex items-center justify-center min-h-[497px] w-full ${
           (isContactUsClicked ||
             rentPage.isSubmitForInspectionClicked ||
             isModalOpened ||
