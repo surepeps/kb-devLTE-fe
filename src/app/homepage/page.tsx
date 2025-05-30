@@ -71,13 +71,6 @@ const Homepage = () => {
               accountApproved: boolean;
               userType: string;
             };
-            // const user = {
-            //   id: (response as any).id,
-            //   email: (response as any).email,
-            //   name: (response as any).name,
-            //   phoneNumber: (response as any).phone,
-            //   role: (response as any).role,
-            // };
 
             setUser(user);
             if (user.userType === 'Landowners') {
