@@ -702,7 +702,7 @@ const LolNegotiationPage = ({
             </h3>
               <div className='flex flex-col relative w-[80px] h-[57px]'>
                 <a
-                  href={typeof window !== "undefined" && window?.__LOI_URL__ ? window.__LOI_URL__ : letterOfIntention}
+                  href={typeof window !== "undefined" && (window as any)?.__LOI_URL__ ? (window as any).__LOI_URL__ : letterOfIntention}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full h-full"
