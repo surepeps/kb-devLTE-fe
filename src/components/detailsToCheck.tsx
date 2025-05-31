@@ -7,6 +7,7 @@ import { FC, useEffect, useRef } from 'react';
 import { usePageContext } from '@/context/page-context';
 import { AgentNavData } from '@/enums';
 import { useCreateBriefContext } from '@/context/create-brief-context';
+import { archivo } from '@/styles/font';
 
 interface DetailsToCheckProps {
   setIsFullDetailsClicked: (type: boolean) => void;
@@ -28,6 +29,8 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
   const scrollToTop = () => {
     topRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const excludedKeys = ['__v', '_id', 'ownerModel']; // keys to skip
 
   useEffect(() => {
     console.log(detailsToCheck);
@@ -70,67 +73,174 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
         </div>
       </div>
 
-      <div className='w-full container min-h-[310px] border-[1px] py-[30px] flex flex-row flex-wrap items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[60px]'>
-        <div className='w-full flex flex-wrap gap-[20px] items-start'>
-          {/**Property Type and Property Price */}
-          <Container
-            heading='Property Type'
-            title={detailsToCheck.propertyType}
-          />
-          <Container
-            heading='Property price'
-            title={`N${Number(detailsToCheck.price).toLocaleString()}`}
-          />
-
-          {/**Location and Property Features */}
-          <Container
-            heading='Location'
-            title={`${detailsToCheck.location?.state}, ${detailsToCheck.location?.localGovernment}, ${detailsToCheck.location?.area}`}
-          />
-          <Container
-            heading='Property Features'
-            containsList={true}
-            mapData={detailsToCheck.propertyFeatures?.additionalFeatures}
-          />
-          {/**Bedroom */}
-          <Container
-            heading='Bedroom'
-            title={detailsToCheck.noOfBedrooms?.toLocaleString()}
-          />
-
-          {/**Date Created and Document  */}
-          <Container
-            heading='Date Created'
-            title={detailsToCheck.createdAt?.split('T')[0]}
-          />
-          <Container
-            heading='Document'
-            containsList={true}
-            mapData={detailsToCheck.docOnProperty?.map(
-              ({ docName }) => docName
-            )}
-          />
-
-          <Container
-            heading='Tenanat Criteria'
-            containsList
-            mapData={detailsToCheck.tenantCriteria?.map(
-              ({ criteria }) => criteria
-            )}
-          />
-
-          <Container
-            heading='Property Condition'
-            title={detailsToCheck.propertyCondition}
-          />
-
+      <div className='w-full container min-h-[310px] border-[1px] py-[30px] flex flex-row items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[30px]'>
+        <div className='w-full lg:w-[539px] h-full bg-[#FAFAFA] py-[30px] px-[28px] flex flex-col gap-[10px] justify-between items-center'>
+          {/**Reference ID */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Reference ID
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck._id || 'N/A'}
+            </span>
+          </div>
+          {/**Date */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Date
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.createdAt}
+            </span>
+          </div>
+          {/**Mandate */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Mandate
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.areYouTheOwner ? 'YES' : 'NO'}
+            </span>
+          </div>
+          {/**authorised to list the property */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              authorised to list the property
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              YES
+            </span>
+          </div>
+          {/**Property Type */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Property Type
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.propertyType}
+            </span>
+          </div>
+          {/**Location */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Location
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.location?.area || 'N/A'},{' '}
+              {detailsToCheck.location?.localGovernment || 'N/A'},{' '}
+            </span>
+          </div>
+          {/**Property price */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Property Price
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.propertyPrice
+                ? `N ${Number(detailsToCheck.propertyPrice).toLocaleString()}`
+                : 'N/A'}
+            </span>
+          </div>
+          {/**List type */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              List Type
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.ownerModel || 'N/A'}
+            </span>
+          </div>
+          {/**Documents */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Documents
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.docOnProperty?.length !== 0
+                ? detailsToCheck.docOnProperty
+                    .map(({ docName }) => docName)
+                    .join(', ')
+                : 'N/A'}
+            </span>
+          </div>
+          {/***Bedroom */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Bedroom
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {detailsToCheck.propertyFeatures?.noOfBedrooms || 'N/A'}
+            </span>
+          </div>
+          {/**Bathroom */}
+          <div className='w-full flex justify-between items-center'>
+            <span className={`text-[#515B6F] text-sm ${archivo.className}`}>
+              Bathroom
+            </span>
+            <span
+              className={`text-sm text-[#181336] font-medium ${archivo.className}`}>
+              {'N/A'}
+            </span>
+          </div>
+        </div>
+        <div className='flex flex-col lg:w-[288px] h-full w-full gap-[20px]'>
+          {/**Continue */}
+          {detailsToCheck.propertyFeatures?.additionalFeatures.length !== 0 && (
+            <div className='py-[20px] px-[15px] flex flex-col gap-[10px] bg-[#FAFAFA] border-[1px] border-[#E9EBEB]'>
+              <h2 className='text-sm font-archivo font-bold text-black'>
+                Condition
+              </h2>
+              <div className='w-full grid grid-cols-2 gap-[10px]'>
+                {detailsToCheck.propertyFeatures?.additionalFeatures.map(
+                  (item: string, idx: number) => (
+                    <span
+                      key={idx}
+                      className='text-sm font-archivo text-[#141A16]'>
+                      {item}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+          {/**Features */}
+          {detailsToCheck?.features !== undefined && (
+            <div className='py-[20px] px-[15px] flex flex-col gap-[10px] bg-[#FAFAFA] border-[1px] border-[#E9EBEB]'>
+              <h2 className='text-sm font-archivo font-bold text-black'>
+                Features
+              </h2>
+              <div className='w-full grid grid-cols-2 gap-[10px]'>
+                {detailsToCheck?.features.map(
+                  (item: { featureName: string }, idx: number) => (
+                    <span
+                      key={idx}
+                      className='text-sm font-archivo text-[#141A16]'>
+                      {item.featureName}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className=' flex gap-[20px] items-start'>
           {/**Images */}
           {detailsToCheck.pictures?.length !== 0 && (
             <div className='flex flex-col gap-[10px]'>
               <h2 className='text-[#585B6C] text-[14px] leading-[22.4px] tracking-[0.1px] font-normal'>
                 Upload Image
               </h2>
-              <div className='flex flex-wrap gap-[10px] w-full'>
+              <div className='grid grid-cols-2 gap-[10px] w-full'>
                 {detailsToCheck?.pictures?.map((picture: any, idx: number) => {
                   // const isBlob = picture instanceof Blob;
                   // const src = isBlob ? URL.createObjectURL(picture) : picture;
