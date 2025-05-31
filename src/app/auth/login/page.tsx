@@ -101,7 +101,9 @@ const Login = () => {
               };
               sessionStorage.setItem('user', JSON.stringify(user));
 
-              if ((response as any)?.user?._id) {
+              if ((response as any)?.user?.id) {
+
+                console.log('response', response.user.userType);
 
                 if (response.user.userType === 'Agent') {
                   if (!response.user.agentData?.agentType) {
