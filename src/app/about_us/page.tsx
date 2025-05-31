@@ -4,7 +4,7 @@ import Loading from '@/components/loading-component/loading';
 import { useVisibility } from '@/hooks/useVisibility';
 import React, { Fragment, useRef } from 'react';
 import '@/styles/stylish.modules.css';
-import { data, servicesData } from '@/data/about_us_data';
+import { data, reasonData, servicesData } from '@/data/about_us_data';
 import AboutUsUnit from '@/components/aboutus_unit';
 import { usePageContext } from '@/context/page-context';
 import CEO from '@/components/general-components/displayCEO';
@@ -26,17 +26,20 @@ const AboutUs = () => {
         (isContactUsClicked || isModalOpened) &&
         'filter brightness-[30%] transition-all duration-500 overflow-hidden'
       }`}>
-      <div className='container min-h-[1000px] flex flex-col items-center lg:px-[40px] overflow-hidden py-[30px] lg:py-[60px] px-[20px]'>
+      <div className='container min-h-[1000px] flex flex-col items-center lg:px-[40px] pb-[40px] overflow-hidden px-[20px]'>
         <h2
-          className={`min-h-[66px] font-semibold lg:text-[60px] lg:leading-[66px] text-[30px] leading-[33px] text-[#000000] ${'slide-from-right'} font-display`}>
+          className={`min-h-[66px] font-semibold lg:text-4xl lg:leading-[66px] text-[30px] leading-[33px] text-[#000000] ${'slide-from-right'} font-display`}>
           About <span className='text-[#8DDB90] font-display'>Khabiteq</span>
         </h2>
-        <p className='font-normal text-[#5A5D63] lg:text-[24px] lg:leading-[38px] text-base leading-[25.6px] tracking-[5%] text-center lg:mt-[40px] slide-from-left'>
-          With a passion for delivering exceptional real estate experiences, our
-          team has worked tirelessly to exceed client expectations. Over the
-          past five years, we&apos;ve successfully navigated the ever-changing
-          landscape of Lagos&apos; property market, adapting innovative
-          strategies to stay ahead
+        <p className='font-normal text-[#5A5D63] lg:text-xl text-base text-center md:mt-4 slide-from-left'>
+          At Khabiteq Realty, we are more than just a real estate company we are
+          a community builder, a lifestyle curator, and a trusted partner on
+          your property journey. Founded with a bold vision to transform how
+          Nigerians experience real estate, Khabiteq Realty operates at the
+          intersection of innovation, trust, and service. Our company combines
+          deep industry expertise with a passion for connecting people with
+          properties that not only meet their needs but also exceed their
+          expectations.
         </p>
         {/* <hr className='border-[1px] w-full border-[#D9D9D9] mt-[50px]' /> */}
 
@@ -48,10 +51,33 @@ const AboutUs = () => {
 
         <div className='flex flex-col min-h-[373px] gap-[24px] mt-[20px] lg:mt-[50px] lg:w-[870px]'>
           <h2
-            className={`${'slide-from-left'} font-bold lg:text-[35px] text-[24px] leading-[28.13px] lg:leading-[41px] text-[#09391C]`}>
-            Our Services
+            className={`${'slide-from-left'} font-bold lg:text-3xl text-[24px] leading-[28.13px] lg:leading-[41px] text-[#09391C]`}>
+            What We Do
           </h2>
           {servicesData.map(
+            (item: { heading: string; description: string }, idx: number) => {
+              return (
+                <div key={idx} className='flex gap-[20px]'>
+                  <span className='lg:text-[20px] lg:leading-[28px] text-base leading-[22.4px] font-semibold tracking-[5%]'>
+                    <span className='md:text-[#0B423D] text-[#8DDB90]'>
+                      {item.heading}: &nbsp;
+                    </span>
+                    <span className='font-normal text-[#5A5D63]'>
+                      {item.description}
+                    </span>
+                  </span>
+                </div>
+              );
+            }
+          )}
+        </div>
+
+        <div className='flex flex-col min-h-[373px] gap-[24px] mt-[20px] lg:mt-[50px] lg:w-[870px]'>
+          <h2
+            className={`${'slide-from-left'} font-bold lg:text-3xl text-[24px] leading-[28.13px] lg:leading-[41px] text-[#09391C]`}>
+            What Choose Us?
+          </h2>
+          {reasonData.map(
             (item: { heading: string; description: string }, idx: number) => {
               return (
                 <div key={idx} className='flex gap-[20px]'>
