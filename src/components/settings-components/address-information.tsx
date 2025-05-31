@@ -150,7 +150,7 @@ const AddressInformation = () => {
             <Input
               label='Street'
               name='street'
-              value={userDetails?.address?.street}
+              value={`${userDetails?.agentData?.address?.homeNo}, ${userDetails?.agentData?.address?.street}`}
               onChange={formik.handleChange}
               type='text'
               isDisabled={true}
@@ -161,7 +161,7 @@ const AddressInformation = () => {
               name='selectedState'
               forState={false}
               forLGA={false}
-              value={userDetails?.address?.state}
+              value={userDetails?.agentData?.address?.state}
               type='text'
               placeholder='Select State'
               formik={formik}
@@ -178,7 +178,7 @@ const AddressInformation = () => {
               type='text'
               formik={formik}
               forLGA={false}
-              value={userDetails?.address?.localGovtArea}
+              value={userDetails?.agentData?.address?.localGovtArea}
               forState={false}
               selectedLGA={selectedLGA}
               lgasOptions={lgaOptions}
@@ -203,7 +203,7 @@ const AddressInformation = () => {
             // isDisabled={areInputsDisabled}
           /> */}
           <ReactSelect
-            value={userDetails?.regionOfOperation?.map((region) => ({
+            value={userDetails?.agentData?.regionOfOperation?.map((region) => ({
               label: region,
               value: region,
             }))}

@@ -99,7 +99,9 @@ const Overview = () => {
     useState<boolean>(false);
 
   const [detailsToCheck, setDetailsToCheck] = useState<DataProps>(briefData[0]);
-
+  const [activeBriefs, setActiveBriefs] = useState<number>(0);
+  const [pendingBriefs, setPendingBriefs] = useState<number>(0);
+  const [dealClosed, setDealClosed] = useState<number>(0);
   const [totalBriefs, setTotalBriefs] = useState<DataPropsArray>([]);
 
   useEffect(() => {
@@ -167,14 +169,17 @@ const Overview = () => {
         const data = response;
 
         const combinedProperties = [
-          ...(data?.properties.sellProperties || []),
-          ...(data?.properties.rentProperties || []),
+          ...(data?.properties.active || []),
+          ...(data?.properties.pending || []),
         ];
 
         setIsLoadingDetails({
           isLoading: false,
           message: 'Data Loaded',
         });
+        setActiveBriefs(data.properties.active.length);
+        setPendingBriefs(data.properties.pending.length);
+        setDealClosed(data.properties.dealsClosed);
         setBriefs({
           ...briefs,
           totalBrief: combinedProperties.length,
@@ -199,7 +204,7 @@ const Overview = () => {
   const dynamicContent = () => {
     switch (selectedOption) {
       case SELECTED_OPTIONS.REQUIRE_ATTENTION:
-        if (buyerPreferences['length'] === 0) {
+        if (buyerPreferences?.['length'] === 0) {
           return (
             <div className='w-full h-[200px] flex justify-center items-center'>
               <motion.h2
@@ -224,7 +229,7 @@ const Overview = () => {
             match it with available property briefs. Upload suitable options to
             the preference form as soon as possible to ensure a fast and
             seamless transaction`}
-              data={buyerPreferences.map((item) => ({
+              data={buyerPreferences?.map((item) => ({
                 ...item,
                 // docOnProperty: item.docOnProperty.map(({ docName }) => ({
                 //   docName,
@@ -248,7 +253,7 @@ const Overview = () => {
         }
 
       case SELECTED_OPTIONS.INSPECTION_REQUESTS:
-        if (allRequests.length === 0) {
+        if (allRequests?.length === 0) {
           return (
             <div className='w-full h-[200px] flex justify-center items-center'>
               <motion.h2
@@ -265,7 +270,7 @@ const Overview = () => {
           return <RequestsTable data={allRequests} />;
         }
       case SELECTED_OPTIONS.THREE_MONTHS_AGO_BRIEF:
-        if (briefData.length === 0) {
+        if (briefData?.length === 0) {
           return (
             <div className='w-full h-[200px] flex justify-center items-center'>
               <motion.h2
@@ -292,7 +297,7 @@ const Overview = () => {
           );
         }
       case SELECTED_OPTIONS.RECENTLY_PUBLISH:
-        if (briefData.length === 0) {
+        if (briefData?.length === 0) {
           return (
             <div className='w-full h-[200px] flex justify-center items-center'>
               <motion.h2
@@ -324,7 +329,7 @@ const Overview = () => {
   const mobileDynamicContent = () => {
     switch (selectedOption) {
       case SELECTED_OPTIONS.REQUIRE_ATTENTION:
-        if (briefData.length === 0) {
+        if (briefData?.length === 0) {
           return (
             <div className='w-full h-[200px] flex justify-center items-center'>
               <motion.h2
@@ -351,7 +356,7 @@ const Overview = () => {
         }
 
       case SELECTED_OPTIONS.INSPECTION_REQUESTS:
-        if (allRequests.length === 0) {
+        if (allRequests?.length === 0) {
           <div className='w-full h-[200px] flex justify-center items-center'>
             <motion.h2
               initial={{ y: 20, opacity: 0 }}
@@ -391,7 +396,7 @@ const Overview = () => {
       //     );
       //   }
       case SELECTED_OPTIONS.RECENTLY_PUBLISH:
-        if (totalBriefs.length === 0) {
+        if (totalBriefs?.length === 0) {
           <div className='w-full h-[200px] flex justify-center items-center'>
             <motion.h2
               initial={{ y: 20, opacity: 0 }}
@@ -440,9 +445,11 @@ const Overview = () => {
               </h4>
               <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
                 {isLoadingDetails.isLoading ? (
-                  <i className='text-sm'>{isLoadingDetails.message}</i>
+                  <i className='animate-pulse text-sm'>
+                    {isLoadingDetails.message}
+                  </i>
                 ) : (
-                  briefs.totalBrief
+                  activeBriefs.toLocaleString()
                 )}
               </h2>
             </div>
@@ -451,7 +458,9 @@ const Overview = () => {
               heading='Total Brief'
               value={
                 isLoadingDetails.isLoading ? (
-                  <i className='text-sm'>{isLoadingDetails.message}</i>
+                  <i className='animate-pulse text-sm'>
+                    {isLoadingDetails.message}
+                  </i>
                 ) : (
                   briefs.totalBrief
                 )
@@ -462,9 +471,31 @@ const Overview = () => {
             {/**Total Referred Agent */}
             {/* <Boxes heading='Total referred agent' value={'Coming soon'} /> */}
             {/**Pending brief */}
-            <Boxes heading='Pending Brief' value={Number(2).toLocaleString()} />
+            <Boxes
+              heading='Pending Brief'
+              value={
+                isLoadingDetails.isLoading ? (
+                  <i className='animate-pulse text-sm'>
+                    {isLoadingDetails.message}
+                  </i>
+                ) : (
+                  pendingBriefs.toLocaleString()
+                )
+              }
+            />
             {/**Deal Closed */}
-            <Boxes heading='Deal Closed' value={briefs.completeTransaction} />
+            <Boxes
+              heading='Deal Closed'
+              value={
+                isLoadingDetails.isLoading ? (
+                  <i className='animate-pulse text-sm'>
+                    {isLoadingDetails.message}
+                  </i>
+                ) : (
+                  dealClosed.toLocaleString()
+                )
+              }
+            />
             {/**Total Amount */}
             {/* Complete Transaction */}
 
@@ -607,7 +638,7 @@ const Table: FC<TableProps> = ({
             </tr>
           </thead>
           <tbody className='space-y-96 overflow-y-scroll hide-scrollbar px-[8px]'>
-            {data.map((item, idx: number) => (
+            {data?.map((item, idx: number) => (
               <tr className='w-full' key={idx}>
                 <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
                   {item.createdAt?.split('T')[0]}

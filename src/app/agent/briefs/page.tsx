@@ -144,10 +144,15 @@ const Form2 = () => {
           return setIsLoading(false);
         }
         const data = response;
-        // console.log('data', data);
+        console.log(
+          'data',
+          data,
+          data.properties.active,
+          data.properties.pending
+        );
         const combinedProperties = [
-          ...(data?.properties.sellProperties || []),
-          ...(data?.properties.rentProperties || []),
+          ...(data?.properties.active || []),
+          ...(data?.properties.pending || []),
         ]
           .map((item: DataProps) => ({
             ...item,
@@ -188,7 +193,7 @@ const Form2 = () => {
     };
 
     getTotalBriefs();
-  }, []);
+  }, [selectedNav]);
 
   return (
     <section
@@ -198,7 +203,6 @@ const Form2 = () => {
       <div className='container flex flex-col items-center p-[20px]'>
         <AgentNav />
         {selectedNav && renderComponent()}
-        {selectedNav === AgentNavData.SETTINGS && <Settings />}
       </div>
     </section>
   );

@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import { usePageContext } from '@/context/page-context';
 import { userDetailsProperties } from '@/types';
 import Loading from '../loading-component/loading';
+import { UserAgentDataProps } from '@/types/agent_data_props';
 
 const Settings = () => {
   const { userDetails, setUserDetails } = usePageContext();
@@ -37,33 +38,14 @@ const Settings = () => {
       if (response.status === 200) {
         setIsLoading(false);
         setFormikStatus('success');
-        const userAccount: userDetailsProperties = response.data.user;
+        const userAccount: UserAgentDataProps = response.data.user;
+        console.log('userAccount', userAccount);
         if (userAccount._id) {
           /**
            * fill the userDetails contextAPI with the values from the backend
            *
            */
-          setUserDetails({
-            ...userDetails,
-            name: `${userAccount.lastName} ${userAccount.firstName}`,
-            accountApproved: userAccount.accountApproved,
-            accountStatus: userAccount.accountStatus,
-            address: userAccount.address,
-            agentType: userAccount.agentType,
-            email: userAccount.email,
-            firstName: userAccount.firstName,
-            lastName: userAccount.lastName,
-            id: userAccount.id,
-            individualAgent: userAccount.individualAgent,
-            isAccountVerified: userAccount.isAccountVerified,
-            isInUpgrade: userAccount.isInUpgrade,
-            meansOfId: userAccount.meansOfId,
-            phoneNumber: userAccount.phoneNumber,
-            regionOfOperation: userAccount.regionOfOperation,
-            upgradeData: userAccount.upgradeData,
-            _id: userAccount._id,
-            profile_picture: userAccount.profile_picture,
-          });
+          setUserDetails(userAccount);
         }
         console.log(userDetails);
       } else {
