@@ -2,6 +2,7 @@
 
 'use client';
 import { BriefType, GlobalContextTypes } from '@/types';
+import { UserAgentDataProps } from '@/types/agent_data_props';
 import { PropertyProps } from '@/types/property.types';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState } from 'react';
@@ -114,50 +115,10 @@ export const PageContextProvider = ({
       image: [''],
     },
   });
-  const [userDetails, setUserDetails] = useState({
-    name: '',
-    email: '',
-    profile_picture: '',
-    address: {
-      localGovtArea: '',
-      state: '',
-      street: '',
-    },
-    regionOfOperation: [''],
-    accountApproved: false,
-    accountStatus: '',
-    agentType: '',
-    firstName: '',
-    lastName: '',
-    id: '',
-    individualAgent: {
-      typeOfId: '',
-    },
-    isAccountVerified: false,
-    isInUpgrade: false,
-    meansOfId: [
-      {
-        docImg: [''],
-        name: '',
-        _id: '',
-      },
-    ],
-    phoneNumber: '',
-    upgradeData: {
-      companyAgent: {
-        companyName: '',
-      },
-      meansOfId: [
-        {
-          docImg: [''],
-          name: '',
-          _id: '',
-        },
-      ],
-      requestDate: '',
-    },
-    _id: '',
-  });
+
+  const [userDetails, setUserDetails] = useState<UserAgentDataProps>(
+    {} as UserAgentDataProps
+  );
 
   /**
    * Dashboard

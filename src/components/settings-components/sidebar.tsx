@@ -21,9 +21,7 @@ const Sidebar = () => {
     usePageContext();
   const [uploading, setUploading] = useState(false);
   const { logout } = useUserContext();
-  const [img, setImg] = useState<any>(
-    userDetails.profile_picture || randomImage
-  );
+  const [img, setImg] = useState<any>(randomImage);
 
   // const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = event.target.files?.[0];
@@ -197,7 +195,7 @@ const Sidebar = () => {
         <div className='flex flex-col justify-center items-center lg:h-[58px]'>
           <h2
             className={`text-[#000000] font-bold text-[20px] ${product_sans.className}`}>
-            {userDetails.name}
+            {userDetails.lastName} {userDetails.firstName}
           </h2>
           <p
             className={`text-[#000000] font-normal text-base ${product_sans.className}`}>
