@@ -554,8 +554,8 @@ const Options: FC<OptionType> = ({ text, onClick, className }) => {
 };
 
 const OptionData: string[] = [
-  'View Preference Request',
-  'recently publish',
+  'Require Attention',
+  'Recently Published',
   // 'Total referred Agent',
   // '3 month ago Brief',
   'Inspection Requests',
@@ -693,8 +693,8 @@ const Boxes: FC<BoxProps> = ({ heading, value }) => {
 };
 
 enum SELECTED_OPTIONS {
-  REQUIRE_ATTENTION = 'View Preference Request',
-  RECENTLY_PUBLISH = 'recently publish',
+  REQUIRE_ATTENTION = 'Require Attention',
+  RECENTLY_PUBLISH = 'Recently Published',
   INSPECTION_REQUESTS = 'Inspection Requests',
   THREE_MONTHS_AGO_BRIEF = '3 month ago Brief',
 }

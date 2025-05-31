@@ -87,7 +87,7 @@ const MarketPlace = () => {
               <span className='text-[#8DDB90] text-[28px] font-display md:text-4xl font-semibold'>
                 Khabiteq Realty
               </span>{' '}
-              Marketplace
+              marketplace
             </h2>
             <p className='text-base md:text-xl text-[#5A5D63] text-center'>
               Whether you're buying, selling, renting, or investing (JV), how
@@ -97,7 +97,7 @@ const MarketPlace = () => {
             <div className={`md:flex gap-[15px] hidden`}>
               {[
                 'Buy a property',
-                'Find property for Joint Venture',
+                'Find property for joint venture',
                 'Rent/Lease a property',
               ].map((item: string, idx: number) => (
                 <ButtonBoxModal

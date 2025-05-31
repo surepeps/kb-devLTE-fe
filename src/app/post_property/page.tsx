@@ -338,6 +338,7 @@ const Sell = () => {
             toast.success('Property submitted successfully');
             setIsSubmittedSuccessfully(true);
             setAreInputsDisabled(false);
+            setShowSummary(false);   
             setShowFinalSubmit(true);
             return 'Property submitted successfully';
           } else {
@@ -427,7 +428,7 @@ const Sell = () => {
                   <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px] mt-[20px]'>
                     <ClickableCard
                       imageSrc={Green}
-                      text='Do you have a property you want to Sell?'
+                      text='Do you have a property for sale?'
                       href='#'
                       onClick={() => {
                         setSelectedCard('sell');
@@ -436,7 +437,7 @@ const Sell = () => {
                     />
                     <ClickableCard
                       imageSrc={Blue}
-                      text='Do you have a property you want to Rent?'
+                      text='Do you have a property you for rent?'
                       href='#'
                       onClick={() => {
                         setSelectedCard('rent');
@@ -445,7 +446,7 @@ const Sell = () => {
                     />
                     <ClickableCard
                       imageSrc={Red}
-                      text='Do you have a property you joint venture?'
+                      text='Do you have a property for joint venture?'
                       href='#'
                       onClick={() => {
                         setSelectedCard('jv');

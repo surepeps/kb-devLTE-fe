@@ -61,7 +61,7 @@ const Agent = () => {
             displayCounts={false}
             text={`Join our trusted network of agents and access exclusive property listings, connect with verified buyers and sellers, and grow your real estate business seamlessly`}
           />
-          <div className='w-full md:h-[343px] bg-[#D9E5EE] flex justify-center items-center md:px-[40px] md:py-0 py-[30px] px-[20px]'>
+          {/* <div className='w-full md:h-[343px] bg-[#D9E5EE] flex justify-center items-center md:px-[40px] md:py-0 py-[30px] px-[20px]'>
             <div className='container flex md:flex-row flex-col gap-[20px] md:gap-[40px] justify-between items-end'>
               <Image
                 className='lg:w-[491px] md:h-[227px] bg-[#D9D9D9] object-cover'
@@ -100,7 +100,7 @@ const Agent = () => {
                 </motion.button>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <Section3
             isAgentPage={true}

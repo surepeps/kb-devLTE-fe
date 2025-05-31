@@ -123,7 +123,6 @@ const SearchModal = ({
             throw new Error('Failed to fetch data');
           }
           setFormikStatus('success');
-
           const shuffledData = shuffleArray(data);
           setProperties(shuffledData.slice(0, 10));
           setSearchStatus({
@@ -158,7 +157,7 @@ const SearchModal = ({
       case 'Buy a property':
         briefType = 'Outright Sales';
         break;
-      case 'Find property for Joint Venture':
+      case 'Find property for joint venture':
         briefType = 'Joint Venture';
         break;
       case 'Rent/Lease a property':
@@ -227,7 +226,7 @@ const SearchModal = ({
             </section>
           </div>
         );
-      case 'Find property for Joint Venture':
+      case 'Find property for joint venture':
         return (
           <div className='relative w-full flex flex-col'>
             <JointVentureModal
@@ -377,7 +376,7 @@ const SearchModal = ({
               );
             }
           });
-        case 'Find property for Joint Venture':
+        case 'Find property for joint venture':
           return properties?.map((property, idx: number) => {
             if (
               (filterBy?.includes('Land') &&
