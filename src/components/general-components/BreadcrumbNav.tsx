@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +11,12 @@ interface BreadcrumbNavProps {
   backText?: string;
 }
 
-const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({ point, onBack, arrowIcon, backText, }) => (
+const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
+  point,
+  onBack,
+  arrowIcon,
+  backText,
+}) => (
   <div className='flex gap-1 items-center px-[10px] lg:px-[0px]'>
     <Image
       alt=''
@@ -21,15 +28,15 @@ const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({ point, onBack, arrowIcon,
     />
     <div className='flex gap-2 items-center justify-center align-middle'>
       <Link
-        href="#"
-        onClick={e => {
+        href='#'
+        onClick={(e) => {
           e.preventDefault();
           onBack();
         }}
-        className='text-[20px] leading-[32px] text-[#25324B] font-normal'>
+        className='text-base md:text-lg text-[#25324B] font-normal'>
         {backText}
       </Link>
-      <h3 className='text-[20px] leading-[32px] text-[#25324B] font-semibold'>
+      <h3 className='text-base md:text-lg text-[#25324B] font-semibold'>
         .&nbsp;{point}
       </h3>
     </div>
