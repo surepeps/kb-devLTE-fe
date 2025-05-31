@@ -84,9 +84,9 @@ const Policies = () => {
 };
 
 const buttons: string[] = [
-  'Client Engagement policy',
-  'Agent Engagement policy',
-  'Data Protection policy',
+  'Client Engagement Policy',
+  'Agent Engagement Policy',
+  'Data Protection Policy',
 ];
 
 const DataProtectionPolicy = () => {
@@ -151,9 +151,9 @@ const ClientEngagementPolicy = () => {
             viewport={{ once: true }}
             className='text-[20px] leading-[32px] text-center text-[#5A5D63]'>
             At Khabiteq Realty, we are committed to providing exceptional
-            service to our clients. This Client Engagement Policy outlines our
+            service to our agents. This Client Engagement Policy outlines our
             approach to building and maintaining strong relationships with our
-            clients.
+            agents.
           </motion.span>
         </div>
         <div className='flex flex-col justify-center items-center w-full'>
@@ -682,7 +682,7 @@ and transactions`,
       {
         subListing: [],
         paragraph:
-          'We reserve the right to amend this policy at any time. Any changes will be posted on our website and will take eect immediately.',
+          'We reserve the right to amend this policy at any time. Any changes will be posted on our website and will take effect immediately.',
       },
     ],
   },
