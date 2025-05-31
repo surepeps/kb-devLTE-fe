@@ -88,12 +88,12 @@ const Settings = () => {
           <Mainbar />
         </div>
       )}
-      {formikStatus === 'failed' && (
+      {formikStatus === 'failed' ? (
         <div className='flex flex-col items-center justify-center h-[500px] container lg:w-[1180px]'>
           <h1 className='text-3xl font-bold text-gray-600'>Failed to load</h1>
           <p className='text-gray-500'>Check your internet connection.</p>
         </div>
-      )}
+      ) : null}
     </section>
   );
 };

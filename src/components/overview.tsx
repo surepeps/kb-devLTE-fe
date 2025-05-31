@@ -20,6 +20,8 @@ import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import RequestsTable from './RquestsTable';
 import toast from 'react-hot-toast';
+import { archivo } from '@/styles/font';
+import { motion } from 'framer-motion';
 
 interface RequestData {
   docOnProperty: { docName: string; isProvided: boolean; _id: string }[];
@@ -82,8 +84,9 @@ const Overview = () => {
     totalAmount: 3000000000.0,
   });
 
-  const [selectedOption, setSelectedOption] =
-    useState<string>('recently publish');
+  const [selectedOption, setSelectedOption] = useState<string>(
+    'View Preference Request'
+  );
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
@@ -197,63 +200,123 @@ const Overview = () => {
   const dynamicContent = () => {
     switch (selectedOption) {
       case SELECTED_OPTIONS.REQUIRE_ATTENTION:
-        return (
-          <Table
-            headingColor='#FF3D00'
-            headerData={headerData}
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            heading='Urgent Property Request'
-            description={`A new buyer preference has been submitted! Review the details and
+        if (buyerPreferences['length'] === 0) {
+          return (
+            <div className='w-full h-[200px] flex justify-center items-center'>
+              <motion.h2
+                initial={{ y: 20, opacity: 0 }}
+                viewport={{ once: true }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+                No buyer preferences found
+              </motion.h2>
+            </div>
+          );
+        } else {
+          return (
+            <Table
+              headingColor='#FF3D00'
+              headerData={headerData}
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setIsFullDetailsClicked}
+              heading='Urgent Property Request'
+              description={`A new buyer preference has been submitted! Review the details and
             match it with available property briefs. Upload suitable options to
             the preference form as soon as possible to ensure a fast and
             seamless transaction`}
-            data={buyerPreferences.map((item) => ({
-              ...item,
-              // docOnProperty: item.docOnProperty.map(({ docName }) => ({
-              //   docName,
-              //   isProvided: true,
-              //   _id: '',
-              // })),
-              date: formatDate(item.createdAt),
-              propertyType: item.propertyType,
-              location: {
-                localGovernment: item.location.localGovernment,
-                state: item.location.state,
-                area: item.location.area,
-              },
-              propertyPrice: item.price,
-              document: item.docOnProperty
-                ? item.docOnProperty.map((doc) => doc.docName).join(', ')
-                : '', // Join docName values or leave empty if not provided
-            }))}
-          />
-        );
+              data={buyerPreferences.map((item) => ({
+                ...item,
+                // docOnProperty: item.docOnProperty.map(({ docName }) => ({
+                //   docName,
+                //   isProvided: true,
+                //   _id: '',
+                // })),
+                date: formatDate(item.createdAt),
+                propertyType: item.propertyType,
+                location: {
+                  localGovernment: item.location.localGovernment,
+                  state: item.location.state,
+                  area: item.location.area,
+                },
+                propertyPrice: item.price,
+                document: item.docOnProperty
+                  ? item.docOnProperty.map((doc) => doc.docName).join(', ')
+                  : '', // Join docName values or leave empty if not provided
+              }))}
+            />
+          );
+        }
 
       case SELECTED_OPTIONS.INSPECTION_REQUESTS:
-        return <RequestsTable data={allRequests} />;
+        if (allRequests.length === 0) {
+          return (
+            <div className='w-full h-[200px] flex justify-center items-center'>
+              <motion.h2
+                initial={{ y: 20, opacity: 0 }}
+                viewport={{ once: true }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+                No inspection requests found
+              </motion.h2>
+            </div>
+          );
+        } else {
+          return <RequestsTable data={allRequests} />;
+        }
       case SELECTED_OPTIONS.THREE_MONTHS_AGO_BRIEF:
-        return (
-          <Table
-            headingColor='black'
-            headerData={headerData}
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            heading='3 month ago Brief'
-            description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
-            data={briefData}
-          />
-        );
+        if (briefData.length === 0) {
+          return (
+            <div className='w-full h-[200px] flex justify-center items-center'>
+              <motion.h2
+                initial={{ y: 20, opacity: 0 }}
+                viewport={{ once: true }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+                No inspection requests found
+              </motion.h2>
+            </div>
+          );
+        } else {
+          return (
+            <Table
+              headingColor='black'
+              headerData={headerData}
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setIsFullDetailsClicked}
+              heading='3 month ago Brief'
+              description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
+              data={briefData}
+            />
+          );
+        }
       case SELECTED_OPTIONS.RECENTLY_PUBLISH:
-        return (
-          <ShowTable
-            headerData={headerData}
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            heading='Publish Brief'
-            data={briefData}
-          />
-        );
+        if (briefData.length === 0) {
+          return (
+            <div className='w-full h-[200px] flex justify-center items-center'>
+              <motion.h2
+                initial={{ y: 20, opacity: 0 }}
+                viewport={{ once: true }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+                No recently published briefs found
+              </motion.h2>
+            </div>
+          );
+        } else {
+          return (
+            <ShowTable
+              headerData={headerData}
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setIsFullDetailsClicked}
+              heading='Publish Brief'
+              data={briefData}
+            />
+          );
+        }
       default:
         break;
     }
@@ -262,41 +325,95 @@ const Overview = () => {
   const mobileDynamicContent = () => {
     switch (selectedOption) {
       case SELECTED_OPTIONS.REQUIRE_ATTENTION:
-        return (
-          <Briefs
-            header='Urgent Property request'
-            isLoading={isLoadingDetails.isLoading}
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            // briefData={briefData}
-            briefData={buyerPreferences}
-          />
-        );
+        if (briefData.length === 0) {
+          return (
+            <div className='w-full h-[200px] flex justify-center items-center'>
+              <motion.h2
+                initial={{ y: 20, opacity: 0 }}
+                viewport={{ once: true }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+                No buyer preferences found
+              </motion.h2>
+            </div>
+          );
+        } else {
+          return (
+            <Briefs
+              header='Urgent Property request'
+              isLoading={isLoadingDetails.isLoading}
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setIsFullDetailsClicked}
+              // briefData={briefData}
+              briefData={buyerPreferences}
+            />
+          );
+        }
 
       case SELECTED_OPTIONS.INSPECTION_REQUESTS:
-        return <RequestsTable data={allRequests} />;
-      case SELECTED_OPTIONS.THREE_MONTHS_AGO_BRIEF:
-        return (
-          <Table
-            headingColor='black'
-            headerData={headerData}
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            heading='3 month ago Brief'
-            description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
-            data={briefData}
-          />
-        );
+        if (allRequests.length === 0) {
+          <div className='w-full h-[200px] flex justify-center items-center'>
+            <motion.h2
+              initial={{ y: 20, opacity: 0 }}
+              viewport={{ once: true }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+              No inspection requests found
+            </motion.h2>
+          </div>;
+        } else {
+          return <RequestsTable data={allRequests} />;
+        }
+      // case SELECTED_OPTIONS.THREE_MONTHS_AGO_BRIEF:
+      //   if (briefData.length === 0) {
+      //     <div className='w-full h-[200px] flex justify-center items-center'>
+      //       <motion.h2
+      //         initial={{ y: 20, opacity: 0 }}
+      //         viewport={{ once: true }}
+      //         whileInView={{ y: 0, opacity: 1 }}
+      //         transition={{ duration: 0.2 }}
+      //         className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+      //         No 3 month ago briefs found
+      //       </motion.h2>
+      //     </div>;
+      //   } else {
+      //     return (
+      //       <Table
+      //         headingColor='black'
+      //         headerData={headerData}
+      //         setDetailsToCheck={setDetailsToCheck}
+      //         setShowFullDetails={setIsFullDetailsClicked}
+      //         heading='3 month ago Brief'
+      //         description={`You have property briefs that have been listed for over 3 months without a transaction. Please confirm if these properties are still available or have been sold to keep our listings updated and accurate.`}
+      //         data={briefData}
+      //       />
+      //     );
+      //   }
       case SELECTED_OPTIONS.RECENTLY_PUBLISH:
-        return (
-          <Briefs
-            isLoading={isLoadingDetails.isLoading}
-            header='Publish Brief'
-            setDetailsToCheck={setDetailsToCheck}
-            setShowFullDetails={setIsFullDetailsClicked}
-            briefData={totalBriefs}
-          />
-        );
+        if (totalBriefs.length === 0) {
+          <div className='w-full h-[200px] flex justify-center items-center'>
+            <motion.h2
+              initial={{ y: 20, opacity: 0 }}
+              viewport={{ once: true }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className='text-3xl font-bold text-gray-600 text-[24px] leading-[32px] tracking-[0.25px] font-archivo'>
+              No buyer preferences found
+            </motion.h2>
+          </div>;
+        } else {
+          return (
+            <Briefs
+              isLoading={isLoadingDetails.isLoading}
+              header='Publish Brief'
+              setDetailsToCheck={setDetailsToCheck}
+              setShowFullDetails={setIsFullDetailsClicked}
+              briefData={totalBriefs}
+            />
+          );
+        }
       default:
         break;
     }
@@ -315,11 +432,12 @@ const Overview = () => {
         </div>
       ) : (
         <div className='lg:w-[1184px] w-full bg-transparent gap-[30px] lg:px-[30px] mt-[30px] md:mt-[60px] flex flex-col'>
-          <div className='w-full m-auto min-h-[140px] grid md:grid-cols-2 lg:grid-cols-3 items-center gap-[20px] md:gap-[40px] '>
-            {/**Total Brief */}
-            <div className='w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
-              <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
-                Total Brief
+          <div className='w-full m-auto min-h-[140px] grid md:grid-cols-2 lg:grid-cols-4 items-center gap-[20px] md:gap-[40px] '>
+            {/**Active Brief */}
+            <div className='w-full lg:w-[279px] h-[127px] bg-[#8DDB90]/[20%] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
+              <h4
+                className={`text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-semibold ${archivo.className}`}>
+                Active Brief
               </h4>
               <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
                 {isLoadingDetails.isLoading ? (
@@ -329,24 +447,26 @@ const Overview = () => {
                 )}
               </h2>
             </div>
+            {/**Total Brief */}
+            <Boxes
+              heading='Total Brief'
+              value={
+                isLoadingDetails.isLoading ? (
+                  <i className='text-sm'>{isLoadingDetails.message}</i>
+                ) : (
+                  briefs.totalBrief
+                )
+              }
+            />
             {/**Draft Brief */}
-            <div className='w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
-              <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
-                Draft Brief
-              </h4>
-              <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
-                {briefs.draftBrief}
-              </h2>
-            </div>
+            {/* <Boxes heading='Draft Brief' value={briefs.draftBrief} /> */}
             {/**Total Referred Agent */}
-            <div className=' w-full h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
-              <h4 className='text-[#2CAF67] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
-                Total referred agent
-              </h4>
-              <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
-                {/* {briefs.referredAgent}  */} Coming soon
-              </h2>
-            </div>
+            {/* <Boxes heading='Total referred agent' value={'Coming soon'} /> */}
+            {/**Pending brief */}
+            <Boxes heading='Pending Brief' value={Number(2).toLocaleString()} />
+            {/**Deal Closed */}
+            <Boxes heading='Deal Closed' value={briefs.completeTransaction} />
+            {/**Total Amount */}
             {/* Complete Transaction */}
 
             {/* <div className='w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
@@ -434,7 +554,7 @@ const Options: FC<OptionType> = ({ text, onClick, className }) => {
 };
 
 const OptionData: string[] = [
-  'Require Attention',
+  'View Preference Request',
   'recently publish',
   // 'Total referred Agent',
   // '3 month ago Brief',
@@ -554,8 +674,26 @@ const Table: FC<TableProps> = ({
   );
 };
 
+type BoxProps = {
+  heading: string;
+  value: number | string | React.JSX.Element | React.ReactNode;
+};
+
+const Boxes: FC<BoxProps> = ({ heading, value }) => {
+  return (
+    <div className='w-full lg:w-[279px] h-[127px] bg-[#FFFFFF] rounded-[4px] border-[1px] border-[#E4DFDF] py-[25px] px-[23px] flex flex-col gap-[35px]'>
+      <h4 className='text-[#000000] text-base leading-[18px] tracking-[1.25px] font-normal font-archivo'>
+        {heading}
+      </h4>
+      <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
+        {value}
+      </h2>
+    </div>
+  );
+};
+
 enum SELECTED_OPTIONS {
-  REQUIRE_ATTENTION = 'Require Attention',
+  REQUIRE_ATTENTION = 'View Preference Request',
   RECENTLY_PUBLISH = 'recently publish',
   INSPECTION_REQUESTS = 'Inspection Requests',
   THREE_MONTHS_AGO_BRIEF = '3 month ago Brief',
