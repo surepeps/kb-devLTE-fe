@@ -73,7 +73,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
         </div>
       </div>
 
-      <div className='w-full container min-h-[310px] border-[1px] py-[30px] flex flex-row items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[30px]'>
+      <div className='w-full container border-[1px] py-[30px] flex flex-col md:flex-row items-start gap-[39px] border-[#E9EBEB] bg-[#FFFFFF] p-[20px] lg:p-[30px]'>
         <div className='w-full lg:w-[539px] h-full bg-[#FAFAFA] py-[30px] px-[28px] flex flex-col gap-[10px] justify-between items-center'>
           {/**Reference ID */}
           <div className='w-full flex justify-between items-center'>
@@ -195,7 +195,10 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
         </div>
         <div className='flex flex-col lg:w-[288px] h-full w-full gap-[20px]'>
           {/**Continue */}
-          {detailsToCheck.propertyFeatures?.additionalFeatures.length !== 0 && (
+          {(detailsToCheck.propertyFeatures?.additionalFeatures.length !== 0 ||
+            detailsToCheck?.propertyFeatures?.additionalFeatures.some(
+              (item) => item !== undefined
+            )) && (
             <div className='py-[20px] px-[15px] flex flex-col gap-[10px] bg-[#FAFAFA] border-[1px] border-[#E9EBEB]'>
               <h2 className='text-sm font-archivo font-bold text-black'>
                 Condition
@@ -220,12 +223,12 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                 Features
               </h2>
               <div className='w-full grid grid-cols-2 gap-[10px]'>
-                {detailsToCheck?.features.map(
+                {detailsToCheck?.features?.map(
                   (item: { featureName: string }, idx: number) => (
                     <span
                       key={idx}
                       className='text-sm font-archivo text-[#141A16]'>
-                      {item.featureName}
+                      {item?.featureName}
                     </span>
                   )
                 )}

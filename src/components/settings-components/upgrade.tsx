@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import UpgradeNotification from './upgrade-notification';
 import { motion } from 'framer-motion';
 import Input from '../general-components/Input';
@@ -15,6 +15,11 @@ interface SelectOption {
 }
 const Upgrade = () => {
   const { settings, userDetails } = usePageContext();
+
+  useEffect(
+    () => console.log(userDetails?.agentData?.meansOfId),
+    [userDetails]
+  );
 
   return (
     <section className='flex flex-col gap-[20px] lg:w-[662px] min-h-[400px]'>
@@ -34,7 +39,7 @@ const Upgrade = () => {
         </h2>
         <div className='flex flex-col gap-[20px]'>
           <Input
-            value={userDetails.agentType}
+            value={userDetails?.agentData?.agentType}
             name='Are you an Individual agent or Corporate Agent'
             isDisabled
             label='Agent Type'
@@ -51,13 +56,40 @@ const Upgrade = () => {
             <h2 className='text-[#202430] text-base font-semibold'>
               Uploaded document
             </h2>
-            <Image
-              src={sampleImage}
+            <div className='flex gap-6'>
+              {userDetails?.agentData?.meansOfId?.map(
+                (
+                  item: { docImg: string[]; _id: string; name: string },
+                  index
+                ) => (
+                  <div key={item._id || index} className='mb-4'>
+                    <p className='font-medium mb-2 capitalize'>{item.name}</p>
+                    <div className='flex gap-2 flex-wrap'>
+                      {item?.docImg?.map((image: string, imgIndex) => (
+                        <Image
+                          key={`${item._id}-${imgIndex}`}
+                          src={image}
+                          alt={item.name}
+                          width={150}
+                          height={50}
+                          className='bg-[#D9D9D9] lg:w-[131px] h-full object-cover'
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+            {/* <Image
+              src={
+                userDetails?.agentData?.meansOfId[0]?.docImage?.[0] ||
+                'https://res.cloudinary.com/dkqjneask/image/upload/v1748449285/property-images/1748449284433-property-image.png'
+              }
               alt=''
               width={150}
               height={50}
               className='bg-[#D9D9D9] lg:w-[131px] h-full object-cover'
-            />
+            /> */}
           </div>
         </div>
       </motion.form>
