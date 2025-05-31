@@ -84,9 +84,8 @@ const Overview = () => {
     totalAmount: 3000000000.0,
   });
 
-  const [selectedOption, setSelectedOption] = useState<string>(
-    'View Preference Request'
-  );
+  const [selectedOption, setSelectedOption] =
+    useState<string>('Require Attention');
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
