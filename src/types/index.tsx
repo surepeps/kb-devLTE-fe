@@ -3,6 +3,7 @@
 
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { PropertyProps } from './property.types';
+import { UserAgentDataProps } from './agent_data_props';
 
 interface Option {
   value: string;
@@ -104,8 +105,8 @@ export interface GlobalContextTypes {
     };
   }) => void;
 
-  userDetails: userDetailsProperties;
-  setUserDetails: ({}: userDetailsProperties) => void;
+  userDetails: UserAgentDataProps;
+  setUserDetails: ({}: UserAgentDataProps) => void;
 
   /**Dashboard Types */
   dashboard: {
