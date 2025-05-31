@@ -170,7 +170,7 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
 export const servicesData: { name: string; url: string }[] = [
   {
     name: 'Property Sales',
-    url: '/my_listing',
+    url: '/market-place',
   },
   {
     name: 'Property Rental',
