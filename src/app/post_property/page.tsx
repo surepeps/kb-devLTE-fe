@@ -164,18 +164,15 @@ const Sell = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
-    console.log('Selected LGA:', formik.values); // Debugging
     setSelectedLGA?.(selected);
   };
 
   const handleStateChange = (selected: Option | null) => {
-    console.log('Selected State:', selected);
     formik.setFieldValue('selectedState', selected?.value);
     setSelectedState?.(selected);
 
     if (selected) {
       const lgas = Object.values(data[selected.label]);
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setLgaOptions(

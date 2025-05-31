@@ -45,7 +45,6 @@ const MarketPlace = () => {
 
   useEffect(() => {
     if (propertySelectedForInspection) {
-      console.log(propertySelectedForInspection);
       setPropertiesSelected([
         {
           ...propertySelectedForInspection,
