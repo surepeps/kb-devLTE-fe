@@ -71,6 +71,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       setUserDetails(null);
     }
   }, []);
+
+  useEffect(() => console.log(pathName), [pathName]);
   return (
     <Fragment>
       <header

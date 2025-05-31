@@ -15,7 +15,7 @@ import { SelectedBriefsProvider } from '@/context/selected-briefs-context';
 import Homepage from '@/app/homepage/page';
 import Countdown from './coming-soon-modal/page';
 
-const SHOW_COMING_SOON = true;
+const SHOW_COMING_SOON = false;
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
@@ -42,17 +42,9 @@ export default function RootLayout({
                   className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
                   {' '}
                   {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                  <HeaderFooterWrapper>
+                  <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
                     <Homepage isComingSoon={SHOW_COMING_SOON} />
                     <Countdown />
-                    {/* <Body>
-                      <GoogleOAuthProvider
-                        clientId={
-                          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
-                        }>
-                        {children}
-                      </GoogleOAuthProvider>
-                    </Body> */}
                   </HeaderFooterWrapper>
                   <Toaster />
                 </body>
