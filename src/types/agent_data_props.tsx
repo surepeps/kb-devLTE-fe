@@ -38,4 +38,59 @@ export interface DataProps {
   }[];
 }
 
+export interface UserAgentDataProps {
+  accountApproved: boolean;
+  accountId: string;
+  accountStatus: 'active' | 'inactive';
+  agentData: {
+    accountApproved: boolean;
+    accountStatus: 'active' | 'inactive';
+    address: {
+      homeNo: string;
+      street: string;
+      state: string;
+      localGovtArea: string;
+    };
+    agentType: string; // e.g., "Individual"
+    companyAgent: string | null;
+    createdAt: string; // ISO date string
+    id: string;
+    isAccountVerified: boolean;
+    isDeleted: boolean;
+    isFlagged: boolean;
+    isInActive: boolean;
+    isInUpgrade: boolean;
+    meansOfId: {
+      docImg: string[];
+      name: string;
+      _id: string;
+    }[];
+    regionOfOperation: string[];
+    updatedAt: string;
+    upgradeData: {
+      meansOfId: {
+        docImg: string;
+        name: string;
+        _id: string;
+      }[];
+      requestDate: string;
+    };
+    userId: string;
+    __v?: number;
+    _id?: string;
+  };
+  createdAt: string;
+  email: string;
+  firstName: string;
+  id: string;
+  isAccountVerified: boolean;
+  isFlagged: boolean;
+  lastName: string;
+  phoneNumber: string;
+  updatedAt: string;
+  userType: 'Agent' | string;
+  __v?: number;
+  _id?: string;
+}
+
 export type DataPropsArray = DataProps[];

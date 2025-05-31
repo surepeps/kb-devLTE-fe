@@ -42,17 +42,9 @@ export default function RootLayout({
                   className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}>
                   {' '}
                   {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                  <HeaderFooterWrapper>
+                  <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
                     <Homepage isComingSoon={SHOW_COMING_SOON} />
                     <Countdown />
-                    {/* <Body>
-                      <GoogleOAuthProvider
-                        clientId={
-                          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
-                        }>
-                        {children}
-                      </GoogleOAuthProvider>
-                    </Body> */}
                   </HeaderFooterWrapper>
                   <Toaster />
                 </body>
