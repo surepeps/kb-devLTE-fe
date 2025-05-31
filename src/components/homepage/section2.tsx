@@ -228,7 +228,7 @@ const Section2 = () => {
                 button1: false,
                 button2: false,
                 button3: true,
-                button4: true,
+                button4: false,
               });
               fetchAllRentProperties();
             }}
@@ -243,7 +243,7 @@ const Section2 = () => {
               setButtons({
                 button1: false,
                 button2: false,
-                button3: true,
+                button3: false,
                 button4: true,
               });
               fetchAllRentProperties();
