@@ -17,6 +17,9 @@ const ChangePassword = () => {
     currentPassword: Yup.string().required('Current Password is required'),
     newPassword: Yup.string().required('New Password is required'),
   });
+  const [formikStatus, setFormikStatus] = React.useState<
+    'idle' | 'failed' | 'success' | 'pending'
+  >('idle');
 
   const formik = useFormik({
     initialValues: {
@@ -26,6 +29,7 @@ const ChangePassword = () => {
     validationSchema,
     onSubmit: async (values) => {
       console.log(values);
+      setFormikStatus('pending');
       try {
         const response = await POST_REQUEST(
           URLS.BASE + URLS.changePassword,
@@ -38,10 +42,12 @@ const ChangePassword = () => {
         console.log(response);
         if (response.success) {
           toast.success('Password changed successfully');
+          setFormikStatus('success');
           formik.values.currentPassword = ''; // Clear currentPassword field
           formik.values.newPassword = ''; // Clear newPassword field
         } else {
-          toast.error(response.error);
+          setFormikStatus('failed');
+          toast.error(response.message);
         }
       } catch (err) {
         console.log(err);
@@ -66,10 +72,12 @@ const ChangePassword = () => {
         <InputPassword formik={formik} name='New Password' id='newPassword' />
       </div>
       <button
-        className='lg:w-[317px] h-[50px] transition-all duration-500 gap-[10px] text-base font-bold text-[#FFFFFF] px-[12px] hover:bg-[#4d724e] bg-[#8DDB90] rounded-[5px]'
+        className={`lg:w-[317px] w-full ${
+          formikStatus === 'pending' && 'animate-pulse'
+        } h-[50px] transition-all duration-500 gap-[10px] text-base font-bold text-[#FFFFFF] px-[12px] hover:bg-[#4d724e] bg-[#8DDB90] rounded-[5px]`}
         title='Save Password'
         type='submit'>
-        SAVE PASSWORD
+        {formikStatus === 'pending' ? 'Saving...' : 'SAVE PASSWORD'}
       </button>
     </motion.form>
   );
