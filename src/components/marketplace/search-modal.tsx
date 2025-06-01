@@ -635,7 +635,6 @@ const SearchModal = ({
         }
 
         const data = await response.json();
-        console.log(data);
         setFormikStatus('success');
         // const randomIndex = Math.floor(
         //   Math.random() * (data.data.length - 10 + 1)
@@ -682,28 +681,5 @@ const SearchModal = ({
     </Fragment>
   );
 };
-
-const dummyCardData = [
-  {
-    header: 'Property Type',
-    value: 'N/A',
-  },
-  {
-    header: 'Price',
-    value: `₦${Number(2180000).toLocaleString()}`,
-  },
-  {
-    header: 'Bedrooms',
-    value: 'N/A',
-  },
-  {
-    header: 'Location',
-    value: `N/A`,
-  },
-  {
-    header: 'Documents',
-    value: `N/A`,
-  },
-];
 
 export default SearchModal;
