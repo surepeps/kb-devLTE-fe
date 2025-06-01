@@ -27,7 +27,7 @@ const Section2 = () => {
   });
   const { setCardData } = usePageContext();
   const [properties, setProperties] = useState<any[]>([]);
-
+  const [selectedMarketPlace, setSelectedMarketPlace] = useState('Buy a property');
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
@@ -162,6 +162,41 @@ const Section2 = () => {
     }
   };
 
+  const getBriefType = (marketPlace: string) => {
+  switch (marketPlace) {
+    case 'Buy a property':
+      return 'Outright Sales';
+    case 'Find property for joint venture':
+      return 'Joint Venture';
+    case 'Rent/Lease a property':
+      return 'Rent';
+    default:
+      return 'Outright Sales';
+  }
+};
+
+  useEffect(() => {
+  const briefType = getBriefType(selectedMarketPlace);
+  const url = `${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(url);
+      if (response.status !== 200) throw new Error('Failed to fetch data');
+      const data = response.data.data;
+      setProperties(shuffleArray(data).slice(0, 4));
+      setCardData(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchData();
+}, [selectedMarketPlace, setCardData]);
+
   useEffect(() => {
     fetchPropertyInsightData();
 
@@ -198,7 +233,7 @@ const Section2 = () => {
                 button3: false,
                 button4: false,
               });
-              fetchPropertyInsightData();
+              setSelectedMarketPlace('Buy a property');
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button1 ? '' : 'text-[#5A5D63]'
