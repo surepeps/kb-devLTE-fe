@@ -97,9 +97,9 @@ const Section2 = () => {
         setIsLoading(false);
         throw new Error('Failed to fetch data');
       }
-
+      
       const data = response.data;
-      console.log(data);
+      console.log("data on homepage", data);
       const shuffled = shuffleArray(data.data);
       setProperties(shuffled.slice(0, 4));
       setCardData(data);
