@@ -146,7 +146,7 @@ const Login = () => {
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
       // console.log(codeResponse);
-      const url = URLS.BASE + URLS.agent + URLS.googleLogin;
+      const url = URLS.BASE + URLS.user + URLS.googleLogin;
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(
         async (response) => {
