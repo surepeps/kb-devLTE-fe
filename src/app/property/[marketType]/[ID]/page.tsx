@@ -574,7 +574,7 @@ const ProductDetailsPage = () => {
             <MobileSelectedBottomBar
               selectedBriefs={selectedBriefs.length}
               selectedBriefsList={selectedBriefs}
-              onViewBrief={() => {
+              onRemoveAllBriefs={() => {
                 console.log('View Briefs', selectedBriefs);
               }}
               onSubmitForInspection={() => {
