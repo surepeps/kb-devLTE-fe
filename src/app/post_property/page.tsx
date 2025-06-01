@@ -193,11 +193,20 @@ const Sell = () => {
     }
   };
 
-  const stepRequiredFields: { [key: number]: string[] } = {
-    1: ['propertyType', 'price', 'selectedState', 'selectedLGA'],
-    2: ['documents', 'jvConditions'],
-    // ...add for other steps as needed
-  };
+const getStepRequiredFields = (step: number) => {
+  if (step === 1) return ['propertyType', 'price', 'selectedState', 'selectedLGA'];
+  if (step === 2) {
+    if (selectedCard === 'rent') {
+      return []; // No required fields for rent on features & conditions
+    }
+    if (selectedCard === 'jv') {
+      return ['jvConditions'];
+    }
+    // For sell
+    return ['documents'];
+  }
+  return [];
+};
 
   const formik = useFormik({
     initialValues: {
@@ -646,7 +655,13 @@ const Sell = () => {
                           <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                             Price Details
                           </h2>
-                          <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                          <div
+                              className={
+                                selectedCard !== 'jv' && commission['userType'] !== 'agent'
+                                  ? 'min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'
+                                  : 'min-h-[80px] flex flex-col gap-[15px]'
+                              }
+                            >
                             <Input
                               label='Price'
                               placeholder='Enter property price'
@@ -676,7 +691,7 @@ const Sell = () => {
                               isDisabled={areInputsDisabled}
                             />
 
-                            {selectedCard !== 'jv' && (
+                            {selectedCard !== 'jv' && commission['userType'] !== 'agent' && (
                               <Input
                                 label='Lease Hold'
                                 placeholder='Enter lease hold'
@@ -1101,30 +1116,25 @@ const Sell = () => {
                         Ownership Declaration
                       </h3>
                       <div className='w-full flex flex-col gap-[15px] min-h-[270px] '>
-                        <RadioCheck
-                          name='confirm'
-                          type='checkbox'
-                          // onClick={() => {
-                          //   setIsLegalOwner(!isLegalOwner);
-                          // }}
-                          isChecked={isLegalOwner}
-                          handleChange={() => setIsLegalOwner(!isLegalOwner)}
-                          isDisabled={areInputsDisabled}
-                          value='I confirm that I am the legal owner of this property or authorized to submit this brief'
-                        />
-                        {commission['userType'] === 'agent' ? (
-                          <RadioCheck
-                            name='confirm'
-                            type='checkbox'
-                            // onClick={() => {
-                            //   setIsLegalOwner(!isLegalOwner);
-                            // }}
-                            isChecked={isAuthorized}
-                            handleChange={() => setIsAuthorized(!isAuthorized)}
-                            isDisabled={areInputsDisabled}
-                            value='I confirm that I am authorized to list the property'
-                          />
-                        ) : null}
+                          {commission['userType'] === 'agent' ? (
+                            <RadioCheck
+                              name='confirm'
+                              type='checkbox'
+                              isChecked={isAuthorized}
+                              handleChange={() => setIsAuthorized(!isAuthorized)}
+                              isDisabled={areInputsDisabled}
+                              value='I confirm that I am a mandate to the property'
+                            />
+                          ) : (
+                            <RadioCheck
+                              name='confirm'
+                              type='checkbox'
+                              isChecked={isLegalOwner}
+                              handleChange={() => setIsLegalOwner(!isLegalOwner)}
+                              isDisabled={areInputsDisabled}
+                              value='I confirm that I am the legal owner of this property or authorized to submit this brief'
+                            />
+                          )}
                         <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                           <Input
                             label='Full name'
@@ -1142,7 +1152,11 @@ const Sell = () => {
                             <PhoneInput
                               international
                               defaultCountry='NG'
-                              disabled={!isLegalOwner}
+                                disabled={
+                              commission['userType'] === 'agent'
+                                ? !isAuthorized
+                                : !isLegalOwner
+                            }
                               value={formik.values?.ownerPhoneNumber}
                               style={{ outline: 'none' }}
                               onChange={(value) =>
@@ -1187,47 +1201,41 @@ const Sell = () => {
                       }}
                       className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                     />
-                    <Button
-                      value='Next'
-                      type={
-                        currentStep === steps.length - 1 ? 'submit' : 'button'
-                      }
-                      onClick={async () => {
-                        const errors = await formik.validateForm();
-                        // Only check errors for fields relevant to the current step
-                        const fieldsToCheck =
-                          stepRequiredFields[currentStep] || [];
-                        const hasStepError = fieldsToCheck.some(
-                          (field) =>
-                            !!errors[field as keyof typeof formik.values]
+                      <Button
+                    value='Next'
+                    type={currentStep === steps.length - 1 ? 'submit' : 'button'}
+                    onClick={async () => {
+                      const errors = await formik.validateForm();
+                          console.log('Formik errors:', errors); 
+                      const fieldsToCheck = getStepRequiredFields(currentStep);
+                      const hasStepError = fieldsToCheck.some(
+                        (field) => !!errors[field as keyof typeof formik.values]
+                      );
+                      if (hasStepError) {
+                        formik.setTouched(
+                          fieldsToCheck.reduce(
+                            (acc, field) => ({ ...acc, [field]: true }),
+                            {}
+                          )
                         );
-                        if (hasStepError) {
-                          // Mark those fields as touched
-                          formik.setTouched(
-                            fieldsToCheck.reduce(
-                              (acc, field) => ({ ...acc, [field]: true }),
-                              {}
-                            )
-                          );
-                          return;
-                        }
-                        if (currentStep < steps.length - 1) {
-                          setCurrentStep((prev) => prev + 1);
-                        } else if (currentStep === steps.length - 1) {
-                          setShowCommissionModal(true);
-                        }
-                      }}
-                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
-                      isDisabled={
-                        (currentStep === 4 && !isLegalOwner) ||
-                        (currentStep === 4 && commission['userType'] === 'agent' && !isAuthorized) ||
-                        (currentStep === 4 && !!formik.errors.ownerPhoneNumber) ||
-                        (stepRequiredFields[currentStep] || []).some(
-                          (field) =>
-                            !!formik.errors[field as keyof typeof formik.values]
-                        )
+                        return;
                       }
-                    />
+                      if (currentStep < steps.length - 1) {
+                        setCurrentStep((prev) => prev + 1);
+                      } else if (currentStep === steps.length - 1) {
+                        setShowCommissionModal(true);
+                      }
+                    }}
+                    className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
+                    isDisabled={
+                      (currentStep === 4 && commission['userType'] === 'agent' && !isAuthorized) ||
+                      (currentStep === 4 && commission['userType'] !== 'agent' && !isLegalOwner) ||
+                      (currentStep === 4 && !!formik.errors.ownerPhoneNumber) ||
+                      getStepRequiredFields(currentStep).some(
+                        (field) => !!formik.errors[field as keyof typeof formik.values]
+                      )
+                    }
+                  />
                   </div>
                 </form>
               )}
@@ -1245,7 +1253,14 @@ const Sell = () => {
             />
           )}
 
-          {showFinalSubmit && <Submit href='/my_listing' />}
+          {/* {showFinalSubmit && <Submit href='/my_listing' />} */}
+
+          {showFinalSubmit && (
+            <Submit
+              href={commission['userType'] === 'agent' ? '/agent' : '/my_listing'}
+              onClose={() => setShowFinalSubmit(false)}
+            />
+          )}
 
           {showCommissionModal && (
             <CommissionModal
