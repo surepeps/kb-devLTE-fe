@@ -133,24 +133,31 @@ const Register = () => {
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (codeResponse: any) => {
-      const url = URLS.BASE + URLS.user + URLS.googleSignup;
+onSuccess: async (codeResponse: any) => {
+  const url = URLS.BASE + URLS.user + URLS.googleSignup;
 
-      await POST_REQUEST(url, { idToken: codeResponse.code, userType }).then(async (response) => {
-        if ((response as unknown as { id: string }).id) {
-          Cookies.set('token', (response as unknown as { token: string }).token);
-          setUser((response as any).user);
-          localStorage.setItem('email', `${formik.values.email}`); // Save email to local storage
-          toast.success('Registration successful');
-          router.push('/agent/onboard');
-        }
-        // console.log(response);
-        if (response.error) {
-          toast.error(response.error);
-        }
-        // toast.error(response.message);
-      });
-    },
+  await POST_REQUEST(url, { idToken: codeResponse.code, userType }).then(async (response) => {
+    if ((response as any).id) {
+      Cookies.set('token', (response as any).token);
+      setUser((response as any).user);
+
+      // Use email from response, not formik
+      localStorage.setItem('email', (response as any).user?.email || '');
+
+      toast.success('Registration successful');
+
+      // Navigate based on user type
+      if ((response as any).user?.userType === 'Agent') {
+        router.push('/agent/onboard');
+      } else {
+        router.push('/my_listing');
+      }
+    }
+    if (response.error) {
+      toast.error(response.error);
+    }
+  });
+},
     onError: (errorResponse: any) => toast.error(errorResponse.message),
   });
 

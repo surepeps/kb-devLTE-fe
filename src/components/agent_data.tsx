@@ -222,9 +222,15 @@ const steps: Step[] = [
             }
           })
           .catch((error) => {
-            console.log('error', error);
-            return error.message || 'Submission failed';
-          }),
+          console.log('error', error);
+          const apiMessage =
+            error?.response?.data?.message ||
+            error?.message ||
+            error?.toString() ||
+            'Submission failed';
+          toast.error(apiMessage);
+          return apiMessage;
+        }),
         {
           loading: 'Submitting...',
           // success: 'Agent data submitted successfully',
