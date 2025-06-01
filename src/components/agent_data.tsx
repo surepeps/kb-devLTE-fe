@@ -216,20 +216,26 @@ const steps: Step[] = [
               return 'Agent data submitted successfully';
             } else {
               const errorMessage =
-                (response as any).error || 'Submission failed';
+                (response as any).error ||
+                (response as any).message ||
+                'Submission failed';
               toast.error(errorMessage);
               throw new Error(errorMessage);
             }
           })
-          .catch((error) => {
+        .catch((error) => {
           console.log('error', error);
-          const apiMessage =
-            error?.response?.data?.message ||
-            error?.message ||
-            error?.toString() ||
-            'Submission failed';
-          toast.error(apiMessage);
-          return apiMessage;
+          // Show the actual error message from the API if available
+          if (error?.response?.data?.message) {
+            toast.error(error.response.data.message);
+            return error.response.data.message;
+          }
+          if (error?.message) {
+            toast.error(error.message);
+            return error.message;
+          }
+          toast.error('Submission failed');
+          return 'Submission failed';
         }),
         {
           loading: 'Submitting...',
