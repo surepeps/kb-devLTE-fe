@@ -5,14 +5,15 @@ import React from 'react';
 interface SelectedBriefsBarProps {
   selectedBriefs: number;
   selectedBriefsList?: any[];
-  onViewBrief: () => void;
+  // onViewBrief: () => void;
+  onRemoveAllBriefs: () => void; // <-- change here
   onSubmitForInspection: () => void;
 }
 
 const MobileSelectedBottomBar: React.FC<SelectedBriefsBarProps> = ({
   selectedBriefs,
   selectedBriefsList = [],
-  onViewBrief,
+  onRemoveAllBriefs,
   onSubmitForInspection,
 }) => (
   <div className='w-full flex flex-col gap-3 bg-white py-2 px-5 bottom-0 left-0 right-0 md:hidden'>
@@ -24,8 +25,8 @@ const MobileSelectedBottomBar: React.FC<SelectedBriefsBarProps> = ({
       <button
         className='h-[40px] border-[1px] border-[#5A5D6380] text-[#09391C] font-medium w-[40%]'
         type='button'
-        onClick={onViewBrief}>
-        View Listing
+        onClick={onRemoveAllBriefs}>
+        Remove
       </button>
       <button
         className='h-[40px] bg-[#8DDB90] text-white font-medium w-[60%]'
