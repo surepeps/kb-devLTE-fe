@@ -103,7 +103,6 @@ const Login = () => {
 
               if ((response as any)?.user?.id) {
 
-                console.log('response', response.user.userType);
 
                 if (response.user.userType === 'Agent') {
                   if (!response.user.agentData?.agentType) {
@@ -160,25 +159,30 @@ const Login = () => {
             // console.log('response', response);
             // console.log('response Data', response.data);
 
-            const user = response as unknown as {
-              id: string;
-              email: string;
-              password: string;
-              lastName: string;
-              firstName: string;
-              phoneNumber: string;
-              accountApproved: boolean;
+            const user = {
+              firstName: response?.user?.firstName,
+              lastName: response?.user?.lastName,
+              phoneNumber: response?.user?.phoneNumber,
+              email: response?.user?.email,
+              id: response?.user?.id,
+              userType: response?.user?.userType,
+              agentData: response?.user?.agentData,
+              accountApproved: response?.user?.accountApproved,
             };
 
             setUser(user);
             sessionStorage.setItem('user', JSON.stringify(user));
 
-            if (response.accountApproved === false) {
-              router.push('/agent/under-review');
-            } else if (!response.phoneNumber) {
-              router.push('/agent/onboard');
+            if (user.userType === 'Agent') {
+              if (!user.agentData?.agentType) {
+                router.push('/agent/onboard');
+              } else if (user.accountApproved === false) {
+                router.push('/agent/under-review');
+              } else if (user.phoneNumber && user.agentData.agentType) {
+                router.push('/agent/briefs');
+              }
             } else {
-              router.push('/agent/briefs');
+              router.push('/my_listing');
             }
           }
           console.log('response', response);
