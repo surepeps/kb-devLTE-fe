@@ -117,16 +117,6 @@ const Mobile = ({
     <Fragment>
       <div className='w-full flex flex-col gap-[20px]'>
         <div className='py-[10px] bg-white w-full sticky top-0 z-20'>
-            {selectedBriefs > 0 ? (
-            <MobileSelectedBottomBar
-              selectedBriefs={selectedBriefs}
-              selectedBriefsList={Array.from(selectedBriefsList)}
-              onRemoveAllBriefs={onRemoveAllBriefs} 
-              onSubmitForInspection={() => {
-                onSubmitForInspection(selectedBriefsList);
-              }}
-            />
-            ) : (
             <article className='h-full w-full flex flex-col gap-[15px] px-[10px]'>
               {/**Preferred Location */}
               <SelectStateLGA
@@ -181,7 +171,6 @@ const Mobile = ({
                 </button>
               </div>
             </article>     
-          )}   
         </div>
         <div
           className='flex-1 overflow-y-auto px-5'
@@ -198,6 +187,17 @@ const Mobile = ({
           />
         )}
       </AnimatePresence>
+
+      <MobileSelectedBottomBar
+        selectedBriefs={selectedBriefs}
+        selectedBriefsList={Array.from(selectedBriefsList)}
+        onRemoveAllBriefs={() => {
+          console.log('View Briefs', selectedBriefsList);
+        }}
+        onSubmitForInspection={() => {
+          onSubmitForInspection(selectedBriefsList);
+        }}
+      />
     </Fragment>
   );
 };

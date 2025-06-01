@@ -571,16 +571,18 @@ const ProductDetailsPage = () => {
                 </div>
               </div>
             </div>
-            <MobileSelectedBottomBar
-              selectedBriefs={selectedBriefs.length}
-              selectedBriefsList={selectedBriefs}
-              onRemoveAllBriefs={() => {
-                console.log('View Briefs', selectedBriefs);
-              }}
-              onSubmitForInspection={() => {
-                console.log('Submit for inspection', selectedBriefs);
-              }}
-            />
+            {selectedBriefs && selectedBriefs.length > 0 && (
+              <MobileSelectedBottomBar
+                selectedBriefs={selectedBriefs.length}
+                selectedBriefsList={selectedBriefs}
+                onRemoveAllBriefs={() => {
+                  console.log('View Briefs', selectedBriefs);
+                }}
+                onSubmitForInspection={() => {
+                  console.log('Submit for inspection', selectedBriefs);
+                }}
+              />
+            )}
           </div>
         </section>
       ) : (
