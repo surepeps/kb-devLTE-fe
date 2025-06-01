@@ -5,9 +5,10 @@ import Button from '@/components/general-components/button';
 import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
 import { useLoading } from '@/hooks/useLoading';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import useClickOutside from '@/hooks/clickOutside';
 import RadioCheck from '@/components/general-components/radioCheck';
-import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import Input from '@/components/general-components/Input';
 import { useFormik } from 'formik';
@@ -15,7 +16,6 @@ import * as Yup from 'yup';
 import { featuresData, tenantCriteriaData } from '@/data/landlord';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { usePageContext } from '@/context/page-context';
-import AttachFile from '@/components/multipleAttachFile';
 import 'react-phone-number-input/style.css';
 import { useRouter } from 'next/navigation';
 import arrowRightIcon from '@/svgs/arrowR.svg';
@@ -86,6 +86,22 @@ const Landlord = () => {
       },
     ];
 
+function formatNumberWithCommas(value: string) {
+  const cleaned = value.replace(/\D/g, '');
+  return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+  const formatNumber = (val: string) => {
+    const containsLetters = /[A-Za-z]/.test(val);
+    if (containsLetters) {
+      // setFormattedValue('');
+      return;
+    }
+    const numericValue = val.replace(/,/g, ''); //to remove commas;
+
+    return numericValue ? Number(numericValue).toLocaleString() : '';
+  };
+
   useEffect(() => {
     const filteredArray: string[] = [];
     if (fileUrl.length !== 0) {
@@ -144,12 +160,13 @@ const Landlord = () => {
             <Input
               label="Min Price Range"
               name="min_price_range"
-              type="number"
+              type="text"
               value={prices.minPrice}
               onChange={(event) => {
+                const rawValue = event.target.value.replace(/,/g, '');
                 setPrices({
                   ...prices,
-                  minPrice: event.target.value,
+                  minPrice: formatNumberWithCommas(rawValue),
                 });
               }}
             />
@@ -158,12 +175,13 @@ const Landlord = () => {
             <Input
               label="Max Price Range"
               name="max_price_range"
-              type="number"
+              type="text"
               value={prices.maxPrice}
               onChange={(event) => {
+                const rawValue = event.target.value.replace(/,/g, '');
                 setPrices({
                   ...prices,
-                  maxPrice: event.target.value,
+                  maxPrice: formatNumberWithCommas(rawValue),
                 });
               }}
             />
@@ -298,12 +316,13 @@ const Landlord = () => {
                   <Input
                     label="Min Price Range"
                     name="min_price_range"
-                    type="number"
+                    type="text"
                     value={prices.minPrice}
                     onChange={(event) => {
+                      const rawValue = event.target.value.replace(/,/g, '');
                       setPrices({
                         ...prices,
-                        minPrice: event.target.value,
+                        minPrice: formatNumberWithCommas(rawValue),
                       });
                     }}
                   />
@@ -312,14 +331,15 @@ const Landlord = () => {
                   <Input
                     label="Max Price Range"
                     name="max_price_range"
-                    type="number"
+                    type="text"
                     value={prices.maxPrice}
                     onChange={(event) => {
-                      setPrices({
-                        ...prices,
-                        maxPrice: event.target.value,
-                      });
-                    }}
+                    const rawValue = event.target.value.replace(/,/g, '');
+                    setPrices({
+                      ...prices,
+                      maxPrice: formatNumberWithCommas(rawValue),
+                    });
+                  }}
                   />
                 </div>
               </div>
@@ -458,26 +478,28 @@ const Landlord = () => {
                     <Input
                       label="Min Price Range"
                       name="min_price_range"
-                      type="number"
+                      type="text"
                       placeholder='Min'
                       value={prices.minPrice}
                       onChange={(event) => {
+                        const rawValue = event.target.value;
                         setPrices({
                           ...prices,
-                          minPrice: event.target.value,
+                          minPrice: formatNumber(rawValue) ?? '',
                         });
                       }}
                     />
                     <Input
                       label="Max Price Range"
                       name="max_price_range"
-                      type="number"
+                      type="text"
                       placeholder='Max'
                       value={prices.maxPrice}
                       onChange={(event) => {
+                        const rawValue = event.target.value;
                         setPrices({
                           ...prices,
-                          maxPrice: event.target.value,
+                          maxPrice: formatNumber(rawValue) ?? '',
                         });
                       }}
                     />
@@ -596,7 +618,6 @@ const Landlord = () => {
 
     if (selected) {
       const lgas = Object.values(data[selected.label]);
-      // console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setLgaOptions(
@@ -606,7 +627,6 @@ const Landlord = () => {
           }))
         );
       } else {
-        // console.error('LGAs not returned as an array:', lgas);
         setLgaOptions([]);
       }
       setSelectedLGA?.(null);
@@ -707,7 +727,7 @@ const Landlord = () => {
             if ((response as any).data.owner) {
               toast.success('Preference submitted successfully');
               setShowFinalSubmit(true); 
-              setIsSubmittedSuccessfully(true);
+              // setIsSubmittedSuccessfully(true);
               setAreInputsDisabled(false);
               return 'Preference submitted successfully';
             } else {
@@ -1045,8 +1065,7 @@ const Landlord = () => {
               )}
               <div className='w-full flex items-center mt-8 justify-between'>
                 <Button
-                  value='Cancel'
-                  // isDisabled={!isLegalOwner}
+                   value={currentStep === 1 ? 'Back' : 'Cancel'}
                   type='button'
                   onClick={() =>
                     setCurrentStep((prev) => Math.max(prev - 1, 0))
@@ -1056,19 +1075,28 @@ const Landlord = () => {
                 <Button
                     value={currentStep === steps.length - 1 ? 'Submit' : 'Next'}
                     type={currentStep === steps.length - 1 ? 'submit' : 'button'}
-                    onClick={() => {
-                      if (currentStep < steps.length - 1) {
-                        setCurrentStep((prev) => prev + 1);
-                      }
-                      // No need for else: submit handled by formik
-                    }}
+                    onClick={
+                    currentStep === steps.length - 1
+                      ? undefined // Let formik handle submit
+                      : () => {
+                          setCurrentStep((prev) => prev + 1);
+                        }
+                  }
                     isDisabled={areInputsDisabled}
                   className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                 />
               </div>
-            </form>
+            </form>         
 
-            {showFinalSubmit && <Submit href='/' />}
+<LocalSubmitModal
+  open={showFinalSubmit}
+  onClose={() => {
+    setShowFinalSubmit(false);
+    setTimeout(() => {
+      router.push('/');
+    }, 100);
+  }}
+/>
           </div>
         </div>
       </section>
@@ -1136,16 +1164,50 @@ const bedroomOptions = [
   { value: 'More', label: 'More' },
 ];
 
-// interface SelectProps {
-//   heading: string;
-//   placeholder?: string;
-//   options: string[];
-//   formik: any;
-//   allowMultiple?: boolean;
-//   label?: string;
-//   name?: string;
-//   isDisabled?: boolean;
-// }
+interface LocalSubmitModalProps {
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  subheader?: string;
+  buttonText?: string;
+}
+
+const LocalSubmitModal: React.FC<LocalSubmitModalProps> = ({
+  open,
+  onClose,
+  title = 'Successfully Submitted',
+  subheader = 'We will reach out to you soon',
+  buttonText = 'Home',
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => {
+    if (onClose) onClose();
+  });
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <motion.div
+        ref={ref}
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 20, opacity: 0 }}
+        className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full flex flex-col items-center"
+      >
+        <h2 className="text-2xl font-bold mb-2 text-center">{title}</h2>
+        <p className="text-base text-gray-600 mb-6 text-center">{subheader}</p>
+        <button
+          onClick={onClose}
+          className="bg-[#8DDB90] text-white font-bold py-3 px-8 rounded w-full"
+        >
+          {buttonText}
+        </button>
+      </motion.div>
+    </div>
+  );
+};
+
 
 // const Select: React.FC<SelectProps> = ({
 //   heading,
