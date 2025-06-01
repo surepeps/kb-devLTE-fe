@@ -14,9 +14,11 @@ import { featuresData } from '@/data/landlord';
 const Filter = ({
   closeModal,
   setPayloadFromFilter,
+  selectedType
 }: {
   closeModal: (type: boolean) => void;
   setPayloadFromFilter: (type: any) => void;
+   selectedType: string;
 }) => {
   const [radioValue, setRadioValue] = useState<string>('');
   const formik = useFormik({
@@ -144,6 +146,7 @@ const Filter = ({
         </div>
       </div>
       {/**Building Type */}
+      {selectedType === 'Buy a property' && (
       <SimilarComponent
         heading='Building Type'
         type='checkbox'
@@ -157,6 +160,7 @@ const Filter = ({
         selectedValues={buildingTypeValues}
         setSelectedValues={setBuildingTypeValues}
       />
+      )}
       {/**Document type */}
       <SimilarComponent
         heading='Document Type'

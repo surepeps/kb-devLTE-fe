@@ -95,6 +95,11 @@ const SearchModal = ({
 
   const router = useRouter();
 
+  const handleRemoveAllBriefs = () => {
+    setUniqueProperties(new Set());
+    setPropertiesSelected([]);
+  };
+
   // Sync local selection to context
   useEffect(() => {
     setSelectedBriefs(Array.from(uniqueProperties));
@@ -586,34 +591,43 @@ const SearchModal = ({
     toast.success('Property selected');
   };
 
-  useEffect(() => {
-    //update the payload whenever the propertiesSelected changes
-    const [a, b, c] = propertiesSelected.map((item) => item.location.state);
+    useEffect(() => {
+      // Only consider up to 2 selected briefs
+      const selected = propertiesSelected.slice(0, 2);
 
-    const uniqueStates = new Set([a, b, c]);
-    if (uniqueStates.size === 1) {
-      //All states are the same
-      setAddForInspectionPayload({
-        initialAmount: 10000,
-        toBeIncreaseBy: 0,
-        twoDifferentInspectionAreas: false,
-      });
-    } else if (uniqueStates.size === 2) {
-      //One is different
-      setAddForInspectionPayload({
-        initialAmount: 10000,
-        toBeIncreaseBy: 5000,
-        twoDifferentInspectionAreas: true,
-      });
-    } else if (uniqueStates.size === 3) {
-      //All are different
-      setAddForInspectionPayload({
-        initialAmount: 0,
-        toBeIncreaseBy: 0,
-        twoDifferentInspectionAreas: true,
-      });
-    }
-  }, [propertiesSelected]);
+      if (selected.length === 1) {
+        setAddForInspectionPayload({
+          initialAmount: 10000,
+          toBeIncreaseBy: 0,
+          twoDifferentInspectionAreas: false,
+        });
+      } else if (selected.length === 2) {
+        const [a, b] = selected.map((item) => item.location.localGovernment);
+        const uniqueLGAs = new Set([a, b]);
+        if (uniqueLGAs.size === 1) {
+          // Both briefs are from the same localGovernment
+          setAddForInspectionPayload({
+            initialAmount: 10000,
+            toBeIncreaseBy: 0,
+            twoDifferentInspectionAreas: false,
+          });
+        } else {
+          // Briefs are from different localGovernments
+          setAddForInspectionPayload({
+            initialAmount: 10000,
+            toBeIncreaseBy: 5000,
+            twoDifferentInspectionAreas: true,
+          });
+        }
+      } else {
+        // No briefs selected
+        setAddForInspectionPayload({
+          initialAmount: 0,
+          toBeIncreaseBy: 0,
+          twoDifferentInspectionAreas: false,
+        });
+      }
+    }, [propertiesSelected]);
 
   const is_mobile = IsMobile();
 
@@ -673,7 +687,9 @@ const SearchModal = ({
             setPropertiesSelected(Array.from(selectedBriefsList));
             setIsAddInspectionModalOpened(true);
           }}
+           setPropertiesSelected={setPropertiesSelected} 
           handleSearch={handleSearch}
+          onRemoveAllBriefs={handleRemoveAllBriefs} 
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>
