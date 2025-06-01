@@ -53,6 +53,21 @@ const  Card = ({
 
   //const isCardInView = useInView(cardRef, { once: false });
 
+      const getValidImageUrl = (url: string | StaticImport | undefined) => {
+      if (!url) return randomImage.src; // fallback image
+      if (typeof url === 'string') {
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        // If it looks like a cloudinary or external url but missing protocol, add https://
+        if (url.startsWith('www.')) return `https://${url}`;
+        // If it's a local image, ensure it starts with /
+        if (url.startsWith('/')) return url;
+        // fallback
+        return randomImage.src;
+      }
+      // If it's a StaticImport (local import), return as is
+      return url;
+    };
+
   useEffect(() => {
     if (count === 6) {
       setText('View less');
@@ -83,7 +98,8 @@ const  Card = ({
               <FontAwesomeIcon icon={faStarOfDavid} size='sm' />
             </div>
               <Image
-                src={Array.isArray(images) && images[0] ? images[0] : randomImage.src}
+                // src={Array.isArray(images) && images[0] ? images[0] : randomImage.src}
+                  src={getValidImageUrl(Array.isArray(images) && images[0] ? images[0] : undefined)}
                 alt=''
                 width={400}
                 height={200}

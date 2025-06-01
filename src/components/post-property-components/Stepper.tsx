@@ -30,12 +30,12 @@ const Stepper: React.FC<StepperProps> = ({ steps }) => {
 
           {/* Label */}
           {step.label && (
-            <span className={`ml-2 mr-4 text-base font-medium whitespace-nowrap 
-          ${
-            step.status === "completed"
-            ? "text-black"
-            : "text-[#A8ADB7]"
-          }`}>
+            <span
+              className={`ml-2 mr-4 text-base font-medium whitespace-nowrap
+                ${step.status === "completed" ? "text-black" : "text-[#A8ADB7]"}
+                hidden md:inline
+              `}
+            >
               {step.label}
             </span>
           )}
