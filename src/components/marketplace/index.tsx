@@ -76,7 +76,7 @@ const MarketPlace = () => {
           isAddForInspectionModalOpened={isAddForInspectionModalOpened}
         />
       ) : (
-        <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[20px]'>
+        <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[0px] md:px-[20px]'>
           {/**
            * Heading and the type of market place user wants to select
            */}

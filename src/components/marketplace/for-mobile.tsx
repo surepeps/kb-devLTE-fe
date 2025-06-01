@@ -169,7 +169,7 @@ const Mobile = ({
           </article>
         </div>
         <div
-          className='flex-1 overflow-y-auto'
+          className='flex-1 overflow-y-auto px-5'
           style={{ maxHeight: 'calc(100dvh - 180px)', marginBottom: '20px' }}>
           {selectedMarketPlace && renderBrief(onSelectBrief)}
         </div>
@@ -182,17 +182,19 @@ const Mobile = ({
           />
         )}
       </AnimatePresence>
-
-      <MobileSelectedBottomBar
-        selectedBriefs={selectedBriefs}
-        selectedBriefsList={Array.from(selectedBriefsList)}
-        onViewBrief={() => {
-          console.log('View Briefs', selectedBriefsList);
-        }}
-        onSubmitForInspection={() => {
-          onSubmitForInspection(selectedBriefsList);
-        }}
-      />
+      
+{selectedBriefs > 0 && (
+  <MobileSelectedBottomBar
+    selectedBriefs={selectedBriefs}
+    selectedBriefsList={Array.from(selectedBriefsList)}
+    onViewBrief={() => {
+      console.log('View Briefs', selectedBriefsList);
+    }}
+    onSubmitForInspection={() => {
+      onSubmitForInspection(selectedBriefsList);
+    }}
+  />
+)}
     </Fragment>
   );
 };
