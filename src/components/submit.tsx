@@ -18,6 +18,7 @@ interface SubmitPopUpProps {
   buttonText?: string;
   href?: string;
   onClick?: () => void;
+  onClose?: () => void;
 }
 
 const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
@@ -26,11 +27,14 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
   buttonText = 'Home',
   href = '/',
   onClick,
+   onClose, 
 }) => {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const { setIsSubmittedSuccessfully } = usePageContext();
-  useClickOutside(ref, () => setIsSubmittedSuccessfully(false)); // Close modal on outside click
+  useClickOutside(ref, () => {
+     if (onClose) onClose();
+}); // Close modal on outside click
   return (
     // <motion.section className='w-full h-screen flex justify-center items-center fixed top-0 z-40 px-[20px] bg-black bg-opacity-50'>
 
@@ -65,7 +69,7 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
             href={href}
             onClick={(e) => {
               e.preventDefault(); // Prevent default navigation
-              // Invoke onClick to close modal
+              if (onClose) onClose();
               router.push(href);
               //window.location.href = href;
             }}
