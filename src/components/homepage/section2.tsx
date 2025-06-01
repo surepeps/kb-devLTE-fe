@@ -17,6 +17,7 @@ import { Trio } from 'ldrs/react';
 import { epilogue } from '@/styles/font';
 import { shuffleArray } from '@/utils/shuffleArray';
 import axios from 'axios';
+import { GET_REQUEST } from '@/utils/requests';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -175,33 +176,60 @@ const Section2 = () => {
   }
 };
 
-  useEffect(() => {
-  const briefType = getBriefType(selectedMarketPlace);
-  const url = `${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
+//   useEffect(() => {
+//   const briefType = getBriefType(selectedMarketPlace);
+//   const url = `${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(url);
-      if (response.status !== 200) throw new Error('Failed to fetch data');
-      const data = response.data.data;
-      setProperties(shuffleArray(data).slice(0, 4));
-      setCardData(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+//   const fetchData = async () => {
+//     setIsLoading(true);
+//     try {
+//       const response = await axios.get(url);
+//       if (response.status !== 200) throw new Error('Failed to fetch data');
+//       const data = response.data.data;
+//       setProperties(shuffleArray(data).slice(0, 4));
+//       setCardData(data);
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   fetchData();
+// }, [selectedMarketPlace, setCardData]);
+
+useEffect(() => {
+  const briefType = getBriefType(selectedMarketPlace);
+  const url = `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
+
+const fetchData = async () => {
+  setIsLoading(true);
+  try {
+    const data = await GET_REQUEST(url); // NOT response.data
+    console.log("data on homepage", data);
+    if (Array.isArray(data.data)) {
+      setProperties(shuffleArray(data.data).slice(0, 4));
+      setCardData(data.data);
+    } else {
+      setProperties([]);
+      setCardData([]);
+      console.error("API returned data.data that is not an array:", data.data);
     }
-  };
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   fetchData();
 }, [selectedMarketPlace, setCardData]);
 
-  useEffect(() => {
-    fetchPropertyInsightData();
+  // useEffect(() => {
+  //   fetchPropertyInsightData();
 
-    return () => {};
-  }, [setCardData]);
+  //   return () => {};
+  // }, [setCardData]);
 
   return (
     <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
@@ -249,7 +277,7 @@ const Section2 = () => {
                 button3: false,
                 button4: false,
               });
-              fetchAllRentProperties();
+              setSelectedMarketPlace('Buy a property');
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[168px] ${
               buttons.button2 ? '' : 'text-[#5A5D63]'
@@ -265,7 +293,7 @@ const Section2 = () => {
                 button3: true,
                 button4: false,
               });
-              fetchAllRentProperties();
+              setSelectedMarketPlace('Rent/Lease a property');
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[200px] ${
               buttons.button3 ? '' : 'text-[#5A5D63] '
@@ -281,7 +309,7 @@ const Section2 = () => {
                 button3: false,
                 button4: true,
               });
-              fetchAllRentProperties();
+              setSelectedMarketPlace('Find property for joint venture');
             }}
             className={`border-[1px] h-[38px] md:h-[initial] md:py-[15px] md:px-[24px] text-[12px] text-xs md:text-[14px] transition-all duration-500 border-[#D6DDEB] w-[105px] md:min-w-[220px] ${
               buttons.button4 ? '' : 'text-[#5A5D63] '
@@ -320,7 +348,7 @@ const Section2 = () => {
                     },
                     {
                       header: 'Bedrooms',
-                      value: property?.propertyFeatures?.noOfBedrooms || 'N/A',
+                      value: property?.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',
@@ -328,12 +356,26 @@ const Section2 = () => {
                         property?.location?.localGovernment || 'N/A'
                       }`,
                     },
-                    {
+                    // {
+                    //   header: 'Documents',
+                    //   value: `<div>${property?.docOnProperty?.map(
+                    //     (item: { _id: string; docName: string }) =>
+                    //       `<span key={${item._id}>${item.docName}</span>`
+                    //   )}</div>`,
+                    // },
+                      {
                       header: 'Documents',
-                      value: `<div>${property?.docOnProperty?.map(
-                        (item: { _id: string; docName: string }) =>
-                          `<span key={${item._id}>${item.docName}</span>`
-                      )}</div>`,
+                      value: (
+                        <div>
+                          {property?.docOnProperty?.map(
+                            (item: { _id: string; docName: string }) => (
+                              <span key={item._id} style={{ marginRight: 8 }}>
+                                {item.docName}
+                              </span>
+                            )
+                          )}
+                        </div>
+                      ),
                     },
                   ]}
                   key={idx}
