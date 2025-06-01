@@ -48,13 +48,13 @@ const VerifyEmail = () => {
                   {userEmail}
                 </span>{' '}
                 Click it to complete your signup.
-                <br /> Didn&apos;t get it? Check your email or{' '}
-                <span
+                {/* <br /> Didn&apos;t get it? Check your email or{' '} */}
+                {/* <span
                   onClick={() => setIsEditEmailOpened(!isEditEmailModalOpened)}
                   className='text-base md:text-xl text-[#09391C] font-bold underline cursor-pointer'>
                   Edit Email
                 </span>
-                .
+                . */}
               </p>
             </div>
           </div>

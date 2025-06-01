@@ -755,7 +755,7 @@ const Landlord = () => {
           <div className='my-7'>
             <Stepper steps={steps} />
           </div>
-          <h2 className='text-[#0B0D0C] lg:text-[24px] font-semibold text-center text-[30px]'>
+          <h2 className='text-[#0B0D0C] lg:text-[24px] font-semibold text-center text-[18px]'>
             {currentStep === 1
               ? 'Contact information'
               : 'Enter the property you are looking for'}
@@ -770,38 +770,51 @@ const Landlord = () => {
             >
               {currentStep === 0 ? (
                 <div className='flex items-center justify-center w-full'>
-                  <div className='flex flex-wrap gap-[20px]'>
-                    {[
-                      'Buy a property',
-                      'Find property for joint ventures',
-                      'Rent/Lease a property',
-                    ].map((item: string, idx: number) => (
-                      <button
-                        type='button'
-                        onClick={() => {
-                          setSelectedProperty(item);
-                            formik.resetForm({
-                            values: {
-                              ...formik.initialValues,
-                              propertyType: 'Residential',
-                            },
-                          });
-                          setPrices({ minPrice: '', maxPrice: '' });
-                          setArea('');
-                          setBathroom('');
-                          setSelectedState(null);
-                          setSelectedLGA(null);
-                        }}
-                        className={`${
-                          item === selectedProperty
-                            ? 'bg-[#8DDB90] font-medium text-[#FFFFFF]'
-                            : 'bg-transparent font-normal text-[#5A5D63]'
-                        } h-[51px] min-w-fit border-[1px] border-[#C7CAD0] text-lg px-[25px]`}
-                        key={idx}>
-                        {item}
-                      </button>
-                    ))}
-                  </div>
+ <div className="flex flex-wrap gap-[10px] md:gap-[20px]">
+  {[
+    'Buy a property',
+    'Find property for joint ventures',
+    'Rent/Lease a property',
+  ].map((item: string, idx: number) => (
+    <button
+      type="button"
+      onClick={() => {
+        setSelectedProperty(item);
+        formik.resetForm({
+          values: {
+            ...formik.initialValues,
+            propertyType: 'Residential',
+          },
+        });
+        setPrices({ minPrice: '', maxPrice: '' });
+        setArea('');
+        setBathroom('');
+        setSelectedState(null);
+        setSelectedLGA(null);
+      }}
+      className={`${
+        item === selectedProperty
+          ? 'bg-[#8DDB90] font-medium text-[#FFFFFF]'
+          : 'bg-transparent font-normal text-[#5A5D63]'
+      } h-[40px] md:h-[51px] min-w-fit border-[1px] border-[#C7CAD0] text-[12px] md:text-lg px-[10px] md:px-[25px]`}
+      key={idx}
+    >
+    {item === 'Rent/Lease a property' ? (
+      <>
+        <span className="block md:hidden">Rent a property</span>
+        <span className="hidden md:block">Rent/Lease a property</span>
+      </>
+    ) : item === 'Find property for joint ventures' ? (
+      <>
+        <span className="block md:hidden">Joint ventures</span>
+        <span className="hidden md:block">Find property for joint ventures</span>
+      </>
+    ) : (
+      item
+    )}
+    </button>
+  ))}
+</div>
                 </div>
               ) : null}
               {currentStep === 0 && (
