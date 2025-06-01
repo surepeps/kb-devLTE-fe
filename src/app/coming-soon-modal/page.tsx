@@ -13,7 +13,7 @@ function getNextSunday4pmTimestamp() {
 
   const target = new Date(now);
   target.setDate(now.getDate() + daysUntilSunday);
-  target.setHours(17, 30, 0, 0); 
+  target.setHours(16, 0, 0, 0);
 
   return target.getTime();
 }
