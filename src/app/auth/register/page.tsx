@@ -136,7 +136,7 @@ const Register = () => {
 onSuccess: async (codeResponse: any) => {
   const url = URLS.BASE + URLS.user + URLS.googleSignup;
 
-  await POST_REQUEST(url, { idToken: codeResponse.code, userType }).then(async (response) => {
+  await POST_REQUEST(url, { code: codeResponse.code, userType }).then(async (response) => {
     if ((response as any).id) {
       Cookies.set('token', (response as any).token);
       setUser((response as any).user);
