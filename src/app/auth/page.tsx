@@ -7,6 +7,7 @@ import googleIcon from '@/svgs/googleIcon.svg';
 import Button from '@/components/general-components/button';
 import Link from 'next/link';
 import { usePageContext } from '@/context/page-context';
+import { useUserContext } from '@/context/user-context';
 import { useLoading } from '@/hooks/useLoading';
 import Loading from '@/components/loading-component/loading';
 import '@/styles/stylish.modules.css';
@@ -18,11 +19,14 @@ import { useRouter } from 'next/navigation';
 import { URLS } from '@/utils/URLS';
 import { POST_REQUEST } from '@/utils/requests';
 
+import toast from 'react-hot-toast';
+
 const Register = () => {
   const { isContactUsClicked, rentPage, isModalOpened } = usePageContext();
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
   const [hideLandownerText, setHideLandownerText] = useState(false);
   const isLoading = useLoading();
+  const { setUser, user } = useUserContext();
 
   const router = useRouter();
 
@@ -44,26 +48,34 @@ const Register = () => {
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
-      console.log(codeResponse);
-      const url = URLS.BASE + URLS.agent + URLS.googleSignup;
+    onSuccess: async (codeResponse: any) => {
+      const url = URLS.BASE + URLS.user + URLS.googleSignup;
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(
-        async (response) => {
-          if ((response as unknown as { id: string }).id) {
-            Cookies.set(
-              'token',
-              (response as unknown as { token: string }).token
-            );
+      await POST_REQUEST(url, { code: codeResponse.code, userType: selectedUserType }).then(async (response) => {
+        if ((response as any).id) {
+          Cookies.set('token', (response as any).token);
+          setUser((response as any).user);
 
+          // Use email from response, not formik
+          localStorage.setItem('email', (response as any).user?.email || '');
+
+          toast.success('Registration successful');
+
+          // Navigate based on user type
+          if ((response as any).user?.userType === 'Agent') {
             router.push('/agent/onboard');
+          } else {
+            router.push('/my_listing');
           }
-          console.log('response', response);
         }
-      );
+        if (response.error) {
+          toast.error(response.error);
+        }
+      });
     },
-    onError: (errorResponse) => console.error(errorResponse),
+    onError: (errorResponse: any) => toast.error(errorResponse.message),
   });
+
 
   if (isLoading) return <Loading />;
 

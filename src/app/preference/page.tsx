@@ -815,7 +815,7 @@ const Landlord = () => {
     </button>
   ))}
 </div>
-                </div>
+          </div>
               ) : null}
               {currentStep === 0 && (
                 <div className='min-h-[629px] py-[40px] lg:px-[80px]  w-full'>
