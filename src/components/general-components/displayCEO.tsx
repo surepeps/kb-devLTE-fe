@@ -1,6 +1,10 @@
 /** @format */
 
+'use client';
 import React, { FC } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import oladipoImage from '@/assets/Oladipo.png';
 
 interface ClientProps {
   name: string;
@@ -11,8 +15,19 @@ interface ClientProps {
 
 const CEO: FC<ClientProps> = ({ name, text, title }) => {
   return (
-    <div className='lg:w-[1007px] w-full flex md:flex-row flex-col gap-[15px] lg:gap-[60px] md:items-center'>
-      <div className='md:w-[306px] w-[100%] h-[268px] bg-[#D9D9D9]'></div>
+    <motion.div
+      initial={{ x: 30, opacity: 0 }}
+      whileInView={{ x: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.2 }}
+      exit={{ x: 30, opacity: 0 }}
+      className='lg:w-[1007px] w-full flex md:flex-row flex-col gap-[15px] lg:gap-[60px] md:items-center'>
+      <Image
+        src={oladipoImage}
+        alt={'Oladipo Onakoya'}
+        title='Oladipo Onakoya, CEO/Founder'
+        className='md:w-[306px] w-[100%] h-[308px] bg-[#D9D9D9] object-cover object-bottom'
+      />
       <div className='min-h-[157px] w-full lg:w-[562px] flex flex-col gap-[15px]'>
         <h2 className='lg:text-[36px] text-[20px] leading-[22px] lg:leading-[39px] text-[#09391C]'>
           {name}
@@ -24,7 +39,7 @@ const CEO: FC<ClientProps> = ({ name, text, title }) => {
           {text}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
