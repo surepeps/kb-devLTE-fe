@@ -16,7 +16,7 @@ import Homepage from '@/app/homepage/page';
 import Countdown from './coming-soon-modal/page';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
-const SHOW_COMING_SOON = false;
+const SHOW_COMING_SOON = true;
 
 export const metadata: Metadata = {
   title: 'Khabiteq',
