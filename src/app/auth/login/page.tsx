@@ -103,7 +103,6 @@ const Login = () => {
 
               if ((response as any)?.user?.id) {
 
-
                 if (response.user.userType === 'Agent') {
                   if (!response.user.agentData?.agentType) {
                     router.push('/agent/onboard');
@@ -156,8 +155,6 @@ const Login = () => {
               'token',
               (response as unknown as { token: string }).token
             );
-            // console.log('response', response);
-            // console.log('response Data', response.data);
 
             const user = {
               firstName: response?.user?.firstName,
