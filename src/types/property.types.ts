@@ -1,24 +1,36 @@
-/** @format */
-
 export type PropertyProps = {
   propertyId: string;
-  _id?: string;
-  id?: string;
   price: number;
   propertyType: string;
   bedRoom: number;
-  noOfBedrooms?: number;
   propertyStatus: string;
   location: {
     state: string;
     localGovernment: string;
     area: string;
   };
+  landSize: {
+    measurementType: string;
+    size: number | null;
+  };
+  additionalFeatures: {
+    additionalFeatures: string[];
+  };
+  features: string[];
   tenantCriteria: { _id: string; criteria: string }[];
-  docOnProperty: string[];
+  areYouTheOwner: boolean;
+  isAvailable: boolean | string;
+  isApproved?: boolean;
+  isRejected?: boolean;
+  isPreference?: boolean;
+  isPremium?: boolean;
   pictures: string[];
   createdAt: string;
-  owner: string;
   updatedAt: string;
-  isAvailable: boolean;
+  owner: string;
+  docOnProperty: { isProvided: boolean; _id: string; docName: string }[];
+  briefType?: string;
+  propertyCondition?: string;
+  _id?: string;
+  __v?: number;
 };

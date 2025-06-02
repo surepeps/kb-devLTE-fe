@@ -44,6 +44,7 @@ export interface GlobalContextTypes {
     usageOptions: string[];
     price: string | number;
     documents: string[];
+    docOnProperty: Array<string | { isProvided: boolean; _id: string; docName: string }>;
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
@@ -54,6 +55,7 @@ export interface GlobalContextTypes {
     usageOptions: string[];
     price: string | number;
     documents: string[];
+    docOnProperty: [], 
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;

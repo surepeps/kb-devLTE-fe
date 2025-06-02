@@ -61,8 +61,7 @@ const Register = () => {
           Register
         </h2>
         <div className='w-full min-h-[237px] flex flex-col justify-center items-center gap-[19px]'>
-          <div className='min-h-[147px] flex flex-col gap-[22px] w-full'>
-            {/**Google | Facebook */}
+          {/* <div className='min-h-[147px] flex flex-col gap-[22px] w-full'>
             <div className='flex justify-between lg:flex-row flex-col gap-[23px]'>
               <RegisterWith
                 icon={googleIcon}
@@ -71,7 +70,6 @@ const Register = () => {
               />
               <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
             </div>
-            {/**Register Via E-mails or phone */}
             <Button
               type='button'
               value='Register Via E-mails or phone'
@@ -80,7 +78,7 @@ const Register = () => {
               }}
               className='bg-[#8DDB90] h-[65px] w-full py-[12px] px-[24px] text-[16px] leading-[25.6px] font-bold text-[#FAFAFA]'
             />
-          </div>
+          </div> */}
           <span className='text-base text-center leading-[25.6px] font-normal'>
             Already have an account?{' '}
             <Link
