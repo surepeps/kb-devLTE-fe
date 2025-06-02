@@ -280,6 +280,7 @@ const SearchModal = ({
                   setPropertySelected={setPropertiesSelected}
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                  isPremium={property?.isPremium}
                   property={property}
                   onCardPageClick={() => {
                     const selectedBriefsParam = encodeURIComponent(
@@ -339,6 +340,7 @@ const SearchModal = ({
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   property={property}
+                  isPremium={property?.isPremium}
                   onCardPageClick={() => {
                     router.push(`/property/${type}/${property._id}`);
                   }}
@@ -396,6 +398,7 @@ const SearchModal = ({
                   cardData={[]}
                   images={[]}
                   property={property}
+                  isPremium={property?.isPremium}
                   properties={properties}
                   isAddInspectionalModalOpened={isAddForInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
@@ -457,6 +460,7 @@ const SearchModal = ({
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   property={property}
+                  isPremium={property?.isPremium}
                   onCardPageClick={() => {
                     router.push(`/property/Rent/${property._id}`);
                   }}
@@ -505,6 +509,7 @@ const SearchModal = ({
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
                   images={property?.pictures}
                   property={property}
+                  isPremium={property?.isPremium}
                   setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
                   isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
