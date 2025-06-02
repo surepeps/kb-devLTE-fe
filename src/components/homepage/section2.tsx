@@ -269,6 +269,7 @@ const Section2 = () => {
                 <Card
                   isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   images={property?.pictures}
+                  isPremium={property?.isPremium}
                   onClick={() => {
                     handleSubmitInspection(property);
                   }}
