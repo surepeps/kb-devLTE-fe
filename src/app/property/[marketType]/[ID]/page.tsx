@@ -464,7 +464,7 @@ const ProductDetailsPage = () => {
                         />
                         <BoxContainer
                           heading='Property Title'
-                          subHeading={details.propertyType || '-'}
+                          subHeading={'Nil'}
                         />
                         <BoxContainer
                           heading='Price'
@@ -476,11 +476,11 @@ const ProductDetailsPage = () => {
                         />
                         <BoxContainer
                           heading='List Type'
-                          subHeading={details.briefType || '-'}
+                          subHeading={details.briefType || 'Nil'}
                         />
                         <BoxContainer
                           heading='Property Condition'
-                          subHeading={details.propertyStatus || '-'}
+                          subHeading={details.propertyStatus || 'Nil'}
                         />
                           <BoxContainer
                           heading='Bedrooms'
