@@ -192,7 +192,6 @@ const Sell = () => {
       }
       setSelectedLGA?.(null);
     } else {
-      console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
@@ -215,7 +214,7 @@ const getStepRequiredFields = (step: number) => {
 
   const formik = useFormik({
     initialValues: {
-      propertyType: '',
+      propertyType: 'Residential',
       propertyCondition: '',
       typeOfBuilding: '',
       // usageOptions: [] as string[],
