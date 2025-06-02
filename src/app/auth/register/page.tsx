@@ -286,10 +286,10 @@ onSuccess: async (codeResponse: any) => {
             </Link>
           </span>
           {/**Google | Facebook */}
-          <div className="flex justify-between lg:flex-row flex-col gap-[15px] w-full">
+          {/* <div className="flex justify-between lg:flex-row flex-col gap-[15px] w-full">
             <RegisterWith icon={googleIcon} text="Continue with Google" onClick={googleLogin} />
             <RegisterWith icon={facebookIcon} text="Continue with Facebook" />
-          </div>
+          </div> */}
         </form>
       </div>
     </section>

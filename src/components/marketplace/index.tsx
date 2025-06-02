@@ -45,17 +45,21 @@ const MarketPlace = () => {
 
   useEffect(() => {
     if (propertySelectedForInspection) {
-      setPropertiesSelected([
-        {
-          ...propertySelectedForInspection,
-          _id: propertySelectedForInspection.propertyId,
-          price: propertySelectedForInspection.price,
-          propertyType: propertySelectedForInspection.propertyType,
-          noOfBedrooms: propertySelectedForInspection.bedRoom,
-          location: propertySelectedForInspection.location,
-          docOnProperty: [],
-        },
-      ]);
+    setPropertiesSelected([
+      {
+        ...propertySelectedForInspection,
+        _id: propertySelectedForInspection.propertyId,
+        price: propertySelectedForInspection.price,
+        propertyType: propertySelectedForInspection.propertyType,
+        noOfBedrooms: propertySelectedForInspection.bedRoom,
+        location: propertySelectedForInspection.location,
+        docOnProperty: Array.isArray(propertySelectedForInspection.docOnProperty)
+          ? (propertySelectedForInspection.docOnProperty as Array<string | { docName: string }>).map(doc =>
+              typeof doc === 'string' ? doc : doc.docName
+            )
+          : [],
+      },
+    ]);
     }
   }, [propertySelectedForInspection]);
 

@@ -348,7 +348,7 @@ const fetchData = async () => {
                     },
                     {
                       header: 'Bedrooms',
-                      value: property?.noOfBedrooms || 'N/A',
+                      value: property?.additionalFeatures.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',

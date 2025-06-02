@@ -310,7 +310,7 @@ const SearchModal = ({
                     },
                     {
                       header: 'Bedrooms',
-                      value: property.propertyFeatures?.noOfBedrooms || 'N/A',
+                      value: property.additionalFeatures?.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',
@@ -361,7 +361,7 @@ const SearchModal = ({
                     },
                     {
                       header: 'Bedrooms',
-                      value: property.propertyFeatures?.noOfBedrooms || 'N/A',
+                      value: property.additionalFeatures?.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',
