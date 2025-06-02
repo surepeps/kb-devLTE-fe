@@ -276,14 +276,14 @@ const Login = () => {
               </button>
             </p>
             {/**Google | Facebook */}
-            <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
+            {/* <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
               <RegisterWith
                 icon={googleIcon}
                 text='Continue with Google'
                 onClick={googleLogin}
               />
               <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
-            </div>
+            </div> */}
           </form>
         ) : (
           <form

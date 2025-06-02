@@ -335,6 +335,7 @@ const DetailsToCheck: FC<DetailsToCheckProps> = ({
                     selectedCity: { value: '', label: '' },
                     usageOptions: ['C of Document', 'Lorem ipsum'],
                     documents: ['C of Document', 'Lorem ipsum'],
+                    docOnProperty: [],
                     noOfBedroom: '5',
                     additionalFeatures: '',
                   });

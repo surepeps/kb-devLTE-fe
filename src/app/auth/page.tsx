@@ -120,14 +120,14 @@ const Register = () => {
                 bgColor={selectedUserType === 'agent' ? '#8DDB90' : ''}
               />
             </div>
-            <div className='flex justify-between lg:flex-row flex-col gap-[23px] mt-5'>
+            {/* <div className='flex justify-between lg:flex-row flex-col gap-[23px] mt-5'>
               <RegisterWith
                 icon={googleIcon}
                 text='Continue with Google'
                 onClick={googleLogin}
               />
               <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
-            </div>
+            </div> */}
             {/**Register Via E-mails or phone */}
             <Button
               type='button'

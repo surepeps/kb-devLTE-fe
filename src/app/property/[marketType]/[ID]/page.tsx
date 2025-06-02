@@ -57,15 +57,34 @@ interface DetailsProps {
     localGovernment: string;
     area: string;
   };
+  landSize: {
+    measurementType: string;
+    size: number | null;
+  };
+   additionalFeatures: {
+    additionalFeatures: string[];
+    noOfBedrooms?: number;
+    noOfBathrooms?: number;
+    noOfToilets?: number;
+    noOfCarParks?: number;
+  };
+  features: string[];
   tenantCriteria: { _id: string; criteria: string }[];
+  areYouTheOwner: boolean;
+  isAvailable: boolean | string;
+  isApproved?: boolean;
+  isRejected?: boolean;
+  isPreference?: boolean;
+  isPremium?: boolean;
   pictures: string[];
   createdAt: string;
-  owner: string;
   updatedAt: string;
-  isAvailable: boolean;
-  docOnProperty: string[];
+  owner: string;
+  docOnProperty: { isProvided: boolean; _id: string; docName: string }[];
+  briefType?: string;
+  propertyCondition?: string;
   _id?: string;
-  id?: string;
+  __v?: number;
 }
 
 interface FormProps {
@@ -95,32 +114,47 @@ const ProductDetailsPage = () => {
   // const selectedBriefsList = JSON.parse(searchParams.get('selectedBriefs') || '[]');
   // const selectedBriefs = selectedBriefsList.length;
 
-  console.log('Selected Briefs:', selectedBriefs);
-
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
     usePageContext();
   const [scrollPosition, setScrollPosition] = useState(0);
   const isLoading = useLoading();
-  const [details, setDetails] = useState<DetailsProps>({
-    price: 0,
-    propertyType: '',
-    bedRoom: 0,
-    propertyStatus: '',
-    location: {
-      state: '',
-      localGovernment: '',
-      area: '',
-    },
-    tenantCriteria: [],
-    pictures: [],
-    propertyId: '',
-    createdAt: '',
-    owner: '',
-    updatedAt: '',
-    isAvailable: false,
-    docOnProperty: [],
-  });
+ const [details, setDetails] = useState<DetailsProps>({
+  propertyId: '',
+  price: 0,
+  propertyType: '',
+  bedRoom: 0,
+  propertyStatus: '',
+  location: {
+    state: '',
+    localGovernment: '',
+    area: '',
+  },
+  landSize: {
+    measurementType: '',
+    size: null,
+  },
+  additionalFeatures: {
+    additionalFeatures: [],
+  },
+  features: [],
+  tenantCriteria: [],
+  areYouTheOwner: false,
+  isAvailable: false,
+  isApproved: false,
+  isRejected: false,
+  isPreference: false,
+  isPremium: false,
+  pictures: [],
+  createdAt: '',
+  updatedAt: '',
+  owner: '',
+  docOnProperty: [],
+  briefType: '',
+  propertyCondition: '',
+  _id: '',
+  __v: 0,
+});
   const [featureData, setFeatureData] = useState<
     { _id: string; featureName: string }[]
   >([]);
@@ -273,10 +307,14 @@ const ProductDetailsPage = () => {
         const res = await axios.get(URLS.BASE + URLS.getOneProperty + id);
         if (res.status === 200) {
           if (typeof res.data === 'object') {
-            setDetails({
+         setDetails({
               price: res.data.price,
               propertyType: res.data.propertyType,
-              bedRoom: res.data.bedRoom || res.data.noOfBedrooms || 0,
+              bedRoom:
+                res.data.bedRoom ||
+                res.data.noOfBedrooms ||
+                res.data.additionalFeatures?.noOfBedrooms ||
+                0,
               propertyStatus: res.data.propertyCondition || '',
               location: res.data.location,
               tenantCriteria: res.data.tenantCriteria || [],
@@ -291,6 +329,24 @@ const ProductDetailsPage = () => {
               isAvailable:
                 res.data.isAvailable === 'yes' || res.data.isAvailable === true,
               docOnProperty: res.data.docOnProperty || [],
+              landSize: res.data.landSize || { measurementType: '', size: null },
+              additionalFeatures: {
+                additionalFeatures: res.data.additionalFeatures?.additionalFeatures || [],
+                noOfBedrooms: res.data.additionalFeatures?.noOfBedrooms || 0,
+                noOfBathrooms: res.data.additionalFeatures?.noOfBathrooms || 0,
+                noOfToilets: res.data.additionalFeatures?.noOfToilets || 0,
+                noOfCarParks: res.data.additionalFeatures?.noOfCarParks || 0,
+              },
+              features: res.data.features || [],
+              areYouTheOwner: res.data.areYouTheOwner ?? false,
+              isApproved: res.data.isApproved ?? false,
+              isRejected: res.data.isRejected ?? false,
+              isPreference: res.data.isPreference ?? false,
+              isPremium: res.data.isPremium ?? false,
+              briefType: res.data.briefType || '',
+              propertyCondition: res.data.propertyCondition || '',
+              _id: res.data._id || '',
+              __v: res.data.__v || 0,
             });
             setFeatureData(
               Array.isArray(res.data.features)
@@ -396,15 +452,55 @@ const ProductDetailsPage = () => {
                       <div className='w-full min-h-[152px] grid grid-cols-2 md:grid-cols-3 gap-[10px]'>
                         <BoxContainer
                           heading='Property Type'
-                          subHeading={details.propertyType}
+                          subHeading={details.propertyType || '-'}
                         />
                         <BoxContainer
                           heading='Location'
-                          subHeading={`${details.location.state}, ${details.location.localGovernment}`}
+                          subHeading={
+                            (details.location.state && details.location.localGovernment)
+                              ? `${details.location.state}, ${details.location.localGovernment}`
+                              : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Property Title'
+                          subHeading={details.propertyType || '-'}
                         />
                         <BoxContainer
                           heading='Price'
-                          subHeading={Number(details.price).toLocaleString()}
+                          subHeading={
+                            details.price !== undefined && details.price !== null
+                              ? Number(details.price).toLocaleString()
+                              : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='List Type'
+                          subHeading={details.briefType || '-'}
+                        />
+                        <BoxContainer
+                          heading='Property Condition'
+                          subHeading={details.propertyStatus || '-'}
+                        />
+                          <BoxContainer
+                          heading='Bedrooms'
+                          subHeading={
+                            (details.additionalFeatures?.noOfBedrooms && details.additionalFeatures.noOfBedrooms > 0)
+                              ? details.additionalFeatures.noOfBedrooms.toString()
+                              : (details.bedRoom && details.bedRoom > 0)
+                                ? details.bedRoom.toString()
+                                : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Land Size'
+                          subHeading={
+                            details.landSize && details.landSize.size !== null && details.landSize.size !== undefined
+                              ? details.landSize.measurementType
+                                ? `${details.landSize.size} ${details.landSize.measurementType}`
+                                : details.landSize.size.toString()
+                              : '-'
+                          }
                         />
                       </div>
                     </div>
