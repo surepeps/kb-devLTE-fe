@@ -183,11 +183,7 @@ import {
   StaticImport,
 } from 'next/dist/shared/lib/get-img-props';
 
-const ViewImage = ({
-  imageData,
-}: {
-  imageData: StaticImageData[] | string[];
-}) => {
+const ViewImage = ({ imageData }: { imageData: StaticImport[] | string[] }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const { setViewImage, viewImage } = usePageContext();
   const ref = useRef<HTMLDivElement>(null);
@@ -276,11 +272,11 @@ const ViewImage = ({
           } justify-start items-center mt-0 md:mt-10 lg:mt-0 overflow-x-scroll px-[10px] md:px-0`}>
           {imageData.length > 0 ? (
             imageData.map((image, idx: number) => {
-              const src = typeof image === 'string' ? image : image?.src;
+              // const src = typeof image === 'string' ? image : image?.src;
               return (
                 <div key={idx}>
                   <Image
-                    src={src}
+                    src={image}
                     width={1000}
                     height={1000}
                     alt={`Uploaded image ${idx + 1}`}
