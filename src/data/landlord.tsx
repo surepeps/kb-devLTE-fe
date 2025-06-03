@@ -13,6 +13,7 @@ export const featuresData: string[] = [
   'Bath Tub',
   'Balconies',
   'Spacious Dining Area',
+  'With Furnitures'
 ];
 
 export const tenantCriteriaData: string[] = [

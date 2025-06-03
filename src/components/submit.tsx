@@ -18,6 +18,7 @@ interface SubmitPopUpProps {
   buttonText?: string;
   href?: string;
   onClick?: () => void;
+  onClose?: () => void;
 }
 
 const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
@@ -26,11 +27,14 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
   buttonText = 'Home',
   href = '/',
   onClick,
+   onClose, 
 }) => {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
-  const { setIsSubmittedSuccessfully } = usePageContext();
-  useClickOutside(ref, () => setIsSubmittedSuccessfully(false)); // Close modal on outside click
+  // const { setIsSubmittedSuccessfully } = usePageContext();
+  useClickOutside(ref, () => {
+     if (onClose) onClose();
+}); // Close modal on outside click
   return (
     // <motion.section className='w-full h-screen flex justify-center items-center fixed top-0 z-40 px-[20px] bg-black bg-opacity-50'>
 
@@ -62,12 +66,16 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
             className='h-[121.88px] w-[121.88px]'
           />
           <Link
-            href={href}
-            onClick={(e) => {
-              e.preventDefault(); // Prevent default navigation
-              // Invoke onClick to close modal
-              router.push(href);
-              //window.location.href = href;
+            href="#"
+            // onClick={(e) => {
+            //   e.preventDefault(); // Prevent default navigation
+            //   if (onClose) onClose();
+            //   router.push(href);
+            //   //window.location.href = href;
+            // }}
+              onClick={(e) => {
+              e.preventDefault();
+              if (onClose) onClose();
             }}
             className={`min-h-[57px] w-full rounded-[5px] py-[14px] px-[27px] gap-[10px] bg-[#8DDB90] text-white text-[18px] leading-[28.8px] font-bold text-center text-whitespace-nowrap ${product_sans.className}`}>
             {buttonText}

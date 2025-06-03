@@ -87,6 +87,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = (callback?: () => void) => {
+    console.log('Logging out...');
     Cookies.remove('token');
     setUser(null);
     router.push('/auth/login');

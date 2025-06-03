@@ -11,10 +11,7 @@ export type SubmitInspectionPayloadProp = {
     email: string;
   };
   transaction: {
-    bank: string;
-    accountNumber: string;
-    accountName: string;
-    transactionReference: string;
+    fullName: string;
     transactionReceipt: string;
   };
   isNegotiating: boolean;

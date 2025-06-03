@@ -53,7 +53,7 @@ const RentSearchModal = ({
       selectedState: '',
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
   const router = useRouter();
@@ -83,7 +83,7 @@ const RentSearchModal = ({
       maxPrice: 0,
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
