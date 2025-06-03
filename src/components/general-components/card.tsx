@@ -10,7 +10,7 @@ import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { motion } from 'framer-motion';
 import randomImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStarOfDavid } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faStarOfDavid } from '@fortawesome/free-solid-svg-icons';
 import markerSVG from '@/svgs/marker.svg';
 interface CardDataProps {
   isRed?: boolean;
@@ -30,7 +30,7 @@ interface CardDataProps {
   setIsComingFromPriceNeg?: (type: boolean) => void;
 }
 
-const  Card = ({
+const Card = ({
   isRed,
   cardData,
   onClick,
@@ -45,6 +45,7 @@ const  Card = ({
   isComingFromPriceNeg,
   setIsComingFromPriceNeg,
   isAddForInspectionModalOpened,
+  isPremium,
 }: CardDataProps) => {
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>('View more');
@@ -89,26 +90,29 @@ const  Card = ({
         <div className='flex flex-col gap-[11px] w-full'>
           <div className={`w-full h-[148px] bg-gray-200`}>
             {/**Premium */}
-            <div
-              // style={{
-              //   position: '',
-              // }}
-              className='w-[98px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00]'>
-              <span>Premium</span>
-              <FontAwesomeIcon icon={faStarOfDavid} size='sm' />
-            </div>
-              <Image
-                // src={Array.isArray(images) && images[0] ? images[0] : randomImage.src}
-                  src={getValidImageUrl(Array.isArray(images) && images[0] ? images[0] : undefined)}
-                alt=''
-                width={400}
-                height={200}
-                onClick={() => {
-                  setImageData(Array.isArray(images) ? images : []);
-                  setViewImage(true);
-                }}
-                className='w-full h-[148px] object-cover cursor-pointer'
-              />
+            {isPremium ? (
+              <div
+                // style={{
+                //   position: '',
+                // }}
+                className='w-[98px] h-[28px] py-[8px] px-[6px] text-white flex justify-between items-center bg-[#FF3D00] absolute'>
+                <span>Premium</span>
+                <FontAwesomeIcon icon={faStar} size='sm' />
+              </div>
+            ) : null}
+            <Image
+              src={
+                Array.isArray(images) && images[0] ? images[0] : randomImage.src
+              }
+              alt=''
+              width={400}
+              height={200}
+              onClick={() => {
+                setImageData(Array.isArray(images) ? images : []);
+                setViewImage(true);
+              }}
+              className='w-full h-[148px] object-cover cursor-pointer'
+            />
           </div>
           <div className='flex flex-col gap-[2px] mt-6'>
             <div className='flex gap-[7px]'>

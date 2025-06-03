@@ -14,6 +14,8 @@ import Loading from '@/components/loading-component/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { downloadImage } from '@/utils/downloadImage';
+import Image from 'next/image';
+import viewIcon from '@/svgs/view-image.svg';
 
 export default function OnboardAgentBar({
   user,
@@ -200,7 +202,7 @@ export default function OnboardAgentBar({
                     ? 'text-red-500'
                     : 'text-green-500'
                 }`}>
-                {user?.agentType || '--'}
+                {user?.agentData?.agentType || '--'}
               </p>
               <p className='text-sm md:text-xs sm:text-[10px] text-gray-600'>
                 {user?.email || 'N/A'}
@@ -214,67 +216,125 @@ export default function OnboardAgentBar({
             <div className='space-y-4'>
               {user?.createdAt && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Date</span>
-                  <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Date
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
               )}
               {user?.email && user.email !== '--' && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Email</span>
-                  <span>{user.email}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Email
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {user.email}
+                  </span>
                 </div>
               )}
-              {user?.address?.street &&
-                user?.address?.localGovtArea &&
-                user?.address?.state && (
+              {user?.agentData?.address?.street &&
+                user?.agentData?.address?.localGovtArea &&
+                user?.agentData?.address?.state && (
                   <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                    <span className='font-normal'>Address</span>
-                    <span>{`${user.address.street}, ${user.address.localGovtArea}, ${user.address.state}`}</span>
+                    <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                      Address
+                    </span>
+                    <span className='font-medium text-sm text-[#181336] font-archivo'>{`${user?.agentData?.address?.homeNo} ${user?.agentData?.address.street}, ${user?.agentData?.address.localGovtArea}, ${user?.agentData?.address.state}`}</span>
                   </div>
                 )}
-              {user?.regionOfOperation?.length > 0 && (
+              {user?.agentData?.regionOfOperation?.length > 0 && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Areas of Operation</span>
-                  <span>{user.regionOfOperation.join(', ')}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Areas of Operation
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {user?.agentData?.regionOfOperation.join(', ')}
+                  </span>
                 </div>
               )}
               {user?.referral && user.referral !== '--' && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Referral</span>
-                  <span>{user.referral}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Referral
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {user.referral}
+                  </span>
                 </div>
               )}
-              {user?.agentType && user.agentType !== '--' && (
-                <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Type of Agent</span>
-                  <span>{user.agentType}</span>
-                </div>
-              )}
-              {user?.agentType?.toLowerCase() === 'incorporated' && (
+              {user?.agentData?.agentType &&
+                user?.agentData?.agentType !== '--' && (
+                  <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                    <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                      Type of Agent
+                    </span>
+                    <span className='font-medium text-sm text-[#181336] font-archivo'>
+                      {user?.agentData?.agentType}
+                    </span>
+                  </div>
+                )}
+              {user?.agentData?.agentType?.toLowerCase() === 'incorporated' && (
                 <>
-                  {user?.companyName && user.companyName !== '--' && (
-                    <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                      <span className='font-normal'>Company Name</span>
-                      <span>{user.companyName}</span>
-                    </div>
-                  )}
+                  {user?.agentData?.companyAgent?.companyName &&
+                    user?.agentData?.companyAgent?.companyName !== '--' && (
+                      <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                        <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                          Company Name
+                        </span>
+                        <span className='font-medium text-sm text-[#181336] font-archivo'>
+                          {user?.agentData?.companyAgent?.companyName}
+                        </span>
+                      </div>
+                    )}
                   {user?.registrationNumber &&
                     user.registrationNumber !== '--' && (
                       <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                        <span className='font-normal'>Registration Number</span>
-                        <span>{user.registrationNumber}</span>
+                        <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                          Registration Number
+                        </span>
+                        <span className='font-medium text-sm text-[#181336] font-archivo'>
+                          {user.registrationNumber}
+                        </span>
                       </div>
                     )}
                 </>
               )}
-              {user?.meansOfId?.length > 0 && (
+              {/* {user?.agentData?.meansOfId?.length > 0 && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
                   <span className='font-normal'>Documents</span>
                   <span className='space-x-2'>
-                    {user.meansOfId.map((doc: any, index: number) => (
-                      <a
-                        key={index}
-                        href='#'
+                    {user?.agentData?.meansOfId.map(
+                      (doc: any, index: number) => (
+                        <a
+                          key={index}
+                          href='#'
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleImageClick(
+                              doc?.docImg?.[0] || '',
+                              doc?.name || ''
+                            );
+                          }}
+                          className='text-blue-500 underline'>
+                          {doc?.name || 'N/A'}
+                        </a>
+                      )
+                    )}
+                  </span>
+                </div>
+              )} */}
+              {user?.agentData?.meansOfId?.length > 0 && (
+                <div className='flex flex-col gap-[5px] justify-between text-base md:text-sm sm:text-xs'>
+                  {user?.agentData?.meansOfId.map((doc: any, index: number) => (
+                    <div
+                      key={index}
+                      className='flex items-center justify-between'>
+                      <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                        View {doc.name}
+                      </span>
+                      <Image
                         onClick={(e) => {
                           e.preventDefault();
                           handleImageClick(
@@ -282,29 +342,43 @@ export default function OnboardAgentBar({
                             doc?.name || ''
                           );
                         }}
-                        className='text-blue-500 underline'>
-                        {doc?.name || 'N/A'}
-                      </a>
-                    ))}
-                  </span>
+                        src={viewIcon}
+                        alt='View image'
+                        width={119}
+                        height={40}
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
               {user?.location && user.location !== '--' && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Location</span>
-                  <span>{user.location}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Location
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {user.location}
+                  </span>
                 </div>
               )}
               {user?.propertyType && user.propertyType !== '--' && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Property Type</span>
-                  <span>{user.propertyType}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Property Type
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {user.propertyType}
+                  </span>
                 </div>
               )}
               {user?.propertyCondition && user.propertyCondition !== '--' && (
                 <div className='flex justify-between text-base md:text-sm sm:text-xs'>
-                  <span className='font-normal'>Property Condition</span>
-                  <span>{user.propertyCondition}</span>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>
+                    Property Condition
+                  </span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>
+                    {user.propertyCondition}
+                  </span>
                 </div>
               )}
               {user?.price && user.price !== '--' && (
