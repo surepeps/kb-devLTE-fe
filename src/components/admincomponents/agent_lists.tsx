@@ -33,19 +33,28 @@ import Pagination from '../pagination';
 interface Agent {
   _id: string;
   agentData: {
-    accountApproved: boolean;
-    accountStatus: 'active' | '';
     address: {
       homeNo: string;
-      localGovtArea: string;
-      state: string;
       street: string;
+      state: string;
+      localGovtArea: string;
     };
-    agentType: string;
-    companyAgent: {
+    companyAgent: null | {
       companyName: string;
+      cacNumber?: string;
     };
     regionOfOperation: string[];
+    agentType: string;
+    meansOfId: {
+      docImg: string[];
+      name: string;
+      _id?: string;
+    }[];
+    govtId: {
+      typeOfId: string;
+      idNumber: string;
+    };
+    // ...other fields as needed
   };
   isAccountInRecovery: boolean;
   id: string;
@@ -312,60 +321,94 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
           <div className='w-full overflow-x-auto md:overflow-clip mt-6'>
             <table className='min-w-[900px] md:w-full border-collapse'>
               <thead className='bg-[#fafafa] text-left text-sm font-medium text-gray-600'>
-                <tr className='border-b'>
-                  <th className='p-3'>
-                    <input title='checkbox' type='checkbox' />
-                  </th>
-                  <th className='p-3'>ID</th>
-                  <th className='p-3'>Legal Name</th>
-                  <th className='p-3'>Total Briefs</th>
-                  <th className='p-3'>Type of Agent</th>
-                  <th className='p-3'>Area of operation</th>
-                  <th className='p-3'>Action</th>
-                </tr>
+              <tr className='border-b'>
+                <th className='p-3'>
+                  <input title='checkbox' type='checkbox' />
+                </th>
+                <th className='p-3'>ID</th>
+                <th className='p-3'>Legal Name</th>
+                {active === 'Onboarding Agents' ? (
+                  <>
+                    <th className='p-3'>Email</th>
+                    <th className='p-3'>Type of Agent</th>
+                    <th className='p-3'>Address</th>
+                  </>
+                ) : (
+                  <>
+                    <th className='p-3'>Total Briefs</th>
+                    <th className='p-3'>Type of Agent</th>
+                    <th className='p-3'>Area of operation</th>
+                  </>
+                )}
+                <th className='p-3'>Action</th>
+              </tr>
               </thead>
               <tbody>
-                {filteredAgents.map((item, index) => (
-                  <tr
-                    key={index}
-                    className='border-b text-sm text-gray-700 hover:bg-gray-50'>
-                    <td className='p-3'>
-                      <input title='checkbox' type='checkbox' />
-                    </td>
-                    <td className='p-3'>{truncateId(item.id)}</td>
-                    <td className='p-3'>
-                      {item.firstName && item.lastName
-                        ? `${item.firstName} ${item.lastName}`
-                        : item.fullName}
-                    </td>
-                    <td className='p-3'>1000</td>
+            {filteredAgents.map((item, index) => (
+              <tr
+                key={index}
+                className='border-b text-sm text-gray-700 hover:bg-gray-50'
+              >
+                <td className='p-3'>
+                  <input title='checkbox' type='checkbox' />
+                </td>
+                <td className='p-3'>{truncateId(item.id)}</td>
+                <td className='p-3'>
+                  {item.firstName && item.lastName
+                    ? `${item.firstName} ${item.lastName}`
+                    : item.agentData?.companyAgent?.companyName || item.fullName}
+                </td>
+                {active === 'Onboarding Agents' ? (
+                  <>
+                    <td className='p-3'>{item.email}</td>
                     <td
                       className={`p-3 font-semibold ${
-                        item.agentType?.toLowerCase() === 'individual'
+                        item.agentData?.agentType?.toLowerCase() === 'individual'
                           ? 'text-red-500'
                           : 'text-green-500'
-                      }`}>
-                      {item.agentData.agentType || 'N/A'}
+                      }`}
+                    >
+                      {item.agentData?.agentType || 'N/A'}
                     </td>
                     <td className='p-3'>
-                      {item?.agentData?.regionOfOperation['length'] !== 0
-                        ? item?.agentData?.regionOfOperation?.join(', ')
+                      {item.agentData?.address
+                        ? `${item.agentData.address.street}, ${item.agentData.address.localGovtArea}, ${item.agentData.address.state}`
                         : 'N/A'}
                     </td>
-                    <td className='p-3 cursor-pointer text-2xl'>
-                      <FontAwesomeIcon
-                        onClick={() => {
-                          if (active === 'Onboarding Agents') {
-                            setSelectedUser(item); // Set the selected user for OnboardAgentBar
-                          } else {
-                            handleActionClick(item);
-                          }
-                        }}
-                        icon={faEllipsis}
-                      />
+                  </>
+                ) : (
+                  <>
+                    <td className='p-3'>1000</td> {/* Replace with actual briefs count if available */}
+                    <td
+                      className={`p-3 font-semibold ${
+                        item.agentData?.agentType?.toLowerCase() === 'individual'
+                          ? 'text-red-500'
+                          : 'text-green-500'
+                      }`}
+                    >
+                      {item.agentData?.agentType || 'N/A'}
                     </td>
-                  </tr>
-                ))}
+                    <td className='p-3'>
+                      {item.agentData?.regionOfOperation?.length
+                        ? item.agentData.regionOfOperation.join(', ')
+                        : 'N/A'}
+                    </td>
+                  </>
+                )}
+                <td className='p-3 cursor-pointer text-2xl'>
+                  <FontAwesomeIcon
+                    onClick={() => {
+                      if (active === 'Onboarding Agents') {
+                        setSelectedUser(item);
+                      } else {
+                        handleActionClick(item);
+                      }
+                    }}
+                    icon={faEllipsis}
+                  />
+                </td>
+              </tr>
+            ))}
               </tbody>
             </table>
           </div>

@@ -44,7 +44,8 @@ const AgentData = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
 
-  const [idFileUrl, setIdFileUrl] = useState<string | null>(null); // For ID upload
+  const [idFileUrl, setIdFileUrl] = useState<string | null>(null); 
+  const [cacFileUrl, setCacFileUrl] = useState<string | null>(null); 
   const [utilityBillFileUrl, setUtilityBillFileUrl] = useState<string | null>(
     null
   ); // For utility bill upload
@@ -94,40 +95,59 @@ const steps: Step[] = [
     setSelectedLGA?.(selected);
   };
 
-  const handleStateChange = (selected: Option | null) => {
-    formik.setFieldValue('state', selected?.value);
-    setSelectedState?.(selected);
+    const handleStateChange = (selected: Option | null) => {
+      formik.setFieldValue('state', selected?.value);
+      setSelectedState?.(selected);
 
-    if (selected) {
-      const lgas = naijaStates.lgas(selected.value)?.lgas;
+      if (selected) {
+        const lgas = naijaStates.lgas(selected.value)?.lgas;
 
-      if (Array.isArray(lgas)) {
-        setLgaOptions(
-          lgas.map((lga: string) => ({
-            value: lga,
-            label: lga,
-          }))
-        );
+        if (Array.isArray(lgas)) {
+          setLgaOptions(
+            lgas.map((lga: string) => ({
+              value: lga,
+              label: lga,
+            }))
+          );
+        } else {
+          setLgaOptions([]);
+        }
+        setSelectedLGA?.(null);
       } else {
         setLgaOptions([]);
+        setSelectedLGA?.(null);
       }
-      setSelectedLGA?.(null);
-    } else {
-      setLgaOptions([]);
-      setSelectedLGA?.(null);
-    }
-  };
+    };
 
   const handleIdTypeChange = (selected: Option | null) => {
     formik.setFieldValue('typeOfID', selected?.value);
     setSelectedIdType(selected);
   };
 
-  const formik = useFormik({
+    const validate = (values: any) => {
+      const errors: any = {};
+
+      // Common required fields
+      if (!values.houseNumber) errors.houseNumber = 'House number is required';
+      if (!values.street) errors.street = 'Street is required';
+      if (!values.state) errors.state = 'State is required';
+      if (!values.localGovtArea) errors.localGovtArea = 'Local government is required';
+      if (!values.selectedRegion || values.selectedRegion.length === 0) errors.selectedRegion = 'Region of operation is required';
+      if (!values.firstName) errors.firstName = 'First name is required';
+      if (!values.lastName) errors.lastName = 'Last name is required';
+      if (!values.phoneNumber) errors.phoneNumber = 'Phone number is required';
+
+      // Required for both agent types
+      if (!values.typeOfID) errors.typeOfID = 'Type of ID is required';
+      if (!values.idNumber) errors.idNumber = 'ID Number is required';
+      return errors;
+    };
+
+   const formik = useFormik({
     initialValues: {
       houseNumber: '',
       cacNumber: '',
-      IdNumber: '',
+      // IdNumber: '',
       street: '',
       state: '',
       localGovtArea: '',
@@ -141,14 +161,20 @@ const steps: Step[] = [
       phoneNumber: user?.phoneNumber,
       email: user?.email,
     },
+    validate,
     onSubmit: async () => {
-      if (!idFileUrl) {
-        return toast.error('Please upload your government-issued ID');
+      if (selectedAgentType === 'Corporate Agent') {
+        if (!cacFileUrl) {
+          return toast.error('Please upload your CAC document');
+        }
+
+      } else {
+        if (!idFileUrl) {
+          return toast.error('Please upload your government-issued ID');
+        }
       }
       if (!utilityBillFileUrl) {
-        return toast.error(
-          'Please upload your utility bill for address verification'
-        );
+        return toast.error('Please upload your utility bill for address verification');
       }
       if (!user?.email) {
         return toast.error('User email is required. Please log in again.');
@@ -163,39 +189,50 @@ const steps: Step[] = [
           localGovtArea: formik.values.localGovtArea,
         },
         regionOfOperation: formik.values.selectedRegion,
-        agentType:
-          selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
+        agentType: selectedAgentType === 'Individual Agent' ? 'Individual' : 'Company',
         ...(selectedAgentType === 'Individual Agent'
-        ? {
-            individualAgent: {
-              typeOfId: formik.values.typeOfID,
-            },
-          }
-        : {
-            companyAgent: {
-              companyName: formik.values.companyName,
-              cacNumber: formik.values.cacNumber,
-            },
-            // Do NOT include govtId for company
-          }),
-          govtId: {
+          ? {}
+          : {
+              companyAgent: {
+                companyName: formik.values.companyName,
+                cacNumber: formik.values.cacNumber,
+              },
+            }
+        ),
+        govtId: {
             typeOfId: formik.values.typeOfID,
-            idNumber: formik.values.IdNumber,
+            idNumber: formik.values.idNumber,
           },
         firstName: formik.values.firstName,
         lastName: formik.values.lastName,
         phoneNumber: formik.values.phoneNumber,
         email: user?.email,
-        meansOfId: [
-          {
-            name: selectedAgentType === 'Individual Agent' ? selectedIdType?.value : 'cac',
-            docImg: idFileUrl ? [idFileUrl] : [],
-          },
-          {
-            name: 'utility bill',
-            docImg: utilityBillFileUrl ? [utilityBillFileUrl] : [],
-          },
-        ],
+        meansOfId:
+        selectedAgentType === 'Individual Agent'
+        ? [
+        {
+          name: selectedIdType?.value,
+          docImg: idFileUrl ? [idFileUrl] : [],
+        },
+        {
+          name: 'utility bill',
+          docImg: utilityBillFileUrl ? [utilityBillFileUrl] : [],
+        },
+      ]
+    : [
+        {
+          name: 'cac',
+          docImg: cacFileUrl ? [cacFileUrl] : [],
+        },
+        {
+          name: 'govID',
+          docImg: idFileUrl ? [idFileUrl] : [],
+        },
+        {
+          name: 'utility bill',
+          docImg: utilityBillFileUrl ? [utilityBillFileUrl] : [],
+        },
+      ],
       };
       // console.log('Payload:', payload);
       await toast.promise(
@@ -206,7 +243,6 @@ const steps: Step[] = [
         )
           .then((response) => {
             if (response.success) {
-              console.log('response from form', response);
               toast.success('Agent data submitted successfully');
               Cookies.set(
                 'token',
@@ -224,7 +260,6 @@ const steps: Step[] = [
             }
           })
         .catch((error) => {
-          console.log('error', error);
           // Show the actual error message from the API if available
           if (error?.response?.data?.message) {
             toast.error(error.response.data.message);
@@ -273,7 +308,7 @@ const steps: Step[] = [
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
         houseNumber: '',
-        IdNumber: '',
+        // IdNumber: '',
         cacNumber: '',
         email: user.email,
       });
@@ -338,7 +373,7 @@ const steps: Step[] = [
               <div className=' flex gap-[15px] lg:flex-row flex-col'>
                 <Input
                   label='State'
-                  name='selectedState'
+                  name='state'
                   forState={true}
                   forLGA={false}
                   type='text'
@@ -351,7 +386,7 @@ const steps: Step[] = [
                 />
                 <Input
                   label='Local Government'
-                  name='selectedLGA'
+                  name='localGovtArea'
                   type='text'
                   formik={formik}
                   forLGA={true}
@@ -364,10 +399,10 @@ const steps: Step[] = [
                 />
               </div>
               <RegionMultipleInput
-                name='Region of Operation'
+                name='selectedRegion'
                 formik={formik}
                 allowMultiple={true}
-                heading='selectedRegion'
+                heading='Region of Operation'
                 options={lgaOptions}
               />
             </div>
@@ -386,7 +421,13 @@ const steps: Step[] = [
               <div className='w-full min-h-[80px] gap-[15px] flex lg:flex-row flex-col'>
                 {selectedAgentType === 'Corporate Agent' ? (
                   <div className='w-full flex flex-col gap-[20px]'>
-                  <div className='w-full flex  gap-[20px]'>
+                  <div
+                      className={`w-full gap-[20px] ${
+                        selectedAgentType === 'Corporate Agent'
+                          ? 'flex-col'
+                          : 'flex lg:flex-row flex-col'
+                      } flex`}
+                    >
                     {/* Business/Company Name */}
                     <Input
                       label='Business/Company Name'
@@ -410,7 +451,13 @@ const steps: Step[] = [
                       id='cacNumber'
                       placeholder='This is a placeholder' />
                   </div>
-                  <div className='w-full flex gap-[20px]'>
+                  <div
+                      className={`w-full gap-[20px] ${
+                        selectedAgentType === 'Corporate Agent'
+                          ? 'flex-col'
+                          : 'flex lg:flex-row flex-col'
+                      } flex`}
+                    >
                       {/* Type of Government ID */}
                       <Input
                         label='Type of Government ID'
@@ -430,13 +477,13 @@ const steps: Step[] = [
                       {/* ID Number */}
                       <Input
                         label='ID Number'
-                        name='IdNumber'
+                        name='idNumber'
                         className='md:w-[70%] w-full'
                         type='number'
-                        value={formik.values.IdNumber}
+                        value={formik.values.idNumber}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        id='IdNumber'
+                        id='idNumber'
                         placeholder='This is a placeholder' />
                     </div>
                   </div>
@@ -460,13 +507,13 @@ const steps: Step[] = [
                     />
                     <Input
                       label='ID Number'
-                      name='IdNumber'
+                      name='idNumber'
                       className='md:w-full w-full'
                       type='number'
-                      value={formik.values.IdNumber}
+                      value={formik.values.idNumber}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      id='IdNumber'
+                      id='idNumber'
                       placeholder='This is a placeholder'
                     />
                   </>
@@ -488,7 +535,7 @@ const steps: Step[] = [
             <>
             <div className='lg:w-[602px] min-h-[654px] flex flex-col gap-[40px]'>
                   {/**Agent Type */}
-                  <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold mb-[10px]'>
+                  <h2 className='text-[20px] leading-[32px] text-[#09391C]     font-semibold mb-[10px]'>
                     Upload for verification
                   </h2>
 
@@ -508,14 +555,25 @@ const steps: Step[] = [
                   </div>
                   ) : (
                     <>
+                      <AttachFile
+                        heading={`Upload your ${selectedIdType?.label || 'ID'}`}
+                        setFileUrl={setIdFileUrl}
+                        id='id-upload'
+                      />
+                      <ImagePreview
+                        fileUrl={idFileUrl}
+                        onDelete={() => setIdFileUrl(null)}
+                        onView={setImageModalUrl}
+                        label="Uploaded ID"
+                      />
                     <AttachFile
                       heading='Upload your CAC'
-                      setFileUrl={setIdFileUrl} 
+                      setFileUrl={setCacFileUrl} 
                       id='cac-upload' 
                     />
                     <ImagePreview
                       fileUrl={idFileUrl}
-                      onDelete={() => setIdFileUrl(null)}
+                      onDelete={() => setCacFileUrl(null)}
                       onView={setImageModalUrl}
                       label="Uploaded ID" />
                     </>
@@ -532,43 +590,8 @@ const steps: Step[] = [
                     onView={setImageModalUrl}
                     label="Utility Bill"
                   />
-                  {/* <h2 className='text-[20px] leading-[32px] text-[#09391C] font-semibold'>
-                    Contact Information
-                  </h2>
-                  <div className='w-full min-h-[259px] flex flex-col gap-[20px]'>
-                    <Input
-                      label='First Name'
-                      name='firstName'
-                      className='w-full'
-                      id='firstName'
-                      value={formik.values.firstName}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      type='text'
-                      placeholder='Enter your first name' />
-                    <Input
-                      label='Last Name'
-                      name='lastName'
-                      className='w-full'
-                      id='lastName'
-                      value={formik.values.lastName}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      type='text'
-                      placeholder='Enter your first name' />
-                    <Input
-                      label='Phone Number'
-                      name='phoneNumber'
-                      className='w-full'
-                      id='phoneNumber'
-                      value={formik.values.phoneNumber}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      type='text'
-                      placeholder='Enter your phone number' />
-                  </div> */}
 
-                      {/* Modal for image preview */}
+                  {/* Modal for image preview */}
                     {imageModalUrl && (
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
                         <div className="bg-white rounded-lg shadow-lg p-4 relative max-w-[90vw] max-h-[90vh] flex flex-col items-center">
@@ -587,7 +610,11 @@ const steps: Step[] = [
                         </div>
                       </div>
                     )}
-
+                    {!formik.isValid && (
+                      <div className="text-red-500 text-sm mb-1">
+                        Please fill all required fields to enable submit.
+                      </div>
+                    )}
                   <div className="flex gap-4 w-full mt-4 justify-between">
                      <Button
                       value="Back"
@@ -600,15 +627,24 @@ const steps: Step[] = [
                         setUtilityBillFileUrl(null);
                       }} 
                     />
-                    <Button
-                      value="Submit"
-                      type="submit"
-                      green={true}
-                      className='bg-[#8DDB90] min-h-[50px] py-[12px] px-[24px] md:w-[30%] w-full text-[#FAFAFA] text-base leading-[25.6px] font-bold' />
+                  <Button
+                    value="Submit"
+                    type="button"
+                    green={true}
+                    className='bg-[#8DDB90] min-h-[50px] py-[12px] px-[24px] md:w-[30%] w-full text-[#FAFAFA] text-base leading-[25.6px] font-bold'
+                    onClick={() => {
+                      if (!formik.isValid) {
+                        const errors = validate(formik.values);
+                        Object.values(errors).forEach((msg) => toast.error(String(msg)));
+                        return;
+                      }
+                      formik.handleSubmit();
+                    }}
+                  />
                   </div>
                 </div>
               </>
-      )}
+        )}
       </form>
     </section>
   );
@@ -638,7 +674,7 @@ const RegionMultipleInput: FC<SelectProps> = ({
       htmlFor='select'
       className='min-h-[80px] w-full flex flex-col gap-[4px]'>
       <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
-        {name}
+        {heading}
       </h2>
       <ReactSelect
         isMulti={allowMultiple}
@@ -646,17 +682,22 @@ const RegionMultipleInput: FC<SelectProps> = ({
         onChange={(selectedOption) =>
           allowMultiple
             ? formik.setFieldValue(
-                heading,
+                name,
                 [
                   ...(Array.isArray(selectedOption)
                     ? selectedOption.map((opt: any) => opt.label)
                     : []),
                 ].filter(Boolean)
               )
-            : formik.setFieldValue(heading, selectedOption?.label ?? '')
+            : formik.setFieldValue(name, selectedOption?.label ?? '')
         }
         onBlur={formik.handleBlur}
-        value={options.length !== 0 ? formik.values[heading]?.label : null}
+        value={
+          allowMultiple
+            ? options.filter(opt => formik.values[name]?.includes(opt.label))
+            : options.find(opt => opt.label === formik.values[name]) || null
+        }
+        // value={options.length !== 0 ? formik.values[heading]?.label : null}
         options={options.length !== 0 ? options : []}
         className={`w-full bg-white`}
         styles={customStyles}
