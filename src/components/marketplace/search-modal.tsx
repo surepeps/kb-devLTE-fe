@@ -655,10 +655,6 @@ const SearchModal = ({
 
         const data = await response.json();
         setFormikStatus('success');
-        // const randomIndex = Math.floor(
-        //   Math.random() * (data.data.length - 10 + 1)
-        // );
-        // const randomData = data.data.slice(randomIndex, randomIndex + 10);
         const approvedData = Array.isArray(data.data)
         ? data.data.filter((item: any) => item.isApproved === true)
         : [];
