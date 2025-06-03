@@ -11,7 +11,7 @@ import Button from '@/components/general-components/button';
 import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
 import { useLoading } from '@/hooks/useLoading';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, useRef } from 'react';
 import RadioCheck from '@/components/general-components/radioCheck';
 import Input from '@/components/general-components/Input';
 import { usePageContext } from '@/context/page-context';
@@ -31,6 +31,8 @@ import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 import CommissionModal from '@/components/post-property-components/CommissionModal';
 import { useUserContext } from '@/context/user-context';
 import Cookies from 'js-cookie';
+import ClipLoader from "react-spinners/ClipLoader";
+import useClickOutside from '@/hooks/clickOutside';
 
 //import naijaStates from 'naija-state-local-government';
 // import { useUserContext } from '@/context/user-context';
@@ -40,6 +42,7 @@ import comingSoon from '@/assets/cominsoon.png';
 import Blue from '@/assets/blue.png';
 import Red from '@/assets/red.png';
 import Green from '@/assets/green.png';
+import { motion } from 'framer-motion';
 import { epilogue } from '@/styles/font';
 import customStyles from '@/styles/inputStyle';
 import data from '@/data/state-lga';
@@ -86,6 +89,8 @@ const Sell = () => {
   const [showFinalSubmit, setShowFinalSubmit] = useState(false);
   const { commission, setCommission } = usePageContext();
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [wasModalOpened, setWasModalOpened] = useState(false);
 
   const steps: { label: string; status: 'completed' | 'active' | 'pending' }[] =
     [
@@ -164,18 +169,15 @@ const Sell = () => {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
-    console.log('Selected LGA:', formik.values); // Debugging
     setSelectedLGA?.(selected);
   };
 
   const handleStateChange = (selected: Option | null) => {
-    console.log('Selected State:', selected);
     formik.setFieldValue('selectedState', selected?.value);
     setSelectedState?.(selected);
 
     if (selected) {
       const lgas = Object.values(data[selected.label]);
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setLgaOptions(
@@ -190,24 +192,31 @@ const Sell = () => {
       }
       setSelectedLGA?.(null);
     } else {
-      console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
   };
 
-  const stepRequiredFields: { [key: number]: string[] } = {
-    1: ['propertyType', 'price', 'selectedState', 'selectedLGA'],
-    2: ['documents', 'jvConditions'],
-    // ...add for other steps as needed
-  };
+const getStepRequiredFields = (step: number) => {
+  if (step === 1) return ['propertyType', 'price', 'selectedState', 'selectedLGA'];
+  if (step === 2) {
+    if (selectedCard === 'rent') {
+      return []; // No required fields for rent on features & conditions
+    }
+    if (selectedCard === 'jv') {
+      return ['jvConditions'];
+    }
+    // For sell
+    return ['documents'];
+  }
+  return [];
+};
 
   const formik = useFormik({
     initialValues: {
-      propertyType: '',
+      propertyType: 'Residential',
       propertyCondition: '',
       typeOfBuilding: '',
-      // usageOptions: [] as string[],
       price: '',
       leaseHold: '',
       documents: [] as string[],
@@ -219,7 +228,6 @@ const Sell = () => {
       features: [] as string[],
       tenantCriteria: [] as string[],
       selectedState: '',
-      // selectedAddress: '',
       selectedCity: '',
       selectedLGA: '',
       ownerFullName: '',
@@ -232,11 +240,11 @@ const Sell = () => {
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
-      // propertyCondition: Yup.string().required('Property Condition is required'),
+      // propertyCondition: Yup.string().required('Property Condition is requireFd'),
       // typeOfBuilding: Yup.string().required('Property Condition is required'),
       // usageOptions: Yup.array().min(1, 'At least one usage option is required'),
       price: Yup.string().required('Price is required'),
-      documents: Yup.array().min(1, 'At least one document is required'),
+      // documents: Yup.array().min(1, 'At least one document is required'),
       landSize: Yup.string(),
       measurementType: Yup.string(),
       // noOfBedroom: Yup.string().required('Number of bedrooms is required'),
@@ -264,6 +272,7 @@ const Sell = () => {
 
   const handleFinalSubmit = async () => {
     setAreInputsDisabled(true);
+    setIsSubmitting(true); 
     try {
       const url = URLS.BASE + URLS.listNewProperty;
       const token = Cookies.get('token');
@@ -336,7 +345,7 @@ const Sell = () => {
         POST_REQUEST(url, payload, token).then((response) => {
           if ((response as any).owner) {
             toast.success('Property submitted successfully');
-            setIsSubmittedSuccessfully(true);
+            // setIsSubmittedSuccessfully(true);Bo
             setAreInputsDisabled(false);
             setShowSummary(false);   
             setShowFinalSubmit(true);
@@ -357,6 +366,7 @@ const Sell = () => {
       setAreInputsDisabled(false);
     } finally {
       setAreInputsDisabled(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -382,7 +392,7 @@ const Sell = () => {
   }, [isLegalOwner]);
 
   if (isLoading) return <Loading />;
-  if (isComingSoon) return <UseIsComingPage />;
+  // if (isComingSoon) return <UseIsComingPage />;
 
   const getFormTitle = () => {
     switch (selectedCard) {
@@ -400,6 +410,11 @@ const Sell = () => {
     <Fragment>
       <section
         className={` bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500 my-7`}>
+          {isSubmitting && (
+            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+              <ClipLoader color="#22c55e" size={70} />
+            </div>
+          )}
         <div className='container flex flex-col justify-center items-center gap-[10px] px-[10px]'>
           <div className='w-full flex justify-start mb-5'>
             <BreadcrumbNav
@@ -415,10 +430,10 @@ const Sell = () => {
               <Stepper steps={steps} />
               {currentStep === 0 && !selectedCard && (
                 <div>
-                  <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[24px] leading-[40.4px] mt-7'>
+                  <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[27px] leading-[40.4px] mt-7'>
                     Select type of Property
                   </h2>
-                  <div className='lg:w-[953px] w-full text-xl text-[#5A5D63] font-normal text-center'>
+                  <div className='lg:w-[953px] w-full text-sm md:text-xl text-[#5A5D63] font-normal text-center'>
                     Khabi-Teq helps you reach a wide network of potential buyers
                     and simplifies the property selling process. Our platform
                     ensures your property is showcased effectively, connects you
@@ -649,7 +664,13 @@ const Sell = () => {
                           <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
                             Price Details
                           </h2>
-                          <div className='min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'>
+                          <div
+                              className={
+                                selectedCard !== 'jv' && commission['userType'] !== 'agent'&&selectedCard !== 'sell' 
+                                  ? 'min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'
+                                  : 'min-h-[80px] flex flex-col gap-[15px]'
+                              }
+                            >
                             <Input
                               label='Price'
                               placeholder='Enter property price'
@@ -679,7 +700,7 @@ const Sell = () => {
                               isDisabled={areInputsDisabled}
                             />
 
-                            {selectedCard !== 'jv' && (
+                            {selectedCard !== 'jv' && commission['userType'] !== 'agent' && selectedCard !== 'sell' && (
                               <Input
                                 label='Lease Hold'
                                 placeholder='Enter lease hold'
@@ -793,9 +814,15 @@ const Sell = () => {
                   {currentStep === 2 && (
                     // {/* Feature & Conditions */}
                     <div className='min-h-[629px] py-[40px] lg:px-[80px] w-full'>
-                      <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>
-                        Feature & Conditions
-                      </h2>
+                          <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>
+                      {selectedCard === 'rent'
+                        ? 'Feature & Conditions'
+                        : selectedCard === 'sell'
+                        ? 'Document and Features'
+                        : selectedCard === 'jv'
+                        ? 'Document and Condition'
+                        : 'Feature & Conditions'}
+                    </h2>
                       {selectedCard !== 'rent' && (
                         <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
                           <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
@@ -1104,30 +1131,25 @@ const Sell = () => {
                         Ownership Declaration
                       </h3>
                       <div className='w-full flex flex-col gap-[15px] min-h-[270px] '>
-                        <RadioCheck
-                          name='confirm'
-                          type='checkbox'
-                          // onClick={() => {
-                          //   setIsLegalOwner(!isLegalOwner);
-                          // }}
-                          isChecked={isLegalOwner}
-                          handleChange={() => setIsLegalOwner(!isLegalOwner)}
-                          isDisabled={areInputsDisabled}
-                          value='I confirm that I am the legal owner of this property or authorized to submit this brief'
-                        />
-                        {commission['userType'] === 'agent' ? (
-                          <RadioCheck
-                            name='confirm'
-                            type='checkbox'
-                            // onClick={() => {
-                            //   setIsLegalOwner(!isLegalOwner);
-                            // }}
-                            isChecked={isAuthorized}
-                            handleChange={() => setIsAuthorized(!isAuthorized)}
-                            isDisabled={areInputsDisabled}
-                            value='I confirm that I am authorized to list the property'
-                          />
-                        ) : null}
+                          {commission['userType'] === 'agent' ? (
+                            <RadioCheck
+                              name='confirm'
+                              type='checkbox'
+                              isChecked={isAuthorized}
+                              handleChange={() => setIsAuthorized(!isAuthorized)}
+                              isDisabled={areInputsDisabled}
+                              value='I confirm that I am a mandate to the property'
+                            />
+                          ) : (
+                            <RadioCheck
+                              name='confirm'
+                              type='checkbox'
+                              isChecked={isLegalOwner}
+                              handleChange={() => setIsLegalOwner(!isLegalOwner)}
+                              isDisabled={areInputsDisabled}
+                              value='I confirm that I am the legal owner of this property or authorized to submit this brief'
+                            />
+                          )}
                         <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                           <Input
                             label='Full name'
@@ -1145,7 +1167,11 @@ const Sell = () => {
                             <PhoneInput
                               international
                               defaultCountry='NG'
-                              disabled={!isLegalOwner}
+                                disabled={
+                              commission['userType'] === 'agent'
+                                ? !isAuthorized
+                                : !isLegalOwner
+                            }
                               value={formik.values?.ownerPhoneNumber}
                               style={{ outline: 'none' }}
                               onChange={(value) =>
@@ -1177,7 +1203,7 @@ const Sell = () => {
 
                   <div className='w-full flex items-center mt-8 gap-5 justify-between lg:px-[80px]'>
                     <Button
-                      value='Cancel'
+                      value='Back'
                       // isDisabled={!isLegalOwner}
                       type='button'
                       onClick={() => {
@@ -1190,52 +1216,56 @@ const Sell = () => {
                       }}
                       className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                     />
-                    <Button
-                      value='Next'
-                      type={
-                        currentStep === steps.length - 1 ? 'submit' : 'button'
-                      }
-                      onClick={async () => {
-                        const errors = await formik.validateForm();
-                        // Only check errors for fields relevant to the current step
-                        const fieldsToCheck =
-                          stepRequiredFields[currentStep] || [];
-                        const hasStepError = fieldsToCheck.some(
-                          (field) =>
-                            !!errors[field as keyof typeof formik.values]
+                      <Button
+                    value='Next'
+                    type={currentStep === steps.length - 1 ? 'submit' : 'button'}
+                    onClick={async () => {
+                      const errors = await formik.validateForm();
+                          console.log('Formik errors:', errors); 
+                      const fieldsToCheck = getStepRequiredFields(currentStep);
+                      const hasStepError = fieldsToCheck.some(
+                        (field) => !!errors[field as keyof typeof formik.values]
+                      );
+                      if (hasStepError) {
+                        formik.setTouched(
+                          fieldsToCheck.reduce(
+                            (acc, field) => ({ ...acc, [field]: true }),
+                            {}
+                          )
                         );
-                        if (hasStepError) {
-                          // Mark those fields as touched
-                          formik.setTouched(
-                            fieldsToCheck.reduce(
-                              (acc, field) => ({ ...acc, [field]: true }),
-                              {}
-                            )
-                          );
-                          return;
-                        }
-                        if (currentStep < steps.length - 1) {
-                          setCurrentStep((prev) => prev + 1);
-                        } else if (currentStep === steps.length - 1) {
-                          setShowCommissionModal(true);
-                        }
-                      }}
-                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
-                      isDisabled={
-                        (currentStep === 4 && !isLegalOwner) ||
-                        (currentStep === 4 && commission['userType'] === 'agent' && !isAuthorized) ||
-                        (currentStep === 4 && !!formik.errors.ownerPhoneNumber) ||
-                        (stepRequiredFields[currentStep] || []).some(
-                          (field) =>
-                            !!formik.errors[field as keyof typeof formik.values]
-                        )
+                        return;
                       }
-                    />
+                      if (currentStep < steps.length - 1) {
+                        setCurrentStep((prev) => prev + 1);
+                      } else if (currentStep === steps.length - 1) {
+                        setShowCommissionModal(true);
+                      }
+                    }}
+                    className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
+                    isDisabled={
+                      (currentStep === 4 && commission['userType'] === 'agent' && !isAuthorized) ||
+                      (currentStep === 4 && commission['userType'] !== 'agent' && !isLegalOwner) ||
+                      (currentStep === 4 && !!formik.errors.ownerPhoneNumber) ||
+                      getStepRequiredFields(currentStep).some(
+                        (field) => !!formik.errors[field as keyof typeof formik.values]
+                      )
+                    }
+                  />
                   </div>
                 </form>
               )}
             </>
           )}
+
+        <LocalSubmitModal
+          open={showFinalSubmit}
+          onClose={() => {
+            setShowFinalSubmit(false);
+            setTimeout(() => {
+              router.push(commission['userType'] === 'agent' ? '/agent' : '/my_listing');
+            }, 100);
+          }}
+        />
 
           {showSummary && (
             <PropertySummary
@@ -1248,7 +1278,13 @@ const Sell = () => {
             />
           )}
 
-          {showFinalSubmit && <Submit href='/my_listing' />}
+{/* 
+          {showFinalSubmit && (
+            <Submit
+              href={commission['userType'] === 'agent' ? '/agent' : '/my_listing'}
+              onClose={() => setShowFinalSubmit(false)}
+            />
+          )} */}
 
           {showCommissionModal && (
             <CommissionModal
@@ -1329,29 +1365,73 @@ const Select: React.FC<SelectProps> = ({
   );
 };
 
-const UseIsComingPage = () => {
+// const UseIsComingPage = () => {
+//   return (
+//     <div className='w-full flex justify-center items-center'>
+//       <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
+//         <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
+//           <div className='w-full flex justify-center'>
+//             <Image
+//               src={comingSoon}
+//               width={400}
+//               height={50}
+//               alt='Coming Soon Icon'
+//               className='w-full max-w-[400px] h-auto'
+//             />
+//           </div>
+//           <div className='flex flex-col justify-center items-center gap-[10px]'>
+//             <p
+//               className={`text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%] ${epilogue.className}`}>
+//               We are working hard to bring you an amazing experience. Stay tuned
+//               for updates!
+//             </p>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+interface LocalSubmitModalProps {
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  subheader?: string;
+  buttonText?: string;
+}
+
+const LocalSubmitModal: React.FC<LocalSubmitModalProps> = ({
+  open,
+  onClose,
+  title = 'Successfully Submitted',
+  subheader = 'We will reach out to you soon',
+  buttonText = 'Home',
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => {
+    if (onClose) onClose();
+  });
+
+  if (!open) return null;
+
   return (
-    <div className='w-full flex justify-center items-center'>
-      <div className='container min-h-[600px] flex flex-col justify-center items-center gap-[20px] px-4 md:px-8'>
-        <div className='lg:w-[654px] flex flex-col justify-center items-center gap-[20px] w-full'>
-          <div className='w-full flex justify-center'>
-            <Image
-              src={comingSoon}
-              width={400}
-              height={50}
-              alt='Coming Soon Icon'
-              className='w-full max-w-[400px] h-auto'
-            />
-          </div>
-          <div className='flex flex-col justify-center items-center gap-[10px]'>
-            <p
-              className={`text-4xl md:text-2xl font-bold text-center text-[#5A5D63] leading-[160%] tracking-[5%] ${epilogue.className}`}>
-              We are working hard to bring you an amazing experience. Stay tuned
-              for updates!
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <motion.div
+        ref={ref}
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 20, opacity: 0 }}
+        className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full flex flex-col items-center"
+      >
+        <h2 className="text-2xl font-bold mb-2 text-center">{title}</h2>
+        <p className="text-base text-gray-600 mb-6 text-center">{subheader}</p>
+        <button
+          onClick={onClose}
+          className="bg-[#8DDB90] text-white font-bold py-3 px-8 rounded w-full"
+        >
+          {buttonText}
+        </button>
+      </motion.div>
     </div>
   );
 };

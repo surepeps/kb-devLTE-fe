@@ -3,6 +3,7 @@
 
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { PropertyProps } from './property.types';
+import { UserAgentDataProps } from './agent_data_props';
 
 interface Option {
   value: string;
@@ -43,6 +44,7 @@ export interface GlobalContextTypes {
     usageOptions: string[];
     price: string | number;
     documents: string[];
+    docOnProperty: Array<string | { isProvided: boolean; _id: string; docName: string }>;
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
@@ -53,6 +55,7 @@ export interface GlobalContextTypes {
     usageOptions: string[];
     price: string | number;
     documents: string[];
+    docOnProperty: [], 
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
@@ -104,8 +107,8 @@ export interface GlobalContextTypes {
     };
   }) => void;
 
-  userDetails: userDetailsProperties;
-  setUserDetails: ({}: userDetailsProperties) => void;
+  userDetails: UserAgentDataProps;
+  setUserDetails: ({}: UserAgentDataProps) => void;
 
   /**Dashboard Types */
   dashboard: {

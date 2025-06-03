@@ -76,6 +76,72 @@ export const navData: {
   },
 ];
 
+export const agentnavData: {
+  name: string;
+  url: string;
+  isClicked: boolean;
+  additionalLinks?: { name: string; url: string }[];
+}[] = [
+  {
+    name: 'Home',
+    url: '/',
+    isClicked: true,
+  },
+  {
+    name: 'Marketplace',
+    url: '/market-place',
+    isClicked: false,
+    additionalLinks: [
+      {
+        name: 'list a property',
+        url: '/my_listing',
+      },
+      {
+        name: 'Buy a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Rent a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Property on joint venture',
+        url: '/market-place',
+      },
+    ],
+  },
+  // {
+  //   name: 'Landlord',
+  //   url: '/landlord_page',
+  //   isClicked: false,
+  // },
+  {
+    name: 'My Listing',
+    url: '/my_listing',
+    isClicked: false,
+  },
+  {
+    name: 'Agent',
+    url: '/agent/briefs',
+    isClicked: false,
+  },
+  {
+    name: 'Policies',
+    url: '/policies_page',
+    isClicked: false,
+  },
+  {
+    name: 'About us',
+    url: '/about_us',
+    isClicked: false,
+  },
+  {
+    name: 'Contact Us',
+    url: '/contact-us',
+    isClicked: false,
+  },
+];
+
 //Footer Data
 export const exploreData: { name: string; url: string; isClicked: boolean }[] =
   [
@@ -104,7 +170,7 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
 export const servicesData: { name: string; url: string }[] = [
   {
     name: 'Property Sales',
-    url: '/my_listing',
+    url: '/market-place',
   },
   {
     name: 'Property Rental',

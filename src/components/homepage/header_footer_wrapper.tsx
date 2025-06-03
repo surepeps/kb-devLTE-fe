@@ -13,17 +13,18 @@ import { usePageContext } from '@/context/page-context';
 
 interface Props {
   children: ReactNode;
+  isComingSoon?: boolean;
 }
 
-export default function HeaderFooterWrapper({ children }: Props) {
+export default function HeaderFooterWrapper({ children, isComingSoon }: Props) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith('/admin');
   const { viewImage, imageData } = usePageContext();
   return (
     <Fragment>
-      {!isAdminRoute && <HeaderLogic />}
+      {!isAdminRoute && <HeaderLogic isComingSoon={isComingSoon} />}
       {children}
-      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <Footer isComingSoon={isComingSoon} />}
       {viewImage && <ViewImage imageData={imageData} />}
     </Fragment>
   );

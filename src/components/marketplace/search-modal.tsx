@@ -95,6 +95,11 @@ const SearchModal = ({
 
   const router = useRouter();
 
+  const handleRemoveAllBriefs = () => {
+    setUniqueProperties(new Set());
+    setPropertiesSelected([]);
+  };
+
   // Sync local selection to context
   useEffect(() => {
     setSelectedBriefs(Array.from(uniqueProperties));
@@ -280,6 +285,7 @@ const SearchModal = ({
                   setPropertySelected={setPropertiesSelected}
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
+                  isPremium={property?.isPremium}
                   property={property}
                   onCardPageClick={() => {
                     const selectedBriefsParam = encodeURIComponent(
@@ -305,7 +311,7 @@ const SearchModal = ({
                     },
                     {
                       header: 'Bedrooms',
-                      value: property.propertyFeatures?.noOfBedrooms || 'N/A',
+                      value: property.additionalFeatures?.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',
@@ -339,6 +345,7 @@ const SearchModal = ({
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   property={property}
+                  isPremium={property?.isPremium}
                   onCardPageClick={() => {
                     router.push(`/property/${type}/${property._id}`);
                   }}
@@ -356,7 +363,7 @@ const SearchModal = ({
                     },
                     {
                       header: 'Bedrooms',
-                      value: property.propertyFeatures?.noOfBedrooms || 'N/A',
+                      value: property.additionalFeatures?.noOfBedrooms || 'N/A',
                     },
                     {
                       header: 'Location',
@@ -396,6 +403,7 @@ const SearchModal = ({
                   cardData={[]}
                   images={[]}
                   property={property}
+                  isPremium={property?.isPremium}
                   properties={properties}
                   isAddInspectionalModalOpened={isAddForInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
@@ -457,6 +465,7 @@ const SearchModal = ({
                   isComingFromPriceNeg={isComingFromPriceNeg}
                   setIsComingFromPriceNeg={comingFromPriceNegotiation}
                   property={property}
+                  isPremium={property?.isPremium}
                   onCardPageClick={() => {
                     router.push(`/property/Rent/${property._id}`);
                   }}
@@ -505,6 +514,7 @@ const SearchModal = ({
                   style={is_mobile ? { width: '100%' } : { width: '281px' }}
                   images={property?.pictures}
                   property={property}
+                  isPremium={property?.isPremium}
                   setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
                   isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   setPropertySelected={setPropertiesSelected}
@@ -586,34 +596,43 @@ const SearchModal = ({
     toast.success('Property selected');
   };
 
-  useEffect(() => {
-    //update the payload whenever the propertiesSelected changes
-    const [a, b, c] = propertiesSelected.map((item) => item.location.state);
+    useEffect(() => {
+      // Only consider up to 2 selected briefs
+      const selected = propertiesSelected.slice(0, 2);
 
-    const uniqueStates = new Set([a, b, c]);
-    if (uniqueStates.size === 1) {
-      //All states are the same
-      setAddForInspectionPayload({
-        initialAmount: 10000,
-        toBeIncreaseBy: 0,
-        twoDifferentInspectionAreas: false,
-      });
-    } else if (uniqueStates.size === 2) {
-      //One is different
-      setAddForInspectionPayload({
-        initialAmount: 10000,
-        toBeIncreaseBy: 5000,
-        twoDifferentInspectionAreas: true,
-      });
-    } else if (uniqueStates.size === 3) {
-      //All are different
-      setAddForInspectionPayload({
-        initialAmount: 0,
-        toBeIncreaseBy: 0,
-        twoDifferentInspectionAreas: true,
-      });
-    }
-  }, [propertiesSelected]);
+      if (selected.length === 1) {
+        setAddForInspectionPayload({
+          initialAmount: 10000,
+          toBeIncreaseBy: 0,
+          twoDifferentInspectionAreas: false,
+        });
+      } else if (selected.length === 2) {
+        const [a, b] = selected.map((item) => item.location.localGovernment);
+        const uniqueLGAs = new Set([a, b]);
+        if (uniqueLGAs.size === 1) {
+          // Both briefs are from the same localGovernment
+          setAddForInspectionPayload({
+            initialAmount: 10000,
+            toBeIncreaseBy: 0,
+            twoDifferentInspectionAreas: false,
+          });
+        } else {
+          // Briefs are from different localGovernments
+          setAddForInspectionPayload({
+            initialAmount: 10000,
+            toBeIncreaseBy: 5000,
+            twoDifferentInspectionAreas: true,
+          });
+        }
+      } else {
+        // No briefs selected
+        setAddForInspectionPayload({
+          initialAmount: 0,
+          toBeIncreaseBy: 0,
+          twoDifferentInspectionAreas: false,
+        });
+      }
+    }, [propertiesSelected]);
 
   const is_mobile = IsMobile();
 
@@ -635,7 +654,6 @@ const SearchModal = ({
         }
 
         const data = await response.json();
-        console.log(data);
         setFormikStatus('success');
         // const randomIndex = Math.floor(
         //   Math.random() * (data.data.length - 10 + 1)
@@ -674,6 +692,9 @@ const SearchModal = ({
             setPropertiesSelected(Array.from(selectedBriefsList));
             setIsAddInspectionModalOpened(true);
           }}
+           setPropertiesSelected={setPropertiesSelected} 
+          handleSearch={handleSearch}
+          onRemoveAllBriefs={handleRemoveAllBriefs} 
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>
@@ -681,28 +702,5 @@ const SearchModal = ({
     </Fragment>
   );
 };
-
-const dummyCardData = [
-  {
-    header: 'Property Type',
-    value: 'N/A',
-  },
-  {
-    header: 'Price',
-    value: `₦${Number(2180000).toLocaleString()}`,
-  },
-  {
-    header: 'Bedrooms',
-    value: 'N/A',
-  },
-  {
-    header: 'Location',
-    value: `N/A`,
-  },
-  {
-    header: 'Documents',
-    value: `N/A`,
-  },
-];
 
 export default SearchModal;
