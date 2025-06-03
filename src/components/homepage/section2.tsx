@@ -78,42 +78,6 @@ const Section2 = () => {
     }
   };
 
-  // const fetchLandBriefs = async () => {
-  //   setIsLoading(true);
-
-  //   const response = await axios.get(URLS.BASE + '');
-
-  //   try {
-  //   } catch (err) {
-  //     console.log(err as any);
-  //   }
-  // };
-
-  const fetchPropertyInsightData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(URLS.BASE + URLS.buyersFetchBriefs);
-
-      if (response.status !== 200) {
-        setIsLoading(false);
-        throw new Error('Failed to fetch data');
-      }
-      
-      const data = response.data;
-      console.log("data on homepage", data);
-      const shuffled = shuffleArray(data.data);
-      setProperties(shuffled.slice(0, 4));
-      setCardData(data);
-      setIsLoading(false);
-    } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        console.error(err);
-        // setErrMessage(err.message || 'An error occurred');
-        setIsLoading(false);
-      }
-    }
-  };
-
   const handleShowMoreClick = () => {
     if (buttons.button1) return (window.location.href = '/market-place');
     if (buttons.button2) return (window.location.href = '/market-place');
@@ -176,60 +140,35 @@ const Section2 = () => {
   }
 };
 
-//   useEffect(() => {
-//   const briefType = getBriefType(selectedMarketPlace);
-//   const url = `${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
-
-//   const fetchData = async () => {
-//     setIsLoading(true);
-//     try {
-//       const response = await axios.get(url);
-//       if (response.status !== 200) throw new Error('Failed to fetch data');
-//       const data = response.data.data;
-//       setProperties(shuffleArray(data).slice(0, 4));
-//       setCardData(data);
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   fetchData();
-// }, [selectedMarketPlace, setCardData]);
 
 useEffect(() => {
   const briefType = getBriefType(selectedMarketPlace);
   const url = `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
-const fetchData = async () => {
-  setIsLoading(true);
-  try {
-    const data = await GET_REQUEST(url); // NOT response.data
-    console.log("data on homepage", data);
-    if (Array.isArray(data.data)) {
-      setProperties(shuffleArray(data.data).slice(0, 4));
-      setCardData(data.data);
-    } else {
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await GET_REQUEST(url);
+      let approved = Array.isArray(data.data)
+        ? data.data.filter((item: any) => item.isApproved === true)
+        : [];
+      if (buttons.button2) {
+        approved = approved.filter((item: any) => item.propertyType === 'Land');
+      }
+      setProperties(shuffleArray(approved).slice(0, 4));
+      setCardData(approved);
+    } catch (err) {
+      console.error(err);
       setProperties([]);
       setCardData([]);
-      console.error("API returned data.data that is not an array:", data.data);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   fetchData();
-}, [selectedMarketPlace, setCardData]);
+}, [selectedMarketPlace, setCardData, buttons.button2]);
 
-  // useEffect(() => {
-  //   fetchPropertyInsightData();
-
-  //   return () => {};
-  // }, [setCardData]);
 
   return (
     <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
