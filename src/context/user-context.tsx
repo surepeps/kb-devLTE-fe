@@ -36,6 +36,10 @@ export interface User {
     idNumber: string;
     typeOfId: string;
   };
+  agentData?: {
+    accountApproved: boolean;
+    agentType: string;
+  };
   companyAgent?: {
     companyName: string;
     companyRegNumber: string;
@@ -73,7 +77,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           ) {
             Cookies.remove('token');
             toast.error('Session expired, please login again');
-            router.push('/auth/login');     
+            router.push('/auth/login');
           }
         }
       })
