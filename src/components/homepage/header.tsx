@@ -17,7 +17,7 @@ import barIcon from '@/svgs/bars.svg';
 import { usePageContext } from '@/context/page-context';
 import { reducer } from '@/hooks/reducer';
 // import { useRouter } from 'next/router';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import SideBar from '../general-components/sideBar';
 import { FaCaretDown } from 'react-icons/fa';
 import useClickOutside from '@/hooks/clickOutside';
@@ -54,6 +54,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     email: string;
     id: string;
   } | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     console.log(isModalOpened);
@@ -71,6 +72,10 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       setUserDetails(null);
     }
   }, []);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   useEffect(() => console.log(pathName), [pathName]);
   return (
@@ -212,14 +217,16 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   green={true}
                   onClick={() => {
                     window.localStorage.setItem('signupFromHeader', 'true');
-                    window.location.href = '/auth';
+                    router.push('/auth');
+                    //window.location.href = '/auth';
                   }}
                   className='text-base text-[#FFFFFF] leading-[25px] font-bold w-[155px] h-[50px]'
                 />
                 <Button
                   value='Login'
                   onClick={() => {
-                    window.location.href = '/auth/login';
+                    router.push('/auth/login');
+                    //window.location.href = '/auth/login';
                   }}
                   className='text-base bg-transparent leading-[25px] font-bold w-[71px] h-[50px] text-black'
                 />
