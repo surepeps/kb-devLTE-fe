@@ -45,18 +45,21 @@ const MarketPlace = () => {
 
   useEffect(() => {
     if (propertySelectedForInspection) {
-      console.log(propertySelectedForInspection);
-      setPropertiesSelected([
-        {
-          ...propertySelectedForInspection,
-          _id: propertySelectedForInspection.propertyId,
-          price: propertySelectedForInspection.price,
-          propertyType: propertySelectedForInspection.propertyType,
-          noOfBedrooms: propertySelectedForInspection.bedRoom,
-          location: propertySelectedForInspection.location,
-          docOnProperty: [],
-        },
-      ]);
+    setPropertiesSelected([
+      {
+        ...propertySelectedForInspection,
+        _id: propertySelectedForInspection.propertyId,
+        price: propertySelectedForInspection.price,
+        propertyType: propertySelectedForInspection.propertyType,
+        noOfBedrooms: propertySelectedForInspection.bedRoom,
+        location: propertySelectedForInspection.location,
+        docOnProperty: Array.isArray(propertySelectedForInspection.docOnProperty)
+          ? (propertySelectedForInspection.docOnProperty as Array<string | { docName: string }>).map(doc =>
+              typeof doc === 'string' ? doc : doc.docName
+            )
+          : [],
+      },
+    ]);
     }
   }, [propertySelectedForInspection]);
 
@@ -77,7 +80,7 @@ const MarketPlace = () => {
           isAddForInspectionModalOpened={isAddForInspectionModalOpened}
         />
       ) : (
-        <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[20px]'>
+        <div className='container lg:py-[30px] flex flex-col gap-[20px] px-[0px] md:px-[20px]'>
           {/**
            * Heading and the type of market place user wants to select
            */}

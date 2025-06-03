@@ -48,7 +48,7 @@ const JointVentureModal = ({
       selectedState: '',
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
@@ -58,7 +58,7 @@ const JointVentureModal = ({
       maxPrice: 0,
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 
@@ -111,7 +111,7 @@ const JointVentureModal = ({
       desirerFeatures: filters.desirer_features,
       briefType: 'Joint Venture', 
     };
-    console.log(payload);
+    // console.log(payload);
   // };
 
 const handleUsageOptionChange = (item: string) => {
