@@ -150,7 +150,7 @@ const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             headingColor='#09391C'
           />
           <FAQs isHomePage={true} />
-          <Feedback />
+          {/* <Feedback /> */}
           <HelpButton />
         </main>
       </section>

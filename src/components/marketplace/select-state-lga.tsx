@@ -46,7 +46,7 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
     );
     if (!filteredOptions) return;
     //setStateOptions(filteredOptions);
-    console.log(filteredOptions);
+    // console.log(filteredOptions);
   };
 
   /**
@@ -62,7 +62,7 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
   useEffect(() => {
     // Load Nigerian states correctly
     const sample = Object.keys(nigeriaStates);
-    console.log(sample);
+    // console.log(sample);
     setStateOptions(
       Object.keys(nigeriaStates).map((state: string) => ({
         value: state,
@@ -98,7 +98,7 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
             event.preventDefault();
             setShowLocationModal(true);
             filterBasedOnText(event.target.value);
-            console.log(formik.values);
+            // console.log(formik.values);
           }}
           placeholder={placeholder}
           id={id}
@@ -157,7 +157,6 @@ const SelectOption: FC<SelectOptionProps> = ({
       formik.setFieldValue(selectedStateHandler, option.label);
       formik.setFieldValue(selectedLGAHandler, '');
       const lgas = Object.values(nigeriaStates[option.label]);
-      console.log('Raw LGA Data:', lgas); // Log raw LGA data
 
       if (Array.isArray(lgas)) {
         setDataOptions(
@@ -217,7 +216,7 @@ const SelectOption: FC<SelectOptionProps> = ({
               title={option.label}
               onClick={() => {
                 handleInput(option);
-                console.log(formik.values);
+                // console.log(formik.values);
               }}
               className={`w-full flex items-center justify-between cursor-pointer hover:bg-[#8DDB90] py-[8px] px-[5px] rounded-[5px]`}>
               <span className='text-base font-normal text-[#000000]'>

@@ -220,7 +220,7 @@ const teamMembers: {
   {
     image: abolanleImage,
     name: 'Abolanle Okunade',
-    positionHeld: 'Excusive Assistant',
+    positionHeld: 'Executive Assistant',
   },
   {
     image: adesayoImage,

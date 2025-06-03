@@ -104,7 +104,7 @@ const Footer = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       <Link
                         className={`lg:text-base text-[14px] leading-[22px] lg:leading-[25px] text-[#D6DDEB] font-normal ${epilogue.className}`}
                         key={idx}
-                        onClick={handleClick}
+                        // onClick={handleClick}
                         href={item.url}>
                         {item.name}
                       </Link>
