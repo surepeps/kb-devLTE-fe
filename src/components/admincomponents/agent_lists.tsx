@@ -31,6 +31,23 @@ import { string } from 'yup';
 import OnboardAgentBar from './OnboardAgentbar';
 import Pagination from '../pagination';
 interface Agent {
+  _id: string;
+  agentData: {
+    accountApproved: boolean;
+    accountStatus: 'active' | '';
+    address: {
+      homeNo: string;
+      localGovtArea: string;
+      state: string;
+      street: string;
+    };
+    agentType: string;
+    companyAgent: {
+      companyName: string;
+    };
+    regionOfOperation: string[];
+  };
+  isAccountInRecovery: boolean;
   id: string;
   email: string;
   firstName: string;
@@ -44,6 +61,7 @@ interface Agent {
   };
   agentType: string;
   accountStatus: string;
+  userType: string;
   isAccountVerified: boolean;
   createdAt: string;
   updatedAt: string;
@@ -85,7 +103,8 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
       message: 'Loading...',
     });
     try {
-      const response = await GET_REQUEST(URLS.BASE + URLS.getAllUsers,
+      const response = await GET_REQUEST(
+        URLS.BASE + URLS.getAllUsers,
         Cookies.get('token')
       );
 
@@ -97,7 +116,10 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
         });
       }
       const data = response.users.users;
-      const filteredAgents = data.filter((agent: any) => agent.userType === "Agent");
+      console.log(data);
+      const filteredAgents = data.filter(
+        (agent: any) => agent.userType === 'Agent'
+      );
       setAgents(filteredAgents);
 
       setIsLoadingDetails({
@@ -210,29 +232,29 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
   }, [active]);
 
   const filteredAgents = agents.filter((agent) => {
-  if (active === 'Onboarding Agents') {
-    return agent.accountApproved === false;
-  }
-  if (active === 'All Agents') {
-    return true;
-  }
-  if (active === 'Active Agents') {
-    // Show agents that are approved and not inactive
-    return agent.accountApproved && !agent.isInActive;
-  }
-  if (active === 'Inactive Agents') {
-    // Show agents that are approved and inactive
-    return agent.accountApproved && agent.isInActive;
-  }
-  // if (active === 'Banned Agents') {
-  //   // If you have a banned property, use it here
-  //   return agent.isBanned;
-  // }
-  if (active === 'Flagged Agents') {
-    return agent.isFlagged;
-  }
-  return false;
-});
+    if (active === 'Onboarding Agents') {
+      return agent.accountApproved === false;
+    }
+    if (active === 'All Agents') {
+      return true;
+    }
+    if (active === 'Active Agents') {
+      // Show agents that are approved and not inactive
+      return agent.accountApproved && !agent.isInActive;
+    }
+    if (active === 'Inactive Agents') {
+      // Show agents that are approved and inactive
+      return agent.accountApproved && agent.isInActive;
+    }
+    // if (active === 'Banned Agents') {
+    //   // If you have a banned property, use it here
+    //   return agent.isBanned;
+    // }
+    if (active === 'Flagged Agents') {
+      return agent.isFlagged;
+    }
+    return false;
+  });
 
   const handleActionClick = (user: any) => {
     setSelectedUser(user);
@@ -323,11 +345,11 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
                           ? 'text-red-500'
                           : 'text-green-500'
                       }`}>
-                      {item.agentType || 'N/A'}
+                      {item.agentData.agentType || 'N/A'}
                     </td>
                     <td className='p-3'>
-                      {item.address
-                        ? `${item.address.street}, ${item.address.localGovtArea}, ${item.address.state}`
+                      {item?.agentData?.regionOfOperation['length'] !== 0
+                        ? item?.agentData?.regionOfOperation?.join(', ')
                         : 'N/A'}
                     </td>
                     <td className='p-3 cursor-pointer text-2xl'>
@@ -348,6 +370,9 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
             </table>
           </div>
           <Pagination
+            onClick={() => {
+              getAgentsData(currentPage + 1, 10, 'all');
+            }}
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
             totalPages={totalPages}
@@ -424,16 +449,16 @@ export default function AgentLists({ setDetails }: AgentManagementTabsProps) {
           user={selectedUser}
           onClose={closeSidebar}
           onApprove={() => {
-              closeSidebar();
-              setAgentToApprove(selectedUser);
+            closeSidebar();
+            setAgentToApprove(selectedUser);
           }}
           onReject={() => {
             closeSidebar();
-            setAgentToReject(selectedUser)
-            }} 
+            setAgentToReject(selectedUser);
+          }}
           onDelete={() => {
             closeSidebar();
-            setAgentToDelete(selectedUser)
+            setAgentToDelete(selectedUser);
           }}
         />
       )}
