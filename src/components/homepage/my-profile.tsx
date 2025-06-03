@@ -107,7 +107,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       <button
         type='button'
         onClick={() => {
-          logout();
+          logout(() => closeUserProfileModal(false));
         }}
         className='w-full h-[50px] border-[1px] text-base font-medium border-[#FF3D00] text-[#FF2539]'>
         Sign out

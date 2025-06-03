@@ -7,19 +7,22 @@ interface PaginationProps {
   setCurrentPage: (type: number | any) => void;
   currentPage: number;
   totalPages: number;
+  onClick?: () => void;
 }
 const Pagination: React.FC<PaginationProps> = ({
   setCurrentPage,
   currentPage,
   totalPages,
+  onClick,
 }) => {
   return (
     <div className='flex justify-end items-center mt-10 gap-1'>
       <button
         type='button'
-        onClick={() =>
-          setCurrentPage?.((prev: number) => Math.max(prev - 1, 1))
-        }
+        onClick={() => {
+          onClick?.();
+          setCurrentPage?.((prev: number) => Math.max(prev - 1, 1));
+        }}
         className={`px-4 py-1 rounded-md ${
           currentPage === 1
             ? 'text-gray-300'
