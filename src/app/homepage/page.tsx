@@ -145,7 +145,7 @@ const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           {/* <NewSection /> */}
           <HowItWorksSection />
           <SeeWhatOthers />
-          <AgentMarket/>
+          {/* <AgentMarket/> */}
           <Section3
             isHomepage={true}
             isAgentPage={false}
