@@ -16,6 +16,7 @@ import sampleImg from '@/assets/Agentpic.png';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useUserContext } from '@/context/user-context';
 
 type MainEntryprops = {
   potentialClientID: string;
@@ -25,9 +26,10 @@ type RenderModalProps = {
   props?: Record<string, any>;
 };
 
-type NegotiationType = 'NORMAL' | 'LOL' | null;
+type NegotiationType = 'NORMAL' | 'LOI' | null;
 
 const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
+  const { user } = useUserContext();
   const [formStatus, setFormStatus] = useState<
     'idle' | 'success' | 'failed' | 'pending'
   >('pending');
@@ -58,26 +60,20 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
         // console.log("response", response);
       if (response.success === true) {
         setFormStatus('success');
-        const briefType = response.data.propertyId?.briefType;
-        setNegotiationType(
-          briefType === 'Outright Sales' || briefType === 'Rent' ? 'NORMAL' : 'LOL'
-        );
-
-        const user = response.data.requestedBy || {};
         const property = response.data.propertyId || {};
-        const nameParts = (user.fullName || '').split(' ');
-        setDetails({
-          firstName: nameParts[0] || '',
-          lastName: nameParts.slice(1).join(' ') || '',
-          currentAmount: property.price || 0,
-          buyOffer: response.data.negotiationPrice || 0,
-          renderDynamicContent: () => renderContentDynamically(),
-          setContentTracker: setContentTracker,
-        });
+
+        // Check for letterOfIntention
+        if (response.data.letterOfIntention && response.data.letterOfIntention !== "") {
+          setNegotiationType('LOI');
+        } else {
+          const briefType = property.briefType;
+          setNegotiationType(
+            briefType === 'Outright Sales' || briefType === 'Rent' ? 'NORMAL' : 'LOI'
+          );
+        }
 
         setCreatedAt(response.data.createdAt || null);
 
-        // Set date and time from backend
         setDateTimeObj({
           selectedDate: response.data.inspectionDate
             ? new Date(response.data.inspectionDate).toLocaleDateString()
@@ -85,11 +81,30 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
           selectedTime: response.data.inspectionTime || 'N/A',
         });
         // Set contentTracker to 'Confirm Inspection Date' if negotiationPrice is 0
-        if (response.data.negotiationPrice === 0) {
-          setContentTracker('Confirm Inspection Date');
-        } else {
+        if (response.data.letterOfIntention && response.data.letterOfIntention !== "") {
+          setNegotiationType('LOI');
           setContentTracker('Negotiation');
+        } else {
+          const briefType = property.briefType;
+          setNegotiationType(
+            briefType === 'Outright Sales' || briefType === 'Rent' ? 'NORMAL' : 'LOI'
+          );
+          if (response.data.negotiationPrice === 0) {
+            setContentTracker('Confirm Inspection Date');
+          } else {
+            setContentTracker('Negotiation');
+          }
         }
+
+        setDetails({
+          firstName: user?.firstName || '',
+          lastName: user?.lastName || '',
+          currentAmount: property.price || 0,
+          buyOffer: response.data.negotiationPrice || 0,
+          renderDynamicContent: () => renderContentDynamically(),
+          setContentTracker: setContentTracker,
+          letterOfIntention: response.data.letterOfIntention || '', 
+        });
       }
       } catch (error) {
         setFormStatus('failed');
@@ -116,7 +131,7 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
         </div>
       );
     // Render based on negotiationType
-    if (negotiationType === 'LOL') {
+    if (negotiationType === 'LOI') {
       return (
         <LolNegotiation
           {...(props as NegotiationProps)}
@@ -140,12 +155,13 @@ const Index: FC<MainEntryprops> = ({ potentialClientID }) => {
   const renderContentDynamically = (): { content: any; header: string } => {
     switch (contentTracker) {
       case 'Negotiation':
-        if (negotiationType === 'LOL') {
+        if (negotiationType === 'LOI') {
           return {
             content: (
               <LolNegotiationPage
                 setIsNegotiated={setIsNegotiated}
                 setContentTracker={setContentTracker}
+                letterOfIntention={details?.letterOfIntention}
               />
             ),
             header: contentTracker,
@@ -204,6 +220,7 @@ type NegotiationProps = {
   setContentTracker?: (type: 'Negotiation' | 'Confirm Inspection Date') => void;
   renderDynamicContent: () => { content: any; header: string };
   createdAt?: string | null;
+  letterOfIntention?: string; // Added for LOI negotiation
 };
 
 const Negotiation = (props: NegotiationProps): React.ReactNode => {
@@ -262,7 +279,7 @@ useEffect(() => {
           transition={{ duration: 0.3 }}
           className='flex flex-col gap-[1px] items-center justify-center'>
           <p className='text-center text-base md:text-lg text-black'>
-            Hi, Mr {firstName} {lastName},
+            Hi, {firstName} {lastName},
           </p>
           <p className='text-center text-base md:text-lg text-black'>
             A potential client has submitted an offer and is waiting for your
@@ -537,7 +554,7 @@ useEffect(() => {
           transition={{ duration: 0.3 }}
           className='flex flex-col gap-[1px] items-center justify-center'>
           <p className='text-center text-base md:text-lg text-black'>
-            Hi, Mr {firstName} {lastName},
+            Hi, {firstName} {lastName},
           </p>
           <p className='text-center text-base md:text-lg text-black'>
             A potential client has submitted an offer and is waiting for your
@@ -577,9 +594,11 @@ useEffect(() => {
 const LolNegotiationPage = ({
   setContentTracker,
   setIsNegotiated,
+  letterOfIntention,
 }: {
   setContentTracker?: (type: 'Negotiation' | 'Confirm Inspection Date') => void;
   setIsNegotiated?: (type: boolean) => void;
+  letterOfIntention?: string; 
 }) => {
   const [isViewed, setIsViewed] = useState<boolean>(false);
   const [contentToPass, setContentToPass] = useState<{
@@ -681,22 +700,29 @@ const LolNegotiationPage = ({
               <br />
               Accept or reject offer
             </h3>
-            <div className='flex flex-col'>
-              <Image
-                style={{
-                  backgroundBlendMode: 'luminosity',
-                  backgroundColor: '',
-                }}
-                src={sampleImg}
-                className='w-[80px] h-[57px] object-cover'
-                alt=''
-                width={80}
-                height={57}
-              />
-              <p className='absolute text-xs mt-5 ml-2 text-white'>
-                View details
-              </p>
-            </div>
+              <div className='flex flex-col relative w-[80px] h-[57px]'>
+                <a
+                  href={typeof window !== "undefined" && (window as any)?.__LOI_URL__ ? (window as any).__LOI_URL__ : letterOfIntention}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full h-full"
+                >
+                  <Image
+                    style={{
+                      backgroundBlendMode: 'luminosity',
+                      backgroundColor: '',
+                    }}
+                    src={letterOfIntention || sampleImg}
+                    className='w-[80px] h-[57px] object-cover'
+                    alt='LOI Document'
+                    width={80}
+                    height={57}
+                  />
+                  <p className='absolute left-1 bottom-1 text-[8px] text-slate-700 px-2 py-1 rounded'>
+                    View details
+                  </p>
+                </a>
+              </div>
           </div>
         </div>
         {/* buttons */}

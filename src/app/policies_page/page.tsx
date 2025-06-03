@@ -150,10 +150,11 @@ const ClientEngagementPolicy = () => {
             transition={{ delay: 0.4 }}
             viewport={{ once: true }}
             className='text-[20px] leading-[32px] text-center text-[#5A5D63]'>
-            At Khabiteq Realty, we are committed to providing exceptional
-            service to our agents. This Client Engagement Policy outlines our
+                          At Khabiteq Realty, we are committed to providing exceptional
+            service to our clients. This Client Engagement Policy outlines our
             approach to building and maintaining strong relationships with our
-            agents.
+            clients.
+ 
           </motion.span>
         </div>
         <div className='flex flex-col justify-center items-center w-full'>
@@ -192,9 +193,9 @@ const AgentEngagementPolicy = () => {
             viewport={{ once: true }}
             className='text-[20px] leading-[32px] text-center text-[#5A5D63]'>
             At Khabiteq Realty, we are committed to providing exceptional
-            service to our clients. This Client Engagement Policy outlines our
+            service to our agents. This Agent Engagement Policy outlines our
             approach to building and maintaining strong relationships with our
-            clients.
+            agents.
           </motion.span>
         </div>
         <div className='flex flex-col justify-center items-center w-full'>

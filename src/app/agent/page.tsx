@@ -27,15 +27,17 @@ const Agent = () => {
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const { user } = useUserContext();
 
-  useEffect(() => {
-    if (!user) {
-      return;
-    } else if (user.userType && !user.accountApproved) {
-      router.push('/agent/under-review');
-    } else {
-      router.push('/agent/briefs');
-    }
-  }, [user, router]);
+useEffect(() => {
+  if (!user) {
+    return;
+  } else if (user.userType !== 'Agent') {
+    router.push('/agent');
+  } else if (!user.accountApproved) {
+    router.push('/agent/under-review');
+  } else {
+    router.push('/agent/briefs');
+  }
+}, [user, router]);
 
   if (isLoading) return <Loading />;
 

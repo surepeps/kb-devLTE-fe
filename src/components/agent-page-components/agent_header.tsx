@@ -11,7 +11,7 @@ import React, {
 import khabiteqIcon from '@/svgs/khabi-teq.svg';
 // import Button from '@/components/button';
 import Image from 'next/image';
-import { navData } from '@/data';
+import { agentnavData, navData } from '@/data';
 import Link from 'next/link';
 import barIcon from '@/svgs/bars.svg';
 import { usePageContext } from '@/context/page-context';
@@ -33,7 +33,7 @@ const AgentHeader = () => {
     settings,
   } = usePageContext();
   const { logout, user } = useUserContext();
-  const [state, dispatch] = useReducer(reducer, navData);
+  const [state, dispatch] = useReducer(reducer, agentnavData);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isUserProfileModalOpened, setIsUserProfileModal] =
     useState<boolean>(false);
@@ -49,6 +49,8 @@ const AgentHeader = () => {
     setIsDropdownOpen(false);
     router.push(path);
   };
+
+  const pathName = usePathname();
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -107,7 +109,9 @@ const AgentHeader = () => {
                       });
                     }}
                     className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                      item.isClicked ? 'text-[#8DDB90]' : 'text-[#000000]'
+                      item.url === pathname
+                        ? 'text-[#8DDB90]'
+                        : 'text-[#000000]'
                     }`}>
                     {item.name}
                   </Link>

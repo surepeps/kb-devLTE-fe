@@ -75,9 +75,33 @@ const ShowTable: React.FC<ShowTableProps> = ({
 
   return (
     <div className='w-full border-[1px] border-[#E4DFDF] min-h-fit rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
-      <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
-        {heading}
-      </h1>
+      <div className='w-full flex items-center justify-between'>
+        <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
+          {heading}
+        </h1>
+        <div className='flex gap-4 items-center'>
+          <select
+            name='filter'
+            id='filter'
+            title='filter'
+            disabled
+            className='w-[140px] px-[12px] h-[50px] bg-[#FAFAFA] border-[1px] border-[#D6DDEB]'>
+            <option value='all'>Filter by</option>
+            <option value='published'>Published</option>
+            <option value='draft'>Draft</option>
+          </select>
+          <select
+            name='status'
+            id='status'
+            title='Status'
+            disabled
+            className='w-[140px] px-[12px] h-[50px] bg-[#FAFAFA] border-[1px] border-[#D6DDEB]'>
+            <option value='status'>Status</option>
+            <option value='published'>Published</option>
+            <option value='draft'>Draft</option>
+          </select>
+        </div>
+      </div>
       <table cellPadding={6} className='w-full flex flex-col gap-[15px]'>
         <thead className='min-h-[54px] px-[8px] py-[6px] bg-[#FAFAFA]'>
           {''}

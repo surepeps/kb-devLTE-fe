@@ -59,7 +59,7 @@ const BuyAPropertySearchModal = ({
       selectedState: '',
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
   const router = useRouter();
@@ -100,7 +100,7 @@ const BuyAPropertySearchModal = ({
       maxPrice: 0,
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
 

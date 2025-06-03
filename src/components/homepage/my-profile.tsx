@@ -38,7 +38,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
       viewport={{ once: true }}
-      className='absolute mt-[70px] z-50 -ml-[160px] md:-ml-[210px] w-[268px] h-[435px] bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
+      className='absolute mt-[70px] z-[1000] -ml-[160px] md:-ml-[210px] w-[268px] h-[435px] bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
       <h2
         className={`text-base font-medium text-[#000000] ${archivo.className}`}>
         My Profile
@@ -107,7 +107,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       <button
         type='button'
         onClick={() => {
-          logout();
+          logout(() => closeUserProfileModal(false));
         }}
         className='w-full h-[50px] border-[1px] text-base font-medium border-[#FF3D00] text-[#FF2539]'>
         Sign out

@@ -117,7 +117,7 @@ const Box: React.FC<BoxProps> = ({
           : selectedText === name
           ? 'bg-[#09391C] text-[#8DDB90] shadow-md'
           : 'text-[#5A5D63] bg-transparent'
-      } text-[18px] leading-[21.09px] transition-all duration-500 font-semibold py-[15px] px-[20px] gap-[10px] border-[1px] border-[#C7CAD0] border-sm lg:min-w-[202px] hover:bg-[#8DDB90] hover:text-[#FFFFFF]`}>
+      } text-[18px] leading-[21.09px] transition-all duration-500 font-semibold py-[15px] px-[20px] gap-[10px] border-[1px] border-[#C7CAD0] border-sm lg:min-w-[202px] hover:bg-[#8DDB90] hover:text-[#09391C]`}>
       {name}
     </button>
   );

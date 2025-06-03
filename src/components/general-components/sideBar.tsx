@@ -215,7 +215,7 @@ const SideBar = ({
                     type='button'
                     className='w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md'
                     onClick={() => handleItemClick('/agent/briefs')}>
-                    Create Brief
+                    List a property
                   </button>
                   <button
                     type='button'

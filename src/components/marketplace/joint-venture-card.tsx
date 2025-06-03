@@ -62,6 +62,17 @@ const JointVentureModalCard = ({
   const { setViewImage, setImageData } = usePageContext();
   const cardRef = useRef<HTMLDivElement | null>(null);
 
+  const getValidImageUrl = (url: string | StaticImport | undefined) => {
+  if (!url) return imageSample; // fallback image
+  if (typeof url === 'string') {
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('www.')) return `https://${url}`;
+    if (url.startsWith('/')) return url;
+    return imageSample;
+  }
+  return url;
+};
+
   return (
     <Fragment>
       <motion.div
@@ -76,7 +87,7 @@ const JointVentureModalCard = ({
         <div className='md:w-[261px] w-full p-[12px] flex flex-col gap-[11px] bg-[#FFFFFF] on'>
           <div className='min-h-[62px] w-full flex gap-[10px] items-end relative'>
             <Image
-              src={property?.pictures?.[0] ?? imageSample}
+              src={getValidImageUrl(property?.pictures?.[0])}
               width={61}
               height={62}
               onClick={() => {

@@ -65,7 +65,6 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
     { header: 'Documents', value: brief.documents || 'N/A' },
   ];
 
-  // Render the correct card based on propertyType
   const renderCard = (brief: any, idx: number) => {
     const cardData = mapBriefToCardData(brief);
 
@@ -191,11 +190,12 @@ export default MyListing;
 
 const filterOptions = [
   { value: '1', label: 'Filter by' },
-  { value: '2', label: 'Pending' },
-  { value: '3', label: 'Overdue' },
+  { value: '2', label: 'Rent' },
+  { value: '3', label: 'JV' },
+  { value: '3', label: 'Outright Sale' },
 ];
 const statusOptions = [
   { value: '1', label: 'Status' },
   { value: '2', label: 'Pending' },
-  { value: '3', label: 'Overdue' },
+  { value: '3', label: 'Active' },
 ];

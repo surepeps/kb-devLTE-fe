@@ -108,9 +108,30 @@ const AddForInspection = ({
   const [submitPayload, setSubmitPayload] =
     useState<SubmitInspectionPayloadProp>({} as SubmitInspectionPayloadProp);
 
-  useEffect(() => {
-    setTotalAmount(payload.initialAmount + payload.toBeIncreaseBy);
-  }, [payload]);
+    useEffect(() => {
+      // Only consider up to 2 selected briefs
+      const selected = propertiesSelected.slice(0, 2);
+
+      if (selected.length === 1) {
+        setTotalAmount(10000);
+      } else if (selected.length === 2) {
+        const [a, b] = selected.map((item) => item.location.localGovernment);
+        const uniqueLGAs = new Set([a, b]);
+        if (uniqueLGAs.size === 1) {
+          setTotalAmount(10000);
+        } else {
+          setTotalAmount(15000); // 10,000 + 5,000
+        }
+      } else {
+        setTotalAmount(0);
+      }
+    }, [propertiesSelected]);
+
+    useEffect(() => {
+  if (totalAmount === 0) {
+    setIsAddForInspectionModalOpened(false); // or router.back();
+  }
+}, [totalAmount, setIsAddForInspectionModalOpened]);
 
   const renderCards = ({ length }: { length: number }): React.JSX.Element => {
     /**
