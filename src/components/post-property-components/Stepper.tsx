@@ -33,7 +33,7 @@ const Stepper: React.FC<StepperProps> = ({ steps }) => {
             <span
               className={`ml-2 mr-4 text-base font-medium whitespace-nowrap
                 ${step.status === "completed" ? "text-black" : "text-[#A8ADB7]"}
-                hidden md:inline
+                ${step.status === "active" ? "inline" : "hidden"} md:inline
               `}
             >
               {step.label}
@@ -41,7 +41,10 @@ const Stepper: React.FC<StepperProps> = ({ steps }) => {
           )}
 
           {/* Line */}
-          {index < steps.length - 1 && (
+          {/* {index < steps.length - 1 && (
+            <div className="w-8 h-1.5 bg-[#D9D9D9] mx-2"></div>
+          )} */}
+          {index < steps.length - 1 && step.status !== "active" && (
             <div className="w-8 h-1.5 bg-[#D9D9D9] mx-2"></div>
           )}
         </div>

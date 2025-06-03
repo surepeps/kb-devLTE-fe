@@ -275,6 +275,14 @@ export default function OnboardAgentBar({
                     </span>
                   </div>
                 )}
+
+              {/* Govt ID Number */}
+              {user?.agentData?.govtId?.idNumber && (
+                <div className='flex justify-between text-base md:text-sm sm:text-xs'>
+                  <span className='font-normal text-sm text-[#515B6F] font-archivo'>Govt ID Number</span>
+                  <span className='font-medium text-sm text-[#181336] font-archivo'>{user.agentData.govtId.idNumber}</span>
+                </div>
+              )}
               {user?.agentData?.agentType?.toLowerCase() === 'incorporated' && (
                 <>
                   {user?.agentData?.companyAgent?.companyName &&
