@@ -101,7 +101,7 @@ const Login = () => {
               };
               sessionStorage.setItem('user', JSON.stringify(user));
 
-              if ((response as any)?.user?._id) {
+              if ((response as any)?.user?.id) {
 
                 if (response.user.userType === 'Agent') {
                   if (!response.user.agentData?.agentType) {
@@ -145,7 +145,7 @@ const Login = () => {
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
       // console.log(codeResponse);
-      const url = URLS.BASE + URLS.agent + URLS.googleLogin;
+      const url = URLS.BASE + URLS.user + URLS.googleLogin;
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(
         async (response) => {
@@ -155,28 +155,31 @@ const Login = () => {
               'token',
               (response as unknown as { token: string }).token
             );
-            // console.log('response', response);
-            // console.log('response Data', response.data);
 
-            const user = response as unknown as {
-              id: string;
-              email: string;
-              password: string;
-              lastName: string;
-              firstName: string;
-              phoneNumber: string;
-              accountApproved: boolean;
+            const user = {
+              firstName: response?.user?.firstName,
+              lastName: response?.user?.lastName,
+              phoneNumber: response?.user?.phoneNumber,
+              email: response?.user?.email,
+              id: response?.user?.id,
+              userType: response?.user?.userType,
+              agentData: response?.user?.agentData,
+              accountApproved: response?.user?.accountApproved,
             };
 
             setUser(user);
             sessionStorage.setItem('user', JSON.stringify(user));
 
-            if (response.accountApproved === false) {
-              router.push('/agent/under-review');
-            } else if (!response.phoneNumber) {
-              router.push('/agent/onboard');
+            if (user.userType === 'Agent') {
+              if (!user.agentData?.agentType) {
+                router.push('/agent/onboard');
+              } else if (user.accountApproved === false) {
+                router.push('/agent/under-review');
+              } else if (user.phoneNumber && user.agentData.agentType) {
+                router.push('/agent/briefs');
+              }
             } else {
-              router.push('/agent/briefs');
+              router.push('/my_listing');
             }
           }
           console.log('response', response);
@@ -273,14 +276,14 @@ const Login = () => {
               </button>
             </p>
             {/**Google | Facebook */}
-            <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
+            {/* <div className='flex justify-between w-full lg:flex-row flex-col gap-[15px]'>
               <RegisterWith
                 icon={googleIcon}
                 text='Continue with Google'
                 onClick={googleLogin}
               />
               <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
-            </div>
+            </div> */}
           </form>
         ) : (
           <form

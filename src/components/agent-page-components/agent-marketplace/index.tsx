@@ -58,6 +58,7 @@ const AgentMarketPlace = () => {
     useState<PropertySelectedProps>(undefined);
 
   const docsValues = documentsSelected.map((item: string) => item);
+  console.log('docsValues', docsValues);
 
   const renderDynamically = (): {
     content: React.ReactNode;
@@ -310,9 +311,8 @@ const Index = ({
                 {isMoreFilterModalOpened &&
                   (is_mobile ? (
                     <Filter
-                      setPayloadFromFilter={setPayloadFromFilter}
-                      closeModal={setIsMoreFilterModalOpened}
-                    />
+                    setPayloadFromFilter={setPayloadFromFilter}
+                    closeModal={setIsMoreFilterModalOpened} selectedType={''}                    />
                   ) : (
                     <MoreFilter
                       style={

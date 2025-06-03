@@ -3,7 +3,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
-import React, { Fragment, MouseEventHandler, useEffect, useState } from 'react';
+import React, {
+  FC,
+  Fragment,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from 'react';
 import arrowRightIcon from '@/svgs/arrowR.svg';
 import Image from 'next/image';
 import { usePageContext } from '@/context/page-context';
@@ -36,6 +42,7 @@ import { IsMobile } from '@/hooks/isMobile';
 import MobileSelectedBottomBar from '@/components/marketplace/MobileSelectedBottomBar';
 import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 import Link from 'next/link';
+import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 
 // const selectedBriefs = 9;
 
@@ -50,15 +57,34 @@ interface DetailsProps {
     localGovernment: string;
     area: string;
   };
+  landSize: {
+    measurementType: string;
+    size: number | null;
+  };
+   additionalFeatures: {
+    additionalFeatures: string[];
+    noOfBedrooms?: number;
+    noOfBathrooms?: number;
+    noOfToilets?: number;
+    noOfCarParks?: number;
+  };
+  features: string[];
   tenantCriteria: { _id: string; criteria: string }[];
+  areYouTheOwner: boolean;
+  isAvailable: boolean | string;
+  isApproved?: boolean;
+  isRejected?: boolean;
+  isPreference?: boolean;
+  isPremium?: boolean;
   pictures: string[];
   createdAt: string;
-  owner: string;
   updatedAt: string;
-  isAvailable: boolean;
-  docOnProperty: string[];
+  owner: string;
+  docOnProperty: { isProvided: boolean; _id: string; docName: string }[];
+  briefType?: string;
+  propertyCondition?: string;
   _id?: string;
-  id?: string;
+  __v?: number;
 }
 
 interface FormProps {
@@ -88,32 +114,47 @@ const ProductDetailsPage = () => {
   // const selectedBriefsList = JSON.parse(searchParams.get('selectedBriefs') || '[]');
   // const selectedBriefs = selectedBriefsList.length;
 
-  console.log('Selected Briefs:', selectedBriefs);
-
   const [point, setPoint] = useState<string>('Details');
   const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
     usePageContext();
   const [scrollPosition, setScrollPosition] = useState(0);
   const isLoading = useLoading();
-  const [details, setDetails] = useState<DetailsProps>({
-    price: 0,
-    propertyType: '',
-    bedRoom: 0,
-    propertyStatus: '',
-    location: {
-      state: '',
-      localGovernment: '',
-      area: '',
-    },
-    tenantCriteria: [],
-    pictures: [],
-    propertyId: '',
-    createdAt: '',
-    owner: '',
-    updatedAt: '',
-    isAvailable: false,
-    docOnProperty: [],
-  });
+ const [details, setDetails] = useState<DetailsProps>({
+  propertyId: '',
+  price: 0,
+  propertyType: '',
+  bedRoom: 0,
+  propertyStatus: '',
+  location: {
+    state: '',
+    localGovernment: '',
+    area: '',
+  },
+  landSize: {
+    measurementType: '',
+    size: null,
+  },
+  additionalFeatures: {
+    additionalFeatures: [],
+  },
+  features: [],
+  tenantCriteria: [],
+  areYouTheOwner: false,
+  isAvailable: false,
+  isApproved: false,
+  isRejected: false,
+  isPreference: false,
+  isPremium: false,
+  pictures: [],
+  createdAt: '',
+  updatedAt: '',
+  owner: '',
+  docOnProperty: [],
+  briefType: '',
+  propertyCondition: '',
+  _id: '',
+  __v: 0,
+});
   const [featureData, setFeatureData] = useState<
     { _id: string; featureName: string }[]
   >([]);
@@ -266,10 +307,14 @@ const ProductDetailsPage = () => {
         const res = await axios.get(URLS.BASE + URLS.getOneProperty + id);
         if (res.status === 200) {
           if (typeof res.data === 'object') {
-            setDetails({
+         setDetails({
               price: res.data.price,
               propertyType: res.data.propertyType,
-              bedRoom: res.data.bedRoom || res.data.noOfBedrooms || 0,
+              bedRoom:
+                res.data.bedRoom ||
+                res.data.noOfBedrooms ||
+                res.data.additionalFeatures?.noOfBedrooms ||
+                0,
               propertyStatus: res.data.propertyCondition || '',
               location: res.data.location,
               tenantCriteria: res.data.tenantCriteria || [],
@@ -284,6 +329,24 @@ const ProductDetailsPage = () => {
               isAvailable:
                 res.data.isAvailable === 'yes' || res.data.isAvailable === true,
               docOnProperty: res.data.docOnProperty || [],
+              landSize: res.data.landSize || { measurementType: '', size: null },
+              additionalFeatures: {
+                additionalFeatures: res.data.additionalFeatures?.additionalFeatures || [],
+                noOfBedrooms: res.data.additionalFeatures?.noOfBedrooms || 0,
+                noOfBathrooms: res.data.additionalFeatures?.noOfBathrooms || 0,
+                noOfToilets: res.data.additionalFeatures?.noOfToilets || 0,
+                noOfCarParks: res.data.additionalFeatures?.noOfCarParks || 0,
+              },
+              features: res.data.features || [],
+              areYouTheOwner: res.data.areYouTheOwner ?? false,
+              isApproved: res.data.isApproved ?? false,
+              isRejected: res.data.isRejected ?? false,
+              isPreference: res.data.isPreference ?? false,
+              isPremium: res.data.isPremium ?? false,
+              briefType: res.data.briefType || '',
+              propertyCondition: res.data.propertyCondition || '',
+              _id: res.data._id || '',
+              __v: res.data.__v || 0,
             });
             setFeatureData(
               Array.isArray(res.data.features)
@@ -335,9 +398,9 @@ const ProductDetailsPage = () => {
             (isContactUsClicked || isModalOpened) &&
             'filter brightness-[30%] transition-all duration-500 overflow-hidden'
           }`}>
-          <div className='flex flex-col items-center gap-[20px] w-full mt-10'>
-            <div className='min-h-[90px] container w-full flex flex-col items-start lg:px-[40px]'>
-              <div className='w-full flex justify-start mb-5'>
+          <div className='flex flex-col items-center gap-[20px] w-full'>
+            <div className='container w-full flex flex-col items-start px-[10px] lg:px-[40px]'>
+              <div className='w-full flex justify-start md:mb-5'>
                 <BreadcrumbNav
                   point={point}
                   onBack={() => router.back()}
@@ -345,15 +408,15 @@ const ProductDetailsPage = () => {
                   backText='Home'
                 />
               </div>
-              <h2
+              {/* <h2
                 className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold mt-6 text-black px-3 md:px-5`}>
                 Newly Built 5 bedroom Duplex with BQ in a highly secured area in
                 the heart of GRA
-              </h2>
+              </h2> */}
             </div>
 
             {/* <div className='w-full flex justify-center items-center'> */}
-            <div className='flex flex-col md:flex-row justify-between items-start container px-[10px] md:px-[20px]'>
+            <div className='flex flex-col md:flex-row justify-between items-start container px-[15px] md:px-[20px]'>
               <div className='w-full md:w-[70%] flex flex-col'>
                 <div className='lg:w-[837px] flex flex-col gap-[20px]'>
                   <ImageSwiper
@@ -366,14 +429,18 @@ const ProductDetailsPage = () => {
 
                   <div className='w-full md:w-[90%] h-full flex flex-col gap-[20px]'>
                     {details.pictures['length'] !== 0 ? (
-                      <div className='flex gap-[12px] overflow-x-auto w-full min-w-0'>
+                      <div className='flex gap-[12px] overflow-x-auto w-full justify-center md:justify-start'>
                         {details.pictures.map((src: string, idx: number) => (
                           <img
                             src={src}
                             key={idx}
                             width={200}
                             height={200}
-                            className='w-[80px] h-[60px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded'
+                            onClick={() => {
+                              setImageData([src]);
+                              setViewImage(true);
+                            }}
+                            className='md:w-[80px] md:h-[60px] w-[63px] h-[48px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded'
                             // style={{ maxWidth: '100%', flex: '0 0 auto' }}
                             alt={'image'}
                           />
@@ -385,15 +452,55 @@ const ProductDetailsPage = () => {
                       <div className='w-full min-h-[152px] grid grid-cols-2 md:grid-cols-3 gap-[10px]'>
                         <BoxContainer
                           heading='Property Type'
-                          subHeading={details.propertyType}
+                          subHeading={details.propertyType || '-'}
                         />
                         <BoxContainer
                           heading='Location'
-                          subHeading={`${details.location.state}, ${details.location.localGovernment}`}
+                          subHeading={
+                            (details.location.state && details.location.localGovernment)
+                              ? `${details.location.state}, ${details.location.localGovernment}`
+                              : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Property Title'
+                          subHeading={'Nil'}
                         />
                         <BoxContainer
                           heading='Price'
-                          subHeading={Number(details.price).toLocaleString()}
+                          subHeading={
+                            details.price !== undefined && details.price !== null
+                              ? Number(details.price).toLocaleString()
+                              : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='List Type'
+                          subHeading={details.briefType || 'Nil'}
+                        />
+                        <BoxContainer
+                          heading='Property Condition'
+                          subHeading={details.propertyStatus || 'Nil'}
+                        />
+                          <BoxContainer
+                          heading='Bedrooms'
+                          subHeading={
+                            (details.additionalFeatures?.noOfBedrooms && details.additionalFeatures.noOfBedrooms > 0)
+                              ? details.additionalFeatures.noOfBedrooms.toString()
+                              : (details.bedRoom && details.bedRoom > 0)
+                                ? details.bedRoom.toString()
+                                : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Land Size'
+                          subHeading={
+                            details.landSize && details.landSize.size !== null && details.landSize.size !== undefined
+                              ? details.landSize.measurementType
+                                ? `${details.landSize.size} ${details.landSize.measurementType}`
+                                : details.landSize.size.toString()
+                              : '-'
+                          }
                         />
                       </div>
                     </div>
@@ -423,7 +530,7 @@ const ProductDetailsPage = () => {
                             setPropertySelectedForInspection(details);
                             setIsAddForInspectionModalOpened(true);
                           }}
-                          className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
+                          className='w-full px-[10px] md:px-0 md:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] text-base font-bold text-white'>
                           Select for inspection
                         </button>
                       </Link>
@@ -435,7 +542,7 @@ const ProductDetailsPage = () => {
                             setIsComingFromPriceNeg(true);
                           }}
                           type='button'
-                          className='w-full md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
+                          className='w-full px-[10px] md:px-0 md:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] text-base font-bold text-white'>
                           Price Negotiation
                         </button>
                       </Link>
@@ -560,16 +667,18 @@ const ProductDetailsPage = () => {
                 </div>
               </div>
             </div>
-            <MobileSelectedBottomBar
-              selectedBriefs={selectedBriefs.length}
-              selectedBriefsList={selectedBriefs}
-              onViewBrief={() => {
-                console.log('View Briefs', selectedBriefs);
-              }}
-              onSubmitForInspection={() => {
-                console.log('Submit for inspection', selectedBriefs);
-              }}
-            />
+            {selectedBriefs && selectedBriefs.length > 0 && (
+              <MobileSelectedBottomBar
+                selectedBriefs={selectedBriefs.length}
+                selectedBriefsList={selectedBriefs}
+                onRemoveAllBriefs={() => {
+                  console.log('View Briefs', selectedBriefs);
+                }}
+                onSubmitForInspection={() => {
+                  console.log('Submit for inspection', selectedBriefs);
+                }}
+              />
+            )}
           </div>
         </section>
       ) : (
@@ -679,14 +788,73 @@ interface PhoneInputFieldProps {
 //   );
 // };
 
+//specifically built for image swiper
+
+type NavigationButtonProps = {
+  handleNav: () => void;
+  type: 'arrow left' | 'arrow right';
+  className?: string;
+};
+const NavigationButton: FC<NavigationButtonProps> = ({
+  handleNav,
+  type,
+  className,
+}): React.JSX.Element => {
+  const renderArrow = () => {
+    switch (type) {
+      case 'arrow left':
+        return (
+          <FaCaretLeft
+            width={16}
+            height={16}
+            color='#09391C'
+            className='w-[16px] h-[16px]'
+          />
+        );
+      case 'arrow right':
+        return (
+          <FaCaretRight
+            width={16}
+            height={16}
+            color='#09391C'
+            className='w-[16px] h-[16px]'
+          />
+        );
+    }
+  };
+  return (
+    <button
+      onClick={handleNav}
+      type='button'
+      className={`w-[35px] h-[35px] border-[1px] border-[#5A5D63]/[50%] flex items-center justify-center ${className}`}>
+      {type && renderArrow()}
+    </button>
+  );
+};
+
 const ImageSwiper = ({ images }: { images: string[] }) => {
   //const images = [sampleImage.src, sampleImage.src];
+
+  const swiperRef = React.useRef<any>(null);
+
+  const handleNext = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slideNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slidePrev();
+    }
+  };
+
   return (
     <Swiper
-      modules={[Navigation, Pagination, Autoplay]}
+      modules={[Pagination, Navigation, Autoplay]}
       spaceBetween={30}
       slidesPerView={1}
-      navigation
+      onSwiper={(swiper) => (swiperRef.current = swiper)}
       pagination={{ clickable: true }}
       autoplay={{ delay: 3000 }}
       loop={true}
@@ -700,6 +868,16 @@ const ImageSwiper = ({ images }: { images: string[] }) => {
           />
         </SwiperSlide>
       ))}
+      <NavigationButton
+        handleNav={handlePrev}
+        type='arrow left'
+        className='absolute left-5 top-1/2 transform -translate-y-1/2 z-10'
+      />
+      <NavigationButton
+        handleNav={handleNext}
+        type='arrow right'
+        className='absolute right-5 top-1/2 transform -translate-y-1/2 z-10'
+      />
     </Swiper>
   );
 };
@@ -761,10 +939,10 @@ const BoxContainer = ({
     <div
       className={`w-full ${
         heading && changeColorBehaviors().bg
-      } h-[83px] py-[15px] px-[10px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
-      <h4 className='text-lg text-[#7C8493]'>{heading}</h4>
+      }  py-[5px] px-[10px] md:h-[83px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
+      <h4 className='text-xs md:text-lg text-[#7C8493]'>{heading}</h4>
       <h3
-        className={`text-lg font-semibold ${
+        className={`text-sm md:text-lg font-semibold ${
           heading && changeColorBehaviors().color
         } ${epilogue.className}`}>
         {subHeading}

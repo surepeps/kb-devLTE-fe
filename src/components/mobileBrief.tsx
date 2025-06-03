@@ -97,8 +97,8 @@ const Briefs: FC<BriefsProps> = ({
         <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
           {header}
         </h1>
-        {briefData.length !== 0
-          ? briefData.map((item: DataProps, idx: number) => (
+        {briefData?.length !== 0
+          ? briefData?.map((item: DataProps, idx: number) => (
               <PublishMobileView
                 key={idx}
                 item={item}
