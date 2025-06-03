@@ -36,7 +36,6 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('inpection payload', submitInspectionPayload);
   }, [submitInspectionPayload]);
   const [fileURL, setFileURL] = useState<string | null>(null); 
   const [formStatus, setFormStatus] = useState<

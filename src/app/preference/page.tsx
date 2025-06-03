@@ -4,6 +4,7 @@
 import Button from '@/components/general-components/button';
 import Loading from '@/components/loading-component/loading';
 import { toast } from 'react-hot-toast';
+import { archivo } from '@/styles/font';
 import { useLoading } from '@/hooks/useLoading';
 import React, { Fragment, useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
@@ -23,14 +24,13 @@ import arrowRightIcon from '@/svgs/arrowR.svg';
 import Image from 'next/image';
 import comingSoon from '@/assets/cominsoon.png';
 import { epilogue } from '@/styles/font';
-import MultiSelectionProcess from '@/components/multiSelectionProcess';
-import ImageContainer from '@/components/general-components/image-container';
 import axios from 'axios';
 import data from '@/data/state-lga';
 import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 import Select from 'react-select';
 import Stepper from '@/components/post-property-components/Stepper';
 import Submit from '@/components/submit';
+import AttachFile from '@/components/general-components/attach_file';
 
 interface Option {
   value: string;
@@ -52,6 +52,7 @@ const Landlord = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [showBedroom, setShowBedroom] = useState<boolean>(false);
   const [fileUrl, setFileUrl] = useState<{ id: string; image: string }[]>([]);
+  const [paymentReceiptUrl, setPaymentReceiptUrl] = useState<string | null>(null); 
   const { setViewImage, setImageData } = usePageContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedProperty, setSelectedProperty] =
@@ -81,6 +82,15 @@ const Landlord = () => {
           currentStep > 1
             ? 'completed'
             : currentStep === 1
+            ? 'active'
+            : 'pending',
+      },
+      {
+        label: 'Payment Details',
+        status:
+          currentStep > 2
+            ? 'completed'
+            : currentStep === 2
             ? 'active'
             : 'pending',
       },
@@ -122,6 +132,8 @@ function formatNumberWithCommas(value: string) {
       }))
     );
   }, []);
+
+  const amountToPay = 5000;
 
   const renderDynamicComponent = () => {
     switch (selectedProperty) {
@@ -607,12 +619,10 @@ function formatNumberWithCommas(value: string) {
 
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue('selectedLGA', selected?.value);
-    // console.log('Selected LGA:', formik.values); // Debugging
     setSelectedLGA?.(selected);
   };
 
   const handleStateChange = (selected: Option | null) => {
-    // console.log('Selected State:', selected);
     formik.setFieldValue('selectedState', selected?.value);
     setSelectedState?.(selected);
 
@@ -631,11 +641,17 @@ function formatNumberWithCommas(value: string) {
       }
       setSelectedLGA?.(null);
     } else {
-      // console.log('Hey');
       setLgaOptions([]);
       setSelectedLGA?.(null);
     }
   };
+
+// After uploading file, update both local state and Formik
+const handlePaymentReceipt = (value: React.SetStateAction<string | null>) => {
+  const url = typeof value === 'function' ? value(paymentReceiptUrl) : value;
+  setPaymentReceiptUrl(url);
+  formik.setFieldValue('paymentReceiptUrl', url);
+};
 
   const formik = useFormik({
     initialValues: {
@@ -655,11 +671,13 @@ function formatNumberWithCommas(value: string) {
       ownerFullName: '',
       ownerPhoneNumber: '',
       ownerEmail: '',
+      fullName: '',
       areYouTheOwner: true,
       rentalPrice: undefined as number | undefined,
       bedroom: undefined as string | undefined,
       images: [],
       documentType: [] as string[],
+      paymentReceiptUrl: ''
     },
     validationSchema: Yup.object({
       propertyType: Yup.string().required('Property type is required'),
@@ -675,6 +693,7 @@ function formatNumberWithCommas(value: string) {
       ownerEmail: Yup.string()
         .email('Invalid email')
         .required('Owner email is required'),
+      fullName: Yup.string().required('Your account name is required'),
     }),
     validateOnBlur: true,
     validateOnChange: true,
@@ -718,6 +737,10 @@ function formatNumberWithCommas(value: string) {
               noOfBathrooms: Number(bathroom || 0),
             },
             tenantCriteria: values.tenantCriteria,
+            preferenceFeeTransaction: {
+              accountName: values.fullName,
+              transactionReciept: values.paymentReceiptUrl,
+            },
           };
         // console.log('Payload:', payload);
 
@@ -790,52 +813,52 @@ function formatNumberWithCommas(value: string) {
             >
               {currentStep === 0 ? (
                 <div className='flex items-center justify-center w-full'>
- <div className="flex flex-wrap gap-[10px] md:gap-[20px]">
-  {[
-    'Buy a property',
-    'Find property for joint ventures',
-    'Rent/Lease a property',
-  ].map((item: string, idx: number) => (
-    <button
-      type="button"
-      onClick={() => {
-        setSelectedProperty(item);
-        formik.resetForm({
-          values: {
-            ...formik.initialValues,
-            propertyType: 'Residential',
-          },
-        });
-        setPrices({ minPrice: '', maxPrice: '' });
-        setArea('');
-        setBathroom('');
-        setSelectedState(null);
-        setSelectedLGA(null);
-      }}
-      className={`${
-        item === selectedProperty
-          ? 'bg-[#8DDB90] font-medium text-[#FFFFFF]'
-          : 'bg-transparent font-normal text-[#5A5D63]'
-      } h-[40px] md:h-[51px] min-w-fit border-[1px] border-[#C7CAD0] text-[12px] md:text-lg px-[10px] md:px-[25px]`}
-      key={idx}
-    >
-    {item === 'Rent/Lease a property' ? (
-      <>
-        <span className="block md:hidden">Rent a property</span>
-        <span className="hidden md:block">Rent/Lease a property</span>
-      </>
-    ) : item === 'Find property for joint ventures' ? (
-      <>
-        <span className="block md:hidden">Joint ventures</span>
-        <span className="hidden md:block">Find property for joint ventures</span>
-      </>
-    ) : (
-      item
-    )}
-    </button>
-  ))}
-</div>
-          </div>
+                  <div className="flex flex-wrap gap-[10px] md:gap-[20px]">
+                    {[
+                      'Buy a property',
+                      'Find property for joint ventures',
+                      'Rent/Lease a property',
+                    ].map((item: string, idx: number) => (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedProperty(item);
+                          formik.resetForm({
+                            values: {
+                              ...formik.initialValues,
+                              propertyType: 'Residential',
+                            },
+                          });
+                          setPrices({ minPrice: '', maxPrice: '' });
+                          setArea('');
+                          setBathroom('');
+                          setSelectedState(null);
+                          setSelectedLGA(null);
+                        }}
+                        className={`${
+                          item === selectedProperty
+                            ? 'bg-[#8DDB90] font-medium text-[#FFFFFF]'
+                            : 'bg-transparent font-normal text-[#5A5D63]'
+                        } h-[40px] md:h-[51px] min-w-fit border-[1px] border-[#C7CAD0] text-[12px] md:text-lg px-[10px] md:px-[25px]`}
+                        key={idx}
+                      >
+                      {item === 'Rent/Lease a property' ? (
+                        <>
+                          <span className="block md:hidden">Rent a property</span>
+                          <span className="hidden md:block">Rent/Lease a property</span>
+                        </>
+                      ) : item === 'Find property for joint ventures' ? (
+                        <>
+                          <span className="block md:hidden">Joint ventures</span>
+                          <span className="hidden md:block">Find property for joint ventures</span>
+                        </>
+                      ) : (
+                        item
+                      )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ) : null}
               {currentStep === 0 && (
                 <div className='min-h-[629px] py-[40px] lg:px-[80px]  w-full'>
@@ -1063,9 +1086,114 @@ function formatNumberWithCommas(value: string) {
                   </div>
                 </div>
               )}
+
+            {currentStep === 2 && (
+             <div className='w-full flex flex-col lg:flex-row gap-6 md:gap-8 lg:gap-[35px] max-w-6xl px-2 sm:px-4 md:px-8'>
+                {/* First div */}
+                <div className='w-full lg:w-[420px] flex flex-col gap-4'>
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    exit={{ y: 20, opacity: 0 }}
+                    viewport={{ once: true }}
+                    className='w-full bg-white py-6 px-4 sm:px-6 flex flex-col gap-3'>
+                    {/* Make payment to */}
+                    <div className='flex flex-col'>
+                      <h3
+                        className={`${archivo.className} text-lg font-bold text-black`}>
+                        Make payment to
+                      </h3>
+                      <h2
+                        className={`${archivo.className} text-3xl font-bold text-black`}>
+                        N{Number(amountToPay).toLocaleString()}
+                      </h2>
+                    </div>
+                    {/* Account details */}
+                    <div className='flex flex-col gap-2'>
+                      <h4
+                        className={`${archivo.className} text-lg font-bold text-black`}>
+                        Account details
+                      </h4>
+                      <p
+                        className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+                        Bank{' '}
+                        <span
+                          className={`${archivo.className} text-lg font-medium text-black`}>
+                          GTB
+                        </span>
+                      </p>
+                      <p
+                        className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+                        Account Number{' '}
+                        <span
+                          className={`${archivo.className} text-lg font-medium text-black`}>
+                          0234567894
+                        </span>
+                      </p>
+                      <p
+                        className={`text-[#5A5D63] ${archivo.className} text-lg font-medium`}>
+                        Account Name{' '}
+                        <span
+                          className={`${archivo.className} text-lg font-medium text-black`}>
+                          Khabi-Teq Reality
+                        </span>
+                      </p>
+                    </div>
+                  </motion.div>
+                  {/* PS */}
+                  <motion.p
+                    initial={{ y: 20, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    exit={{ y: 20, opacity: 0 }}
+                    viewport={{ once: true }}
+                    className='text-[#1976D2] font-medium text-base sm:text-lg'>
+                    Note that this process is subject to Approval by khabiteq realty
+                  </motion.p>
+                </div>
+                {/* Second div - form section */}
+                <div className='w-full lg:w-[602px] flex flex-col gap-5'>
+                  <h2 className='text-xl text-[#09391C] font-semibold'>
+                    Provide Transaction Details
+                  </h2>
+
+                    {/* Enter Account Name */}
+                    <Input
+                      value={formik.values?.fullName}
+                      id='fullName'
+                      type='text'
+                      name='fullName'
+                      placeholder='Enter Full Name'
+                      label='Enter Full Name'
+                      onChange={formik.handleChange}
+                      className="col-span-1 sm:col-span-2" 
+                    />
+                  {/* Attach Receipt */}
+                  <div className='h-[58px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'>
+                    <AttachFile
+                      heading='Upload your transaction receipt.'
+                      style={{
+                        width: '283px',
+                      }}
+                      id='transaction_receipt'
+                      setFileUrl={handlePaymentReceipt}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            {(currentStep === 0 ) && (
+                <div className="w-full flex justify-center mb-4">
+                  <span className="text-[#FF2539] text-base font-bold text-center">
+                    Stay updated! Receive email updates on listing that fits your preference for{' '}
+                    <span className="text-black font-bold"> N{Number(amountToPay).toLocaleString()}</span>
+                  </span>
+                </div>
+              )}
               <div className='w-full flex items-center mt-8 justify-between'>
                 <Button
-                   value={currentStep === 1 ? 'Back' : 'Cancel'}
+                  value={currentStep === 0 ? 'Cancel' : 'Back'}
                   type='button'
                   onClick={() =>
                     setCurrentStep((prev) => Math.max(prev - 1, 0))
@@ -1073,30 +1201,47 @@ function formatNumberWithCommas(value: string) {
                   className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                 />
                 <Button
-                    value={currentStep === steps.length - 1 ? 'Submit' : 'Next'}
+                    value={
+                        currentStep === steps.length - 1
+                          ? 'Submit'
+                          : currentStep === 0
+                            ? 'Subscribe'
+                            : 'Next'
+                      }
                     type={currentStep === steps.length - 1 ? 'submit' : 'button'}
                     onClick={
                     currentStep === steps.length - 1
-                      ? undefined // Let formik handle submit
+                      ? undefined
                       : () => {
                           setCurrentStep((prev) => prev + 1);
                         }
                   }
-                    isDisabled={areInputsDisabled}
-                  className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
-                />
+                    isDisabled={
+                      areInputsDisabled ||
+                      (currentStep === steps.length - 1 &&
+                        (!formik.values.fullName || !formik.values.paymentReceiptUrl))
+                    }
+                    className={`lg:w-[25%] text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] 
+                      ${
+                        areInputsDisabled ||
+                        (currentStep === steps.length - 1 &&
+                          (!formik.values.fullName || !paymentReceiptUrl))
+                          ? 'bg-gray-300 text-gray-400 cursor-not-allowed'
+                          : 'bg-[#8DDB90] text-white'
+                      }`}
+                    />
               </div>
-            </form>         
+            </form>       
 
-<LocalSubmitModal
-  open={showFinalSubmit}
-  onClose={() => {
-    setShowFinalSubmit(false);
-    setTimeout(() => {
-      router.push('/');
-    }, 100);
-  }}
-/>
+            <LocalSubmitModal
+              open={showFinalSubmit}
+              onClose={() => {
+                setShowFinalSubmit(false);
+                setTimeout(() => {
+                  router.push('/');
+                }, 100);
+              }}
+            />
           </div>
         </div>
       </section>
