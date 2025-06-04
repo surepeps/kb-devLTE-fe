@@ -11,6 +11,7 @@ import { User, useUserContext } from '@/context/user-context';
 import { archivo } from '@/styles/font';
 import { LayoutDashboardIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import microphonesvg from '@/svgs/microphone.svg';
 
 type userDetailsProps = {
   firstName: string;
@@ -138,6 +139,17 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       </button>
       {/**Agent marketplace */}
       <button
+        onClick={() => {
+          switch (userType) {
+            case 'Agent':
+              return router.push('/agent/marketplace');
+            case 'Landowners':
+              router.push('/market-place');
+
+            default:
+              break;
+          }
+        }}
         type='button'
         className='w-full h-[26px] flex items-end gap-[10px]'>
         {/* <Image
@@ -149,12 +161,12 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
         /> */}
         <Image
           alt='lock'
-          src={userIcon}
+          src={microphonesvg}
           width={24}
           height={24}
           className='w-[24px] h-[24px]'
         />
-        <span className='text-base font-medium underline'>Dashboard</span>
+        <span className='text-base font-medium underline'>marketplace</span>
       </button>
       {/**Change Password */}
       <button

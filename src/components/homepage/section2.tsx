@@ -18,6 +18,7 @@ import { epilogue } from '@/styles/font';
 import { shuffleArray } from '@/utils/shuffleArray';
 import axios from 'axios';
 import { GET_REQUEST } from '@/utils/requests';
+import { useRouter } from 'next/navigation';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -28,7 +29,8 @@ const Section2 = () => {
   });
   const { setCardData } = usePageContext();
   const [properties, setProperties] = useState<any[]>([]);
-  const [selectedMarketPlace, setSelectedMarketPlace] = useState('Buy a property');
+  const [selectedMarketPlace, setSelectedMarketPlace] =
+    useState('Buy a property');
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
@@ -36,6 +38,7 @@ const Section2 = () => {
     useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
@@ -128,47 +131,49 @@ const Section2 = () => {
   };
 
   const getBriefType = (marketPlace: string) => {
-  switch (marketPlace) {
-    case 'Buy a property':
-      return 'Outright Sales';
-    case 'Find property for joint venture':
-      return 'Joint Venture';
-    case 'Rent/Lease a property':
-      return 'Rent';
-    default:
-      return 'Outright Sales';
-  }
-};
-
-
-useEffect(() => {
-  const briefType = getBriefType(selectedMarketPlace);
-  const url = `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const data = await GET_REQUEST(url);
-      let approved = Array.isArray(data.data)
-        ? data.data.filter((item: any) => item.isApproved === true)
-        : [];
-      if (buttons.button2) {
-        approved = approved.filter((item: any) => item.propertyType === 'Land');
-      }
-      setProperties(shuffleArray(approved).slice(0, 4));
-      setCardData(approved);
-    } catch (err) {
-      console.error(err);
-      setProperties([]);
-      setCardData([]);
-    } finally {
-      setIsLoading(false);
+    switch (marketPlace) {
+      case 'Buy a property':
+        return 'Outright Sales';
+      case 'Find property for joint venture':
+        return 'Joint Venture';
+      case 'Rent/Lease a property':
+        return 'Rent';
+      default:
+        return 'Outright Sales';
     }
   };
 
-  fetchData();
-}, [selectedMarketPlace, setCardData, buttons.button2]);
+  useEffect(() => {
+    const briefType = getBriefType(selectedMarketPlace);
+    const url = `${URLS.BASE}${
+      URLS.fetchBriefs
+    }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await GET_REQUEST(url);
+        let approved = Array.isArray(data.data)
+          ? data.data.filter((item: any) => item.isApproved === true)
+          : [];
+        if (buttons.button2) {
+          approved = approved.filter(
+            (item: any) => item.propertyType === 'Land'
+          );
+        }
+        setProperties(shuffleArray(approved).slice(0, 4));
+        setCardData(approved);
+      } catch (err) {
+        console.error(err);
+        setProperties([]);
+        setCardData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedMarketPlace, setCardData, buttons.button2]);
 
   return (
     <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
@@ -272,6 +277,13 @@ useEffect(() => {
                   isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   images={property?.pictures}
                   isPremium={property?.isPremium}
+                  onCardPageClick={() => {
+                    if (buttons.button1) {
+                      return router.push(`/property/${'Buy'}/${property?._id}`);
+                    } else if (buttons.button3) {
+                      return router.push(`property/${'Rent'}/${property?._id}`);
+                    }
+                  }}
                   onClick={() => {
                     handleSubmitInspection(property);
                   }}
@@ -303,7 +315,7 @@ useEffect(() => {
                     //       `<span key={${item._id}>${item.docName}</span>`
                     //   )}</div>`,
                     // },
-                      {
+                    {
                       header: 'Documents',
                       value: (
                         <div>
