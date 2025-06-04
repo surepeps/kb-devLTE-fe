@@ -220,6 +220,7 @@ const SearchModal = ({
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
               onSearch={handleSearch}
+              searchStatus={searchStatus}
             />
             <section className='flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]'>
               {formikStatus &&
@@ -596,43 +597,43 @@ const SearchModal = ({
     toast.success('Property selected');
   };
 
-    useEffect(() => {
-      // Only consider up to 2 selected briefs
-      const selected = propertiesSelected.slice(0, 2);
+  useEffect(() => {
+    // Only consider up to 2 selected briefs
+    const selected = propertiesSelected.slice(0, 2);
 
-      if (selected.length === 1) {
+    if (selected.length === 1) {
+      setAddForInspectionPayload({
+        initialAmount: 10000,
+        toBeIncreaseBy: 0,
+        twoDifferentInspectionAreas: false,
+      });
+    } else if (selected.length === 2) {
+      const [a, b] = selected.map((item) => item.location.localGovernment);
+      const uniqueLGAs = new Set([a, b]);
+      if (uniqueLGAs.size === 1) {
+        // Both briefs are from the same localGovernment
         setAddForInspectionPayload({
           initialAmount: 10000,
           toBeIncreaseBy: 0,
           twoDifferentInspectionAreas: false,
         });
-      } else if (selected.length === 2) {
-        const [a, b] = selected.map((item) => item.location.localGovernment);
-        const uniqueLGAs = new Set([a, b]);
-        if (uniqueLGAs.size === 1) {
-          // Both briefs are from the same localGovernment
-          setAddForInspectionPayload({
-            initialAmount: 10000,
-            toBeIncreaseBy: 0,
-            twoDifferentInspectionAreas: false,
-          });
-        } else {
-          // Briefs are from different localGovernments
-          setAddForInspectionPayload({
-            initialAmount: 10000,
-            toBeIncreaseBy: 5000,
-            twoDifferentInspectionAreas: true,
-          });
-        }
       } else {
-        // No briefs selected
+        // Briefs are from different localGovernments
         setAddForInspectionPayload({
-          initialAmount: 0,
-          toBeIncreaseBy: 0,
-          twoDifferentInspectionAreas: false,
+          initialAmount: 10000,
+          toBeIncreaseBy: 5000,
+          twoDifferentInspectionAreas: true,
         });
       }
-    }, [propertiesSelected]);
+    } else {
+      // No briefs selected
+      setAddForInspectionPayload({
+        initialAmount: 0,
+        toBeIncreaseBy: 0,
+        twoDifferentInspectionAreas: false,
+      });
+    }
+  }, [propertiesSelected]);
 
   const is_mobile = IsMobile();
 
@@ -656,8 +657,8 @@ const SearchModal = ({
         const data = await response.json();
         setFormikStatus('success');
         const approvedData = Array.isArray(data.data)
-        ? data.data.filter((item: any) => item.isApproved === true)
-        : [];
+          ? data.data.filter((item: any) => item.isApproved === true)
+          : [];
         const shuffledData = shuffleArray(approvedData);
         setProperties(shuffledData.slice(0, 10));
       } catch (err: any) {
@@ -689,9 +690,9 @@ const SearchModal = ({
             setPropertiesSelected(Array.from(selectedBriefsList));
             setIsAddInspectionModalOpened(true);
           }}
-           setPropertiesSelected={setPropertiesSelected} 
+          setPropertiesSelected={setPropertiesSelected}
           handleSearch={handleSearch}
-          onRemoveAllBriefs={handleRemoveAllBriefs} 
+          onRemoveAllBriefs={handleRemoveAllBriefs}
         />
       ) : (
         <>{userSelectedMarketPlace && renderDynamicComponent()}</>

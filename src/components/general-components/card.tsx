@@ -54,20 +54,20 @@ const Card = ({
 
   //const isCardInView = useInView(cardRef, { once: false });
 
-      const getValidImageUrl = (url: string | StaticImport | undefined) => {
-      if (!url) return randomImage.src; // fallback image
-      if (typeof url === 'string') {
-        if (url.startsWith('http://') || url.startsWith('https://')) return url;
-        // If it looks like a cloudinary or external url but missing protocol, add https://
-        if (url.startsWith('www.')) return `https://${url}`;
-        // If it's a local image, ensure it starts with /
-        if (url.startsWith('/')) return url;
-        // fallback
-        return randomImage.src;
-      }
-      // If it's a StaticImport (local import), return as is
-      return url;
-    };
+  const getValidImageUrl = (url: string | StaticImport | undefined) => {
+    if (!url) return randomImage.src; // fallback image
+    if (typeof url === 'string') {
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      // If it looks like a cloudinary or external url but missing protocol, add https://
+      if (url.startsWith('www.')) return `https://${url}`;
+      // If it's a local image, ensure it starts with /
+      if (url.startsWith('/')) return url;
+      // fallback
+      return randomImage.src;
+    }
+    // If it's a StaticImport (local import), return as is
+    return url;
+  };
 
   useEffect(() => {
     if (count === 6) {
@@ -114,7 +114,7 @@ const Card = ({
               className='w-full h-[148px] object-cover cursor-pointer'
             />
           </div>
-          <div className='flex flex-col gap-[2px] mt-6'>
+          <div className='flex flex-col gap-[2px]'>
             <div className='flex gap-[7px]'>
               {cardData.map(
                 (item: { header: string; value: string }, idx: number) => {
