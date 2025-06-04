@@ -49,12 +49,16 @@ const ContactInformation: FC<ConractInformationProps> = ({
         try {
           const url = URLS.BASE + URLS.userSubmitPreference;
           const payloadToPass = {
-            propertyType: payload.values.usageOptions.join(','),
+            propertyType: payload.values.usageOptions
+              ? payload.values.usageOptions.join(',')
+              : '',
             features: payload.values.desirerFeatures,
-            docOnProperty: payload.values.docsOnProperty.map((opt: string) => ({
-              docName: opt,
-              isProvided: true,
-            })),
+            docOnProperty: payload?.values?.docsOnProperty
+              ? payload.values.docsOnProperty.map((opt: string) => ({
+                  docName: opt,
+                  isProvided: true,
+                }))
+              : [],
             propertyCondition: payload.values.desirerFeatures.toString(),
             location: {
               state: payload.values.location.split(',')[1].trim(),
@@ -123,17 +127,23 @@ const ContactInformation: FC<ConractInformationProps> = ({
         try {
           const url = URLS.BASE + URLS.userSubmitPreference;
           const payloadToPass = {
-            propertyType: payload.values.rentFilterBy.join(','),
-            features: payload.values.desirerFeatures,
+            propertyType: payload?.values?.rentFilterBy
+              ? payload.values.rentFilterBy.join(',')
+              : '',
+            features: payload?.values?.desirerFeatures
+              ? payload?.values?.desiresFeatures
+              : [],
             docOnProperty: [],
-            propertyCondition: payload.values.desiresFeatures.toString(),
+            propertyCondition: payload?.values?.desiresFeatures
+              ? payload.values.desiresFeatures.toString()
+              : '',
             location: {
               state: payload.values.location.state,
               localGovernment: payload.values.location.lga,
               //area: payload.values.area,
             },
-            budgetMin: Number(payload.values.price.minPrice || 0),
-            budgetMax: Number(payload.values.price.maxPrice || 0),
+            budgetMin: Number(payload?.values?.price?.minPrice || 0),
+            budgetMax: Number(payload?.values?.price?.maxPrice || 0),
             owner: {
               fullName: values.fullName,
               phoneNumber: values.phoneNumber,
@@ -233,8 +243,8 @@ const ContactInformation: FC<ConractInformationProps> = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='py-[40px] px-[60px] rounded-[4px] bg-white shadow-md flex items-center justify-center'>
-          <div className='w-full flex flex-col gap-[42px]'>
+          className='md:py-[40px] py-[30px] px-[30px] md:px-[60px] rounded-[4px] bg-white shadow-md flex items-center justify-center'>
+          <div className='w-full flex flex-col gap-[21px] md:gap-[42px]'>
             <div className='flex flex-col gap-[4px] items-center justify-center'>
               <h2 className='text-2xl font-bold text-gray-900 text-center'>
                 Contact Information
@@ -275,10 +285,13 @@ const ContactInformation: FC<ConractInformationProps> = ({
                 placeholder={`Optional, for communication`}
               />
             </div>
-            <span className={`text-[#FF2539] font-semibold text-xl`}>
+            <span
+              className={`text-[#FF2539] font-semibold text-base md:text-xl`}>
               Stay updated! Receive email updates on listing that fits your
               preference for{' '}
-              <span className='text-black text-xl font-semibold'>N5,000</span>
+              <span className='text-black text-base md:text-xl font-semibold'>
+                N5,000
+              </span>
             </span>
             <div className='w-full flex flex-col gap-[15px]'>
               <button
