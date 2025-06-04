@@ -681,6 +681,7 @@ const SearchModal = ({
     <Fragment>
       {is_mobile ? (
         <Mobile
+          searchStatus={searchStatus}
           selectedMarketPlace={userSelectedMarketPlace}
           renderBrief={renderDynamicComponent}
           selectedBriefs={uniqueProperties.size}
