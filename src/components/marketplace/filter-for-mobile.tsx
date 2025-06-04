@@ -14,17 +14,19 @@ import { featuresData } from '@/data/landlord';
 const Filter = ({
   closeModal,
   setPayloadFromFilter,
-  selectedType
+  selectedType,
+  payloadFromFilter,
 }: {
   closeModal: (type: boolean) => void;
+  payloadFromFilter: any;
   setPayloadFromFilter: (type: any) => void;
-   selectedType: string;
+  selectedType: string;
 }) => {
   const [radioValue, setRadioValue] = useState<string>('');
   const formik = useFormik({
     initialValues: {
-      minPrice: 0,
-      maxPrice: 0,
+      minPrice: payloadFromFilter?.prices?.minPrice || 0,
+      maxPrice: payloadFromFilter?.prices?.maxPrice || 0,
     },
     onSubmit: (values) => console.log(values),
   });
@@ -94,22 +96,22 @@ const Filter = ({
             <span className='text-base text-black'>min</span>
             <input
               type='number'
-              name='min'
+              name='minPrice'
               value={formik.values.minPrice}
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              id='min'
+              id='minPrice'
               className='h-full w-[50px] text-center outline-none'
             />
             <span className='text-base text-black'>N</span>
           </label>
           <label
-            htmlFor='max'
+            htmlFor='maxPrice'
             className='w-[50%] border-[1px] border-[#D6DDEB] px-[12px] flex items-center justify-evenly'>
             <span className='text-base text-black'>max</span>
             <input
               type='number'
-              name='max'
+              name='maxPrice'
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.maxPrice}
@@ -133,11 +135,13 @@ const Filter = ({
               }}
               key={idx}
               type='radio'
-              isChecked={item === radioValue}
-              onClick={() => {
+              isChecked={
+                item === payloadFromFilter?.actualPrice || item === radioValue
+              }
+              handleChange={() => {
                 setRadioValue(item);
-                formik.setFieldValue('minPrice', '');
-                formik.setFieldValue('maxPrice', '');
+                // formik.setFieldValue('minPrice', '');
+                // formik.setFieldValue('maxPrice', '');
               }}
               value={item}
               name='prices'
@@ -147,19 +151,19 @@ const Filter = ({
       </div>
       {/**Building Type */}
       {selectedType === 'Buy a property' && (
-      <SimilarComponent
-        heading='Building Type'
-        type='checkbox'
-        data={[
-          'Bungalow',
-          'Duplex',
-          'Semi detach',
-          'Deed of Assignment',
-          'Land certificate',
-        ]}
-        selectedValues={buildingTypeValues}
-        setSelectedValues={setBuildingTypeValues}
-      />
+        <SimilarComponent
+          heading='Building Type'
+          type='checkbox'
+          data={[
+            'Bungalow',
+            'Duplex',
+            'Semi detach',
+            'Deed of Assignment',
+            'Land certificate',
+          ]}
+          selectedValues={buildingTypeValues}
+          setSelectedValues={setBuildingTypeValues}
+        />
       )}
       {/**Document type */}
       <SimilarComponent
@@ -187,7 +191,7 @@ const Filter = ({
             type='radio'
             value='1'
             isChecked={bedroom === 1}
-            onClick={() => setBedroom(1)}
+            handleChange={() => setBedroom(1)}
             name='bedroom'
           />
           <RadioCheck
@@ -197,7 +201,7 @@ const Filter = ({
             type='radio'
             value='2'
             isChecked={bedroom === 2}
-            onClick={() => setBedroom(2)}
+            handleChange={() => setBedroom(2)}
             name='bedroom'
           />
           <RadioCheck
@@ -207,7 +211,7 @@ const Filter = ({
             type='radio'
             value='3'
             isChecked={bedroom === 3}
-            onClick={() => setBedroom(3)}
+            handleChange={() => setBedroom(3)}
             name='bedroom'
           />
           <RadioCheck
@@ -217,7 +221,7 @@ const Filter = ({
             type='radio'
             value='4'
             isChecked={bedroom === 4}
-            onClick={() => setBedroom(4)}
+            handleChange={() => setBedroom(4)}
             name='bedroom'
           />
           <RadioCheck
@@ -227,7 +231,7 @@ const Filter = ({
             type='radio'
             value='5+'
             isChecked={bedroom === 5}
-            onClick={() => setBedroom(5)}
+            handleChange={() => setBedroom(5)}
             name='bedroom'
           />
         </div>
@@ -260,7 +264,7 @@ const Filter = ({
                     key={idx + 1}
                     name='bathroom'
                     isChecked={bathroom === 'more'}
-                    onClick={() => setBathroom('more')}
+                    handleChange={() => setBathroom('more')}
                   />
                 );
               }
@@ -274,7 +278,7 @@ const Filter = ({
                   key={idx + 1}
                   name='bathroom'
                   isChecked={bathroom === idx + 1}
-                  onClick={() => setBathroom(idx + 1)}
+                  handleChange={() => setBathroom(idx + 1)}
                 />
               );
             })}
@@ -336,10 +340,12 @@ const Filter = ({
                 value={item}
                 type='checkbox'
                 name='features'
-                isChecked={desirerFeatures.some(
-                  (text: string) => text === item
-                )}
-                onClick={() => {
+                isChecked={
+                  payloadFromFilter?.desirer_features.some(
+                    (text: string) => text === item
+                  ) || desirerFeatures.some((text: string) => text === item)
+                }
+                handleChange={() => {
                   const uniqueFeatures: Set<string> = new Set([
                     ...desirerFeatures,
                   ]);
@@ -431,7 +437,7 @@ const SimilarComponent = ({
                 fontSize: '14px',
               }}
               type={type}
-              onClick={() => {
+              handleChange={() => {
                 if (Array.isArray(selectedValues)) {
                   if (type === 'checkbox') {
                     const uniqueValues = new Set([...selectedValues]);
