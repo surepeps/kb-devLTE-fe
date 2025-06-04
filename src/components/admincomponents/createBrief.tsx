@@ -430,44 +430,8 @@ const RentalBrief = ({
             isChecked={editBrief.propertyType === 'Land'}
           />
         </div>
-        {/* {formik.touched.propertyType && formik.errors.propertyType && (
-              <span className='text-red-600 text-sm'>
-                {formik.errors.propertyType}
-              </span>
-            )} */}
       </div>
-      {/**Usage Options */}
-      {/* <div className='min-h-[73px] flex flex-col gap-[15px]'>
-        <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
-          Usage Options
-        </h2>
-        <div className='flex flex-wrap gap-[30px]'>
-          {['All', 'Lease', 'Joint Venture', 'Outright Sale'].map(
-            (item: string, idx: number) => (
-              <RadioCheck
-                type='checkbox'
-                value={item}
-                isChecked={editBrief.usageOptions.includes(item)}
-                key={idx}
-                name='Usage Options'
-                handleChange={() => {
-                  const usageOptions = editBrief?.usageOptions?.includes(item)
-                    ? editBrief.usageOptions &&
-                      editBrief?.usageOptions?.filter(
-                        (option) => option !== item
-                      )
-                    : [...editBrief?.usageOptions, item];
-                  // formik.setFieldValue('usageOptions', usageOptions);
-                  setEditBrief({
-                    ...editBrief,
-                    usageOptions: usageOptions,
-                  });
-                }}
-              />
-            )
-          )}
-        </div>
-      </div> */}
+
       {/**Property condition */}
       <div className='lg:w-[535px] min-h-[73px] flex flex-col gap-[15px]'>
         <h2 className='text-[20px] leading-[32px] font-semibold text-[#1E1E1E]'>
@@ -666,36 +630,6 @@ const RentalBrief = ({
           ))}
         </div>
       </div>
-      {/**Upload Image | Documents */}
-      {/* <AttachFile
-        ref={attachRef}
-        heading='Upload image(optional)'
-        id='my-upload'
-      /> */}
-      {/**Images selected */}
-      {/* <div className='flex justify-end items-center gap-[15px] overflow-x-scroll hide-scrollbar md:overflow-x-auto whitespace-nowrap'>
-        {typeof editBrief?.fileUrl === 'object' &&
-          editBrief?.fileUrl.map((image) => (
-            <ImageContainer
-              setViewImage={setViewImage}
-              setImageData={setImageData}
-              removeImage={() => {
-                // setFileUrl(fileUrl.filter((img) => img.id !== image.id));
-                setEditBrief({
-                  ...editBrief,
-                  fileUrl: editBrief?.fileUrl.filter(
-                    (img) => img.id !== image.id
-                  ),
-                });
-              }}
-              image={image.image}
-              alt=''
-              heading=''
-              key={image.id}
-              id={image.id}
-            />
-          ))}
-      </div> */}
 
       {/**Button */}
       <div className='min-h-[50px] w-full flex justify-end items-center'>
