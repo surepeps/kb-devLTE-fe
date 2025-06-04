@@ -103,6 +103,7 @@ const Overview = () => {
   const [pendingBriefs, setPendingBriefs] = useState<number>(0);
   const [dealClosed, setDealClosed] = useState<number>(0);
   const [totalBriefs, setTotalBriefs] = useState<DataPropsArray>([]);
+  const [recentlyPublishedData, setRecentlyPublishedData] = useState<any[]>([]);
 
   useEffect(() => {
     if (selectedOption === 'Require Attention') {
@@ -113,9 +114,10 @@ const Overview = () => {
       (async () => {
         const url = URLS.BASE + URLS.agentGetUserPreferences;
         await GET_REQUEST(url, Cookies.get('token')).then((data) => {
+          console.log(data);
           if (data.success) {
-            // console.log(data.sellPreferences);
-            setBuyerPreferences(data.sellPreferences);
+            console.log(data.preferences);
+            setBuyerPreferences(data.preferences);
             setIsLoadingDetails({
               isLoading: false,
               message: 'Data Loaded',
@@ -297,7 +299,7 @@ const Overview = () => {
           );
         }
       case SELECTED_OPTIONS.RECENTLY_PUBLISH:
-        if (briefData?.length === 0) {
+        if (recentlyPublishedData?.length === 0) {
           return (
             <div className='w-full h-[200px] flex justify-center items-center'>
               <motion.h2
@@ -317,7 +319,7 @@ const Overview = () => {
               setDetailsToCheck={setDetailsToCheck}
               setShowFullDetails={setIsFullDetailsClicked}
               heading='Publish Brief'
-              data={briefData}
+              data={recentlyPublishedData}
             />
           );
         }
