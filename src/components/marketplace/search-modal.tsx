@@ -129,7 +129,7 @@ const SearchModal = ({
           }
           setFormikStatus('success');
           const shuffledData = shuffleArray(data);
-          setProperties(shuffledData.slice(0, 10));
+          setProperties(shuffledData);
           setSearchStatus({
             status: 'success',
             couldNotFindAProperty: properties['length'] === 0,
@@ -173,7 +173,7 @@ const SearchModal = ({
     }
     // You can set default page and limit as needed
     setBriefToFetch(
-      `${URLS.fetchBriefs}?page=1&limit=10&briefType=${encodeURIComponent(
+      `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(
         briefType
       )}`
     );
@@ -660,7 +660,7 @@ const SearchModal = ({
           ? data.data.filter((item: any) => item.isApproved === true)
           : [];
         const shuffledData = shuffleArray(approvedData);
-        setProperties(shuffledData.slice(0, 10));
+        setProperties(shuffledData);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error(err);
