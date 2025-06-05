@@ -148,6 +148,8 @@ const BuyAPropertySearchModal = ({
   const formikToPass = useFormik({
     initialValues: {
       ...cleanedPayload,
+      prices: priceFormik.values,
+      prices2: priceRadioValue,
     },
     onSubmit: () => {},
   });
@@ -155,6 +157,8 @@ const BuyAPropertySearchModal = ({
   useEffect(() => {
     formikToPass.setValues({
       ...cleanedPayload,
+      prices: priceFormik.values,
+      prices2: priceRadioValue,
     });
   }, [
     priceFormik.values,
@@ -380,6 +384,7 @@ const BuyAPropertySearchModal = ({
       <AnimatePresence>
         {isContactInformationModalOpened && (
           <ContactInformation
+            payload={formikToPass}
             type='buyer'
             setIsContactInformationModalOpened={
               setIsContactInformationModalOpened

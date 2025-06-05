@@ -1,6 +1,6 @@
 /** @format */
 'use client';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import PopUpModal from '../pop-up-modal-reusability';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,19 +11,22 @@ import * as Yup from 'yup';
 import { archivo } from '@/styles/font';
 import axios from 'axios';
 import { URLS } from '@/utils/URLS';
+import toast from 'react-hot-toast';
 
 type ConractInformationProps = {
   payload?: any;
   setIsContactInformationModalOpened?: (value: boolean) => void;
-  type: 'buyer' | 'seller';
+  type: 'buyer' | 'jv' | 'rent';
 };
 
 const ContactInformation: FC<ConractInformationProps> = ({
   setIsContactInformationModalOpened,
   type,
+  payload,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const validationSchema = Yup.object({
-    name: Yup.string().required('Name is required'),
+    fullName: Yup.string().required('Name is required'),
     email: Yup.string().email('Invalid email address').notRequired(),
     phoneNumber: Yup.string()
       .required('Phone number is required')
@@ -39,16 +42,175 @@ const ContactInformation: FC<ConractInformationProps> = ({
     validationSchema,
     onSubmit: async (values) => {
       console.log('Form submitted with values:', values);
-      //asynchronous http request
-      try {
-        const response = await axios.post(URLS.BASE);
-        if (response.status === 200) {
-          //do something
-        } else {
+      console.log('Payload:', payload.values);
+
+      setIsSubmitting(true);
+      if (type === 'buyer') {
+        try {
+          const url = URLS.BASE + URLS.userSubmitPreference;
+          const payloadToPass = {
+            propertyType: payload.values.usageOptions
+              ? payload.values.usageOptions.join(',')
+              : '',
+            features: payload.values.desirerFeatures,
+            docOnProperty: payload?.values?.docsOnProperty
+              ? payload.values.docsOnProperty.map((opt: string) => ({
+                  docName: opt,
+                  isProvided: true,
+                }))
+              : [],
+            propertyCondition: payload.values.desirerFeatures.toString(),
+            location: {
+              state: payload.values.location.split(',')[1].trim(),
+              localGovernment: payload.values.location.split(',')[0].trim(),
+              //area: payload.values.area,
+            },
+            budgetMin: Number(payload.values.prices.minPrice || 0),
+            budgetMax: Number(payload.values.prices.maxPrice || 0),
+            owner: {
+              fullName: values.fullName,
+              phoneNumber: values.phoneNumber,
+              email: values.email,
+            },
+            areYouTheOwner: true,
+            landSize: {
+              measurementType: payload.values.landSize.type,
+              size: Number(payload.values.landSize.size),
+            },
+            briefType: payload.values.briefType,
+            additionalFeatures: {
+              noOfBedrooms: Number(payload.values.bedroom || 0),
+              noOfBathrooms: Number(payload.values.bathroom || 0),
+            },
+            tenantCriteria: [],
+            // preferenceFeeTransaction: {
+            //   accountName: values.fullName,
+            //   transactionReciept: payload.values.paymentReceiptUrl,
+            // },
+          };
+          console.log('Payload:', payloadToPass);
+
+          await toast.promise(
+            axios.post(url, payloadToPass).then((response) => {
+              console.log('response from brief', response);
+              if ((response as any).data.owner) {
+                setIsSubmitting(false);
+                toast.success('Preference submitted successfully');
+                //setShowFinalSubmit(true);
+                // setIsSubmittedSuccessfully(true);
+                //setAreInputsDisabled(false);
+                return 'Preference submitted successfully';
+              } else {
+                const errorMessage =
+                  (response as any).error || 'Submission failed';
+                toast.error(errorMessage);
+                //setAreInputsDisabled(false);
+                setIsSubmitting(false);
+                throw new Error(errorMessage);
+              }
+            }),
+            {
+              loading: 'Submitting...',
+              // success: 'Property submitted successfully',
+              // error: 'An error occurred, please try again',
+            }
+          );
+        } catch (error) {
+          console.error(error);
+          toast.error('Failed to submit property');
+          //setAreInputsDisabled(false);
+          setIsSubmitting(false);
+        } finally {
+          //setAreInputsDisabled(false);
         }
-      } catch (err) {
-        console.error(err);
+      } else if (type === 'rent') {
+        try {
+          const url = URLS.BASE + URLS.userSubmitPreference;
+          const payloadToPass = {
+            propertyType: payload?.values?.rentFilterBy
+              ? payload.values.rentFilterBy.join(',')
+              : '',
+            features: payload?.values?.desirerFeatures
+              ? payload?.values?.desiresFeatures
+              : [],
+            docOnProperty: [],
+            propertyCondition: payload?.values?.desiresFeatures
+              ? payload.values.desiresFeatures.toString()
+              : '',
+            location: {
+              state: payload.values.location.state,
+              localGovernment: payload.values.location.lga,
+              //area: payload.values.area,
+            },
+            budgetMin: Number(payload?.values?.price?.minPrice || 0),
+            budgetMax: Number(payload?.values?.price?.maxPrice || 0),
+            owner: {
+              fullName: values.fullName,
+              phoneNumber: values.phoneNumber,
+              email: values.email,
+            },
+            areYouTheOwner: true,
+            // landSize: {
+            //   measurementType: payload.values.landSize.type,
+            //   size: Number(payload.values.landSize.size),
+            // },
+            briefType: payload.values.briefType,
+            additionalFeatures: {
+              noOfBedrooms: Number(payload.values.bedroom || 0),
+              noOfBathrooms: Number(payload.values.bathroom || 0),
+            },
+            tenantCriteria: [],
+            // preferenceFeeTransaction: {
+            //   accountName: values.fullName,
+            //   transactionReciept: payload.values.paymentReceiptUrl,
+            // },
+          };
+          console.log('Payload:', payloadToPass);
+
+          await toast.promise(
+            axios.post(url, payloadToPass).then((response) => {
+              console.log('response from brief', response);
+              if ((response as any).data.owner) {
+                setIsSubmitting(false);
+                toast.success('Preference submitted successfully');
+                //setShowFinalSubmit(true);
+                // setIsSubmittedSuccessfully(true);
+                //setAreInputsDisabled(false);
+                return 'Preference submitted successfully';
+              } else {
+                const errorMessage =
+                  (response as any).error || 'Submission failed';
+                toast.error(errorMessage);
+                //setAreInputsDisabled(false);
+                setIsSubmitting(false);
+                throw new Error(errorMessage);
+              }
+            }),
+            {
+              loading: 'Submitting...',
+              // success: 'Property submitted successfully',
+              // error: 'An error occurred, please try again',
+            }
+          );
+        } catch (error) {
+          console.error(error);
+          toast.error('Failed to submit property');
+          setIsSubmitting(false);
+          //setAreInputsDisabled(false);
+        } finally {
+          //setAreInputsDisabled(false);
+        }
       }
+      //asynchronous http request
+      // try {
+      //   const response = await axios.post(URLS.BASE);
+      //   if (response.status === 200) {
+      //     //do something
+      //   } else {
+      //   }
+      // } catch (err) {
+      //   console.error(err);
+      // }
       //close the modal
       setIsContactInformationModalOpened?.(false);
     },
@@ -81,8 +243,8 @@ const ContactInformation: FC<ConractInformationProps> = ({
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className='py-[40px] px-[60px] rounded-[4px] bg-white shadow-md flex items-center justify-center'>
-          <div className='w-full flex flex-col gap-[42px]'>
+          className='md:py-[40px] py-[30px] px-[30px] md:px-[60px] rounded-[4px] bg-white shadow-md flex items-center justify-center'>
+          <div className='w-full flex flex-col gap-[21px] md:gap-[42px]'>
             <div className='flex flex-col gap-[4px] items-center justify-center'>
               <h2 className='text-2xl font-bold text-gray-900 text-center'>
                 Contact Information
@@ -123,11 +285,20 @@ const ContactInformation: FC<ConractInformationProps> = ({
                 placeholder={`Optional, for communication`}
               />
             </div>
+            <span
+              className={`text-[#FF2539] font-semibold text-base md:text-xl`}>
+              Stay updated! Receive email updates on listing that fits your
+              preference for{' '}
+              <span className='text-black text-base md:text-xl font-semibold'>
+                N5,000
+              </span>
+            </span>
             <div className='w-full flex flex-col gap-[15px]'>
               <button
                 type='submit'
-                className={`bg-[#8DDB90] h-[57px] rounded-[5px] text-lg ${archivo.className} font-bold text-white`}>
-                Submit
+                disabled={isSubmitting}
+                className={`bg-[#8DDB90] h-[57px] rounded-[5px] text-lg ${archivo.className} font-bold text-white disabled:animate-pulse`}>
+                {isSubmitting ? 'Submitting' : 'Submit'}
               </button>
               <button
                 onClick={() => {

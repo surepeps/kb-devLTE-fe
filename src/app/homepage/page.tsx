@@ -13,6 +13,7 @@ import { useLoading } from '@/hooks/useLoading';
 import HeroSection from '@/components/homepage/homepage_hero';
 import Section1 from '@/components/homepage/home_section1';
 import EmailVerification from '@/components/EmailVerification';
+import AgentMarket from '@/components/homepage/agent_marketplace';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { URLS } from '@/utils/URLS';
 import { GET_REQUEST } from '@/utils/requests';
@@ -22,6 +23,7 @@ import HowItWorksSection from '@/components/homepage/how-it-works-section';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Countdown from '../coming-soon-modal/page';
+import Agent from '../agent/page';
 
 /**
  * @Homepage - A function that returns the web homepage
@@ -143,6 +145,7 @@ const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           {/* <NewSection /> */}
           <HowItWorksSection />
           <SeeWhatOthers />
+          {/* <AgentMarket/> */}
           <Section3
             isHomepage={true}
             isAgentPage={false}
