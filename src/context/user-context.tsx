@@ -24,6 +24,7 @@ export interface User {
   phoneNumber?: string;
   selectedRegion?: string[];
   userType?: string;
+  accountId?: string;
   address?: {
     localGovtArea: string;
     city: string;
