@@ -18,6 +18,7 @@ import { epilogue } from '@/styles/font';
 import { shuffleArray } from '@/utils/shuffleArray';
 import axios from 'axios';
 import { GET_REQUEST } from '@/utils/requests';
+import { useRouter } from 'next/navigation';
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -28,7 +29,8 @@ const Section2 = () => {
   });
   const { setCardData } = usePageContext();
   const [properties, setProperties] = useState<any[]>([]);
-  const [selectedMarketPlace, setSelectedMarketPlace] = useState('Buy a property');
+  const [selectedMarketPlace, setSelectedMarketPlace] =
+    useState('Buy a property');
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
@@ -36,6 +38,9 @@ const Section2 = () => {
     useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+
 
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
@@ -75,42 +80,6 @@ const Section2 = () => {
     } catch (err) {
       console.log(err);
       setIsLoading(false);
-    }
-  };
-
-  // const fetchLandBriefs = async () => {
-  //   setIsLoading(true);
-
-  //   const response = await axios.get(URLS.BASE + '');
-
-  //   try {
-  //   } catch (err) {
-  //     console.log(err as any);
-  //   }
-  // };
-
-  const fetchPropertyInsightData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(URLS.BASE + URLS.buyersFetchBriefs);
-
-      if (response.status !== 200) {
-        setIsLoading(false);
-        throw new Error('Failed to fetch data');
-      }
-      
-      const data = response.data;
-      console.log("data on homepage", data);
-      const shuffled = shuffleArray(data.data);
-      setProperties(shuffled.slice(0, 4));
-      setCardData(data);
-      setIsLoading(false);
-    } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        console.error(err);
-        // setErrMessage(err.message || 'An error occurred');
-        setIsLoading(false);
-      }
     }
   };
 
@@ -164,72 +133,61 @@ const Section2 = () => {
   };
 
   const getBriefType = (marketPlace: string) => {
-  switch (marketPlace) {
-    case 'Buy a property':
-      return 'Outright Sales';
-    case 'Find property for joint venture':
-      return 'Joint Venture';
-    case 'Rent/Lease a property':
-      return 'Rent';
-    default:
-      return 'Outright Sales';
-  }
-};
-
-//   useEffect(() => {
-//   const briefType = getBriefType(selectedMarketPlace);
-//   const url = `${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
-
-//   const fetchData = async () => {
-//     setIsLoading(true);
-//     try {
-//       const response = await axios.get(url);
-//       if (response.status !== 200) throw new Error('Failed to fetch data');
-//       const data = response.data.data;
-//       setProperties(shuffleArray(data).slice(0, 4));
-//       setCardData(data);
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   fetchData();
-// }, [selectedMarketPlace, setCardData]);
-
-useEffect(() => {
-  const briefType = getBriefType(selectedMarketPlace);
-  const url = `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
-
-const fetchData = async () => {
-  setIsLoading(true);
-  try {
-    const data = await GET_REQUEST(url); // NOT response.data
-    console.log("data on homepage", data);
-    if (Array.isArray(data.data)) {
-      setProperties(shuffleArray(data.data).slice(0, 4));
-      setCardData(data.data);
-    } else {
-      setProperties([]);
-      setCardData([]);
-      console.error("API returned data.data that is not an array:", data.data);
+    switch (marketPlace) {
+      case 'Buy a property':
+        return 'Outright Sales';
+      case 'Find property for joint venture':
+        return 'Joint Venture';
+      case 'Rent/Lease a property':
+        return 'Rent';
+      default:
+        return 'Outright Sales';
     }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setIsLoading(false);
+  };
+
+  const sanitizeUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+    return url;
   }
+  return 'https://' + url.replace(/^\/+/, '');
 };
 
-  fetchData();
-}, [selectedMarketPlace, setCardData]);
+  useEffect(() => {
+    const briefType = getBriefType(selectedMarketPlace);
+    const url = `${URLS.BASE}${
+      URLS.fetchBriefs
+    }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
-  // useEffect(() => {
-  //   fetchPropertyInsightData();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await GET_REQUEST(url);
+        let approved = Array.isArray(data.data)
+          ? data.data.filter((item: any) => item.isApproved === true)
+          : [];
+        if (buttons.button2) {
+          approved = approved.filter(
+            (item: any) => item.propertyType === 'Land'
+          );
+        }
+          const sanitizedApproved = shuffleArray(approved).slice(0, 4).map((item: any) => ({
+            ...item,
+            pictures: item?.pictures?.map((img: string) => sanitizeUrl(img)),
+          }));
+        setProperties(sanitizedApproved);
+        setCardData(approved);
+      } catch (err) {
+        console.error(err);
+        setProperties([]);
+        setCardData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  //   return () => {};
-  // }, [setCardData]);
+    fetchData();
+  }, [selectedMarketPlace, setCardData, buttons.button2]);
 
   return (
     <section className='flex justify-center items-center bg-[#8DDB901A] pb-[30px]'>
@@ -333,6 +291,13 @@ const fetchData = async () => {
                   isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                   images={property?.pictures}
                   isPremium={property?.isPremium}
+                  onCardPageClick={() => {
+                    if (buttons.button1) {
+                      return router.push(`/property/${'Buy'}/${property?._id}`);
+                    } else if (buttons.button3) {
+                      return router.push(`property/${'Rent'}/${property?._id}`);
+                    }
+                  }}
                   onClick={() => {
                     handleSubmitInspection(property);
                   }}
@@ -364,7 +329,7 @@ const fetchData = async () => {
                     //       `<span key={${item._id}>${item.docName}</span>`
                     //   )}</div>`,
                     // },
-                      {
+                    {
                       header: 'Documents',
                       value: (
                         <div>

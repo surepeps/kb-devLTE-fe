@@ -27,7 +27,7 @@ const Settings = () => {
   const getUserAccount = async () => {
     setIsLoading(true);
     setFormikStatus('pending');
-    console.log(Cookies.get('token'));
+    //console.log(Cookies.get('token'));
     try {
       const response = await axios.get(URLS.BASE + URLS.userAccount, {
         headers: {
@@ -39,7 +39,7 @@ const Settings = () => {
         setIsLoading(false);
         setFormikStatus('success');
         const userAccount: UserAgentDataProps = response.data.user;
-        console.log('userAccount', userAccount);
+        // console.log('userAccount', userAccount);
         if (userAccount._id) {
           /**
            * fill the userDetails contextAPI with the values from the backend
@@ -47,7 +47,7 @@ const Settings = () => {
            */
           setUserDetails(userAccount);
         }
-        console.log(userDetails);
+        //console.log(userDetails);
       } else {
         setFormikStatus('failed');
       }
