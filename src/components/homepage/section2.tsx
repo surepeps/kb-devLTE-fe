@@ -40,6 +40,8 @@ const Section2 = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
+
+
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
 
@@ -143,6 +145,14 @@ const Section2 = () => {
     }
   };
 
+  const sanitizeUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+    return url;
+  }
+  return 'https://' + url.replace(/^\/+/, '');
+};
+
   useEffect(() => {
     const briefType = getBriefType(selectedMarketPlace);
     const url = `${URLS.BASE}${
@@ -161,7 +171,11 @@ const Section2 = () => {
             (item: any) => item.propertyType === 'Land'
           );
         }
-        setProperties(shuffleArray(approved).slice(0, 4));
+          const sanitizedApproved = shuffleArray(approved).slice(0, 4).map((item: any) => ({
+            ...item,
+            pictures: item?.pictures?.map((img: string) => sanitizeUrl(img)),
+          }));
+        setProperties(sanitizedApproved);
         setCardData(approved);
       } catch (err) {
         console.error(err);
