@@ -49,6 +49,12 @@ const navItems = [
     icon: faUserShield,
     disabled: true,
   },
+  {
+    href: '/admin/preference_management',
+    label: 'Preference Management',
+    icon: faUserShield,
+    disabled: false,
+  },
   // {
   //   href: '/admin/analytics',
   //   label: 'Advance Analytics',
@@ -101,7 +107,6 @@ export default function AdminNavbar() {
                     ? 'text-gray-400 cursor-not-allowed'
                     : 'text-[#515B6F] hover:bg-gray-200'
                 }`}>
-
                 <FontAwesomeIcon
                   width={24}
                   height={24}
