@@ -85,7 +85,7 @@ const Overview = () => {
   });
 
   const [selectedOption, setSelectedOption] =
-    useState<string>('Require Attention');
+    useState<string>('View Preference Request');
   const [heading, setHeading] = useState<string>(selectedOption);
   const [submitBrief, setSubmitBrief] = useState<boolean>(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState({
@@ -106,7 +106,7 @@ const Overview = () => {
   const [recentlyPublishedData, setRecentlyPublishedData] = useState<any[]>([]);
 
   useEffect(() => {
-    if (selectedOption === 'Require Attention') {
+    if (selectedOption === 'View Preference Request') {
       setIsLoadingDetails({
         isLoading: true,
         message: 'Loading...',
@@ -498,31 +498,6 @@ const Overview = () => {
                 )
               }
             />
-            {/**Total Amount */}
-            {/* Complete Transaction */}
-
-            {/* <div className='w-full h-[127px] bg-[#F1FFF7] rounded-[4px] border-[1px] border-[#2CAF67] p-[20px] flex flex-col justify-between'>
-              <div className='flex justify-between min-h-[24px] border-b-[1px] border-[#E4DFDF] pb-1 w-full'>
-                <span className='text-base leading-[18px] text-[#2CAF67] tracking-[0.25px] font-archivo'>
-                  Complete Transaction
-                </span>
-                <h2 className='text-[#181336] text-[30px] leading-[24px] tracking-[0.25px] font-semibold font-archivo'>
-                  {briefs.completeTransaction}
-                </h2>
-              </div>
-              <div className='min-h-[44px] flex flex-col gap-[4px]'>
-                <span className='text-[14px] leading-[18px] text-[#181336] tracking-[0.25px] font-archivo'>
-                  Total Amount made with us
-                </span>
-                <h2 className='text-[24px] leading-[22px] tracking-[0.25px] font-semibold font-archivo font-[#181336]'>
-                  N{' '}
-                  {Number(briefs.totalAmount || 0).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </h2>
-              </div>
-            </div> */}
           </div>
 
           <div className='w-full min-h-[51px] flex gap-[15px] md:gap-[25px] overflow-x-auto hide-scrollbar'>
@@ -586,11 +561,10 @@ const Options: FC<OptionType> = ({ text, onClick, className }) => {
 };
 
 const OptionData: string[] = [
-  'Require Attention',
-  'Recently Published',
+  'View Preference Request',
   // 'Total referred Agent',
   // '3 month ago Brief',
-  'Inspection Requests',
+  'Manage Inspection Requests',
 ];
 
 interface TableProps {
@@ -654,15 +628,19 @@ const Table: FC<TableProps> = ({
                 <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
                   N {Number(item.propertyPrice).toLocaleString()}
                 </td>
-                {item.docOnProperty.length !== 0 ? (
-                  <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
-                    {item.docOnProperty.map(({ docName }) => docName)}
-                  </td>
-                ) : (
-                  <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
-                    No document
-                  </td>
-                )}
+                  {item.docOnProperty.length !== 0 ? (
+                    <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
+                      {item.docOnProperty
+                        .slice(0, 2)
+                        .map(({ docName }) => docName)
+                        .join(', ')}
+                      {item.docOnProperty.length > 2 && '...'}
+                    </td>
+                  ) : (
+                    <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>
+                      No document
+                    </td>
+                  )}
                 {/* {item.propertyPrice ? (
                   <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
                     N {Number(item.propertyPrice).toLocaleString()}
@@ -725,9 +703,9 @@ const Boxes: FC<BoxProps> = ({ heading, value }) => {
 };
 
 enum SELECTED_OPTIONS {
-  REQUIRE_ATTENTION = 'Require Attention',
+  REQUIRE_ATTENTION = 'View Preference Request',
   RECENTLY_PUBLISH = 'Recently Published',
-  INSPECTION_REQUESTS = 'Inspection Requests',
+  INSPECTION_REQUESTS = 'Manage Inspection Requests',
   THREE_MONTHS_AGO_BRIEF = '3 month ago Brief',
 }
 export default Overview;
