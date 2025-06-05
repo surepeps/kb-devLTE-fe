@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import useClickOutside from '@/hooks/clickOutside';
 import Image from 'next/image';
@@ -9,6 +9,9 @@ import userIcon from '@/svgs/user2.svg';
 import faLock from '@/svgs/lock.svg';
 import { User, useUserContext } from '@/context/user-context';
 import { archivo } from '@/styles/font';
+import { LayoutDashboardIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import microphonesvg from '@/svgs/microphone.svg';
 
 type userDetailsProps = {
   firstName: string;
@@ -29,8 +32,15 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
 }) => {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const { logout } = useUserContext();
+  const [userType, setUserType] = useState<'Agent' | 'Landowners'>('Agent');
+
+  const router = useRouter();
 
   useClickOutside(ref, () => closeUserProfileModal(false));
+
+  useEffect(() => {
+    setUserType(userDetails?.userType as 'Agent' | 'Landowners');
+  }, [userDetails]);
   return (
     <motion.div
       ref={ref}
@@ -38,19 +48,28 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
       viewport={{ once: true }}
-      className='absolute mt-[70px] z-[1000] -ml-[160px] md:-ml-[210px] w-[268px] h-[435px] bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
+      className='absolute mt-[70px] z-[1000] -ml-[160px] md:-ml-[210px] w-[268px] min-h-[435px] bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
       <h2
         className={`text-base font-medium text-[#000000] ${archivo.className}`}>
         My Profile
       </h2>
       <div className='flex flex-col gap-[30px]'>
         <div className='w-full flex flex-col py-[15px] px-[10px] min-h-[154px] gap-[10px] bg-[#F7F7F8] border-[1px] border-[#D6DDEB] overflow-x-auto hide-scrollbar'>
-          {/**User ID */}
+          {/**User Type */}
           <div className='flex items-end gap-[10px]'>
-            <span className='text-base text-[#7C8493]'>User ID</span>
-            <span className='text-base text-[#25324B]'>
-              {userDetails?._id?.slice(0, 15)}...
+            <span className='text-base text-[#7C8493]'>
+              {userType === 'Agent' ? userType : 'User type'}
             </span>
+            <span className='text-base text-[#25324B]'>
+              {userType === 'Agent'
+                ? userDetails?.agentData?.agentType
+                : userType}
+            </span>
+          </div>
+          {/**User ID */}
+          <div className='flex items-center gap-[10px]'>
+            <span className='text-base text-[#7C8493]'>ID</span>
+            <span className='text-base text-[#25324B]'>{userDetails?.accountId}</span>
           </div>
           {/**Name */}
           <div className='flex items-center gap-[10px]'>
@@ -74,6 +93,15 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             </span>
           </div>
         </div>
+
+        {userType === 'Agent' ? (
+          <button
+            onClick={() => router.push('/post_property')}
+            className='h-[50px] bg-[#8DDB90] border-[1px] border-[#5A5D63]/[50%] text-[#FFFFFF]'
+            type='button'>
+            List a property
+          </button>
+        ) : null}
       </div>
 
       {/**Referral */}
@@ -89,6 +117,37 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
         />
         <span className='text-base font-medium underline'>Referral</span>
       </button>
+      {/**Dashboard */}
+       {userType === 'Agent' ? (
+      <button
+        type='button'
+        className='w-full h-[26px] flex items-end gap-[10px]'>
+        <LayoutDashboardIcon
+          size={'sm'}
+          width={24}
+          height={24}
+          color='#5A5D63'
+          className='w-[24px] h-[24px]'
+        />
+        <span className='text-base font-medium underline'>Dashboard</span>
+      </button>
+        ) : null}
+      {/**Agent marketplace */}
+       {userType === 'Agent' ? (
+      <button
+      onClick={() => router.push('/agent/marketplace')}
+        type='button'
+        className='w-full h-[26px] flex items-end gap-[10px]'>
+        <Image
+          alt='lock'
+          src={microphonesvg}
+          width={24}
+          height={24}
+          className='w-[24px] h-[24px]'
+        />
+        <span className='text-base font-medium underline'>marketplace</span>
+      </button>
+        ) : null}
       {/**Change Password */}
       <button
         type='button'

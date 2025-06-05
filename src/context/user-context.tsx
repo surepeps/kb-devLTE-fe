@@ -24,6 +24,7 @@ export interface User {
   phoneNumber?: string;
   selectedRegion?: string[];
   userType?: string;
+  accountId?: string;
   address?: {
     localGovtArea: string;
     city: string;
@@ -35,6 +36,10 @@ export interface User {
   individualAgent?: {
     idNumber: string;
     typeOfId: string;
+  };
+  agentData?: {
+    accountApproved: boolean;
+    agentType: string;
   };
   companyAgent?: {
     companyName: string;
@@ -73,7 +78,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           ) {
             Cookies.remove('token');
             toast.error('Session expired, please login again');
-            router.push('/auth/login');     
+            router.push('/auth/login');
           }
         }
       })
