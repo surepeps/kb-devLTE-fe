@@ -75,7 +75,9 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           {/**User ID */}
           <div className='flex items-center gap-[10px]'>
             <span className='text-base text-[#7C8493]'>ID</span>
-            <span className='text-base text-[#25324B]'>{userDetails?._id}</span>
+            <span className='text-base text-[#25324B]'>
+              {userDetails?.accountId}
+            </span>
           </div>
           {/**Name */}
           <div className='flex items-center gap-[10px]'>
@@ -126,60 +128,40 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
         </Link>
       </button>
       {/**Dashboard */}
-      <button
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        {/* <Image
-          alt='lock'
-          src={userIcon}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        /> */}
-        <LayoutDashboardIcon
-          size={'sm'}
-          width={24}
-          height={24}
-          color='#5A5D63'
-          className='w-[24px] h-[24px]'
-        />
-        <Link
-          href={'/agent/briefs'}
-          className='text-base font-medium underline'>
-          Dashboard
-        </Link>
-      </button>
+      {userType === 'Agent' ? (
+        <button
+          type='button'
+          className='w-full h-[26px] flex items-end gap-[10px]'>
+          <LayoutDashboardIcon
+            size={'sm'}
+            width={24}
+            height={24}
+            color='#5A5D63'
+            className='w-[24px] h-[24px]'
+          />
+          <Link
+            href={'/agent/briefs'}
+            className='text-base font-medium underline'>
+            Dashboard
+          </Link>
+        </button>
+      ) : null}
       {/**Agent marketplace */}
-      <button
-        onClick={() => {
-          switch (userType) {
-            case 'Agent':
-              return router.push('/agent/agent-marketplace');
-            case 'Landowners':
-              router.push('/market-place');
-
-            default:
-              break;
-          }
-        }}
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        {/* <Image
-          alt='lock'
-          src={userIcon}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        /> */}
-        <Image
-          alt='lock'
-          src={microphonesvg}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        />
-        <span className='text-base font-medium underline'>marketplace</span>
-      </button>
+      {userType === 'Agent' ? (
+        <button
+          onClick={() => router.push('/agent/marketplace')}
+          type='button'
+          className='w-full h-[26px] flex items-end gap-[10px]'>
+          <Image
+            alt='lock'
+            src={microphonesvg}
+            width={24}
+            height={24}
+            className='w-[24px] h-[24px]'
+          />
+          <span className='text-base font-medium underline'>marketplace</span>
+        </button>
+      ) : null}
       {/**Change Password */}
       <button
         type='button'

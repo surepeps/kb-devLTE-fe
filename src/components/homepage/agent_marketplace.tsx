@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Users, Zap, Shield, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 const AgentMarketplace = () => {
   const containerVariants = {
@@ -132,6 +133,7 @@ const AgentMarketplace = () => {
           variants={itemVariants}
           className="text-center"
         >
+          <Link href="/agent/agent-marketplace">
           <motion.button
             whileHover={{ 
               scale: 1.05,
@@ -142,6 +144,7 @@ const AgentMarketplace = () => {
           >
             <span>Agent Marketplace</span>
           </motion.button>
+         </Link>
         </motion.div>
       </div>
     </section>
