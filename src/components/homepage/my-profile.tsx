@@ -12,6 +12,9 @@ import { archivo } from '@/styles/font';
 import { LayoutDashboardIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import microphonesvg from '@/svgs/microphone.svg';
+import Link from 'next/link';
+import { usePageContext } from '@/context/page-context';
+import { AgentNavData } from '@/enums';
 
 type userDetailsProps = {
   firstName: string;
@@ -32,6 +35,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
 }) => {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const { logout } = useUserContext();
+  const { setSelectedNav } = usePageContext();
   const [userType, setUserType] = useState<'Agent' | 'Landowners'>('Agent');
 
   const router = useRouter();
@@ -48,7 +52,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
       viewport={{ once: true }}
-      className='absolute mt-[70px] z-[1000] -ml-[160px] md:-ml-[210px] w-[268px] min-h-[435px] bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
+      className='absolute mt-[70px] -ml-[160px] md:-ml-[210px] w-[268px] whitespace-nowrap bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
       <h2
         className={`text-base font-medium text-[#000000] ${archivo.className}`}>
         My Profile
@@ -63,13 +67,17 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             <span className='text-base text-[#25324B]'>
               {userType === 'Agent'
                 ? userDetails?.agentData?.agentType
+                  ? userDetails?.agentData?.agentType
+                  : 'N/A'
                 : userType}
             </span>
           </div>
           {/**User ID */}
           <div className='flex items-center gap-[10px]'>
             <span className='text-base text-[#7C8493]'>ID</span>
-            <span className='text-base text-[#25324B]'>{userDetails?.accountId}</span>
+            <span className='text-base text-[#25324B]'>
+              {userDetails?.accountId}
+            </span>
           </div>
           {/**Name */}
           <div className='flex items-center gap-[10px]'>
@@ -115,39 +123,45 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           height={24}
           className='w-[24px] h-[24px]'
         />
-        <span className='text-base font-medium underline'>Referral</span>
+        <Link href={'/referral'} className='text-base font-medium underline'>
+          Referral
+        </Link>
       </button>
       {/**Dashboard */}
-       {userType === 'Agent' ? (
-      <button
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        <LayoutDashboardIcon
-          size={'sm'}
-          width={24}
-          height={24}
-          color='#5A5D63'
-          className='w-[24px] h-[24px]'
-        />
-        <span className='text-base font-medium underline'>Dashboard</span>
-      </button>
-        ) : null}
+      {userType === 'Agent' ? (
+        <button
+          type='button'
+          className='w-full h-[26px] flex items-end gap-[10px]'>
+          <LayoutDashboardIcon
+            size={'sm'}
+            width={24}
+            height={24}
+            color='#5A5D63'
+            className='w-[24px] h-[24px]'
+          />
+          <Link
+            href={'/agent/briefs'}
+            className='text-base font-medium underline'>
+            Dashboard
+          </Link>
+        </button>
+      ) : null}
       {/**Agent marketplace */}
-       {userType === 'Agent' ? (
-      <button
-      onClick={() => router.push('/agent/marketplace')}
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        <Image
-          alt='lock'
-          src={microphonesvg}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        />
-        <span className='text-base font-medium underline'>marketplace</span>
-      </button>
-        ) : null}
+      {userType === 'Agent' ? (
+        <button
+          onClick={() => router.push('/agent/agent-marketplace')}
+          type='button'
+          className='w-full h-[26px] flex items-end gap-[10px]'>
+          <Image
+            alt='lock'
+            src={microphonesvg}
+            width={24}
+            height={24}
+            className='w-[24px] h-[24px]'
+          />
+          <span className='text-base font-medium underline'>marketplace</span>
+        </button>
+      ) : null}
       {/**Change Password */}
       <button
         type='button'
@@ -159,7 +173,14 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           height={24}
           className='w-[24px] h-[24px]'
         />
-        <span className='text-base font-medium underline'>Change Password</span>
+        <span
+          onClick={() => {
+            setSelectedNav(AgentNavData.SETTINGS);
+            router.push('/agent/briefs');
+          }}
+          className='text-base font-medium underline'>
+          Change Password
+        </span>
       </button>
 
       {/**button to sign out */}
