@@ -133,7 +133,7 @@ const AboutUs = () => {
                 do.
               </p>
             </div>
-            <div className='w-full px-[10px] flex justify-center items-center'>
+            <div className='w-full px-[10px] flex justify-center items-center '>
               <div className='grid md:grid-cols-3 md:gap-[40px] gap-[20px]'>
                 {teamMembers.map(
                   (
@@ -212,11 +212,11 @@ const teamMembers: {
     name: 'Ayowole Ajayi',
     positionHeld: 'CTO',
   },
-  {
-    image: fasimoye,
-    name: 'Fasimoye Olatunji',
-    positionHeld: 'Product Consultant',
-  },
+  // {
+  //   image: fasimoye,
+  //   name: 'Fasimoye Olatunji',
+  //   positionHeld: 'Product Consultant',
+  // },
   {
     image: abolanleImage,
     name: 'Abolanle Okunade',
@@ -225,8 +225,7 @@ const teamMembers: {
   {
     image: adesayoImage,
     name: 'Adesayo Okubajo',
-    positionHeld: `Business  Development
-& Strategy Lead`,
+    positionHeld: `Business  Development & Strategy Lead`,
   },
 ];
 
