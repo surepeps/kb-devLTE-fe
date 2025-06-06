@@ -21,6 +21,8 @@ const VerifyEmail = () => {
     if (!email) return;
     setUserEmail(email);
   }, []);
+
+
   return (
     <div className='w-full flex justify-center items-center'>
       <div className='container min-h-[600px] flex flex-col justify-start items-center gap-[20px]'>
@@ -48,13 +50,13 @@ const VerifyEmail = () => {
                   {userEmail}
                 </span>{' '}
                 Click it to complete your signup.
-                {/* <br /> Didn&apos;t get it? Check your email or{' '} */}
-                {/* <span
+                <br /> Didn&apos;t get it? Check your email or{' '}
+                <span
                   onClick={() => setIsEditEmailOpened(!isEditEmailModalOpened)}
                   className='text-base md:text-xl text-[#09391C] font-bold underline cursor-pointer'>
                   Edit Email
                 </span>
-                . */}
+                .
               </p>
             </div>
           </div>
@@ -91,20 +93,36 @@ const EditEmail = ({
     }
   };
 
-  const submitEmail = async () => {
-    try {
-      setReqStatus('pending');
-      const response = await axios.post(URLS.BASE);
-      if (response.status === 200) {
-        setReqStatus('success');
-        toast.success(reqStatus);
-      }
-    } catch (error: any) {
-      console.log(error);
-      setReqStatus(reqStatus);
-      toast.error(error?.message ?? reqStatus);
+const submitEmail = async () => {
+  try {
+    setReqStatus('pending');
+    // Get the token from localStorage (or however you store it after signup)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('No token found. Please sign up again.');
+      setReqStatus('failed');
+      return;
     }
-  };
+    const response = await axios.post(
+      `${URLS.BASE}/user/change-email`,
+      {
+        email: userEmail,
+        token: token,
+      }
+    );
+    if (response.status === 200) {
+      setReqStatus('success');
+      toast.success('Email updated successfully!');
+      // Optionally update localStorage
+      localStorage.setItem('email', userEmail);
+      closeModal(false);
+    }
+  } catch (error: any) {
+    console.log(error);
+    setReqStatus('failed');
+    toast.error(error?.response?.data?.message || error?.message || 'Failed to update email');
+  }
+};
   return (
     <div className='w-full h-[400px] flex flex-col px-[20px] mt-[30px]'>
       <div className='flex items-center gap-[10px]'>

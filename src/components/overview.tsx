@@ -24,6 +24,8 @@ import { archivo } from '@/styles/font';
 import { motion } from 'framer-motion';
 
 interface RequestData {
+  budgetMin: number;
+  budgetMax: undefined;
   docOnProperty: { docName: string; isProvided: boolean; _id: string }[];
   createdAt: string;
   propertyType: string;
@@ -245,7 +247,10 @@ const Overview = () => {
                   state: item.location.state,
                   area: item.location.area,
                 },
-                propertyPrice: item.price,
+                propertyPrice: 
+                  item.budgetMin !== undefined && item.budgetMax !== undefined
+                  ? `N ${Number(item.budgetMin).toLocaleString()} - ${Number(item.budgetMax).toLocaleString()}`
+                  : item.price,
                 document: item.docOnProperty
                   ? item.docOnProperty.map((doc) => doc.docName).join(', ')
                   : '', // Join docName values or leave empty if not provided
@@ -538,7 +543,7 @@ const headerData: string[] = [
   'Date',
   'Property Type',
   'Location',
-  'Property price',
+  'Price Range',
   'Document',
   'Full details',
 ];
@@ -626,7 +631,9 @@ const Table: FC<TableProps> = ({
                   {item.location.localGovernment}
                 </td>
                 <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
-                  N {Number(item.propertyPrice).toLocaleString()}
+                  {/* N {Number(item.propertyPrice).toLocaleString()} */}
+                    {item.propertyPrice}
+
                 </td>
                   {item.docOnProperty.length !== 0 ? (
                     <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-nowrap overflow-hidden text-[#181336]'>

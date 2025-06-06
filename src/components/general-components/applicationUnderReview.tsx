@@ -16,7 +16,7 @@ const ReviewingApplication = () => {
 
   return (
     <div className='w-full flex justify-center items-center'>
-        <div className='lg:w-[60%] flex flex-col justify-center items-center gap-[20px] w-full px-[20px] mt-40'>
+        <div className='lg:w-[60%] flex flex-col justify-center items-center gap-[20px] w-full px-[20px] mt-10 md:mt-40'>
           <div className='w-[81px] h-[81px] rounded-full bg-[#1976D2] flex items-center justify-center'>
             <Image
               src={reviewIcon}
