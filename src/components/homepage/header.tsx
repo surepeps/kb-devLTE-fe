@@ -235,7 +235,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           </div>
 
           <div className='flex items-center gap-[20px] lg:hidden'>
-            {user?.id ? (
+            {user?._id ? (
               <div className='flex flex-col gap-[10px]'>
                 <button
                   type='button'

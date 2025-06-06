@@ -311,8 +311,11 @@ const Index = ({
                 {isMoreFilterModalOpened &&
                   (is_mobile ? (
                     <Filter
-                    setPayloadFromFilter={setPayloadFromFilter}
-                    closeModal={setIsMoreFilterModalOpened} selectedType={''}                    />
+                      payloadFromFilter={payloadFromFilter}
+                      setPayloadFromFilter={setPayloadFromFilter}
+                      closeModal={setIsMoreFilterModalOpened}
+                      selectedType={''}
+                    />
                   ) : (
                     <MoreFilter
                       style={
