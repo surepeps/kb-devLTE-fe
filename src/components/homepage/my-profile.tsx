@@ -149,7 +149,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       {/**Agent marketplace */}
       {userType === 'Agent' ? (
         <button
-          onClick={() => router.push('/agent/marketplace')}
+          onClick={() => router.push('/agent/agent-marketplace')}
           type='button'
           className='w-full h-[26px] flex items-end gap-[10px]'>
           <Image
