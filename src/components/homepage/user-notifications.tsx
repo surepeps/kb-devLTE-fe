@@ -22,12 +22,13 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
       viewport={{ once: true }}
-      className='absolute z-50 mt-[70px] md:-ml-[400px] w-[443px] h-[512px] bg-white p-[19px] shadow-md flex flex-col gap-[25px]'>
+      className='absolute z-50 mt-[70px] md:-ml-[400px] w-[443px] bg-white p-[19px] shadow-md flex flex-col gap-[25px]'>
       <h2 className='text-base font-medium text-black'>Notification</h2>
       <div className='flex flex-col gap-[10px] overflow-y-auto'>
-        {Array.from({ length: 6 }).map((__, idx: number) => (
+        {/* {Array.from({ length: 6 }).map((__, idx: number) => (
           <DetailsUnit key={idx} />
-        ))}
+        ))} */}
+        Empty
       </div>
     </motion.div>
   );

@@ -6,18 +6,24 @@ import Image from 'next/image';
 import Button from './button';
 //import ViewImage from './viewImage';
 import { usePageContext } from '@/context/page-context';
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import {
+  StaticImageData,
+  StaticImport,
+} from 'next/dist/shared/lib/get-img-props';
 import { motion } from 'framer-motion';
 import randomImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarOfDavid } from '@fortawesome/free-solid-svg-icons';
 import markerSVG from '@/svgs/marker.svg';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 interface CardDataProps {
   isRed?: boolean;
   cardData: { header: string; value: string }[];
   onClick?: () => void;
   className?: string;
-  images: StaticImport[];
+  images: StaticImport | StaticImageData[];
   isPremium?: boolean;
   style?: React.CSSProperties;
   isDisabled?: boolean;
@@ -100,7 +106,7 @@ const Card = ({
                 <FontAwesomeIcon icon={faStar} size='sm' />
               </div>
             ) : null}
-            <Image
+            {/* <Image
               src={
                 Array.isArray(images) && images[0] ? images[0] : randomImage.src
               }
@@ -112,6 +118,9 @@ const Card = ({
                 setViewImage(true);
               }}
               className='w-full h-[148px] object-cover cursor-pointer'
+            /> */}
+            <ImageSwiper
+              images={Array.isArray(images) ? images : [randomImage]}
             />
           </div>
           <div className='flex flex-col gap-[2px]'>
@@ -306,6 +315,112 @@ const BreadCrumb = ({
         }
       })}
     </>
+  );
+};
+
+//specifically built for image swiper
+
+type NavigationButtonProps = {
+  handleNav: () => void;
+  type: 'arrow left' | 'arrow right';
+  className?: string;
+};
+const NavigationButton: React.FC<NavigationButtonProps> = ({
+  handleNav,
+  type,
+  className,
+}): React.JSX.Element => {
+  const renderArrow = () => {
+    switch (type) {
+      case 'arrow left':
+        return (
+          <FaCaretLeft
+            width={16}
+            height={16}
+            color='#09391C'
+            className='w-[16px] h-[16px]'
+          />
+        );
+      case 'arrow right':
+        return (
+          <FaCaretRight
+            width={16}
+            height={16}
+            color='#09391C'
+            className='w-[16px] h-[16px]'
+          />
+        );
+    }
+  };
+  return (
+    <button
+      onClick={handleNav}
+      type='button'
+      className={`w-[35px] h-[35px] border-[1px] border-[#5A5D63]/[50%] flex items-center justify-center ${className}`}>
+      {type && renderArrow()}
+    </button>
+  );
+};
+
+const ImageSwiper = ({ images }: { images: StaticImageData[] }) => {
+  //const images = [sampleImage.src, sampleImage.src];
+
+  const swiperRef = React.useRef<any>(null);
+  const { setViewImage, setImageData } = usePageContext();
+
+  useEffect(() => console.log(images), [images]);
+
+  const handleNext = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slideNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slidePrev();
+    }
+  };
+
+  return (
+    <div className='overflow-hidden'>
+      <Swiper
+        modules={[Pagination, Navigation, Autoplay]}
+        // spaceBetween={3}
+        slidesPerView={1}
+        onSwiper={(swiper) => (swiperRef.current = swiper)}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 3000 }}
+        // loop={true}
+        className='w-[400px] h-[148px] cursor-pointer'>
+        {images.map((src, i) => (
+          <SwiperSlide
+            onClick={() => {
+              setImageData(images);
+              setViewImage(true);
+            }}
+            key={i}>
+            <Image
+              width={1000}
+              height={1000}
+              src={src}
+              alt={`Slide ${i + 1}`}
+              className='w-full h-full object-cover cursor-pointer'
+            />
+          </SwiperSlide>
+        ))}
+        {/* <NavigationButton
+          handleNav={handlePrev}
+          type='arrow left'
+          className='absolute left-5 top-1/2 transform -translate-y-1/2 z-10'
+        />
+        <NavigationButton
+          handleNav={handleNext}
+          type='arrow right'
+          className='absolute right-5 top-1/2 transform -translate-y-1/2 z-10'
+        /> */}
+      </Swiper>
+    </div>
   );
 };
 
