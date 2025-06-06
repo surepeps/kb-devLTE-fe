@@ -161,6 +161,7 @@ const Section2 = () => {
             (item: any) => item.propertyType === 'Land'
           );
         }
+        console.log(data);
         setProperties(shuffleArray(approved).slice(0, 4));
         setCardData(approved);
       } catch (err) {
