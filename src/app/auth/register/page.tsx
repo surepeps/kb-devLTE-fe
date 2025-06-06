@@ -97,6 +97,7 @@ const Register = () => {
               localStorage.setItem('fullname', `${formik.values.firstName} ${formik.values.lastName}`);
               localStorage.setItem('email', `${formik.values.email}`);
               localStorage.setItem('phoneNumber', `${String(formik.values.phone)}`);
+              localStorage.setItem('token', (response as any).token);
               setTimeout(() => {
                 toast.custom(
                   <CustomToast
