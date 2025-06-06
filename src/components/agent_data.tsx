@@ -43,6 +43,7 @@ const AgentData = () => {
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const [idFileUrl, setIdFileUrl] = useState<string | null>(null); 
   const [cacFileUrl, setCacFileUrl] = useState<string | null>(null); 
@@ -242,6 +243,7 @@ const steps: Step[] = [
           Cookies.get('token')
         )
           .then((response) => {
+            setSubmitting(true);
             if (response.success) {
               toast.success('Agent data submitted successfully');
               Cookies.set(
@@ -277,6 +279,7 @@ const steps: Step[] = [
           // success: 'Agent data submitted successfully',
         }
       );
+      setSubmitting(false);
     },
   });
 
@@ -478,7 +481,7 @@ const steps: Step[] = [
                       <Input
                         label='ID Number'
                         name='idNumber'
-                        className='md:w-[70%] w-full'
+                        className=' w-full'
                         type='number'
                         value={formik.values.idNumber}
                         onChange={formik.handleChange}
@@ -572,7 +575,7 @@ const steps: Step[] = [
                       id='cac-upload' 
                     />
                     <ImagePreview
-                      fileUrl={idFileUrl}
+                      fileUrl={cacFileUrl}
                       onDelete={() => setCacFileUrl(null)}
                       onView={setImageModalUrl}
                       label="Uploaded ID" />
@@ -628,9 +631,10 @@ const steps: Step[] = [
                       }} 
                     />
                   <Button
-                    value="Submit"
+                    value={submitting ? "Submitting..." : "Submit"}
                     type="button"
                     green={true}
+                    isDisabled={submitting}
                     className='bg-[#8DDB90] min-h-[50px] py-[12px] px-[24px] md:w-[30%] w-full text-[#FAFAFA] text-base leading-[25.6px] font-bold'
                     onClick={() => {
                       if (!formik.isValid) {
