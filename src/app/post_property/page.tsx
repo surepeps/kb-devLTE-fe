@@ -31,7 +31,7 @@ import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 import CommissionModal from '@/components/post-property-components/CommissionModal';
 import { useUserContext } from '@/context/user-context';
 import Cookies from 'js-cookie';
-import ClipLoader from "react-spinners/ClipLoader";
+import ClipLoader from 'react-spinners/ClipLoader';
 import useClickOutside from '@/hooks/clickOutside';
 
 //import naijaStates from 'naija-state-local-government';
@@ -165,6 +165,20 @@ const Sell = () => {
       );
       formik.setFieldValue('ownerEmail', user.email || '');
     }
+    console.log(user?.agentData?.agentType);
+    if (user?.agentData) {
+      setCommission({
+        userType: 'agent',
+        commission: '20%',
+        payload: {},
+      });
+    } else {
+      setCommission({
+        userType: 'land_owners',
+        commission: '10%',
+        payload: {},
+      });
+    }
   }, [user]);
 
   const handleLGAChange = (selected: Option | null) => {
@@ -197,20 +211,21 @@ const Sell = () => {
     }
   };
 
-const getStepRequiredFields = (step: number) => {
-  if (step === 1) return ['propertyType', 'price', 'selectedState', 'selectedLGA'];
-  if (step === 2) {
-    if (selectedCard === 'rent') {
-      return []; // No required fields for rent on features & conditions
+  const getStepRequiredFields = (step: number) => {
+    if (step === 1)
+      return ['propertyType', 'price', 'selectedState', 'selectedLGA'];
+    if (step === 2) {
+      if (selectedCard === 'rent') {
+        return []; // No required fields for rent on features & conditions
+      }
+      if (selectedCard === 'jv') {
+        return ['jvConditions'];
+      }
+      // For sell
+      return ['documents'];
     }
-    if (selectedCard === 'jv') {
-      return ['jvConditions'];
-    }
-    // For sell
-    return ['documents'];
-  }
-  return [];
-};
+    return [];
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -265,14 +280,21 @@ const getStepRequiredFields = (step: number) => {
       // .required('Owner email is required'),
     }),
     onSubmit: async (values) => {
+      //Debugging:
+      console.log(values);
       // No API call here, just validation
       // Optionally set a flag if needed
     },
   });
 
+  const [formattedLandSizeNumber, setFormatedLandNumber] = useState<string>('');
+
+  //Debugging
+  useEffect(() => console.log(formik.values), [formik.values]);
+
   const handleFinalSubmit = async () => {
     setAreInputsDisabled(true);
-    setIsSubmitting(true); 
+    setIsSubmitting(true);
     try {
       const url = URLS.BASE + URLS.listNewProperty;
       const token = Cookies.get('token');
@@ -347,7 +369,7 @@ const getStepRequiredFields = (step: number) => {
             toast.success('Property submitted successfully');
             // setIsSubmittedSuccessfully(true);Bo
             setAreInputsDisabled(false);
-            setShowSummary(false);   
+            setShowSummary(false);
             setShowFinalSubmit(true);
             return 'Property submitted successfully';
           } else {
@@ -410,11 +432,11 @@ const getStepRequiredFields = (step: number) => {
     <Fragment>
       <section
         className={` bg-[#EEF1F1] w-full flex justify-center items-center transition-all duration-500 my-7`}>
-          {isSubmitting && (
-            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-              <ClipLoader color="#22c55e" size={70} />
-            </div>
-          )}
+        {isSubmitting && (
+          <div className='fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50'>
+            <ClipLoader color='#22c55e' size={70} />
+          </div>
+        )}
         <div className='container flex flex-col justify-center items-center gap-[10px] px-[10px]'>
           <div className='w-full flex justify-start mb-5'>
             <BreadcrumbNav
@@ -647,8 +669,22 @@ const getStepRequiredFields = (step: number) => {
                                 name='landSize'
                                 forState={false}
                                 forLGA={false}
-                                onChange={formik.handleChange}
-                                type='number'
+                                value={formattedLandSizeNumber}
+                                onChange={(e) => {
+                                  const rawValue = (
+                                    e.target as
+                                      | HTMLInputElement
+                                      | HTMLTextAreaElement
+                                  ).value;
+                                  setFormatedLandNumber(
+                                    formatNumber?.(rawValue) ?? ''
+                                  );
+                                  formik.setFieldValue(
+                                    'landSize',
+                                    rawValue.replace(/,/g, '')
+                                  );
+                                }}
+                                type='text'
                                 isDisabled={areInputsDisabled}
                               />
                             </div>
@@ -665,12 +701,13 @@ const getStepRequiredFields = (step: number) => {
                             Price Details
                           </h2>
                           <div
-                              className={
-                                selectedCard !== 'jv' && commission['userType'] !== 'agent'&&selectedCard !== 'sell' 
-                                  ? 'min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'
-                                  : 'min-h-[80px] flex flex-col gap-[15px]'
-                              }
-                            >
+                            className={
+                              selectedCard !== 'jv' &&
+                              commission['userType'] !== 'agent' &&
+                              selectedCard !== 'sell'
+                                ? 'min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col'
+                                : 'min-h-[80px] flex flex-col gap-[15px]'
+                            }>
                             <Input
                               label='Price'
                               placeholder='Enter property price'
@@ -700,32 +737,34 @@ const getStepRequiredFields = (step: number) => {
                               isDisabled={areInputsDisabled}
                             />
 
-                            {selectedCard !== 'jv' && commission['userType'] !== 'agent' && selectedCard !== 'sell' && (
-                              <Input
-                                label='Lease Hold'
-                                placeholder='Enter lease hold'
-                                name='leaseHold'
-                                type='text'
-                                className='w-full'
-                                minNumber={0}
-                                value={formatedHold}
-                                onChange={(e) => {
-                                  const rawValue = (
-                                    e.target as
-                                      | HTMLInputElement
-                                      | HTMLTextAreaElement
-                                  ).value;
-                                  setFormatedHold(
-                                    formatNumber?.(rawValue) ?? ''
-                                  );
-                                  formik.setFieldValue(
-                                    'leaseHold',
-                                    rawValue.replace(/,/g, '')
-                                  );
-                                }}
-                                isDisabled={areInputsDisabled}
-                              />
-                            )}
+                            {selectedCard !== 'jv' &&
+                              commission['userType'] !== 'agent' &&
+                              selectedCard !== 'sell' && (
+                                <Input
+                                  label='Lease Hold'
+                                  placeholder='Enter lease hold'
+                                  name='leaseHold'
+                                  type='text'
+                                  className='w-full'
+                                  minNumber={0}
+                                  value={formatedHold}
+                                  onChange={(e) => {
+                                    const rawValue = (
+                                      e.target as
+                                        | HTMLInputElement
+                                        | HTMLTextAreaElement
+                                    ).value;
+                                    setFormatedHold(
+                                      formatNumber?.(rawValue) ?? ''
+                                    );
+                                    formik.setFieldValue(
+                                      'leaseHold',
+                                      rawValue.replace(/,/g, '')
+                                    );
+                                  }}
+                                  isDisabled={areInputsDisabled}
+                                />
+                              )}
                           </div>
                         </div>
                         {formik.values.propertyType !== 'Land' &&
@@ -814,15 +853,15 @@ const getStepRequiredFields = (step: number) => {
                   {currentStep === 2 && (
                     // {/* Feature & Conditions */}
                     <div className='min-h-[629px] py-[40px] lg:px-[80px] w-full'>
-                          <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>
-                      {selectedCard === 'rent'
-                        ? 'Feature & Conditions'
-                        : selectedCard === 'sell'
-                        ? 'Document and Features'
-                        : selectedCard === 'jv'
-                        ? 'Document and Condition'
-                        : 'Feature & Conditions'}
-                    </h2>
+                      <h2 className='text-[#0B0D0C] lg:text-[24px] lg:leading-[40.4px] font-bold font-display text-center text-[18px] leading-[40.4px] mt-7'>
+                        {selectedCard === 'rent'
+                          ? 'Feature & Conditions'
+                          : selectedCard === 'sell'
+                          ? 'Document and Features'
+                          : selectedCard === 'jv'
+                          ? 'Document and Condition'
+                          : 'Feature & Conditions'}
+                      </h2>
                       {selectedCard !== 'rent' && (
                         <div className='min-h-[73px] flex flex-col gap-[15px] mt-5'>
                           <h2 className='text-[20px] leading-[32px] font-medium text-[#1E1E1E]'>
@@ -983,123 +1022,126 @@ const getStepRequiredFields = (step: number) => {
                         Note: Please upload high-quality images of your
                         property. The photos must be clear, well-lit, and should
                         fully capture the key areas of the property. Submissions
-                        with poor or incomplete images may be <span className='text-red-500'>rejected</span>."
+                        with poor or incomplete images may be{' '}
+                        <span className='text-red-500'>rejected</span>."
                       </div>
                       <div className='lg:w-[953px] w-full flex flex-col justify-center gap-[15px]  my-10'>
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[25px]'>
-                          {Array.from({ length: imageCardCount }).map((_, idx) => (
-                            <label
-                              key={idx}
-                              htmlFor={`property-image-${idx}`}
-                              className='h-[166px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center relative'
-                              style={{ position: 'relative' }}>
-                              {/* Upload text at the top */}
-                              {idx < 4 && (
-                                <span
-                                  className="absolute top-2 text-sm font-semibold"
-                                  style={{
-                                    color:
-                                      idx < 2
-                                        ? '#1976D2'
-                                        : '#FF2539',
-                                  }}
-                                >
-                                  {idx < 2 ? 'Upload Exterior Image' : 'Upload Interior Image'}
-                                </span>
-                              )}
-                              {/* Hidden file input */}
-                              <input
-                                id={`property-image-${idx}`}
-                                type='file'
-                                accept='image/png, image/jpeg'
-                                className='hidden'
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    const url = URL.createObjectURL(file);
-                                    setImages((prev) => {
-                                      const updated = [...prev];
-                                      updated[idx] = file;
-                                      return updated;
-                                    });
-                                  }
-                                }}
-                              />
-                              {images[idx] ? (
-                                <div className='w-full h-full'>
-                                  <img
-                                    src={
-                                      images[idx]
-                                        ? images[idx] instanceof File
-                                          ? URL.createObjectURL(images[idx] as File)
-                                          : (images[idx] as string)
-                                        : ''
-                                    }
-                                    alt='Preview'
-                                    className='w-full h-full object-cover rounded'
-                                    style={{ position: 'absolute', inset: 0 }}
-                                  />
-                                  <button
-                                    type='button'
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      e.preventDefault();
+                          {Array.from({ length: imageCardCount }).map(
+                            (_, idx) => (
+                              <label
+                                key={idx}
+                                htmlFor={`property-image-${idx}`}
+                                className='h-[166px] border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center relative'
+                                style={{ position: 'relative' }}>
+                                {/* Upload text at the top */}
+                                {idx < 4 && (
+                                  <span
+                                    className='absolute top-2 text-sm font-semibold'
+                                    style={{
+                                      color: idx < 2 ? '#1976D2' : '#FF2539',
+                                    }}>
+                                    {idx < 2
+                                      ? 'Upload Exterior Image'
+                                      : 'Upload Interior Image'}
+                                  </span>
+                                )}
+                                {/* Hidden file input */}
+                                <input
+                                  id={`property-image-${idx}`}
+                                  type='file'
+                                  accept='image/png, image/jpeg'
+                                  className='hidden'
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const url = URL.createObjectURL(file);
                                       setImages((prev) => {
                                         const updated = [...prev];
-                                        updated[idx] = null;
+                                        updated[idx] = file;
                                         return updated;
                                       });
-                                    }}
-                                    className='absolute top-2 right-2 z-20 flex items-center justify-center w-8 h-8  bg-white shadow hover:bg-gray-100'
-                                    style={{ border: 'none', padding: 0 }}
-                                    title='Delete image'>
-                                    {/* Trash icon (SVG) */}
-                                    <svg
-                                      width='20'
-                                      height='20'
-                                      viewBox='0 0 24 24'
-                                      fill='none'>
-                                      <path
-                                        d='M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12z'
-                                        stroke='#ef4444'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                      />
-                                      <path
-                                        d='M10 11v6M14 11v6'
-                                        stroke='#ef4444'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className='flex flex-col items-center justify-center'>
-                                  <span className='flex items-center justify-center w-12 h-12 rounded-full bg-white border mb-2 cursor-pointer'>
-                                    <svg
-                                      width='28'
-                                      height='28'
-                                      viewBox='0 0 24 24'
-                                      fill='none'>
-                                      <path
-                                        d='M12 5v14M5 12h14'
-                                        stroke='#22c55e'
-                                        strokeWidth='2.5'
-                                        strokeLinecap='round'
-                                      />
-                                    </svg>
-                                  </span>
-                                  <span
-                                    title='Click to add images'
-                                    className='text-sm text-black cursor-pointer font-medium'>
-                                    Format: png, jpeg
-                                  </span>
-                                </div>
-                              )}
-                            </label>
-                          ))}
+                                    }
+                                  }}
+                                />
+                                {images[idx] ? (
+                                  <div className='w-full h-full'>
+                                    <img
+                                      src={
+                                        images[idx]
+                                          ? images[idx] instanceof File
+                                            ? URL.createObjectURL(
+                                                images[idx] as File
+                                              )
+                                            : (images[idx] as string)
+                                          : ''
+                                      }
+                                      alt='Preview'
+                                      className='w-full h-full object-cover rounded'
+                                      style={{ position: 'absolute', inset: 0 }}
+                                    />
+                                    <button
+                                      type='button'
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setImages((prev) => {
+                                          const updated = [...prev];
+                                          updated[idx] = null;
+                                          return updated;
+                                        });
+                                      }}
+                                      className='absolute top-2 right-2 z-20 flex items-center justify-center w-8 h-8  bg-white shadow hover:bg-gray-100'
+                                      style={{ border: 'none', padding: 0 }}
+                                      title='Delete image'>
+                                      {/* Trash icon (SVG) */}
+                                      <svg
+                                        width='20'
+                                        height='20'
+                                        viewBox='0 0 24 24'
+                                        fill='none'>
+                                        <path
+                                          d='M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12z'
+                                          stroke='#ef4444'
+                                          strokeWidth='2'
+                                          strokeLinecap='round'
+                                          strokeLinejoin='round'
+                                        />
+                                        <path
+                                          d='M10 11v6M14 11v6'
+                                          stroke='#ef4444'
+                                          strokeWidth='2'
+                                          strokeLinecap='round'
+                                        />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className='flex flex-col items-center justify-center'>
+                                    <span className='flex items-center justify-center w-12 h-12 rounded-full bg-white border mb-2 cursor-pointer'>
+                                      <svg
+                                        width='28'
+                                        height='28'
+                                        viewBox='0 0 24 24'
+                                        fill='none'>
+                                        <path
+                                          d='M12 5v14M5 12h14'
+                                          stroke='#22c55e'
+                                          strokeWidth='2.5'
+                                          strokeLinecap='round'
+                                        />
+                                      </svg>
+                                    </span>
+                                    <span
+                                      title='Click to add images'
+                                      className='text-sm text-black cursor-pointer font-medium'>
+                                      Format: png, jpeg
+                                    </span>
+                                  </div>
+                                )}
+                              </label>
+                            )
+                          )}
                         </div>
                         {/* Add More Button */}
                         <button
@@ -1131,25 +1173,25 @@ const getStepRequiredFields = (step: number) => {
                         Ownership Declaration
                       </h3>
                       <div className='w-full flex flex-col gap-[15px] min-h-[270px] '>
-                          {commission['userType'] === 'agent' ? (
-                            <RadioCheck
-                              name='confirm'
-                              type='checkbox'
-                              isChecked={isAuthorized}
-                              handleChange={() => setIsAuthorized(!isAuthorized)}
-                              isDisabled={areInputsDisabled}
-                              value='I confirm that I am a mandate to the property'
-                            />
-                          ) : (
-                            <RadioCheck
-                              name='confirm'
-                              type='checkbox'
-                              isChecked={isLegalOwner}
-                              handleChange={() => setIsLegalOwner(!isLegalOwner)}
-                              isDisabled={areInputsDisabled}
-                              value='I confirm that I am the legal owner of this property or authorized to submit this brief'
-                            />
-                          )}
+                        {commission['userType'] === 'agent' ? (
+                          <RadioCheck
+                            name='confirm'
+                            type='checkbox'
+                            isChecked={isAuthorized}
+                            handleChange={() => setIsAuthorized(!isAuthorized)}
+                            isDisabled={areInputsDisabled}
+                            value='I confirm that I am a mandate to the property'
+                          />
+                        ) : (
+                          <RadioCheck
+                            name='confirm'
+                            type='checkbox'
+                            isChecked={isLegalOwner}
+                            handleChange={() => setIsLegalOwner(!isLegalOwner)}
+                            isDisabled={areInputsDisabled}
+                            value='I confirm that I am the legal owner of this property or authorized to submit this brief'
+                          />
+                        )}
                         <div className='flex lg:flex-row flex-col w-full gap-[15px]'>
                           <Input
                             label='Full name'
@@ -1167,11 +1209,11 @@ const getStepRequiredFields = (step: number) => {
                             <PhoneInput
                               international
                               defaultCountry='NG'
-                                disabled={
-                              commission['userType'] === 'agent'
-                                ? !isAuthorized
-                                : !isLegalOwner
-                            }
+                              disabled={
+                                commission['userType'] === 'agent'
+                                  ? !isAuthorized
+                                  : !isLegalOwner
+                              }
                               value={formik.values?.ownerPhoneNumber}
                               style={{ outline: 'none' }}
                               onChange={(value) =>
@@ -1216,56 +1258,68 @@ const getStepRequiredFields = (step: number) => {
                       }}
                       className={`border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed`}
                     />
-                      <Button
-                    value='Next'
-                    type={currentStep === steps.length - 1 ? 'submit' : 'button'}
-                    onClick={async () => {
-                      const errors = await formik.validateForm();
-                          console.log('Formik errors:', errors); 
-                      const fieldsToCheck = getStepRequiredFields(currentStep);
-                      const hasStepError = fieldsToCheck.some(
-                        (field) => !!errors[field as keyof typeof formik.values]
-                      );
-                      if (hasStepError) {
-                        formik.setTouched(
-                          fieldsToCheck.reduce(
-                            (acc, field) => ({ ...acc, [field]: true }),
-                            {}
-                          )
+                    <Button
+                      value='Next'
+                      type={
+                        currentStep === steps.length - 1 ? 'submit' : 'button'
+                      }
+                      onClick={async () => {
+                        const errors = await formik.validateForm();
+                        console.log('Formik errors:', errors);
+                        const fieldsToCheck =
+                          getStepRequiredFields(currentStep);
+                        const hasStepError = fieldsToCheck.some(
+                          (field) =>
+                            !!errors[field as keyof typeof formik.values]
                         );
-                        return;
+                        if (hasStepError) {
+                          formik.setTouched(
+                            fieldsToCheck.reduce(
+                              (acc, field) => ({ ...acc, [field]: true }),
+                              {}
+                            )
+                          );
+                          return;
+                        }
+                        if (currentStep < steps.length - 1) {
+                          setCurrentStep((prev) => prev + 1);
+                        } else if (currentStep === steps.length - 1) {
+                          setShowCommissionModal(true);
+                        }
+                      }}
+                      className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
+                      isDisabled={
+                        (currentStep === 4 &&
+                          commission['userType'] === 'agent' &&
+                          !isAuthorized) ||
+                        (currentStep === 4 &&
+                          commission['userType'] !== 'agent' &&
+                          !isLegalOwner) ||
+                        (currentStep === 4 &&
+                          !!formik.errors.ownerPhoneNumber) ||
+                        getStepRequiredFields(currentStep).some(
+                          (field) =>
+                            !!formik.errors[field as keyof typeof formik.values]
+                        )
                       }
-                      if (currentStep < steps.length - 1) {
-                        setCurrentStep((prev) => prev + 1);
-                      } else if (currentStep === steps.length - 1) {
-                        setShowCommissionModal(true);
-                      }
-                    }}
-                    className={`bg-[#8DDB90] lg:w-[25%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed disabled:bg-[#D3D3D3]`}
-                    isDisabled={
-                      (currentStep === 4 && commission['userType'] === 'agent' && !isAuthorized) ||
-                      (currentStep === 4 && commission['userType'] !== 'agent' && !isLegalOwner) ||
-                      (currentStep === 4 && !!formik.errors.ownerPhoneNumber) ||
-                      getStepRequiredFields(currentStep).some(
-                        (field) => !!formik.errors[field as keyof typeof formik.values]
-                      )
-                    }
-                  />
+                    />
                   </div>
                 </form>
               )}
             </>
           )}
 
-        <LocalSubmitModal
-          open={showFinalSubmit}
-          onClose={() => {
-            setShowFinalSubmit(false);
-            setTimeout(() => {
-              router.push(commission['userType'] === 'agent' ? '/agent' : '/my_listing');
-            }, 100);
-          }}
-        />
+          <LocalSubmitModal
+            open={showFinalSubmit}
+            onClose={() => {
+              setShowFinalSubmit(false);
+              setTimeout(() => {
+                router.push(
+                  commission['userType'] === 'agent' ? '/agent' : '/my_listing'
+                );
+              }, 100);
+            }}
+          />
 
           {showSummary && (
             <PropertySummary
@@ -1278,7 +1332,7 @@ const getStepRequiredFields = (step: number) => {
             />
           )}
 
-{/* 
+          {/* 
           {showFinalSubmit && (
             <Submit
               href={commission['userType'] === 'agent' ? '/agent' : '/my_listing'}
@@ -1415,20 +1469,18 @@ const LocalSubmitModal: React.FC<LocalSubmitModalProps> = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40'>
       <motion.div
         ref={ref}
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 20, opacity: 0 }}
-        className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full flex flex-col items-center"
-      >
-        <h2 className="text-2xl font-bold mb-2 text-center">{title}</h2>
-        <p className="text-base text-gray-600 mb-6 text-center">{subheader}</p>
+        className='bg-white rounded-lg shadow-lg p-8 max-w-md w-full flex flex-col items-center'>
+        <h2 className='text-2xl font-bold mb-2 text-center'>{title}</h2>
+        <p className='text-base text-gray-600 mb-6 text-center'>{subheader}</p>
         <button
           onClick={onClose}
-          className="bg-[#8DDB90] text-white font-bold py-3 px-8 rounded w-full"
-        >
+          className='bg-[#8DDB90] text-white font-bold py-3 px-8 rounded w-full'>
           {buttonText}
         </button>
       </motion.div>
