@@ -53,6 +53,8 @@ const NegiotiatePrice = ({
       askingPrice: undefined,
       isOpened: false,
     });
+  const [yourPrice, setYourPrice] = useState<string>('');
+
   const handleSubmit = () => {
     //to avoid duplicates
     //check if ID is not null
@@ -69,8 +71,11 @@ const NegiotiatePrice = ({
 
     findSelectedCard.yourPrice = selectedProperty.yourPrice;
 
+    //Debugging:
+    console.log(submitInspectionPayload);
+
     // Set propertyId and negotiationPrice in the payload
-      setSubmitInspectionPayload((prev) => ({
+    setSubmitInspectionPayload((prev) => ({
       ...prev,
       propertyId: getID,
       negotiationPrice: Number(selectedProperty.yourPrice),
@@ -80,6 +85,17 @@ const NegiotiatePrice = ({
     setSelectPreferableInspectionDateModalOpened(true);
     //set the current index to the next one
     setCurrentIndex(currentIndex + 1);
+  };
+
+  const formatNumber = (val: string) => {
+    const containsLetters = /[A-Za-z]/.test(val);
+    if (containsLetters) {
+      // setFormattedValue('');
+      return;
+    }
+    const numericValue = val.replace(/,/g, ''); //to remove commas;
+
+    return numericValue ? Number(numericValue).toLocaleString() : '';
   };
 
   useEffect(() => {
@@ -96,8 +112,10 @@ const NegiotiatePrice = ({
     });
   }, []);
 
+  useEffect(() => console.log(selectedProperty), [selectedProperty]);
+
   return (
-    <div className='w-full h-full border-black border-[1px] fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]'>
+    <div className='w-full h-full border-black border-[1px] z-50 fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]'>
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
@@ -157,19 +175,31 @@ const NegiotiatePrice = ({
             <Input
               label='Enter your price'
               name='enter_your_price'
-              type='number'
+              type='text'
               placeholder='Enter amount'
-              value={selectedProperty.yourPrice}
+              value={yourPrice}
               onChange={(event) => {
-                const value = 'value' in event.target ? event.target.value : '';
+                const rawValue = (
+                  event.target as HTMLInputElement | HTMLTextAreaElement
+                ).value;
+                setYourPrice(formatNumber?.(rawValue) ?? '');
                 setSelectedProperty({
                   ...selectedProperty,
-                  yourPrice: value,
+                  yourPrice: rawValue.replace(/,/g, ''),
                 });
                 setSubmitInspectionPayload({
                   ...submitInspectionPayload,
-                  negotiationPrice: Number(value),
+                  negotiationPrice: Number(rawValue.replace(/,/g, '')),
                 });
+                // const value = 'value' in event.target ? event.target.value : '';
+                // setSelectedProperty({
+                //   ...selectedProperty,
+                //   yourPrice: value,
+                // });
+                // setSubmitInspectionPayload({
+                //   ...submitInspectionPayload,
+                //   negotiationPrice: Number(value),
+                // });
               }}
             />
             {/** Submit and Cancel buttons */}
@@ -244,34 +274,34 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
       isOpened: false,
     });
 
-    const getAvailableDates = () => {
-      const dates: string[] = [];
-      let date = new Date();
-      date.setDate(date.getDate() + 3);
-    
-      while (dates.length < 6) {
-        if (date.getDay() !== 0) {
-          dates.push(format(date, 'MMM d, yyyy'));
-        }
-        date.setDate(date.getDate() + 1);
+  const getAvailableDates = () => {
+    const dates: string[] = [];
+    let date = new Date();
+    date.setDate(date.getDate() + 3);
+
+    while (dates.length < 6) {
+      if (date.getDay() !== 0) {
+        dates.push(format(date, 'MMM d, yyyy'));
       }
-      return dates;
-    };
-    
-    const availableDates = getAvailableDates();
-    
-    const [details, setDetails] = useState<DetailsProps>({
-      selectedDate: availableDates[0],
-      selectedTime: '9:00 AM',
-      });
-    
-      useEffect(() => {
-      setSubmitInspectionPayload({
-        ...submitInspectionPayload,
-        inspectionDate: availableDates[0],
-        inspectionTime: '9:00 AM',
-      });
-    }, []);
+      date.setDate(date.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const availableDates = getAvailableDates();
+
+  const [details, setDetails] = useState<DetailsProps>({
+    selectedDate: availableDates[0],
+    selectedTime: '9:00 AM',
+  });
+
+  useEffect(() => {
+    setSubmitInspectionPayload({
+      ...submitInspectionPayload,
+      inspectionDate: availableDates[0],
+      inspectionTime: '9:00 AM',
+    });
+  }, []);
 
   // const [details, setDetails] = useState<DetailsProps>({
   //   selectedDate: 'Jan 1, 2025',
@@ -295,15 +325,15 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
       ]);
       setSubmitInspectionPayload({
         ...submitInspectionPayload,
-        propertyId: selectedProperty.id ?? '', 
+        propertyId: selectedProperty.id ?? '',
         requestedBy: {
           fullName: formik.values.fullName,
           email: formik.values.email,
           phoneNumber: formik.values.phoneNumber,
         },
-      negotiationPrice: Number(selectedProperty.yourPrice),
-      inspectionDate: details.selectedDate,
-      inspectionTime: details.selectedTime,
+        negotiationPrice: Number(selectedProperty.yourPrice),
+        inspectionDate: details.selectedDate,
+        inspectionTime: details.selectedTime,
       });
       setIsProvideTransactionDetails(true);
       closeSelectPreferableModal(false);
@@ -587,12 +617,12 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
           </div>
         </form>
         {/* Arrow down indicator */}
-        <div className="absolute right-6 bottom-6 z-10">
-          <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
+        <div className='absolute right-6 bottom-6 z-10'>
+          <div className='w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg'>
             <FontAwesomeIcon
               icon={faChevronDown}
-              className="text-white"
-              size="lg"
+              className='text-white'
+              size='lg'
             />
           </div>
         </div>
