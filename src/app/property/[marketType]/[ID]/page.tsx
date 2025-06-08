@@ -85,6 +85,9 @@ interface DetailsProps {
   propertyCondition?: string;
   _id?: string;
   __v?: number;
+  noOfCarParks?: number;
+  noOfBathrooms?: number;
+  noOfToilets?: number;
 }
 
 interface FormProps {
@@ -152,6 +155,9 @@ const ProductDetailsPage = () => {
   docOnProperty: [],
   briefType: '',
   propertyCondition: '',
+  noOfCarParks: 0,
+  noOfBathrooms: 0,
+  noOfToilets: 0,
   _id: '',
   __v: 0,
 });
@@ -447,9 +453,57 @@ const ProductDetailsPage = () => {
                         ))}
                       </div>
                     ) : null}
+                    
                     {/**Details */}
-                    <div className='w-full min-h-[152px] py-[40px] border-b-[1px] border-[#C7CAD0]'>
-                      <div className='w-full min-h-[152px] grid grid-cols-2 md:grid-cols-3 gap-[10px]'>
+                      <div className='w-full grid grid-cols-4 md:grid-cols-4 gap-[10px] border-b-[1px] border-[#C7CAD0] pb-[40px]'>
+                        <BoxContainer
+                          heading='Bedrooms'
+                          subHeading={
+                            (details.additionalFeatures?.noOfBedrooms && details.additionalFeatures.noOfBedrooms > 0)
+                              ? details.additionalFeatures.noOfBedrooms.toString()
+                              : (details.bedRoom && details.bedRoom > 0)
+                                ? details.bedRoom.toString()
+                                : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Bathroom'
+                          subHeading={
+                            (details.additionalFeatures?.noOfBathrooms && details.additionalFeatures.noOfBathrooms > 0)
+                              ? details.additionalFeatures.noOfBathrooms.toString()
+                              : (details.noOfBathrooms && details.noOfBathrooms > 0)
+                                ? details.noOfBathrooms.toString()
+                                : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Toilet'
+                          subHeading={
+                            (details.additionalFeatures?.noOfToilets && details.additionalFeatures.noOfToilets > 0)
+                              ? details.additionalFeatures.noOfToilets.toString()
+                              : (details.noOfToilets && details.noOfToilets > 0)
+                                ? details.noOfToilets.toString()
+                                : '-'
+                          }
+                        />
+                        <BoxContainer
+                          heading='Parking space'
+                            subHeading={
+                            (details.additionalFeatures?.noOfCarParks && details.additionalFeatures.noOfCarParks > 0)
+                              ? details.additionalFeatures.noOfCarParks.toString()
+                              : (details.noOfCarParks && details.noOfCarParks > 0)
+                                ? details.noOfCarParks.toString()
+                                : '-'
+                          }
+                        />           
+                      </div>
+
+                    {/* <div className='w-full py-[40px] border-b-[1px] border-[#C7CAD0]'> */}
+                      <div className='w-full grid grid-cols-2 md:grid-cols-3 gap-[10px] border-b-[1px] border-[#C7CAD0] pb-[20px]'>
+                        <BoxContainer
+                          heading='Listing Type'
+                          subHeading={details.briefType || 'Nil'}
+                        />
                         <BoxContainer
                           heading='Property Type'
                           subHeading={details.propertyType || '-'}
@@ -463,10 +517,6 @@ const ProductDetailsPage = () => {
                           }
                         />
                         <BoxContainer
-                          heading='Property Title'
-                          subHeading={'Nil'}
-                        />
-                        <BoxContainer
                           heading='Price'
                           subHeading={
                             details.price !== undefined && details.price !== null
@@ -475,22 +525,12 @@ const ProductDetailsPage = () => {
                           }
                         />
                         <BoxContainer
-                          heading='List Type'
-                          subHeading={details.briefType || 'Nil'}
+                          heading='Property Title'
+                          subHeading={'Nil'}
                         />
                         <BoxContainer
                           heading='Property Condition'
                           subHeading={details.propertyStatus || 'Nil'}
-                        />
-                          <BoxContainer
-                          heading='Bedrooms'
-                          subHeading={
-                            (details.additionalFeatures?.noOfBedrooms && details.additionalFeatures.noOfBedrooms > 0)
-                              ? details.additionalFeatures.noOfBedrooms.toString()
-                              : (details.bedRoom && details.bedRoom > 0)
-                                ? details.bedRoom.toString()
-                                : '-'
-                          }
                         />
                         <BoxContainer
                           heading='Land Size'
@@ -503,7 +543,7 @@ const ProductDetailsPage = () => {
                           }
                         />
                       </div>
-                    </div>
+                    {/* </div> */}
 
                     {/**Property Features */}
                     {featureData['length'] !== 0 ? (
@@ -521,6 +561,29 @@ const ProductDetailsPage = () => {
                         )}
                       />
                     ) : null}
+
+                    <div className='w-full flex flex-col gap-[10px] bg-[#F7F7F8] p-6'>
+                      <h2
+                        className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold text-black`}>
+                        Additional information
+                      </h2>
+                      <p>
+                      {/* {details.additionalFeatures?.additionalFeatures &&
+                        details.additionalFeatures.additionalFeatures.length > 0
+                          ? details.additionalFeatures.additionalFeatures.join(
+                              ', '
+                            )
+                          : 'No additional information provided.'
+                          } */}
+                          </p>
+ 
+                    </div>
+
+                    <div className='w-full flex flex-col gap-[10px] p-6'>
+                      <p className='text-sm text-[#25324B] font-extralight'>
+                        I hereby agree to indemnify and hold harmless Khabi-Teq Realty, its affiliates, directors, and agents from and against any and all claims, losses, liabilities, or damages arising from or related to any transaction conducted by me on its platform
+                      </p>
+                    </div>
 
                     <div className='w-full flex flex-row items-center mt-10 gap-3 justify-between'>
                       <Link href={'/market-place'}>
@@ -936,18 +999,18 @@ const BoxContainer = ({
     }
   };
   return (
-    <div
-      className={`w-full ${
-        heading && changeColorBehaviors().bg
-      }  py-[5px] px-[10px] md:h-[83px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
-      <h4 className='text-xs md:text-lg text-[#7C8493]'>{heading}</h4>
-      <h3
-        className={`text-sm md:text-lg font-semibold ${
-          heading && changeColorBehaviors().color
-        } ${epilogue.className}`}>
-        {subHeading}
-      </h3>
-    </div>
+<div
+  className={`w-full ${
+    heading && changeColorBehaviors().bg
+  }  py-[5px] px-[5] md:px-[10px] h-[58px] md:h-[83px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}>
+  <h4 className='text-xs md:text-lg text-[#7C8493]'>{heading}</h4>
+  <h3
+    className={`text-sm md:text-lg font-semibold ${
+      heading && changeColorBehaviors().color
+    } ${epilogue.className}`}>
+    {subHeading}
+  </h3>
+</div>
   );
 };
 

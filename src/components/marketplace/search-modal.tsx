@@ -399,6 +399,7 @@ const SearchModal = ({
                   key={idx}
                   onClick={() => handlePropertiesSelection(property)}
                   isDisabled={uniqueProperties.has(property)}
+                  onCardPageClick={() => router.push(`/property/JV/${property._id}`)}
                   isComingFromSubmitLol={isComingFromSubmitLol}
                   setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                   cardData={[]}
@@ -423,6 +424,7 @@ const SearchModal = ({
                   key={idx}
                   onClick={() => handlePropertiesSelection(property)}
                   isDisabled={uniqueProperties.has(property)}
+                  onCardPageClick={() => router.push(`/property/JV/${property._id}`)}
                   isComingFromSubmitLol={isComingFromSubmitLol}
                   setIsComingFromSubmitLol={setIsComingFromSubmitLol}
                   cardData={[]}
