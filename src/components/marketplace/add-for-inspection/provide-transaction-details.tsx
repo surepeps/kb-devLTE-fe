@@ -15,6 +15,8 @@ import { SubmitInspectionPayloadProp } from '../types/payload';
 import toast from 'react-hot-toast';
 import { POST_REQUEST } from '@/utils/requests';
 import { set } from 'date-fns';
+import ImageContainer from '@/components/general-components/image-container';
+import { usePageContext } from '@/context/page-context';
 
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
@@ -29,15 +31,16 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   submitInspectionPayload,
   setSubmitInspectionPayload,
 }) => {
-
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] =
     useState<boolean>(false);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  useEffect(() => {
-  }, [submitInspectionPayload]);
-  const [fileURL, setFileURL] = useState<string | null>(null); 
+  //to see selected image
+  const { setImageData, setViewImage } = usePageContext();
+
+  useEffect(() => {}, [submitInspectionPayload]);
+  const [fileURL, setFileURL] = useState<string | null>(null);
   const [formStatus, setFormStatus] = useState<
     'success' | 'pending' | 'failed' | 'idle'
   >('idle');
@@ -94,10 +97,10 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
           setIsSuccessfullySubmitted(true);
           setFormStatus('success');
         } else {
-            setIsSuccessfullySubmitted(false);
-            setFormStatus('failed');
-            setIsSubmitting(false);
-          }
+          setIsSuccessfullySubmitted(false);
+          setFormStatus('failed');
+          setIsSubmitting(false);
+        }
       } catch (err) {
         console.log(err);
         setIsSuccessfullySubmitted(false);
@@ -188,16 +191,16 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
               Provide Transaction Details
             </h2>
 
-              {/* Enter Account Name */}
-              <Input
-                formikType={formik}
-                id='fullName'
-                type='text'
-                name='fullName'
-                placeholder='Enter Full Name'
-                heading='Enter Full Name'
-                className="col-span-1 sm:col-span-2" 
-              />
+            {/* Enter Account Name */}
+            <Input
+              formikType={formik}
+              id='fullName'
+              type='text'
+              name='fullName'
+              placeholder='Enter Full Name'
+              heading='Enter Full Name'
+              className='col-span-1 sm:col-span-2'
+            />
             {/* Attach Receipt */}
             <div className='h-[58px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'>
               <AttachFile
@@ -208,6 +211,21 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
                 id='transaction_receipt'
                 setFileUrl={setFileURL}
               />
+            </div>
+            <div className='flex items-center justify-end'>
+              {fileURL && (
+                <ImageContainer
+                  image={fileURL}
+                  setViewImage={setViewImage}
+                  setImageData={setImageData}
+                  alt='Image'
+                  heading='Image1'
+                  removeImage={() => {
+                    setFileURL(null);
+                  }}
+                  id=''
+                />
+              )}
             </div>
             {/* button to submit */}
             <button
