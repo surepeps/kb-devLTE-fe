@@ -18,6 +18,11 @@ import markerSVG from '@/svgs/marker.svg';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
+import 'swiper/css';
+import 'swiper/css/pagination'; // if using pagination
+import 'swiper/css/navigation'; // if using navigation arrows
+import { isValid } from 'date-fns';
+
 interface CardDataProps {
   isRed?: boolean;
   cardData: { header: string; value: string }[];
@@ -368,29 +373,52 @@ const ImageSwiper = ({ images }: { images: StaticImageData[] }) => {
     <div className='overflow-hidden'>
       <Swiper
         modules={[Pagination, Navigation, Autoplay]}
-        // spaceBetween={3}
+        spaceBetween={3}
         slidesPerView={1}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
-        // loop={true}
-        className='w-full h-[148px] cursor-pointer '>
-        {images.map((src, i) => (
-          <SwiperSlide
-            onClick={() => {
-              setImageData(images);
-              setViewImage(true);
-            }}
-            key={i}>
-            <Image
-              width={1000}
-              height={1000}
-              src={getValidImageUrl(src)}
-              alt={`Slide ${i + 1}`}
-              className='w-full h-full object-cover cursor-pointer'
-            />
-          </SwiperSlide>
-        ))}
+        loop={true}
+        className='w-full h-[148px] cursor-pointer'>
+        {images.map((src, i) => {
+          const checkSrcType: string = (src?.src ? src.src : src) as string;
+          const isSrcValid = checkSrcType?.includes('https://');
+
+          if (!isSrcValid) {
+            return (
+              <SwiperSlide
+                onClick={() => {
+                  setImageData(images);
+                  setViewImage(true);
+                }}
+                key={i}>
+                <Image
+                  width={1000}
+                  height={1000}
+                  src={`https://${src}`}
+                  alt={`Slide ${i + 1}`}
+                  className='w-full h-full object-cover cursor-pointer'
+                />
+              </SwiperSlide>
+            );
+          }
+          return (
+            <SwiperSlide
+              onClick={() => {
+                setImageData(images);
+                setViewImage(true);
+              }}
+              key={i}>
+              <Image
+                width={1000}
+                height={1000}
+                src={src}
+                alt={`Slide ${i + 1}`}
+                className='w-full h-full object-cover cursor-pointer'
+              />
+            </SwiperSlide>
+          );
+        })}
         {/* <NavigationButton
           handleNav={handlePrev}
           type='arrow left'
