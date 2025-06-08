@@ -108,30 +108,30 @@ const AddForInspection = ({
   const [submitPayload, setSubmitPayload] =
     useState<SubmitInspectionPayloadProp>({} as SubmitInspectionPayloadProp);
 
-    useEffect(() => {
-      // Only consider up to 2 selected briefs
-      const selected = propertiesSelected.slice(0, 2);
+  useEffect(() => {
+    // Only consider up to 2 selected briefs
+    const selected = propertiesSelected.slice(0, 2);
 
-      if (selected.length === 1) {
+    if (selected.length === 1) {
+      setTotalAmount(10000);
+    } else if (selected.length === 2) {
+      const [a, b] = selected.map((item) => item.location.localGovernment);
+      const uniqueLGAs = new Set([a, b]);
+      if (uniqueLGAs.size === 1) {
         setTotalAmount(10000);
-      } else if (selected.length === 2) {
-        const [a, b] = selected.map((item) => item.location.localGovernment);
-        const uniqueLGAs = new Set([a, b]);
-        if (uniqueLGAs.size === 1) {
-          setTotalAmount(10000);
-        } else {
-          setTotalAmount(15000); // 10,000 + 5,000
-        }
       } else {
-        setTotalAmount(0);
+        setTotalAmount(15000); // 10,000 + 5,000
       }
-    }, [propertiesSelected]);
+    } else {
+      setTotalAmount(0);
+    }
+  }, [propertiesSelected]);
 
-    useEffect(() => {
-  if (totalAmount === 0) {
-    setIsAddForInspectionModalOpened(false); // or router.back();
-  }
-}, [totalAmount, setIsAddForInspectionModalOpened]);
+  useEffect(() => {
+    if (totalAmount === 0) {
+      setIsAddForInspectionModalOpened(false); // or router.back();
+    }
+  }, [totalAmount, setIsAddForInspectionModalOpened]);
 
   const renderCards = ({ length }: { length: number }): React.JSX.Element => {
     /**
@@ -503,18 +503,18 @@ const AddForInspection = ({
                     //   ) {
                     //     setSubmitPayload((prev) => ({
                     //       ...prev,
-                    //       propertyId: propertiesSelected[0]?._id, 
+                    //       propertyId: propertiesSelected[0]?._id,
                     //     }));
                     //     setSelectPreferableInspectionDateModalOpened(true);
                     //   } else if (inspectionType === 'JV')
                     //     return setIsLetterOfIntentionModalOpened(true);
                     // }}
                     onClick={() => {
-                        setSubmitPayload((prev) => ({
-                          ...prev,
-                          propertyId: propertiesSelected[0]?._id, 
-                        }));
-                        setSelectPreferableInspectionDateModalOpened(true);
+                      setSubmitPayload((prev) => ({
+                        ...prev,
+                        propertyId: propertiesSelected[0]?._id,
+                      }));
+                      setSelectPreferableInspectionDateModalOpened(true);
                     }}
                     className='h-[65px] w-[292px] bg-[#8DDB90] text-lg font-bold text-[#FAFAFA]'
                     type='button'>
@@ -618,7 +618,7 @@ const Slot = ({
     <div
       className={`w-[261px] ${inspectionType === 'JV' && 'h-[300px]'} ${
         (inspectionType === 'Buy' || inspectionType === 'Rent/Lease') &&
-        'h-[440px]'
+        'h-[400px]'
       } border-[1px] border-dashed border-[#5A5D63] flex items-center justify-center`}>
       <span
         title='Click to add for inspection'
