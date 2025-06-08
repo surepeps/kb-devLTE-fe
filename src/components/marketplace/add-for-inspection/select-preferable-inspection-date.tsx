@@ -42,19 +42,24 @@ const SelectPreferableInspectionDate = ({
     React.SetStateAction<SubmitInspectionPayloadProp>
   >;
 }) => {
-  const getAvailableDates = () => {
-    const dates: string[] = [];
-    let date = new Date();
-    date.setDate(date.getDate() + 3);
+const getAvailableDates = () => {
+  const dates: string[] = [];
+  let date = new Date();
+  date.setDate(date.getDate() + 3); // start from 3 days from now
 
-    while (dates.length < 6) {
-      if (date.getDay() !== 0) {
-        dates.push(format(date, 'MMM d, yyyy'));
-      }
-      date.setDate(date.getDate() + 1);
+  // Get the last day of the next month
+  const nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  const lastDayOfNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
+
+  while (date <= lastDayOfNextMonth) {
+    // Exclude Sundays if needed
+    if (date.getDay() !== 0) {
+      dates.push(format(date, 'MMM d, yyyy'));
     }
-    return dates;
-  };
+    date.setDate(date.getDate() + 1);
+  }
+  return dates;
+};
 
   const availableDates = getAvailableDates();
 
