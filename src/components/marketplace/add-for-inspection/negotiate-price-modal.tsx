@@ -348,7 +348,9 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     const findSelectedCard = allNegotiation.find((item) => item.id === getID);
 
     if (!findSelectedCard) {
-      throw new Error('Not found');
+
+       return;
+      // throw new Error('Not found');
     }
     setSubmitInspectionPayload((prev) => ({
       ...prev,
