@@ -56,6 +56,46 @@ const Step2FeaturesConditions: React.FC = () => {
       </div>
 
       <div className="space-y-8">
+        {/* Documents (for sell and jv) */}
+        {propertyData.propertyType !== "rent" && (
+          <div className="border border-[#E5E7EB] rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Document on the property
+            </h3>
+            <p className="text-[#5A5D63] mb-6">
+              Select all documents available for this property
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {DocOnPropertyData.map((document, index) => (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    const currentDocuments = propertyData.documents;
+                    const updatedDocuments = currentDocuments.includes(document)
+                      ? currentDocuments.filter((doc) => doc !== document)
+                      : [...currentDocuments, document];
+                    updatePropertyData("documents", updatedDocuments);
+                  }}
+                  className={`p-3 rounded-md border text-left transition-all text-sm ${
+                    propertyData.documents.includes(document)
+                      ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-medium"
+                      : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63] hover:bg-gray-50"
+                  }`}
+                >
+                  <span>{document}</span>
+                  {propertyData.documents.includes(document) && (
+                    <div className="mt-1">
+                      <span className="inline-block w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></span>
+                    </div>
+                  )}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Property Features */}
         <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
