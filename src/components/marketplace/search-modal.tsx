@@ -191,18 +191,12 @@ const SearchModal = ({
         return (
           <div className="relative w-full flex flex-col">
             <BuyAPropertySearchModal
-              usageOptions={usageOptions}
               addForInspectionPayload={addForInspectionPayload}
-              setUsageOptions={setUsageOptions}
-              // selectedBriefs={uniqueProperties.size}
-              selectedBriefs={selectedBriefs.length}
-              // setSelectedBriefs={setSelectedBriefs}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
               onSearch={handleSearch}
-              searchStatus={searchStatus}
             />
             <section className="w-full flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
               {(formikStatus || usageOptions) && renderBriefs("Buy a property")}
