@@ -285,8 +285,10 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         errorMessage = err.message;
       }
 
-      setErrMessage(errorMessage);
-      setFormikStatus("failed");
+      if (isMountedRef.current) {
+        setErrMessage(errorMessage);
+        setFormikStatus("failed");
+      }
     }
   }, []);
 
