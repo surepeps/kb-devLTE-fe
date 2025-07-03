@@ -1,19 +1,19 @@
-"use client";
+/** @format */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { X } from "lucide-react";
 
 interface ModalWrapperProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
-  className?: string;
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   showCloseButton?: boolean;
+  preventBackgroundScroll?: boolean;
   closeOnBackdropClick?: boolean;
-  maxWidth?: string;
+  className?: string;
 }
 
 const ModalWrapper: React.FC<ModalWrapperProps> = ({
@@ -21,22 +21,60 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
   onClose,
   children,
   title,
-  className = "",
+  size = "md",
   showCloseButton = true,
+  preventBackgroundScroll = true,
   closeOnBackdropClick = true,
-  maxWidth = "800px",
+  className = "",
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Prevent background scrolling when modal is open
   useEffect(() => {
+    if (!preventBackgroundScroll) return;
+
     if (isOpen) {
-      // Prevent body scroll
-      document.body.classList.add("no-scroll");
-      return () => {
-        document.body.classList.remove("no-scroll");
-      };
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = "0px"; // Prevent layout shift
     } else {
-      document.body.classList.remove("no-scroll");
+      document.body.style.overflow = "unset";
+      document.body.style.paddingRight = "unset";
     }
-  }, [isOpen]);
+
+    return () => {
+      document.body.style.overflow = "unset";
+      document.body.style.paddingRight = "unset";
+    };
+  }, [isOpen, preventBackgroundScroll]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  const getSizeClasses = () => {
+    switch (size) {
+      case "sm":
+        return "max-w-md";
+      case "md":
+        return "max-w-lg";
+      case "lg":
+        return "max-w-4xl";
+      case "xl":
+        return "max-w-6xl";
+      case "full":
+        return "max-w-full w-full h-full";
+      default:
+        return "max-w-lg";
+    }
+  };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (closeOnBackdropClick && e.target === e.currentTarget) {
@@ -51,48 +89,52 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 modal-backdrop"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={handleBackdropClick}
         >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+
+          {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2 }}
+            ref={modalRef}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={`
-              bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto
-              w-full max-w-[${maxWidth}] mx-auto relative
+              relative bg-white rounded-xl shadow-xl overflow-hidden w-full
+              ${getSizeClasses()}
+              ${size === "full" ? "h-full" : "max-h-[90vh]"}
               ${className}
             `}
-            style={{ maxWidth }}
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
                 {title && (
-                  <h2 className="text-xl font-semibold text-[#09391C]">
+                  <h2 className="text-xl md:text-2xl font-semibold text-[#09391C] font-display">
                     {title}
                   </h2>
                 )}
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                    type="button"
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    aria-label="Close modal"
                   >
-                    <FontAwesomeIcon
-                      icon={faClose}
-                      className="w-5 h-5 text-gray-600"
-                    />
+                    <X size={20} className="text-[#5A5D63]" />
                   </button>
                 )}
               </div>
             )}
 
             {/* Content */}
-            <div className="p-4 md:p-6">{children}</div>
+            <div
+              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto"}`}
+            >
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       )}
