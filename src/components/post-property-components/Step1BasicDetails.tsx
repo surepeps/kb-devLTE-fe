@@ -20,6 +20,11 @@ interface Option {
   label: string;
 }
 
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
 const Step1BasicDetails: React.FC = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
