@@ -10,14 +10,14 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  BriefcaseIcon,
-  TrendingUpIcon,
-  DollarSignIcon,
-  UsersIcon,
-  ClockIcon,
-  MapPinIcon,
-  StarIcon,
-  PlusIcon,
+  Briefcase as BriefcaseIcon,
+  TrendingUp as TrendingUpIcon,
+  DollarSign as DollarSignIcon,
+  Users as UsersIcon,
+  Clock as ClockIcon,
+  MapPin as MapPinIcon,
+  Star as StarIcon,
+  Plus as PlusIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 

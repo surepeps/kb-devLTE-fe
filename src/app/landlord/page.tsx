@@ -10,13 +10,13 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  PlusIcon,
-  HomeIcon,
-  EyeIcon,
-  ChartBarIcon,
-  CurrencyDollarIcon,
-  ClockIcon,
-  UserGroupIcon,
+  Plus as PlusIcon,
+  Home as HomeIcon,
+  Eye as EyeIcon,
+  BarChart3 as ChartBarIcon,
+  DollarSign as CurrencyDollarIcon,
+  Clock as ClockIcon,
+  Users as UserGroupIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
