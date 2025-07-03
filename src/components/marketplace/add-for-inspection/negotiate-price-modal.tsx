@@ -70,7 +70,8 @@ const NegiotiatePrice = ({
     // Save negotiated price to marketplace context
     if (
       selectedProperty.yourPrice &&
-      typeof selectedProperty.askingPrice === "number"
+      typeof selectedProperty.askingPrice === "number" &&
+      getID
     ) {
       addNegotiatedPrice(
         getID,
