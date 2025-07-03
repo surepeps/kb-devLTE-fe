@@ -20,6 +20,7 @@ import Step3ImageUpload from "@/components/post-property-components/Step3ImageUp
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
+import Preloader from "@/components/general-components/preloader";
 
 // Import additional step components
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
@@ -235,6 +236,10 @@ const PostProperty = () => {
       const uploadedImageUrls: string[] = [];
       const validImages = images.filter((img) => img.file !== null);
 
+      if (validImages.length > 0) {
+        toast.loading("Uploading images...", { id: "upload" });
+      }
+
       for (const image of validImages) {
         if (image.file) {
           const formData = new FormData();
@@ -252,8 +257,13 @@ const PostProperty = () => {
             }
           } catch (error) {
             console.error("Error uploading image:", error);
+            toast.error(`Failed to upload image: ${image.file.name}`);
           }
         }
+      }
+
+      if (validImages.length > 0) {
+        toast.success("Images uploaded successfully!", { id: "upload" });
       }
 
       // 2. Determine brief type
@@ -315,7 +325,15 @@ const PostProperty = () => {
       if (response && (response as any).owner) {
         toast.success("Property listed successfully!");
         resetForm();
-        router.push("/my_listing");
+
+        // Redirect based on user type
+        if (user?.userType === "Landowners") {
+          router.push("/my_listing");
+        } else if (user?.userType === "Agent") {
+          router.push("/agent/dashboard");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
         const errorMessage =
           (response as any)?.error || "Failed to submit property";
@@ -360,123 +378,126 @@ const PostProperty = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
-      <div className="container mx-auto px-4 md:px-6">
-        {/* Breadcrumb */}
-        <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
-          <span>Home</span>
-          <span className="mx-2">›</span>
-          <span>Post Property</span>
-          <span className="mx-2">›</span>
-          <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
-        </nav>
+    <>
+      <Preloader isVisible={isSubmitting} message="Submitting Property..." />
+      <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
+        <div className="container mx-auto px-4 md:px-6">
+          {/* Breadcrumb */}
+          <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
+            <span>Home</span>
+            <span className="mx-2">›</span>
+            <span>Post Property</span>
+            <span className="mx-2">›</span>
+            <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
+          </nav>
 
-        {/* Header */}
-        <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-4">
-            List Your Property
-          </h1>
-          <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
-            {showPreview
-              ? "Review your property listing before submission"
-              : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
-          </p>
-        </div>
-
-        {/* Stepper */}
-        {!showPreview && (
-          <div className="mb-6 md:mb-8 overflow-x-auto">
-            <Stepper steps={steps} />
+          {/* Header */}
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-4">
+              List Your Property
+            </h1>
+            <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
+              {showPreview
+                ? "Review your property listing before submission"
+                : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
+            </p>
           </div>
-        )}
 
-        {/* Main Content with Formik */}
-        <Formik
-          initialValues={propertyData}
-          validationSchema={getValidationSchema(currentStep, propertyData)}
-          onSubmit={() => {}}
-          enableReinitialize
-        >
-          {({ errors, touched, validateForm }) => (
-            <Form>
-              <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
-                {renderCurrentStep(errors, touched)}
-              </div>
+          {/* Stepper */}
+          {!showPreview && (
+            <div className="mb-6 md:mb-8 overflow-x-auto">
+              <Stepper steps={steps} />
+            </div>
+          )}
 
-              {/* Navigation Buttons */}
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
-                <Button
-                  type="button"
-                  value={
-                    showPreview
-                      ? "Edit Property"
-                      : currentStep === 0
-                        ? "Cancel"
-                        : "Previous"
-                  }
-                  onClick={
-                    showPreview
-                      ? () => setShowPreview(false)
-                      : currentStep === 0
-                        ? () => router.push("/")
-                        : handlePrevious
-                  }
-                  className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                  isDisabled={isSubmitting}
-                />
+          {/* Main Content with Formik */}
+          <Formik
+            initialValues={propertyData}
+            validationSchema={getValidationSchema(currentStep, propertyData)}
+            onSubmit={() => {}}
+            enableReinitialize
+          >
+            {({ errors, touched, validateForm }) => (
+              <Form>
+                <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
+                  {renderCurrentStep(errors, touched)}
+                </div>
 
-                <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                  {showPreview ? (
-                    <div className="relative w-full md:w-auto">
-                      <Button
-                        type="button"
-                        value={
-                          isSubmitting ? "Submitting..." : "Submit Property"
-                        }
-                        onClick={handleSubmit}
-                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                        isDisabled={isSubmitting}
-                      />
-                      {isSubmitting && (
-                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      )}
-                    </div>
-                  ) : (
-                    <>
-                      {currentStep === 4 && (
+                {/* Navigation Buttons */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
+                  <Button
+                    type="button"
+                    value={
+                      showPreview
+                        ? "Edit Property"
+                        : currentStep === 0
+                          ? "Cancel"
+                          : "Previous"
+                    }
+                    onClick={
+                      showPreview
+                        ? () => setShowPreview(false)
+                        : currentStep === 0
+                          ? () => router.push("/")
+                          : handlePrevious
+                    }
+                    className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                    isDisabled={isSubmitting}
+                  />
+
+                  <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                    {showPreview ? (
+                      <div className="relative w-full md:w-auto">
                         <Button
                           type="button"
-                          value="Preview"
-                          onClick={() => setShowPreview(true)}
-                          className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                          isDisabled={!validateCurrentStep() || isSubmitting}
+                          value={
+                            isSubmitting ? "Submitting..." : "Submit Property"
+                          }
+                          onClick={handleSubmit}
+                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                          isDisabled={isSubmitting}
                         />
-                      )}
-                      <Button
-                        type="button"
-                        value={currentStep === 4 ? "Complete" : "Next"}
-                        onClick={() => handleNext(validateForm, errors)}
-                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                        isDisabled={isSubmitting}
-                      />
-                    </>
-                  )}
+                        {isSubmitting && (
+                          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        {currentStep === 4 && (
+                          <Button
+                            type="button"
+                            value="Preview"
+                            onClick={() => setShowPreview(true)}
+                            className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                            isDisabled={!validateCurrentStep() || isSubmitting}
+                          />
+                        )}
+                        <Button
+                          type="button"
+                          value={currentStep === 4 ? "Complete" : "Next"}
+                          onClick={() => handleNext(validateForm, errors)}
+                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                          isDisabled={isSubmitting}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Progress Indicator */}
-              {!showPreview && (
-                <div className="text-center mt-6">
-                  <span className="text-sm text-[#5A5D63]">
-                    Step {currentStep + 1} of {steps.length}
-                  </span>
-                </div>
-              )}
-            </Form>
-          )}
-        </Formik>
+                {/* Progress Indicator */}
+                {!showPreview && (
+                  <div className="text-center mt-6">
+                    <span className="text-sm text-[#5A5D63]">
+                      Step {currentStep + 1} of {steps.length}
+                    </span>
+                  </div>
+                )}
+              </Form>
+            )}
+          </Formik>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

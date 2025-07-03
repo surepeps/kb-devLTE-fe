@@ -247,149 +247,143 @@ export default function AgentDashboard() {
           })}
         </div>
 
-        {/* Recent Briefs */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-[#09391C]">
-                Recent Briefs
-              </h2>
-              <Link
-                href="/agent/briefs"
-                className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
-              >
-                View All
-              </Link>
+        {/* Recent Briefs and Properties Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Briefs */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#09391C]">
+                  Recent Briefs
+                </h2>
+                <Link
+                  href="/agent/briefs"
+                  className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
+                >
+                  View All
+                </Link>
+              </div>
             </div>
+
+            {briefs.length === 0 ? (
+              <div className="p-8 text-center">
+                <BriefcaseIcon
+                  size={32}
+                  className="mx-auto text-gray-400 mb-3"
+                />
+                <h3 className="text-base font-medium text-gray-600 mb-2">
+                  No Briefs Available
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Check the marketplace for new opportunities
+                </p>
+                <Link
+                  href="/agent_marketplace"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
+                >
+                  <PlusIcon size={16} />
+                  Browse Marketplace
+                </Link>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+                {briefs.slice(0, 5).map((brief, index) => (
+                  <motion.div
+                    key={brief._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#8DDB90] bg-opacity-10 rounded-lg flex items-center justify-center">
+                          <BriefcaseIcon size={16} className="text-[#8DDB90]" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-[#09391C] capitalize text-sm">
+                            {brief.propertyType}
+                          </h3>
+                          <div className="flex items-center gap-1 text-xs text-[#5A5D63]">
+                            <MapPinIcon size={10} />
+                            {brief.location.area}
+                          </div>
+                          <p className="text-xs text-[#8DDB90] font-medium">
+                            ₦{brief.price.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                            brief.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : brief.status === "assigned"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {brief.status}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {briefs.length === 0 ? (
-            <div className="p-12 text-center">
-              <BriefcaseIcon size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">
-                No Briefs Available
-              </h3>
-              <p className="text-gray-500 mb-6">
-                Check the marketplace for new opportunities or wait for clients
-                to submit briefs
-              </p>
+          {/* Quick Actions */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-[#09391C]">
+                Quick Actions
+              </h2>
+            </div>
+            <div className="p-6 space-y-4">
               <Link
-                href="/agent_marketplace"
-                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
+                href="/post_property"
+                className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
-                <PlusIcon size={20} />
-                Browse Marketplace
-              </Link>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {briefs.slice(0, 5).map((brief, index) => (
-                <motion.div
-                  key={brief._id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-6 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#8DDB90] bg-opacity-10 rounded-lg flex items-center justify-center">
-                        <BriefcaseIcon size={20} className="text-[#8DDB90]" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-[#09391C] capitalize">
-                          {brief.propertyType}
-                        </h3>
-                        <div className="flex items-center gap-1 text-sm text-[#5A5D63]">
-                          <MapPinIcon size={12} />
-                          {brief.location.area},{" "}
-                          {brief.location.localGovernment}
-                        </div>
-                        <p className="text-sm text-[#8DDB90] font-medium">
-                          ₦{brief.price.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          brief.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : brief.status === "assigned"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {brief.status}
-                      </span>
-                      <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
-                        <ClockIcon size={12} />
-                        {new Date(brief.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold text-[#09391C] mb-6">
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link
-              href="/agent/briefs"
-              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-[#8DDB90] bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <BriefcaseIcon size={24} className="text-[#8DDB90]" />
+                <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                  <PlusIcon size={20} />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-[#09391C]">View Briefs</h3>
-                  <p className="text-sm text-[#5A5D63]">
-                    Manage your assigned briefs
+                <div className="flex-1">
+                  <h3 className="font-semibold">List New Property</h3>
+                  <p className="text-sm opacity-90">
+                    Add property to portfolio
                   </p>
                 </div>
-              </div>
-            </Link>
+              </Link>
 
-            <Link
-              href="/agent_marketplace"
-              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <PlusIcon size={24} className="text-blue-500" />
+              <Link
+                href="/agent_marketplace"
+                className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-[#8DDB90] p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
+              >
+                <div className="p-2 bg-[#8DDB90] bg-opacity-10 rounded-lg">
+                  <BriefcaseIcon size={20} className="text-[#8DDB90]" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-[#09391C]">Marketplace</h3>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Browse Marketplace</h3>
                   <p className="text-sm text-[#5A5D63]">
                     Find new opportunities
                   </p>
                 </div>
-              </div>
-            </Link>
+              </Link>
 
-            <Link
-              href="/preference"
-              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <UsersIcon size={24} className="text-purple-500" />
+              <Link
+                href="/my_listing"
+                className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
+              >
+                <div className="p-2 bg-blue-500 bg-opacity-10 rounded-lg">
+                  <UsersIcon size={20} className="text-blue-500" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-[#09391C]">Settings</h3>
-                  <p className="text-sm text-[#5A5D63]">
-                    Update your preferences
-                  </p>
+                <div className="flex-1">
+                  <h3 className="font-semibold">My Listings</h3>
+                  <p className="text-sm text-[#5A5D63]">Manage properties</p>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
