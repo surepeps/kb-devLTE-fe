@@ -228,7 +228,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
               return (
                 <JointVentureModalCard
                   key={`${property._id}-${currentPage}`}
-                  onClick={() => onPropertySelect(property)}
+                  onClick={() => toggleInspectionSelection(property)}
                   isDisabled={isPropertySelected(property)}
                   onCardPageClick={() => onCardPageClick(property)}
                   isComingFromSubmitLol={isComingFromSubmitLol}
@@ -259,7 +259,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                 isPremium={property?.isPremium}
                 property={property}
                 onCardPageClick={() => onCardPageClick(property)}
-                onClick={() => onPropertySelect(property)}
+                onClick={() => toggleInspectionSelection(property)}
                 cardData={createCardData(property)}
                 isDisabled={isPropertySelected(property)}
               />
