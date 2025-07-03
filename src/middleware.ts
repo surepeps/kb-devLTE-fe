@@ -68,9 +68,9 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/landlord", request.url));
     }
     // Redirect /landlord to dashboard if already logged in as landlord
-    if (pathname === "/landlord") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+    // if (pathname === "/landlord") {
+    //   return NextResponse.redirect(new URL("/dashboard", request.url));
+    // }
   }
 
   // Handle auth redirections for logged-in agents

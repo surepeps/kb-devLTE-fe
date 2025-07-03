@@ -130,16 +130,16 @@ const PostProperty = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+    // if (!user) {
+    //   router.push("/auth/login");
+    //   return;
+    // }
 
-    if (user.userType !== "Landowners" && !user.agentData) {
-      toast.error("You need to be a landowner or agent to post properties");
-      router.push("/");
-      return;
-    }
+    // if (user.userType !== "Landowners" && !user.agentData) {
+    //   toast.error("You need to be a landowner or agent to post properties");
+    //   router.push("/");
+    //   return;
+    // }
   }, [user, router]);
 
   const steps = [
