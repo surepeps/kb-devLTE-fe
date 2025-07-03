@@ -99,6 +99,7 @@ const SearchModal = ({
     clearAllFilters,
     toggleInspectionSelection,
     selectedForInspection,
+    fetchInitialData,
   } = useMarketplace();
 
   const router = useRouter();
