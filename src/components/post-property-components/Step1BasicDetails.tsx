@@ -416,13 +416,12 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   value={
                     propertyData.area && typeof propertyData.area === "object"
                       ? propertyData.area
-                      : propertyData.area
+                      : propertyData.area &&
+                          typeof propertyData.area === "string"
                         ? { value: propertyData.area, label: propertyData.area }
                         : null
                   }
-                  onChange={(option) =>
-                    updatePropertyData("area", option?.value || "")
-                  }
+                  onChange={(option) => updatePropertyData("area", option)}
                   placeholder="Select area/neighborhood"
                   styles={{
                     ...customStyles,
@@ -436,6 +435,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   }}
                   isSearchable
                   isDisabled={!propertyData.lga}
+                  isClearable
                 />
               ) : (
                 <Input
@@ -446,7 +446,10 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   value={
                     typeof propertyData.area === "string"
                       ? propertyData.area
-                      : ""
+                      : typeof propertyData.area === "object" &&
+                          propertyData.area?.value
+                        ? propertyData.area.value
+                        : ""
                   }
                   onChange={(e) => updatePropertyData("area", e.target.value)}
                   className={
