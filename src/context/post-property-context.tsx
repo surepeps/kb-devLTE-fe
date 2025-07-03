@@ -65,12 +65,19 @@ const PostPropertyContext = createContext<PostPropertyContextType | undefined>(
 
 const initialPropertyData: PropertyData = {
   propertyType: "",
+  propertyCategory: "",
+  propertyCondition: "",
+  typeOfBuilding: "",
+  rentalType: "",
   price: "",
+  leaseHold: "",
   holdDuration: "",
   description: "",
   state: null,
   lga: null,
   area: "",
+  landSize: "",
+  measurementType: "",
   bedrooms: 0,
   bathrooms: 0,
   toilets: 0,
@@ -87,6 +94,8 @@ const initialPropertyData: PropertyData = {
     phone: "",
   },
   isLegalOwner: false,
+  isTenanted: "",
+  additionalInfo: "",
 };
 
 export function PostPropertyProvider({ children }: { children: ReactNode }) {
