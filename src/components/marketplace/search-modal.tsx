@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { POST_REQUEST } from "@/utils/requests";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
 import PropertyGrid from "./property-grid";
+import { useMarketplace } from "@/context/marketplace-context";
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
