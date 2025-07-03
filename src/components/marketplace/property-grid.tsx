@@ -182,7 +182,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         title="No properties available"
         description="There are currently no properties available in this category."
         actionLabel="Browse All Categories"
-        onAction={onClearFilters}
+        onAction={clearAllFilters}
       />
     );
   }
@@ -193,7 +193,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
       <EmptyState
         type="no-results"
         showFilters={true}
-        onClearFilters={onClearFilters}
+        onClearFilters={clearAllFilters}
       />
     );
   }
