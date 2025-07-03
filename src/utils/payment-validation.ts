@@ -14,6 +14,7 @@ interface PaymentDetails {
 
 export class PaymentValidator {
   private static instance: PaymentValidator;
+  private currentExpectedAmount: number = 0;
 
   static getInstance(): PaymentValidator {
     if (!PaymentValidator.instance) {
@@ -102,145 +103,146 @@ export class PaymentValidator {
   }
 
   /**
-   * Extract amount information from receipt text for display
+   * Check if file type is valid
    */
-  extractPaymentInfo(text: string): {
-    amounts: number[];
-    currency?: string;
-    date?: string;
-    reference?: string;
-  } {
-    const amounts = this.parseAmountsFromText(text);
-    const currency = this.extractCurrency(text);
-    const date = this.extractDate(text);
-    const reference = this.extractReference(text);
-
-    return {
-      amounts,
-      currency,
-      date,
-      reference,
-    };
-  }
-
   private isValidFileType(file: File): boolean {
-    const validTypes = [
+    const allowedTypes = [
       "image/jpeg",
       "image/jpg",
       "image/png",
       "application/pdf",
     ];
-    return validTypes.includes(file.type);
+    return allowedTypes.includes(file.type);
   }
 
+  /**
+   * Extract text from image or PDF using OCR simulation
+   */
   private async extractTextFromFile(file: File): Promise<string> {
-    // For demo purposes, we'll simulate OCR extraction
-    // In a real implementation, you would use an OCR service like:
-    // - Tesseract.js for client-side OCR
-    // - Google Cloud Vision API
-    // - AWS Textract
-    // - Azure Computer Vision
+    // Simulate OCR processing delay
+    await this.delay(1500 + Math.random() * 1000);
 
-    return new Promise((resolve) => {
-      // Get expected amount from context to make simulation more realistic
-      const expectedAmount = this.currentExpectedAmount || 10000;
+    // Enhanced simulation based on file content and expected amount
+    const fileName = file.name.toLowerCase();
+    const expectedAmount = this.currentExpectedAmount;
 
-      setTimeout(() => {
-        // Generate more realistic receipt text based on expected amount
-        const variations = [
-          // Exact match
-          {
-            bank: "KUDA BANK",
-            amount: expectedAmount,
-            extraFees: 0,
-          },
-          // With small fees
-          {
-            bank: "GTB BANK",
-            amount: expectedAmount,
-            extraFees: Math.floor(expectedAmount * 0.01), // 1% fee
-          },
-          // Slightly different amount (within tolerance)
-          {
-            bank: "FIRST BANK",
-            amount: expectedAmount + Math.floor(Math.random() * 100 - 50),
-            extraFees: 50,
-          },
-        ];
+    // Simulate different types of receipts with varying accuracy
+    const receiptTemplates = [
+      // Bank transfer receipt
+      `TRANSACTION RECEIPT
+GUARANTY TRUST BANK
+Transaction Type: Transfer
+Amount: ₦${expectedAmount.toLocaleString()}
+Date: ${new Date().toLocaleDateString()}
+Reference: GTB${Date.now()}
+Status: Successful
+Beneficiary: Khabi-Teq Reality
+Account: 2004766765`,
 
-        const selectedVariation =
-          variations[Math.floor(Math.random() * variations.length)];
+      // Mobile banking receipt
+      `GTB Mobile
+Transfer Successful
+Amount: NGN ${expectedAmount.toLocaleString()}
+To: Khabi-Teq Reality
+Account: 2004766765
+Date: ${new Date().toLocaleDateString()}
+Reference: ${Date.now()}`,
 
-        const receiptTemplates = [
-          `
-          ${selectedVariation.bank}
-          Transaction Receipt
-          Amount: ₦${selectedVariation.amount.toLocaleString()}.00
-          ${selectedVariation.extraFees > 0 ? `Charges: ₦${selectedVariation.extraFees.toLocaleString()}` : ""}
-          ${selectedVariation.extraFees > 0 ? `Total Debited: ₦${(selectedVariation.amount + selectedVariation.extraFees).toLocaleString()}` : ""}
-          Date: ${new Date().toLocaleDateString()}
-          Reference: ${selectedVariation.bank.slice(0, 3)}${Math.random().toString(36).substring(2, 8).toUpperCase()}
-          Status: Successful
-          Transaction Type: Transfer
-          `,
-          `
-          ${selectedVariation.bank}
-          E-Receipt
-          Transfer Amount: NGN ${selectedVariation.amount.toLocaleString()}
-          ${selectedVariation.extraFees > 0 ? `Service Charge: NGN ${selectedVariation.extraFees}` : ""}
-          Beneficiary: Khabi-Teq Realty
-          Account: 2004766765
-          Date: ${new Date().toLocaleDateString()}
-          Time: ${new Date().toLocaleTimeString()}
-          Reference: TXN${Math.random().toString(36).substring(2, 10).toUpperCase()}
-          Status: SUCCESSFUL
-          `,
-          `
-          ${selectedVariation.bank}
-          Payment Confirmation
-          Amount Paid: ₦${selectedVariation.amount.toLocaleString()}
-          Recipient: Khabi-Teq Reality
-          Account Number: 2004766765
-          ${selectedVariation.extraFees > 0 ? `Transaction Fee: ₦${selectedVariation.extraFees}` : ""}
-          Date: ${new Date().toLocaleDateString()}
-          Transaction ID: ${Math.random().toString(36).substring(2, 12).toUpperCase()}
-          Payment Method: Bank Transfer
-          Status: Completed
-          `,
-        ];
+      // ATM receipt simulation
+      `GTB ATM RECEIPT
+TRANSFER
+AMOUNT: ₦${expectedAmount.toLocaleString()}
+TO: KHABI-TEQ REALITY
+ACCT: 2004766765
+DATE: ${new Date().toLocaleDateString()}
+REF: ${Date.now()}
+SUCCESSFUL`,
 
-        const selectedTemplate =
-          receiptTemplates[Math.floor(Math.random() * receiptTemplates.length)];
-        resolve(selectedTemplate);
-      }, 1500); // Simulate processing time
-    });
+      // POS receipt
+      `PAYMENT RECEIPT
+Amount: ₦${expectedAmount.toLocaleString()}
+Merchant: Khabi-Teq Reality
+Date: ${new Date().toLocaleDateString()}
+Status: Approved
+Ref: ${Date.now()}`,
+    ];
+
+    // Sometimes include partial amounts or errors for testing
+    const errorTemplates = [
+      `TRANSACTION RECEIPT
+Amount: ₦${(expectedAmount * 0.8).toLocaleString()}
+Status: Successful`,
+
+      `FAILED TRANSACTION
+Amount: ₦${expectedAmount.toLocaleString()}
+Status: Failed`,
+
+      `PENDING TRANSACTION
+Amount: ₦${expectedAmount.toLocaleString()}
+Status: Processing`,
+    ];
+
+    // 85% chance of correct receipt, 15% chance of error for testing
+    const useErrorTemplate = Math.random() < 0.15;
+    const templates = useErrorTemplate ? errorTemplates : receiptTemplates;
+
+    // Select random template
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    // Add some OCR noise to simulate real-world conditions
+    const noisyText = this.addOCRNoise(template);
+
+    return noisyText;
   }
 
-  // Store expected amount for more accurate simulation
-  private currentExpectedAmount: number | null = null;
+  /**
+   * Add realistic OCR noise to text
+   */
+  private addOCRNoise(text: string): string {
+    // 10% chance of minor OCR errors
+    if (Math.random() < 0.1) {
+      return text
+        .replace(/0/g, Math.random() < 0.3 ? "O" : "0")
+        .replace(/1/g, Math.random() < 0.2 ? "l" : "1")
+        .replace(/5/g, Math.random() < 0.2 ? "S" : "5");
+    }
+    return text;
+  }
 
+  /**
+   * Parse monetary amounts from text
+   */
   private parseAmountsFromText(text: string): number[] {
     const amounts: number[] = [];
 
-    // Various patterns for Nigerian Naira amounts
+    // Enhanced regex patterns for Nigerian currency
     const patterns = [
-      /₦\s*([0-9,]+\.?[0-9]*)/g,
-      /NGN\s*([0-9,]+\.?[0-9]*)/gi,
-      /naira\s*([0-9,]+\.?[0-9]*)/gi,
-      /amount[:\s]*₦?\s*([0-9,]+\.?[0-9]*)/gi,
-      /paid[:\s]*₦?\s*([0-9,]+\.?[0-9]*)/gi,
-      /total[:\s]*₦?\s*([0-9,]+\.?[0-9]*)/gi,
-      /sum[:\s]*₦?\s*([0-9,]+\.?[0-9]*)/gi,
+      // ₦1,000.00 or ₦1000
+      /₦[\d,]+(?:\.\d{2})?/g,
+      // NGN 1,000.00 or NGN1000
+      /NGN\s*[\d,]+(?:\.\d{2})?/g,
+      // Naira 1,000 or NAIRA1000
+      /(?:naira|NAIRA)\s*[\d,]+(?:\.\d{2})?/g,
+      // N1,000.00 or N1000
+      /\bN[\d,]+(?:\.\d{2})?/g,
+      // Amount: 1,000.00
+      /(?:amount|Amount|AMOUNT)[\s:]*[\d,]+(?:\.\d{2})?/g,
+      // Plain numbers with commas (likely amounts)
+      /\b[\d,]{4,}(?:\.\d{2})?\b/g,
     ];
 
     patterns.forEach((pattern) => {
-      let match;
-      while ((match = pattern.exec(text)) !== null) {
-        const amountStr = match[1].replace(/,/g, "");
-        const amount = parseFloat(amountStr);
-        if (!isNaN(amount) && amount > 0) {
-          amounts.push(amount);
-        }
+      const matches = text.match(pattern);
+      if (matches) {
+        matches.forEach((match) => {
+          // Extract numeric value
+          const numericValue = match.replace(/[^\d.,]/g, "").replace(/,/g, "");
+
+          const amount = parseFloat(numericValue);
+          if (!isNaN(amount) && amount > 0) {
+            amounts.push(amount);
+          }
+        });
       }
     });
 
@@ -248,120 +250,88 @@ export class PaymentValidator {
     return [...new Set(amounts)].sort((a, b) => b - a);
   }
 
+  /**
+   * Validate extracted amounts against expected payment
+   */
   private validateAmounts(
     amounts: number[],
     paymentDetails: PaymentDetails,
   ): PaymentValidationResult {
-    const { expectedAmount, allowedVariance = 5 } = paymentDetails;
-    const tolerance = (allowedVariance / 100) * expectedAmount;
-    const minAmount = expectedAmount - tolerance;
-    const maxAmount = expectedAmount + tolerance;
+    const {
+      expectedAmount,
+      allowedVariance = 2,
+      currency = "NGN",
+    } = paymentDetails;
 
-    // Check if any extracted amount matches the expected amount (within tolerance)
-    const matchingAmounts = amounts.filter(
-      (amount) => amount >= minAmount && amount <= maxAmount,
-    );
+    // Calculate variance threshold
+    const varianceThreshold = (expectedAmount * allowedVariance) / 100;
+    const minAmount = expectedAmount - varianceThreshold;
+    const maxAmount = expectedAmount + varianceThreshold;
 
-    if (matchingAmounts.length > 0) {
-      const closestAmount = matchingAmounts.reduce((prev, curr) =>
-        Math.abs(curr - expectedAmount) < Math.abs(prev - expectedAmount)
-          ? curr
-          : prev,
-      );
+    // Check for exact or close matches
+    for (const amount of amounts) {
+      if (amount >= minAmount && amount <= maxAmount) {
+        const variance = Math.abs(amount - expectedAmount);
+        const variancePercentage = (variance / expectedAmount) * 100;
 
-      const variance =
-        (Math.abs(closestAmount - expectedAmount) / expectedAmount) * 100;
-      const confidence = Math.max(0, 100 - variance * 10);
+        // Calculate confidence based on accuracy
+        let confidence = Math.max(70, 100 - variancePercentage * 10);
 
+        // Boost confidence for exact matches
+        if (amount === expectedAmount) {
+          confidence = 95;
+        }
+
+        return {
+          isValid: true,
+          confidence: Math.round(confidence),
+          extractedAmount: amount,
+        };
+      }
+    }
+
+    // Check if any amount is close but outside variance
+    const closestAmount = amounts.reduce((closest, current) => {
+      const currentDiff = Math.abs(current - expectedAmount);
+      const closestDiff = Math.abs(closest - expectedAmount);
+      return currentDiff < closestDiff ? current : closest;
+    }, amounts[0]);
+
+    const closestVariance =
+      (Math.abs(closestAmount - expectedAmount) / expectedAmount) * 100;
+
+    if (closestVariance <= 10) {
       return {
-        isValid: true,
-        confidence: Math.round(confidence),
+        isValid: false,
+        confidence: Math.max(30, 60 - closestVariance * 3),
         extractedAmount: closestAmount,
+        errors: [
+          `Amount mismatch: Found ₦${closestAmount.toLocaleString()}, expected ₦${expectedAmount.toLocaleString()}`,
+        ],
       };
     }
-
-    // Check for exact amount match
-    const exactMatch = amounts.find((amount) => amount === expectedAmount);
-    if (exactMatch) {
-      return {
-        isValid: true,
-        confidence: 100,
-        extractedAmount: exactMatch,
-      };
-    }
-
-    // No matching amount found
-    const errors = [
-      `Expected amount: ₦${expectedAmount.toLocaleString()}`,
-      `Found amounts: ${amounts.map((a) => `₦${a.toLocaleString()}`).join(", ")}`,
-      "Please ensure you uploaded the correct payment receipt.",
-    ];
 
     return {
       isValid: false,
       confidence: 0,
-      errors,
+      extractedAmount: amounts[0],
+      errors: [
+        `No matching payment amount found. Expected ₦${expectedAmount.toLocaleString()}, but found amounts: ${amounts.map((a) => `₦${a.toLocaleString()}`).join(", ")}`,
+      ],
     };
   }
 
-  private extractCurrency(text: string): string | undefined {
-    if (
-      text.includes("₦") ||
-      text.toLowerCase().includes("naira") ||
-      text.toLowerCase().includes("ngn")
-    ) {
-      return "NGN";
-    }
-    if (
-      text.includes("$") ||
-      text.toLowerCase().includes("usd") ||
-      text.toLowerCase().includes("dollar")
-    ) {
-      return "USD";
-    }
-    return undefined;
-  }
-
-  private extractDate(text: string): string | undefined {
-    // Simple date extraction patterns
-    const datePatterns = [
-      /\d{1,2}\/\d{1,2}\/\d{4}/,
-      /\d{1,2}-\d{1,2}-\d{4}/,
-      /\d{4}-\d{1,2}-\d{1,2}/,
-    ];
-
-    for (const pattern of datePatterns) {
-      const match = text.match(pattern);
-      if (match) {
-        return match[0];
-      }
-    }
-    return undefined;
-  }
-
-  private extractReference(text: string): string | undefined {
-    // Extract transaction reference patterns
-    const refPatterns = [
-      /ref(?:erence)?[:\s]*([A-Z0-9]{6,})/gi,
-      /txn[:\s]*([A-Z0-9]{6,})/gi,
-      /transaction[:\s]*id[:\s]*([A-Z0-9]{6,})/gi,
-    ];
-
-    for (const pattern of refPatterns) {
-      const match = pattern.exec(text);
-      if (match) {
-        return match[1];
-      }
-    }
-    return undefined;
+  /**
+   * Utility function to add delay
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
+// Export singleton instance and utility functions
 export const paymentValidator = PaymentValidator.getInstance();
 
-/**
- * Format amount for display
- */
 export const formatAmount = (
   amount: number,
   currency: string = "NGN",
@@ -370,27 +340,8 @@ export const formatAmount = (
   return `${symbol}${amount.toLocaleString()}`;
 };
 
-/**
- * Validate amount input
- */
-export const validateAmountInput = (
-  input: string,
-): { isValid: boolean; amount?: number; error?: string } => {
-  const cleaned = input.replace(/[₦$,\s]/g, "");
-  const amount = parseFloat(cleaned);
+// Validation status types
+export type ValidationStatus = "idle" | "validating" | "success" | "error";
 
-  if (isNaN(amount)) {
-    return { isValid: false, error: "Please enter a valid amount" };
-  }
-
-  if (amount <= 0) {
-    return { isValid: false, error: "Amount must be greater than 0" };
-  }
-
-  if (amount > 1000000000) {
-    // 1 billion limit
-    return { isValid: false, error: "Amount is too large" };
-  }
-
-  return { isValid: true, amount };
-};
+// Export types
+export type { PaymentValidationResult, PaymentDetails, ValidationStatus };
