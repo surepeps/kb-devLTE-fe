@@ -111,19 +111,19 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b border-gray-200">
                 {title && (
-                  <h2 className="text-xl md:text-2xl font-semibold text-[#09391C] font-display">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#09391C] font-display pr-2">
                     {title}
                   </h2>
                 )}
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-1 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
                     aria-label="Close modal"
                   >
-                    <X size={20} className="text-[#5A5D63]" />
+                    <X size={18} className="text-[#5A5D63] sm:w-5 sm:h-5" />
                   </button>
                 )}
               </div>
