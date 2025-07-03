@@ -63,7 +63,16 @@ const Card = ({
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>("View more");
   const { setViewImage, setImageData } = usePageContext();
+  const { getNegotiatedPrice, removeNegotiatedPrice, isSelectedForInspection } =
+    useMarketplace();
   const cardRef = useRef<HTMLDivElement | null>(null);
+
+  // Check if this property has a negotiated price
+  const negotiatedPriceData = getNegotiatedPrice(property?._id);
+  const hasNegotiatedPrice = negotiatedPriceData !== null;
+
+  // Check if this property is selected for inspection
+  const isSelectedForInspectionCheck = isSelectedForInspection(property?._id);
 
   useEffect(() => {
     if (count === 6) {
