@@ -16,6 +16,7 @@ const eslintConfig = [
       "react-hooks/exhaustive-deps": "warn",
       // 'react-hooks/rules-of-hooks': 'error',
       "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
     },
   },
 ];
