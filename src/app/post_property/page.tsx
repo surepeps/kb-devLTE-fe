@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import { POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
+import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
