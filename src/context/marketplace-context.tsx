@@ -1,7 +1,13 @@
 /** @format */
 
 "use client";
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import toast from "react-hot-toast";
 
 interface NegotiatedPrice {
