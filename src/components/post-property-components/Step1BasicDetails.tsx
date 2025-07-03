@@ -26,6 +26,8 @@ const Step1BasicDetails: React.FC = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [formatedPrice, setFormatedPrice] = useState<string>("");
   const [formatedHold, setFormatedHold] = useState<string>("");
+  const [formatedLandSize, setFormatedLandSize] = useState<string>("");
+  const [formatedLeaseHold, setFormatedLeaseHold] = useState<string>("");
 
   useEffect(() => {
     // Format states data using dummy data
