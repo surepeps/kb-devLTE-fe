@@ -282,6 +282,10 @@ const Card = ({
               value={`Price Negotiation`}
               type="button"
               onClick={() => {
+                // Auto-add to selected briefs when negotiating price
+                if (!isSelectedForInspectionCheck) {
+                  toggleInspectionSelection(property);
+                }
                 setIsAddInspectionModalOpened?.(true);
                 setPropertySelected?.([property]);
                 setIsComingFromPriceNeg?.(true);
