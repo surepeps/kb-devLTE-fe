@@ -27,6 +27,7 @@ import UploadLolDocumentModal from "./upload-your-lol-document";
 import { usePageContext } from "@/context/page-context";
 import { SubmitInspectionPayloadProp } from "../types/payload";
 import ModalWrapper from "@/components/general-components/modal-wrapper";
+import { useMarketplace } from "@/context/marketplace-context";
 
 // Types
 type PayloadProps = {
