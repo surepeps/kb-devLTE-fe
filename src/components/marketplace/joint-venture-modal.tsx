@@ -22,26 +22,28 @@ type PayloadProps = {
 };
 
 const JointVentureModal = ({
-  selectedBriefs,
   addForInspectionPayload,
   setAddInspectionModal,
   setSelectedBriefs,
   inspectionType,
-  usageOptions,
-  setUsageOptions,
   setInspectionType,
   onSearch,
 }: {
-  selectedBriefs: number;
-  usageOptions: string[];
   addForInspectionPayload: PayloadProps;
-  setUsageOptions: (type: string[]) => void;
   setAddInspectionModal?: (type: boolean) => void;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
   inspectionType: "Buy" | "JV" | "Rent/Lease";
   setInspectionType: (type: "Buy" | "JV" | "Rent/Lease") => void;
   onSearch: (payload: any) => void;
 }) => {
+  // Use marketplace context
+  const {
+    jvFilterBy: usageOptions,
+    setJvFilterBy: setUsageOptions,
+    selectedForInspection,
+  } = useMarketplace();
+
+  const selectedBriefs = selectedForInspection.length;
   // const [usageOptions, setUsageOptions] = useState<string[]>([]);
   const formik = useFormik({
     initialValues: {
