@@ -581,6 +581,7 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
   setIsComingFromSubmitLol,
 }) => {
   const { propertySelectedForInspection } = usePageContext();
+  const { removeFromInspection } = useMarketplace();
   const totalAmount = useInspectionFee(propertiesSelected);
 
   const {
