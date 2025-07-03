@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { POST_REQUEST } from "@/utils/requests";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
 import PropertyGrid from "./property-grid";
+import { useMarketplace } from "@/context/marketplace-context";
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -73,26 +74,30 @@ const SearchModal = ({
   const [uniqueProperties, setUniqueProperties] = useState<Set<any>>(
     new Set(propertiesSelected),
   );
-  const [formikStatus, setFormikStatus] = useState<
-    "idle" | "pending" | "success" | "failed"
-  >("success");
-  const [errMessage, setErrMessage] = useState<string>("");
-  const [properties, setProperties] = useState<any[]>([]);
-  const [usageOptions, setUsageOptions] = useState<string[]>([]);
-  const [rentFilterBy, setRentFilterBy] = useState<string[]>([]);
-  const [jvFilterBy, setJvFilterBy] = useState<string[]>(["All"]);
-  const [homeCondition, setHomeCondition] = useState<string>("");
-  const [briefToFetch, setBriefToFetch] = useState<string>(
-    URLS.buyersFetchBriefs,
-  );
 
-  const [searchStatus, setSearchStatus] = useState<{
-    status: "pending" | "success" | "failed" | "idle";
-    couldNotFindAProperty: boolean;
-  }>({
-    status: "idle",
-    couldNotFindAProperty: false,
-  });
+  // Use marketplace context for state management
+  const {
+    formikStatus,
+    setFormikStatus,
+    errMessage,
+    setErrMessage,
+    properties,
+    setProperties,
+    usageOptions,
+    setUsageOptions,
+    rentFilterBy,
+    setRentFilterBy,
+    jvFilterBy,
+    setJvFilterBy,
+    homeCondition,
+    setHomeCondition,
+    searchStatus,
+    setSearchStatus,
+    clearAllFilters,
+    toggleInspectionSelection,
+    selectedForInspection,
+    fetchInitialData,
+  } = useMarketplace();
 
   const router = useRouter();
 
@@ -101,10 +106,7 @@ const SearchModal = ({
     setPropertiesSelected([]);
   };
 
-  // Sync local selection to context
-  useEffect(() => {
-    setSelectedBriefs(Array.from(uniqueProperties));
-  }, [uniqueProperties, setSelectedBriefs]);
+  // Note: State syncing moved to marketplace context to avoid render issues
 
   const handleSearch = async (searchPayload: any) => {
     setFormikStatus("pending");
@@ -133,9 +135,9 @@ const SearchModal = ({
           setProperties(shuffledData);
           setSearchStatus({
             status: "success",
-            couldNotFindAProperty: properties["length"] === 0,
+            couldNotFindAProperty: shuffledData.length === 0,
           });
-          console.log(`Properties: ${properties.length}`);
+          console.log(`Properties: ${shuffledData.length}`);
           // setUsageOptions(['All'])
         }),
         {
@@ -157,51 +159,21 @@ const SearchModal = ({
     }
   };
 
-  useEffect(() => {
-    let briefType = "";
-    switch (userSelectedMarketPlace) {
-      case "Buy a property":
-        briefType = "Outright Sales";
-        break;
-      case "Find property for joint venture":
-        briefType = "Joint Venture";
-        break;
-      case "Rent/Lease a property":
-        briefType = "Rent";
-        break;
-      default:
-        briefType = "Outright Sales";
-    }
-    // You can set default page and limit as needed
-    setBriefToFetch(
-      `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(
-        briefType,
-      )}`,
-    );
-  }, [userSelectedMarketPlace]);
-
   const renderDynamicComponent = () => {
     switch (userSelectedMarketPlace) {
       case "Buy a property":
         return (
           <div className="relative w-full flex flex-col">
             <BuyAPropertySearchModal
-              usageOptions={usageOptions}
               addForInspectionPayload={addForInspectionPayload}
-              setUsageOptions={setUsageOptions}
-              // selectedBriefs={uniqueProperties.size}
-              selectedBriefs={selectedBriefs.length}
-              // setSelectedBriefs={setSelectedBriefs}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
               onSearch={handleSearch}
-              searchStatus={searchStatus}
             />
             <section className="w-full flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
-              {(formikStatus || usageOptions) &&
-                renderBriefs("Buy a property", usageOptions)}
+              {(formikStatus || usageOptions) && renderBriefs("Buy a property")}
             </section>
           </div>
         );
@@ -209,27 +181,15 @@ const SearchModal = ({
         return (
           <div className="relative w-full flex flex-col">
             <RentSearchModal
-              homeCondition={homeCondition}
-              setHomeCondition={setHomeCondition}
-              rentFilterBy={rentFilterBy}
-              setRentFilterBy={setRentFilterBy}
-              selectedBriefs={uniqueProperties.size}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               addForInspectionPayload={addForInspectionPayload}
-              setUsageOptions={setUsageOptions}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
               onSearch={handleSearch}
-              searchStatus={searchStatus}
             />
             <section className="flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
-              {formikStatus &&
-                renderBriefs(
-                  userSelectedMarketPlace,
-                  rentFilterBy,
-                  homeCondition,
-                )}
+              {formikStatus && renderBriefs(userSelectedMarketPlace)}
             </section>
           </div>
         );
@@ -238,19 +198,14 @@ const SearchModal = ({
           <div className="relative w-full flex flex-col">
             <JointVentureModal
               onSearch={handleSearch}
-              selectedBriefs={uniqueProperties.size}
               addForInspectionPayload={addForInspectionPayload}
-              // setUsageOptions={setUsageOptions}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
-              usageOptions={jvFilterBy}
-              setUsageOptions={setJvFilterBy}
               setInspectionType={setInspectionType}
             />
             <section className="flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
-              {formikStatus &&
-                renderBriefs(userSelectedMarketPlace, jvFilterBy)}
+              {formikStatus && renderBriefs(userSelectedMarketPlace)}
             </section>
           </div>
         );
@@ -259,28 +214,8 @@ const SearchModal = ({
     }
   };
 
-  const clearAllFilters = () => {
-    setUsageOptions(["All"]);
-    setRentFilterBy(["All"]);
-    setJvFilterBy(["All"]);
-    setHomeCondition("All");
-  };
-
   const getPropertyGridMarketplaceType = () => {
     return userSelectedMarketPlace;
-  };
-
-  const getFilterBy = () => {
-    switch (userSelectedMarketPlace) {
-      case "Buy a property":
-        return usageOptions;
-      case "Rent/Lease a property":
-        return rentFilterBy;
-      case "Find property for joint venture":
-        return jvFilterBy;
-      default:
-        return [];
-    }
   };
 
   const handleCardPageClick = (property: any) => {
@@ -303,26 +238,10 @@ const SearchModal = ({
     }
   };
 
-  const renderBriefs = (
-    type: string,
-    filterBy: string[],
-    condition?: string,
-  ) => {
+  const renderBriefs = (type: string) => {
     return (
       <PropertyGrid
-        properties={properties}
         marketplaceType={type}
-        filterBy={filterBy}
-        condition={condition}
-        isLoading={formikStatus === "pending"}
-        error={
-          formikStatus === "failed"
-            ? errMessage || "Failed to load properties"
-            : null
-        }
-        selectedBriefs={uniqueProperties}
-        onPropertySelect={handlePropertiesSelection}
-        onCardPageClick={handleCardPageClick}
         itemsPerPage={12}
         // JV specific props
         isComingFromSubmitLol={isComingFromSubmitLol}
@@ -334,23 +253,14 @@ const SearchModal = ({
         // Buy specific props
         isComingFromPriceNeg={isComingFromPriceNeg}
         setIsComingFromPriceNeg={comingFromPriceNegotiation}
-        // Clear filters
-        onClearFilters={clearAllFilters}
+        // Card page click
+        onCardPageClick={handleCardPageClick}
       />
     );
   };
 
   const handlePropertiesSelection = (property: any) => {
-    const maximumSelection: number = 2;
-    if (uniqueProperties.size === maximumSelection) {
-      return toast.error(`Maximum of ${maximumSelection} reached`);
-    }
-    // Create a new Set to trigger state update
-    const newSet = new Set(uniqueProperties);
-    newSet.add(property);
-    setUniqueProperties(newSet);
-    setPropertiesSelected(Array.from(newSet));
-    toast.success("Property selected");
+    toggleInspectionSelection(property);
   };
 
   useEffect(() => {
@@ -393,45 +303,27 @@ const SearchModal = ({
 
   const is_mobile = IsMobile();
 
+  // Data fetching using marketplace context to avoid AbortError issues
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+    let briefType = "";
+    switch (userSelectedMarketPlace) {
+      case "Buy a property":
+        briefType = "Outright Sales";
+        break;
+      case "Find property for joint venture":
+        briefType = "Joint Venture";
+        break;
+      case "Rent/Lease a property":
+        briefType = "Rent";
+        break;
+      default:
+        briefType = "Outright Sales";
+    }
+    const briefToFetch = `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(briefType)}`;
 
-    const fetchAllData = async () => {
-      setFormikStatus("pending");
-      try {
-        const response = await fetch(URLS.BASE + briefToFetch, {
-          signal,
-        });
-
-        if (!response.ok) {
-          setErrMessage("Failed to fetch data");
-          setFormikStatus("failed");
-          throw new Error("Failed to fetch data");
-        }
-
-        const data = await response.json();
-        setFormikStatus("success");
-        const approvedData = Array.isArray(data.data)
-          ? data.data.filter((item: any) => item.isApproved === true)
-          : [];
-        const shuffledData = shuffleArray(approvedData);
-        setProperties(shuffledData);
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          console.error(err);
-          setErrMessage(err.message || "An error occurred");
-          setFormikStatus("failed");
-        }
-      }
-    };
-
-    fetchAllData();
-
-    return () => {
-      controller.abort();
-    };
-  }, [briefToFetch]);
+    // Use the context method for fetching
+    fetchInitialData(briefToFetch);
+  }, [userSelectedMarketPlace, fetchInitialData]);
 
   return (
     <Fragment>
@@ -440,9 +332,11 @@ const SearchModal = ({
           searchStatus={searchStatus}
           selectedMarketPlace={userSelectedMarketPlace}
           renderBrief={renderDynamicComponent}
-          selectedBriefs={uniqueProperties.size}
+          selectedBriefs={selectedForInspection.length}
           onSelectBrief={handlePropertiesSelection}
-          selectedBriefsList={uniqueProperties} // pass the array
+          selectedBriefsList={
+            new Set(selectedForInspection.map((item) => item.property))
+          } // pass as Set
           onSubmitForInspection={(selectedBriefsList: Set<any>) => {
             setPropertiesSelected(Array.from(selectedBriefsList));
             setIsAddInspectionModalOpened(true);

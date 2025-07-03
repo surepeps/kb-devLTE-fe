@@ -8,17 +8,10 @@ import Pagination from "./pagination";
 import EmptyState from "./empty-state";
 import Loading from "@/components/loading-component/loading";
 import { IsMobile } from "@/hooks/isMobile";
+import { useMarketplace } from "@/context/marketplace-context";
 
 interface PropertyGridProps {
-  properties: any[];
   marketplaceType: string;
-  filterBy: string[];
-  condition?: string;
-  isLoading?: boolean;
-  error?: string | null;
-  selectedBriefs: Set<any> | number;
-  onPropertySelect: (property: any) => void;
-  onCardPageClick: (property: any) => void;
   itemsPerPage?: number;
   // JV specific props
   isComingFromSubmitLol?: boolean;
@@ -30,20 +23,12 @@ interface PropertyGridProps {
   // Buy specific props
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (value: boolean) => void;
-  // Clear filters
-  onClearFilters?: () => void;
+  // Card page click
+  onCardPageClick: (property: any) => void;
 }
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
-  properties,
   marketplaceType,
-  filterBy,
-  condition,
-  isLoading = false,
-  error = null,
-  selectedBriefs,
-  onPropertySelect,
-  onCardPageClick,
   itemsPerPage = 12,
   isComingFromSubmitLol,
   setIsComingFromSubmitLol,
@@ -53,10 +38,43 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   isAddForInspectionModalOpened,
   isComingFromPriceNeg,
   setIsComingFromPriceNeg,
-  onClearFilters,
+  onCardPageClick,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const isMobile = IsMobile();
+
+  // Use marketplace context
+  const {
+    properties,
+    formikStatus: isLoading,
+    errMessage: error,
+    usageOptions,
+    rentFilterBy,
+    jvFilterBy,
+    homeCondition,
+    selectedForInspection,
+    toggleInspectionSelection,
+    isSelectedForInspection,
+    clearAllFilters,
+  } = useMarketplace();
+
+  // Get filter by based on marketplace type
+  const getFilterBy = () => {
+    switch (marketplaceType) {
+      case "Buy a property":
+        return usageOptions;
+      case "Rent/Lease a property":
+        return rentFilterBy;
+      case "Find property for joint venture":
+        return jvFilterBy;
+      default:
+        return [];
+    }
+  };
+
+  const filterBy = getFilterBy();
+  const condition =
+    marketplaceType === "Rent/Lease a property" ? homeCondition : undefined;
 
   // Filter properties based on marketplace type and filters
   const filteredProperties = useMemo(() => {
@@ -132,14 +150,11 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   ];
 
   const isPropertySelected = (property: any) => {
-    if (typeof selectedBriefs === "number") {
-      return false;
-    }
-    return selectedBriefs.has(property);
+    return isSelectedForInspection(property._id);
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading === "pending") {
     return (
       <div className="flex justify-center items-center py-20">
         <Loading />
@@ -148,7 +163,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   }
 
   // Error state
-  if (error) {
+  if (isLoading === "failed" && error) {
     return (
       <EmptyState
         type="error"
@@ -167,7 +182,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         title="No properties available"
         description="There are currently no properties available in this category."
         actionLabel="Browse All Categories"
-        onAction={onClearFilters}
+        onAction={clearAllFilters}
       />
     );
   }
@@ -178,7 +193,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
       <EmptyState
         type="no-results"
         showFilters={true}
-        onClearFilters={onClearFilters}
+        onClearFilters={clearAllFilters}
       />
     );
   }
@@ -202,7 +217,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className={`grid gap-5 ${
+          className={`grid gap-3 ${
             isMobile
               ? "grid-cols-1"
               : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -213,7 +228,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
               return (
                 <JointVentureModalCard
                   key={`${property._id}-${currentPage}`}
-                  onClick={() => onPropertySelect(property)}
+                  onClick={() => toggleInspectionSelection(property)}
                   isDisabled={isPropertySelected(property)}
                   onCardPageClick={() => onCardPageClick(property)}
                   isComingFromSubmitLol={isComingFromSubmitLol}
@@ -244,7 +259,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                 isPremium={property?.isPremium}
                 property={property}
                 onCardPageClick={() => onCardPageClick(property)}
-                onClick={() => onPropertySelect(property)}
+                onClick={() => toggleInspectionSelection(property)}
                 cardData={createCardData(property)}
                 isDisabled={isPropertySelected(property)}
               />

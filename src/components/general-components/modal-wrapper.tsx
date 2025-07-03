@@ -62,17 +62,17 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
   const getSizeClasses = () => {
     switch (size) {
       case "sm":
-        return "max-w-md";
+        return "max-w-md w-full mx-4 sm:mx-6";
       case "md":
-        return "max-w-lg";
+        return "max-w-lg w-full mx-4 sm:mx-6";
       case "lg":
-        return "max-w-4xl";
+        return "max-w-4xl w-full mx-4 sm:mx-6";
       case "xl":
-        return "max-w-6xl";
+        return "max-w-6xl w-full mx-4 sm:mx-6";
       case "full":
-        return "max-w-full w-full h-full";
+        return "max-w-full w-full h-full mx-2 sm:mx-4";
       default:
-        return "max-w-lg";
+        return "max-w-lg w-full mx-4 sm:mx-6";
     }
   };
 
@@ -89,7 +89,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
           onClick={handleBackdropClick}
         >
           {/* Backdrop */}
@@ -103,27 +103,27 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={`
-              relative bg-white rounded-xl shadow-xl overflow-hidden w-full
+              relative bg-white rounded-lg sm:rounded-xl shadow-xl overflow-hidden
               ${getSizeClasses()}
-              ${size === "full" ? "h-full" : "max-h-[90vh]"}
+              ${size === "full" ? "h-full" : "max-h-[95vh] sm:max-h-[90vh]"}
               ${className}
             `}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b border-gray-200">
                 {title && (
-                  <h2 className="text-xl md:text-2xl font-semibold text-[#09391C] font-display">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#09391C] font-display pr-2">
                     {title}
                   </h2>
                 )}
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-1 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
                     aria-label="Close modal"
                   >
-                    <X size={20} className="text-[#5A5D63]" />
+                    <X size={18} className="text-[#5A5D63] sm:w-5 sm:h-5" />
                   </button>
                 )}
               </div>
@@ -131,7 +131,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
             {/* Content */}
             <div
-              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto"}`}
+              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto"} p-1 sm:p-0`}
             >
               {children}
             </div>

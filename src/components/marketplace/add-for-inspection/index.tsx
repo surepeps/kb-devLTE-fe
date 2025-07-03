@@ -27,6 +27,7 @@ import UploadLolDocumentModal from "./upload-your-lol-document";
 import { usePageContext } from "@/context/page-context";
 import { SubmitInspectionPayloadProp } from "../types/payload";
 import ModalWrapper from "@/components/general-components/modal-wrapper";
+import { useMarketplace } from "@/context/marketplace-context";
 
 // Types
 type PayloadProps = {
@@ -580,6 +581,7 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
   setIsComingFromSubmitLol,
 }) => {
   const { propertySelectedForInspection } = usePageContext();
+  const { removeFromInspection } = useMarketplace();
   const totalAmount = useInspectionFee(propertiesSelected);
 
   const {
@@ -661,13 +663,17 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
 
   const handleRemoveProperty = useCallback(
     (propertyId: string) => {
+      // Remove from marketplace context
+      removeFromInspection(propertyId);
+
+      // Remove from local state
       const filteredArray = propertiesSelected.filter(
         (item) => item._id !== propertyId,
       );
 
       setPropertiesSelected(filteredArray);
     },
-    [propertiesSelected, setPropertiesSelected],
+    [propertiesSelected, setPropertiesSelected, removeFromInspection],
   );
 
   const handlePriceNegotiation = useCallback(

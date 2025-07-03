@@ -9,6 +9,7 @@ import { IsMobile } from "@/hooks/isMobile";
 import { useRouter } from "next/navigation";
 import Card from "./add-for-inspection/card";
 import AddForInspection from "./add-for-inspection";
+import { useMarketplace } from "@/context/marketplace-context";
 
 const MarketPlace = () => {
   const router = useRouter();
@@ -24,6 +25,7 @@ const MarketPlace = () => {
   } = usePageContext();
   // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
   //   React.useState<boolean>(false);
+  const { selectedForInspection, clearInspectionSelection } = useMarketplace();
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState(false);
@@ -67,6 +69,13 @@ const MarketPlace = () => {
       ]);
     }
   }, [propertySelectedForInspection]);
+
+  // Sync marketplace context selection with local state
+  useEffect(() => {
+    if (selectedForInspection.length > 0) {
+      setPropertiesSelected(selectedForInspection.map((item) => item.property));
+    }
+  }, [selectedForInspection]);
 
   return (
     <div className="min-h-screen bg-[#EEF1F1]">
