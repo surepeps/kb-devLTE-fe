@@ -254,30 +254,54 @@ const Card = ({
             className='min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold'>
             Select of Inspection
           </button> */}
-          <Button
-            value={`Price Negotiation`}
-            type="button"
-            // green={isRed ? false : true}
-            onClick={() => {
-              setIsAddInspectionModalOpened?.(true);
-              setPropertySelected?.([property]);
-              setIsComingFromPriceNeg?.(true);
-            }}
-            red={isRed}
-            //onClick={onClick}
-            className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold"
-          />
+          {hasNegotiatedPrice ? (
+            <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between">
+              <span>
+                Negotiated: ₦
+                {Number(negotiatedPriceData!.negotiatedPrice).toLocaleString()}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeNegotiatedPrice(property._id);
+                }}
+                className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
+                title="Clear negotiated price"
+              >
+                <X size={16} className="text-white" />
+              </button>
+            </div>
+          ) : (
+            <Button
+              value={`Price Negotiation`}
+              type="button"
+              onClick={() => {
+                setIsAddInspectionModalOpened?.(true);
+                setPropertySelected?.([property]);
+                setIsComingFromPriceNeg?.(true);
+              }}
+              red={isRed}
+              className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold"
+            />
+          )}
           <button
             onClick={onClick}
             disabled={isDisabled}
             className={`min-h-[50px] py-[12px] px-[24px] ${
               isDisabled
-                ? "bg-gray-400 cursor-not-allowed"
+                ? "bg-[#09391C] cursor-default"
                 : "bg-[#8DDB90] hover:bg-[#76c77a]"
-            } text-[#FFFFFF] text-base leading-[25.6px] font-bold`}
+            } text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-center gap-2`}
             type="button"
           >
-            {isDisabled ? "Selected" : "Select for Inspection"}
+            {isDisabled ? (
+              <>
+                <span>Selected</span>
+                <X size={16} className="text-white" />
+              </>
+            ) : (
+              "Select for Inspection"
+            )}
           </button>
           {/* <Button
             value={`${isDisabled ? 'Selected' : 'Select for Inspection'}`}
