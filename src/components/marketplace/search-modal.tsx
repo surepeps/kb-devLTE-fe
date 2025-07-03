@@ -224,14 +224,10 @@ const SearchModal = ({
           <div className="relative w-full flex flex-col">
             <JointVentureModal
               onSearch={handleSearch}
-              selectedBriefs={uniqueProperties.size}
               addForInspectionPayload={addForInspectionPayload}
-              // setUsageOptions={setUsageOptions}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               inspectionType={inspectionType}
-              usageOptions={jvFilterBy}
-              setUsageOptions={setJvFilterBy}
               setInspectionType={setInspectionType}
             />
             <section className="flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
