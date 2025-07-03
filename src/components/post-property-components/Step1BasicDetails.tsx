@@ -338,65 +338,169 @@ const Step1BasicDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Property Specifications */}
-        <div>
-          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Specifications
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Property Details (for non-Land properties) */}
+        {propertyData.propertyCategory !== "Land" &&
+          propertyData.propertyType !== "jv" && (
             <div>
-              <Input
-                name="bedrooms"
-                label="Bedrooms"
-                type="number"
-                placeholder="0"
-                value={propertyData.bedrooms.toString()}
-                onChange={(e) =>
-                  updatePropertyData("bedrooms", parseInt(e.target.value) || 0)
-                }
-              />
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                Property Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Type of Building
+                  </label>
+                  <ReactSelect
+                    options={
+                      propertyData.propertyCategory === "Residential"
+                        ? propertyReferenceData[0].options.map((option) => ({
+                            value: option,
+                            label: option,
+                          }))
+                        : propertyData.propertyCategory === "Commercial"
+                          ? propertyReferenceData[1].options.map((option) => ({
+                              value: option,
+                              label: option,
+                            }))
+                          : []
+                    }
+                    value={
+                      propertyData.typeOfBuilding
+                        ? {
+                            value: propertyData.typeOfBuilding,
+                            label: propertyData.typeOfBuilding,
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData("typeOfBuilding", option?.value || "")
+                    }
+                    placeholder="Select building type"
+                    styles={customStyles}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Bedrooms
+                  </label>
+                  <ReactSelect
+                    options={propertyReferenceData[
+                      propertyReferenceData.length - 2
+                    ].options.map((option) => ({
+                      value: option,
+                      label: option,
+                    }))}
+                    value={
+                      propertyData.bedrooms
+                        ? {
+                            value: propertyData.bedrooms,
+                            label: propertyData.bedrooms,
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "bedrooms",
+                        parseInt(option?.value?.toString() || "0") || 0,
+                      )
+                    }
+                    placeholder="Select bedrooms"
+                    styles={customStyles}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Bathrooms
+                  </label>
+                  <ReactSelect
+                    options={propertyReferenceData[
+                      propertyReferenceData.length - 2
+                    ].options.map((option) => ({
+                      value: option,
+                      label: option,
+                    }))}
+                    value={
+                      propertyData.bathrooms
+                        ? {
+                            value: propertyData.bathrooms,
+                            label: propertyData.bathrooms,
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "bathrooms",
+                        parseInt(option?.value?.toString() || "0") || 0,
+                      )
+                    }
+                    placeholder="Select bathrooms"
+                    styles={customStyles}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Toilets
+                  </label>
+                  <ReactSelect
+                    options={propertyReferenceData[
+                      propertyReferenceData.length - 2
+                    ].options.map((option) => ({
+                      value: option,
+                      label: option,
+                    }))}
+                    value={
+                      propertyData.toilets
+                        ? {
+                            value: propertyData.toilets,
+                            label: propertyData.toilets,
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "toilets",
+                        parseInt(option?.value?.toString() || "0") || 0,
+                      )
+                    }
+                    placeholder="Select toilets"
+                    styles={customStyles}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Car Parks
+                  </label>
+                  <ReactSelect
+                    options={propertyReferenceData[
+                      propertyReferenceData.length - 2
+                    ].options.map((option) => ({
+                      value: option,
+                      label: option,
+                    }))}
+                    value={
+                      propertyData.parkingSpaces
+                        ? {
+                            value: propertyData.parkingSpaces,
+                            label: propertyData.parkingSpaces,
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "parkingSpaces",
+                        parseInt(option?.value?.toString() || "0") || 0,
+                      )
+                    }
+                    placeholder="Select car parks"
+                    styles={customStyles}
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <Input
-                name="bathrooms"
-                label="Bathrooms"
-                type="number"
-                placeholder="0"
-                value={propertyData.bathrooms.toString()}
-                onChange={(e) =>
-                  updatePropertyData("bathrooms", parseInt(e.target.value) || 0)
-                }
-              />
-            </div>
-            <div>
-              <Input
-                name="toilets"
-                label="Toilets"
-                type="number"
-                placeholder="0"
-                value={propertyData.toilets.toString()}
-                onChange={(e) =>
-                  updatePropertyData("toilets", parseInt(e.target.value) || 0)
-                }
-              />
-            </div>
-            <div>
-              <Input
-                name="parkingSpaces"
-                label="Parking Spaces"
-                type="number"
-                placeholder="0"
-                value={propertyData.parkingSpaces.toString()}
-                onChange={(e) =>
-                  updatePropertyData(
-                    "parkingSpaces",
-                    parseInt(e.target.value) || 0,
-                  )
-                }
-              />
-            </div>
-          </div>
-        </div>
+          )}
 
         {/* Description */}
         <div>
