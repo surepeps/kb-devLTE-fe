@@ -342,7 +342,6 @@ const BuyAPropertySearchModal = ({
             {selectedBriefs > 0 && (
               <button
                 onClick={() => {
-                  const { clearInspectionSelection } = useMarketplace();
                   clearInspectionSelection();
                   setSelectedBriefs(new Set([]));
                 }}
