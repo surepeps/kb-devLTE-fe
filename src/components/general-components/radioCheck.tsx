@@ -26,9 +26,12 @@ const RadioCheck: FC<RadioCheckProps> = ({
   className,
   handleChange,
   isChecked,
+  selectedValue,
   modifyStyle,
 }) => {
   const inputId = id ?? `${name}-${value}`;
+  const isSelected =
+    isChecked !== undefined ? isChecked : selectedValue === value;
 
   return (
     <label
