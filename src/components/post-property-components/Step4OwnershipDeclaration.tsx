@@ -9,7 +9,15 @@ import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { DocOnPropertyData } from "@/data/buy_data";
 import "react-phone-number-input/style.css";
 
-const Step4OwnershipDeclaration: React.FC = () => {
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
+const Step4OwnershipDeclaration: React.FC<StepProps> = ({
+  errors,
+  touched,
+}) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
 
