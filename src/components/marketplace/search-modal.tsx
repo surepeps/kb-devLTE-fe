@@ -305,6 +305,8 @@ const SearchModal = ({
 
   // Data fetching using marketplace context to avoid AbortError issues
   useEffect(() => {
+    if (!userSelectedMarketPlace) return;
+
     let briefType = "";
     switch (userSelectedMarketPlace) {
       case "Buy a property":
@@ -321,9 +323,9 @@ const SearchModal = ({
     }
     const briefToFetch = `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(briefType)}`;
 
-    // Use the context method for fetching
+    // Use the context method for fetching (removed fetchInitialData from deps to avoid re-render loop)
     fetchInitialData(briefToFetch);
-  }, [userSelectedMarketPlace, fetchInitialData]);
+  }, [userSelectedMarketPlace]);
 
   return (
     <Fragment>

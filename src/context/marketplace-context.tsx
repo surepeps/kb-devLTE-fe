@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useMemo,
   useEffect,
+  useRef,
 } from "react";
 import toast from "react-hot-toast";
 
@@ -84,6 +85,15 @@ const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
 export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  // Track if component is mounted to prevent setState on unmounted component
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Negotiated prices state
   const [negotiatedPrices, setNegotiatedPrices] = useState<NegotiatedPrice[]>(
     [],
@@ -155,19 +165,20 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Inspection selection methods
   const toggleInspectionSelection = useCallback((property: any) => {
+    const propertyId = property._id;
+
     setSelectedForInspection((prev) => {
-      const propertyId = property._id;
       const isAlreadySelected = prev.some(
         (item) => item.propertyId === propertyId,
       );
 
       if (isAlreadySelected) {
-        // Remove from selection
+        // Remove from selection (no notification needed for removal)
         return prev.filter((item) => item.propertyId !== propertyId);
       } else {
         // Check if we can select more (max 2)
         if (prev.length >= 2) {
-          // Use setTimeout to avoid setState during render
+          // Schedule toast for next tick to avoid setState during render
           setTimeout(() => {
             toast.error(
               "Maximum of 2 properties can be selected for inspection",
@@ -176,7 +187,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           return prev;
         }
 
-        // Use setTimeout to avoid setState during render
+        // Schedule toast for next tick to avoid setState during render
         setTimeout(() => {
           toast.success("Property selected for inspection");
         }, 0);
@@ -209,39 +220,77 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [selectedForInspection]);
 
   // Data fetching
-  const fetchInitialData = useCallback(
-    async (briefToFetch: string) => {
-      setFormikStatus("pending");
-      setErrMessage("");
+  const fetchInitialData = useCallback(async (briefToFetch: string) => {
+    // Don't proceed if briefToFetch is empty or invalid
+    if (!briefToFetch || typeof briefToFetch !== "string") {
+      console.warn("Invalid briefToFetch parameter:", briefToFetch);
+      return;
+    }
 
-      try {
-        // Import URLS and shuffleArray dynamically to avoid dependency issues
-        const { URLS } = await import("@/utils/URLS");
-        const { shuffleArray } = await import("@/utils/shuffleArray");
+    setFormikStatus("pending");
+    setErrMessage("");
 
-        const response = await fetch(URLS.BASE + briefToFetch);
+    try {
+      // Import URLS and shuffleArray dynamically to avoid dependency issues
+      const { URLS } = await import("@/utils/URLS");
+      const { shuffleArray } = await import("@/utils/shuffleArray");
 
-        if (!response.ok) {
-          setErrMessage("Failed to fetch data");
+      // Add timeout to fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch(URLS.BASE + briefToFetch, {
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        if (isMountedRef.current) {
+          setErrMessage(errorMessage);
           setFormikStatus("failed");
-          return;
         }
+        return;
+      }
 
-        const data = await response.json();
+      const data = await response.json();
+
+      if (isMountedRef.current) {
         setFormikStatus("success");
-        const approvedData = Array.isArray(data.data)
-          ? data.data.filter((item: any) => item.isApproved === true)
+
+        // Handle different response structures
+        const responseData = data?.data || data || [];
+        const approvedData = Array.isArray(responseData)
+          ? responseData.filter((item: any) => item?.isApproved === true)
           : [];
+
         const shuffledData = shuffleArray(approvedData);
         setProperties(shuffledData);
-      } catch (err: any) {
-        console.error(err);
-        setErrMessage(err.message || "An error occurred");
+      }
+    } catch (err: any) {
+      console.error("Fetch error:", err);
+
+      let errorMessage = "An error occurred while fetching data";
+
+      if (err.name === "AbortError") {
+        errorMessage =
+          "Request timed out. Please check your connection and try again.";
+      } else if (err.message?.includes("Failed to fetch")) {
+        errorMessage = "Network error. Please check your internet connection.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      if (isMountedRef.current) {
+        setErrMessage(errorMessage);
         setFormikStatus("failed");
       }
-    },
-    [setFormikStatus, setErrMessage, setProperties],
-  );
+    }
+  }, []);
 
   // Clear all filters
   const clearAllFilters = useCallback(() => {

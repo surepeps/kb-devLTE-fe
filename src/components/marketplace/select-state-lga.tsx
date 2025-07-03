@@ -56,9 +56,24 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
   };
 
   const handleLocationSelect = (location: any) => {
+    const locationString = formatLocationString(
+      location.state,
+      location.lga,
+      location.area,
+    );
+
+    // Update formik values
     formik.setFieldValue("selectedState", location.state);
     formik.setFieldValue("selectedLGA", location.lga || "");
+
+    // Close dropdown
     setShowLocationModal(false);
+    setLocationSuggestions([]);
+
+    // Update input value visually
+    if (inputRef.current) {
+      inputRef.current.value = locationString;
+    }
   };
 
   useClickOutside(inputRef, () => setShowLocationModal(false));
