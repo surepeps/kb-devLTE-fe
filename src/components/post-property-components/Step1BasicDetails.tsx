@@ -25,7 +25,7 @@ interface StepProps {
   touched?: any;
 }
 
-const Step1BasicDetails: React.FC = () => {
+const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
