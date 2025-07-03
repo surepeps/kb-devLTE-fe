@@ -70,6 +70,9 @@ interface MarketplaceContextType {
   errMessage: string;
   setErrMessage: (message: string) => void;
 
+  // Data fetching
+  fetchInitialData: (briefType: string) => Promise<void>;
+
   // Clear all filters
   clearAllFilters: () => void;
 }
