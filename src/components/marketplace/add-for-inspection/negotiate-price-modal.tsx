@@ -310,6 +310,8 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
   submitInspectionPayload,
   setSubmitInspectionPayload,
 }): React.JSX.Element => {
+  const { addNegotiatedPrice } = useMarketplace();
+
   const [selectedProperty, setSelectedProperty] =
     useState<NegotiationModalProps>({
       id: null,
