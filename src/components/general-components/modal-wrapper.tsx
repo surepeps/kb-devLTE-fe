@@ -62,17 +62,17 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
   const getSizeClasses = () => {
     switch (size) {
       case "sm":
-        return "max-w-md";
+        return "max-w-md w-full mx-4 sm:mx-6";
       case "md":
-        return "max-w-lg";
+        return "max-w-lg w-full mx-4 sm:mx-6";
       case "lg":
-        return "max-w-4xl";
+        return "max-w-4xl w-full mx-4 sm:mx-6";
       case "xl":
-        return "max-w-6xl";
+        return "max-w-6xl w-full mx-4 sm:mx-6";
       case "full":
-        return "max-w-full w-full h-full";
+        return "max-w-full w-full h-full mx-2 sm:mx-4";
       default:
-        return "max-w-lg";
+        return "max-w-lg w-full mx-4 sm:mx-6";
     }
   };
 
