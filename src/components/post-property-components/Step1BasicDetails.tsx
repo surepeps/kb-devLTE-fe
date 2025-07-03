@@ -325,9 +325,21 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 value={propertyData.state}
                 onChange={(option) => updatePropertyData("state", option)}
                 placeholder="Select state"
-                styles={customStyles}
+                styles={{
+                  ...customStyles,
+                  control: (provided, state) => ({
+                    ...customStyles.control?.(provided, state),
+                    borderColor:
+                      errors?.state && touched?.state
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
+                  }),
+                }}
                 isSearchable
               />
+              {errors?.state && touched?.state && (
+                <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -338,10 +350,22 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 value={propertyData.lga}
                 onChange={(option) => updatePropertyData("lga", option)}
                 placeholder="Select LGA"
-                styles={customStyles}
+                styles={{
+                  ...customStyles,
+                  control: (provided, state) => ({
+                    ...customStyles.control?.(provided, state),
+                    borderColor:
+                      errors?.lga && touched?.lga
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
+                  }),
+                }}
                 isSearchable
                 isDisabled={!propertyData.state}
               />
+              {errors?.lga && touched?.lga && (
+                <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
+              )}
             </div>
             <div>
               <Input
@@ -351,7 +375,13 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 placeholder="Enter area/neighborhood"
                 value={propertyData.area}
                 onChange={(e) => updatePropertyData("area", e.target.value)}
+                className={
+                  errors?.area && touched?.area ? "border-red-500" : ""
+                }
               />
+              {errors?.area && touched?.area && (
+                <p className="text-red-500 text-sm mt-1">{errors.area}</p>
+              )}
             </div>
           </div>
         </div>
