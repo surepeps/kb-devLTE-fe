@@ -187,7 +187,10 @@ const JointVentureModal = ({
           </button>
           {selectedBriefs > 0 && (
             <button
-              onClick={() => setSelectedBriefs(new Set([]))}
+              onClick={() => {
+                clearInspectionSelection();
+                setSelectedBriefs(new Set([]));
+              }}
               className="h-[34px] w-[133px] bg-transparent text-black border-[1px] border-zinc-800 font-medium text-sm"
               type="button"
             >
