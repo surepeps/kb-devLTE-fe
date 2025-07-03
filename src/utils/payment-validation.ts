@@ -142,40 +142,82 @@ export class PaymentValidator {
     // - Azure Computer Vision
 
     return new Promise((resolve) => {
+      // Get expected amount from context to make simulation more realistic
+      const expectedAmount = this.currentExpectedAmount || 10000;
+
       setTimeout(() => {
-        // Simulate extracted text with various payment patterns
-        const mockTexts = [
+        // Generate more realistic receipt text based on expected amount
+        const variations = [
+          // Exact match
+          {
+            bank: "KUDA BANK",
+            amount: expectedAmount,
+            extraFees: 0,
+          },
+          // With small fees
+          {
+            bank: "GTB BANK",
+            amount: expectedAmount,
+            extraFees: Math.floor(expectedAmount * 0.01), // 1% fee
+          },
+          // Slightly different amount (within tolerance)
+          {
+            bank: "FIRST BANK",
+            amount: expectedAmount + Math.floor(Math.random() * 100 - 50),
+            extraFees: 50,
+          },
+        ];
+
+        const selectedVariation =
+          variations[Math.floor(Math.random() * variations.length)];
+
+        const receiptTemplates = [
           `
-          KUDA BANK
+          ${selectedVariation.bank}
           Transaction Receipt
-          Amount: ₦10,000.00
+          Amount: ₦${selectedVariation.amount.toLocaleString()}.00
+          ${selectedVariation.extraFees > 0 ? `Charges: ₦${selectedVariation.extraFees.toLocaleString()}` : ""}
+          ${selectedVariation.extraFees > 0 ? `Total Debited: ₦${(selectedVariation.amount + selectedVariation.extraFees).toLocaleString()}` : ""}
           Date: ${new Date().toLocaleDateString()}
-          Reference: KDA${Math.random().toString(36).substring(7).toUpperCase()}
+          Reference: ${selectedVariation.bank.slice(0, 3)}${Math.random().toString(36).substring(2, 8).toUpperCase()}
           Status: Successful
+          Transaction Type: Transfer
           `,
           `
-          Bank Transfer Receipt
-          Transfer Amount: NGN 10,000
-          Fees: NGN 26.88
-          Total Debited: NGN 10,026.88
+          ${selectedVariation.bank}
+          E-Receipt
+          Transfer Amount: NGN ${selectedVariation.amount.toLocaleString()}
+          ${selectedVariation.extraFees > 0 ? `Service Charge: NGN ${selectedVariation.extraFees}` : ""}
+          Beneficiary: Khabi-Teq Realty
+          Account: 2004766765
           Date: ${new Date().toLocaleDateString()}
-          Reference: ${Math.random().toString(36).substring(7).toUpperCase()}
+          Time: ${new Date().toLocaleTimeString()}
+          Reference: TXN${Math.random().toString(36).substring(2, 10).toUpperCase()}
+          Status: SUCCESSFUL
           `,
           `
+          ${selectedVariation.bank}
           Payment Confirmation
-          Amount Paid: ₦15,000
-          Service Charge: ₦50
+          Amount Paid: ₦${selectedVariation.amount.toLocaleString()}
+          Recipient: Khabi-Teq Reality
+          Account Number: 2004766765
+          ${selectedVariation.extraFees > 0 ? `Transaction Fee: ₦${selectedVariation.extraFees}` : ""}
           Date: ${new Date().toLocaleDateString()}
-          Transaction ID: TXN${Math.random().toString(36).substring(7).toUpperCase()}
+          Transaction ID: ${Math.random().toString(36).substring(2, 12).toUpperCase()}
+          Payment Method: Bank Transfer
+          Status: Completed
           `,
         ];
 
-        const randomText =
-          mockTexts[Math.floor(Math.random() * mockTexts.length)];
-        resolve(randomText);
+        const selectedTemplate =
+          receiptTemplates[Math.floor(Math.random() * receiptTemplates.length)];
+        resolve(selectedTemplate);
       }, 1500); // Simulate processing time
     });
   }
+
+  // Store expected amount for more accurate simulation
+  private currentExpectedAmount: number | null = null;
 
   private parseAmountsFromText(text: string): number[] {
     const amounts: number[] = [];
