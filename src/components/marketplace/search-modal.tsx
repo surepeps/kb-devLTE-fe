@@ -138,9 +138,9 @@ const SearchModal = ({
           setProperties(shuffledData);
           setSearchStatus({
             status: "success",
-            couldNotFindAProperty: properties["length"] === 0,
+            couldNotFindAProperty: shuffledData.length === 0,
           });
-          console.log(`Properties: ${properties.length}`);
+          console.log(`Properties: ${shuffledData.length}`);
           // setUsageOptions(['All'])
         }),
         {
