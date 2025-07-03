@@ -154,7 +154,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading === "pending") {
     return (
       <div className="flex justify-center items-center py-20">
         <Loading />
@@ -163,7 +163,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   }
 
   // Error state
-  if (error) {
+  if (isLoading === "failed" && error) {
     return (
       <EmptyState
         type="error"
