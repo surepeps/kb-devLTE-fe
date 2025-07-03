@@ -66,6 +66,23 @@ const Step1BasicDetails: React.FC = () => {
     setFormatedHold(numericValue ? `${numericValue} years` : "");
   };
 
+  const formatNumber = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    return numericValue ? Number(numericValue).toLocaleString() : "";
+  };
+
+  const handleLandSizeChange = (value: string) => {
+    const formatted = formatNumber(value);
+    setFormatedLandSize(formatted);
+    updatePropertyData("landSize", value.replace(/[^0-9]/g, ""));
+  };
+
+  const handleLeaseHoldChange = (value: string) => {
+    const formatted = formatNumber(value);
+    setFormatedLeaseHold(formatted);
+    updatePropertyData("leaseHold", value.replace(/[^0-9]/g, ""));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
