@@ -20,7 +20,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-const PropertyPreview: React.FC = () => {
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
+const PropertyPreview: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, images } = usePostPropertyContext();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
