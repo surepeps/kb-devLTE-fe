@@ -1,6 +1,6 @@
 /** @format */
 "use client";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState, useMemo } from "react";
 import arrowDown from "@/svgs/arrowDown.svg";
 import Image from "next/image";
 import Button from "./button";
