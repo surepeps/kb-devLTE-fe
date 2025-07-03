@@ -25,24 +25,17 @@ type PayloadProps = {
 };
 
 const BuyAPropertySearchModal = ({
-  selectedBriefs,
   className = "",
   style = {},
-  usageOptions,
-  setUsageOptions,
   setAddInspectionModal,
   addForInspectionPayload,
   setSelectedBriefs,
   inspectionType,
   setInspectionType,
   onSearch,
-  searchStatus,
 }: {
-  selectedBriefs: number;
   className?: string;
   style?: React.CSSProperties;
-  usageOptions: string[];
-  setUsageOptions: (type: string[]) => void;
   setAddInspectionModal?: (type: boolean) => void;
   addForInspectionPayload: PayloadProps;
   setSelectedBriefs: React.Dispatch<React.SetStateAction<Set<any>>>;
