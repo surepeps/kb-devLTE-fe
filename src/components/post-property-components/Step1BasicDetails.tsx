@@ -20,7 +20,12 @@ interface Option {
   label: string;
 }
 
-const Step1BasicDetails: React.FC = () => {
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
+const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
@@ -117,13 +122,20 @@ const Step1BasicDetails: React.FC = () => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
+                    : errors?.propertyCategory && touched?.propertyCategory
+                      ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
+                      : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
                 }`}
               >
                 {category}
               </button>
             ))}
           </div>
+          {errors?.propertyCategory && touched?.propertyCategory && (
+            <p className="text-red-500 text-sm mt-2">
+              {errors.propertyCategory}
+            </p>
+          )}
         </div>
 
         {/* Rental Type (for rent only) */}
@@ -211,7 +223,13 @@ const Step1BasicDetails: React.FC = () => {
                 placeholder="Enter amount"
                 value={formatedPrice}
                 onChange={(e) => handlePriceChange(e.target.value)}
+                className={
+                  errors?.price && touched?.price ? "border-red-500" : ""
+                }
               />
+              {errors?.price && touched?.price && (
+                <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+              )}
             </div>
 
             {/* Lease Hold for Rent (non-agents) */}
@@ -307,9 +325,21 @@ const Step1BasicDetails: React.FC = () => {
                 value={propertyData.state}
                 onChange={(option) => updatePropertyData("state", option)}
                 placeholder="Select state"
-                styles={customStyles}
+                styles={{
+                  ...customStyles,
+                  control: (provided, state) => ({
+                    ...customStyles.control?.(provided, state),
+                    borderColor:
+                      errors?.state && touched?.state
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
+                  }),
+                }}
                 isSearchable
               />
+              {errors?.state && touched?.state && (
+                <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -320,10 +350,22 @@ const Step1BasicDetails: React.FC = () => {
                 value={propertyData.lga}
                 onChange={(option) => updatePropertyData("lga", option)}
                 placeholder="Select LGA"
-                styles={customStyles}
+                styles={{
+                  ...customStyles,
+                  control: (provided, state) => ({
+                    ...customStyles.control?.(provided, state),
+                    borderColor:
+                      errors?.lga && touched?.lga
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
+                  }),
+                }}
                 isSearchable
                 isDisabled={!propertyData.state}
               />
+              {errors?.lga && touched?.lga && (
+                <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
+              )}
             </div>
             <div>
               <Input
@@ -333,7 +375,13 @@ const Step1BasicDetails: React.FC = () => {
                 placeholder="Enter area/neighborhood"
                 value={propertyData.area}
                 onChange={(e) => updatePropertyData("area", e.target.value)}
+                className={
+                  errors?.area && touched?.area ? "border-red-500" : ""
+                }
               />
+              {errors?.area && touched?.area && (
+                <p className="text-red-500 text-sm mt-1">{errors.area}</p>
+              )}
             </div>
           </div>
         </div>

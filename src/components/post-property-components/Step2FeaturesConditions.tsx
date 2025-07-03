@@ -12,7 +12,12 @@ import { tenantCriteriaData } from "@/data/landlord";
 import RadioCheck from "@/components/general-components/radioCheck";
 import Input from "@/components/general-components/Input";
 
-const Step2FeaturesConditions: React.FC = () => {
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
+const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
   const handleFeatureToggle = (feature: string) => {

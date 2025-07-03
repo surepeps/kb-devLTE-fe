@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
@@ -18,11 +20,95 @@ import Step3ImageUpload from "@/components/post-property-components/Step3ImageUp
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
-// import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 
 // Import additional step components
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
 import Step4OwnershipDeclaration from "@/components/post-property-components/Step4OwnershipDeclaration";
+
+// Validation schemas for each step
+const getValidationSchema = (currentStep: number, propertyData: any) => {
+  switch (currentStep) {
+    case 0:
+      return Yup.object({
+        propertyType: Yup.string().required("Property type is required"),
+      });
+
+    case 1:
+      let basicSchema = Yup.object({
+        propertyCategory: Yup.string().required(
+          "Property category is required",
+        ),
+        price: Yup.string().required("Price is required"),
+        state: Yup.object().nullable().required("State is required"),
+        lga: Yup.object()
+          .nullable()
+          .required("Local Government Area is required"),
+        area: Yup.string().required("Area/Neighborhood is required"),
+      });
+
+      // Additional validations based on property type
+      if (
+        propertyData.propertyType === "rent" &&
+        propertyData.propertyCategory !== "Land"
+      ) {
+        basicSchema = basicSchema.concat(
+          Yup.object({
+            rentalType: Yup.string().required("Rental type is required"),
+            propertyCondition: Yup.string().required(
+              "Property condition is required",
+            ),
+          }),
+        );
+      }
+
+      if (propertyData.propertyCategory !== "Land") {
+        basicSchema = basicSchema.concat(
+          Yup.object({
+            typeOfBuilding: Yup.string().required(
+              "Type of building is required",
+            ),
+            bedrooms: Yup.number().min(1, "At least 1 bedroom is required"),
+          }),
+        );
+      }
+
+      return basicSchema;
+
+    case 2:
+      if (propertyData.propertyType === "sell") {
+        return Yup.object({
+          documents: Yup.array().min(1, "At least one document is required"),
+        });
+      }
+      if (propertyData.propertyType === "jv") {
+        return Yup.object({
+          jvConditions: Yup.array().min(
+            1,
+            "At least one JV condition is required",
+          ),
+        });
+      }
+      return Yup.object({}); // No validation for rent
+
+    case 3:
+      return Yup.object({}); // Image validation handled separately
+
+    case 4:
+      return Yup.object({
+        contactInfo: Yup.object({
+          firstName: Yup.string().required("First name is required"),
+          lastName: Yup.string().required("Last name is required"),
+          email: Yup.string()
+            .email("Invalid email")
+            .required("Email is required"),
+          phone: Yup.string().required("Phone number is required"),
+        }),
+      });
+
+    default:
+      return Yup.object({});
+  }
+};
 
 const PostProperty = () => {
   const router = useRouter();
@@ -103,13 +189,26 @@ const PostProperty = () => {
     },
   ] as { label: string; status: "completed" | "active" | "pending" }[];
 
-  const handleNext = () => {
-    if (!validateCurrentStep()) {
-      if (currentStep === 3 && !areImagesValid()) {
-        toast.error("Please upload at least 4 images to continue");
-        return;
+  const handleNext = async (validateForm: () => Promise<any>, errors: any) => {
+    // Validate current step
+    const stepErrors = await validateForm();
+
+    if (Object.keys(stepErrors).length > 0) {
+      // Show toast for first error found
+      const firstError = Object.values(stepErrors)[0];
+      if (typeof firstError === "string") {
+        toast.error(firstError);
+      } else if (typeof firstError === "object" && firstError !== null) {
+        const nestedError = Object.values(firstError)[0];
+        if (typeof nestedError === "string") {
+          toast.error(nestedError);
+        }
       }
-      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (currentStep === 3 && !areImagesValid()) {
+      toast.error("Please upload at least 4 images to continue");
       return;
     }
 
@@ -230,24 +329,24 @@ const PostProperty = () => {
     }
   };
 
-  const renderCurrentStep = () => {
+  const renderCurrentStep = (errors: any, touched: any) => {
     if (showPreview) {
       return <PropertyPreview />;
     }
 
     switch (currentStep) {
       case 0:
-        return <Step0PropertyTypeSelection />;
+        return <Step0PropertyTypeSelection errors={errors} touched={touched} />;
       case 1:
-        return <Step1BasicDetails />;
+        return <Step1BasicDetails errors={errors} touched={touched} />;
       case 2:
-        return <Step2FeaturesConditions />;
+        return <Step2FeaturesConditions errors={errors} touched={touched} />;
       case 3:
-        return <Step3ImageUpload />;
+        return <Step3ImageUpload errors={errors} touched={touched} />;
       case 4:
-        return <Step4OwnershipDeclaration />;
+        return <Step4OwnershipDeclaration errors={errors} touched={touched} />;
       default:
-        return <Step0PropertyTypeSelection />;
+        return <Step0PropertyTypeSelection errors={errors} touched={touched} />;
     }
   };
 
@@ -261,10 +360,10 @@ const PostProperty = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-8">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
+      <div className="container mx-auto px-4 md:px-6">
         {/* Breadcrumb */}
-        <nav className="text-sm text-[#5A5D63] mb-6">
+        <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
           <span>Home</span>
           <span className="mx-2">›</span>
           <span>Post Property</span>
@@ -273,11 +372,11 @@ const PostProperty = () => {
         </nav>
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#09391C] font-display mb-4">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-4">
             List Your Property
           </h1>
-          <p className="text-[#5A5D63] text-lg max-w-2xl mx-auto">
+          <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
             {showPreview
               ? "Review your property listing before submission"
               : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
@@ -286,83 +385,96 @@ const PostProperty = () => {
 
         {/* Stepper */}
         {!showPreview && (
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8 overflow-x-auto">
             <Stepper steps={steps} />
           </div>
         )}
 
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          {renderCurrentStep()}
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center max-w-4xl mx-auto">
-          <Button
-            type="button"
-            value={
-              showPreview
-                ? "Edit Property"
-                : currentStep === 0
-                  ? "Cancel"
-                  : "Previous"
-            }
-            onClick={
-              showPreview
-                ? () => setShowPreview(false)
-                : currentStep === 0
-                  ? () => router.push("/")
-                  : handlePrevious
-            }
-            className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-            isDisabled={isSubmitting}
-          />
-
-          <div className="flex gap-4">
-            {showPreview ? (
-              <div className="relative">
-                <Button
-                  type="button"
-                  value={isSubmitting ? "Submitting..." : "Submit Property"}
-                  onClick={handleSubmit}
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                  isDisabled={isSubmitting}
-                />
-                {isSubmitting && (
-                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                )}
+        {/* Main Content with Formik */}
+        <Formik
+          initialValues={propertyData}
+          validationSchema={getValidationSchema(currentStep, propertyData)}
+          onSubmit={() => {}}
+          enableReinitialize
+        >
+          {({ errors, touched, validateForm }) => (
+            <Form>
+              <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
+                {renderCurrentStep(errors, touched)}
               </div>
-            ) : (
-              <>
-                {currentStep === 4 && (
-                  <Button
-                    type="button"
-                    value="Preview"
-                    onClick={() => setShowPreview(true)}
-                    className="border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                    isDisabled={!validateCurrentStep() || isSubmitting}
-                  />
-                )}
+
+              {/* Navigation Buttons */}
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
                 <Button
                   type="button"
-                  value={currentStep === 4 ? "Complete" : "Next"}
-                  onClick={handleNext}
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                  value={
+                    showPreview
+                      ? "Edit Property"
+                      : currentStep === 0
+                        ? "Cancel"
+                        : "Previous"
+                  }
+                  onClick={
+                    showPreview
+                      ? () => setShowPreview(false)
+                      : currentStep === 0
+                        ? () => router.push("/")
+                        : handlePrevious
+                  }
+                  className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
                   isDisabled={isSubmitting}
                 />
-              </>
-            )}
-          </div>
-        </div>
 
-        {/* Progress Indicator */}
-        {!showPreview && (
-          <div className="text-center mt-6">
-            <span className="text-sm text-[#5A5D63]">
-              Step {currentStep + 1} of {steps.length}
-            </span>
-          </div>
-        )}
+                <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                  {showPreview ? (
+                    <div className="relative w-full md:w-auto">
+                      <Button
+                        type="button"
+                        value={
+                          isSubmitting ? "Submitting..." : "Submit Property"
+                        }
+                        onClick={handleSubmit}
+                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                        isDisabled={isSubmitting}
+                      />
+                      {isSubmitting && (
+                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {currentStep === 4 && (
+                        <Button
+                          type="button"
+                          value="Preview"
+                          onClick={() => setShowPreview(true)}
+                          className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                          isDisabled={!validateCurrentStep() || isSubmitting}
+                        />
+                      )}
+                      <Button
+                        type="button"
+                        value={currentStep === 4 ? "Complete" : "Next"}
+                        onClick={() => handleNext(validateForm, errors)}
+                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                        isDisabled={isSubmitting}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Progress Indicator */}
+              {!showPreview && (
+                <div className="text-center mt-6">
+                  <span className="text-sm text-[#5A5D63]">
+                    Step {currentStep + 1} of {steps.length}
+                  </span>
+                </div>
+              )}
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   );

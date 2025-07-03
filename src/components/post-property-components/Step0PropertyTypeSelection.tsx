@@ -5,7 +5,15 @@ import { motion } from "framer-motion";
 import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
 
-const Step0PropertyTypeSelection: React.FC = () => {
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
+const Step0PropertyTypeSelection: React.FC<StepProps> = ({
+  errors,
+  touched,
+}) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
   const propertyTypes = [
