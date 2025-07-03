@@ -280,7 +280,7 @@ const PostProperty = () => {
                   : handlePrevious
             }
             className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-            disabled={isSubmitting}
+            isDisabled={isSubmitting}
           />
 
           <div className="flex gap-4">
