@@ -217,7 +217,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className={`grid gap-5 ${
+          className={`grid gap-3 ${
             isMobile
               ? "grid-cols-1"
               : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
