@@ -161,65 +161,77 @@ export const useModalActions = () => {
   const { openModal, closeModal, closeAllModals } = useModal();
 
   const openNegotiationModal = useCallback(
-    (property: any, onSubmit?: (data: any) => void) => {
-      const NegotiationModal = React.lazy(
-        () => import("@/components/modals/negotiation-modal"),
-      );
+    async (property: any, onSubmit?: (data: any) => void) => {
+      try {
+        const { default: NegotiationModal } = await import(
+          "@/components/modals/negotiation-modal"
+        );
 
-      openModal({
-        id: "negotiation-modal",
-        component: NegotiationModal,
-        props: {
-          property,
-          onSubmit,
-        },
-        size: "lg",
-      });
+        openModal({
+          id: "negotiation-modal",
+          component: NegotiationModal,
+          props: {
+            property,
+            onSubmit,
+          },
+          size: "lg",
+        });
+      } catch (error) {
+        console.error("Failed to load negotiation modal:", error);
+      }
     },
     [openModal],
   );
 
   const openPriceModal = useCallback(
-    (filters: any, onApply?: (filters: any) => void) => {
-      const PriceModal = React.lazy(
-        () => import("@/components/modals/price-modal"),
-      );
+    async (filters: any, onApply?: (filters: any) => void) => {
+      try {
+        const { default: PriceModal } = await import(
+          "@/components/modals/price-modal"
+        );
 
-      openModal({
-        id: "price-modal",
-        component: PriceModal,
-        props: {
-          currentFilters: filters,
-          onApply,
-        },
-        size: "md",
-      });
+        openModal({
+          id: "price-modal",
+          component: PriceModal,
+          props: {
+            currentFilters: filters,
+            onApply,
+          },
+          size: "md",
+        });
+      } catch (error) {
+        console.error("Failed to load price modal:", error);
+      }
     },
     [openModal],
   );
 
   const openConfirmationModal = useCallback(
-    (
+    async (
       title: string,
       message: string,
       onConfirm?: () => void,
       onCancel?: () => void,
     ) => {
-      const ConfirmationModal = React.lazy(
-        () => import("@/components/modals/confirmation-modal"),
-      );
+      try {
+        const { default: ConfirmationModal } = await import(
+          "@/components/modals/confirmation-modal"
+        );
 
-      openModal({
-        id: "confirmation-modal",
-        component: ConfirmationModal,
-        props: {
-          title,
-          message,
-          onConfirm,
-          onCancel,
-        },
-        size: "sm",
-      });
+        openModal({
+          id: "confirmation-modal",
+          component: ConfirmationModal,
+          props: {
+            title,
+            message,
+            onConfirm,
+            onCancel,
+          },
+          size: "sm",
+        });
+      } catch (error) {
+        console.error("Failed to load confirmation modal:", error);
+      }
     },
     [openModal],
   );
