@@ -264,28 +264,8 @@ const SearchModal = ({
     }
   };
 
-  const clearAllFilters = () => {
-    setUsageOptions(["All"]);
-    setRentFilterBy(["All"]);
-    setJvFilterBy(["All"]);
-    setHomeCondition("All");
-  };
-
   const getPropertyGridMarketplaceType = () => {
     return userSelectedMarketPlace;
-  };
-
-  const getFilterBy = () => {
-    switch (userSelectedMarketPlace) {
-      case "Buy a property":
-        return usageOptions;
-      case "Rent/Lease a property":
-        return rentFilterBy;
-      case "Find property for joint venture":
-        return jvFilterBy;
-      default:
-        return [];
-    }
   };
 
   const handleCardPageClick = (property: any) => {
