@@ -157,12 +157,20 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       } else {
         // Check if we can select more (max 2)
         if (prev.length >= 2) {
-          toast.error("Maximum of 2 properties can be selected for inspection");
+          // Use setTimeout to avoid setState during render
+          setTimeout(() => {
+            toast.error(
+              "Maximum of 2 properties can be selected for inspection",
+            );
+          }, 0);
           return prev;
         }
 
         // Add to selection
-        toast.success("Property selected for inspection");
+        // Use setTimeout to avoid setState during render
+        setTimeout(() => {
+          toast.success("Property selected for inspection");
+        }, 0);
         return [...prev, { propertyId, property }];
       }
     });
