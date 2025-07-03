@@ -63,8 +63,12 @@ const Card = ({
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>("View more");
   const { setViewImage, setImageData } = usePageContext();
-  const { getNegotiatedPrice, removeNegotiatedPrice, isSelectedForInspection } =
-    useMarketplace();
+  const {
+    getNegotiatedPrice,
+    removeNegotiatedPrice,
+    isSelectedForInspection,
+    toggleInspectionSelection,
+  } = useMarketplace();
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   // Check if this property has a negotiated price
