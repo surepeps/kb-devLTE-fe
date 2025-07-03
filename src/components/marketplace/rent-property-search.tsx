@@ -227,7 +227,7 @@ const RentPropertySearch: React.FC<RentPropertySearchProps> = ({
             {/* Property Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-6">
               {getCurrentPageProperties().map((property, index) => (
-                <PropertyCard
+                <Card
                   key={property._id || index}
                   images={property?.pictures || []}
                   property={property}
