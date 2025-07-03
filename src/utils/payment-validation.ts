@@ -29,6 +29,9 @@ export class PaymentValidator {
     file: File,
     paymentDetails: PaymentDetails,
   ): Promise<PaymentValidationResult> {
+    // Store expected amount for more accurate simulation
+    this.currentExpectedAmount = paymentDetails.expectedAmount;
+
     try {
       // Check file type
       if (!this.isValidFileType(file)) {
