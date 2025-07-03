@@ -1,0 +1,180 @@
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
+import { usePostPropertyContext } from "@/context/post-property-context";
+import { featuresData, JvConditionData } from "@/data/buy_data";
+import { tenantCriteriaData } from "@/data/landlord";
+
+const Step2FeaturesConditions: React.FC = () => {
+  const { propertyData, updatePropertyData } = usePostPropertyContext();
+
+  const handleFeatureToggle = (feature: string) => {
+    const currentFeatures = propertyData.features;
+    const updatedFeatures = currentFeatures.includes(feature)
+      ? currentFeatures.filter((f) => f !== feature)
+      : [...currentFeatures, feature];
+    updatePropertyData("features", updatedFeatures);
+  };
+
+  const handleTenantCriteriaToggle = (criteria: string) => {
+    const currentCriteria = propertyData.tenantCriteria;
+    const updatedCriteria = currentCriteria.includes(criteria)
+      ? currentCriteria.filter((c) => c !== criteria)
+      : [...currentCriteria, criteria];
+    updatePropertyData("tenantCriteria", updatedCriteria);
+  };
+
+  const handleJvConditionToggle = (condition: string) => {
+    const currentConditions = propertyData.jvConditions;
+    const updatedConditions = currentConditions.includes(condition)
+      ? currentConditions.filter((c) => c !== condition)
+      : [...currentConditions, condition];
+    updatePropertyData("jvConditions", updatedConditions);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-4xl mx-auto"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-[#09391C] font-display mb-4">
+          Features & Conditions
+        </h2>
+        <p className="text-[#5A5D63] text-lg">
+          Select features and set conditions for your property
+        </p>
+      </div>
+
+      <div className="space-y-8">
+        {/* Property Features */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          <h3 className="text-xl font-semibold text-[#09391C] mb-4">
+            Property Features
+          </h3>
+          <p className="text-[#5A5D63] mb-6">
+            Select all features that apply to your property
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {featuresData.map((feature, index) => (
+              <motion.button
+                key={index}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleFeatureToggle(feature)}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                  propertyData.features.includes(feature)
+                    ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10 text-[#09391C]"
+                    : "border-gray-200 hover:border-[#8DDB90] text-gray-700"
+                }`}
+              >
+                <span className="text-sm font-medium">{feature}</span>
+                {propertyData.features.includes(feature) && (
+                  <div className="mt-2">
+                    <span className="inline-block w-2 h-2 bg-[#8DDB90] rounded-full"></span>
+                  </div>
+                )}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tenant Criteria (for rent) */}
+        {propertyData.propertyType === "rent" && (
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#09391C] mb-4">
+              Tenant Requirements
+            </h3>
+            <p className="text-[#5A5D63] mb-6">
+              Set criteria for potential tenants
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {tenantCriteriaData.map((criteria, index) => (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleTenantCriteriaToggle(criteria)}
+                  className={`p-4 rounded-lg border-2 text-left transition-all ${
+                    propertyData.tenantCriteria.includes(criteria)
+                      ? "border-blue-500 bg-blue-50 text-blue-900"
+                      : "border-gray-200 hover:border-blue-500 text-gray-700"
+                  }`}
+                >
+                  <span className="text-sm font-medium">{criteria}</span>
+                  {propertyData.tenantCriteria.includes(criteria) && (
+                    <div className="mt-2">
+                      <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
+                    </div>
+                  )}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Joint Venture Conditions */}
+        {propertyData.propertyType === "jv" && (
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#09391C] mb-4">
+              Joint Venture Terms
+            </h3>
+            <p className="text-[#5A5D63] mb-6">
+              Select applicable conditions for the joint venture
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {JvConditionData.map((condition, index) => (
+                <motion.button
+                  key={index}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleJvConditionToggle(condition)}
+                  className={`p-4 rounded-lg border-2 text-left transition-all ${
+                    propertyData.jvConditions.includes(condition)
+                      ? "border-purple-500 bg-purple-50 text-purple-900"
+                      : "border-gray-200 hover:border-purple-500 text-gray-700"
+                  }`}
+                >
+                  <span className="text-sm font-medium">{condition}</span>
+                  {propertyData.jvConditions.includes(condition) && (
+                    <div className="mt-2">
+                      <span className="inline-block w-2 h-2 bg-purple-500 rounded-full"></span>
+                    </div>
+                  )}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Summary */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h4 className="font-semibold text-[#09391C] mb-3">Summary</h4>
+          <div className="space-y-2 text-sm text-[#5A5D63]">
+            <p>
+              <span className="font-medium">Features selected:</span>{" "}
+              {propertyData.features.length}
+            </p>
+            {propertyData.propertyType === "rent" && (
+              <p>
+                <span className="font-medium">Tenant criteria:</span>{" "}
+                {propertyData.tenantCriteria.length}
+              </p>
+            )}
+            {propertyData.propertyType === "jv" && (
+              <p>
+                <span className="font-medium">JV conditions:</span>{" "}
+                {propertyData.jvConditions.length}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Step2FeaturesConditions;

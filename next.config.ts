@@ -23,10 +23,8 @@ const nextConfig: NextConfig = {
     "15926671fc324092973eeb5e0d7e8356-5ab49ed98488415c98ebd4d45.fly.dev",
   ],
   // Improve performance and reduce network issues
-  experimental: {
-    turbo: {
-      useSwcCss: true,
-    },
+  turbopack: {
+    // Turbopack is now stable, moved from experimental
   },
 };
 

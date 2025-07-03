@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 export const config = {
   matcher: [
-    "/:path*", // Match everything, handle logic inside
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
 
@@ -25,6 +25,7 @@ const publicRoutes = [
   "/joint-ventures",
   "/joint_ventures",
   "/landlord",
+  "/agent",
   "/coming-soon-modal",
   "/testing",
   "/verify-email",
@@ -32,10 +33,14 @@ const publicRoutes = [
   "/slots",
 ];
 
-const agentProtectedPrefix = "/agent";
-const agentAuthPrefix = "/agent/auth";
+const agentProtectedRoutes = [
+  "/agent/dashboard",
+  "/agent/briefs",
+  "/agent/onboard",
+  "/agent/under-review",
+];
 
-const userProtectedPrefixes = [
+const userProtectedRoutes = [
   "/dashboard",
   "/profile",
   "/my_listing",
@@ -52,46 +57,83 @@ export function middleware(request: NextRequest) {
   const agentToken = request.cookies.get("agentToken")?.value;
   const userToken = request.cookies.get("token")?.value;
 
-  // ✅ If user is logged in and trying to visit /auth/*, redirect to /dashboard
-  if (
-    userToken &&
-    (pathname === "/auth/login" || pathname === "/auth/register")
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Skip middleware for API routes and static files
+  if (pathname.startsWith("/api") || pathname.startsWith("/_next")) {
+    return NextResponse.next();
   }
 
-  // ✅ If agent is logged in and trying to visit /agent/auth/*, redirect to /agent/dashboard
-  if (
-    agentToken &&
-    (pathname === "/agent/auth/login" || pathname === "/agent/auth/register")
-  ) {
-    return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+  // Handle auth redirections for logged-in users
+  if (userToken) {
+    if (pathname === "/auth/login" || pathname === "/auth/register") {
+      return NextResponse.redirect(new URL("/landlord", request.url));
+    }
+    // Redirect /landlord to dashboard if already logged in as landlord
+    if (pathname === "/landlord") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
   }
 
-  // ✅ Allow public routes
+  // Handle auth redirections for logged-in agents
+  if (agentToken) {
+    if (
+      pathname === "/agent/auth/login" ||
+      pathname === "/agent/auth/register"
+    ) {
+      return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+    }
+    // Redirect /agent to dashboard if already logged in as agent
+    if (pathname === "/agent") {
+      return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+    }
+  }
+
+  // Check if route is public
   const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route)
+    (route) => pathname === route || pathname.startsWith(route + "/"),
   );
-  if (isPublicRoute) return NextResponse.next();
 
-  // ✅ Protect agent routes
-  if (
-    pathname.startsWith(agentProtectedPrefix) &&
-    !pathname.startsWith(agentAuthPrefix)
-  ) {
-    if (!agentToken) {
-      return NextResponse.redirect(new URL("/agent/auth/login", request.url));
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+
+  // Protect agent routes
+  const isAgentProtectedRoute = agentProtectedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + "/"),
+  );
+
+  if (isAgentProtectedRoute) {
+    if (!agentToken && !userToken) {
+      const loginUrl = new URL("/agent/auth/login", request.url);
+      loginUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
   }
 
-  // ✅ Protect user routes
-  if (userProtectedPrefixes.some((prefix) => pathname.startsWith(prefix))) {
-    if (!userToken) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+  // Protect user routes
+  const isUserProtectedRoute = userProtectedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + "/"),
+  );
+
+  if (isUserProtectedRoute) {
+    if (!userToken && !agentToken) {
+      const loginUrl = new URL("/auth/login", request.url);
+      loginUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
   }
 
+  // Handle property routes - check for specific property paths
+  if (pathname.startsWith("/property/")) {
+    return NextResponse.next();
+  }
+
+  // Handle buy_page details
+  if (pathname.startsWith("/buy_page/details/")) {
+    return NextResponse.next();
+  }
+
+  // Default: allow the request to continue
   return NextResponse.next();
 }
