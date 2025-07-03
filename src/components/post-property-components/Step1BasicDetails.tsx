@@ -192,38 +192,105 @@ const Step1BasicDetails: React.FC = () => {
           )}
 
         {/* Price */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Input
-              name="price"
-              label={
-                propertyData.propertyType === "sell"
-                  ? "Selling Price"
-                  : propertyData.propertyType === "rent"
-                    ? "Annual Rent"
-                    : "Property Value"
-              }
-              type="text"
-              placeholder="Enter amount"
-              value={formatedPrice}
-              onChange={(e) => handlePriceChange(e.target.value)}
-            />
-          </div>
-
-          {/* Hold Duration for Joint Venture */}
-          {propertyData.propertyType === "jv" && (
+        <div>
+          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+            Price Details
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Input
-                name="holdDuration"
-                label="Hold Duration (Years)"
+                name="price"
+                label={
+                  propertyData.propertyType === "sell"
+                    ? "Selling Price"
+                    : propertyData.propertyType === "rent"
+                      ? "Annual Rent"
+                      : "Property Value"
+                }
                 type="text"
-                placeholder="Enter years"
-                value={formatedHold}
-                onChange={(e) => handleHoldDurationChange(e.target.value)}
+                placeholder="Enter amount"
+                value={formatedPrice}
+                onChange={(e) => handlePriceChange(e.target.value)}
               />
             </div>
-          )}
+
+            {/* Lease Hold for Rent (non-agents) */}
+            {propertyData.propertyType === "rent" && (
+              <div>
+                <Input
+                  name="leaseHold"
+                  label="Lease Hold"
+                  type="text"
+                  placeholder="Enter lease hold amount"
+                  value={formatedLeaseHold}
+                  onChange={(e) => handleLeaseHoldChange(e.target.value)}
+                />
+              </div>
+            )}
+
+            {/* Hold Duration for Joint Venture */}
+            {propertyData.propertyType === "jv" && (
+              <div>
+                <Input
+                  name="holdDuration"
+                  label="Hold Duration (Years)"
+                  type="text"
+                  placeholder="Enter years"
+                  value={formatedHold}
+                  onChange={(e) => handleHoldDurationChange(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Land Size (for Land, Sell, JV) */}
+        {(propertyData.propertyCategory === "Land" ||
+          propertyData.propertyType === "sell" ||
+          propertyData.propertyType === "jv") && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Land Size
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Type of Measurement
+                </label>
+                <ReactSelect
+                  options={[
+                    { value: "Plot", label: "Plot" },
+                    { value: "Acres", label: "Acres" },
+                    { value: "Square Meter", label: "Square Meter" },
+                  ]}
+                  value={
+                    propertyData.measurementType
+                      ? {
+                          value: propertyData.measurementType,
+                          label: propertyData.measurementType,
+                        }
+                      : null
+                  }
+                  onChange={(option) =>
+                    updatePropertyData("measurementType", option?.value || "")
+                  }
+                  placeholder="Select measurement type"
+                  styles={customStyles}
+                />
+              </div>
+              <div>
+                <Input
+                  name="landSize"
+                  label="Enter Land Size"
+                  type="text"
+                  placeholder="Enter land size"
+                  value={formatedLandSize}
+                  onChange={(e) => handleLandSizeChange(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Location */}
         <div>
