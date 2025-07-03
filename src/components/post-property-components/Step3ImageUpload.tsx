@@ -137,11 +137,11 @@ const Step3ImageUpload: React.FC = () => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-4xl mx-auto"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[#09391C] font-display mb-4">
-          Upload Property Images
+      <div className="mb-8">
+        <h2 className="text-[24px] leading-[38.4px] font-semibold font-display text-[#09391C] mb-2">
+          Upload Picture
         </h2>
-        <p className="text-[#5A5D63] text-lg mb-4">
+        <p className="text-[16px] text-[#5A5D63] mb-4">
           Add high-quality images to showcase your property
         </p>
         <div className="flex items-center justify-center gap-4 text-sm">
@@ -176,7 +176,7 @@ const Step3ImageUpload: React.FC = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="relative aspect-square bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 hover:border-[#8DDB90] transition-colors group"
+            className="relative aspect-square bg-[#F7F7F8] rounded-md border-2 border-dashed border-[#C7CAD0] hover:border-[#8DDB90] transition-colors group"
           >
             {image.file && image.preview ? (
               <>
