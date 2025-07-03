@@ -213,44 +213,75 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     setHomeCondition("All");
   }, []);
 
-  const contextValue: MarketplaceContextType = {
-    // Negotiated prices
-    negotiatedPrices,
-    addNegotiatedPrice,
-    removeNegotiatedPrice,
-    getNegotiatedPrice,
+  const contextValue: MarketplaceContextType = useMemo(
+    () => ({
+      // Negotiated prices
+      negotiatedPrices,
+      addNegotiatedPrice,
+      removeNegotiatedPrice,
+      getNegotiatedPrice,
 
-    // Inspection selection
-    selectedForInspection,
-    toggleInspectionSelection,
-    removeFromInspection,
-    clearInspectionSelection,
-    isSelectedForInspection,
-    canSelectMoreForInspection,
+      // Inspection selection
+      selectedForInspection,
+      toggleInspectionSelection,
+      removeFromInspection,
+      clearInspectionSelection,
+      isSelectedForInspection,
+      canSelectMoreForInspection,
 
-    // Filter states
-    usageOptions,
-    setUsageOptions,
-    rentFilterBy,
-    setRentFilterBy,
-    jvFilterBy,
-    setJvFilterBy,
-    homeCondition,
-    setHomeCondition,
+      // Filter states
+      usageOptions,
+      setUsageOptions,
+      rentFilterBy,
+      setRentFilterBy,
+      jvFilterBy,
+      setJvFilterBy,
+      homeCondition,
+      setHomeCondition,
 
-    // Search and loading states
-    searchStatus,
-    setSearchStatus,
-    properties,
-    setProperties,
-    formikStatus,
-    setFormikStatus,
-    errMessage,
-    setErrMessage,
+      // Search and loading states
+      searchStatus,
+      setSearchStatus,
+      properties,
+      setProperties,
+      formikStatus,
+      setFormikStatus,
+      errMessage,
+      setErrMessage,
 
-    // Clear all filters
-    clearAllFilters,
-  };
+      // Clear all filters
+      clearAllFilters,
+    }),
+    [
+      negotiatedPrices,
+      addNegotiatedPrice,
+      removeNegotiatedPrice,
+      getNegotiatedPrice,
+      selectedForInspection,
+      toggleInspectionSelection,
+      removeFromInspection,
+      clearInspectionSelection,
+      isSelectedForInspection,
+      canSelectMoreForInspection,
+      usageOptions,
+      setUsageOptions,
+      rentFilterBy,
+      setRentFilterBy,
+      jvFilterBy,
+      setJvFilterBy,
+      homeCondition,
+      setHomeCondition,
+      searchStatus,
+      setSearchStatus,
+      properties,
+      setProperties,
+      formikStatus,
+      setFormikStatus,
+      errMessage,
+      setErrMessage,
+      clearAllFilters,
+    ],
+  );
 
   return (
     <MarketplaceContext.Provider value={contextValue}>
