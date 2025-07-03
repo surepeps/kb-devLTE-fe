@@ -53,6 +53,14 @@ const BuyAPropertySearchModal = ({
     clearInspectionSelection,
   } = useMarketplace();
 
+  // Use modal actions
+  const {
+    openPriceModal,
+    openBedsAndBathModal,
+    openDesiredFeaturesModal,
+    openMoreFilterModal,
+  } = useModalActions();
+
   const selectedBriefs = selectedForInspection.length;
   const formik = useFormik({
     initialValues: {
