@@ -12,7 +12,12 @@ interface PropertyImage {
   id: string;
 }
 
-const Step3ImageUpload: React.FC = () => {
+interface StepProps {
+  errors?: any;
+  touched?: any;
+}
+
+const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   const { images, setImages, getMinimumRequiredImages, areImagesValid } =
     usePostPropertyContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
