@@ -10,62 +10,66 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  PlusIcon,
-  HomeIcon,
-  EyeIcon,
-  ChartBarIcon,
-  CurrencyDollarIcon,
+  BriefcaseIcon,
+  TrendingUpIcon,
+  DollarSignIcon,
+  UsersIcon,
   ClockIcon,
-  UserGroupIcon,
+  MapPinIcon,
+  StarIcon,
+  PlusIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
-interface Property {
+interface Brief {
   _id: string;
   propertyType: string;
-  price: number;
   location: {
     state: string;
     localGovernment: string;
     area: string;
   };
-  images: string[];
-  status: "active" | "pending" | "sold" | "rented";
+  price: number;
   createdAt: string;
-  views?: number;
+  status: "active" | "assigned" | "completed";
 }
 
 interface DashboardStats {
-  totalProperties: number;
-  activeListings: number;
-  soldProperties: number;
-  rentedProperties: number;
-  totalViews: number;
-  totalEarnings: number;
+  totalBriefs: number;
+  activeBriefs: number;
+  completedDeals: number;
+  totalCommission: number;
+  monthlyCommission: number;
+  averageRating: number;
 }
 
-export default function LandlordDashboard() {
+export default function AgentDashboard() {
   const router = useRouter();
   const { user } = useUserContext();
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [briefs, setBriefs] = useState<Brief[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
-    totalProperties: 0,
-    activeListings: 0,
-    soldProperties: 0,
-    rentedProperties: 0,
-    totalViews: 0,
-    totalEarnings: 0,
+    totalBriefs: 0,
+    activeBriefs: 0,
+    completedDeals: 0,
+    totalCommission: 0,
+    monthlyCommission: 0,
+    averageRating: 4.5,
   });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
-      router.push("/auth/login");
+      router.push("/agent/auth/login");
       return;
     }
 
-    if (user.userType !== "Landowners") {
+    if (user.userType !== "Agent") {
       router.push("/");
+      return;
+    }
+
+    if (!user.accountApproved) {
+      router.push("/agent/under-review");
       return;
     }
 
@@ -76,39 +80,32 @@ export default function LandlordDashboard() {
     try {
       setIsLoading(true);
 
-      // Fetch user's properties
-      const propertiesResponse = await GET_REQUEST(
-        `${URLS.BASE}${URLS.user}/properties`,
-        Cookies.get("token"),
+      // Fetch agent briefs
+      const briefsResponse = await GET_REQUEST(
+        `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=100`,
+        Cookies.get("agentToken") || Cookies.get("token"),
       );
 
-      if (propertiesResponse?.data) {
-        const userProperties = propertiesResponse.data;
-        setProperties(userProperties);
+      if (briefsResponse?.data) {
+        const agentBriefs = briefsResponse.data;
+        setBriefs(agentBriefs);
 
         // Calculate stats
-        const totalProperties = userProperties.length;
-        const activeListings = userProperties.filter(
-          (p: Property) => p.status === "active",
+        const totalBriefs = agentBriefs.length;
+        const activeBriefs = agentBriefs.filter(
+          (b: Brief) => b.status === "active",
         ).length;
-        const soldProperties = userProperties.filter(
-          (p: Property) => p.status === "sold",
+        const completedDeals = agentBriefs.filter(
+          (b: Brief) => b.status === "completed",
         ).length;
-        const rentedProperties = userProperties.filter(
-          (p: Property) => p.status === "rented",
-        ).length;
-        const totalViews = userProperties.reduce(
-          (sum: number, p: Property) => sum + (p.views || 0),
-          0,
-        );
 
         setStats({
-          totalProperties,
-          activeListings,
-          soldProperties,
-          rentedProperties,
-          totalViews,
-          totalEarnings: soldProperties * 50000, // Mock calculation
+          totalBriefs,
+          activeBriefs,
+          completedDeals,
+          totalCommission: completedDeals * 500000, // Mock calculation
+          monthlyCommission: 1500000, // Mock data
+          averageRating: 4.5,
         });
       }
     } catch (error) {
@@ -129,30 +126,30 @@ export default function LandlordDashboard() {
 
   const statCards = [
     {
-      title: "Total Properties",
-      value: stats.totalProperties,
-      icon: HomeIcon,
+      title: "Total Briefs",
+      value: stats.totalBriefs,
+      icon: BriefcaseIcon,
       color: "bg-blue-500",
       textColor: "text-blue-600",
     },
     {
-      title: "Active Listings",
-      value: stats.activeListings,
-      icon: ChartBarIcon,
+      title: "Active Briefs",
+      value: stats.activeBriefs,
+      icon: TrendingUpIcon,
       color: "bg-green-500",
       textColor: "text-green-600",
     },
     {
-      title: "Properties Sold",
-      value: stats.soldProperties,
-      icon: CurrencyDollarIcon,
+      title: "Completed Deals",
+      value: stats.completedDeals,
+      icon: DollarSignIcon,
       color: "bg-yellow-500",
       textColor: "text-yellow-600",
     },
     {
-      title: "Total Views",
-      value: stats.totalViews,
-      icon: EyeIcon,
+      title: "Total Commission",
+      value: `₦${stats.totalCommission.toLocaleString()}`,
+      icon: DollarSignIcon,
       color: "bg-purple-500",
       textColor: "text-purple-600",
     },
@@ -165,19 +162,57 @@ export default function LandlordDashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-[#09391C] font-display">
-              Welcome back, {user.firstName}!
+              Welcome back, Agent {user.firstName}!
             </h1>
             <p className="text-[#5A5D63] mt-2">
-              Manage your properties and track your real estate portfolio
+              Manage your briefs and track your real estate performance
             </p>
           </div>
-          <Link
-            href="/post_property"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
-          >
-            <PlusIcon size={20} />
-            List New Property
-          </Link>
+          <div className="flex gap-4">
+            <Link
+              href="/agent/briefs"
+              className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+            >
+              <BriefcaseIcon size={20} />
+              View Briefs
+            </Link>
+            <Link
+              href="/agent_marketplace"
+              className="bg-white hover:bg-gray-50 text-[#09391C] border border-[#8DDB90] px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+            >
+              <PlusIcon size={20} />
+              Marketplace
+            </Link>
+          </div>
+        </div>
+
+        {/* Performance Overview */}
+        <div className="bg-white rounded-lg p-6 mb-8 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-[#8DDB90] mb-2">
+                ₦{stats.monthlyCommission.toLocaleString()}
+              </div>
+              <p className="text-[#5A5D63]">This Month's Commission</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-2">
+                <StarIcon size={24} className="text-yellow-500 fill-current" />
+                <span className="text-3xl font-bold text-[#09391C] ml-2">
+                  {stats.averageRating}
+                </span>
+              </div>
+              <p className="text-[#5A5D63]">Average Rating</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-[#09391C] mb-2">
+                {Math.round((stats.completedDeals / stats.totalBriefs) * 100) ||
+                  0}
+                %
+              </div>
+              <p className="text-[#5A5D63]">Success Rate</p>
+            </div>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -198,7 +233,9 @@ export default function LandlordDashboard() {
                       {card.title}
                     </p>
                     <p className={`text-2xl font-bold ${card.textColor}`}>
-                      {card.value.toLocaleString()}
+                      {typeof card.value === "number"
+                        ? card.value.toLocaleString()
+                        : card.value}
                     </p>
                   </div>
                   <div className={`p-3 rounded-lg ${card.color} bg-opacity-10`}>
@@ -210,15 +247,15 @@ export default function LandlordDashboard() {
           })}
         </div>
 
-        {/* Recent Properties */}
+        {/* Recent Briefs */}
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6 border-b border-gray-200">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-[#09391C]">
-                Recent Properties
+                Recent Briefs
               </h2>
               <Link
-                href="/my_listing"
+                href="/agent/briefs"
                 className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
               >
                 View All
@@ -226,29 +263,29 @@ export default function LandlordDashboard() {
             </div>
           </div>
 
-          {properties.length === 0 ? (
+          {briefs.length === 0 ? (
             <div className="p-12 text-center">
-              <HomeIcon size={48} className="mx-auto text-gray-400 mb-4" />
+              <BriefcaseIcon size={48} className="mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-600 mb-2">
-                No Properties Listed Yet
+                No Briefs Available
               </h3>
               <p className="text-gray-500 mb-6">
-                Start by listing your first property to manage your real estate
-                portfolio
+                Check the marketplace for new opportunities or wait for clients
+                to submit briefs
               </p>
               <Link
-                href="/post_property"
+                href="/agent_marketplace"
                 className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
               >
                 <PlusIcon size={20} />
-                List Your First Property
+                Browse Marketplace
               </Link>
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {properties.slice(0, 5).map((property, index) => (
+              {briefs.slice(0, 5).map((brief, index) => (
                 <motion.div
-                  key={property._id}
+                  key={brief._id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -256,47 +293,38 @@ export default function LandlordDashboard() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        {property.images?.[0] ? (
-                          <img
-                            src={property.images[0]}
-                            alt={property.propertyType}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <HomeIcon size={24} className="text-gray-400" />
-                        )}
+                      <div className="w-12 h-12 bg-[#8DDB90] bg-opacity-10 rounded-lg flex items-center justify-center">
+                        <BriefcaseIcon size={20} className="text-[#8DDB90]" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-[#09391C] capitalize">
-                          {property.propertyType}
+                          {brief.propertyType}
                         </h3>
-                        <p className="text-sm text-[#5A5D63]">
-                          {property.location.area},{" "}
-                          {property.location.localGovernment}
-                        </p>
+                        <div className="flex items-center gap-1 text-sm text-[#5A5D63]">
+                          <MapPinIcon size={12} />
+                          {brief.location.area},{" "}
+                          {brief.location.localGovernment}
+                        </div>
                         <p className="text-sm text-[#8DDB90] font-medium">
-                          ₦{property.price.toLocaleString()}
+                          ₦{brief.price.toLocaleString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          property.status === "active"
+                          brief.status === "active"
                             ? "bg-green-100 text-green-800"
-                            : property.status === "sold"
+                            : brief.status === "assigned"
                               ? "bg-blue-100 text-blue-800"
-                              : property.status === "rented"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
+                              : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {property.status}
+                        {brief.status}
                       </span>
                       <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
                         <ClockIcon size={12} />
-                        {new Date(property.createdAt).toLocaleDateString()}
+                        {new Date(brief.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -313,38 +341,34 @@ export default function LandlordDashboard() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link
-              href="/post_property"
+              href="/agent/briefs"
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-[#8DDB90] bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <PlusIcon size={24} className="text-[#8DDB90]" />
+                  <BriefcaseIcon size={24} className="text-[#8DDB90]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#09391C]">
-                    List Property
-                  </h3>
+                  <h3 className="font-semibold text-[#09391C]">View Briefs</h3>
                   <p className="text-sm text-[#5A5D63]">
-                    Add a new property to your portfolio
+                    Manage your assigned briefs
                   </p>
                 </div>
               </div>
             </Link>
 
             <Link
-              href="/my_listing"
+              href="/agent_marketplace"
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <HomeIcon size={24} className="text-blue-500" />
+                  <PlusIcon size={24} className="text-blue-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#09391C]">
-                    View Listings
-                  </h3>
+                  <h3 className="font-semibold text-[#09391C]">Marketplace</h3>
                   <p className="text-sm text-[#5A5D63]">
-                    Manage your property listings
+                    Find new opportunities
                   </p>
                 </div>
               </div>
@@ -356,7 +380,7 @@ export default function LandlordDashboard() {
             >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-purple-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <UserGroupIcon size={24} className="text-purple-500" />
+                  <UsersIcon size={24} className="text-purple-500" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#09391C]">Settings</h3>
