@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import { PlusIcon, XIcon, ImageIcon } from "lucide-react";
+import { Plus as PlusIcon, X as XIcon, Image as ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface PropertyImage {

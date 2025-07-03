@@ -4,19 +4,19 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import {
-  MapPinIcon,
-  BedIcon,
-  BathIcon,
-  CarIcon,
-  HomeIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PhoneIcon,
-  MailIcon,
-  UserIcon,
-  CalendarIcon,
-  TagIcon,
-  CheckCircleIcon,
+  MapPin as MapPinIcon,
+  Bed as BedIcon,
+  Bath as BathIcon,
+  Car as CarIcon,
+  Home as HomeIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  Phone as PhoneIcon,
+  Mail as MailIcon,
+  User as UserIcon,
+  Calendar as CalendarIcon,
+  Tag as TagIcon,
+  CheckCircle as CheckCircleIcon,
 } from "lucide-react";
 import Image from "next/image";
 
