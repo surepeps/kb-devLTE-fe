@@ -150,10 +150,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   ];
 
   const isPropertySelected = (property: any) => {
-    if (typeof selectedBriefs === "number") {
-      return false;
-    }
-    return selectedBriefs.has(property);
+    return isSelectedForInspection(property._id);
   };
 
   // Loading state
