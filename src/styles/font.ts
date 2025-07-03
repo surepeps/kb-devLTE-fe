@@ -1,7 +1,15 @@
 /** @format */
 
 // styles/font.js
-import { Roboto, Open_Sans, Epilogue, Archivo, Ubuntu } from 'next/font/google';
+import {
+  Roboto,
+  Open_Sans,
+  Epilogue,
+  Archivo,
+  Ubuntu,
+  PT_Sans,
+  Manrope,
+} from 'next/font/google';
 
 export const roboto = Roboto({
   variable: '--font-roboto',
@@ -34,4 +42,18 @@ export const ubuntu = Ubuntu({
   weight: ['400', '700'],
   style: ['normal', 'italic'],
   variable: '--font-ubuntu',
+});
+
+export const product_sans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-pt-sans',
+});
+
+export const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal'],
+  variable: '--font-manrope',
 });

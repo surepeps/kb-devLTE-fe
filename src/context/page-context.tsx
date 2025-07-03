@@ -2,8 +2,11 @@
 
 'use client';
 import { BriefType, GlobalContextTypes } from '@/types';
+import { UserAgentDataProps } from '@/types/agent_data_props';
+import { PropertyProps } from '@/types/property.types';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState } from 'react';
+import { string } from 'yup';
 
 interface Option {
   value: string;
@@ -20,6 +23,7 @@ export const PageContextProvider = ({
   const [isContactUsClicked, setIsContactUsClicked] = useState<boolean>(false);
   const [rentPage, setRentPage] = useState({
     isSubmitForInspectionClicked: false,
+    submitPreference: false,
   });
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 
@@ -32,6 +36,7 @@ export const PageContextProvider = ({
     usageOptions: string[];
     price: string | number;
     documents: string[];
+    docOnProperty: Array<string | { isProvided: boolean; _id: string; docName: string }>;
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
@@ -41,6 +46,7 @@ export const PageContextProvider = ({
     usageOptions: [],
     price: '',
     documents: [],
+    docOnProperty: [],
     noOfBedroom: '',
     additionalFeatures: '',
     selectedCity: null,
@@ -51,14 +57,20 @@ export const PageContextProvider = ({
    * View image
    */
   const [viewImage, setViewImage] = useState<boolean>(false);
-  const [imageData, setImageData] = useState<StaticImport[]>([]);
+  const [imageData, setImageData] = useState<StaticImport[] | string[]>([]);
 
   //Submitted successfully context logic.
   const [isSubmittedSuccessfully, setIsSubmittedSuccessfully] =
     useState<boolean>(false);
 
-  //Buy page - property referenece
-  const [propertyReference, setPropertyReference] = useState({});
+  //Buy page and rent page - property referenece
+  const [propertyReference, setPropertyReference] = useState<{
+    type: 'buy' | 'rental' | '';
+    payload: {};
+  }>({
+    type: '',
+    payload: {},
+  });
 
   /**Selected Briefs for Buy Page - property reference */
   const [propertyRefSelectedBriefs, setPropertyRefSelectedBriefs] = useState<
@@ -77,10 +89,10 @@ export const PageContextProvider = ({
     setSelectedBriefs((prev) => new Set([...prev, brief])); // Ensure immutability
   };
 
-  const removeBrief = (briefId: BriefType) => {
+  const removeBrief = (brief: BriefType) => {
     setSelectedBriefs((prev) => {
       const updatedSet = new Set(prev);
-      updatedSet.delete(briefId);
+      updatedSet.delete(brief);
       return updatedSet;
     });
   };
@@ -88,6 +100,72 @@ export const PageContextProvider = ({
   const clearBriefs = () => {
     setSelectedBriefs(new Set());
   };
+
+  /**
+   * Agent Brief Settings
+   */
+  const [settings, setSettings] = useState({
+    selectedNav: 'Change Password',
+    isUpgradeButtonClicked: false,
+    upgradeStatus: {
+      isYetToUpgrade: true,
+      isAwatingUpgrade: false,
+      isUpgraded: false,
+    },
+    onUpgradeData: {
+      companyName: '',
+      regNo: 0,
+      image: [''],
+    },
+  });
+
+  const [userDetails, setUserDetails] = useState<UserAgentDataProps>(
+    {} as UserAgentDataProps
+  );
+
+  /**
+   * Dashboard
+   */
+  const [dashboard, setDashboard] = useState({
+    approveBriefsTable: {
+      isApproveClicked: false,
+      isRejectClicked: false,
+      isDeleteClicked: false,
+    },
+  });
+
+  /**
+   * Market Place
+   */
+  const [selectedType, setSelectedType] = useState<string>('Buy a property');
+
+  /**
+   * Property selected for inspection from the property detailss page
+   */
+  const [propertySelectedForInspection, setPropertySelectedForInspection] =
+    useState<PropertyProps | undefined>(undefined);
+
+  /**
+   * ismodalforInspection Opened
+   */
+  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+    useState<boolean>(false);
+
+  //handle is coming from price negotiation
+  const [isComingFromPriceNeg, setIsComingFromPriceNeg] =
+    useState<boolean>(false);
+
+  //commission
+  type CommissionType = {
+    userType: 'agent' | 'land_owners';
+    commission: string;
+    payload: any;
+  };
+  const [commission, setCommission] = useState<CommissionType>({
+    userType: 'land_owners',
+    commission: '10%',
+    payload: {},
+  }); //default for land owners, agent is 20%
 
   return (
     <PageContext.Provider
@@ -118,6 +196,22 @@ export const PageContextProvider = ({
         removeBrief,
         propertyRefSelectedBriefs,
         setPropertyRefSelectedBriefs,
+        settings,
+        setSettings,
+        dashboard,
+        setDashboard,
+        userDetails,
+        setUserDetails,
+        selectedType,
+        setSelectedType,
+        propertySelectedForInspection,
+        setPropertySelectedForInspection,
+        isAddForInspectionModalOpened,
+        setIsAddForInspectionModalOpened,
+        isComingFromPriceNeg,
+        setIsComingFromPriceNeg,
+        commission,
+        setCommission,
       }}>
       {children}
     </PageContext.Provider>

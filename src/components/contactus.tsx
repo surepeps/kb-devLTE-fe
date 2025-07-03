@@ -1,5 +1,5 @@
 /** @format */
-
+'use client';
 import { usePageContext } from '@/context/page-context';
 import useClickOutside from '@/hooks/clickOutside';
 import { faClose } from '@fortawesome/free-solid-svg-icons';

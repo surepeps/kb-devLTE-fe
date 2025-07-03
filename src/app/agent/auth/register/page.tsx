@@ -1,9 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/**
+ * eslint-disable react-hooks/exhaustive-deps
+ *
+ * @format
+ */
+
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import Loading from '@/components/loading';
+import Loading from '@/components/loading-component/loading';
 import { useLoading } from '@/hooks/useLoading';
 import Image from 'next/image';
 import React, { FC, useEffect, useState } from 'react';
@@ -12,9 +17,9 @@ import phoneIcon from '@/svgs/phone.svg';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import Button from '@/components/button';
-import RadioCheck from '@/components/radioCheck';
-import { RegisterWith } from '@/components/registerWith';
+import Button from '@/components/general-components/button';
+import RadioCheck from '@/components/general-components/radioCheck';
+import { RegisterWith } from '@/components/general-components/registerWith';
 import googleIcon from '@/svgs/googleIcon.svg';
 import facebookIcon from '@/svgs/facebookIcon.svg';
 import Link from 'next/link';
@@ -28,7 +33,7 @@ import { resolve } from 'path';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGoogleLogin } from '@react-oauth/google';
-import CustomToast from '@/components/CustomToast';
+import CustomToast from '@/components/general-components/CustomToast';
 
 const Register = () => {
   const isLoading = useLoading();
@@ -41,26 +46,21 @@ const Register = () => {
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Enter email'),
-
     password: Yup.string()
       .min(8, 'Password must be at least 8 characters')
-      // .matches(
-      //   /^(.*[A-Z]){2,}/,
-      //   'Password must contain at least two uppercase letters'
-      // ) // At least two uppercase letters
       .matches(/[a-z]/, 'Password must contain at least one lowercase letter') // At least one lowercase letter
       // .matches(/\d/, 'Password must contain at least one number') // At least one number
-      .matches(/[\W_]{2,}/, 'Password must contain at least two special character') // At least two special character
+      .matches(
+        /[\W_]{2,}/,
+        'Password must contain at least two special character'
+      ) // At least two special character
       .required('Password is required'),
-
     firstName: Yup.string()
       .matches(/^[a-zA-Z]+$/, 'First name must only contain letters') // Only letters
       .required('Firstname is required'),
-
     lastName: Yup.string()
       .matches(/^[a-zA-Z]+$/, 'Last name must only contain letters') // Only letters
       .required('Lastname is required'),
-
     phone: Yup.string()
       .matches(/^[0-9]+$/, 'Phone number must only contain digits') // Only digits
       .min(10, 'Phone number must be at least 10 digits')
@@ -80,20 +80,26 @@ const Register = () => {
     onSubmit: async (values) => {
       setIsDisabled(true);
       try {
-        const url = URLS.BASE + URLS.agentSignup;
+        const url = URLS.BASE + URLS.userSignup;
         const { phone, ...payload } = values;
         await toast.promise(
           POST_REQUEST(url, {
             ...payload,
             phoneNumber: String(values.phone),
+            userType: 'Agent'
           }).then((response) => {
-            console.log('response from signup', response);
             if ((response as any).id) {
               toast.success('Registration successful');
               setUser((response as any).user);
-              localStorage.setItem('fullname', `${formik.values.firstName} ${formik.values.lastName}`);
+              localStorage.setItem(
+                'fullname',
+                `${formik.values.firstName} ${formik.values.lastName}`
+              );
               localStorage.setItem('email', `${formik.values.email}`);
-              localStorage.setItem('phoneNumber', `${String(formik.values.phone)}`);
+              localStorage.setItem(
+                'phoneNumber',
+                `${String(formik.values.phone)}`
+              );
               setTimeout(() => {
                 toast.custom(
                   <CustomToast
@@ -103,25 +109,34 @@ const Register = () => {
                 );
               }, 2000);
               setIsDisabled(false);
-              // router.push('/auth/agent/form');
+              router.push('/verify-email');
               return 'Registration successful';
             } else {
               const errorMessage = (response as any).error || 'Registration failed';
-              toast.error(errorMessage);
+              if (errorMessage.toLowerCase().includes('already exists')) {
+                toast.error('This email is already registered. Please try logging in instead.');
+                router.push('/auth/login');
+              } else {
+                toast.error(errorMessage);
+              }
               setIsDisabled(false);
               throw new Error(errorMessage);
             }
           }),
           {
             loading: 'Signing up...',
-            // success: 'Registration successful',
-            // error: 'Registration failed',
+            error: (err) => err.message || 'Registration failed. Please try again.',
           }
         );
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        console.error('Registration error:', error);
         setIsDisabled(false);
-        // toast.error('Registration failed, please try again!');
+        if (error.message?.toLowerCase().includes('already exists')) {
+          toast.error('This email is already registered. Please try logging in instead.');
+          router.push('/auth/login');
+        } else {
+          toast.error('Registration failed. Please try again.');
+        }
       }
     },
   });
@@ -129,23 +144,27 @@ const Register = () => {
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse: any) => {
-      console.log(codeResponse);
       const url = URLS.BASE + URLS.agent + URLS.googleSignup;
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(async (response) => {
-        if ((response as unknown as { id: string }).id) {
-          Cookies.set('token', (response as unknown as { token: string }).token);
-          console.log('response', response);
-          setUser((response as any).user);
-          toast.success('Registration successful');
-          router.push('/agent/onboard');
+      await POST_REQUEST(url, { code: codeResponse.code }).then(
+        async (response) => {
+          if ((response as unknown as { id: string }).id) {
+            Cookies.set(
+              'token',
+              (response as unknown as { token: string }).token
+            );
+            setUser((response as any).user);
+            localStorage.setItem('email', `${formik.values.email}`); // Save email to local storage
+            toast.success('Registration successful');
+            router.push('/agent/onboard');
+          }
+          // console.log(response);
+          if (response.error) {
+            toast.error(response.error);
+          }
+          // toast.error(response.message);
         }
-        console.log(response);
-        if (response.error) {
-          toast.error(response.error);
-        }
-        // toast.error(response.message);
-      });
+      );
     },
     onError: (errorResponse: any) => toast.error(errorResponse.message),
   });
@@ -159,14 +178,14 @@ const Register = () => {
     <section
       className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && 'filter brightness-[30%]'
-      } transition-all duration-500`}
-    >
-      <div className='container flex items-center justify-center py-[30px] mt-[60px] px-[25px] lg:px-0'>
+      } transition-all duration-500`}>
+      <div className='container flex items-center justify-center py-[20px] md:py-[30px] md:mt-[60px] px-[25px] lg:px-0'>
         <form
           onSubmit={formik.handleSubmit}
-          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'
-        >
-          <h2 className='text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>Register with us</h2>
+          className='lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]'>
+          <h2 className='text-3xl md:text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]'>
+            Register with us
+          </h2>
           <div className='w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]'>
             <Input
               formik={formik}
@@ -229,7 +248,16 @@ const Register = () => {
           {/**Button */}
           <Button
             value={`${isDisabled ? 'Registering...' : 'Register'}`}
-            isDisabled={isDisabled}
+            isDisabled={
+              isDisabled
+              // isDisabled ||
+              // !agreed ||
+              // !formik.values.email ||
+              // !formik.values.password ||
+              // !formik.values.firstName ||
+              // !formik.values.lastName ||
+              // !formik.values.phone
+            }
             className='min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold'
             type='submit'
             onSubmit={formik.handleSubmit}
@@ -238,15 +266,13 @@ const Register = () => {
           {/**Already have an account */}
           <span className='text-base leading-[25.6px] font-normal'>
             Already have an account?{' '}
-            <Link className='font-semibold text-[#09391C]' href={'/agent/auth/login'}>
+            <Link
+              className='font-semibold text-[#09391C]'
+              href={'/agent/auth/login'}>
               Sign In
             </Link>
           </span>
-          {/**Google | Facebook */}
-          <div className='flex justify-between lg:flex-row flex-col gap-[15px]'>
-            <RegisterWith icon={googleIcon} text='Continue with Google' onClick={googleLogin} />
-            <RegisterWith icon={facebookIcon} text='Continue with Facebook' />
-          </div>
+        
         </form>
       </div>
     </section>
@@ -264,12 +290,25 @@ interface InputProps {
   isDisabled?: boolean;
 }
 
-const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, formik, isDisabled }) => {
+const Input: FC<InputProps> = ({
+  className,
+  id,
+  title,
+  type,
+  placeholder,
+  icon,
+  formik,
+  isDisabled,
+}) => {
   const fieldError = formik.errors[id];
   const fieldTouched = formik.touched[id];
   return (
-    <label htmlFor={id} className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
-      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>{title}</span>
+    <label
+      htmlFor={id}
+      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}>
+      <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+        {title}
+      </span>
       <div className='flex'>
         <input
           name={id}
@@ -291,7 +330,9 @@ const Input: FC<InputProps> = ({ className, id, title, type, placeholder, icon, 
           />
         ) : null} */}
       </div>
-      {fieldError && fieldTouched && <span className='text-red-600 text-sm'>{fieldError}</span>}
+      {fieldError && fieldTouched && (
+        <span className='text-red-600 text-sm'>{fieldError}</span>
+      )}
     </label>
   );
 };

@@ -1,23 +1,23 @@
 import { POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 
 interface Request {
-  _id: string;
+  _id?: string;
   requestFrom: {
-    fullName: string;
-    email: string;
+    fullName?: string;
+    email?: string;
   };
-  propertyId: {
-    propertyType: string;
-    location: {
-      state: string;
-      localGovernment: string;
-      area: string;
+  propertyId?: {
+    propertyType?: string;
+    location?: {
+      state?: string;
+      localGovernment?: string;
+      area?: string;
     };
-    price: number;
+    price?: number;
   };
   status: string;
   inspectionDate: string;
@@ -29,6 +29,8 @@ interface TableProps {
 }
 
 const RequestsTable: FC<TableProps> = ({ data }) => {
+  const [availabilityStatus, setAvailabilityStatus] = useState<Record<string, boolean | null>>({});
+
   const handleAvailability = async (id: string, isAvailable: boolean) => {
     const url = URLS.BASE + URLS.agent + URLS.confirmAvailability;
 
@@ -36,6 +38,7 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
       .then((result) => {
         if (result.success) {
           toast.success(result.message);
+          setAvailabilityStatus((prev) => ({ ...prev, [id]: isAvailable }));
         } else {
           toast.error(result.error);
         }
@@ -57,45 +60,37 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
           <table className='w-full min-w-[700px] border border-gray-200 rounded-lg overflow-hidden'>
             <thead className='bg-gray-100'>
               <tr className='text-left text-gray-700 text-sm'>
-                <th className='p-3'>Request From</th>
-                <th className='p-3'>Email</th>
-                <th className='p-3'>Property Type</th>
+                <th className='p-3'>Breif ID</th>
                 <th className='p-3'>Location</th>
-                <th className='p-3'>Price (₦)</th>
-                {/* <th className='p-3'>Status</th>
-                <th className='p-3'>Inspection</th> */}
+                <th className='p-3'>Property Price (₦)</th>
+                <th className='p-3'>Brief Information</th>
                 <th className='p-3'>Action</th>
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-gray-200'>
               {data.map((item) => (
                 <tr key={item._id} className='text-sm text-gray-900'>
-                  <td className='p-3'>{item.requestFrom.fullName}</td>
-                  <td className='p-3'>{item.requestFrom.email}</td>
-                  <td className='p-3'>{item.propertyId.propertyType}</td>
+                  <td className='p-3'>{item._id}</td>
                   <td className='p-3'>
-                    {item.propertyId.location.state}, {item.propertyId.location.localGovernment},{' '}
-                    {item.propertyId.location.area}
+                    {item.propertyId?.location?.state}, {item.propertyId?.location?.localGovernment},{' '}
+                    {item.propertyId?.location?.area}
                   </td>
-                  <td className='p-3'>{Number(item.propertyId.price).toLocaleString()}</td>
-                  {/* <td className={`p-3 font-semibold ${item.status === 'Accepted' ? 'text-green-600' : 'text-red-600'}`}>
-                    {item.status}
-                  </td>
-                  <td className='p-3'>
-                    {new Date(item.inspectionDate).toLocaleDateString()} - {item.inspectionTime}
-                  </td> */}
+                  <td className='p-3'>{Number(item.propertyId?.price).toLocaleString()}</td>
+                  <td className='p-3'>{item.requestFrom?.email}</td>
                   <td className='p-3 flex gap-2'>
                     <button
-                      className='px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600'
-                      onClick={() => handleAvailability(item._id, true)}
+                      className='px-3 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 disabled:bg-gray-300'
+                      onClick={() => item._id && handleAvailability(item._id, true)}
+                      disabled={item._id ? availabilityStatus[item._id] === true : false}
                     >
                       Available
                     </button>
                     <button
-                      className='px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600'
-                      onClick={() => handleAvailability(item._id, false)}
+                      className='px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 disabled:bg-gray-300'
+                      onClick={() => item._id && handleAvailability(item._id, false)}
+                      disabled={item._id ? availabilityStatus[item._id] === false : false}
                     >
-                      Unavailable
+                      Not Available
                     </button>
                   </td>
                 </tr>

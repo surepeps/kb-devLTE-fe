@@ -6,39 +6,124 @@ import instagramIcon from '@/svgs/instagram.svg';
 import twitterIcon from '@/svgs/twitter.svg';
 import linkedInIcon from '@/svgs/linkedIn.svg';
 import envelopeIcon from '@/svgs/envelope.svg';
-import phoneIcon from '@/svgs/phone.svg';
 import whatsappIcon from '@/svgs/whatsapp.svg';
+import headphoneIcon from '@/svgs/headphone.svg';
 
 //Navbar data
-export const navData: { name: string; url: string; isClicked: boolean }[] = [
+export const navData: {
+  name: string;
+  url: string;
+  isClicked: boolean;
+  additionalLinks?: { name: string; url: string }[];
+}[] = [
   {
     name: 'Home',
     url: '/',
     isClicked: true,
   },
   {
-    name: 'Buy',
-    url: '/buy_page',
+    name: 'Marketplace',
+    url: '/market-place',
     isClicked: false,
-  },
-  {
-    name: 'Sell',
-    url: '/sell_page',
-    isClicked: false,
-  },
-  {
-    name: 'Rent',
-    url: '/rent_page',
-    isClicked: false,
+    additionalLinks: [ 
+      {
+        name: 'Buy',
+        url: '/market-place',
+      },
+      {
+        name: 'Sell',
+        url: '/my_listing',
+      },
+      {
+        name: 'Rent',
+        url: '/market-place',
+      },
+      {
+        name: 'Joint Venture',
+        url: '/market-place',
+      },
+    ],
   },
   {
     name: 'Landlord',
-    url: '/landlord_page',
+    url: '/landlord',
     isClicked: false,
   },
   {
     name: 'Agent',
     url: '/agent',
+    isClicked: false,
+    additionalLinks: [ 
+      {
+        name: 'Market Place',
+        url: '/agent/market-place',
+      },
+    ],
+  },
+  {
+    name: 'Policies',
+    url: '/policies_page',
+    isClicked: false,
+  },
+  {
+    name: 'About us',
+    url: '/about_us',
+    isClicked: false,
+  },
+  {
+    name: 'Contact Us',
+    url: '/contact-us',
+    isClicked: false,
+  },
+];
+
+export const agentnavData: {
+  name: string;
+  url: string;
+  isClicked: boolean;
+  additionalLinks?: { name: string; url: string }[];
+}[] = [
+  {
+    name: 'Home',
+    url: '/',
+    isClicked: true,
+  },
+  {
+    name: 'Marketplace',
+    url: '/market-place',
+    isClicked: false,
+    additionalLinks: [
+      {
+        name: 'list a property',
+        url: '/my_listing',
+      },
+      {
+        name: 'Buy a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Rent a property',
+        url: '/market-place',
+      },
+      {
+        name: 'Joint Venture',
+        url: '/market-place',
+      },
+    ],
+  },
+  // {
+  //   name: 'Landlord',
+  //   url: '/landlord_page',
+  //   isClicked: false,
+  // },
+  {
+    name: 'Landlord',
+    url: '/my_listing',
+    isClicked: false,
+  },
+  {
+    name: 'Agent',
+    url: '/agent/briefs',
     isClicked: false,
   },
   {
@@ -51,29 +136,29 @@ export const navData: { name: string; url: string; isClicked: boolean }[] = [
     url: '/about_us',
     isClicked: false,
   },
+  {
+    name: 'Contact Us',
+    url: '/contact-us',
+    isClicked: false,
+  },
 ];
 
 //Footer Data
 export const exploreData: { name: string; url: string; isClicked: boolean }[] =
   [
     {
-      name: 'Buy',
-      url: '/buy_page',
+      name: 'List a property',
+      url: '/my_listing',
       isClicked: false,
     },
     {
-      name: 'sell a property',
-      url: '/sell_page',
+      name: 'Buy a property',
+      url: '/market-place',
       isClicked: false,
     },
     {
-      name: 'Agent',
-      url: '/agent_page',
-      isClicked: false,
-    },
-    {
-      name: 'Landlord',
-      url: '/landlord_page',
+      name: 'Become an Agent',
+      url: '/agent',
       isClicked: false,
     },
     {
@@ -85,34 +170,38 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
 
 export const servicesData: { name: string; url: string }[] = [
   {
-    name: 'Property management',
-    url: '#',
+    name: 'Property Sales',
+    url: '/market-place',
   },
   {
-    name: 'Property Valuation',
-    url: '#',
+    name: 'Property Rental',
+    url: '/market-place',
   },
   {
-    name: 'Legal Management',
-    url: '#',
+    name: 'Agent Partnership Program',
+    url: '/agent',
   },
   {
-    name: 'Exchange Management',
-    url: '#',
+    name: 'Property Management',
+    url: '/contact-us',
+  },
+  {
+    name: 'Market Insights and Analytic',
+    url: '/contact-us',
   },
 ];
 
 export const supportData: { name: string; url: string }[] = [
   {
     name: 'FAQ',
-    url: '#',
+    url: '/',
   },
   {
     name: 'Contact us',
-    url: '#',
+    url: '/contact-us',
   },
   {
-    name: 'policies',
+    name: 'Policies',
     url: '/policies_page',
   },
 ];
@@ -127,19 +216,19 @@ export const iconsData: { image: StaticImageData; url: string }[] = [
     url: 'https://www.instagram.com/khabiteq_realty/profilecard/?igsh=YjRvanQ3YmlmdDNl',
   },
   {
-    image: twitterIcon,
-    url: 'https://x.com/Khabi_Teq?t=Jq6MpEMfwfJ6aQ46CYGPpQ&s=09',
-  },
-  {
     image: linkedInIcon,
     url: '#',
+  },
+  {
+    image: twitterIcon,
+    url: 'https://x.com/Khabi_Teq?t=Jq6MpEMfwfJ6aQ46CYGPpQ&s=09',
   },
 ];
 
 //Section1 data
 export const section1Data: { name: string; count: number }[] = [
   {
-    name: 'Properties',
+    name: 'Deals Completed',
     count: 22,
   },
   {
@@ -282,19 +371,19 @@ export const TenantsFAQsData: { heading: string; text: string }[] = [
 export const agentFAQsData: { heading: string; text: string }[] = [
   {
     heading: `How can I partner with Khabi-Teq as an agent?`,
-    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+    text: `Agents can join by submitting their details through our registration form. We'll review your application and onboard you as part of our network.`,
   },
   {
     heading: `What are the benefits of partnering with Khabi-Teq?`,
-    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+    text: `Agents can join by submitting their details through our registration form. We'll review your application and onboard you as part of our network.`,
   },
   {
     heading: `HIs there a fee to join as an agent?`,
-    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+    text: `Agents can join by submitting their details through our registration form. We'll review your application and onboard you as part of our network.`,
   },
   {
     heading: `Is my data secure with Khabi-Teq?`,
-    text: `Agents can join by submitting their details through our registration form. We’ll review your application and onboard you as part of our network.`,
+    text: `Agents can join by submitting their details through our registration form. We'll review your application and onboard you as part of our network.`,
   },
 ];
 
@@ -325,17 +414,17 @@ export const contactUsData: {
   type: string;
 }[] = [
   {
-    value: 'Khabireqrealty.com',
+    value: 'info@Khabireqrealty.com',
     icon: envelopeIcon,
     type: 'mail',
   },
   {
-    value: '070567778906',
-    icon: phoneIcon,
+    value: '02013306352',
+    icon: headphoneIcon,
     type: 'call',
   },
   {
-    value: '070454556775',
+    value: '08132108659',
     icon: whatsappIcon,
     type: 'social_media',
   },
@@ -417,7 +506,7 @@ export const cardDataArray: {
     },
     {
       header: 'Document',
-      value: 'Governor’s Consent, Deed of Assignment',
+      value: "Governor's Consent, Deed of Assignment",
     },
     {
       header: 'Land size',
@@ -495,7 +584,7 @@ export const cardDataArray: {
     },
     {
       header: 'Document',
-      value: 'Governor’s Consent, C of O',
+      value: "Governor's Consent, C of O",
     },
     {
       header: 'Land size',
@@ -547,7 +636,7 @@ export const cardDataArray: {
     },
     {
       header: 'Document',
-      value: 'Governor’s Consent',
+      value: "Governor's Consent",
     },
     {
       header: 'Land size',

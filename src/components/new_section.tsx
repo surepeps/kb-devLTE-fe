@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { motion, useInView } from 'framer-motion';
 import icon from '@/svgs/icon.svg';
 import arrowRight from '@/svgs/arrowRight.svg';
+import { IsMobile } from '@/hooks/isMobile';
 
 type DisplayProps = {
   backgroundColor: string;
@@ -38,9 +39,9 @@ const NewSection = () => {
   const ref3 = useRef(null);
   // const [tracker, setTracker] = useState();
 
-  const isInView = useInView(ref, { once: false });
-  const isInView2 = useInView(ref2, { once: false });
-  const isInView3 = useInView(ref3, { once: false });
+  const isInView = useInView(ref, { once: true });
+  const isInView2 = useInView(ref2, { once: true });
+  const isInView3 = useInView(ref3, { once: true });
 
   const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
   const [src, setSrc] = useState<any>(arrowIcon);
@@ -175,7 +176,7 @@ const NewSection = () => {
         </div>
         <div
           style={{ backgroundColor: `${display.backgroundColor}` }}
-          className={`lg:w-[773px] w-full h-[528px] px-[20px] lg:px-0 flex flex-col gap-[20px] lg:gap-0 items-center justify-center overflow-hidden transition duration-500`}>
+          className={`lg:w-[773px] w-full min-h-[377px] py-[20px] md:h-[528px] px-[20px] lg:px-0 flex flex-col gap-[20px] lg:gap-0 items-center justify-center overflow-hidden transition duration-500`}>
           {/**first card and arrow */}
           <motion.div
             ref={ref}
@@ -195,7 +196,7 @@ const NewSection = () => {
               width={129}
               height={103}
               alt=''
-              className='w-[129px] h-[103px] mt-[90px]'
+              className='w-[129px] h-[103px] mt-[90px] hidden md:inline'
             />
           </motion.div>
           {/**second card and arrow */}
@@ -204,7 +205,7 @@ const NewSection = () => {
             initial={{ opacity: 0, x: -80 }}
             animate={isInView2 ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 0.3 }}
-            className='flex flex-row-reverse z-10 items-center lg:ml-[200px] -mt-[45px]'>
+            className='flex md:flex-row-reverse md:z-10 items-center lg:ml-[200px] md:-mt-[45px]'>
             <Card
               heading={display.secondHeading}
               desc={display.secondDescription}
@@ -222,7 +223,7 @@ const NewSection = () => {
               width={129}
               height={103}
               alt=''
-              className='w-[129px] h-[103px] mt-[90px]'
+              className='w-[129px] h-[103px] mt-[90px] hidden md:inline'
             />
           </motion.div>
           {/**simply card */}
@@ -231,7 +232,7 @@ const NewSection = () => {
             initial={{ opacity: 0, x: 80 }}
             animate={isInView3 ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 0.3 }}
-            className='flex flex-row-reverse z-10 items-center lg:-ml-[100px]'>
+            className='flex md:flex-row-reverse md:z-10 items-center lg:-ml-[100px]'>
             <Card
               heading={display.thirdHeading}
               desc={display.thirdDescription} /** */ /** */
@@ -250,7 +251,7 @@ const NewSection = () => {
               openModalIndex === 0 && 'newsec-image'
             } newsec-image ${openModalIndex === 1 && 'newsec-image-dark'} ${
               openModalIndex === 2 && 'newsec-image-blue'
-            } absolute lg:w-[583px] lg:h-[500px] w-full lg:ml-[140px] lg:mt-[30px] transition duration-500`}></div>
+            } absolute lg:w-[583px] lg:h-[500px] w-full lg:ml-[140px] lg:mt-[30px] transition duration-500 hidden md:inline`}></div>
         </div>
       </div>
     </section>
@@ -278,20 +279,22 @@ const Card: FC<CardProps> = ({
   descColor,
   backgroundColor,
 }) => {
+  const isMobile = IsMobile();
+
   return (
     <motion.div
-      whileHover={{ scale: 1.1 }}
+      whileHover={isMobile ? {} : { scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       style={{ backgroundColor: backgroundColor }}
-      className='lg:w-[314px] min-h-[101px] cursor-pointer flex flex-col gap-[10px] p-[15px] shadow-lg shadow-[#00000040]'>
+      className='lg:w-[314px] w-full min-h-[101px] cursor-pointer flex flex-col gap-[10px] p-[15px] shadow-lg shadow-[#00000040]'>
       <h2
         style={{ color: headingColor }}
-        className='text-[20px] leading-[23.44px] font-semibold'>
+        className='text-lg md:text-[20px] leading-[23.44px] font-semibold'>
         {heading}
       </h2>
       <p
         style={{ color: descColor }}
-        className='text-base leading-[18.75px] font-normal'>
+        className='text-sm md:text-base leading-[18.75px] font-normal'>
         {desc}
       </p>
     </motion.div>
@@ -315,7 +318,7 @@ const Container: FC<ContainerProps> = ({
 }) => {
   const [isModalOpeneds, setIsModalOpened] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const isContainerInView = useInView(containerRef, { once: false });
+  const isContainerInView = useInView(containerRef, { once: true });
 
   return (
     <motion.div
@@ -418,7 +421,7 @@ const data = [
       },
       {
         value: 'Tenant Preference',
-        url: '#',
+        url: '/rent_page',
       },
     ],
   },

@@ -1,9 +1,19 @@
 /** @format */
 
 .blended-image {
-  background-image: url('../assets/assets.png');
-  background-color: #0b423db2;
-  background-blend-mode: soft-light;
+  background-image: url('../assets/Rectangle\ 2819.png');
+  /* background-color: #0b423db2;
+  background-blend-mode: soft-light; */
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+}
+
+.blended-image2 {
+  background-image: url('../assets/Agentpic.png');
+  /* background-color: #0b423d; */
+  background-blend-mode: soft-light;
+  background-size: cover;
+  background-position: top;
+  background-repeat: no-repeat;
 }

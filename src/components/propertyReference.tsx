@@ -2,28 +2,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use clients';
 import React, { Fragment, MouseEvent, useEffect, useState } from 'react';
-import Button from './button';
-import ReactSelect from 'react-select';
+import Button from './general-components/button';
+import ReactSelect, { components } from 'react-select';
 import { useFormik } from 'formik';
 //import * as Yup from 'yup';
 //import { cardDataArray } from '@/data';
 // import { POST_REQUEST } from '@/utils/requests';
-import Input from '@/components/Input';
+import Input from '@/components/general-components/Input';
 import toast from 'react-hot-toast';
 import { usePageContext } from '@/context/page-context';
 import { URLS } from '@/utils/URLS';
 import axios from 'axios';
 import naijaStates from 'naija-state-local-government';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import MultiSelectionProcess from './multiSelectionProcess';
+import customStyles from '@/styles/inputStyle';
+import SubmitPrefrenceModal from './can-not-find-brief-modal';
+import { data } from '@/data/about_us_data';
+import nigeriaStates from '@/data/state-lga';
 
 interface valuesProps {
   propertyType: string;
   usageOption: any[];
   budgetRange: string;
   state: string;
-  landSize: string;
+  selectedLGA: string;
+  landSize: '';
+  landType: string;
   docOnProperty: [];
   desireFeatures: [];
   bedroom: number;
+  typeOfMeasurement: '';
 }
 
 interface PropertyReferenceDataProps {
@@ -41,7 +51,7 @@ const PropertyReference = ({
   setAllCards,
   usageOption,
 }: PropertyReferenceDataProps) => {
-  const { setPropertyReference, setRentPage, rentPage } = usePageContext();
+  const { setPropertyReference, setRentPage } = usePageContext();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const formik = useFormik({
     initialValues: {
@@ -49,43 +59,46 @@ const PropertyReference = ({
       usageOption: usageOption ? [usageOption] : [],
       budgetRange: '',
       state: '',
+      selectedLGA: '',
       landSize: '',
+      landType: '',
       docOnProperty: [],
       desireFeatures: [],
       bedroom: 0,
+      typeOfMeasurement: '',
     },
     // validationSchema,
     onSubmit: async (values: valuesProps) => {
-      // console.log(values);
+      // Check if the preferred location and property type fields have values
+      if (!formik.values.propertyType) {
+        toast.error('Please select a property type');
+        return;
+      }
+      if (!formik.values.selectedLGA) {
+        toast.error('Please select a preferred location');
+        return;
+      }
+
       const payload = {
         propertyType: values.propertyType,
-        state: values.state,
-        localGovernment: 'Egbeda', //assumption, no local govt input on the design
-        area: 'Iwo', //assumption, same,
+        state: formik.values.selectedLGA.split(',')[0].trimStart(),
+        localGovernment: values.selectedLGA, // assumption, no local govt input on the design
+        area: 'N/A', // assumption, same
         minPrice: 0,
-        maxPrice: 1000000000,
+        maxPrice: 0,
         usageOptions: formik.values.usageOption,
         additionalFeatures: formik.values.desireFeatures,
         minBedrooms: 1,
         maxBedrooms: formik.values.bedroom,
+        // typeOfMeasurement: formik.values.typeOfMeasurement
       };
-      //check if it has vvalues otherwise don't run
-      if (
-        !values.bedroom ||
-        !values.propertyType ||
-        !values.state ||
-        !values.usageOption ||
-        !values.budgetRange ||
-        !values.desireFeatures ||
-        !values.docOnProperty ||
-        !values.landSize
-      ) {
-        toast.error('Please fill all fields');
-        return;
-      }
+
       setIsSubmitting(true);
       try {
-        const response = await axios.post(URLS.BASE + URLS.buyersSearchBrief, payload);
+        const response = await axios.post(
+          URLS.BASE + URLS.buyersSearchBrief,
+          payload
+        );
         if (response.status === 200) {
           setFound({ isFound: true, count: response.data.length });
           setAllCards(response.data);
@@ -125,50 +138,66 @@ const PropertyReference = ({
       pictures: [], //no pictures required in the design,
       budgetRange: formik.values.budgetRange,
       location: {
-        state: formik.values.state,
-        localGovernment: 'Egbeda', //assumption, no local govt input on the design
-        area: 'Iwo', //assumption, same,
+        state: formik.values.selectedLGA.split(',')[0].trimStart(),
+        localGovernment: formik.values.selectedLGA, //assumption, no local govt input on the design
+        area: 'N/A', //assumption, same,
       },
-      price: 2048344930, //assumption, supposing we are using the budget range instead
+      price: 0,
       docOnProperty: propertyDoc,
       propertyFeatures: {
         additionalFeatures: formik.values.desireFeatures,
         noOfBedrooms: formik.values.bedroom,
       },
+      landSize: {
+        measurementType: formik.values.landSize.split(' ')[1],
+        size: Number(formik.values.landSize.split(' ')[0]),
+      },
+      // typeOfMeasurment: formik.values.typeOfMeasurement
     };
 
-    setPropertyReference(payload);
-    setRentPage({ submitPreference: true, isSubmitForInspectionClicked: false });
+    console.log(payload);
+    setPropertyReference({
+      type: 'buy',
+      payload: payload,
+    });
+    setRentPage({
+      submitPreference: true,
+      isSubmitForInspectionClicked: false,
+    });
   };
 
   interface Option {
     value: string;
     label: string;
   }
-  const [selectedState, setSelectedState] = useState<Option | null>(null);
 
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
 
+  const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
+  const [showLandSize, setShowLandSize] = useState<boolean>(false);
+
   useEffect(() => {
     // Load Nigerian states correctly
+    const sample = Object.keys(nigeriaStates);
+    console.log(sample);
     setStateOptions(
-      naijaStates.states().map((state: string) => ({
+      Object.keys(nigeriaStates).map((state: string) => ({
         value: state,
         label: state,
       }))
     );
   }, []);
 
-  const handleStateChange = (selected: Option | null) => {
-    //console.log('Selected State:', selected);
-    formik.setFieldValue('state', selected?.value);
-    setSelectedState?.(selected);
-  };
+  React.useEffect(() => {
+    console.log(formik.values);
+  }, [formik.values]);
 
   return (
     <Fragment>
       <div className='min-h-[250px] lg:min-h-[250px] py-[24px] px-[20px] lg:py-[30px] w-full lg:w-[1153px] lg:px-[45px] bg-[#FFFFFF]'>
-        <form onSubmit={formik.handleSubmit} className='w-full flex flex-col gap-[37px]'>
+        <form
+          onSubmit={formik.handleSubmit}
+          className='w-full flex flex-col gap-[37px]'>
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-[30px] lg:gap-[37px] items-end'>
             {/**Type of Property */}
             <Select
@@ -197,42 +226,90 @@ const PropertyReference = ({
               options={propertyReferenceData[2].options}
               placeholder='Select'
             />
+
             {/**Preferred Location */}
-            {/* <Input
-              label='Preferred Location'
-              name='selectedState'
-              selectedState={{
-                value: formik.values?.state,
-                label: formik.values?.state,
-              }}
-              setSelectedState={(option) => {
-                formik.setFieldValue('state', option?.label);
-              }}
-              forState={true}
-              type='text'
-              placeholder='Select State'
-            /> */}
-            <Input
-              label='Preferred Location'
-              name='selectedState'
-              forState={true}
-              forLGA={false}
-              type='text'
-              placeholder='Select State'
-              formik={formik}
-              selectedState={selectedState}
-              stateOptions={stateOptions}
-              setSelectedState={handleStateChange}
-            />
-            {/**Land Size */}
-            <Select
+            <div className='flex flex-col gap-[10px]'>
+              <label htmlFor='selectedLGA' className='flex flex-col gap-[4px]'>
+                <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+                  Preferred Location
+                </span>{' '}
+                <input
+                  id='selectedLGA'
+                  placeholder='select location'
+                  onClick={() => {
+                    setShowLocationModal(!showLocationModal);
+                  }}
+                  className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed cursor-pointer'
+                  readOnly
+                  value={
+                    formik.values.selectedLGA ? formik.values.selectedLGA : ''
+                  }
+                />
+              </label>
+              {showLocationModal && (
+                <MultiSelectionProcess
+                  name='selectedState'
+                  formik={formik}
+                  options={stateOptions}
+                  closeModalFunction={setShowLocationModal}
+                  heading='location'
+                  type='Preferred Location'
+                />
+              )}
+            </div>
+
+            {/**Measurment */}
+            {/* <Select
               allowMultiple={false}
-              heading={'landSize'}
+              heading={'typeOfMeasurement'}
               formik={formik}
-              name={propertyReferenceData[4].heading}
-              options={propertyReferenceData[4].options}
+              name={propertyReferenceData[8].heading}
+              options={propertyReferenceData[8].options}
               placeholder='Select'
-            />
+            /> */}
+            {/**Land Size */}
+            {/* <Input
+              value={formik.values.landSize}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder=''
+              name='landSize'
+              type='number'
+              id='landSize'
+              isDisabled={formik.values.typeOfMeasurement === ''}
+              label={propertyReferenceData[4].heading}
+            /> */}
+
+            <div className='flex flex-col gap-[10px]'>
+              <label htmlFor='landSize' className='flex flex-col gap-[4px]'>
+                <span className='text-base leading-[25.6px] font-medium text-[#1E1E1E]'>
+                  Land Size
+                </span>{' '}
+                <input
+                  id='landSize'
+                  placeholder='select land size'
+                  onClick={() => {
+                    setShowLandSize(!showLandSize);
+                  }}
+                  className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] disabled:cursor-not-allowed cursor-pointer'
+                  readOnly
+                  value={formik.values.landSize ? formik.values.landSize : ''}
+                />
+              </label>
+              {showLandSize && (
+                <MultiSelectionProcess
+                  name='landSize'
+                  formik={formik}
+                  options={propertyReferenceData[8].options.map(
+                    (item: string) => ({ label: item, value: item })
+                  )}
+                  closeModalFunction={setShowLandSize}
+                  heading='Land size'
+                  type='Land Size'
+                />
+              )}
+            </div>
+
             {/**Document Type */}
             <Select
               allowMultiple={true}
@@ -252,13 +329,15 @@ const PropertyReference = ({
               placeholder='Select'
             />
             {/**Bedroom */}
-            <Select
-              allowMultiple={false}
-              heading={'bedroom'}
-              formik={formik}
-              name={propertyReferenceData[7].heading}
-              options={propertyReferenceData[7].options}
-              placeholder='Select'
+
+            <Input
+              label='Bedroom'
+              name='bedroom'
+              type='number'
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder='Input number of bedrooms'
+              value={formik.values.bedroom}
             />
 
             <Button
@@ -273,32 +352,10 @@ const PropertyReference = ({
         </form>
       </div>
       {found.isFound && (
-        <div className='min-h-[106px] w-full lg:w-[1153px] py-[23px] px-[20px] md:px-[40px] gap-[10px] bg-white'>
-          <div className='w-full min-h-[60px] flex md:flex-row flex-col gap-[20px] justify-between md:gap-0'>
-            <div className='flex flex-col'>
-              <h2 className='text-[18px] text-[#09391C] leading-[28.8px] font-medium'>
-                Can&apos;t find the brief you&apos;re looking for? Don&apos;t worry! We&apos;ll provide a reference
-                brief for you
-              </h2>
-              <div className='flex gap-[5px] flex-wrap'>
-                <Crumb text={formik.values.propertyType} />
-                <Crumb text={formik.values.usageOption.map((item) => item)} />
-                <Crumb text={formik.values.budgetRange} />
-                <Crumb text={formik.values.state} />
-                <Crumb text={formik.values.landSize} />
-                <Crumb text={formik.values.docOnProperty.map((item) => item)} />
-                <Crumb text={formik.values.desireFeatures?.map((item) => item)} />
-              </div>
-            </div>
-            <button
-              type='button'
-              onClick={submitReference}
-              className='text-base leading-[25.6px] font-bold text-[#09391C] lg:min-w-[245px] h-[58px] border-[1px] py-[12px] px-[24px] border-[#09391C]'
-            >
-              Submit your preferences
-            </button>
-          </div>
-        </div>
+        <SubmitPrefrenceModal
+          formik={formik}
+          submitPreference={submitReference}
+        />
       )}
     </Fragment>
   );
@@ -311,11 +368,17 @@ interface SelectProps {
   placeholder?: string;
   options: any[];
   formik: any;
-  allowMultiple?: boolean;
+  allowMultiple: boolean;
   name: string;
 }
 
-const Select: React.FC<SelectProps> = ({ heading, options, formik, allowMultiple, name }) => {
+const Select: React.FC<SelectProps> = ({
+  heading,
+  options,
+  formik,
+  allowMultiple,
+  name,
+}) => {
   // const [valueSelected, setValueSelected] =
   //   useState<SingleValue<OptionType>>(null);
 
@@ -324,16 +387,25 @@ const Select: React.FC<SelectProps> = ({ heading, options, formik, allowMultiple
     label: typeof item === 'number' ? Number(item) : item,
   }));
   return (
-    <label htmlFor='select' className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
-      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>{name}</h2>
+    <label
+      htmlFor='select'
+      className='min-h-[80px] lg:w-[243.25px] w-full flex flex-col gap-[4px]'>
+      <h2 className='text-base font-medium leading-[25.6px] text-[#1E1E1E]'>
+        {name}
+      </h2>
       <ReactSelect
         isMulti={allowMultiple}
         name={name}
+        components={{ MenuList: ComponentMenuList(`Filter by ${name}`) }}
         onChange={(selectedOption) =>
           allowMultiple
             ? formik.setFieldValue(
                 heading,
-                [...(Array.isArray(selectedOption) ? selectedOption.map((opt: any) => opt.label) : [])].filter(Boolean) // Removes undefined values
+                [
+                  ...(Array.isArray(selectedOption)
+                    ? selectedOption.map((opt: any) => opt.label)
+                    : []),
+                ].filter(Boolean) // Removes undefined values
               )
             : formik.setFieldValue(heading, selectedOption?.label ?? '')
         }
@@ -343,16 +415,7 @@ const Select: React.FC<SelectProps> = ({ heading, options, formik, allowMultiple
         value={formik.values[heading]?.label}
         options={opts}
         className={`w-full`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            height: '50px',
-            background: '#FFFFFF00',
-            overflow: 'hidden',
-            display: 'flex',
-            width: '100%',
-          }),
-        }}
+        styles={customStyles}
         placeholder='Select'
       />
       {/* <select
@@ -372,63 +435,31 @@ const Select: React.FC<SelectProps> = ({ heading, options, formik, allowMultiple
     </label>
   );
 };
-
-const Crumb = ({ text }: { text: any }) => {
-  return (
-    <Fragment>
-      {text ? (
-        <div
-          dangerouslySetInnerHTML={{ __html: text }}
-          className='bg-[#F7F7F8] min-h-[28px] min-w-fit py-[3px] px-[6px] text-[14px] text-[#0B0D0C] leading-[22.4px] font-normal tracking-[0.1px] font-ubuntu'
-        />
-      ) : null}
-    </Fragment>
-  );
-};
-
 /**
- * const samplePayload = {
-      propertyFeatures: {
-        additionalFeatures: [],
-        noOfBedrooms: 12,
-      },
-      areYouTheOwner: true,
-      usageOptions: ['Lease', 'Outright Sale'],
-      pictures: [],
-      propertyType: 'Land',
-      location: {
-        state: 'Oyo',
-        localGovernment: 'Egbeda',
-        area: 'Iwo',
-      },
-      price: 2048344930,
-      docOnProperty: [
-        {
-          docName: 'Survey Document',
-          isProvided: true,
-        },
-        {
-          docName: 'C of O',
-          isProvided: true,
-        },
-        {
-          docName: 'Governor Consent',
-          isProvided: false,
-        },
-      ],
-      owner: {
-        fullName: 'John Doe',
-        phoneNumber: '09012345678',
-        email: 'akanjiabayomi2@gmail.com',
-      },
-      budgetRange: '1000-3000',
-    };
-    const propertyDoc = formik.values.docOnProperty.reduce(
-      (acc: { docName: string; isProvided: boolean }[], item: string) => {
-        acc.push({ docName: item, isProvided: true });
-        console.log(acc);
-        return acc;
-      },
-      []
-    );
+ * Component Menu List
  */
+
+const ComponentMenuList = (heading: string) => {
+  const WrappedMenuList = (props: any) => (
+    <components.MenuList {...props}>
+      {heading && (
+        <div
+          className='flex gap-[10px] justify-start items-center border-[#8D9096] border-b-[1px] w-[95%] mx-auto'
+          style={{ padding: '8px 12px', fontWeight: 'bold', color: '#555' }}>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size='sm'
+            color='black'
+            className='cursor-pointer'
+          />
+          <span className='text-[#000000] text-sm font-medium'>{heading}</span>
+        </div>
+      )}
+      {props.children}
+    </components.MenuList>
+  );
+
+  WrappedMenuList.displayName = 'ComponentMenuList';
+
+  return WrappedMenuList;
+};
