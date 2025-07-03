@@ -100,6 +100,97 @@ const Step1BasicDetails: React.FC = () => {
       </div>
 
       <div className="space-y-6">
+        {/* Property Category */}
+        <div>
+          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+            Property Category
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {(propertyData.propertyType === "jv"
+              ? ["Residential", "Commercial", "Mixed Development"]
+              : ["Residential", "Commercial", "Land"]
+            ).map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => updatePropertyData("propertyCategory", category)}
+                className={`p-4 border-2 rounded-lg text-center transition-all ${
+                  propertyData.propertyCategory === category
+                    ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
+                    : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Rental Type (for rent only) */}
+        {propertyData.propertyType === "rent" &&
+          propertyData.propertyCategory !== "Land" && (
+            <div>
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                Select your rental type
+              </h3>
+              <div className="flex gap-6">
+                <RadioCheck
+                  selectedValue={propertyData.rentalType}
+                  handleChange={() => updatePropertyData("rentalType", "Rent")}
+                  type="radio"
+                  value="Rent"
+                  name="rentalType"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.rentalType}
+                  handleChange={() => updatePropertyData("rentalType", "Lease")}
+                  type="radio"
+                  name="rentalType"
+                  value="Lease"
+                />
+              </div>
+            </div>
+          )}
+
+        {/* Property Condition (for rent only) */}
+        {propertyData.propertyType === "rent" &&
+          propertyData.propertyCategory !== "Land" && (
+            <div>
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                Property Condition
+              </h3>
+              <div className="flex flex-wrap gap-6">
+                <RadioCheck
+                  selectedValue={propertyData.propertyCondition}
+                  handleChange={() =>
+                    updatePropertyData("propertyCondition", "Brand New")
+                  }
+                  type="radio"
+                  value="Brand New"
+                  name="propertyCondition"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.propertyCondition}
+                  handleChange={() =>
+                    updatePropertyData("propertyCondition", "Good Condition")
+                  }
+                  type="radio"
+                  name="propertyCondition"
+                  value="Good Condition"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.propertyCondition}
+                  handleChange={() =>
+                    updatePropertyData("propertyCondition", "Needs Renovation")
+                  }
+                  type="radio"
+                  name="propertyCondition"
+                  value="Needs Renovation"
+                />
+              </div>
+            </div>
+          )}
+
         {/* Price */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
