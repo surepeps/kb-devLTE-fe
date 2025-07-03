@@ -10,12 +10,19 @@ interface PropertyImage {
 
 interface PropertyData {
   propertyType: "sell" | "rent" | "jv" | "";
+  propertyCategory: "Residential" | "Commercial" | "Land" | "";
+  propertyCondition: string;
+  typeOfBuilding: string;
+  rentalType: string;
   price: string;
+  leaseHold: string;
   holdDuration?: string;
   description: string;
   state: { value: string; label: string } | null;
   lga: { value: string; label: string } | null;
   area: string;
+  landSize: string;
+  measurementType: string;
   bedrooms: number;
   bathrooms: number;
   toilets: number;
@@ -32,6 +39,8 @@ interface PropertyData {
     phone: string;
   };
   isLegalOwner: boolean;
+  isTenanted: string;
+  additionalInfo: string;
 }
 
 interface PostPropertyContextType {
