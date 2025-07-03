@@ -131,7 +131,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
             {/* Content */}
             <div
-              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto"}`}
+              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto"} p-1 sm:p-0`}
             >
               {children}
             </div>
