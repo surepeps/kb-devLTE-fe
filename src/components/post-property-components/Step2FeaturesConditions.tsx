@@ -3,8 +3,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import { featuresData, JvConditionData } from "@/data/buy_data";
+import {
+  featuresData,
+  JvConditionData,
+  DocOnPropertyData,
+} from "@/data/buy_data";
 import { tenantCriteriaData } from "@/data/landlord";
+import RadioCheck from "@/components/general-components/radioCheck";
+import Input from "@/components/general-components/Input";
 
 const Step2FeaturesConditions: React.FC = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
