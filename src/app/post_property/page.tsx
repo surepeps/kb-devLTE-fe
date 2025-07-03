@@ -313,7 +313,7 @@ const PostProperty = () => {
                   value={currentStep === 4 ? "Complete" : "Next"}
                   onClick={handleNext}
                   className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                  disabled={isSubmitting}
+                  isDisabled={isSubmitting}
                 />
               </>
             )}
