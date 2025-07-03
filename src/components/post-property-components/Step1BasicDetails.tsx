@@ -122,13 +122,20 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
+                    : errors?.propertyCategory && touched?.propertyCategory
+                      ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
+                      : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
                 }`}
               >
                 {category}
               </button>
             ))}
           </div>
+          {errors?.propertyCategory && touched?.propertyCategory && (
+            <p className="text-red-500 text-sm mt-2">
+              {errors.propertyCategory}
+            </p>
+          )}
         </div>
 
         {/* Rental Type (for rent only) */}
