@@ -329,9 +329,8 @@ const SearchModal = ({
 
   const is_mobile = IsMobile();
 
-  // Data fetching moved to marketplace context to avoid AbortError issues
+  // Data fetching using marketplace context to avoid AbortError issues
   useEffect(() => {
-    // Simple effect to update brief type based on marketplace selection
     let briefType = "";
     switch (userSelectedMarketPlace) {
       case "Buy a property":
@@ -346,12 +345,11 @@ const SearchModal = ({
       default:
         briefType = "Outright Sales";
     }
-    setBriefToFetch(
-      `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(
-        briefType,
-      )}`,
-    );
-  }, [userSelectedMarketPlace]);
+    const briefToFetch = `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(briefType)}`;
+
+    // Use the context method for fetching
+    fetchInitialData(briefToFetch);
+  }, [userSelectedMarketPlace, fetchInitialData]);
 
   return (
     <Fragment>
