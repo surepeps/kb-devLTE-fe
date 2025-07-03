@@ -41,6 +41,7 @@ const JointVentureModal = ({
     jvFilterBy: usageOptions,
     setJvFilterBy: setUsageOptions,
     selectedForInspection,
+    clearInspectionSelection,
   } = useMarketplace();
 
   const selectedBriefs = selectedForInspection.length;
