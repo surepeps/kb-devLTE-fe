@@ -292,15 +292,15 @@ const Card = ({
           )}
           <button
             onClick={onClick}
-            disabled={isDisabled}
+            disabled={false}
             className={`min-h-[50px] py-[12px] px-[24px] ${
-              isDisabled
-                ? "bg-[#09391C] cursor-default"
+              isSelectedForInspectionCheck
+                ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
                 : "bg-[#8DDB90] hover:bg-[#76c77a]"
-            } text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-center gap-2`}
+            } text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-center gap-2 transition-colors`}
             type="button"
           >
-            {isDisabled ? (
+            {isSelectedForInspectionCheck ? (
               <>
                 <span>Selected</span>
                 <X size={16} className="text-white" />
