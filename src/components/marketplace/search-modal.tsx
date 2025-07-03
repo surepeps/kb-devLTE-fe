@@ -283,16 +283,7 @@ const SearchModal = ({
   };
 
   const handlePropertiesSelection = (property: any) => {
-    const maximumSelection: number = 2;
-    if (uniqueProperties.size === maximumSelection) {
-      return toast.error(`Maximum of ${maximumSelection} reached`);
-    }
-    // Create a new Set to trigger state update
-    const newSet = new Set(uniqueProperties);
-    newSet.add(property);
-    setUniqueProperties(newSet);
-    setPropertiesSelected(Array.from(newSet));
-    toast.success("Property selected");
+    toggleInspectionSelection(property);
   };
 
   useEffect(() => {
