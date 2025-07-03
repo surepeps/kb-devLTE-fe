@@ -20,7 +20,7 @@ interface PropertyData {
   description: string;
   state: { value: string; label: string } | null;
   lga: { value: string; label: string } | null;
-  area: string;
+  area: string | { value: string; label: string };
   landSize: string;
   measurementType: string;
   bedrooms: number;
