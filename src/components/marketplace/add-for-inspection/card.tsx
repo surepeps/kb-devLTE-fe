@@ -248,48 +248,67 @@ const Card = ({
               </button>
             </div>
           </div>
-          <Button
-            value={`Price Negotiation`}
-            type="button"
-            red={isRed}
-            onClick={() => {
-              if (onPriceNegotiation) {
-                // This will be used in AddForInspection to open NegiotiatePrice
-                onPriceNegotiation();
-              } else if (isAddInspectionModalOpened) {
-                // Marketplace context with inspection modal open
-                const isPropertySelected = allProperties?.some(
-                  (item: any) => item?._id === property?._id,
-                );
-                if (isPropertySelected) {
-                  const newProperties = allProperties?.filter(
-                    (item: any) => item?._id !== property?._id,
+          {hasNegotiatedPrice ? (
+            <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between">
+              <span>
+                Negotiated: ₦
+                {Number(negotiatedPriceData!.negotiatedPrice).toLocaleString()}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeNegotiatedPrice(property._id);
+                }}
+                className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
+                title="Clear negotiated price"
+              >
+                <X size={16} className="text-white" />
+              </button>
+            </div>
+          ) : (
+            <Button
+              value={`Price Negotiation`}
+              type="button"
+              red={isRed}
+              onClick={() => {
+                if (onPriceNegotiation) {
+                  // This will be used in AddForInspection to open NegiotiatePrice
+                  onPriceNegotiation();
+                } else if (isAddInspectionModalOpened) {
+                  // Marketplace context with inspection modal open
+                  const isPropertySelected = allProperties?.some(
+                    (item: any) => item?._id === property?._id,
                   );
-                  setIsComingFromPriceNeg?.(true);
-                  setPropertySelected([property, ...newProperties]);
+                  if (isPropertySelected) {
+                    const newProperties = allProperties?.filter(
+                      (item: any) => item?._id !== property?._id,
+                    );
+                    setIsComingFromPriceNeg?.(true);
+                    setPropertySelected([property, ...newProperties]);
+                  } else {
+                    setPropertySelected([property, ...allProperties]);
+                  }
                 } else {
-                  setPropertySelected([property, ...allProperties]);
+                  // Marketplace context without inspection modal open
+                  setPropertySelected([property]);
+                  setIsComingFromPriceNeg?.(true);
                 }
-              } else {
-                // Marketplace context without inspection modal open
-                setPropertySelected([property]);
-                setIsComingFromPriceNeg?.(true);
-              }
-            }}
-            className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold"
-          />
+              }}
+              className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold"
+            />
+          )}
           <Button
             value={`Remove`}
             type="button"
-            // green={!isRed}
-            // red={isRed}
             onClick={() => {
-              // Make sure onClick is properly called
+              // Remove from marketplace context
+              removeFromInspection(property._id);
+              // Also call the original onClick if provided
               if (onClick) {
                 onClick();
               }
             }}
-            isDisabled={isDisabled} // Disable the button if the property is already selected
+            isDisabled={isDisabled}
             className={`min-h-[50px] py-[12px] px-[24px] ${
               isDisabled
                 ? "bg-gray-400 cursor-not-allowed"
