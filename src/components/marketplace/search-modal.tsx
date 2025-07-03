@@ -248,8 +248,7 @@ const SearchModal = ({
               setInspectionType={setInspectionType}
             />
             <section className="flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
-              {formikStatus &&
-                renderBriefs(userSelectedMarketPlace, jvFilterBy)}
+              {formikStatus && renderBriefs(userSelectedMarketPlace)}
             </section>
           </div>
         );
