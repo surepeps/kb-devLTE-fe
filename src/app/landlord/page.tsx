@@ -76,29 +76,66 @@ export default function LandlordDashboard() {
     try {
       setIsLoading(true);
 
-      // Fetch user's properties
-      const propertiesResponse = await GET_REQUEST(
-        `${URLS.BASE}${URLS.user}/properties`,
-        Cookies.get("token"),
-      );
+      // Fetch user's properties - try multiple endpoints
+      const endpoints = [
+        `${URLS.BASE}${URLS.myPropertyListings}`,
+        `${URLS.BASE}/properties/user/${user?._id}`,
+        `${URLS.BASE}/properties/owner`,
+        `${URLS.BASE}/briefs/user`,
+      ];
 
-      if (propertiesResponse?.data) {
-        const userProperties = propertiesResponse.data;
-        setProperties(userProperties);
+      let userProperties = [];
+      let fetchSuccessful = false;
+
+      for (const endpoint of endpoints) {
+        try {
+          const propertiesResponse = await GET_REQUEST(
+            endpoint,
+            Cookies.get("token"),
+          );
+
+          if (propertiesResponse?.data || propertiesResponse) {
+            userProperties = Array.isArray(propertiesResponse?.data)
+              ? propertiesResponse.data
+              : Array.isArray(propertiesResponse)
+                ? propertiesResponse
+                : [];
+            fetchSuccessful = true;
+            break;
+          }
+        } catch (error) {
+          console.log(`Failed to fetch from ${endpoint}:`, error);
+          continue;
+        }
+      }
+
+      if (fetchSuccessful) {
+        // Filter properties to only include ones belonging to the current user
+        const filteredProperties = userProperties.filter(
+          (property: any) =>
+            property.owner?.email === user?.email ||
+            property.ownerId === user?._id ||
+            property.userId === user?._id,
+        );
+
+        setProperties(filteredProperties);
 
         // Calculate stats
-        const totalProperties = userProperties.length;
-        const activeListings = userProperties.filter(
-          (p: Property) => p.status === "active",
+        const totalProperties = filteredProperties.length;
+        const activeListings = filteredProperties.filter(
+          (p: any) => p.status === "active" || p.isApproved === true,
         ).length;
-        const soldProperties = userProperties.filter(
-          (p: Property) => p.status === "sold",
+        const soldProperties = filteredProperties.filter(
+          (p: any) => p.status === "sold",
         ).length;
-        const rentedProperties = userProperties.filter(
-          (p: Property) => p.status === "rented",
+        const rentedProperties = filteredProperties.filter(
+          (p: any) => p.status === "rented",
         ).length;
-        const totalViews = userProperties.reduce(
-          (sum: number, p: Property) => sum + (p.views || 0),
+        const pendingProperties = filteredProperties.filter(
+          (p: any) => p.status === "pending" || p.isApproved === false,
+        ).length;
+        const totalViews = filteredProperties.reduce(
+          (sum: number, p: any) => sum + (p.views || 0),
           0,
         );
 
@@ -109,6 +146,17 @@ export default function LandlordDashboard() {
           rentedProperties,
           totalViews,
           totalEarnings: soldProperties * 50000, // Mock calculation
+        });
+      } else {
+        // No properties found
+        setProperties([]);
+        setStats({
+          totalProperties: 0,
+          activeListings: 0,
+          soldProperties: 0,
+          rentedProperties: 0,
+          totalViews: 0,
+          totalEarnings: 0,
         });
       }
     } catch (error) {
