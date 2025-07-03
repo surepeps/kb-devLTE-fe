@@ -42,9 +42,27 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
 
   useEffect(() => {}, [submitInspectionPayload]);
   const [fileURL, setFileURL] = useState<string | null>(null);
+  const [paymentValidated, setPaymentValidated] = useState<boolean>(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
   const [formStatus, setFormStatus] = useState<
     "success" | "pending" | "failed" | "idle"
   >("idle");
+
+  const handlePaymentValidation = (result: any) => {
+    setValidationResult(result);
+    setPaymentValidated(result.isValid);
+  };
+
+  const handleFileChange = (file: File | null) => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setFileURL(url);
+    } else {
+      setFileURL(null);
+      setPaymentValidated(false);
+      setValidationResult(null);
+    }
+  };
 
   const validationSchema = Yup.object({
     fullName: Yup.string().required("Full Name is a required field"),
