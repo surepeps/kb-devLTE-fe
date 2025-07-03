@@ -153,17 +153,40 @@ const Card = ({
               )}
             </div>
             {/**price */}
-            <div>
+            <div className="flex items-center gap-2">
               {cardData.map(
                 (item: { header: string; value: string }, idx: number) => {
                   if (item.header === "Price") {
                     return (
-                      <h2
-                        key={idx}
-                        className="text-lg font-semibold text-[#000000]"
-                      >
-                        {item.value}
-                      </h2>
+                      <div key={idx} className="flex items-center gap-2">
+                        {hasNegotiatedPrice ? (
+                          <div className="flex items-center gap-2">
+                            <h2 className="text-lg font-semibold text-[#8DDB90]">
+                              ₦
+                              {Number(
+                                negotiatedPriceData!.negotiatedPrice,
+                              ).toLocaleString()}
+                            </h2>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeNegotiatedPrice(property._id);
+                              }}
+                              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                              title="Clear negotiated price"
+                            >
+                              <X size={16} className="text-[#5A5D63]" />
+                            </button>
+                            <span className="text-sm text-[#5A5D63] line-through">
+                              {item.value}
+                            </span>
+                          </div>
+                        ) : (
+                          <h2 className="text-lg font-semibold text-[#000000]">
+                            {item.value}
+                          </h2>
+                        )}
+                      </div>
                     );
                   }
                 },
