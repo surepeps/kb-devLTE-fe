@@ -1,17 +1,18 @@
-'use client';
+"use client";
 
-import React, { ChangeEventHandler, FC } from 'react';
+import React, { ChangeEventHandler, FC } from "react";
 
 interface RadioCheckProps {
   id?: string;
   title?: string;
   value: string;
   name: string;
-  type?: 'radio' | 'checkbox';
+  type?: "radio" | "checkbox";
   isDisabled?: boolean;
   className?: string;
   handleChange?: ChangeEventHandler<HTMLInputElement>;
   isChecked?: boolean;
+  selectedValue?: string;
   modifyStyle?: React.CSSProperties;
 }
 
@@ -20,14 +21,17 @@ const RadioCheck: FC<RadioCheckProps> = ({
   title,
   value,
   name,
-  type = 'radio',
+  type = "radio",
   isDisabled,
   className,
   handleChange,
   isChecked,
+  selectedValue,
   modifyStyle,
 }) => {
   const inputId = id ?? `${name}-${value}`;
+  const isSelected =
+    isChecked !== undefined ? isChecked : selectedValue === value;
 
   return (
     <label
@@ -40,13 +44,13 @@ const RadioCheck: FC<RadioCheckProps> = ({
         type={type}
         name={name}
         disabled={isDisabled}
-        checked={isChecked}
+        checked={isSelected}
         onChange={handleChange}
         style={{
-          accentColor: '#8DDB90',
-          width: '24px',
-          height: '24px',
-          backgroundColor: 'transparent',
+          accentColor: "#8DDB90",
+          width: "24px",
+          height: "24px",
+          backgroundColor: "transparent",
         }}
         className="w-[24px] h-[24px] rounded border-[#5A5D63] border-[2px]"
       />
