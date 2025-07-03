@@ -159,29 +159,6 @@ const SearchModal = ({
     }
   };
 
-  useEffect(() => {
-    let briefType = "";
-    switch (userSelectedMarketPlace) {
-      case "Buy a property":
-        briefType = "Outright Sales";
-        break;
-      case "Find property for joint venture":
-        briefType = "Joint Venture";
-        break;
-      case "Rent/Lease a property":
-        briefType = "Rent";
-        break;
-      default:
-        briefType = "Outright Sales";
-    }
-    // You can set default page and limit as needed
-    setBriefToFetch(
-      `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(
-        briefType,
-      )}`,
-    );
-  }, [userSelectedMarketPlace]);
-
   const renderDynamicComponent = () => {
     switch (userSelectedMarketPlace) {
       case "Buy a property":
