@@ -383,6 +383,19 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
     },
     validationSchema,
     onSubmit: (values: ContactProps) => {
+      // Save negotiated price to marketplace context if available
+      if (
+        selectedProperty.yourPrice &&
+        typeof selectedProperty.askingPrice === "number" &&
+        getID
+      ) {
+        addNegotiatedPrice(
+          getID,
+          selectedProperty.askingPrice,
+          Number(selectedProperty.yourPrice),
+        );
+      }
+
       setActionTracker([
         ...actionTracker,
         { lastPage: "SelectPreferableInspectionDate" },
