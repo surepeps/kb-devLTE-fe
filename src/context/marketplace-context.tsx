@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useMemo,
   useEffect,
+  useRef,
 } from "react";
 import toast from "react-hot-toast";
 
@@ -84,6 +85,15 @@ const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
 export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  // Track if component is mounted to prevent setState on unmounted component
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Negotiated prices state
   const [negotiatedPrices, setNegotiatedPrices] = useState<NegotiatedPrice[]>(
     [],
@@ -240,22 +250,27 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (!response.ok) {
         const errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        setErrMessage(errorMessage);
-        setFormikStatus("failed");
+        if (isMountedRef.current) {
+          setErrMessage(errorMessage);
+          setFormikStatus("failed");
+        }
         return;
       }
 
       const data = await response.json();
-      setFormikStatus("success");
 
-      // Handle different response structures
-      const responseData = data?.data || data || [];
-      const approvedData = Array.isArray(responseData)
-        ? responseData.filter((item: any) => item?.isApproved === true)
-        : [];
+      if (isMountedRef.current) {
+        setFormikStatus("success");
 
-      const shuffledData = shuffleArray(approvedData);
-      setProperties(shuffledData);
+        // Handle different response structures
+        const responseData = data?.data || data || [];
+        const approvedData = Array.isArray(responseData)
+          ? responseData.filter((item: any) => item?.isApproved === true)
+          : [];
+
+        const shuffledData = shuffleArray(approvedData);
+        setProperties(shuffledData);
+      }
     } catch (err: any) {
       console.error("Fetch error:", err);
 
