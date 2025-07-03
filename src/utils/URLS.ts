@@ -1,7 +1,7 @@
 /** @format */
 
 export const URLS = {
-  BASE: `${process.env.NEXT_PUBLIC_API_URL}`,
+  BASE: process.env.NEXT_PUBLIC_API_URL || "https://api.khabiteq.com",
   agent: "/agent",
   user: "/user",
   userProfile: "/me",

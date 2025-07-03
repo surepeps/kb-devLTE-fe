@@ -1,0 +1,155 @@
+"use client";
+
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, X, Home, Eye } from "lucide-react";
+import Button from "@/components/general-components/button";
+import { useRouter } from "next/navigation";
+
+interface SuccessModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  propertyData?: {
+    propertyType: string;
+    price: string;
+    location: string;
+  };
+}
+
+const SuccessModal: React.FC<SuccessModalProps> = ({
+  isOpen,
+  onClose,
+  propertyData,
+}) => {
+  const router = useRouter();
+
+  const handleViewListings = () => {
+    router.push("/my_listing");
+    onClose();
+  };
+
+  const handleAddAnother = () => {
+    router.push("/post_property");
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="bg-[#8DDB90] px-6 py-4 relative">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
+            >
+              <X size={24} />
+            </button>
+            <div className="text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-3"
+              >
+                <CheckCircle size={32} className="text-[#8DDB90]" />
+              </motion.div>
+              <h2 className="text-2xl font-bold text-white mb-1">
+                Property Listed Successfully!
+              </h2>
+              <p className="text-white text-opacity-90">
+                Your property is now live and ready for potential buyers
+              </p>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-6">
+            {propertyData && (
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-[#09391C] mb-3 text-center">
+                  Property Summary
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Type:</span>
+                    <span className="font-medium capitalize">
+                      {propertyData.propertyType}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Price:</span>
+                    <span className="font-medium text-[#8DDB90]">
+                      ₦{parseInt(propertyData.price).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Location:</span>
+                    <span className="font-medium">{propertyData.location}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* What happens next */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h4 className="font-semibold text-blue-800 mb-2">
+                What happens next?
+              </h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Your property will be reviewed within 24 hours</li>
+                <li>• Once approved, it will appear in search results</li>
+                <li>• You'll receive notifications for inquiries</li>
+                <li>• Potential buyers can schedule inspections</li>
+              </ul>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Button
+                type="button"
+                value="View My Listings"
+                onClick={handleViewListings}
+                className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <Eye size={18} />
+              </Button>
+
+              <Button
+                type="button"
+                value="List Another Property"
+                onClick={handleAddAnother}
+                className="w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <Home size={18} />
+              </Button>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 py-4 text-center">
+            <p className="text-sm text-gray-600">
+              Need help? Contact our support team anytime
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default SuccessModal;

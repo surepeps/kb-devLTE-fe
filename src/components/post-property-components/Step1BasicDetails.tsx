@@ -6,7 +6,12 @@ import Input from "@/components/general-components/Input";
 import ReactSelect from "react-select";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import customStyles from "@/styles/inputStyle";
-import data from "@/data/state-lga";
+import {
+  dummyLocationData,
+  getAllStates,
+  getLGAs,
+  getAreas,
+} from "@/data/dummy-location-data";
 
 interface Option {
   value: string;
@@ -21,27 +26,22 @@ const Step1BasicDetails: React.FC = () => {
   const [formatedHold, setFormatedHold] = useState<string>("");
 
   useEffect(() => {
-    // Format states data
-    const states = data.map((state: any) => ({
-      value: state.state,
-      label: state.state,
+    // Format states data using dummy data
+    const states = getAllStates().map((state: string) => ({
+      value: state,
+      label: state,
     }));
     setStateOptions(states);
   }, []);
 
   useEffect(() => {
     if (propertyData.state) {
-      // Find the selected state and get its LGAs
-      const selectedStateData = data.find(
-        (state: any) => state.state === propertyData.state?.value,
-      );
-      if (selectedStateData) {
-        const lgas = selectedStateData.lgas.map((lga: string) => ({
-          value: lga,
-          label: lga,
-        }));
-        setLgaOptions(lgas);
-      }
+      // Get LGAs for selected state using dummy data
+      const lgas = getLGAs(propertyData.state.value).map((lga: string) => ({
+        value: lga,
+        label: lga,
+      }));
+      setLgaOptions(lgas);
     } else {
       setLgaOptions([]);
       updatePropertyData("lga", null);
@@ -69,48 +69,45 @@ const Step1BasicDetails: React.FC = () => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-4xl mx-auto"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[#09391C] font-display mb-4">
-          Property Details
+      <div className="mb-8">
+        <h2 className="text-[24px] leading-[38.4px] font-semibold font-display text-[#09391C] mb-2">
+          Submit brief details
         </h2>
-        <p className="text-[#5A5D63] text-lg">
+        <p className="text-[16px] text-[#5A5D63]">
           Provide basic information about your property
         </p>
       </div>
 
-      <div className="bg-white rounded-lg p-8 shadow-sm space-y-6">
+      <div className="space-y-6">
         {/* Price */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-[#09391C] mb-2">
-              {propertyData.propertyType === "sell"
-                ? "Selling Price"
-                : propertyData.propertyType === "rent"
-                  ? "Annual Rent"
-                  : "Property Value"}{" "}
-              *
-            </label>
             <Input
+              name="price"
+              label={
+                propertyData.propertyType === "sell"
+                  ? "Selling Price"
+                  : propertyData.propertyType === "rent"
+                    ? "Annual Rent"
+                    : "Property Value"
+              }
               type="text"
               placeholder="Enter amount"
               value={formatedPrice}
               onChange={(e) => handlePriceChange(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
             />
           </div>
 
           {/* Hold Duration for Joint Venture */}
           {propertyData.propertyType === "jv" && (
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Hold Duration (Years) *
-              </label>
               <Input
+                name="holdDuration"
+                label="Hold Duration (Years)"
                 type="text"
                 placeholder="Enter years"
                 value={formatedHold}
                 onChange={(e) => handleHoldDurationChange(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
           )}
@@ -119,11 +116,11 @@ const Step1BasicDetails: React.FC = () => {
         {/* Location */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Location
+            Property Location
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
+              <label className="block text-sm font-medium text-[#707281] mb-2">
                 State *
               </label>
               <ReactSelect
@@ -136,7 +133,7 @@ const Step1BasicDetails: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
+              <label className="block text-sm font-medium text-[#707281] mb-2">
                 Local Government *
               </label>
               <ReactSelect
@@ -150,15 +147,13 @@ const Step1BasicDetails: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Area *
-              </label>
               <Input
+                name="area"
+                label="Area/Neighborhood"
                 type="text"
                 placeholder="Enter area/neighborhood"
                 value={propertyData.area}
                 onChange={(e) => updatePropertyData("area", e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
           </div>
@@ -171,66 +166,54 @@ const Step1BasicDetails: React.FC = () => {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Bedrooms *
-              </label>
               <Input
+                name="bedrooms"
+                label="Bedrooms"
                 type="number"
-                min="0"
                 placeholder="0"
-                value={propertyData.bedrooms}
+                value={propertyData.bedrooms.toString()}
                 onChange={(e) =>
                   updatePropertyData("bedrooms", parseInt(e.target.value) || 0)
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Bathrooms
-              </label>
               <Input
+                name="bathrooms"
+                label="Bathrooms"
                 type="number"
-                min="0"
                 placeholder="0"
-                value={propertyData.bathrooms}
+                value={propertyData.bathrooms.toString()}
                 onChange={(e) =>
                   updatePropertyData("bathrooms", parseInt(e.target.value) || 0)
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Toilets
-              </label>
               <Input
+                name="toilets"
+                label="Toilets"
                 type="number"
-                min="0"
                 placeholder="0"
-                value={propertyData.toilets}
+                value={propertyData.toilets.toString()}
                 onChange={(e) =>
                   updatePropertyData("toilets", parseInt(e.target.value) || 0)
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Parking Spaces
-              </label>
               <Input
+                name="parkingSpaces"
+                label="Parking Spaces"
                 type="number"
-                min="0"
                 placeholder="0"
-                value={propertyData.parkingSpaces}
+                value={propertyData.parkingSpaces.toString()}
                 onChange={(e) =>
                   updatePropertyData(
                     "parkingSpaces",
                     parseInt(e.target.value) || 0,
                   )
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
           </div>
@@ -238,15 +221,15 @@ const Step1BasicDetails: React.FC = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-[#09391C] mb-2">
-            Property Description
+          <label className="block text-sm font-medium text-[#707281] mb-2">
+            Property Description (Optional)
           </label>
           <textarea
             placeholder="Describe your property in detail..."
             value={propertyData.description}
             onChange={(e) => updatePropertyData("description", e.target.value)}
             rows={4}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent resize-none"
+            className="w-full p-[12px] border border-[#C7CAD0] rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] resize-none text-[14px] leading-[22.4px]"
           />
         </div>
       </div>

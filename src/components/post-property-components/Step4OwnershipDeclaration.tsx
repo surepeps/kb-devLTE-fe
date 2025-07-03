@@ -57,18 +57,18 @@ const Step4OwnershipDeclaration: React.FC = () => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-4xl mx-auto"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[#09391C] font-display mb-4">
-          Ownership Declaration
+      <div className="mb-8">
+        <h2 className="text-[24px] leading-[38.4px] font-semibold font-display text-[#09391C] mb-2">
+          Owners Declaration
         </h2>
-        <p className="text-[#5A5D63] text-lg">
+        <p className="text-[16px] text-[#5A5D63]">
           Verify your ownership and provide contact information
         </p>
       </div>
 
       <div className="space-y-8">
         {/* Legal Ownership Declaration */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
             Ownership Verification
           </h3>
@@ -109,7 +109,7 @@ const Step4OwnershipDeclaration: React.FC = () => {
         </div>
 
         {/* Documents on Property */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
             Available Documents
           </h3>
@@ -141,7 +141,7 @@ const Step4OwnershipDeclaration: React.FC = () => {
         </div>
 
         {/* Contact Information */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
             Contact Information
           </h3>
@@ -150,49 +150,43 @@ const Step4OwnershipDeclaration: React.FC = () => {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                First Name *
-              </label>
               <Input
+                name="firstName"
+                label="First Name"
                 type="text"
                 placeholder="Enter first name"
                 value={propertyData.contactInfo.firstName}
                 onChange={(e) =>
                   handleContactInfoChange("firstName", e.target.value)
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Last Name *
-              </label>
               <Input
+                name="lastName"
+                label="Last Name"
                 type="text"
                 placeholder="Enter last name"
                 value={propertyData.contactInfo.lastName}
                 onChange={(e) =>
                   handleContactInfoChange("lastName", e.target.value)
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
-                Email Address *
-              </label>
               <Input
+                name="email"
+                label="Email Address"
                 type="email"
                 placeholder="Enter email address"
                 value={propertyData.contactInfo.email}
                 onChange={(e) =>
                   handleContactInfoChange("email", e.target.value)
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#09391C] mb-2">
+              <label className="block text-sm font-medium text-[#707281] mb-2">
                 Phone Number *
               </label>
               <PhoneInput
@@ -203,7 +197,7 @@ const Step4OwnershipDeclaration: React.FC = () => {
                 onChange={(value) =>
                   handleContactInfoChange("phone", value || "")
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                className="phone-input"
               />
             </div>
           </div>

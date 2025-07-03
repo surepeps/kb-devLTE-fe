@@ -40,19 +40,19 @@ const Step2FeaturesConditions: React.FC = () => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-4xl mx-auto"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-[#09391C] font-display mb-4">
+      <div className="mb-8">
+        <h2 className="text-[24px] leading-[38.4px] font-semibold font-display text-[#09391C] mb-2">
           Features & Conditions
         </h2>
-        <p className="text-[#5A5D63] text-lg">
+        <p className="text-[16px] text-[#5A5D63]">
           Select features and set conditions for your property
         </p>
       </div>
 
       <div className="space-y-8">
         {/* Property Features */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-[#09391C] mb-4">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
             Property Features
           </h3>
           <p className="text-[#5A5D63] mb-6">
@@ -65,16 +65,16 @@ const Step2FeaturesConditions: React.FC = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleFeatureToggle(feature)}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                className={`p-3 rounded-md border text-left transition-all text-sm ${
                   propertyData.features.includes(feature)
-                    ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10 text-[#09391C]"
-                    : "border-gray-200 hover:border-[#8DDB90] text-gray-700"
+                    ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-medium"
+                    : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63] hover:bg-gray-50"
                 }`}
               >
-                <span className="text-sm font-medium">{feature}</span>
+                <span>{feature}</span>
                 {propertyData.features.includes(feature) && (
-                  <div className="mt-2">
-                    <span className="inline-block w-2 h-2 bg-[#8DDB90] rounded-full"></span>
+                  <div className="mt-1">
+                    <span className="inline-block w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></span>
                   </div>
                 )}
               </motion.button>
