@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export interface ModalConfig {
   id: string;
@@ -10,6 +10,7 @@ export interface ModalConfig {
   overlayClose?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | "full";
   position?: "center" | "top" | "bottom";
+  zIndex?: number;
 }
 
 interface ModalContextType {
@@ -124,12 +125,16 @@ const ModalRenderer: React.FC<{
     <AnimatePresence>
       {modals.map((modal, index) => {
         const Component = modal.component;
-        const zIndex = 50 + index;
+        const zIndex = modal.zIndex || 50 + index;
 
         return (
-          <div
+          <motion.div
             key={modal.id}
-            className={`fixed inset-0 flex justify-center p-4 bg-black/50 transition-opacity duration-300`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 flex justify-center p-4 bg-black/50"
             style={{ zIndex }}
             onClick={
               modal.overlayClose !== false ? () => onClose(modal.id) : undefined
@@ -138,7 +143,11 @@ const ModalRenderer: React.FC<{
             <div
               className={`relative flex ${getPositionClasses(modal.position)} w-full`}
             >
-              <div
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.2 }}
                 className={`bg-white rounded-xl shadow-2xl ${getSizeClasses(modal.size)} w-full max-h-[90vh] overflow-hidden`}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -147,9 +156,9 @@ const ModalRenderer: React.FC<{
                   onClose={() => onClose(modal.id)}
                   modalId={modal.id}
                 />
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </AnimatePresence>
@@ -236,10 +245,82 @@ export const useModalActions = () => {
     [openModal],
   );
 
+  const openBedsAndBathModal = useCallback(
+    async (filters: any, onApply?: (filters: any) => void) => {
+      try {
+        const { default: BedsAndBathModal } = await import(
+          "@/components/marketplace/beds-and-bath-modal"
+        );
+
+        openModal({
+          id: "beds-bath-modal",
+          component: BedsAndBathModal,
+          props: {
+            currentFilters: filters,
+            onApply,
+          },
+          size: "md",
+        });
+      } catch (error) {
+        console.error("Failed to load beds and bath modal:", error);
+      }
+    },
+    [openModal],
+  );
+
+  const openDesiredFeaturesModal = useCallback(
+    async (filters: any, onApply?: (filters: any) => void) => {
+      try {
+        const { default: DesiredFeaturesModal } = await import(
+          "@/components/marketplace/desires-features-modal"
+        );
+
+        openModal({
+          id: "desired-features-modal",
+          component: DesiredFeaturesModal,
+          props: {
+            currentFilters: filters,
+            onApply,
+          },
+          size: "lg",
+        });
+      } catch (error) {
+        console.error("Failed to load desired features modal:", error);
+      }
+    },
+    [openModal],
+  );
+
+  const openMoreFilterModal = useCallback(
+    async (filters: any, onApply?: (filters: any) => void) => {
+      try {
+        const { default: MoreFilterModal } = await import(
+          "@/components/marketplace/more-filter"
+        );
+
+        openModal({
+          id: "more-filter-modal",
+          component: MoreFilterModal,
+          props: {
+            currentFilters: filters,
+            onApply,
+          },
+          size: "lg",
+        });
+      } catch (error) {
+        console.error("Failed to load more filter modal:", error);
+      }
+    },
+    [openModal],
+  );
+
   return {
     openNegotiationModal,
     openPriceModal,
     openConfirmationModal,
+    openBedsAndBathModal,
+    openDesiredFeaturesModal,
+    openMoreFilterModal,
     closeModal,
     closeAllModals,
   };
