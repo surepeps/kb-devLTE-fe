@@ -28,6 +28,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  const [areaOptions, setAreaOptions] = useState<Option[]>([]);
   const [formatedPrice, setFormatedPrice] = useState<string>("");
   const [formatedHold, setFormatedHold] = useState<string>("");
   const [formatedLandSize, setFormatedLandSize] = useState<string>("");
@@ -54,9 +55,28 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
       setLgaOptions(lgas);
     } else {
       setLgaOptions([]);
+      setAreaOptions([]);
       updatePropertyData("lga", null);
+      updatePropertyData("area", "");
     }
   }, [propertyData.state]);
+
+  useEffect(() => {
+    if (propertyData.state && propertyData.lga) {
+      // Get areas for selected state and LGA
+      const areas = getAreasByStateLGA(
+        propertyData.state.value,
+        propertyData.lga.value,
+      ).map((area: string) => ({
+        value: area,
+        label: area,
+      }));
+      setAreaOptions(areas);
+    } else {
+      setAreaOptions([]);
+      updatePropertyData("area", "");
+    }
+  }, [propertyData.state, propertyData.lga]);
 
   const handlePriceChange = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, "");
@@ -377,17 +397,53 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               )}
             </div>
             <div>
-              <Input
-                name="area"
-                label="Area/Neighborhood"
-                type="text"
-                placeholder="Enter area/neighborhood"
-                value={propertyData.area}
-                onChange={(e) => updatePropertyData("area", e.target.value)}
-                className={
-                  errors?.area && touched?.area ? "border-red-500" : ""
-                }
-              />
+              <label className="block text-sm font-medium text-[#707281] mb-2">
+                Area/Neighborhood
+              </label>
+              {areaOptions.length > 0 ? (
+                <ReactSelect
+                  options={areaOptions}
+                  value={
+                    propertyData.area && typeof propertyData.area === "object"
+                      ? propertyData.area
+                      : propertyData.area
+                        ? { value: propertyData.area, label: propertyData.area }
+                        : null
+                  }
+                  onChange={(option) =>
+                    updatePropertyData("area", option?.value || "")
+                  }
+                  placeholder="Select area/neighborhood"
+                  styles={{
+                    ...customStyles,
+                    control: (provided, state) => ({
+                      ...customStyles.control?.(provided, state),
+                      borderColor:
+                        errors?.area && touched?.area
+                          ? "#ef4444"
+                          : provided.borderColor || "#C7CAD0",
+                    }),
+                  }}
+                  isSearchable
+                  isDisabled={!propertyData.lga}
+                />
+              ) : (
+                <Input
+                  name="area"
+                  label=""
+                  type="text"
+                  placeholder="Enter area/neighborhood"
+                  value={
+                    typeof propertyData.area === "string"
+                      ? propertyData.area
+                      : ""
+                  }
+                  onChange={(e) => updatePropertyData("area", e.target.value)}
+                  className={
+                    errors?.area && touched?.area ? "border-red-500" : ""
+                  }
+                />
+              )}
               {errors?.area && touched?.area && (
                 <p className="text-red-500 text-sm mt-1">{errors.area}</p>
               )}
