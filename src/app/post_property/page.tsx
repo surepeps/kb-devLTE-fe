@@ -236,6 +236,10 @@ const PostProperty = () => {
       const uploadedImageUrls: string[] = [];
       const validImages = images.filter((img) => img.file !== null);
 
+      if (validImages.length > 0) {
+        toast.loading("Uploading images...", { id: "upload" });
+      }
+
       for (const image of validImages) {
         if (image.file) {
           const formData = new FormData();
@@ -253,8 +257,13 @@ const PostProperty = () => {
             }
           } catch (error) {
             console.error("Error uploading image:", error);
+            toast.error(`Failed to upload image: ${image.file.name}`);
           }
         }
+      }
+
+      if (validImages.length > 0) {
+        toast.success("Images uploaded successfully!", { id: "upload" });
       }
 
       // 2. Determine brief type
