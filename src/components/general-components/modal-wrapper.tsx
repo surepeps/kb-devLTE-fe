@@ -103,9 +103,9 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={`
-              relative bg-white rounded-xl shadow-xl overflow-hidden w-full
+              relative bg-white rounded-lg sm:rounded-xl shadow-xl overflow-hidden
               ${getSizeClasses()}
-              ${size === "full" ? "h-full" : "max-h-[90vh]"}
+              ${size === "full" ? "h-full" : "max-h-[95vh] sm:max-h-[90vh]"}
               ${className}
             `}
           >
