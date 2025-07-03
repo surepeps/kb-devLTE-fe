@@ -124,26 +124,58 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
       case 0: // Property type selection
         return propertyData.propertyType !== "";
       case 1: // Basic details
-        return !!(
+        const basicFieldsValid = !!(
+          propertyData.propertyCategory &&
           propertyData.price &&
           propertyData.state &&
           propertyData.lga &&
-          propertyData.area &&
-          propertyData.bedrooms > 0
+          propertyData.area
         );
+
+        // Additional validations based on property type
+        if (
+          propertyData.propertyType === "rent" &&
+          propertyData.propertyCategory !== "Land"
+        ) {
+          return (
+            basicFieldsValid &&
+            !!propertyData.rentalType &&
+            !!propertyData.propertyCondition
+          );
+        }
+
+        if (propertyData.propertyCategory !== "Land") {
+          return (
+            basicFieldsValid &&
+            !!propertyData.typeOfBuilding &&
+            propertyData.bedrooms > 0
+          );
+        }
+
+        return basicFieldsValid;
+
       case 2: // Features and conditions
-        return propertyData.features.length > 0;
+        if (propertyData.propertyType === "rent") {
+          return true; // No required fields for rent
+        }
+        if (propertyData.propertyType === "jv") {
+          return propertyData.jvConditions.length > 0;
+        }
+        // For sell
+        return propertyData.documents.length > 0;
+
       case 3: // Image upload
         return areImagesValid();
+
       case 4: // Ownership and contact
         return !!(
           propertyData.contactInfo.firstName &&
           propertyData.contactInfo.lastName &&
           propertyData.contactInfo.email &&
           propertyData.contactInfo.phone &&
-          propertyData.isLegalOwner &&
-          propertyData.ownershipDocuments.length > 0
+          propertyData.isLegalOwner
         );
+
       default:
         return true;
     }
