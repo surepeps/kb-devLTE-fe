@@ -8,11 +8,10 @@ import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import customStyles from "@/styles/inputStyle";
 import {
-  dummyLocationData,
-  getAllStates,
-  getLGAs,
-  getAreas,
-} from "@/data/dummy-location-data";
+  getStates,
+  getLGAsByState,
+  getAreasByStateLGA,
+} from "@/utils/location-utils";
 import { propertyReferenceData } from "@/data/buy_page_data";
 
 interface Option {
@@ -35,8 +34,8 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
   const [formatedLeaseHold, setFormatedLeaseHold] = useState<string>("");
 
   useEffect(() => {
-    // Format states data using dummy data
-    const states = getAllStates().map((state: string) => ({
+    // Format states data using new location data
+    const states = getStates().map((state: string) => ({
       value: state,
       label: state,
     }));
@@ -45,11 +44,13 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
 
   useEffect(() => {
     if (propertyData.state) {
-      // Get LGAs for selected state using dummy data
-      const lgas = getLGAs(propertyData.state.value).map((lga: string) => ({
-        value: lga,
-        label: lga,
-      }));
+      // Get LGAs for selected state using new location data
+      const lgas = getLGAsByState(propertyData.state.value).map(
+        (lga: string) => ({
+          value: lga,
+          label: lga,
+        }),
+      );
       setLgaOptions(lgas);
     } else {
       setLgaOptions([]);
