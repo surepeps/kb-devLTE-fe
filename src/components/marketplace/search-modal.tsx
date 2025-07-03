@@ -418,7 +418,8 @@ const SearchModal = ({
         const shuffledData = shuffleArray(approvedData);
         setProperties(shuffledData);
       } catch (err: any) {
-        if (err.name !== "AbortError") {
+        // Only handle non-abort errors to prevent AbortError from being logged
+        if (err.name !== "AbortError" && !signal.aborted) {
           console.error(err);
           setErrMessage(err.message || "An error occurred");
           setFormikStatus("failed");
@@ -429,7 +430,12 @@ const SearchModal = ({
     fetchAllData();
 
     return () => {
-      controller.abort();
+      // Silent abort - don't need to handle the AbortError in cleanup
+      try {
+        controller.abort();
+      } catch (error) {
+        // Suppress any errors during cleanup
+      }
     };
   }, [briefToFetch]);
 
