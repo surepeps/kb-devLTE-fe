@@ -223,7 +223,13 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 placeholder="Enter amount"
                 value={formatedPrice}
                 onChange={(e) => handlePriceChange(e.target.value)}
+                className={
+                  errors?.price && touched?.price ? "border-red-500" : ""
+                }
               />
+              {errors?.price && touched?.price && (
+                <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+              )}
             </div>
 
             {/* Lease Hold for Rent (non-agents) */}
