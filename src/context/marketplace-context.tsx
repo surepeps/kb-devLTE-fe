@@ -288,6 +288,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       errMessage,
       setErrMessage,
 
+      // Data fetching
+      fetchInitialData,
+
       // Clear all filters
       clearAllFilters,
     }),
