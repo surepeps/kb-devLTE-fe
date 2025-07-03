@@ -42,11 +42,12 @@ const BuyAPropertySearchModal = ({
   inspectionType: "Buy" | "JV" | "Rent/Lease";
   setInspectionType: (type: "Buy" | "JV" | "Rent/Lease") => void;
   onSearch: (payload: any) => void;
-  searchStatus: {
-    status: "pending" | "success" | "failed" | "idle";
-    couldNotFindAProperty: boolean;
-  };
 }) => {
+  // Use marketplace context
+  const { usageOptions, setUsageOptions, selectedForInspection, searchStatus } =
+    useMarketplace();
+
+  const selectedBriefs = selectedForInspection.length;
   const formik = useFormik({
     initialValues: {
       selectedLGA: "",
