@@ -288,26 +288,10 @@ const SearchModal = ({
     }
   };
 
-  const renderBriefs = (
-    type: string,
-    filterBy: string[],
-    condition?: string,
-  ) => {
+  const renderBriefs = (type: string) => {
     return (
       <PropertyGrid
-        properties={properties}
         marketplaceType={type}
-        filterBy={filterBy}
-        condition={condition}
-        isLoading={formikStatus === "pending"}
-        error={
-          formikStatus === "failed"
-            ? errMessage || "Failed to load properties"
-            : null
-        }
-        selectedBriefs={uniqueProperties}
-        onPropertySelect={handlePropertiesSelection}
-        onCardPageClick={handleCardPageClick}
         itemsPerPage={12}
         // JV specific props
         isComingFromSubmitLol={isComingFromSubmitLol}
@@ -319,8 +303,8 @@ const SearchModal = ({
         // Buy specific props
         isComingFromPriceNeg={isComingFromPriceNeg}
         setIsComingFromPriceNeg={comingFromPriceNegotiation}
-        // Clear filters
-        onClearFilters={clearAllFilters}
+        // Card page click
+        onCardPageClick={handleCardPageClick}
       />
     );
   };
