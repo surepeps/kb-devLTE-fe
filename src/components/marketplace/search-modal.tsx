@@ -328,58 +328,29 @@ const SearchModal = ({
 
   const is_mobile = IsMobile();
 
+  // Data fetching moved to marketplace context to avoid AbortError issues
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let mounted = true;
-
-    const fetchAllData = async () => {
-      if (!mounted) return;
-
-      setFormikStatus("pending");
-      try {
-        const response = await fetch(URLS.BASE + briefToFetch, {
-          signal,
-        });
-
-        if (!mounted || signal.aborted) return;
-
-        if (!response.ok) {
-          setErrMessage("Failed to fetch data");
-          setFormikStatus("failed");
-          throw new Error("Failed to fetch data");
-        }
-
-        const data = await response.json();
-
-        if (!mounted || signal.aborted) return;
-
-        setFormikStatus("success");
-        const approvedData = Array.isArray(data.data)
-          ? data.data.filter((item: any) => item.isApproved === true)
-          : [];
-        const shuffledData = shuffleArray(approvedData);
-        setProperties(shuffledData);
-      } catch (err: any) {
-        // Only handle non-abort errors and only if component is still mounted
-        if (mounted && err.name !== "AbortError" && !signal.aborted) {
-          console.error(err);
-          setErrMessage(err.message || "An error occurred");
-          setFormikStatus("failed");
-        }
-      }
-    };
-
-    fetchAllData();
-
-    return () => {
-      mounted = false;
-      // Silently abort the request
-      if (controller && typeof controller.abort === "function") {
-        controller.abort();
-      }
-    };
-  }, [briefToFetch, setFormikStatus, setErrMessage, setProperties]);
+    // Simple effect to update brief type based on marketplace selection
+    let briefType = "";
+    switch (userSelectedMarketPlace) {
+      case "Buy a property":
+        briefType = "Outright Sales";
+        break;
+      case "Find property for joint venture":
+        briefType = "Joint Venture";
+        break;
+      case "Rent/Lease a property":
+        briefType = "Rent";
+        break;
+      default:
+        briefType = "Outright Sales";
+    }
+    setBriefToFetch(
+      `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(
+        briefType,
+      )}`,
+    );
+  }, [userSelectedMarketPlace]);
 
   return (
     <Fragment>
