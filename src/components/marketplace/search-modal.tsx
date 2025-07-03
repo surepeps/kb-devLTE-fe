@@ -74,9 +74,6 @@ const SearchModal = ({
   const [uniqueProperties, setUniqueProperties] = useState<Set<any>>(
     new Set(propertiesSelected),
   );
-  const [briefToFetch, setBriefToFetch] = useState<string>(
-    URLS.buyersFetchBriefs,
-  );
 
   // Use marketplace context for state management
   const {
