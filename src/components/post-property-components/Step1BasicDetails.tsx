@@ -143,7 +143,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           propertyData.propertyCategory !== "Land" && (
             <div>
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Select your rental type
+                Select your rental type *
               </h3>
               <div className="flex gap-6">
                 <RadioCheck
@@ -161,6 +161,9 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   value="Lease"
                 />
               </div>
+              {errors?.rentalType && touched?.rentalType && (
+                <p className="text-red-500 text-sm mt-2">{errors.rentalType}</p>
+              )}
             </div>
           )}
 
@@ -169,7 +172,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           propertyData.propertyCategory !== "Land" && (
             <div>
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Property Condition
+                Property Condition *
               </h3>
               <div className="flex flex-wrap gap-6">
                 <RadioCheck
@@ -200,6 +203,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   value="Needs Renovation"
                 />
               </div>
+              {errors?.propertyCondition && touched?.propertyCondition && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.propertyCondition}
+                </p>
+              )}
             </div>
           )}
 
@@ -396,7 +404,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Type of Building
+                    Type of Building *
                   </label>
                   <ReactSelect
                     options={
@@ -424,12 +432,26 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       updatePropertyData("typeOfBuilding", option?.value || "")
                     }
                     placeholder="Select building type"
-                    styles={customStyles}
+                    styles={{
+                      ...customStyles,
+                      control: (provided, state) => ({
+                        ...customStyles.control?.(provided, state),
+                        borderColor:
+                          errors?.typeOfBuilding && touched?.typeOfBuilding
+                            ? "#ef4444"
+                            : provided.borderColor || "#C7CAD0",
+                      }),
+                    }}
                   />
+                  {errors?.typeOfBuilding && touched?.typeOfBuilding && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.typeOfBuilding}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Number of Bedrooms
+                    Number of Bedrooms *
                   </label>
                   <ReactSelect
                     options={propertyReferenceData[
@@ -453,8 +475,22 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       )
                     }
                     placeholder="Select bedrooms"
-                    styles={customStyles}
+                    styles={{
+                      ...customStyles,
+                      control: (provided, state) => ({
+                        ...customStyles.control?.(provided, state),
+                        borderColor:
+                          errors?.bedrooms && touched?.bedrooms
+                            ? "#ef4444"
+                            : provided.borderColor || "#C7CAD0",
+                      }),
+                    }}
                   />
+                  {errors?.bedrooms && touched?.bedrooms && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.bedrooms}
+                    </p>
+                  )}
                 </div>
               </div>
 
