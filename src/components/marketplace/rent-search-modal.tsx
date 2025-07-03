@@ -48,6 +48,7 @@ const RentSearchModal = ({
     setHomeCondition,
     selectedForInspection,
     searchStatus,
+    clearInspectionSelection,
   } = useMarketplace();
 
   const selectedBriefs = selectedForInspection.length;
