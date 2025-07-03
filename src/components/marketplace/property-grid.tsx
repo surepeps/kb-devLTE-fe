@@ -11,15 +11,7 @@ import { IsMobile } from "@/hooks/isMobile";
 import { useMarketplace } from "@/context/marketplace-context";
 
 interface PropertyGridProps {
-  properties: any[];
   marketplaceType: string;
-  filterBy: string[];
-  condition?: string;
-  isLoading?: boolean;
-  error?: string | null;
-  selectedBriefs: Set<any> | number;
-  onPropertySelect: (property: any) => void;
-  onCardPageClick: (property: any) => void;
   itemsPerPage?: number;
   // JV specific props
   isComingFromSubmitLol?: boolean;
@@ -31,8 +23,8 @@ interface PropertyGridProps {
   // Buy specific props
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (value: boolean) => void;
-  // Clear filters
-  onClearFilters?: () => void;
+  // Card page click
+  onCardPageClick: (property: any) => void;
 }
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
