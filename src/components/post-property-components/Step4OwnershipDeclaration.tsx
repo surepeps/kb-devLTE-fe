@@ -68,7 +68,7 @@ const Step4OwnershipDeclaration: React.FC = () => {
 
       <div className="space-y-8">
         {/* Legal Ownership Declaration */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
             Ownership Verification
           </h3>
@@ -109,7 +109,7 @@ const Step4OwnershipDeclaration: React.FC = () => {
         </div>
 
         {/* Documents on Property */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
             Available Documents
           </h3>
@@ -141,7 +141,7 @@ const Step4OwnershipDeclaration: React.FC = () => {
         </div>
 
         {/* Contact Information */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
             Contact Information
           </h3>
