@@ -207,19 +207,12 @@ const SearchModal = ({
         return (
           <div className="relative w-full flex flex-col">
             <RentSearchModal
-              homeCondition={homeCondition}
-              setHomeCondition={setHomeCondition}
-              rentFilterBy={rentFilterBy}
-              setRentFilterBy={setRentFilterBy}
-              selectedBriefs={uniqueProperties.size}
               setSelectedBriefs={setUniqueProperties}
               setAddInspectionModal={setIsAddInspectionModalOpened}
               addForInspectionPayload={addForInspectionPayload}
-              setUsageOptions={setUsageOptions}
               inspectionType={inspectionType}
               setInspectionType={setInspectionType}
               onSearch={handleSearch}
-              searchStatus={searchStatus}
             />
             <section className="flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
               {formikStatus && renderBriefs(userSelectedMarketPlace)}
