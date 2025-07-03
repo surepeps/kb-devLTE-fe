@@ -58,6 +58,24 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     clearAllFilters,
   } = useMarketplace();
 
+  // Get filter by based on marketplace type
+  const getFilterBy = () => {
+    switch (marketplaceType) {
+      case "Buy a property":
+        return usageOptions;
+      case "Rent/Lease a property":
+        return rentFilterBy;
+      case "Find property for joint venture":
+        return jvFilterBy;
+      default:
+        return [];
+    }
+  };
+
+  const filterBy = getFilterBy();
+  const condition =
+    marketplaceType === "Rent/Lease a property" ? homeCondition : undefined;
+
   // Filter properties based on marketplace type and filters
   const filteredProperties = useMemo(() => {
     if (!properties || properties.length === 0) return [];
