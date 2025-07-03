@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import BuyAPropertySearchModal from "./buy-a-property-modal";
-import PropertyCard from "../general-components/card";
+import Card from "../general-components/card";
 import Loading from "../loading-component/loading";
 import Pagination from "../general-components/pagination";
 import EmptyState from "../general-components/empty-state";
