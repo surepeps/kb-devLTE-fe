@@ -172,8 +172,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
           propertyData.contactInfo.firstName &&
           propertyData.contactInfo.lastName &&
           propertyData.contactInfo.email &&
-          propertyData.contactInfo.phone &&
-          propertyData.isLegalOwner
+          propertyData.contactInfo.phone
         );
 
       default:
