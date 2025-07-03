@@ -28,15 +28,7 @@ interface PropertyGridProps {
 }
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
-  properties,
   marketplaceType,
-  filterBy,
-  condition,
-  isLoading = false,
-  error = null,
-  selectedBriefs,
-  onPropertySelect,
-  onCardPageClick,
   itemsPerPage = 12,
   isComingFromSubmitLol,
   setIsComingFromSubmitLol,
@@ -46,10 +38,25 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   isAddForInspectionModalOpened,
   isComingFromPriceNeg,
   setIsComingFromPriceNeg,
-  onClearFilters,
+  onCardPageClick,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const isMobile = IsMobile();
+
+  // Use marketplace context
+  const {
+    properties,
+    formikStatus: isLoading,
+    errMessage: error,
+    usageOptions,
+    rentFilterBy,
+    jvFilterBy,
+    homeCondition,
+    selectedForInspection,
+    toggleInspectionSelection,
+    isSelectedForInspection,
+    clearAllFilters,
+  } = useMarketplace();
 
   // Filter properties based on marketplace type and filters
   const filteredProperties = useMemo(() => {
