@@ -106,10 +106,7 @@ const SearchModal = ({
     setPropertiesSelected([]);
   };
 
-  // Sync local selection to context
-  useEffect(() => {
-    setSelectedBriefs(Array.from(uniqueProperties));
-  }, [uniqueProperties, setSelectedBriefs]);
+  // Note: State syncing moved to marketplace context to avoid render issues
 
   const handleSearch = async (searchPayload: any) => {
     setFormikStatus("pending");
