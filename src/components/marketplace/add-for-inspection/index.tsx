@@ -784,8 +784,16 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         </div>
       </div>
 
-      {/* Modals */}
-      <AnimatePresence>
+      {/* Modals - Wrapped with responsive ModalWrapper */}
+
+      {/* Negotiation Modal */}
+      <ModalWrapper
+        isOpen={currentIndex < allNegotiations.length}
+        onClose={() => setCurrentIndex(allNegotiations.length)}
+        title="Negotiate Price"
+        size="lg"
+        preventBackgroundScroll={true}
+      >
         {currentIndex < allNegotiations.length && (
           <NegiotiatePrice
             currentIndex={currentIndex}
@@ -801,7 +809,16 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
             submitInspectionPayload={submitPayload}
           />
         )}
+      </ModalWrapper>
 
+      {/* Inspection Date Modal */}
+      <ModalWrapper
+        isOpen={isSelectPreferableInspectionDateModalOpened}
+        onClose={() => setSelectPreferableInspectionDateModalOpened(false)}
+        title="Select Inspection Date & Time"
+        size="lg"
+        preventBackgroundScroll={true}
+      >
         {isSelectPreferableInspectionDateModalOpened && (
           <SelectPreferableInspectionDate
             actionTracker={actionTracker}
@@ -812,7 +829,16 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
             submitInspectionPayload={submitPayload}
           />
         )}
+      </ModalWrapper>
 
+      {/* Price Negotiation with Seller Modal */}
+      <ModalWrapper
+        isOpen={!!isComingFromPriceNeg}
+        onClose={() => comingFromPriceNegotiation?.(false)}
+        title="Negotiate with Seller"
+        size="lg"
+        preventBackgroundScroll={true}
+      >
         {isComingFromPriceNeg && (
           <NegiotiatePriceWithSellerModal
             getID={
@@ -832,7 +858,16 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
             }
           />
         )}
+      </ModalWrapper>
 
+      {/* Letter of Intention Modal */}
+      <ModalWrapper
+        isOpen={isLetterOfIntentionModalOpened}
+        onClose={() => setIsLetterOfIntentionModalOpened(false)}
+        title="Letter of Intention"
+        size="xl"
+        preventBackgroundScroll={true}
+      >
         {isLetterOfIntentionModalOpened && (
           <LetterOfIntention
             setIsModalClosed={setIsLetterOfIntentionModalOpened}
@@ -844,7 +879,16 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
             setSubmitInspectionPayload={setSubmitPayload}
           />
         )}
+      </ModalWrapper>
 
+      {/* Upload LOI Document Modal */}
+      <ModalWrapper
+        isOpen={isComingFromSubmitLol}
+        onClose={() => setIsComingFromSubmitLol(false)}
+        title="Upload LOI Document"
+        size="lg"
+        preventBackgroundScroll={true}
+      >
         {isComingFromSubmitLol && (
           <UploadLolDocumentModal
             getID={propertiesSelected[0].id}
@@ -861,7 +905,7 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
             submitInspectionPayload={submitPayload}
           />
         )}
-      </AnimatePresence>
+      </ModalWrapper>
     </Fragment>
   );
 };
