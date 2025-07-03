@@ -321,6 +321,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       setFormikStatus,
       errMessage,
       setErrMessage,
+      fetchInitialData,
       clearAllFilters,
     ],
   );
