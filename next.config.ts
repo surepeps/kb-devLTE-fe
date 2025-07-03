@@ -28,8 +28,6 @@ const nextConfig: NextConfig = {
       useSwcCss: true,
     },
   },
-  // Optimize fetch behavior
-  fetchCache: "default-cache",
 };
 
 export default nextConfig;
