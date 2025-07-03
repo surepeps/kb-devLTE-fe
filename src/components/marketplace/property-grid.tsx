@@ -199,7 +199,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   }
 
   return (
-    <div id="property-grid" className="w-full">
+    <div id="property-grid" className="max-w-10xl mx-auto">
       {/* Results count */}
       <div className="flex justify-between items-center mb-6">
         <p className="text-[#09391C] font-semibold text-lg">

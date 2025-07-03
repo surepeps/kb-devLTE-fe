@@ -161,7 +161,7 @@ const Card = ({
                       <div key={idx} className="flex items-center gap-2">
                         {hasNegotiatedPrice ? (
                           <div className="flex items-center gap-2">
-                            <h2 className="text-lg font-semibold text-[#8DDB90]">
+                            <h2 className="text-md font-semibold text-[#8DDB90]">
                               ₦
                               {Number(
                                 negotiatedPriceData!.negotiatedPrice,
@@ -250,8 +250,8 @@ const Card = ({
           </div>
           {hasNegotiatedPrice ? (
             <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between">
-              <span>
-                Negotiated: ₦
+              <span className="text-xs">
+                New Offer: ₦
                 {Number(negotiatedPriceData!.negotiatedPrice).toLocaleString()}
               </span>
               <button

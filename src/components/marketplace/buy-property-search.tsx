@@ -143,9 +143,11 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
           : [];
 
         const shuffledData = shuffleArray(approvedData);
+
         setProperties(shuffledData);
         setFilteredProperties(shuffledData);
         setTotalPages(Math.ceil(shuffledData.length / itemsPerPage));
+
       } catch (error) {
         console.error("Fetch error:", error);
         toast.error("Failed to load properties");
@@ -211,7 +213,7 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
             </div>
 
             {/* Property Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-2 mb-6">
               {getCurrentPageProperties().map((property, index) => (
                 <Card
                   key={property._id || index}
@@ -260,7 +262,7 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
                 />
               ))}
             </div>
-
+ 
             {/* Pagination */}
             {totalPages > 1 && (
               <Pagination

@@ -176,7 +176,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           return prev;
         }
 
-        // Add to selection
         // Use setTimeout to avoid setState during render
         setTimeout(() => {
           toast.success("Property selected for inspection");
