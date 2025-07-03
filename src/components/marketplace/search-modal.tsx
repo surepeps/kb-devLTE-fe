@@ -21,6 +21,7 @@ import { shuffleArray } from "@/utils/shuffleArray";
 import { useRouter } from "next/navigation";
 import { POST_REQUEST } from "@/utils/requests";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
+import PropertyGrid from "./property-grid";
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
