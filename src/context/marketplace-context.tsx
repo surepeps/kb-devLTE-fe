@@ -209,6 +209,41 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     return selectedForInspection.length < 2;
   }, [selectedForInspection]);
 
+  // Data fetching
+  const fetchInitialData = useCallback(
+    async (briefToFetch: string) => {
+      setFormikStatus("pending");
+      setErrMessage("");
+
+      try {
+        // Import URLS and shuffleArray dynamically to avoid dependency issues
+        const { URLS } = await import("@/utils/URLS");
+        const { shuffleArray } = await import("@/utils/shuffleArray");
+
+        const response = await fetch(URLS.BASE + briefToFetch);
+
+        if (!response.ok) {
+          setErrMessage("Failed to fetch data");
+          setFormikStatus("failed");
+          return;
+        }
+
+        const data = await response.json();
+        setFormikStatus("success");
+        const approvedData = Array.isArray(data.data)
+          ? data.data.filter((item: any) => item.isApproved === true)
+          : [];
+        const shuffledData = shuffleArray(approvedData);
+        setProperties(shuffledData);
+      } catch (err: any) {
+        console.error(err);
+        setErrMessage(err.message || "An error occurred");
+        setFormikStatus("failed");
+      }
+    },
+    [setFormikStatus, setErrMessage, setProperties],
+  );
+
   // Clear all filters
   const clearAllFilters = useCallback(() => {
     setUsageOptions(["All"]);
