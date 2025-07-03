@@ -97,6 +97,8 @@ const SearchModal = ({
     searchStatus,
     setSearchStatus,
     clearAllFilters,
+    toggleInspectionSelection,
+    selectedForInspection,
   } = useMarketplace();
 
   const router = useRouter();
