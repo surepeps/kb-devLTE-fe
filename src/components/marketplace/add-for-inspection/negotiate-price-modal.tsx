@@ -67,6 +67,18 @@ const NegiotiatePrice = ({
 
     findSelectedCard.yourPrice = selectedProperty.yourPrice;
 
+    // Save negotiated price to marketplace context
+    if (
+      selectedProperty.yourPrice &&
+      typeof selectedProperty.askingPrice === "number"
+    ) {
+      addNegotiatedPrice(
+        getID,
+        selectedProperty.askingPrice,
+        Number(selectedProperty.yourPrice),
+      );
+    }
+
     // Update the payload
     setSubmitInspectionPayload((prev) => {
       const updatedProperties =
