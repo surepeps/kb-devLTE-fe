@@ -215,42 +215,66 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
               heading="Enter Full Name"
               className="col-span-1 sm:col-span-2"
             />
-            {/* Attach Receipt */}
-            <div className="h-[58px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <AttachFile
-                heading="Upload your transaction receipt."
-                style={{
-                  width: "283px",
-                }}
-                id="transaction_receipt"
-                setFileUrl={setFileURL}
+            {/* Payment Receipt Upload with Validation */}
+            <div className="w-full">
+              <PaymentReceiptUpload
+                expectedAmount={amountToPay}
+                onValidationComplete={handlePaymentValidation}
+                onFileChange={handleFileChange}
+                currency="NGN"
               />
             </div>
-            <div className="flex items-center justify-end">
-              {fileURL && (
-                <ImageContainer
-                  image={fileURL}
-                  setViewImage={setViewImage}
-                  setImageData={setImageData}
-                  alt="Image"
-                  heading="Image1"
-                  removeImage={() => {
-                    setFileURL(null);
-                  }}
-                  id=""
-                />
-              )}
-            </div>
+            {/* Validation Status Display */}
+            {validationResult && (
+              <div
+                className={`p-4 rounded-lg border ${
+                  paymentValidated
+                    ? "bg-green-50 border-green-200 text-green-800"
+                    : "bg-red-50 border-red-200 text-red-800"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">
+                    {paymentValidated
+                      ? "✅ Payment Verified"
+                      : "❌ Payment Verification Failed"}
+                  </span>
+                  {paymentValidated && validationResult.confidence && (
+                    <span className="text-sm opacity-75">
+                      {validationResult.confidence}% confidence
+                    </span>
+                  )}
+                </div>
+                {!paymentValidated && validationResult.errors && (
+                  <div className="mt-2 text-sm">
+                    {validationResult.errors.map(
+                      (error: string, index: number) => (
+                        <div key={index}>• {error}</div>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* button to submit */}
             <button
               type="submit"
               className={`h-[50px] sm:h-[65px] w-full bg-[#8DDB90] text-base font-bold text-[#FAFAFA] rounded ${
-                !formik.isValid || !formik.dirty || isSubmitting || !fileURL
+                !formik.isValid ||
+                !formik.dirty ||
+                isSubmitting ||
+                !fileURL ||
+                !paymentValidated
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               }`}
               disabled={
-                !formik.isValid || !formik.dirty || isSubmitting || !fileURL
+                !formik.isValid ||
+                !formik.dirty ||
+                isSubmitting ||
+                !fileURL ||
+                !paymentValidated
               }
             >
               {formStatus === "pending" ? (
