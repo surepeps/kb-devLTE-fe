@@ -44,8 +44,13 @@ const BuyAPropertySearchModal = ({
   onSearch: (payload: any) => void;
 }) => {
   // Use marketplace context
-  const { usageOptions, setUsageOptions, selectedForInspection, searchStatus } =
-    useMarketplace();
+  const {
+    usageOptions,
+    setUsageOptions,
+    selectedForInspection,
+    searchStatus,
+    clearInspectionSelection,
+  } = useMarketplace();
 
   const selectedBriefs = selectedForInspection.length;
   const formik = useFormik({
