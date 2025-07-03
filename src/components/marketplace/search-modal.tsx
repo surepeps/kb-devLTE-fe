@@ -341,13 +341,18 @@ const SearchModal = ({
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
+    let mounted = true;
 
     const fetchAllData = async () => {
+      if (!mounted) return;
+
       setFormikStatus("pending");
       try {
         const response = await fetch(URLS.BASE + briefToFetch, {
           signal,
         });
+
+        if (!mounted || signal.aborted) return;
 
         if (!response.ok) {
           setErrMessage("Failed to fetch data");
@@ -356,6 +361,9 @@ const SearchModal = ({
         }
 
         const data = await response.json();
+
+        if (!mounted || signal.aborted) return;
+
         setFormikStatus("success");
         const approvedData = Array.isArray(data.data)
           ? data.data.filter((item: any) => item.isApproved === true)
@@ -363,8 +371,8 @@ const SearchModal = ({
         const shuffledData = shuffleArray(approvedData);
         setProperties(shuffledData);
       } catch (err: any) {
-        // Only handle non-abort errors to prevent AbortError from being logged
-        if (err.name !== "AbortError" && !signal.aborted) {
+        // Only handle non-abort errors and only if component is still mounted
+        if (mounted && err.name !== "AbortError" && !signal.aborted) {
           console.error(err);
           setErrMessage(err.message || "An error occurred");
           setFormikStatus("failed");
@@ -375,11 +383,10 @@ const SearchModal = ({
     fetchAllData();
 
     return () => {
-      // Silent abort - don't need to handle the AbortError in cleanup
-      try {
+      mounted = false;
+      // Silently abort the request
+      if (controller && typeof controller.abort === "function") {
         controller.abort();
-      } catch (error) {
-        // Suppress any errors during cleanup
       }
     };
   }, [briefToFetch, setFormikStatus, setErrMessage, setProperties]);
