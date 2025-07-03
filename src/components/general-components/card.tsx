@@ -68,11 +68,17 @@ const Card = ({
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   // Check if this property has a negotiated price
-  const negotiatedPriceData = getNegotiatedPrice(property?._id);
+  const negotiatedPriceData = useMemo(
+    () => getNegotiatedPrice(property?._id),
+    [getNegotiatedPrice, property?._id],
+  );
   const hasNegotiatedPrice = negotiatedPriceData !== null;
 
   // Check if this property is selected for inspection
-  const isSelectedForInspectionCheck = isSelectedForInspection(property?._id);
+  const isSelectedForInspectionCheck = useMemo(
+    () => isSelectedForInspection(property?._id),
+    [isSelectedForInspection, property?._id],
+  );
 
   useEffect(() => {
     if (count === 6) {
