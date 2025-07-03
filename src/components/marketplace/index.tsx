@@ -70,6 +70,13 @@ const MarketPlace = () => {
     }
   }, [propertySelectedForInspection]);
 
+  // Sync marketplace context selection with local state
+  useEffect(() => {
+    if (selectedForInspection.length > 0) {
+      setPropertiesSelected(selectedForInspection.map((item) => item.property));
+    }
+  }, [selectedForInspection]);
+
   return (
     <div className="min-h-screen bg-[#EEF1F1]">
       {isAddForInspectionModalOpened ? (
