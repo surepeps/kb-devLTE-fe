@@ -388,9 +388,11 @@ const SearchModal = ({
           searchStatus={searchStatus}
           selectedMarketPlace={userSelectedMarketPlace}
           renderBrief={renderDynamicComponent}
-          selectedBriefs={uniqueProperties.size}
+          selectedBriefs={selectedForInspection.length}
           onSelectBrief={handlePropertiesSelection}
-          selectedBriefsList={uniqueProperties} // pass the array
+          selectedBriefsList={
+            new Set(selectedForInspection.map((item) => item.property))
+          } // pass as Set
           onSubmitForInspection={(selectedBriefsList: Set<any>) => {
             setPropertiesSelected(Array.from(selectedBriefsList));
             setIsAddInspectionModalOpened(true);
