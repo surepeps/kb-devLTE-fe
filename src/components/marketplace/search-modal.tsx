@@ -382,7 +382,7 @@ const SearchModal = ({
         // Suppress any errors during cleanup
       }
     };
-  }, [briefToFetch]);
+  }, [briefToFetch, setFormikStatus, setErrMessage, setProperties]);
 
   return (
     <Fragment>
