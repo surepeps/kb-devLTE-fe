@@ -74,26 +74,30 @@ const SearchModal = ({
   const [uniqueProperties, setUniqueProperties] = useState<Set<any>>(
     new Set(propertiesSelected),
   );
-  const [formikStatus, setFormikStatus] = useState<
-    "idle" | "pending" | "success" | "failed"
-  >("success");
-  const [errMessage, setErrMessage] = useState<string>("");
-  const [properties, setProperties] = useState<any[]>([]);
-  const [usageOptions, setUsageOptions] = useState<string[]>([]);
-  const [rentFilterBy, setRentFilterBy] = useState<string[]>([]);
-  const [jvFilterBy, setJvFilterBy] = useState<string[]>(["All"]);
-  const [homeCondition, setHomeCondition] = useState<string>("");
   const [briefToFetch, setBriefToFetch] = useState<string>(
     URLS.buyersFetchBriefs,
   );
 
-  const [searchStatus, setSearchStatus] = useState<{
-    status: "pending" | "success" | "failed" | "idle";
-    couldNotFindAProperty: boolean;
-  }>({
-    status: "idle",
-    couldNotFindAProperty: false,
-  });
+  // Use marketplace context for state management
+  const {
+    formikStatus,
+    setFormikStatus,
+    errMessage,
+    setErrMessage,
+    properties,
+    setProperties,
+    usageOptions,
+    setUsageOptions,
+    rentFilterBy,
+    setRentFilterBy,
+    jvFilterBy,
+    setJvFilterBy,
+    homeCondition,
+    setHomeCondition,
+    searchStatus,
+    setSearchStatus,
+    clearAllFilters,
+  } = useMarketplace();
 
   const router = useRouter();
 
