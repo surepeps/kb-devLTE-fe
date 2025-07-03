@@ -121,6 +121,14 @@ const MarketPlace = () => {
                 selectedType={selectedType}
                 onSelect={() => {
                   setSelectedType(item);
+                  // Navigate to specific page
+                  if (item === "Buy a property") {
+                    router.push("/market-place/buy-a-property");
+                  } else if (item === "Find property for joint venture") {
+                    router.push("/market-place/jv");
+                  } else if (item === "Rent/Lease a property") {
+                    router.push("/market-place/rent");
+                  }
                 }}
                 isSelected
                 key={idx}
