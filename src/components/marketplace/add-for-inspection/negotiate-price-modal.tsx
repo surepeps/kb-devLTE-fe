@@ -46,7 +46,8 @@ const NegiotiatePrice = ({
     React.SetStateAction<SubmitInspectionPayloadProp>
   >;
 }): React.JSX.Element => {
-  //const [inputValue, setInputValue] = useState<string>('');
+  const { addNegotiatedPrice } = useMarketplace();
+
   const [selectedProperty, setSelectedProperty] =
     useState<NegotiationModalProps>({
       id: null,
