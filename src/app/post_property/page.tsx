@@ -18,7 +18,7 @@ import Step3ImageUpload from "@/components/post-property-components/Step3ImageUp
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
-import BreadcrumbNav from "@/components/general-components/BreadcrumbNav";
+// import BreadcrumbNav from '@/components/general-components/BreadcrumbNav';
 
 // Import additional step components
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
@@ -229,13 +229,13 @@ const PostProperty = () => {
     <div className="min-h-screen bg-[#EEF1F1] py-8">
       <div className="container mx-auto px-6">
         {/* Breadcrumb */}
-        <BreadcrumbNav
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Post Property", href: "/post_property" },
-            { label: getStepTitle() },
-          ]}
-        />
+        <nav className="text-sm text-[#5A5D63] mb-6">
+          <span>Home</span>
+          <span className="mx-2">›</span>
+          <span>Post Property</span>
+          <span className="mx-2">›</span>
+          <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
+        </nav>
 
         {/* Header */}
         <div className="text-center mb-8">
@@ -285,17 +285,18 @@ const PostProperty = () => {
 
           <div className="flex gap-4">
             {showPreview ? (
-              <Button
-                type="button"
-                value={isSubmitting ? "Submitting..." : "Submit Property"}
-                onClick={handleSubmit}
-                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
-                disabled={isSubmitting}
-              >
+              <div className="relative">
+                <Button
+                  type="button"
+                  value={isSubmitting ? "Submitting..." : "Submit Property"}
+                  onClick={handleSubmit}
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                  isDisabled={isSubmitting}
+                />
                 {isSubmitting && (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 )}
-              </Button>
+              </div>
             ) : (
               <>
                 {currentStep === 4 && (
@@ -304,7 +305,7 @@ const PostProperty = () => {
                     value="Preview"
                     onClick={() => setShowPreview(true)}
                     className="border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                    disabled={!validateCurrentStep() || isSubmitting}
+                    isDisabled={!validateCurrentStep() || isSubmitting}
                   />
                 )}
                 <Button
