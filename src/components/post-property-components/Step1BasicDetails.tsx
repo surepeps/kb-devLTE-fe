@@ -72,6 +72,16 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
         label: area,
       }));
       setAreaOptions(areas);
+
+      // Clear area if it's not valid for new LGA
+      if (propertyData.area && typeof propertyData.area === "object") {
+        const isValidArea = areas.some(
+          (area) => area.value === propertyData.area.value,
+        );
+        if (!isValidArea) {
+          updatePropertyData("area", "");
+        }
+      }
     } else {
       setAreaOptions([]);
       updatePropertyData("area", "");
@@ -406,13 +416,12 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   value={
                     propertyData.area && typeof propertyData.area === "object"
                       ? propertyData.area
-                      : propertyData.area
+                      : propertyData.area &&
+                          typeof propertyData.area === "string"
                         ? { value: propertyData.area, label: propertyData.area }
                         : null
                   }
-                  onChange={(option) =>
-                    updatePropertyData("area", option?.value || "")
-                  }
+                  onChange={(option) => updatePropertyData("area", option)}
                   placeholder="Select area/neighborhood"
                   styles={{
                     ...customStyles,
@@ -426,6 +435,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   }}
                   isSearchable
                   isDisabled={!propertyData.lga}
+                  isClearable
                 />
               ) : (
                 <Input
@@ -436,7 +446,10 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   value={
                     typeof propertyData.area === "string"
                       ? propertyData.area
-                      : ""
+                      : typeof propertyData.area === "object" &&
+                          propertyData.area?.value
+                        ? propertyData.area.value
+                        : ""
                   }
                   onChange={(e) => updatePropertyData("area", e.target.value)}
                   className={

@@ -187,10 +187,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           return prev;
         }
 
-        // Schedule toast for next tick to avoid setState during render
-        setTimeout(() => {
-          toast.success("Property selected for inspection");
-        }, 0);
+        // Show toast only once per selection
+        if (!prev.some((item) => item.propertyId === propertyId)) {
+          setTimeout(() => {
+            toast.success("Property selected for inspection");
+          }, 0);
+        }
         return [...prev, { propertyId, property }];
       }
     });

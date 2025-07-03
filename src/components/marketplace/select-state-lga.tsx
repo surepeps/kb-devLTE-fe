@@ -63,8 +63,11 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
     );
 
     // Update formik values
-    formik.setFieldValue("selectedState", location.state);
+    formik.setFieldValue("selectedState", location.state || "");
     formik.setFieldValue("selectedLGA", location.lga || "");
+
+    // Update the input display value
+    formik.setFieldValue("locationDisplay", locationString);
 
     // Close dropdown
     setShowLocationModal(false);
@@ -91,16 +94,22 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
           title={title}
           disabled={isDisabled}
           value={
-            formik.values.selectedState || formik.values.selectedLGA
+            formik.values.locationDisplay ||
+            (formik.values.selectedState || formik.values.selectedLGA
               ? `${formik.values.selectedState}${
                   formik.values.selectedLGA
                     ? `, ${formik.values.selectedLGA}`
                     : ""
                 }`
-              : ""
+              : "")
           }
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const value = event.target.value;
+
+            // Update the display value
+            formik.setFieldValue("locationDisplay", value);
+
+            // Parse the input for state and LGA
             const parts = value.split(",").map((part) => part.trim());
 
             if (parts.length >= 1) {
