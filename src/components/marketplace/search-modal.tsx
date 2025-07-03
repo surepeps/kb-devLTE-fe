@@ -205,8 +205,7 @@ const SearchModal = ({
               searchStatus={searchStatus}
             />
             <section className="w-full flex-1 overflow-y-auto flex justify-center items-start md:mt-[20px]">
-              {(formikStatus || usageOptions) &&
-                renderBriefs("Buy a property", usageOptions)}
+              {(formikStatus || usageOptions) && renderBriefs("Buy a property")}
             </section>
           </div>
         );
