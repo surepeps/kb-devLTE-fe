@@ -63,8 +63,11 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
     );
 
     // Update formik values
-    formik.setFieldValue("selectedState", location.state);
+    formik.setFieldValue("selectedState", location.state || "");
     formik.setFieldValue("selectedLGA", location.lga || "");
+
+    // Update the input display value
+    formik.setFieldValue("locationDisplay", locationString);
 
     // Close dropdown
     setShowLocationModal(false);
