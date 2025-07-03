@@ -155,31 +155,25 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Inspection selection methods
   const toggleInspectionSelection = useCallback((property: any) => {
+    const propertyId = property._id;
+
     setSelectedForInspection((prev) => {
-      const propertyId = property._id;
       const isAlreadySelected = prev.some(
         (item) => item.propertyId === propertyId,
       );
 
       if (isAlreadySelected) {
-        // Remove from selection
+        // Remove from selection (no notification needed for removal)
         return prev.filter((item) => item.propertyId !== propertyId);
       } else {
         // Check if we can select more (max 2)
         if (prev.length >= 2) {
-          // Use setTimeout to avoid setState during render
-          setTimeout(() => {
-            toast.error(
-              "Maximum of 2 properties can be selected for inspection",
-            );
-          }, 0);
+          toast.error("Maximum of 2 properties can be selected for inspection");
           return prev;
         }
 
-        // Use setTimeout to avoid setState during render
-        setTimeout(() => {
-          toast.success("Property selected for inspection");
-        }, 0);
+        // Add to selection and show success notification
+        toast.success("Property selected for inspection");
         return [...prev, { propertyId, property }];
       }
     });
