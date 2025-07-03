@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Input from "@/components/general-components/Input";
 import ReactSelect from "react-select";
+import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import customStyles from "@/styles/inputStyle";
 import {
@@ -12,6 +13,7 @@ import {
   getLGAs,
   getAreas,
 } from "@/data/dummy-location-data";
+import { propertyReferenceData } from "@/data/buy_page_data";
 
 interface Option {
   value: string;
