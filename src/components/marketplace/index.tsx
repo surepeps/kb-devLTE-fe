@@ -25,6 +25,7 @@ const MarketPlace = () => {
   } = usePageContext();
   // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
   //   React.useState<boolean>(false);
+  const { selectedForInspection, clearInspectionSelection } = useMarketplace();
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState(false);
