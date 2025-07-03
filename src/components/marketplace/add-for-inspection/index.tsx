@@ -663,13 +663,17 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
 
   const handleRemoveProperty = useCallback(
     (propertyId: string) => {
+      // Remove from marketplace context
+      removeFromInspection(propertyId);
+
+      // Remove from local state
       const filteredArray = propertiesSelected.filter(
         (item) => item._id !== propertyId,
       );
 
       setPropertiesSelected(filteredArray);
     },
-    [propertiesSelected, setPropertiesSelected],
+    [propertiesSelected, setPropertiesSelected, removeFromInspection],
   );
 
   const handlePriceNegotiation = useCallback(
