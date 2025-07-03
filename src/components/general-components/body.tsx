@@ -4,9 +4,6 @@ import { usePageContext } from '@/context/page-context';
 import React, { Fragment, ReactNode, useState } from 'react';
 import SubmitPopUp from '../submit';
 import OnUpgradeNotification from '../settings-components/on-ugrade-notification';
-import ApproveBriefs from '../admincomponents/approveBriefs';
-import RejectBriefs from '../admincomponents/rejectBriefs';
-import DeleteBriefs from '../admincomponents/deleteBriefs';
 //import SubmitPopUp from './submit';
 
 const Body = ({ children }: { children: ReactNode }) => {
@@ -39,37 +36,13 @@ const Body = ({ children }: { children: ReactNode }) => {
       {isSubmittedSuccessfully && <SubmitPopUp />}
       {settings.isUpgradeButtonClicked && <OnUpgradeNotification />}
       {dashboard.approveBriefsTable.isApproveClicked && (
-        <ApproveBriefs
-          brief={undefined}
-          onConfirm={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-          onCancel={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
+        <>lorem add</>
       )}
       {dashboard.approveBriefsTable.isRejectClicked && (
-        <RejectBriefs
-          brief={undefined}
-          onConfirm={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-          onCancel={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
+        <>Lorem, ipsum.</>
       )}
       {dashboard.approveBriefsTable.isDeleteClicked && (
-        <DeleteBriefs
-          brief={undefined}
-          onConfirm={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-          onCancel={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
+        <>Lorem ipsum dolor sit amet.</>
       )}
     </Fragment>
   );

@@ -18,13 +18,12 @@ interface Props {
 
 export default function HeaderFooterWrapper({ children, isComingSoon }: Props) {
 	const pathname = usePathname();
-	const isAdminRoute = pathname?.startsWith("/admin") ?? false;
 	const { viewImage, imageData } = usePageContext();
 	return (
 		<Fragment>
-			{!isAdminRoute && <HeaderLogic isComingSoon={isComingSoon} />}
+			<HeaderLogic isComingSoon={isComingSoon} />
 			{children}
-			{!isAdminRoute && <Footer isComingSoon={isComingSoon} />}
+			<Footer isComingSoon={isComingSoon} />
 			{viewImage && <ViewImage imageData={imageData} />}
 		</Fragment>
 	);
