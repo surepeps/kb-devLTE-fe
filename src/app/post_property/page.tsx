@@ -132,61 +132,95 @@ const PostProperty = () => {
     try {
       setIsSubmitting(true);
 
-      // Prepare form data
-      const formData = new FormData();
-
-      // Add property data
-      formData.append("propertyType", propertyData.propertyType);
-      formData.append("price", propertyData.price);
-      if (propertyData.holdDuration) {
-        formData.append("holdDuration", propertyData.holdDuration);
-      }
-      formData.append("description", propertyData.description);
-      formData.append("state", propertyData.state?.value || "");
-      formData.append("lga", propertyData.lga?.value || "");
-      formData.append("area", propertyData.area);
-      formData.append("bedrooms", propertyData.bedrooms.toString());
-      formData.append("bathrooms", propertyData.bathrooms.toString());
-      formData.append("toilets", propertyData.toilets.toString());
-      formData.append("parkingSpaces", propertyData.parkingSpaces.toString());
-      formData.append("features", JSON.stringify(propertyData.features));
-      formData.append(
-        "tenantCriteria",
-        JSON.stringify(propertyData.tenantCriteria),
-      );
-      formData.append(
-        "jvConditions",
-        JSON.stringify(propertyData.jvConditions),
-      );
-      formData.append("documents", JSON.stringify(propertyData.documents));
-      formData.append(
-        "ownershipDocuments",
-        JSON.stringify(propertyData.ownershipDocuments),
-      );
-      formData.append("contactInfo", JSON.stringify(propertyData.contactInfo));
-      formData.append("isLegalOwner", propertyData.isLegalOwner.toString());
-
-      // Add images
+      // 1. Upload images first and collect URLs
+      const uploadedImageUrls: string[] = [];
       const validImages = images.filter((img) => img.file !== null);
-      validImages.forEach((image, index) => {
-        if (image.file) {
-          formData.append(`image${index}`, image.file);
-        }
-      });
 
-      // Submit to API
-      const response = await POST_REQUEST_FILE_UPLOAD(
-        `${URLS.BASE}${URLS.postProperty}`,
-        formData,
+      for (const image of validImages) {
+        if (image.file) {
+          const formData = new FormData();
+          formData.append("file", image.file);
+
+          try {
+            const uploadResponse = await POST_REQUEST_FILE_UPLOAD(
+              `${URLS.BASE}${URLS.uploadImg}`,
+              formData,
+              Cookies.get("token"),
+            );
+
+            if (uploadResponse?.url) {
+              uploadedImageUrls.push(uploadResponse.url);
+            }
+          } catch (error) {
+            console.error("Error uploading image:", error);
+          }
+        }
+      }
+
+      // 2. Determine brief type
+      let briefType = "";
+      if (propertyData.propertyType === "sell") briefType = "Outright Sales";
+      else if (propertyData.propertyType === "rent") briefType = "Rent";
+      else if (propertyData.propertyType === "jv") briefType = "Joint Venture";
+
+      // 3. Prepare property payload
+      const payload = {
+        propertyType: propertyData.propertyCategory,
+        propertyCondition: propertyData.propertyCondition,
+        typeOfBuilding: propertyData.typeOfBuilding,
+        rentalType: propertyData.rentalType,
+        features: propertyData.features,
+        docOnProperty: propertyData.documents.map((doc) => ({
+          docName: doc,
+          isProvided: true,
+        })),
+        location: {
+          state: propertyData.state?.value || "",
+          localGovernment: propertyData.lga?.value || "",
+          area: propertyData.area,
+        },
+        price: propertyData.price,
+        leaseHold: propertyData.leaseHold,
+        owner: {
+          fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
+          phoneNumber: propertyData.contactInfo.phone,
+          email: propertyData.contactInfo.email,
+        },
+        areYouTheOwner: propertyData.isLegalOwner,
+        landSize: {
+          measurementType: propertyData.measurementType,
+          size: propertyData.landSize,
+        },
+        briefType: briefType,
+        additionalFeatures: {
+          noOfBedroom: propertyData.bedrooms.toString(),
+          noOfBathroom: propertyData.bathrooms.toString(),
+          noOfToilet: propertyData.toilets.toString(),
+          noOfCarPark: propertyData.parkingSpaces.toString(),
+        },
+        tenantCriteria: propertyData.tenantCriteria,
+        jvConditions: propertyData.jvConditions,
+        addtionalInfo: propertyData.additionalInfo,
+        pictures: uploadedImageUrls,
+        isTenanted: propertyData.isTenanted,
+        holdDuration: propertyData.holdDuration,
+      };
+
+      // 4. Submit to API
+      const response = await POST_REQUEST(
+        `${URLS.BASE}${URLS.listNewProperty}`,
+        payload,
         Cookies.get("token"),
       );
 
-      if (response.success) {
+      if (response && (response as any).owner) {
         toast.success("Property listed successfully!");
         resetForm();
         router.push("/my_listing");
       } else {
-        toast.error(response.message || "Failed to submit property");
+        const errorMessage =
+          (response as any)?.error || "Failed to submit property";
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Error submitting property:", error);
