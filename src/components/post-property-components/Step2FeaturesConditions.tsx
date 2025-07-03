@@ -196,10 +196,67 @@ const Step2FeaturesConditions: React.FC = () => {
           </div>
         )}
 
+        {/* Property Tenancy Status */}
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+            Is your property currently tenanted?
+          </h3>
+          <div className="flex flex-wrap gap-6">
+            <RadioCheck
+              type="radio"
+              value="Yes"
+              name="isTenanted"
+              handleChange={() => updatePropertyData("isTenanted", "Yes")}
+              selectedValue={propertyData.isTenanted}
+            />
+            <RadioCheck
+              type="radio"
+              value="No"
+              name="isTenanted"
+              handleChange={() => updatePropertyData("isTenanted", "No")}
+              selectedValue={propertyData.isTenanted}
+            />
+            <RadioCheck
+              type="radio"
+              value="I live in it"
+              name="isTenanted"
+              handleChange={() =>
+                updatePropertyData("isTenanted", "I live in it")
+              }
+              selectedValue={propertyData.isTenanted}
+            />
+          </div>
+        </div>
+
+        {/* Additional Information */}
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+            Additional Information
+          </h3>
+          <Input
+            name="additionalInfo"
+            label=""
+            type="textArea"
+            placeholder="Enter any additional information about your property"
+            value={propertyData.additionalInfo}
+            onChange={(e) =>
+              updatePropertyData("additionalInfo", e.target.value)
+            }
+            multiline={true}
+            rows={4}
+          />
+        </div>
+
         {/* Summary */}
         <div className="bg-gray-50 rounded-lg p-6">
           <h4 className="font-semibold text-[#09391C] mb-3">Summary</h4>
           <div className="space-y-2 text-sm text-[#5A5D63]">
+            {propertyData.propertyType !== "rent" && (
+              <p>
+                <span className="font-medium">Documents selected:</span>{" "}
+                {propertyData.documents.length}
+              </p>
+            )}
             <p>
               <span className="font-medium">Features selected:</span>{" "}
               {propertyData.features.length}
@@ -216,6 +273,10 @@ const Step2FeaturesConditions: React.FC = () => {
                 {propertyData.jvConditions.length}
               </p>
             )}
+            <p>
+              <span className="font-medium">Tenancy status:</span>{" "}
+              {propertyData.isTenanted || "Not specified"}
+            </p>
           </div>
         </div>
       </div>
