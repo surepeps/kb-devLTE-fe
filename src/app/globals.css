@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("../styles/modal.css");
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -20,7 +22,7 @@ body {
   /* color: var(--foreground);
   background: var(--background); */
   background: #eef1f1;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -53,28 +55,31 @@ body {
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('/Fonts/WEB/fonts/ClashDisplay-Regular.woff2') format('woff2'),
-    url('/Fonts/OTF/ClashDisplay-Regular.otf') format('opentype'),
-    url('/Fonts/WEB/fonts/ClashDisplay-Regular.woff') format('woff'); /* Optional fallback */
+  font-family: "Clash Display";
+  src:
+    url("/Fonts/WEB/fonts/ClashDisplay-Regular.woff2") format("woff2"),
+    url("/Fonts/OTF/ClashDisplay-Regular.otf") format("opentype"),
+    url("/Fonts/WEB/fonts/ClashDisplay-Regular.woff") format("woff"); /* Optional fallback */
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('/Fonts/WEB/fonts/ClashDisplay-Semibold.woff2') format('woff2'),
-    url('/Fonts/OTF/ClashDisplay-Medium.otf') format('opentype'),
-    url('/Fonts/WEB/fonts/ClashDisplay-Medium.woff') format('woff'); /* Optional fallback */
+  font-family: "Clash Display";
+  src:
+    url("/Fonts/WEB/fonts/ClashDisplay-Semibold.woff2") format("woff2"),
+    url("/Fonts/OTF/ClashDisplay-Medium.otf") format("opentype"),
+    url("/Fonts/WEB/fonts/ClashDisplay-Medium.woff") format("woff"); /* Optional fallback */
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('/Fonts/WEB/fonts/ClashDisplay-Bold.woff2') format('woff2'),
-    url('/Fonts/OTF/ClashDisplay-Bold.otf') format('opentype'),
-    url('/Fonts/WEB/fonts/ClashDisplay-Bold.woff') format('woff'); /* Optional fallback */
+  font-family: "Clash Display";
+  src:
+    url("/Fonts/WEB/fonts/ClashDisplay-Bold.woff2") format("woff2"),
+    url("/Fonts/OTF/ClashDisplay-Bold.otf") format("opentype"),
+    url("/Fonts/WEB/fonts/ClashDisplay-Bold.woff") format("woff"); /* Optional fallback */
   font-weight: 400;
   font-style: normal;
 }
@@ -106,4 +111,17 @@ body {
   .container {
     max-width: 1400px;
   }
+}
+
+/* Modal and scroll utilities */
+.no-scroll {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.modal-backdrop {
+  backdrop-filter: blur(2px);
 }

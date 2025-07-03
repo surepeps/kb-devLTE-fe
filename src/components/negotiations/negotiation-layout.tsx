@@ -1,21 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { NegotiationHeader } from "./negotiation-header"
-import { CountdownTimer } from "../extrals/countdown-timer"
+import { motion, AnimatePresence } from "framer-motion";
+import { NegotiationHeader } from "./negotiation-header";
+import { CountdownTimer } from "../extrals/countdown-timer";
 
 interface NegotiationLayoutProps {
-  fullName: string
-  title: string
-  createdAt: string | null
-  children: React.ReactNode
+  fullName: string;
+  title: string;
+  createdAt: string | null;
+  children: React.ReactNode;
 }
 
-export const NegotiationLayout = ({ fullName, title, createdAt, children }: NegotiationLayoutProps) => {
+export const NegotiationLayout = ({
+  fullName,
+  title,
+  createdAt,
+  children,
+}: NegotiationLayoutProps) => {
   return (
-    <motion.div className="w-full flex items-center justify-center flex-col gap-[20px] md:gap-[40px] md:py-[50px] px-[20px] pb-[20px]">
+    <motion.div className="w-full min-h-screen flex items-center justify-center flex-col gap-[20px] md:gap-[40px] py-[20px] md:py-[50px] px-[20px] bg-[#EEF1F1]">
       <NegotiationHeader fullName={fullName} title={title} />
 
       <AnimatePresence>
@@ -25,12 +30,12 @@ export const NegotiationLayout = ({ fullName, title, createdAt, children }: Nego
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.2 }}
-          className="lg:w-[933px] w-full flex flex-col gap-[30px] bg-[#FFFFFF] py-[30px] md:py-[50px] md:px-[50px] px-[30px] border-[1px] border-[#C7CAD0]"
+          className="w-full max-w-[933px] flex flex-col gap-[30px] bg-[#FFFFFF] py-[30px] md:py-[50px] px-[20px] md:px-[50px] border-[1px] border-[#C7CAD0] rounded-lg shadow-sm mx-auto"
         >
           <CountdownTimer createdAt={createdAt} />
-          {children}
+          <div className="negotiation-content">{children}</div>
         </motion.div>
       </AnimatePresence>
     </motion.div>
-  )
-}
+  );
+};
