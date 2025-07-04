@@ -150,15 +150,24 @@ const SearchModal = ({
 
     // Handle price range from searchPayload.price
     if (searchPayload.price) {
-      if (searchPayload.price.min || searchPayload.price.max) {
-        searchParams.priceRange = {
-          ...(searchPayload.price.min && {
-            min: Number(searchPayload.price.min),
-          }),
-          ...(searchPayload.price.max && {
-            max: Number(searchPayload.price.max),
-          }),
-        };
+      const priceRange: any = {};
+
+      // Handle different price formats
+      if (searchPayload.price.$gte) {
+        priceRange.min = Number(searchPayload.price.$gte);
+      }
+      if (searchPayload.price.$lte) {
+        priceRange.max = Number(searchPayload.price.$lte);
+      }
+      if (searchPayload.price.min) {
+        priceRange.min = Number(searchPayload.price.min);
+      }
+      if (searchPayload.price.max) {
+        priceRange.max = Number(searchPayload.price.max);
+      }
+
+      if (Object.keys(priceRange).length > 0) {
+        searchParams.priceRange = priceRange;
       }
     }
 
