@@ -15,9 +15,10 @@ const publicRoutes = [
   "/policies_page",
   "/auth/login",
   "/auth/register",
-  "/auth/reset-password",
-  "/agent/auth/login",
-  "/agent/auth/register",
+  "/auth/forgot-password",
+  "/auth/forgot-password/verify",
+  "/auth/forgot-password/reset",
+  "/auth/verification-sent",
   "/buy_page",
   "/rent_page",
   "/agent_marketplace",
@@ -54,7 +55,6 @@ const userProtectedRoutes = [
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const agentToken = request.cookies.get("agentToken")?.value;
   const userToken = request.cookies.get("token")?.value;
 
   // Skip middleware for API routes and static files
@@ -62,28 +62,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Redirect old agent auth routes to new consolidated auth
+  if (pathname.startsWith("/agent/auth/login")) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+  if (pathname.startsWith("/agent/auth/register")) {
+    return NextResponse.redirect(new URL("/auth/register", request.url));
+  }
+
   // Handle auth redirections for logged-in users
   if (userToken) {
     if (pathname === "/auth/login" || pathname === "/auth/register") {
-      return NextResponse.redirect(new URL("/landlord", request.url));
-    }
-    // Redirect /landlord to dashboard if already logged in as landlord
-    // if (pathname === "/landlord") {
-    //   return NextResponse.redirect(new URL("/dashboard", request.url));
-    // }
-  }
-
-  // Handle auth redirections for logged-in agents
-  if (agentToken) {
-    if (
-      pathname === "/agent/auth/login" ||
-      pathname === "/agent/auth/register"
-    ) {
-      return NextResponse.redirect(new URL("/agent/dashboard", request.url));
-    }
-    // Redirect /agent to dashboard if already logged in as agent
-    if (pathname === "/agent") {
-      return NextResponse.redirect(new URL("/agent/dashboard", request.url));
+      // Redirect based on user type - this would need to be determined from the token
+      // For now, redirecting to a general dashboard
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
@@ -102,8 +94,8 @@ export function middleware(request: NextRequest) {
   );
 
   if (isAgentProtectedRoute) {
-    if (!agentToken && !userToken) {
-      const loginUrl = new URL("/agent/auth/login", request.url);
+    if (!userToken) {
+      const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -116,7 +108,7 @@ export function middleware(request: NextRequest) {
   );
 
   if (isUserProtectedRoute) {
-    if (!userToken && !agentToken) {
+    if (!userToken) {
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
