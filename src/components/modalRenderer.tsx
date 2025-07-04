@@ -81,7 +81,7 @@ export const ModalRenderer: React.FC<ModalRendererProps> = ({
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
+  ); 
 };
 
 export default ModalRenderer;
