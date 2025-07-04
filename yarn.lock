@@ -503,6 +503,11 @@
   resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.7.tgz"
   integrity sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==
 
+"@types/facebook-js-sdk@^3.3.12":
+  version "3.3.12"
+  resolved "https://registry.npmjs.org/@types/facebook-js-sdk/-/facebook-js-sdk-3.3.12.tgz"
+  integrity sha512-X1JKH2s0rxsayEmS/NExj96byj59DNOk7jJIzkaqJUO1EM85+J4cS8run45Z4fgG7uFsZPkkdBBkNCxs5QA3Vw==
+
 "@types/hoist-non-react-statics@^3.3.1":
   version "3.3.6"
   resolved "https://registry.npmjs.org/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.6.tgz"

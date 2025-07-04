@@ -59,7 +59,7 @@ export default function AgentDashboard() {
 
   useEffect(() => {
     if (!user) {
-      router.push("/agent/auth/login");
+      router.push("/auth/login");
       return;
     }
 
