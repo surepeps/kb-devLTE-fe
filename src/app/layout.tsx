@@ -14,6 +14,7 @@ import { UserProvider } from "@/context/user-context";
 import { ModalProvider } from "@/context/modalContext";
 import { CreateBriefProvider } from "@/context/create-brief-context";
 import { SelectedBriefsProvider } from "@/context/selected-briefs-context";
+import { MarketplaceProvider } from "@/context/marketplace-context";
 import Homepage from "@/app/homepage/page";
 import Countdown from "./coming-soon-modal/page";
 // import { GoogleAnalytics } from '@next/third-parties/google';
