@@ -448,9 +448,16 @@ const Register = () => {
           </div>
           {/**Button */}
           <Button
-            value={`${isDisabled ? "Registering..." : "Register"}`}
+            value={`${
+              isDisabled
+                ? "Registering..."
+                : isSuccess
+                  ? "Registration Successful!"
+                  : "Register"
+            }`}
             isDisabled={
               isDisabled ||
+              isSuccess ||
               !agreed ||
               !formik.values.email ||
               !formik.values.password ||
