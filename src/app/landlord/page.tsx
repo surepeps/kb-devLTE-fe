@@ -178,6 +178,38 @@ export default function LandlordDashboard() {
           totalEarnings: 0,
         });
       }
+
+      // Fetch briefs
+      let userBriefs = [];
+      for (const endpoint of briefEndpoints) {
+        try {
+          const briefsResponse = await GET_REQUEST(
+            endpoint,
+            Cookies.get("token"),
+          );
+
+          if (briefsResponse?.data || briefsResponse) {
+            userBriefs = Array.isArray(briefsResponse?.data)
+              ? briefsResponse.data
+              : Array.isArray(briefsResponse)
+                ? briefsResponse
+                : [];
+            break;
+          }
+        } catch (error) {
+          console.log(`Failed to fetch briefs from ${endpoint}:`, error);
+          continue;
+        }
+      }
+
+      // Filter briefs to only include ones belonging to the current user
+      const filteredBriefs = userBriefs.filter(
+        (brief: any) =>
+          brief.owner?.email === user?.email ||
+          brief.ownerId === user?._id ||
+          brief.userId === user?._id,
+      );
+      setBriefs(filteredBriefs);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Failed to load dashboard data");
