@@ -393,19 +393,19 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
               </div>
             </div>
             {/**buttons */}
-            <div className=" w-full flex gap-[15px] h-[57px]">
+            <div className="w-full flex flex-col sm:flex-row gap-[12px] sm:gap-[15px]">
               <button
                 type="submit"
-                className={`w-1/2 h-[57px] ${
+                className={`flex-1 h-[50px] sm:h-[57px] ${
                   allFilled ? "bg-[#8DDB90]" : "bg-[#5A5D63]"
-                } text-[#FFFFFF] font-bold text-lg ${archivo.className}`}
+                } text-[#FFFFFF] font-bold text-sm sm:text-base md:text-lg ${archivo.className} rounded`}
               >
                 Submit
               </button>
               <button
-                //onClick={() => closeModal(false)}
+                onClick={() => closeModal?.(false)}
                 type="button"
-                className={`w-1/2 h-[57px] bg-transparent border-[1px] border-[#5A5D63] text-[#414357] font-medium text-lg ${archivo.className}`}
+                className={`flex-1 h-[50px] sm:h-[57px] bg-transparent border-[1px] border-[#5A5D63] text-[#414357] font-medium text-sm sm:text-base md:text-lg ${archivo.className} rounded hover:bg-[#5A5D63] hover:text-white transition-colors`}
               >
                 Close
               </button>
