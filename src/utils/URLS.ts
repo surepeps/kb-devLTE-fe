@@ -13,6 +13,8 @@ export const URLS = {
   agentProfile: "/agent/profile",
   googleSignup: "/signup/google",
   googleLogin: "/login/google",
+  facebookSignup: "/signup/facebook",
+  facebookLogin: "/login/facebook",
   verifyEmail: "/verify-email",
   agentCreateBrief: "/properties/sell/new",
   listNewProperty: "/properties/new",
