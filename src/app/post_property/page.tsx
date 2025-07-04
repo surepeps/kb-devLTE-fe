@@ -518,7 +518,7 @@ const PostProperty = () => {
           </Formik>
         </div>
       </div>
-    </>
+    </AgentAccessBarrier>
   );
 };
 
