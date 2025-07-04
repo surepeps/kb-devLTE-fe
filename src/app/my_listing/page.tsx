@@ -39,7 +39,21 @@ const MyListingPage = () => {
           Cookies.get("token"),
         );
         console.log("Fetched properties:", response);
-        setProperties(response?.data || response || []);
+
+        // Add status labels to properties
+        const propertiesWithStatus = (response?.data || response || []).map(
+          (property: any) => ({
+            ...property,
+            statusLabel:
+              property.isApproved === true
+                ? "Approved"
+                : property.isApproved === false
+                  ? "Rejected"
+                  : "Pending Review",
+          }),
+        );
+
+        setProperties(propertiesWithStatus);
       } catch (err) {
         console.error("Error fetching properties:", err);
         setProperties([]);
@@ -170,21 +184,30 @@ const MyListingPage = () => {
               </div>
               <div className="bg-white rounded-lg p-6 shadow-sm">
                 <div className="text-2xl font-bold text-green-600 mb-1">
-                  {properties.filter((p) => p.status === "active").length}
+                  {
+                    properties.filter((p) => p.statusLabel === "Approved")
+                      .length
+                  }
                 </div>
-                <div className="text-sm text-[#5A5D63]">Active Listings</div>
+                <div className="text-sm text-[#5A5D63]">Approved</div>
               </div>
               <div className="bg-white rounded-lg p-6 shadow-sm">
-                <div className="text-2xl font-bold text-blue-600 mb-1">
-                  {properties.filter((p) => p.status === "sold").length}
+                <div className="text-2xl font-bold text-yellow-600 mb-1">
+                  {
+                    properties.filter((p) => p.statusLabel === "Pending Review")
+                      .length
+                  }
                 </div>
-                <div className="text-sm text-[#5A5D63]">Sold Properties</div>
+                <div className="text-sm text-[#5A5D63]">Pending Review</div>
               </div>
               <div className="bg-white rounded-lg p-6 shadow-sm">
-                <div className="text-2xl font-bold text-purple-600 mb-1">
-                  {properties.filter((p) => p.status === "rented").length}
+                <div className="text-2xl font-bold text-red-600 mb-1">
+                  {
+                    properties.filter((p) => p.statusLabel === "Rejected")
+                      .length
+                  }
                 </div>
-                <div className="text-sm text-[#5A5D63]">Rented Properties</div>
+                <div className="text-sm text-[#5A5D63]">Rejected</div>
               </div>
             </div>
 
@@ -196,6 +219,7 @@ const MyListingPage = () => {
                   property={{
                     ...property,
                     status: property.status || "active",
+                    statusLabel: property.statusLabel,
                     views:
                       property.views || Math.floor(Math.random() * 100) + 10,
                   }}

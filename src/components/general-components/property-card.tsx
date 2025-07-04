@@ -36,6 +36,7 @@ interface PropertyCardProps {
     createdAt: string;
     views?: number;
     status?: "active" | "pending" | "sold" | "rented";
+    statusLabel?: string;
     briefType?: string;
   };
   onView?: () => void;
@@ -101,13 +102,22 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         )}
 
         {/* Status Badge */}
-        {property.status && (
+        {(property.statusLabel || property.status) && (
           <div className="absolute top-3 left-3">
             <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(property.status)}`}
+              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                property.statusLabel
+                  ? property.statusLabel === "Approved"
+                    ? "bg-green-100 text-green-800"
+                    : property.statusLabel === "Rejected"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  : getStatusColor(property.status)
+              }`}
             >
-              {property.status.charAt(0).toUpperCase() +
-                property.status.slice(1)}
+              {property.statusLabel ||
+                property.status?.charAt(0).toUpperCase() +
+                  property.status?.slice(1)}
             </span>
           </div>
         )}

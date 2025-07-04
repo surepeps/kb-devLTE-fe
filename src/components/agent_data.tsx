@@ -44,6 +44,7 @@ const AgentData = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const [idFileUrl, setIdFileUrl] = useState<string | null>(null);
   const [cacFileUrl, setCacFileUrl] = useState<string | null>(null);
@@ -166,6 +167,8 @@ const AgentData = () => {
     },
     validate,
     onSubmit: async () => {
+      if (submitting) return; // Prevent double submissions
+
       if (selectedAgentType === "Corporate Agent") {
         if (!cacFileUrl) {
           return toast.error("Please upload your CAC document");
@@ -183,6 +186,8 @@ const AgentData = () => {
       if (!user?.email) {
         return toast.error("User email is required. Please log in again.");
       }
+
+      setSubmitting(true);
 
       const payload = {
         token: Cookies.get("token"),
@@ -239,14 +244,13 @@ const AgentData = () => {
               ],
       };
       // console.log('Payload:', payload);
-      await toast.promise(
-        PUT_REQUEST(
-          URLS.BASE + URLS.agentOnboarding,
-          payload,
-          Cookies.get("token"),
-        )
-          .then((response) => {
-            setSubmitting(true);
+      try {
+        await toast.promise(
+          PUT_REQUEST(
+            URLS.BASE + URLS.agentOnboarding,
+            payload,
+            Cookies.get("token"),
+          ).then((response) => {
             if (response.success) {
               toast.success("Agent data submitted successfully");
               Cookies.set(
@@ -260,35 +264,30 @@ const AgentData = () => {
                 (response as any).error ||
                 (response as any).message ||
                 "Submission failed";
-              toast.error(errorMessage);
+              setSubmitting(false);
               throw new Error(errorMessage);
             }
-          })
-          .catch((error) => {
-            // Show the actual error message from the API if available
-            if (error?.response?.data?.message) {
-              toast.error(error.response.data.message);
-              return error.response.data.message;
-            }
-            if (error?.message) {
-              toast.error(error.message);
-              return error.message;
-            }
-            toast.error("Submission failed");
-            return "Submission failed";
           }),
-        {
-          loading: "Submitting...",
-          // success: 'Agent data submitted successfully',
-        },
-      );
-      setSubmitting(false);
+          {
+            loading: "Submitting...",
+          },
+        );
+      } catch (error: any) {
+        setSubmitting(false);
+        // Show the actual error message from the API if available
+        if (error?.response?.data?.message) {
+          toast.error(error.response.data.message);
+        } else if (error?.message) {
+          toast.error(error.message);
+        } else {
+          toast.error("Submission failed");
+        }
+      }
     },
   });
 
   useEffect(() => {
-    // if(!user) router.push('/auth/agent/login')
-    if (user) {
+    if (user && !isInitialized) {
       formik.setValues({
         street: "",
         state: user?.address?.state || "",
@@ -314,12 +313,12 @@ const AgentData = () => {
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
         houseNumber: "",
-        // IdNumber: '',
         cacNumber: "",
         email: user.email,
       });
+      setIsInitialized(true);
     }
-  }, [user]);
+  }, [user, isInitialized]);
 
   return (
     <section

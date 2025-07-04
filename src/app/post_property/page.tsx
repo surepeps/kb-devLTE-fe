@@ -157,7 +157,7 @@ const PostProperty = () => {
       router.push("/");
       return;
     }
-  }, [user, router, canPostProperty]);
+  }, [user?.id, canPostProperty]); // Only depend on user ID to prevent unnecessary re-renders
 
   const steps = [
     {
