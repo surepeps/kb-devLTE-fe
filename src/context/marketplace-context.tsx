@@ -307,16 +307,31 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           throw new Error("Invalid API URL format");
         }
 
-        // Use the safer GET_REQUEST utility
+        // Use the safer GET_REQUEST utility with logging
+        console.log("Making API request to:", apiUrl);
         const response = await GET_REQUEST(apiUrl);
+        console.log("API response received:", response);
 
         if (!isMountedRef.current) return;
 
         // Check for API error response
-        if (response?.error || !response?.success) {
+        if (response?.error || response?.success === false) {
           const errorMessage =
             response?.message || response?.error || "Failed to fetch data";
-          setErrMessage(errorMessage);
+          console.error("API Error:", errorMessage);
+
+          // Provide more helpful error messages
+          if (
+            errorMessage.includes("fetch") ||
+            errorMessage.includes("network")
+          ) {
+            setErrMessage(
+              "Unable to connect to the server. Please check your internet connection and try again.",
+            );
+          } else {
+            setErrMessage(errorMessage);
+          }
+
           setFormikStatus("failed");
           setSearchStatus({
             status: "failed",
@@ -328,14 +343,24 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         // Handle successful response
         setFormikStatus("success");
 
-        // Handle different response structures
+        // Handle different response structures with better logging
         const responseData = response?.data || response || [];
-        const dataArray = Array.isArray(responseData) ? responseData : [];
+        console.log("Response data structure:", responseData);
 
-        // Filter for approved properties only
-        const approvedData = dataArray.filter(
-          (item: any) => item?.isApproved === true,
-        );
+        const dataArray = Array.isArray(responseData)
+          ? responseData
+          : Array.isArray(responseData?.properties)
+            ? responseData.properties
+            : [];
+
+        console.log("Data array length:", dataArray.length);
+
+        // More lenient filtering - include if no isApproved field or if explicitly approved
+        const approvedData = dataArray.filter((item: any) => {
+          return (
+            item?.isApproved !== false && item !== null && item !== undefined
+          );
+        });
 
         const shuffledData = shuffleArray(approvedData);
         setProperties(shuffledData);
@@ -345,7 +370,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           couldNotFindAProperty: shuffledData.length === 0,
         });
 
-        console.log(`Successfully loaded ${shuffledData.length} properties`);
+        console.log(
+          `Successfully loaded ${shuffledData.length} properties from ${dataArray.length} total properties`,
+        );
       } catch (err: any) {
         console.error("Fetch error (attempt " + (retryCount + 1) + "):", err);
 
