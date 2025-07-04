@@ -136,136 +136,116 @@ const NegiotiatePrice = ({
   useEffect(() => console.log(selectedProperty), [selectedProperty]);
 
   return (
-    <div className="w-full h-full border-black border-[1px] z-50 fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]">
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ delay: 0.1 }}
-        viewport={{ once: true }}
-        className="lg:w-[615px] w-full h-[637px] flex flex-col gap-[26px]"
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ delay: 0.1 }}
+      viewport={{ once: true }}
+      className="w-full max-w-[615px] mx-auto"
+    >
+      <form
+        onSubmit={(event: React.FormEvent) => {
+          event.preventDefault();
+        }}
+        className="w-full px-4 sm:px-6 md:px-8 py-6"
       >
-        <div className="flex items-center justify-end">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            type="button"
-            className="w-[51px] h-[51px] rounded-full bg-white flex items-center justify-center"
-          >
-            <FontAwesomeIcon
-              icon={faClose}
-              width={24}
-              height={24}
-              onClick={() => {
-                setCurrentIndex(allNegotiation.length + 1);
-              }}
-              className="w-[24px] h-[24px]"
-              color="#181336"
-            />
-          </motion.button>
-        </div>
-        <form
-          onSubmit={(event: React.FormEvent) => {
-            event.preventDefault();
-          }}
-          className="w-[95%] md:w-full mx-auto rounded-[4px] bg-[#FFFFFF] shadow-md py-[40px] px-[20px] md:px-[80px]"
-        >
-          <div className="w-full flex flex-col gap-[20px]">
-            <div className="flex flex-col gap-[4px]">
-              <h2
-                className={`${archivo.className} font-bold text-2xl text-black text-center`}
-              >
-                Negotiate price with the seller
-              </h2>
-              <p
-                className={`${archivo.className} text-[#515B6F] text-lg text-center`}
-              >
-                You&apos;re welcome to negotiate the price directly with the
-                seller even before arranging an inspection. Please enter your
-                proposed offer below
-              </p>
-            </div>
-            {/**Asking Price */}
-            <Input
-              label="Asking Price"
-              name="asking_price"
-              type="text"
-              isDisabled
-              value={Number(selectedProperty.askingPrice).toLocaleString()}
-              onChange={() => {
-                setSelectedProperty({
-                  ...selectedProperty,
-                });
-              }}
-            />
-            {/**Enter your price */}
-            <Input
-              label="Enter your price"
-              name="enter_your_price"
-              type="text"
-              placeholder="Enter amount"
-              value={yourPrice}
-              onChange={(event) => {
-                const rawValue = (
-                  event.target as HTMLInputElement | HTMLTextAreaElement
-                ).value;
-
-                const numericValue = Number(rawValue.replace(/,/g, ""));
-
-                // Format UI value with commas
-                setYourPrice(formatNumber?.(rawValue) ?? "");
-
-                // Update the selected property's local state
-                setSelectedProperty((prev) => ({
-                  ...prev,
-                  yourPrice: numericValue.toString(),
-                }));
-
-                // Update the main payload
-                setSubmitInspectionPayload((prev) => {
-                  const updatedProperties = prev.properties.map((item) => {
-                    if (item.propertyId === selectedProperty.id) {
-                      return {
-                        ...item,
-                        negotiationPrice: numericValue,
-                      };
-                    }
-                    return item;
-                  });
-
-                  const anyNegotiation = updatedProperties.some(
-                    (item) => Number(item.negotiationPrice) > 0,
-                  );
-
-                  return {
-                    ...prev,
-                    properties: updatedProperties,
-                    isNegotiating: anyNegotiation,
-                  };
-                });
-              }}
-            />
-
-            {/** Submit and Cancel buttons */}
-            <div className="w-full flex gap-[15px]">
-              <button
-                onClick={handleSubmit}
-                className={`h-[57px] bg-[#8DDB90] w-[260px] text-lg text-[#FFFFFF] font-bold ${archivo.className}`}
-                type="submit"
-              >
-                Submit
-              </button>
-              <button
-                onClick={() => setCurrentIndex(allNegotiation.length + 1)}
-                className={`h-[57px] bg-white border-[1px] border-[#5A5D63] w-[260px] text-lg text-[#5A5D63] font-bold ${archivo.className}`}
-                type="button"
-              >
-                Cancel
-              </button>
-            </div>
+        <div className="w-full flex flex-col gap-[20px]">
+          <div className="flex flex-col gap-[4px]">
+            <h2
+              className={`${archivo.className} font-bold text-2xl text-black text-center`}
+            >
+              Negotiate price with the seller
+            </h2>
+            <p
+              className={`${archivo.className} text-[#515B6F] text-lg text-center`}
+            >
+              You&apos;re welcome to negotiate the price directly with the
+              seller even before arranging an inspection. Please enter your
+              proposed offer below
+            </p>
           </div>
-        </form>
-      </motion.div>
-    </div>
+          {/**Asking Price */}
+          <Input
+            label="Asking Price"
+            name="asking_price"
+            type="text"
+            isDisabled
+            value={Number(selectedProperty.askingPrice).toLocaleString()}
+            onChange={() => {
+              setSelectedProperty({
+                ...selectedProperty,
+              });
+            }}
+          />
+          {/**Enter your price */}
+          <Input
+            label="Enter your price"
+            name="enter_your_price"
+            type="text"
+            placeholder="Enter amount"
+            value={yourPrice}
+            onChange={(event) => {
+              const rawValue = (
+                event.target as HTMLInputElement | HTMLTextAreaElement
+              ).value;
+
+              const numericValue = Number(rawValue.replace(/,/g, ""));
+
+              // Format UI value with commas
+              setYourPrice(formatNumber?.(rawValue) ?? "");
+
+              // Update the selected property's local state
+              setSelectedProperty((prev) => ({
+                ...prev,
+                yourPrice: numericValue.toString(),
+              }));
+
+              // Update the main payload
+              setSubmitInspectionPayload((prev) => {
+                const updatedProperties = prev.properties.map((item) => {
+                  if (item.propertyId === selectedProperty.id) {
+                    return {
+                      ...item,
+                      negotiationPrice: numericValue,
+                    };
+                  }
+                  return item;
+                });
+
+                const anyNegotiation = updatedProperties.some(
+                  (item) => Number(item.negotiationPrice) > 0,
+                );
+
+                return {
+                  ...prev,
+                  properties: updatedProperties,
+                  isNegotiating: anyNegotiation,
+                };
+              });
+            }}
+          />
+
+          {/** Submit and Cancel buttons */}
+          <div className="w-full flex gap-[15px]">
+            <button
+              onClick={handleSubmit}
+              className={`h-[57px] bg-[#8DDB90] w-[260px] text-lg text-[#FFFFFF] font-bold ${archivo.className}`}
+              type="submit"
+            >
+              Submit
+            </button>
+            <button
+              onClick={() => setCurrentIndex(allNegotiation.length + 1)}
+              className={`h-[57px] bg-white border-[1px] border-[#5A5D63] w-[260px] text-lg text-[#5A5D63] font-bold ${archivo.className}`}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </motion.div>
   );
 };
 
