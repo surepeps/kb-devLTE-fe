@@ -2,7 +2,7 @@
 
 "use client";
 import { usePageContext } from "@/context/page-context";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useRef } from "react";
 import Card from "../general-components/card";
 import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Agentpic.png";
@@ -106,6 +106,7 @@ const SearchModal = ({
   } = useMarketplace();
 
   const router = useRouter();
+  const initialLoadRef = useRef(false);
 
   const handleRemoveAllBriefs = () => {
     setUniqueProperties(new Set());
@@ -116,6 +117,8 @@ const SearchModal = ({
 
   const handleSearch = async (searchPayload: any) => {
     setCurrentPage(1); // Reset to first page on new search
+
+    console.log("Search payload received:", searchPayload);
 
     // Get the correct briefType based on marketplace selection
     const getBriefType = (marketPlace: string) => {
@@ -134,76 +137,93 @@ const SearchModal = ({
     const briefType = getBriefType(userSelectedMarketPlace);
 
     // Build search parameters according to backend API
-    const searchParams = {
+    const searchParams: any = {
       briefType,
       page: 1,
       limit: itemsPerPage,
-
-      // Location filter
-      ...(searchPayload.selectedState && {
-        location: JSON.stringify({
-          state: searchPayload.selectedState,
-          localGovernment: searchPayload.selectedLGA || "",
-          area: searchPayload.selectedArea || "",
-        }),
-      }),
-
-      // Price range filter
-      ...((searchPayload.minPrice || searchPayload.maxPrice) && {
-        priceRange: {
-          ...(searchPayload.minPrice && {
-            min: Number(searchPayload.minPrice),
-          }),
-          ...(searchPayload.maxPrice && {
-            max: Number(searchPayload.maxPrice),
-          }),
-        },
-      }),
-
-      // Property features
-      ...(searchPayload.bedroom && { bedroom: Number(searchPayload.bedroom) }),
-      ...(searchPayload.bathroom && {
-        bathroom: Number(searchPayload.bathroom),
-      }),
-
-      // Document type filter
-      ...(searchPayload.documentType &&
-        searchPayload.documentType.length > 0 && {
-          documentType: searchPayload.documentType,
-        }),
-
-      // Desire features filter
-      ...(searchPayload.desireFeature &&
-        searchPayload.desireFeature.length > 0 && {
-          desireFeature: searchPayload.desireFeature,
-        }),
-
-      // Home condition filter
-      ...(searchPayload.homeCondition &&
-        searchPayload.homeCondition !== "All" && {
-          homeCondition: searchPayload.homeCondition,
-        }),
-
-      // Tenant criteria filter (for rent)
-      ...(searchPayload.tenantCriteria &&
-        searchPayload.tenantCriteria.length > 0 && {
-          tenantCriteria: searchPayload.tenantCriteria,
-        }),
-
-      // Property type filter
-      ...(searchPayload.propertyType &&
-        searchPayload.propertyType !== "All" && {
-          type: searchPayload.propertyType,
-        }),
-
-      // Land size filters
-      ...(searchPayload.landSizeType && {
-        landSizeType: searchPayload.landSizeType,
-      }),
-      ...(searchPayload.landSize && {
-        landSize: Number(searchPayload.landSize),
-      }),
     };
+
+    // Handle location from searchPayload.location
+    if (searchPayload.location) {
+      searchParams.location = searchPayload.location;
+    }
+
+    // Handle price range from searchPayload.price
+    if (searchPayload.price) {
+      const priceRange: any = {};
+
+      // Handle different price formats
+      if (searchPayload.price.$gte) {
+        priceRange.min = Number(searchPayload.price.$gte);
+      }
+      if (searchPayload.price.$lte) {
+        priceRange.max = Number(searchPayload.price.$lte);
+      }
+      if (searchPayload.price.min) {
+        priceRange.min = Number(searchPayload.price.min);
+      }
+      if (searchPayload.price.max) {
+        priceRange.max = Number(searchPayload.price.max);
+      }
+
+      if (Object.keys(priceRange).length > 0) {
+        searchParams.priceRange = priceRange;
+      }
+    }
+
+    // Handle property features
+    if (searchPayload.bedroom) {
+      searchParams.bedroom = Number(searchPayload.bedroom);
+    }
+
+    if (searchPayload.bathroom) {
+      searchParams.bathroom = Number(searchPayload.bathroom);
+    }
+
+    // Handle documents from searchPayload.docsOnProperty
+    if (
+      searchPayload.docsOnProperty &&
+      searchPayload.docsOnProperty.length > 0
+    ) {
+      searchParams.documentType = searchPayload.docsOnProperty;
+    }
+
+    // Handle desire features from searchPayload.desirerFeatures
+    if (
+      searchPayload.desirerFeatures &&
+      searchPayload.desirerFeatures.length > 0
+    ) {
+      searchParams.desireFeature = searchPayload.desirerFeatures;
+    }
+
+    // Handle property types from searchPayload.usageOptions
+    if (
+      searchPayload.usageOptions &&
+      searchPayload.usageOptions.length > 0 &&
+      !searchPayload.usageOptions.includes("All")
+    ) {
+      searchParams.type = searchPayload.usageOptions[0]; // Take first selection
+    }
+
+    // Handle land size from searchPayload.landSize
+    if (searchPayload.landSize) {
+      if (searchPayload.landSize.type) {
+        searchParams.landSizeType = searchPayload.landSize.type;
+      }
+      if (searchPayload.landSize.size) {
+        searchParams.landSize = Number(searchPayload.landSize.size);
+      }
+    }
+
+    // Handle tenant criteria (for rent properties)
+    if (
+      searchPayload.tenantCriteria &&
+      searchPayload.tenantCriteria.length > 0
+    ) {
+      searchParams.tenantCriteria = searchPayload.tenantCriteria;
+    }
+
+    console.log("Final search parameters:", searchParams);
 
     try {
       await toast.promise(searchProperties(searchParams), {
@@ -361,7 +381,7 @@ const SearchModal = ({
 
   // Data fetching using marketplace context with proper API search
   useEffect(() => {
-    if (!userSelectedMarketPlace) return;
+    if (!userSelectedMarketPlace || initialLoadRef.current) return;
 
     let briefType = "";
     switch (userSelectedMarketPlace) {
@@ -384,7 +404,14 @@ const SearchModal = ({
       page: 1,
       limit: itemsPerPage,
     });
-  }, [userSelectedMarketPlace, searchProperties, itemsPerPage]);
+
+    initialLoadRef.current = true;
+  }, [userSelectedMarketPlace]); // Removed searchProperties and itemsPerPage to prevent infinite loop
+
+  // Reset initial load flag when marketplace type changes
+  useEffect(() => {
+    initialLoadRef.current = false;
+  }, [userSelectedMarketPlace]);
 
   return (
     <Fragment>
