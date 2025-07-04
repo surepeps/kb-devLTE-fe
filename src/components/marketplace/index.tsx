@@ -38,51 +38,6 @@ const MarketPlace = () => {
     properties,
   } = useMarketplace();
 
-  // Handle marketplace errors
-  useEffect(() => {
-    if (formikStatus === "failed" && errMessage) {
-      console.error("Marketplace error:", errMessage);
-      setHasError(true);
-    } else if (formikStatus === "success") {
-      setHasError(false);
-    }
-  }, [formikStatus, errMessage]);
-
-  // Error fallback UI
-  if (hasError) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Unable to load marketplace
-          </h2>
-          <p className="text-gray-600 max-w-md">
-            {errMessage ||
-              "There was an error loading the marketplace. Please try again."}
-          </p>
-          <button
-            onClick={() => {
-              setHasError(false);
-              window.location.reload();
-            }}
-            className="px-6 py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-  // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
-  //   React.useState<boolean>(false);
-  const {
-    selectedForInspection,
-    clearInspectionSelection,
-    formikStatus,
-    errMessage,
-    properties,
-  } = useMarketplace();
-
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState(false);
@@ -102,6 +57,18 @@ const MarketPlace = () => {
   >("Buy");
   const [isComingFromSubmitLol, setIsComingFromSubmitLol] =
     React.useState<boolean>(false);
+
+  const is_mobile = IsMobile();
+
+  // Handle marketplace errors - this useEffect must come before any early returns
+  useEffect(() => {
+    if (formikStatus === "failed" && errMessage) {
+      console.error("Marketplace error:", errMessage);
+      setHasError(true);
+    } else if (formikStatus === "success") {
+      setHasError(false);
+    }
+  }, [formikStatus, errMessage]);
 
   useEffect(() => {
     if (propertySelectedForInspection) {
