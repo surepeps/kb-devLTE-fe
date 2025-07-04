@@ -9,7 +9,7 @@ import EmptyState from "./empty-state";
 import Loading from "@/components/loading-component/loading";
 import { IsMobile } from "@/hooks/isMobile";
 import { useMarketplace } from "@/context/marketplace-context";
-
+ 
 interface PropertyGridProps {
   marketplaceType: string;
   itemsPerPage?: number;

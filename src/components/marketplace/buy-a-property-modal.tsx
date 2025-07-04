@@ -17,7 +17,6 @@ import SubmitPrefrenceModal from "../can-not-find-brief-modal";
 import { AnimatePresence, motion } from "framer-motion";
 import ContactInformation from "./contact-information";
 import { useMarketplace } from "@/context/marketplace-context";
-import { useModalActions } from "@/context/modal-context";
 
 type PayloadProps = {
   twoDifferentInspectionAreas: boolean;
@@ -54,12 +53,6 @@ const BuyAPropertySearchModal = ({
   } = useMarketplace();
 
   // Use modal actions
-  const {
-    openPriceModal,
-    openBedsAndBathModal,
-    openDesiredFeaturesModal,
-    openMoreFilterModal,
-  } = useModalActions();
 
   const selectedBriefs = selectedForInspection.length;
   const formik = useFormik({

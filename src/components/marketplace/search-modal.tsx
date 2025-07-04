@@ -109,12 +109,13 @@ const SearchModal = ({
   // Note: State syncing moved to marketplace context to avoid render issues
 
   const handleSearch = async (searchPayload: any) => {
+    
     setFormikStatus("pending");
     setSearchStatus({
       status: "pending",
       couldNotFindAProperty: false,
     });
-    // console.log("searchPayload", searchPayload);
+
     try {
       await toast.promise(
         POST_REQUEST(URLS.BASE + URLS.searchBrief, {

@@ -20,16 +20,16 @@ const MyListingPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+    // if (!user) {
+    //   router.push("/auth/login");
+    //   return;
+    // }
 
-    // Allow both landlords and agents to access this page
-    if (user.userType !== "Landowners" && user.userType !== "Agent") {
-      router.push("/");
-      return;
-    }
+    // // Allow both landlords and agents to access this page
+    // if (user.userType !== "Landowners" && user.userType !== "Agent") {
+    //   router.push("/");
+    //   return;
+    // }
 
     const fetchProperties = async () => {
       setLoading(true);

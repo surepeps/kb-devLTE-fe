@@ -13,6 +13,7 @@ import { useMarketplace } from "@/context/marketplace-context";
 
 const MarketPlace = () => {
   const router = useRouter();
+
   const {
     selectedType,
     setSelectedType,
@@ -23,6 +24,8 @@ const MarketPlace = () => {
     propertySelectedForInspection,
     setPropertySelectedForInspection,
   } = usePageContext();
+
+
   // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
   //   React.useState<boolean>(false);
   const { selectedForInspection, clearInspectionSelection } = useMarketplace();
@@ -77,7 +80,7 @@ const MarketPlace = () => {
     }
   }, [selectedForInspection]);
 
-  return (
+  return ( 
     <div className="min-h-screen bg-[#EEF1F1]">
       {isAddForInspectionModalOpened ? (
         <AddForInspection

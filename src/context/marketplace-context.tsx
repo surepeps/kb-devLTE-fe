@@ -23,6 +23,12 @@ interface InspectionProperty {
   property: any;
 }
 
+export interface MarketTypeSelection {
+  name: string;
+  briefType: string;
+  subValue: string;
+}
+
 interface MarketplaceContextType {
   // Negotiated prices
   negotiatedPrices: NegotiatedPrice[];
@@ -51,6 +57,9 @@ interface MarketplaceContextType {
   setJvFilterBy: (filters: string[]) => void;
   homeCondition: string;
   setHomeCondition: (condition: string) => void;
+
+  selectedMarketType: MarketTypeSelection | null;
+  setSelectedMarketType: (market: MarketTypeSelection) => void;
 
   // Search and loading states
   searchStatus: {
@@ -93,6 +102,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       isMountedRef.current = false;
     };
   }, []);
+
+  const [selectedMarketType, setSelectedMarketType] = useState<MarketTypeSelection | null>({
+    name: "Buy a property",
+    briefType: "buy",
+    subValue: "Outright Sales",
+  });
 
   // Negotiated prices state
   const [negotiatedPrices, setNegotiatedPrices] = useState<NegotiatedPrice[]>(
@@ -318,6 +333,10 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       isSelectedForInspection,
       canSelectMoreForInspection,
 
+      selectedMarketType,
+      setSelectedMarketType,
+
+
       // Filter states
       usageOptions,
       setUsageOptions,
@@ -355,6 +374,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       clearInspectionSelection,
       isSelectedForInspection,
       canSelectMoreForInspection,
+      selectedMarketType,
+      setSelectedMarketType,
       usageOptions,
       setUsageOptions,
       rentFilterBy,

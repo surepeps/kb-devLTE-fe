@@ -135,7 +135,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
             >
               {children}
             </div>
-          </motion.div>
+          </motion.div> 
         </motion.div>
       )}
     </AnimatePresence>

@@ -42,7 +42,7 @@ interface CardDataProps {
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (type: boolean) => void;
 }
-
+ 
 const Card = ({
   isRed,
   cardData,
