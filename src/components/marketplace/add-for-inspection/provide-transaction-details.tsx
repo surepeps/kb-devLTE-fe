@@ -3,7 +3,7 @@
 "use client";
 import { archivo } from "@/styles/font";
 import { FormikProps, useFormik } from "formik";
-import React, { Fragment, use, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import * as Yup from "yup";
 import banks from "@/data/nigeria-banks.json";
 import { Option } from "../types/option";
