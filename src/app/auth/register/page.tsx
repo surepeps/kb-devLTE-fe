@@ -36,7 +36,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
   faEyeSlash,
-  faArrowLeft,
   faUser,
   faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
@@ -285,419 +284,392 @@ const Register = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl"></div>
-      <div
-        className={
-          'absolute inset-0 bg-[url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23e0e7ff" fill-opacity="0.3"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')] opacity-40'
-        }
-      ></div>
-
-      <div className="relative w-full max-w-2xl mx-auto">
-        {/* Back to home button */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-8 transition-colors duration-200"
-        >
-          <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
-          <span className="text-sm font-medium">Back to Home</span>
-        </Link>
-
-        {/* Registration Card */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#8DDB90] to-[#09391C] rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Create Account
-            </h2>
-            <p className="text-gray-600">
-              Join Khabi-Teq and start your real estate journey
-            </p>
-          </div>
-
-          <form onSubmit={formik.handleSubmit} className="space-y-6">
-            {/* Account Type Selection */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">
-                I am a <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => formik.setFieldValue("userType", "Landlord")}
-                  className={`p-4 border-2 rounded-xl transition-all duration-200 ${
-                    formik.values.userType === "Landlord"
-                      ? "border-[#8DDB90] bg-[#8DDB90]/10 text-[#09391C]"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <FontAwesomeIcon icon={faUser} className="w-6 h-6" />
-                    <span className="font-medium">Landlord</span>
-                    <span className="text-xs text-gray-500">
-                      Property Owner
-                    </span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => formik.setFieldValue("userType", "Agent")}
-                  className={`p-4 border-2 rounded-xl transition-all duration-200 ${
-                    formik.values.userType === "Agent"
-                      ? "border-[#8DDB90] bg-[#8DDB90]/10 text-[#09391C]"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <FontAwesomeIcon icon={faUserTie} className="w-6 h-6" />
-                    <span className="font-medium">Agent</span>
-                    <span className="text-xs text-gray-500">
-                      Real Estate Professional
-                    </span>
-                  </div>
-                </button>
-              </div>
-              {formik.touched.userType && formik.errors.userType && (
-                <p className="text-sm text-red-600">{formik.errors.userType}</p>
-              )}
+    <section
+      className={`flex items-center justify-center bg-[#EEF1F1] w-full min-h-screen ${
+        isContactUsClicked && "filter brightness-[30%]"
+      } transition-all duration-500`}
+    >
+      <div className="container flex items-center justify-center py-[40px] px-[25px] lg:px-0">
+        <div className="w-full max-w-2xl mx-auto">
+          {/* Clean Card Container */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-display font-semibold text-[#09391C] mb-2">
+                Create Account
+              </h2>
+              <p className="text-gray-600">
+                Join Khabi-Teq and start your real estate journey
+              </p>
             </div>
 
-            {/* Social Registration */}
-            {formik.values.userType && (
+            <form onSubmit={formik.handleSubmit} className="space-y-6">
+              {/* Account Type Selection */}
               <div className="space-y-3">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
-                      Quick signup with
-                    </span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={googleLogin}
-                    className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
-                  >
-                    <Image
-                      src={googleIcon}
-                      alt="Google"
-                      width={18}
-                      height={18}
-                    />
-                    Google
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleFacebookSignup}
-                    className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
-                  >
-                    <Image
-                      src={facebookIcon}
-                      alt="Facebook"
-                      width={18}
-                      height={18}
-                    />
-                    Facebook
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
-                      Or continue with email
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  First Name <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700">
+                  I am a <span className="text-red-500">*</span>
                 </label>
-                <input
-                  name="firstName"
-                  type="text"
-                  value={formik.values.firstName}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  disabled={isDisabled}
-                  placeholder="John"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm disabled:bg-gray-100"
-                />
-                {formik.touched.firstName && formik.errors.firstName && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formik.errors.firstName}
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => formik.setFieldValue("userType", "Landlord")}
+                    className={`p-4 border-2 rounded-lg transition-all duration-200 ${
+                      formik.values.userType === "Landlord"
+                        ? "border-[#8DDB90] bg-[#8DDB90]/10 text-[#09391C]"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <FontAwesomeIcon icon={faUser} className="w-6 h-6" />
+                      <span className="font-medium">Landlord</span>
+                      <span className="text-xs text-gray-500">
+                        Property Owner
+                      </span>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => formik.setFieldValue("userType", "Agent")}
+                    className={`p-4 border-2 rounded-lg transition-all duration-200 ${
+                      formik.values.userType === "Agent"
+                        ? "border-[#8DDB90] bg-[#8DDB90]/10 text-[#09391C]"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <FontAwesomeIcon icon={faUserTie} className="w-6 h-6" />
+                      <span className="font-medium">Agent</span>
+                      <span className="text-xs text-gray-500">
+                        Real Estate Professional
+                      </span>
+                    </div>
+                  </button>
+                </div>
+                {formik.touched.userType && formik.errors.userType && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.userType}
                   </p>
                 )}
               </div>
 
-              <div>
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Last Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  name="lastName"
-                  type="text"
-                  value={formik.values.lastName}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  disabled={isDisabled}
-                  placeholder="Doe"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm disabled:bg-gray-100"
-                />
-                {formik.touched.lastName && formik.errors.lastName && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formik.errors.lastName}
-                  </p>
-                )}
-              </div>
-            </div>
+              {/* Social Registration */}
+              {formik.values.userType && (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">
+                        Quick signup with
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={googleLogin}
+                      className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
+                    >
+                      <Image
+                        src={googleIcon}
+                        alt="Google"
+                        width={18}
+                        height={18}
+                      />
+                      Google
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleFacebookSignup}
+                      className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
+                    >
+                      <Image
+                        src={facebookIcon}
+                        alt="Facebook"
+                        width={18}
+                        height={18}
+                      />
+                      Facebook
+                    </button>
+                  </div>
 
-            {/* Contact Information */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  name="email"
-                  type="email"
-                  value={formik.values.email}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  disabled={isDisabled}
-                  placeholder="john@example.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm disabled:bg-gray-100"
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <Image
-                    src={mailIcon}
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="opacity-40"
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">
+                        Or continue with email
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              {formik.touched.email && formik.errors.email && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formik.errors.email}
-                </p>
               )}
-            </div>
 
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Phone Number <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  name="phone"
-                  type="tel"
-                  value={formik.values.phone}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  disabled={isDisabled}
-                  placeholder="+1234567890"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm disabled:bg-gray-100"
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <Image
-                    src={phoneIcon}
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="opacity-40"
-                  />
-                </div>
-              </div>
-              {formik.touched.phone && formik.errors.phone && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formik.errors.phone}
-                </p>
-              )}
-            </div>
-
-            {/* Password Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Password <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
+              {/* Personal Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    First Name <span className="text-red-500">*</span>
+                  </label>
                   <input
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formik.values.password}
+                    name="firstName"
+                    type="text"
+                    value={formik.values.firstName}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     disabled={isDisabled}
-                    placeholder="Create password"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm disabled:bg-gray-100 pr-12"
+                    placeholder="John"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 disabled:bg-gray-100"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    <FontAwesomeIcon
-                      icon={showPassword ? faEyeSlash : faEye}
-                      className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
-                    />
-                  </button>
-                </div>
-                {formik.touched.password && formik.errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formik.errors.password}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Confirm Password <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={formik.values.confirmPassword}
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    disabled={isDisabled}
-                    placeholder="Confirm password"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm disabled:bg-gray-100 pr-12"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    <FontAwesomeIcon
-                      icon={showConfirmPassword ? faEyeSlash : faEye}
-                      className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
-                    />
-                  </button>
-                </div>
-                {formik.touched.confirmPassword &&
-                  formik.errors.confirmPassword && (
+                  {formik.touched.firstName && formik.errors.firstName && (
                     <p className="mt-1 text-sm text-red-600">
-                      {formik.errors.confirmPassword}
+                      {formik.errors.firstName}
                     </p>
                   )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="lastName"
+                    type="text"
+                    value={formik.values.lastName}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    disabled={isDisabled}
+                    placeholder="Doe"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 disabled:bg-gray-100"
+                  />
+                  {formik.touched.lastName && formik.errors.lastName && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formik.errors.lastName}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Terms and Conditions */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="agree"
-                checked={agreed}
-                onChange={() => setAgreed(!agreed)}
-                disabled={isDisabled}
-                className="mt-1 w-4 h-4 text-[#8DDB90] bg-gray-100 border-gray-300 rounded focus:ring-[#8DDB90] focus:ring-2"
+              {/* Contact Information */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    name="email"
+                    type="email"
+                    value={formik.values.email}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    disabled={isDisabled}
+                    placeholder="john@example.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 disabled:bg-gray-100"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <Image
+                      src={mailIcon}
+                      alt=""
+                      width={18}
+                      height={18}
+                      className="opacity-40"
+                    />
+                  </div>
+                </div>
+                {formik.touched.email && formik.errors.email && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {formik.errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    name="phone"
+                    type="tel"
+                    value={formik.values.phone}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    disabled={isDisabled}
+                    placeholder="+1234567890"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 disabled:bg-gray-100"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <Image
+                      src={phoneIcon}
+                      alt=""
+                      width={18}
+                      height={18}
+                      className="opacity-40"
+                    />
+                  </div>
+                </div>
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {formik.errors.phone}
+                  </p>
+                )}
+              </div>
+
+              {/* Password Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formik.values.password}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      disabled={isDisabled}
+                      placeholder="Create password"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 disabled:bg-gray-100 pr-12"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEyeSlash : faEye}
+                        className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
+                      />
+                    </button>
+                  </div>
+                  {formik.touched.password && formik.errors.password && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formik.errors.password}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Confirm Password <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={formik.values.confirmPassword}
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      disabled={isDisabled}
+                      placeholder="Confirm password"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 disabled:bg-gray-100 pr-12"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <FontAwesomeIcon
+                        icon={showConfirmPassword ? faEyeSlash : faEye}
+                        className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
+                      />
+                    </button>
+                  </div>
+                  {formik.touched.confirmPassword &&
+                    formik.errors.confirmPassword && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {formik.errors.confirmPassword}
+                      </p>
+                    )}
+                </div>
+              </div>
+
+              {/* Terms and Conditions */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="agree"
+                  checked={agreed}
+                  onChange={() => setAgreed(!agreed)}
+                  disabled={isDisabled}
+                  className="mt-1 w-4 h-4 text-[#8DDB90] bg-gray-100 border-gray-300 rounded focus:ring-[#8DDB90] focus:ring-2"
+                />
+                <label htmlFor="agree" className="text-sm text-gray-600">
+                  I agree to the{" "}
+                  <Link
+                    href="/policies_page"
+                    className="text-[#09391C] hover:text-[#8DDB90] font-medium"
+                  >
+                    Terms & Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/policies_page"
+                    className="text-[#09391C] hover:text-[#8DDB90] font-medium"
+                  >
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                value={isDisabled ? "Creating Account..." : "Create Account"}
+                isDisabled={
+                  isDisabled ||
+                  !agreed ||
+                  !formik.values.email ||
+                  !formik.values.password ||
+                  !formik.values.firstName ||
+                  !formik.values.lastName ||
+                  !formik.values.phone ||
+                  !formik.values.userType
+                }
+                className="w-full py-3 px-4 bg-[#8DDB90] hover:bg-[#7BC97E] text-white text-base font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                type="submit"
+                green={true}
               />
-              <label htmlFor="agree" className="text-sm text-gray-600">
-                I agree to the{" "}
+            </form>
+
+            {/* Sign in link */}
+            <div className="mt-6 text-center">
+              <p className="text-gray-600">
+                Already have an account?{" "}
                 <Link
-                  href="/policies_page"
-                  className="text-[#09391C] hover:text-[#8DDB90] font-medium"
+                  href="/auth/login"
+                  className="text-[#09391C] hover:text-[#8DDB90] font-semibold transition-colors duration-200"
                 >
-                  Terms & Conditions
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/policies_page"
-                  className="text-[#09391C] hover:text-[#8DDB90] font-medium"
-                >
-                  Privacy Policy
+                  Sign in
                 </Link>
-              </label>
+              </p>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={
-                isDisabled ||
-                !agreed ||
-                !formik.values.email ||
-                !formik.values.password ||
-                !formik.values.firstName ||
-                !formik.values.lastName ||
-                !formik.values.phone ||
-                !formik.values.userType
-              }
-              className="w-full bg-gradient-to-r from-[#8DDB90] to-[#09391C] text-white py-3 px-4 rounded-xl font-semibold hover:from-[#7BC97E] hover:to-[#083018] transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
-            >
-              {isDisabled ? "Creating Account..." : "Create Account"}
-            </button>
-          </form>
-
-          {/* Sign in link */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Already have an account?{" "}
-              <Link
-                href="/auth/login"
-                className="text-[#09391C] hover:text-[#8DDB90] font-semibold transition-colors duration-200"
-              >
-                Sign in
-              </Link>
-            </p>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>© 2024 Khabi-Teq. All rights reserved.</p>
-        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
