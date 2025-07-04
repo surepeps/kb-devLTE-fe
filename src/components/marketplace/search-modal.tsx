@@ -2,7 +2,7 @@
 
 "use client";
 import { usePageContext } from "@/context/page-context";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useRef } from "react";
 import Card from "../general-components/card";
 import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Agentpic.png";
