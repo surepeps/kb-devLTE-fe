@@ -1,7 +1,7 @@
 /** @format */
 
-import Image, { StaticImageData } from 'next/image';
-import { FC, MouseEventHandler } from 'react';
+import Image, { StaticImageData } from "next/image";
+import { FC, MouseEventHandler } from "react";
 
 interface RegisterWithProps {
   text: string;
@@ -19,17 +19,20 @@ export const RegisterWith: FC<RegisterWithProps> = ({
   return (
     <button
       onClick={isDisabled ? undefined : onClick}
-      type='button'
-      className='flex gap-[7px] items-center justify-center min-h-[60px] border-[1px] py-[24px] w-full bg-[#FFFFFF] border-[#8D909680]'>
-      {''}
+      type="button"
+      disabled={isDisabled}
+      className={`flex gap-[12px] items-center justify-center min-h-[60px] border-[1px] py-[16px] px-[24px] w-full bg-[#FFFFFF] border-[#D6DDEB] rounded-lg transition-all duration-300 hover:border-[#8DDB90] hover:shadow-md hover:bg-[#8DDB90]/5 ${
+        isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+      }`}
+    >
       <Image
         src={icon}
         alt={text}
-        width={24}
-        height={24}
-        className='w-[24px] h-[24px]'
+        width={20}
+        height={20}
+        className="w-[20px] h-[20px]"
       />
-      <span className='text-[#171717] text-[14px] leading-[16.41px] font-medium tracking-[-2%]'>
+      <span className="text-[#171717] text-[15px] leading-[20px] font-medium">
         {text}
       </span>
     </button>
