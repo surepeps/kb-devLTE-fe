@@ -4,20 +4,20 @@
  * @format
  */
 
-'use client';
+"use client";
 /** @format */
-import { ShowTableProps } from '@/types/show_table';
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '@/styles/tables.css';
-import { useState } from 'react';
-import Modal from './Modal';
-import { usePageContext } from '@/context/page-context';
-import { useCreateBriefContext } from '@/context/create-brief-context';
-import { AgentNavData } from '@/enums';
-import axios from 'axios';
-import { URLS } from '@/utils/URLS';
-import toast from 'react-hot-toast';
+import { ShowTableProps } from "@/types/show_table";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "@/styles/tables.css";
+import { useState } from "react";
+import Modal from "./Modal";
+import { usePageContext } from "@/context/page-context";
+import { useCreateBriefContext } from "@/context/create-brief-context";
+import { AgentNavData } from "@/enums";
+import axios from "axios";
+import { URLS } from "@/utils/URLS";
+import toast from "react-hot-toast";
 
 const ShowTable: React.FC<ShowTableProps> = ({
   data,
@@ -62,7 +62,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
     try {
       const response = await axios.delete(url);
       console.log(response);
-      toast.success('Brief deleted');
+      toast.success("Brief deleted");
       if (response.status === 200) {
         console.log(response);
       }
@@ -74,80 +74,92 @@ const ShowTable: React.FC<ShowTableProps> = ({
   const closeModal = () => setModalVisible(false);
 
   return (
-    <div className='w-full border-[1px] border-[#E4DFDF] min-h-fit rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]'>
-      <div className='w-full flex items-center justify-between'>
-        <h1 className='text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo'>
+    <div className="w-full border-[1px] border-[#E4DFDF] min-h-fit rounded-[4px] py-[32px] px-[30px] flex flex-col gap-[30px] bg-[#FFFFFF]">
+      <div className="w-full flex items-center justify-between">
+        <h1 className="text-[18px] leading-[18px] text-[#000000] font-semibold font-archivo">
           {heading}
         </h1>
-        <div className='flex gap-4 items-center'>
+        <div className="flex gap-4 items-center">
           <select
-            name='filter'
-            id='filter'
-            title='filter'
+            name="filter"
+            id="filter"
+            title="filter"
             disabled
-            className='w-[140px] px-[12px] h-[50px] bg-[#FAFAFA] border-[1px] border-[#D6DDEB]'>
-            <option value='all'>Filter by</option>
-            <option value='published'>Published</option>
-            <option value='draft'>Draft</option>
+            className="w-[140px] px-[12px] h-[50px] bg-[#FAFAFA] border-[1px] border-[#D6DDEB]"
+          >
+            <option value="all">Filter by</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
           </select>
           <select
-            name='status'
-            id='status'
-            title='Status'
+            name="status"
+            id="status"
+            title="Status"
             disabled
-            className='w-[140px] px-[12px] h-[50px] bg-[#FAFAFA] border-[1px] border-[#D6DDEB]'>
-            <option value='status'>Status</option>
-            <option value='published'>Published</option>
-            <option value='draft'>Draft</option>
+            className="w-[140px] px-[12px] h-[50px] bg-[#FAFAFA] border-[1px] border-[#D6DDEB]"
+          >
+            <option value="status">Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
           </select>
         </div>
       </div>
-      <table cellPadding={6} className='w-full flex flex-col gap-[15px]'>
-        <thead className='min-h-[54px] px-[8px] py-[6px] bg-[#FAFAFA]'>
-          {''}
-          <tr className='w-full flex'>
+      <table cellPadding={6} className="w-full flex flex-col gap-[15px]">
+        <thead className="min-h-[54px] px-[8px] py-[6px] bg-[#FAFAFA]">
+          {""}
+          <tr className="w-full flex">
             {headerData?.map((item: string, idx: number) => (
               <td
                 key={idx}
-                className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]'>
+                className="text-[14px] leading-[22.4px] font-normal font-archivo text-[#7C8493]"
+              >
                 {item}
               </td>
             ))}
           </tr>
         </thead>
-        <tbody className='space-y-2 overflow-y-scroll hide-scrollbar px-[8px] '>
+        <tbody className="space-y-2 overflow-y-scroll hide-scrollbar px-[8px] ">
           {data.map((item, idx: number) => (
             <tr
-              className='w-full flex hover:bg-gray-100 rounded-[5px] transition duration-500 py-2 items-center'
-              key={idx}>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                {item.createdAt?.split('T')[0]}
+              className="w-full flex hover:bg-gray-100 rounded-[5px] transition duration-500 py-2 items-center"
+              key={idx}
+            >
+              <td className="text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]">
+                {item.createdAt?.split("T")[0]}
               </td>
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+              <td className="text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]">
                 {item.propertyType}
               </td>
-              <td className='text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]'>
+              <td className="text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]">
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-medium">
+                  {item.briefType || "N/A"}
+                </span>
+              </td>
+              <td className="text-[14px] text-left leading-[22.4px] font-normal font-archivo text-[#181336]">
                 {item.location?.state},{item.location?.localGovernment}
               </td>
-              <td className='text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]'>
+              <td className="text-[14px] leading-[22.4px] font-semibold font-archivo text-[#181336]">
                 N {Number(item.price).toLocaleString()}
               </td>
-              {item.docOnProperty?.length !== 0 ? (
-                // <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                //   {item.document.split('').splice(0, 14).join('') + '...'}
-                // </td>
-                <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
-                  {item?.docOnProperty !== undefined &&
-                    item.docOnProperty[0].docName}
-                  {'...'}
-                </td>
-              ) : null}
+              <td className="text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]">
+                <span
+                  className={`px-2 py-1 rounded-md text-xs font-medium ${
+                    item.statusLabel === "Approved"
+                      ? "bg-green-100 text-green-800"
+                      : item.statusLabel === "Rejected"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {item.statusLabel || "Pending Review"}
+                </span>
+              </td>
               {/* {item.amountSold ? (
                 <td className='text-[14px] text-[#14B01A] leading-[22.4px] font-normal font-archivo'>
                   N {Number(item.amountSold).toLocaleString()}
                 </td>
               ) : null} */}
-              <td className='text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]'>
+              <td className="text-[14px] leading-[22.4px] font-normal font-archivo text-[#181336]">
                 <FontAwesomeIcon
                   onClick={(e) => {
                     handleIconClick(e, item);
@@ -157,9 +169,9 @@ const ShowTable: React.FC<ShowTableProps> = ({
                   icon={faEllipsis}
                   width={24}
                   height={24}
-                  title={'See full details'}
-                  className='w-[24px] h-[24px] cursor-pointer'
-                  color={'#181336'}
+                  title={"See full details"}
+                  className="w-[24px] h-[24px] cursor-pointer"
+                  color={"#181336"}
                 />
               </td>
             </tr>
@@ -172,7 +184,7 @@ const ShowTable: React.FC<ShowTableProps> = ({
         onClose={closeModal}
         onViewBrief={() => setShowFullDetails(true)}
         onEditBrief={() => {
-          if (heading === 'Total Brief' || heading === 'Publish Brief') return;
+          if (heading === "Total Brief" || heading === "Publish Brief") return;
           setCreateBrief({
             ...createBrief,
             propertyType: editBriefDetails.propertyType,
@@ -183,32 +195,32 @@ const ShowTable: React.FC<ShowTableProps> = ({
               value:
                 editBriefDetails.location?.state !== undefined
                   ? editBriefDetails.location.state
-                  : '',
+                  : "",
               label:
                 editBriefDetails.location?.state !== undefined
                   ? editBriefDetails.location.state
-                  : '',
+                  : "",
             },
             selectedLGA: {
               value:
                 editBriefDetails.location?.localGovernment !== undefined
                   ? editBriefDetails.location.localGovernment
-                  : '',
+                  : "",
               label:
                 editBriefDetails.location?.localGovernment !== undefined
                   ? editBriefDetails.location.localGovernment
-                  : '',
+                  : "",
             },
             selectedCity:
               editBriefDetails.location?.area !== undefined
                 ? editBriefDetails.location.area
-                : '',
+                : "",
             documents:
               editBriefDetails.docOnProperty !== undefined
                 ? editBriefDetails.docOnProperty.map(
-                    ({ docName }: { docName: string }) => docName
+                    ({ docName }: { docName: string }) => docName,
                   )
-                : [''],
+                : [""],
             price:
               Number(editBriefDetails.price) ||
               Number(editBriefDetails.propertyPrice),
