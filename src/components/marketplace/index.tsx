@@ -25,10 +25,19 @@ const MarketPlace = () => {
     setPropertySelectedForInspection,
   } = usePageContext();
 
+  // Add error state for marketplace component
+  const [hasError, setHasError] = useState(false);
 
   // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
   //   React.useState<boolean>(false);
-  const { selectedForInspection, clearInspectionSelection } = useMarketplace();
+  const {
+    selectedForInspection,
+    clearInspectionSelection,
+    formikStatus,
+    errMessage,
+    properties,
+  } = useMarketplace();
+
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState(false);
@@ -48,6 +57,24 @@ const MarketPlace = () => {
   >("Buy");
   const [isComingFromSubmitLol, setIsComingFromSubmitLol] =
     React.useState<boolean>(false);
+
+  const is_mobile = IsMobile();
+
+  // Handle marketplace errors - this useEffect must come before any early returns
+  useEffect(() => {
+    console.log("Marketplace status:", {
+      formikStatus,
+      errMessage,
+      propertiesCount: properties?.length,
+    });
+
+    if (formikStatus === "failed" && errMessage) {
+      console.error("Marketplace error:", errMessage);
+      setHasError(true);
+    } else if (formikStatus === "success") {
+      setHasError(false);
+    }
+  }, [formikStatus, errMessage, properties]);
 
   useEffect(() => {
     if (propertySelectedForInspection) {
@@ -80,7 +107,7 @@ const MarketPlace = () => {
     }
   }, [selectedForInspection]);
 
-  return ( 
+  return (
     <div className="min-h-screen bg-[#EEF1F1]">
       {isAddForInspectionModalOpened ? (
         <AddForInspection

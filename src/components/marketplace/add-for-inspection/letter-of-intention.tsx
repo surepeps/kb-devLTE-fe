@@ -85,14 +85,23 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 md:p-6">
-      <div className="space-y-6">
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ delay: 0.1 }}
+      viewport={{ once: true }}
+      className="w-full max-w-[615px] mx-auto"
+    >
+      <div className="w-full px-4 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 max-h-[500px] overflow-y-auto">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h2 className="font-bold text-[#09391C] text-xl md:text-2xl font-display">
+          <h2
+            className={`font-bold text-[#09391C] text-lg sm:text-xl md:text-2xl ${archivo.className}`}
+          >
             Upload your Letter of Intention
           </h2>
-          <p className="text-sm md:text-base text-[#5A5D63] max-w-2xl mx-auto">
+          <p className="text-xs sm:text-sm md:text-base text-[#5A5D63] leading-relaxed">
             Please address your letter to{" "}
             <span className="font-bold text-black">Khabi-Teq Limited</span> and
             include our office address: Goldrim Plaza, Mokuolu Street, Ifako
@@ -101,53 +110,54 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         </div>
 
         {/* LOI Guidelines */}
-        <div className="bg-[#E8F3FE] border border-[#A8ADB7] rounded-lg p-4 md:p-6 space-y-4">
-          <h3 className="font-semibold text-[#09391C] text-lg">
-            LOI Guidelines:
+        <div className="bg-[#E8F3FE] border border-[#A8ADB7] rounded-lg p-3 sm:p-4 space-y-3">
+          <h3 className="font-semibold text-[#09391C] text-sm sm:text-base">
+            📋 LOI Guidelines:
           </h3>
-          <ul className="text-sm md:text-base text-[#5A5D63] space-y-2 list-disc list-inside">
-            <li>Clearly state your intention for joint venture partnership</li>
-            <li>Include your proposed terms and profit-sharing arrangement</li>
-            <li>Specify your financial contribution or expertise offering</li>
-            <li>Mention the property address and reference ID if available</li>
-            <li>Provide your contact information and company details</li>
+          <ul className="text-xs sm:text-sm text-[#5A5D63] space-y-1 sm:space-y-2 list-disc list-inside">
+            <li>State your intention for joint venture partnership</li>
+            <li>Include proposed terms and profit-sharing arrangement</li>
+            <li>Specify your financial contribution or expertise</li>
+            <li>Mention property address and reference ID</li>
+            <li>Provide contact information and company details</li>
             <li>Sign and date the document</li>
           </ul>
         </div>
 
         {/* Sample Format */}
-        <div className="bg-gray-50 border rounded-lg p-4 md:p-6 space-y-3">
-          <h4 className="font-semibold text-[#09391C]">
-            Sample Letter Format:
+        <div className="bg-gray-50 border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+          <h4 className="font-semibold text-[#09391C] text-sm sm:text-base">
+            📝 Sample Letter Format:
           </h4>
-          <div className="text-sm text-[#5A5D63] bg-white p-4 rounded border italic">
+          <div className="text-xs sm:text-sm text-[#5A5D63] bg-white p-3 rounded border italic leading-relaxed">
             <p>"Dear Khabi-Teq Limited,</p>
-            <br />
-            <p>
-              I hereby express my intention to enter into a joint venture
-              partnership for the property located at [Property Address]...
+            <p className="mt-2">
+              I express my intention to enter into a joint venture for the
+              property at [Property Address]...
             </p>
-            <br />
-            <p>My proposed contribution: [Financial/Expertise]</p>
-            <p>Proposed profit sharing: [Percentage/Terms]</p>
-            <br />
-            <p>Contact: [Your details]</p>
-            <br />
-            <p>Sincerely, [Your Name & Signature]"</p>
+            <p className="mt-2">My contribution: [Financial/Expertise]</p>
+            <p>Profit sharing: [Percentage/Terms]</p>
+            <p className="mt-2">Contact: [Your details]</p>
+            <p className="mt-2">Sincerely, [Your Name & Signature]"</p>
           </div>
         </div>
 
         {/* File Upload */}
-        <div className="flex justify-center">
-          <div className="w-full max-w-md">
-            <AttachFile
-              style={{ width: "100%" }}
-              id="loi_attachment"
-              setFileUrl={setFileUrl}
-              heading="Upload your LOI Document (PDF, DOC, DOCX)"
-              acceptedFileTypes=".pdf,.doc,.docx"
-            />
-          </div>
+        <div className="space-y-3">
+          <label className="block">
+            <span className="text-[#24272C] font-medium text-sm">
+              Upload LOI Document <span className="text-red-500">*</span>
+            </span>
+            <div className="mt-2">
+              <AttachFile
+                style={{ width: "100%" }}
+                id="loi_attachment"
+                setFileUrl={setFileUrl}
+                heading=""
+                acceptedFileTypes=".pdf,.doc,.docx"
+              />
+            </div>
+          </label>
         </div>
 
         {/* Status Message */}
@@ -157,19 +167,19 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <p className="text-sm text-green-600 bg-green-50 rounded-lg p-2">
+            <p className="text-xs sm:text-sm text-green-600 bg-green-50 rounded-lg p-2 sm:p-3">
               ✓ LOI document uploaded successfully
             </p>
           </motion.div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <button
             onClick={handleSubmitLOI}
             disabled={!fileUrl || isSubmitting}
             className={`
-              px-8 py-3 rounded-lg font-semibold text-white transition-colors min-w-[150px]
+              flex-1 h-[50px] sm:h-[57px] rounded font-semibold text-white transition-colors text-sm sm:text-base
               ${
                 !fileUrl || isSubmitting
                   ? "bg-gray-300 cursor-not-allowed"
@@ -184,8 +194,8 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             onClick={handleCancel}
             disabled={isSubmitting}
             className={`
-              px-8 py-3 rounded-lg font-semibold border-2 border-[#5A5D63] text-[#5A5D63] 
-              hover:bg-[#5A5D63] hover:text-white transition-colors min-w-[150px]
+              flex-1 h-[50px] sm:h-[57px] rounded font-semibold border-2 border-[#5A5D63] text-[#5A5D63]
+              hover:bg-[#5A5D63] hover:text-white transition-colors text-sm sm:text-base
               ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
             `}
           >
@@ -193,7 +203,7 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

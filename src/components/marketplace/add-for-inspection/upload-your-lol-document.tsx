@@ -209,10 +209,11 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
             </p>
           </div>
           {/**Upload your Lol section */}
-          <div className="lg:w-[534px]">
+          <div className="w-full sm:w-[534px]">
             <AttachFile
               style={{
-                width: "283px",
+                width: "100%",
+                maxWidth: "100%",
               }}
               id="attach_file"
               setFileUrl={(url) => {
@@ -222,9 +223,11 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
               heading="Upload your LOI"
             />
           </div>
-          <p className="text-[#1976D2] font-medium text-lg">
+          <p className="text-[#1976D2] font-medium text-sm sm:text-base md:text-lg leading-relaxed">
             A fee of{" "}
-            <span className="text-[#FF3D00] text-lg font-medium">₦10,000</span>{" "}
+            <span className="text-[#FF3D00] text-sm sm:text-base md:text-lg font-medium">
+              ₦10,000
+            </span>{" "}
             will be charged for inspection and negotiation before your request
             is sent to the seller.
           </p>
@@ -233,7 +236,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
             {/**First div */}
             <div className="flex justify-between items-center gap-[18px] border-b-[1px] pb-[10px] border-black">
               <h2
-                className={`font-bold text-black ${archivo.className} text-xl`}
+                className={`font-bold text-black ${archivo.className} text-lg sm:text-xl`}
               >
                 Select preferable inspection Date
               </h2>
@@ -354,17 +357,17 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
               )}
             </AnimatePresence>
             {/**fifth div */}
-            <div className="p-[20px] bg-[#EEF1F1] flex flex-col gap-[25px]">
+            <div className="p-[15px] sm:p-[20px] bg-[#EEF1F1] flex flex-col gap-[20px] sm:gap-[25px]">
               <div className="flex flex-col gap-[4px]">
-                <h3 className="text-[#0B0D0C] text-xl font-bold">
+                <h3 className="text-[#0B0D0C] text-base sm:text-lg md:text-xl font-bold">
                   Contact information
                 </h3>
-                <span className="text-base text-[#515B6F]">
+                <span className="text-sm sm:text-base text-[#515B6F] leading-relaxed">
                   Provide your contact information to schedule an inspection and
                   take the next step toward your dream property
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-[15px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[12px] sm:gap-[15px]">
                 <Input2
                   id="fullName"
                   name="fullName"
@@ -393,19 +396,19 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
               </div>
             </div>
             {/**buttons */}
-            <div className=" w-full flex gap-[15px] h-[57px]">
+            <div className="w-full flex flex-col sm:flex-row gap-[12px] sm:gap-[15px]">
               <button
                 type="submit"
-                className={`w-1/2 h-[57px] ${
+                className={`flex-1 h-[50px] sm:h-[57px] ${
                   allFilled ? "bg-[#8DDB90]" : "bg-[#5A5D63]"
-                } text-[#FFFFFF] font-bold text-lg ${archivo.className}`}
+                } text-[#FFFFFF] font-bold text-sm sm:text-base md:text-lg ${archivo.className} rounded`}
               >
                 Submit
               </button>
               <button
-                //onClick={() => closeModal(false)}
+                onClick={() => closeModal?.(false)}
                 type="button"
-                className={`w-1/2 h-[57px] bg-transparent border-[1px] border-[#5A5D63] text-[#414357] font-medium text-lg ${archivo.className}`}
+                className={`flex-1 h-[50px] sm:h-[57px] bg-transparent border-[1px] border-[#5A5D63] text-[#414357] font-medium text-sm sm:text-base md:text-lg ${archivo.className} rounded hover:bg-[#5A5D63] hover:text-white transition-colors`}
               >
                 Close
               </button>

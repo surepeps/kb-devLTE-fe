@@ -58,6 +58,26 @@ interface MarketplaceContextType {
   homeCondition: string;
   setHomeCondition: (condition: string) => void;
 
+  // Search filters
+  searchLocation: {
+    state: string;
+    localGovernment: string;
+    area?: string;
+  } | null;
+  setSearchLocation: (
+    location: {
+      state: string;
+      localGovernment: string;
+      area?: string;
+    } | null,
+  ) => void;
+
+  priceRange: {
+    min: number;
+    max: number;
+  } | null;
+  setPriceRange: (range: { min: number; max: number } | null) => void;
+
   selectedMarketType: MarketTypeSelection | null;
   setSelectedMarketType: (market: MarketTypeSelection) => void;
 
@@ -237,78 +257,187 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     return selectedForInspection.length < 2;
   }, [selectedForInspection]);
 
-  // Data fetching
-  const fetchInitialData = useCallback(async (briefToFetch: string) => {
-    // Don't proceed if briefToFetch is empty or invalid
-    if (!briefToFetch || typeof briefToFetch !== "string") {
-      console.warn("Invalid briefToFetch parameter:", briefToFetch);
-      return;
-    }
+  // Data fetching with improved error handling and retry mechanism
+  const fetchInitialData = useCallback(
+    async (briefToFetch: string, retryCount = 0) => {
+      const maxRetries = 2;
 
-    setFormikStatus("pending");
-    setErrMessage("");
-
-    try {
-      // Import URLS and shuffleArray dynamically to avoid dependency issues
-      const { URLS } = await import("@/utils/URLS");
-      const { shuffleArray } = await import("@/utils/shuffleArray");
-
-      // Add timeout to fetch request
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch(URLS.BASE + briefToFetch, {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      // Don't proceed if briefToFetch is empty or invalid
+      if (!briefToFetch || typeof briefToFetch !== "string") {
+        console.warn("Invalid briefToFetch parameter:", briefToFetch);
         if (isMountedRef.current) {
-          setErrMessage(errorMessage);
           setFormikStatus("failed");
+          setErrMessage("Invalid API endpoint");
         }
         return;
       }
 
-      const data = await response.json();
+      if (!isMountedRef.current) return;
 
-      if (isMountedRef.current) {
+      setFormikStatus("pending");
+      setErrMessage("");
+
+      try {
+        // Check network connectivity first
+        if (!navigator.onLine) {
+          throw new Error(
+            "No internet connection. Please check your network and try again.",
+          );
+        }
+
+        // Import utilities dynamically to avoid dependency issues
+        const { URLS } = await import("@/utils/URLS");
+        const { shuffleArray } = await import("@/utils/shuffleArray");
+        const { GET_REQUEST } = await import("@/utils/requests");
+
+        // Validate URL construction
+        if (!URLS.BASE || URLS.BASE.includes("undefined")) {
+          throw new Error(
+            "API URL is not properly configured. Please contact support.",
+          );
+        }
+
+        const apiUrl = URLS.BASE + briefToFetch;
+        console.log("Fetching from:", apiUrl);
+
+        // Validate the complete URL
+        try {
+          new URL(apiUrl);
+        } catch {
+          throw new Error("Invalid API URL format");
+        }
+
+        // Use the safer GET_REQUEST utility with logging
+        console.log("Making API request to:", apiUrl);
+        const response = await GET_REQUEST(apiUrl);
+        console.log("API response received:", response);
+
+        if (!isMountedRef.current) return;
+
+        // Check for API error response
+        if (response?.error || response?.success === false) {
+          const errorMessage =
+            response?.message || response?.error || "Failed to fetch data";
+          console.error("API Error:", errorMessage);
+
+          // Provide more helpful error messages
+          if (
+            errorMessage.includes("fetch") ||
+            errorMessage.includes("network")
+          ) {
+            setErrMessage(
+              "Unable to connect to the server. Please check your internet connection and try again.",
+            );
+          } else {
+            setErrMessage(errorMessage);
+          }
+
+          setFormikStatus("failed");
+          setSearchStatus({
+            status: "failed",
+            couldNotFindAProperty: true,
+          });
+          return;
+        }
+
+        // Handle successful response
         setFormikStatus("success");
 
-        // Handle different response structures
-        const responseData = data?.data || data || [];
-        const approvedData = Array.isArray(responseData)
-          ? responseData.filter((item: any) => item?.isApproved === true)
-          : [];
+        // Handle different response structures with better logging
+        const responseData = response?.data || response || [];
+        console.log("Response data structure:", responseData);
+
+        const dataArray = Array.isArray(responseData)
+          ? responseData
+          : Array.isArray(responseData?.properties)
+            ? responseData.properties
+            : [];
+
+        console.log("Data array length:", dataArray.length);
+
+        // More lenient filtering - include if no isApproved field or if explicitly approved
+        const approvedData = dataArray.filter((item: any) => {
+          return (
+            item?.isApproved !== false && item !== null && item !== undefined
+          );
+        });
 
         const shuffledData = shuffleArray(approvedData);
         setProperties(shuffledData);
-      }
-    } catch (err: any) {
-      console.error("Fetch error:", err);
 
-      let errorMessage = "An error occurred while fetching data";
+        setSearchStatus({
+          status: "success",
+          couldNotFindAProperty: shuffledData.length === 0,
+        });
 
-      if (err.name === "AbortError") {
-        errorMessage =
-          "Request timed out. Please check your connection and try again.";
-      } else if (err.message?.includes("Failed to fetch")) {
-        errorMessage = "Network error. Please check your internet connection.";
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
+        console.log(
+          `Successfully loaded ${shuffledData.length} properties from ${dataArray.length} total properties`,
+        );
+      } catch (err: any) {
+        console.error("Fetch error (attempt " + (retryCount + 1) + "):", err);
 
-      if (isMountedRef.current) {
+        if (!isMountedRef.current) return;
+
+        // Retry logic for network errors
+        if (
+          retryCount < maxRetries &&
+          (err.message?.includes("Failed to fetch") ||
+            err.message?.includes("Network error") ||
+            err.name === "TypeError")
+        ) {
+          console.log(`Retrying request... (${retryCount + 1}/${maxRetries})`);
+          setTimeout(
+            () => {
+              if (isMountedRef.current) {
+                fetchInitialData(briefToFetch, retryCount + 1);
+              }
+            },
+            1000 * (retryCount + 1),
+          ); // Exponential backoff
+          return;
+        }
+
+        let errorMessage = "An error occurred while fetching data";
+
+        // Better error categorization
+        if (err.name === "AbortError") {
+          errorMessage =
+            "Request timed out. Please check your connection and try again.";
+        } else if (err.message?.includes("Failed to fetch")) {
+          errorMessage =
+            "Network error. Please check your internet connection.";
+        } else if (
+          err.message?.includes("API URL is not properly configured")
+        ) {
+          errorMessage = "API configuration error. Please contact support.";
+        } else if (err.message?.includes("No internet connection")) {
+          errorMessage = err.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+
         setErrMessage(errorMessage);
         setFormikStatus("failed");
+        setSearchStatus({
+          status: "failed",
+          couldNotFindAProperty: true,
+        });
       }
-    }
-  }, []);
+    },
+    [isMountedRef],
+  );
+
+  // Search filters state
+  const [searchLocation, setSearchLocation] = useState<{
+    state: string;
+    localGovernment: string;
+    area?: string;
+  } | null>(null);
+
+  const [priceRange, setPriceRange] = useState<{
+    min: number;
+    max: number;
+  } | null>(null);
 
   // Clear all filters
   const clearAllFilters = useCallback(() => {
@@ -316,6 +445,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     setRentFilterBy(["All"]);
     setJvFilterBy(["All"]);
     setHomeCondition("All");
+    setSearchLocation(null);
+    setPriceRange(null);
   }, []);
 
   const contextValue: MarketplaceContextType = useMemo(
@@ -346,6 +477,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       setJvFilterBy,
       homeCondition,
       setHomeCondition,
+
+      // Search filters
+      searchLocation,
+      setSearchLocation,
+      priceRange,
+      setPriceRange,
 
       // Search and loading states
       searchStatus,
@@ -384,6 +521,10 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       setJvFilterBy,
       homeCondition,
       setHomeCondition,
+      searchLocation,
+      setSearchLocation,
+      priceRange,
+      setPriceRange,
       searchStatus,
       setSearchStatus,
       properties,

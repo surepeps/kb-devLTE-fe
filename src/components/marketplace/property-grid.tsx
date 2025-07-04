@@ -180,14 +180,21 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     );
   }
 
-  // Error state
+  // Error state with better handling
   if (isLoading === "failed" && error) {
     return (
       <EmptyState
         type="error"
         description={error}
         actionLabel="Retry"
-        onAction={() => window.location.reload()}
+        onAction={() => {
+          // Clear error state and try to refetch
+          setErrMessage("");
+          setFormikStatus("idle");
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        }}
       />
     );
   }

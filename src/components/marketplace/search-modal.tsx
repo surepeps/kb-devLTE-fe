@@ -109,42 +109,109 @@ const SearchModal = ({
   // Note: State syncing moved to marketplace context to avoid render issues
 
   const handleSearch = async (searchPayload: any) => {
-    
     setFormikStatus("pending");
     setSearchStatus({
       status: "pending",
       couldNotFindAProperty: false,
     });
 
+    // Enhanced search payload with proper location filtering
+    const enhancedSearchPayload = {
+      ...searchPayload,
+      // Add location filters if they exist
+      ...(searchPayload.selectedState && {
+        state: searchPayload.selectedState,
+      }),
+      ...(searchPayload.selectedLGA && {
+        localGovernment: searchPayload.selectedLGA,
+      }),
+      ...(searchPayload.selectedArea && { area: searchPayload.selectedArea }),
+      // Add price range if specified
+      ...(searchPayload.minPrice && {
+        minPrice: Number(searchPayload.minPrice),
+      }),
+      ...(searchPayload.maxPrice && {
+        maxPrice: Number(searchPayload.maxPrice),
+      }),
+      // Add property type filtering
+      ...(searchPayload.propertyType &&
+        searchPayload.propertyType !== "All" && {
+          propertyType: searchPayload.propertyType,
+        }),
+    };
+
     try {
       await toast.promise(
-        POST_REQUEST(URLS.BASE + URLS.searchBrief, {
-          ...searchPayload,
-        }).then((response) => {
-          const data = Array.isArray(response) ? response : response?.data;
-          if (!data) {
-            setErrMessage("Failed to fetch data");
-            setFormikStatus("failed");
+        POST_REQUEST(URLS.BASE + URLS.searchBrief, enhancedSearchPayload).then(
+          (response) => {
+            const data = Array.isArray(response) ? response : response?.data;
+            if (!data) {
+              setErrMessage("Failed to fetch data");
+              setFormikStatus("failed");
+              setSearchStatus({
+                status: "failed",
+                couldNotFindAProperty: true,
+              });
+              throw new Error("Failed to fetch data");
+            }
+
+            // Apply client-side filtering for more precise results
+            let filteredData = data;
+
+            if (searchPayload.selectedState) {
+              filteredData = filteredData.filter((property: any) =>
+                property.location?.state
+                  ?.toLowerCase()
+                  .includes(searchPayload.selectedState.toLowerCase()),
+              );
+            }
+
+            if (searchPayload.selectedLGA) {
+              filteredData = filteredData.filter((property: any) =>
+                property.location?.localGovernment
+                  ?.toLowerCase()
+                  .includes(searchPayload.selectedLGA.toLowerCase()),
+              );
+            }
+
+            if (searchPayload.minPrice || searchPayload.maxPrice) {
+              filteredData = filteredData.filter((property: any) => {
+                const price = property.price || property.rentalPrice || 0;
+                const minPrice = searchPayload.minPrice
+                  ? Number(searchPayload.minPrice)
+                  : 0;
+                const maxPrice = searchPayload.maxPrice
+                  ? Number(searchPayload.maxPrice)
+                  : Infinity;
+                return price >= minPrice && price <= maxPrice;
+              });
+            }
+
+            setFormikStatus("success");
+            const shuffledData = shuffleArray(filteredData);
+            setProperties(shuffledData);
+
+            // Update search location in context
+            if (searchPayload.selectedState || searchPayload.selectedLGA) {
+              setSearchLocation({
+                state: searchPayload.selectedState || "",
+                localGovernment: searchPayload.selectedLGA || "",
+                area: searchPayload.selectedArea || "",
+              });
+            }
+
             setSearchStatus({
-              status: "failed",
-              couldNotFindAProperty: true,
+              status: "success",
+              couldNotFindAProperty: shuffledData.length === 0,
             });
-            throw new Error("Failed to fetch data");
-          }
-          setFormikStatus("success");
-          const shuffledData = shuffleArray(data);
-          setProperties(shuffledData);
-          setSearchStatus({
-            status: "success",
-            couldNotFindAProperty: shuffledData.length === 0,
-          });
-          console.log(`Properties: ${shuffledData.length}`);
-          // setUsageOptions(['All'])
-        }),
+
+            console.log(`Properties found: ${shuffledData.length}`);
+          },
+        ),
         {
-          loading: "Searching...",
-          success: "Properties loaded!",
-          error: "Failed to load properties",
+          loading: "Searching properties...",
+          success: (data) => `Found ${data?.length || 0} properties!`,
+          error: "Failed to search properties",
         },
       );
     } catch (err: any) {
