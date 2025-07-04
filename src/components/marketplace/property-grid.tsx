@@ -12,7 +12,6 @@ import { useMarketplace } from "@/context/marketplace-context";
 
 interface PropertyGridProps {
   marketplaceType: string;
-  itemsPerPage?: number;
   // JV specific props
   isComingFromSubmitLol?: boolean;
   setIsComingFromSubmitLol?: (value: boolean) => void;
