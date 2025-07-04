@@ -114,6 +114,13 @@ export default function LandlordDashboard() {
       textColor: "text-green-600",
     },
     {
+      title: "Inactive Briefs",
+      value: dashboardData?.totalInactiveBriefs || 0,
+      icon: ClockIcon,
+      color: "bg-gray-500",
+      textColor: "text-gray-600",
+    },
+    {
       title: "Properties Sold",
       value: dashboardData?.propertySold || 0,
       icon: CurrencyDollarIcon,
