@@ -436,15 +436,39 @@ const Register = () => {
             />
           </div>
           <div className="flex justify-center items-center w-full lg:px-[60px]">
-            <RadioCheck
-              isDisabled={isDisabled}
-              isChecked={agreed}
-              handleChange={() => setAgreed(!agreed)}
-              type="checkbox"
-              name="agree"
-              className="w-full"
-              value={`By clicking here, I agree to the Khabi-Teq realty <br/> <a href='/policies_page'><span style='color: #0B423D; font-weight: bold'>Policy</span> and <span style='color: #0B423D; font-weight: bold'>Rules</span></a>`}
-            />
+            <div className="flex items-start gap-3 w-full">
+              <label className="relative flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={() => !isDisabled && setAgreed(!agreed)}
+                  disabled={isDisabled}
+                  className="sr-only peer"
+                />
+                <div className="w-5 h-5 border-2 border-gray-300 rounded bg-white transition-all duration-300 peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed flex items-center justify-center">
+                  <svg
+                    className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </label>
+              <div className="flex-1 text-sm text-gray-600 leading-relaxed">
+                By clicking here, I agree to the Khabi-Teq realty{" "}
+                <a
+                  href="/policies_page"
+                  className="text-[#0B423D] font-bold hover:underline"
+                >
+                  Policy and Rules
+                </a>
+              </div>
+            </div>
           </div>
           {/**Button */}
           <Button
