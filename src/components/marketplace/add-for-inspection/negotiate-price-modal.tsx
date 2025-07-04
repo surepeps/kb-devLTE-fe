@@ -737,17 +737,17 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
             </div>
           </div>
         </div>
-      </form>
-      {/* Arrow down indicator */}
-      <div className="absolute right-6 bottom-6 z-10">
-        <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            className="text-white"
-            size="lg"
-          />
+        {/* Arrow down indicator */}
+        <div className="absolute right-6 bottom-6 z-10">
+          <div className="w-12 h-12 rounded-full bg-[#8DDB90] flex items-center justify-center animate-bounce shadow-lg">
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className="text-white"
+              size="lg"
+            />
+          </div>
         </div>
-        </form>
+      </form>
     </motion.div>
   );
 };
