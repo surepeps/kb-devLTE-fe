@@ -384,7 +384,7 @@ const SearchModal = ({
       page: 1,
       limit: itemsPerPage,
     });
-  }, [userSelectedMarketPlace, searchProperties, itemsPerPage]);
+  }, [userSelectedMarketPlace]); // Removed searchProperties and itemsPerPage to prevent infinite loop
 
   return (
     <Fragment>
