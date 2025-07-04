@@ -9,7 +9,7 @@ import EmptyState from "./empty-state";
 import Loading from "@/components/loading-component/loading";
 import { IsMobile } from "@/hooks/isMobile";
 import { useMarketplace } from "@/context/marketplace-context";
- 
+
 interface PropertyGridProps {
   marketplaceType: string;
   itemsPerPage?: number;
@@ -103,18 +103,36 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   const endIndex = startIndex + itemsPerPage;
   const currentProperties = filteredProperties.slice(startIndex, endIndex);
 
-  // Reset page when filters change
+  // Reset page when filters change or when no results on current page
+  React.useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    } else if (filteredProperties.length > 0 && currentPage < 1) {
+      setCurrentPage(1);
+    }
+  }, [filterBy, condition, currentPage, totalPages, filteredProperties.length]);
+
+  // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
   }, [filterBy, condition]);
 
   const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+
     setCurrentPage(page);
-    // Scroll to top of grid
-    document.getElementById("property-grid")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    // Scroll to top of grid with proper positioning
+    setTimeout(() => {
+      const gridElement = document.getElementById("property-grid");
+      if (gridElement) {
+        const elementTop = gridElement.offsetTop;
+        const offset = 80; // Account for any fixed headers
+        window.scrollTo({
+          top: Math.max(0, elementTop - offset),
+          behavior: "smooth",
+        });
+      }
+    }, 100);
   };
 
   const createCardData = (property: any) => [

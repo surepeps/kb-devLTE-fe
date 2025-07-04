@@ -103,11 +103,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const [selectedMarketType, setSelectedMarketType] = useState<MarketTypeSelection | null>({
-    name: "Buy a property",
-    briefType: "buy",
-    subValue: "Outright Sales",
-  });
+  const [selectedMarketType, setSelectedMarketType] =
+    useState<MarketTypeSelection | null>({
+      name: "Buy a property",
+      briefType: "buy",
+      subValue: "Outright Sales",
+    });
 
   // Negotiated prices state
   const [negotiatedPrices, setNegotiatedPrices] = useState<NegotiatedPrice[]>(
@@ -202,12 +203,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           return prev;
         }
 
-        // Show toast only once per selection
-        if (!prev.some((item) => item.propertyId === propertyId)) {
-          setTimeout(() => {
-            toast.success("Property selected for inspection");
-          }, 0);
-        }
+        // Show success notification only once when adding
+        setTimeout(() => {
+          toast.success("Property selected for inspection");
+        }, 0);
+
+        // Add to selection
         return [...prev, { propertyId, property }];
       }
     });
@@ -335,7 +336,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
       selectedMarketType,
       setSelectedMarketType,
-
 
       // Filter states
       usageOptions,
