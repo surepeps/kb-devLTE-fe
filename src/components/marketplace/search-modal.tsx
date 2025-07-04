@@ -360,7 +360,7 @@ const SearchModal = ({
 
   const is_mobile = IsMobile();
 
-  // Data fetching using marketplace context to avoid AbortError issues
+  // Data fetching using marketplace context with proper API search
   useEffect(() => {
     if (!userSelectedMarketPlace) return;
 
@@ -378,11 +378,14 @@ const SearchModal = ({
       default:
         briefType = "Outright Sales";
     }
-    const briefToFetch = `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(briefType)}`;
 
-    // Use the context method for fetching (removed fetchInitialData from deps to avoid re-render loop)
-    fetchInitialData(briefToFetch);
-  }, [userSelectedMarketPlace]);
+    // Use the new search function for initial data loading
+    searchProperties({
+      briefType,
+      page: 1,
+      limit: itemsPerPage,
+    });
+  }, [userSelectedMarketPlace, searchProperties, itemsPerPage]);
 
   return (
     <Fragment>
