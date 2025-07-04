@@ -796,8 +796,8 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
       <ModalWrapper
         isOpen={currentIndex < allNegotiations.length}
         onClose={() => setCurrentIndex(allNegotiations.length)}
-        title="Negotiate Price"
-        size="lg"
+        title="Negotiate price with the seller"
+        size="md"
         preventBackgroundScroll={true}
       >
         {currentIndex < allNegotiations.length && (
@@ -822,7 +822,7 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         isOpen={isSelectPreferableInspectionDateModalOpened}
         onClose={() => setSelectPreferableInspectionDateModalOpened(false)}
         title="Select Inspection Date & Time"
-        size="lg"
+        size="md"
         preventBackgroundScroll={true}
       >
         {isSelectPreferableInspectionDateModalOpened && (
@@ -842,7 +842,7 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         isOpen={!!isComingFromPriceNeg}
         onClose={() => comingFromPriceNegotiation?.(false)}
         title="Negotiate with Seller"
-        size="lg"
+        size="md"
         preventBackgroundScroll={true}
       >
         {isComingFromPriceNeg && (
