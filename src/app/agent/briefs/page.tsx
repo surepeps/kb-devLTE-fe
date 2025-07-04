@@ -10,6 +10,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { usePageContext } from "@/context/page-context";
+import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentNav from "@/components/agent-page-components/agent_navbar";
 import { AgentNavData } from "@/enums";
 import { DataProps } from "@/types/agent_data_props";
