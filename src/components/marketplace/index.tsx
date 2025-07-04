@@ -73,6 +73,16 @@ const MarketPlace = () => {
       </div>
     );
   }
+  // const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
+  //   React.useState<boolean>(false);
+  const {
+    selectedForInspection,
+    clearInspectionSelection,
+    formikStatus,
+    errMessage,
+    properties,
+  } = useMarketplace();
+
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
   const [isLetterOfIntentionModalOpened, setIsLetterOfIntentionModalOpened] =
     useState(false);
