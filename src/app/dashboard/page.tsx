@@ -181,17 +181,17 @@ export default function LandlordDashboard() {
           })}
         </div>
 
-        {/* Properties and Briefs Grid */}
+        {/* Briefs and Pending Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Properties */}
+          {/* Recent Briefs */}
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b border-gray-200">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-[#09391C]">
-                  Recent Properties
+                  Recent Briefs
                 </h2>
                 <Link
-                  href="/my-listings"
+                  href="/agent_marketplace"
                   className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
                 >
                   View All
@@ -199,29 +199,32 @@ export default function LandlordDashboard() {
               </div>
             </div>
 
-            {properties.length === 0 ? (
+            {!dashboardData?.recentBriefs ||
+            dashboardData.recentBriefs.length === 0 ? (
               <div className="p-12 text-center">
-                <HomeIcon size={48} className="mx-auto text-gray-400 mb-4" />
+                <BriefcaseIcon
+                  size={48}
+                  className="mx-auto text-gray-400 mb-4"
+                />
                 <h3 className="text-lg font-medium text-gray-600 mb-2">
-                  No Properties Listed Yet
+                  No Recent Briefs
                 </h3>
                 <p className="text-gray-500 mb-6">
-                  Start by listing your first property to manage your real
-                  estate portfolio
+                  Create your first brief to start finding properties
                 </p>
                 <Link
-                  href="/post_property"
+                  href="/agent_marketplace"
                   className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
                 >
                   <PlusIcon size={20} />
-                  List Your First Property
+                  Create Brief
                 </Link>
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
-                {properties.slice(0, 5).map((property, index) => (
+                {dashboardData.recentBriefs.slice(0, 5).map((brief, index) => (
                   <motion.div
-                    key={property._id}
+                    key={brief._id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -230,46 +233,51 @@ export default function LandlordDashboard() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          {property.images?.[0] ? (
+                          {brief.pictures?.[0] ? (
                             <img
-                              src={property.images[0]}
-                              alt={property.propertyType}
+                              src={brief.pictures[0]}
+                              alt={brief.propertyType}
                               className="w-full h-full object-cover rounded-lg"
                             />
                           ) : (
-                            <HomeIcon size={24} className="text-gray-400" />
+                            <BriefcaseIcon
+                              size={24}
+                              className="text-gray-400"
+                            />
                           )}
                         </div>
                         <div>
                           <h3 className="font-semibold text-[#09391C] capitalize">
-                            {property.propertyType}
+                            {brief.propertyType}
                           </h3>
                           <p className="text-sm text-[#5A5D63]">
-                            {property.location.area},{" "}
-                            {property.location.localGovernment}
+                            {brief.location?.area},{" "}
+                            {brief.location?.localGovernment}
                           </p>
                           <p className="text-sm text-[#8DDB90] font-medium">
-                            ₦{property.price.toLocaleString()}
+                            {brief.price
+                              ? `₦${brief.price.toLocaleString()}`
+                              : "Price not set"}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                            property.status === "active"
+                            brief.status === "active"
                               ? "bg-green-100 text-green-800"
-                              : property.status === "sold"
+                              : brief.status === "assigned"
                                 ? "bg-blue-100 text-blue-800"
-                                : property.status === "rented"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-gray-100 text-gray-800"
+                                : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {property.status}
+                          {brief.status || "pending"}
                         </span>
                         <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
                           <ClockIcon size={12} />
-                          {new Date(property.createdAt).toLocaleDateString()}
+                          {brief.createdAt
+                            ? new Date(brief.createdAt).toLocaleDateString()
+                            : "Recently"}
                         </p>
                       </div>
                     </div>
