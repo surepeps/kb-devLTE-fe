@@ -61,6 +61,7 @@ export default function LandlordDashboard() {
   const router = useRouter();
   const { user } = useUserContext();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [briefs, setBriefs] = useState<Brief[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
     activeListings: 0,
