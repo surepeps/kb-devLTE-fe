@@ -106,6 +106,7 @@ const SearchModal = ({
   } = useMarketplace();
 
   const router = useRouter();
+  const initialLoadRef = useRef(false);
 
   const handleRemoveAllBriefs = () => {
     setUniqueProperties(new Set());
