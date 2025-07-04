@@ -118,27 +118,33 @@ const Register = () => {
               );
               localStorage.setItem("token", (response as any).token);
 
-              setIsDisabled(false);
+              setIsSuccess(true);
               formik.resetForm();
               setAgreed(false);
 
               if (values.userType === "Agent") {
                 // For agents, show verification email success page
+                setOverlayVisible(true);
                 setTimeout(() => {
+                  setOverlayVisible(false);
                   toast.custom(
                     <CustomToast
                       title="Registration successful"
                       subtitle="A Verification has been sent to your email. Please verify your email to continue"
                     />,
                   );
+                  router.push("/auth/verification-sent");
                 }, 2000);
-                router.push("/auth/verification-sent");
               } else {
-                // For landlords, auto login them
+                // For landlords, auto login them and show overlay
                 toast.success("Registration successful");
                 Cookies.set("token", (response as any).token);
                 setUser((response as any).user);
-                router.push("/my_listing");
+                setOverlayVisible(true);
+                setTimeout(() => {
+                  setOverlayVisible(false);
+                  router.push("/my_listing");
+                }, 1500);
               }
 
               return "Registration successful";
@@ -147,6 +153,7 @@ const Register = () => {
                 (response as any).error || "Registration failed";
               toast.error(errorMessage);
               setIsDisabled(false);
+              setIsSuccess(false);
               throw new Error(errorMessage);
             }
           }),
@@ -157,6 +164,7 @@ const Register = () => {
       } catch (error) {
         console.log(error);
         setIsDisabled(false);
+        setIsSuccess(false);
       }
     },
   });
