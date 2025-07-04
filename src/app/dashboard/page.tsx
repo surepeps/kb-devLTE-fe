@@ -22,56 +22,34 @@ import {
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
-interface Property {
+interface PendingBrief {
   _id: string;
   propertyType: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  images: string[];
-  status: "active" | "pending" | "sold" | "rented";
-  createdAt: string;
-  views?: number;
+  pictures: string[];
+  isApproved: boolean;
 }
 
-interface Brief {
-  _id: string;
-  propertyType: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  createdAt: string;
-  status: "active" | "assigned" | "completed";
-}
-
-interface DashboardStats {
-  totalProperties: number;
-  activeListings: number;
-  soldProperties: number;
-  rentedProperties: number;
+interface DashboardData {
+  totalBriefs: number;
+  totalActiveBriefs: number;
+  totalInactiveBriefs: number;
+  propertySold: number;
   totalViews: number;
-  totalEarnings: number;
+  recentBriefs: any[];
+  newPendingBriefs: PendingBrief[];
+}
+
+interface DashboardResponse {
+  success: boolean;
+  dashboard: DashboardData;
 }
 
 export default function LandlordDashboard() {
   const router = useRouter();
   const { user } = useUserContext();
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [briefs, setBriefs] = useState<Brief[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProperties: 0,
-    activeListings: 0,
-    soldProperties: 0,
-    rentedProperties: 0,
-    totalViews: 0,
-    totalEarnings: 0,
-  });
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -92,129 +70,21 @@ export default function LandlordDashboard() {
     try {
       setIsLoading(true);
 
-      // Fetch user's properties - try multiple endpoints
-      const endpoints = [
-        `${URLS.BASE}${URLS.myPropertyListings}`,
-        `${URLS.BASE}/properties/user/${user?._id}`,
-        `${URLS.BASE}/properties/owner`,
-      ];
-
-      // Separate endpoint for briefs
-      const briefEndpoints = [
-        `${URLS.BASE}/briefs/user`,
-        `${URLS.BASE}${URLS.fetchBriefs}?owner=${user?.email}`,
-      ];
-
-      let userProperties = [];
-      let fetchSuccessful = false;
-
-      for (const endpoint of endpoints) {
-        try {
-          const propertiesResponse = await GET_REQUEST(
-            endpoint,
-            Cookies.get("token"),
-          );
-
-          if (propertiesResponse?.data || propertiesResponse) {
-            userProperties = Array.isArray(propertiesResponse?.data)
-              ? propertiesResponse.data
-              : Array.isArray(propertiesResponse)
-                ? propertiesResponse
-                : [];
-            fetchSuccessful = true;
-            break;
-          }
-        } catch (error) {
-          console.log(`Failed to fetch from ${endpoint}:`, error);
-          continue;
-        }
-      }
-
-      if (fetchSuccessful) {
-        // Filter properties to only include ones belonging to the current user
-        const filteredProperties = userProperties.filter(
-          (property: any) =>
-            property.owner?.email === user?.email ||
-            property.ownerId === user?._id ||
-            property.userId === user?._id,
-        );
-
-        setProperties(filteredProperties);
-
-        // Calculate stats
-        const totalProperties = filteredProperties.length;
-        const activeListings = filteredProperties.filter(
-          (p: any) => p.status === "active" || p.isApproved === true,
-        ).length;
-        const soldProperties = filteredProperties.filter(
-          (p: any) => p.status === "sold",
-        ).length;
-        const rentedProperties = filteredProperties.filter(
-          (p: any) => p.status === "rented",
-        ).length;
-        const pendingProperties = filteredProperties.filter(
-          (p: any) => p.status === "pending" || p.isApproved === false,
-        ).length;
-        const totalViews = filteredProperties.reduce(
-          (sum: number, p: any) => sum + (p.views || 0),
-          0,
-        );
-
-        setStats({
-          totalProperties,
-          activeListings,
-          soldProperties,
-          rentedProperties,
-          totalViews,
-          totalEarnings: soldProperties * 50000, // Mock calculation
-        });
-      } else {
-        // No properties found
-        setProperties([]);
-        setStats({
-          totalProperties: 0,
-          activeListings: 0,
-          soldProperties: 0,
-          rentedProperties: 0,
-          totalViews: 0,
-          totalEarnings: 0,
-        });
-      }
-
-      // Fetch briefs
-      let userBriefs = [];
-      for (const endpoint of briefEndpoints) {
-        try {
-          const briefsResponse = await GET_REQUEST(
-            endpoint,
-            Cookies.get("token"),
-          );
-
-          if (briefsResponse?.data || briefsResponse) {
-            userBriefs = Array.isArray(briefsResponse?.data)
-              ? briefsResponse.data
-              : Array.isArray(briefsResponse)
-                ? briefsResponse
-                : [];
-            break;
-          }
-        } catch (error) {
-          console.log(`Failed to fetch briefs from ${endpoint}:`, error);
-          continue;
-        }
-      }
-
-      // Filter briefs to only include ones belonging to the current user
-      const filteredBriefs = userBriefs.filter(
-        (brief: any) =>
-          brief.owner?.email === user?.email ||
-          brief.ownerId === user?._id ||
-          brief.userId === user?._id,
+      const response = await GET_REQUEST(
+        `${URLS.BASE}/user/dashboard`,
+        Cookies.get("token"),
       );
-      setBriefs(filteredBriefs);
+
+      if (response?.success && response.dashboard) {
+        setDashboardData(response.dashboard);
+      } else {
+        toast.error("Failed to load dashboard data");
+        setDashboardData(null);
+      }
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Failed to load dashboard data");
+      setDashboardData(null);
     } finally {
       setIsLoading(false);
     }
@@ -230,29 +100,36 @@ export default function LandlordDashboard() {
 
   const statCards = [
     {
-      title: "Total Properties",
-      value: stats.totalProperties,
-      icon: HomeIcon,
+      title: "Total Briefs",
+      value: dashboardData?.totalBriefs || 0,
+      icon: BriefcaseIcon,
       color: "bg-blue-500",
       textColor: "text-blue-600",
     },
     {
-      title: "Active Listings",
-      value: stats.activeListings,
+      title: "Active Briefs",
+      value: dashboardData?.totalActiveBriefs || 0,
       icon: ChartBarIcon,
       color: "bg-green-500",
       textColor: "text-green-600",
     },
     {
+      title: "Inactive Briefs",
+      value: dashboardData?.totalInactiveBriefs || 0,
+      icon: ClockIcon,
+      color: "bg-gray-500",
+      textColor: "text-gray-600",
+    },
+    {
       title: "Properties Sold",
-      value: stats.soldProperties,
+      value: dashboardData?.propertySold || 0,
       icon: CurrencyDollarIcon,
       color: "bg-yellow-500",
       textColor: "text-yellow-600",
     },
     {
       title: "Total Views",
-      value: stats.totalViews,
+      value: dashboardData?.totalViews || 0,
       icon: EyeIcon,
       color: "bg-purple-500",
       textColor: "text-purple-600",
@@ -282,7 +159,7 @@ export default function LandlordDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           {statCards.map((card, index) => {
             const IconComponent = card.icon;
             return (
@@ -311,104 +188,8 @@ export default function LandlordDashboard() {
           })}
         </div>
 
-        {/* Properties and Briefs Grid */}
+        {/* Briefs and Pending Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Properties */}
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-[#09391C]">
-                  Recent Properties
-                </h2>
-                <Link
-                  href="/my-listings"
-                  className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
-                >
-                  View All
-                </Link>
-              </div>
-            </div>
-
-            {properties.length === 0 ? (
-              <div className="p-12 text-center">
-                <HomeIcon size={48} className="mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">
-                  No Properties Listed Yet
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Start by listing your first property to manage your real
-                  estate portfolio
-                </p>
-                <Link
-                  href="/post_property"
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
-                >
-                  <PlusIcon size={20} />
-                  List Your First Property
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200">
-                {properties.slice(0, 5).map((property, index) => (
-                  <motion.div
-                    key={property._id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="p-6 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          {property.images?.[0] ? (
-                            <img
-                              src={property.images[0]}
-                              alt={property.propertyType}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            <HomeIcon size={24} className="text-gray-400" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-[#09391C] capitalize">
-                            {property.propertyType}
-                          </h3>
-                          <p className="text-sm text-[#5A5D63]">
-                            {property.location.area},{" "}
-                            {property.location.localGovernment}
-                          </p>
-                          <p className="text-sm text-[#8DDB90] font-medium">
-                            ₦{property.price.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                            property.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : property.status === "sold"
-                                ? "bg-blue-100 text-blue-800"
-                                : property.status === "rented"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {property.status}
-                        </span>
-                        <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
-                          <ClockIcon size={12} />
-                          {new Date(property.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Recent Briefs */}
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6 border-b border-gray-200">
@@ -425,57 +206,71 @@ export default function LandlordDashboard() {
               </div>
             </div>
 
-            {briefs.length === 0 ? (
-              <div className="p-8 text-center">
+            {!dashboardData?.recentBriefs ||
+            dashboardData.recentBriefs.length === 0 ? (
+              <div className="p-12 text-center">
                 <BriefcaseIcon
-                  size={32}
-                  className="mx-auto text-gray-400 mb-3"
+                  size={48}
+                  className="mx-auto text-gray-400 mb-4"
                 />
-                <h3 className="text-base font-medium text-gray-600 mb-2">
-                  No Briefs Posted Yet
+                <h3 className="text-lg font-medium text-gray-600 mb-2">
+                  No Recent Briefs
                 </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  Create a brief to find the perfect property for your needs
+                <p className="text-gray-500 mb-6">
+                  Create your first brief to start finding properties
                 </p>
                 <Link
                   href="/agent_marketplace"
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
                 >
-                  <PlusIcon size={16} />
+                  <PlusIcon size={20} />
                   Create Brief
                 </Link>
               </div>
             ) : (
-              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-                {briefs.slice(0, 5).map((brief, index) => (
+              <div className="divide-y divide-gray-200">
+                {dashboardData.recentBriefs.slice(0, 5).map((brief, index) => (
                   <motion.div
                     key={brief._id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-4 hover:bg-gray-50 transition-colors"
+                    className="p-6 hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[#8DDB90] bg-opacity-10 rounded-lg flex items-center justify-center">
-                          <BriefcaseIcon size={16} className="text-[#8DDB90]" />
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                          {brief.pictures?.[0] ? (
+                            <img
+                              src={brief.pictures[0]}
+                              alt={brief.propertyType}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <BriefcaseIcon
+                              size={24}
+                              className="text-gray-400"
+                            />
+                          )}
                         </div>
                         <div>
-                          <h3 className="font-medium text-[#09391C] capitalize text-sm">
+                          <h3 className="font-semibold text-[#09391C] capitalize">
                             {brief.propertyType}
                           </h3>
-                          <div className="flex items-center gap-1 text-xs text-[#5A5D63]">
-                            <MapPinIcon size={10} />
-                            {brief.location.area}
-                          </div>
-                          <p className="text-xs text-[#8DDB90] font-medium">
-                            ₦{brief.price.toLocaleString()}
+                          <p className="text-sm text-[#5A5D63]">
+                            {brief.location?.area},{" "}
+                            {brief.location?.localGovernment}
+                          </p>
+                          <p className="text-sm text-[#8DDB90] font-medium">
+                            {brief.price
+                              ? `₦${brief.price.toLocaleString()}`
+                              : "Price not set"}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <span
-                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                             brief.status === "active"
                               ? "bg-green-100 text-green-800"
                               : brief.status === "assigned"
@@ -483,16 +278,105 @@ export default function LandlordDashboard() {
                                 : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {brief.status}
+                          {brief.status || "pending"}
                         </span>
                         <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
                           <ClockIcon size={12} />
-                          {new Date(brief.createdAt).toLocaleDateString()}
+                          {brief.createdAt
+                            ? new Date(brief.createdAt).toLocaleDateString()
+                            : "Recently"}
                         </p>
                       </div>
                     </div>
                   </motion.div>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* Pending Briefs */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#09391C]">
+                  Pending Briefs
+                </h2>
+                <span className="text-sm text-[#5A5D63]">
+                  {dashboardData?.newPendingBriefs?.length || 0} pending
+                  approval
+                </span>
+              </div>
+            </div>
+
+            {!dashboardData?.newPendingBriefs ||
+            dashboardData.newPendingBriefs.length === 0 ? (
+              <div className="p-8 text-center">
+                <ClockIcon size={32} className="mx-auto text-gray-400 mb-3" />
+                <h3 className="text-base font-medium text-gray-600 mb-2">
+                  No Pending Briefs
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  All your briefs have been processed
+                </p>
+                <Link
+                  href="/agent_marketplace"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
+                >
+                  <PlusIcon size={16} />
+                  Create New Brief
+                </Link>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+                {dashboardData.newPendingBriefs
+                  .slice(0, 5)
+                  .map((brief, index) => (
+                    <motion.div
+                      key={brief._id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                            {brief.pictures?.[0] ? (
+                              <img
+                                src={brief.pictures[0]}
+                                alt={brief.propertyType}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <BriefcaseIcon
+                                size={16}
+                                className="text-gray-400"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-[#09391C] capitalize text-sm">
+                              {brief.propertyType}
+                            </h3>
+                            <p className="text-xs text-[#5A5D63]">
+                              {brief.pictures?.length || 0} images uploaded
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span
+                            className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                              brief.isApproved
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {brief.isApproved ? "Approved" : "Pending"}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
               </div>
             )}
           </div>
