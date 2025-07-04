@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react';
-import PopUpModal from '../pop-up-modal-reusability';
+import ModalWrapper from '../general-components/modal-wrapper';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
@@ -11,22 +11,22 @@ import toast from 'react-hot-toast';
 import { useNegotiationModals, useNegotiationData} from '@/context/negotiation-context';
 
 const SubmitOffer: React.FC = () => {
-  const { 
+  const {
     isSubmitting,
-    closeSubmitOfferModal, 
+    closeSubmitOfferModal,
   } = useNegotiationModals();
-  
+
   const { details, negotiationType, createdAt, counterOffer, setCounterOffer, setInspectionStatus, goToNextPage, setNegotiated } = useNegotiationData();
-  
+
   const handleSubmit = async (event: React.FormEvent) => {
-    
+
     event.preventDefault();
     if (counterOffer === undefined || counterOffer === 0) {
       return toast.error('Please, input a value before proceeding');
     }
-    
+
     try {
-      
+
       setInspectionStatus("countered");
       setNegotiated(true);
       goToNextPage('Confirm Inspection Date');
@@ -35,17 +35,22 @@ const SubmitOffer: React.FC = () => {
     } catch (error) {
       toast.error('Failed to submit offer');
     } finally {
-      // 
+      //
     }
   };
 
   return (
-    <PopUpModal>
+    <ModalWrapper
+      isOpen={true}
+      onClose={closeSubmitOfferModal}
+      title="Submit Counter Offer"
+      size="md"
+      showCloseButton={true}
+    >
       <motion.form
-        initial={{ y: 40, opacity: 0 }}
-        exit={{ y: 20, opacity: 1 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        viewport={{ once: true }}
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 20, opacity: 0 }}
         transition={{ duration: 0.2 }}
         className='lg:w-[649px] w-full flex flex-col gap-[26px]'>
         <div className='flex items-start justify-end'>
