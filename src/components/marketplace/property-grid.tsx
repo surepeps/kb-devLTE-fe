@@ -40,7 +40,6 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   setIsComingFromPriceNeg,
   onCardPageClick,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
   const isMobile = IsMobile();
 
   // Use marketplace context
@@ -56,6 +55,13 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     toggleInspectionSelection,
     isSelectedForInspection,
     clearAllFilters,
+    searchProperties,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    selectedMarketType,
   } = useMarketplace();
 
   // Get filter by based on marketplace type
@@ -76,51 +82,38 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   const condition =
     marketplaceType === "Rent/Lease a property" ? homeCondition : undefined;
 
-  // Filter properties based on marketplace type and filters
-  const filteredProperties = useMemo(() => {
-    if (!properties || properties.length === 0) return [];
-
-    return properties.filter((property) => {
-      // Filter by property type
-      const typeMatch =
-        filterBy?.includes("All") ||
-        filterBy?.length === 0 ||
-        filterBy?.includes(property.propertyType);
-
-      // Filter by condition (for rent)
-      const conditionMatch =
-        !condition ||
-        condition === "All" ||
-        property.propertyCondition === condition;
-
-      return typeMatch && conditionMatch;
-    });
-  }, [properties, filterBy, condition]);
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentProperties = filteredProperties.slice(startIndex, endIndex);
-
-  // Reset page when filters change or when no results on current page
-  React.useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(1);
-    } else if (filteredProperties.length > 0 && currentPage < 1) {
-      setCurrentPage(1);
-    }
-  }, [filterBy, condition, currentPage, totalPages, filteredProperties.length]);
-
-  // Reset to page 1 when filters change
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [filterBy, condition]);
+  // Properties are already filtered by the API
+  const filteredProperties = properties || [];
+  const currentProperties = filteredProperties; // API handles pagination
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > totalPages || isLoading === "pending") return;
 
     setCurrentPage(page);
+
+    // Get the current briefType and search with new page
+    const getBriefType = (marketPlace: string) => {
+      switch (marketPlace) {
+        case "Buy a property":
+          return "Outright Sales";
+        case "Find property for joint venture":
+          return "Joint Venture";
+        case "Rent/Lease a property":
+          return "Rent";
+        default:
+          return "Outright Sales";
+      }
+    };
+
+    const briefType = getBriefType(marketplaceType);
+
+    // Fetch new page data
+    searchProperties({
+      briefType,
+      page,
+      limit: itemsPerPage,
+    });
+
     // Scroll to top of grid with proper positioning
     setTimeout(() => {
       const gridElement = document.getElementById("property-grid");
@@ -188,12 +181,27 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         description={error}
         actionLabel="Retry"
         onAction={() => {
-          // Clear error state and try to refetch
-          setErrMessage("");
-          setFormikStatus("idle");
-          setTimeout(() => {
-            window.location.reload();
-          }, 100);
+          // Retry current search
+          const getBriefType = (marketPlace: string) => {
+            switch (marketPlace) {
+              case "Buy a property":
+                return "Outright Sales";
+              case "Find property for joint venture":
+                return "Joint Venture";
+              case "Rent/Lease a property":
+                return "Rent";
+              default:
+                return "Outright Sales";
+            }
+          };
+
+          const briefType = getBriefType(marketplaceType);
+
+          searchProperties({
+            briefType,
+            page: currentPage,
+            limit: itemsPerPage,
+          });
         }}
       />
     );
@@ -228,10 +236,15 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
       {/* Results count */}
       <div className="flex justify-between items-center mb-6">
         <p className="text-[#09391C] font-semibold text-lg">
-          {filteredProperties.length > 0
-            ? `${filteredProperties.length} ${filteredProperties.length === 1 ? "property" : "properties"} found`
+          {totalItems > 0
+            ? `${totalItems} ${totalItems === 1 ? "property" : "properties"} found`
             : "Select the property brief you wish to inspect"}
         </p>
+        {totalPages > 1 && (
+          <p className="text-[#5A5D63] text-sm">
+            Page {currentPage} of {totalPages}
+          </p>
+        )}
       </div>
 
       {/* Property Grid */}
@@ -297,10 +310,10 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        totalItems={filteredProperties.length}
+        totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
-        isLoading={isLoading}
+        isLoading={isLoading === "pending"}
       />
     </div>
   );
