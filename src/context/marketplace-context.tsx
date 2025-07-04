@@ -257,76 +257,101 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     return selectedForInspection.length < 2;
   }, [selectedForInspection]);
 
-  // Data fetching
+  // Data fetching with improved error handling
   const fetchInitialData = useCallback(async (briefToFetch: string) => {
     // Don't proceed if briefToFetch is empty or invalid
     if (!briefToFetch || typeof briefToFetch !== "string") {
       console.warn("Invalid briefToFetch parameter:", briefToFetch);
+      if (isMountedRef.current) {
+        setFormikStatus("failed");
+        setErrMessage("Invalid API endpoint");
+      }
       return;
     }
+
+    if (!isMountedRef.current) return;
 
     setFormikStatus("pending");
     setErrMessage("");
 
     try {
-      // Import URLS and shuffleArray dynamically to avoid dependency issues
+      // Import utilities dynamically to avoid dependency issues
       const { URLS } = await import("@/utils/URLS");
       const { shuffleArray } = await import("@/utils/shuffleArray");
+      const { GET_REQUEST } = await import("@/utils/requests");
 
-      // Add timeout to fetch request
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      // Validate URL construction
+      const apiUrl = URLS.BASE + briefToFetch;
+      if (apiUrl.includes("undefined") || !URLS.BASE) {
+        throw new Error("API URL is not properly configured");
+      }
 
-      const response = await fetch(URLS.BASE + briefToFetch, {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      console.log("Fetching from:", apiUrl);
 
-      clearTimeout(timeoutId);
+      // Use the safer GET_REQUEST utility
+      const response = await GET_REQUEST(apiUrl);
 
-      if (!response.ok) {
-        const errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        if (isMountedRef.current) {
-          setErrMessage(errorMessage);
-          setFormikStatus("failed");
-        }
+      if (!isMountedRef.current) return;
+
+      // Check for API error response
+      if (response?.error || !response?.success) {
+        const errorMessage =
+          response?.message || response?.error || "Failed to fetch data";
+        setErrMessage(errorMessage);
+        setFormikStatus("failed");
+        setSearchStatus({
+          status: "failed",
+          couldNotFindAProperty: true,
+        });
         return;
       }
 
-      const data = await response.json();
+      // Handle successful response
+      setFormikStatus("success");
 
-      if (isMountedRef.current) {
-        setFormikStatus("success");
+      // Handle different response structures
+      const responseData = response?.data || response || [];
+      const dataArray = Array.isArray(responseData) ? responseData : [];
 
-        // Handle different response structures
-        const responseData = data?.data || data || [];
-        const approvedData = Array.isArray(responseData)
-          ? responseData.filter((item: any) => item?.isApproved === true)
-          : [];
+      // Filter for approved properties only
+      const approvedData = dataArray.filter(
+        (item: any) => item?.isApproved === true,
+      );
 
-        const shuffledData = shuffleArray(approvedData);
-        setProperties(shuffledData);
-      }
+      const shuffledData = shuffleArray(approvedData);
+      setProperties(shuffledData);
+
+      setSearchStatus({
+        status: "success",
+        couldNotFindAProperty: shuffledData.length === 0,
+      });
+
+      console.log(`Successfully loaded ${shuffledData.length} properties`);
     } catch (err: any) {
       console.error("Fetch error:", err);
 
+      if (!isMountedRef.current) return;
+
       let errorMessage = "An error occurred while fetching data";
 
+      // Better error categorization
       if (err.name === "AbortError") {
         errorMessage =
           "Request timed out. Please check your connection and try again.";
       } else if (err.message?.includes("Failed to fetch")) {
         errorMessage = "Network error. Please check your internet connection.";
+      } else if (err.message?.includes("API URL is not properly configured")) {
+        errorMessage = "API configuration error. Please contact support.";
       } else if (err.message) {
         errorMessage = err.message;
       }
 
-      if (isMountedRef.current) {
-        setErrMessage(errorMessage);
-        setFormikStatus("failed");
-      }
+      setErrMessage(errorMessage);
+      setFormikStatus("failed");
+      setSearchStatus({
+        status: "failed",
+        couldNotFindAProperty: true,
+      });
     }
   }, []);
 
