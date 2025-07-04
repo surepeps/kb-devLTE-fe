@@ -299,7 +299,6 @@ const SearchModal = ({
     return (
       <PropertyGrid
         marketplaceType={type}
-        itemsPerPage={12}
         // JV specific props
         isComingFromSubmitLol={isComingFromSubmitLol}
         setIsComingFromSubmitLol={setIsComingFromSubmitLol}
