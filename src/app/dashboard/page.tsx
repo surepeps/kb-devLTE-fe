@@ -100,29 +100,29 @@ export default function LandlordDashboard() {
 
   const statCards = [
     {
-      title: "Total Properties",
-      value: stats.totalProperties,
-      icon: HomeIcon,
+      title: "Total Briefs",
+      value: dashboardData?.totalBriefs || 0,
+      icon: BriefcaseIcon,
       color: "bg-blue-500",
       textColor: "text-blue-600",
     },
     {
-      title: "Active Listings",
-      value: stats.activeListings,
+      title: "Active Briefs",
+      value: dashboardData?.totalActiveBriefs || 0,
       icon: ChartBarIcon,
       color: "bg-green-500",
       textColor: "text-green-600",
     },
     {
       title: "Properties Sold",
-      value: stats.soldProperties,
+      value: dashboardData?.propertySold || 0,
       icon: CurrencyDollarIcon,
       color: "bg-yellow-500",
       textColor: "text-yellow-600",
     },
     {
       title: "Total Views",
-      value: stats.totalViews,
+      value: dashboardData?.totalViews || 0,
       icon: EyeIcon,
       color: "bg-purple-500",
       textColor: "text-purple-600",
