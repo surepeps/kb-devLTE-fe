@@ -249,9 +249,9 @@ const Input: FC<InputProps> = ({
           />
         )}
       </div>
-      {formik.touched[id || title] && formik.errors[id || title] && (
+      {formik.touched[id || "password"] && formik.errors[id || "password"] && (
         <span className="text-red-600 text-sm">
-          {formik.errors[id || title]}
+          {formik.errors[id || "password"]}
         </span>
       )}
     </label>
