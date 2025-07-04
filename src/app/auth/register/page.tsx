@@ -298,30 +298,59 @@ const Register = () => {
             <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
               Are you a Landlord or Agent?
             </span>
-            <div className="flex gap-[20px]">
-              <label className="flex items-center gap-[8px] cursor-pointer">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="relative cursor-pointer">
                 <input
                   type="radio"
                   name="userType"
                   value="Landlord"
                   checked={formik.values.userType === "Landlord"}
                   onChange={formik.handleChange}
-                  className="w-4 h-4 text-[#8DDB90] bg-gray-100 border-gray-300 focus:ring-[#8DDB90] focus:ring-2"
+                  disabled={isDisabled}
+                  className="sr-only peer"
                 />
-                <span className="text-sm font-medium text-gray-900">
-                  Landlord
-                </span>
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-[#09391C] mb-1">
+                        Landlord
+                      </span>
+                      <span className="text-sm text-[#5A5D63]">
+                        Property owner looking to sell or rent
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] transition-all duration-300 flex items-center justify-center">
+                      <div className="w-3 h-3 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                  </div>
+                </div>
               </label>
-              <label className="flex items-center gap-[8px] cursor-pointer">
+
+              <label className="relative cursor-pointer">
                 <input
                   type="radio"
                   name="userType"
                   value="Agent"
                   checked={formik.values.userType === "Agent"}
                   onChange={formik.handleChange}
-                  className="w-4 h-4 text-[#8DDB90] bg-gray-100 border-gray-300 focus:ring-[#8DDB90] focus:ring-2"
+                  disabled={isDisabled}
+                  className="sr-only peer"
                 />
-                <span className="text-sm font-medium text-gray-900">Agent</span>
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-[#09391C] mb-1">
+                        Agent
+                      </span>
+                      <span className="text-sm text-[#5A5D63]">
+                        Professional helping clients buy/sell properties
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] transition-all duration-300 flex items-center justify-center">
+                      <div className="w-3 h-3 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             {formik.touched.userType && formik.errors.userType && (
