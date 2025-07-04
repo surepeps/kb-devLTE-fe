@@ -58,6 +58,26 @@ interface MarketplaceContextType {
   homeCondition: string;
   setHomeCondition: (condition: string) => void;
 
+  // Search filters
+  searchLocation: {
+    state: string;
+    localGovernment: string;
+    area?: string;
+  } | null;
+  setSearchLocation: (
+    location: {
+      state: string;
+      localGovernment: string;
+      area?: string;
+    } | null,
+  ) => void;
+
+  priceRange: {
+    min: number;
+    max: number;
+  } | null;
+  setPriceRange: (range: { min: number; max: number } | null) => void;
+
   selectedMarketType: MarketTypeSelection | null;
   setSelectedMarketType: (market: MarketTypeSelection) => void;
 
