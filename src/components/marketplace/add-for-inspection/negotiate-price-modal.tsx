@@ -773,8 +773,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
             />
           </div>
         </div>
-      </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
