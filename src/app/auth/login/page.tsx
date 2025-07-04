@@ -316,9 +316,16 @@ const Login = () => {
           </div>
           {/**Button */}
           <Button
-            value="Sign In"
-            className=" w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+            value={
+              isSubmitting
+                ? "Signing In..."
+                : isSuccess
+                  ? "Login Successful!"
+                  : "Sign In"
+            }
+            className="w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
             type="submit"
+            isDisabled={isSubmitting || isSuccess}
             onSubmit={formik.handleSubmit}
             green={true}
           />
