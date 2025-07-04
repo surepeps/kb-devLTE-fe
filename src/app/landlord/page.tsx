@@ -17,6 +17,8 @@ import {
   DollarSign as CurrencyDollarIcon,
   Clock as ClockIcon,
   Users as UserGroupIcon,
+  Briefcase as BriefcaseIcon,
+  MapPin as MapPinIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
