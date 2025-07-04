@@ -309,21 +309,23 @@ export default function LandlordDashboard() {
           })}
         </div>
 
-        {/* Recent Properties */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-[#09391C]">
-                Recent Properties
-              </h2>
-              <Link
-                href="/my_listing"
-                className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
-              >
-                View All
-              </Link>
+        {/* Properties and Briefs Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Properties */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#09391C]">
+                  Recent Properties
+                </h2>
+                <Link
+                  href="/my_listing"
+                  className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
+                >
+                  View All
+                </Link>
+              </div>
             </div>
-          </div>
 
           {properties.length === 0 ? (
             <div className="p-12 text-center">
