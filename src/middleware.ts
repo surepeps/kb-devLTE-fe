@@ -41,6 +41,8 @@ const agentProtectedRoutes = [
   "/agent/under-review",
 ];
 
+const agentRestrictedRoutes = ["/post_property", "/new-post-property"];
+
 const userProtectedRoutes = [
   "/dashboard",
   "/profile",
