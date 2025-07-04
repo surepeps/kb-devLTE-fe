@@ -146,6 +146,11 @@ const Form2 = () => {
     }
   };
 
+  // Don't render if agent doesn't have access
+  if (!canAccessBriefs) {
+    return null;
+  }
+
   useEffect(() => {
     const getTotalBriefs = async () => {
       setIsLoading(true);
