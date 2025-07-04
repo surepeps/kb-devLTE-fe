@@ -165,9 +165,9 @@ const Input: FC<InputProps> = ({
           className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar disabled:bg-gray-200"
         />
       </div>
-      {formik.touched[id || title] && formik.errors[id || title] && (
+      {formik.touched[id || "email"] && formik.errors[id || "email"] && (
         <span className="text-red-600 text-sm">
-          {formik.errors[id || title]}
+          {formik.errors[id || "email"]}
         </span>
       )}
     </label>
