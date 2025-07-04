@@ -357,8 +357,8 @@ const Register = () => {
                         Professional helping clients buy/sell properties
                       </span>
                     </div>
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] transition-all duration-300 flex items-center justify-center">
-                      <div className="w-3 h-3 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]">
+                      <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-opacity duration-300 peer-checked:opacity-100"></div>
                     </div>
                   </div>
                 </div>
