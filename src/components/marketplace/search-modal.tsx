@@ -372,7 +372,7 @@ const SearchModal = ({
 
   // Data fetching using marketplace context with proper API search
   useEffect(() => {
-    if (!userSelectedMarketPlace) return;
+    if (!userSelectedMarketPlace || initialLoadRef.current) return;
 
     let briefType = "";
     switch (userSelectedMarketPlace) {
@@ -395,7 +395,14 @@ const SearchModal = ({
       page: 1,
       limit: itemsPerPage,
     });
+
+    initialLoadRef.current = true;
   }, [userSelectedMarketPlace]); // Removed searchProperties and itemsPerPage to prevent infinite loop
+
+  // Reset initial load flag when marketplace type changes
+  useEffect(() => {
+    initialLoadRef.current = false;
+  }, [userSelectedMarketPlace]);
 
   return (
     <Fragment>
