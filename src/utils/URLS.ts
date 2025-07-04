@@ -16,6 +16,7 @@ export const URLS = {
   facebookSignup: "/signup/facebook",
   facebookLogin: "/login/facebook",
   verifyEmail: "/verify-email",
+  resendVerification: "/resend-verification",
   agentCreateBrief: "/properties/sell/new",
   listNewProperty: "/properties/new",
   userSubmitPreference: "/properties/preference/new",
