@@ -32,7 +32,11 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 
 declare global {
   interface Window {
@@ -264,152 +268,191 @@ const Login = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <section
-      className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
-        isContactUsClicked && "filter brightness-[30%]"
-      } transition-all duration-500`}
-    >
-      <div className="container flex items-center justify-center py-[30px] mt-[20px] px-[25px] lg:px-0">
-        <form
-          onSubmit={formik.handleSubmit}
-          className="lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]"
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+      {/* Background pattern */}
+      <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl"></div>
+      <div
+        className={
+          'absolute inset-0 bg-[url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23e0e7ff" fill-opacity="0.3"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')] opacity-40'
+        }
+      ></div>
+
+      <div className="relative w-full max-w-md mx-auto">
+        {/* Back to home button */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-8 transition-colors duration-200"
         >
-          <h2 className="text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]">
-            Welcome Back
-          </h2>
-          <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
-            <Input
-              formik={formik}
-              title="Email"
-              id="email"
-              icon={mailIcon}
-              type="email"
-              placeholder="Enter your email"
-            />
-            <Input
-              formik={formik}
-              title="Password"
-              id="password"
-              seePassword={setShowPassword}
-              isSeePassword={showPassword}
-              icon={""}
-              type="password"
-              placeholder="Enter your password"
-            />
+          <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
+          <span className="text-sm font-medium">Back to Home</span>
+        </Link>
+
+        {/* Login Card */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#8DDB90] to-[#09391C] rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome Back
+            </h2>
+            <p className="text-gray-600">Sign in to access your account</p>
           </div>
-          {/**Button */}
-          <Button
-            value="Sign In"
-            className=" w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
-            type="submit"
-            onSubmit={formik.handleSubmit}
-            green={true}
-          />
-          {/**Already have an account */}
 
-          <p className="text-base leading-[25.6px] font-normal">
-            Don&apos;t have an account?{" "}
-            <Link
-              className="font-semibold text-[#09391C]"
-              href={"/auth/register"}
-            >
-              Sign Up
-            </Link>
-          </p>
-
-          <p className="text-base leading-[25.6px] font-normal">
-            Forgot your password?{" "}
-            <Link
-              className="font-semibold text-[#09391C]"
-              href={"/auth/forgot-password"}
-            >
-              Reset
-            </Link>
-          </p>
-
-          {/**Google | Facebook */}
-          <div className="flex justify-between w-full lg:flex-row flex-col gap-[15px]">
-            <RegisterWith
-              icon={googleIcon}
-              text="Continue with Google"
+          {/* Social Login Buttons */}
+          <div className="space-y-3 mb-6">
+            <button
+              type="button"
               onClick={googleLogin}
-            />
-            <RegisterWith
-              icon={facebookIcon}
-              text="Continue with Facebook"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
+            >
+              <Image src={googleIcon} alt="Google" width={20} height={20} />
+              Continue with Google
+            </button>
+            <button
+              type="button"
               onClick={handleFacebookLogin}
-            />
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
+            >
+              <Image src={facebookIcon} alt="Facebook" width={20} height={20} />
+              Continue with Facebook
+            </button>
           </div>
-        </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+
+          {/* Login Form */}
+          <form onSubmit={formik.handleSubmit} className="space-y-5">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email Address
+              </label>
+              <div className="relative">
+                <input
+                  name="email"
+                  type="email"
+                  value={formik.values.email}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <Image
+                    src={mailIcon}
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="opacity-40"
+                  />
+                </div>
+              </div>
+              {formik.touched.email && formik.errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.email}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formik.values.password}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  placeholder="Enter your password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <FontAwesomeIcon
+                    icon={showPassword ? faEyeSlash : faEye}
+                    className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
+                  />
+                </button>
+              </div>
+              {formik.touched.password && formik.errors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {formik.errors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-[#09391C] hover:text-[#8DDB90] font-medium transition-colors duration-200"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={formik.isSubmitting}
+              className="w-full bg-gradient-to-r from-[#8DDB90] to-[#09391C] text-white py-3 px-4 rounded-xl font-semibold hover:from-[#7BC97E] hover:to-[#083018] transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            >
+              {formik.isSubmitting ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          {/* Sign up link */}
+          <div className="mt-6 text-center">
+            <p className="text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                href="/auth/register"
+                className="text-[#09391C] hover:text-[#8DDB90] font-semibold transition-colors duration-200"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>© 2024 Khabi-Teq. All rights reserved.</p>
+        </div>
       </div>
-    </section>
-  );
-};
-
-interface InputProps {
-  title: string;
-  placeholder?: string;
-  type: string;
-  className?: string;
-  id?: string;
-  icon: StaticImport | string;
-  formik: any;
-  seePassword?: (type: boolean) => void;
-  isSeePassword?: boolean;
-}
-
-const Input: FC<InputProps> = ({
-  className,
-  id,
-  title,
-  type,
-  placeholder,
-  icon,
-  formik,
-  seePassword,
-  isSeePassword,
-}) => {
-  return (
-    <label
-      htmlFor={id}
-      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}
-    >
-      <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
-        {title}
-      </span>
-      <div className="flex items-center relative">
-        <input
-          name={id}
-          type={
-            type === "password" ? (isSeePassword ? "text" : "password") : type
-          }
-          value={formik.values[id || title]}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          placeholder={placeholder ?? "This is placeholder"}
-          className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar`}
-        />
-
-        {type === "password" && (
-          <FontAwesomeIcon
-            title={isSeePassword ? "Hide password" : "See password"}
-            className="cursor-pointer transition absolute top-5 right-3 duration-500"
-            icon={isSeePassword ? faEye : faEyeSlash}
-            size="sm"
-            color="black"
-            onClick={() => {
-              seePassword?.(!isSeePassword);
-            }}
-          />
-        )}
-      </div>
-      {formik.touched[id || title] ||
-        (formik.errors[id || title] && (
-          <span className="text-red-600 text-sm">
-            {formik.errors[id || title]}
-          </span>
-        ))}
-    </label>
+    </div>
   );
 };
 
