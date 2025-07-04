@@ -3,8 +3,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import ModalWrapper from '../general-components/modal-wrapper';
 import { archivo } from '@/styles/font';
 import { format } from 'date-fns';
 import { useNegotiationActions, useNegotiationData } from '@/context/negotiation-context';
@@ -19,10 +18,10 @@ const SelectPreferableInspectionDate = ({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { 
-    details, 
-    setInspectionDateStatus, 
-    inspectionDateStatus, 
+  const {
+    details,
+    setInspectionDateStatus,
+    inspectionDateStatus,
     inspectionStatus,
     dateTimeObj,
     counterDateTimeObj,
@@ -47,16 +46,16 @@ const SelectPreferableInspectionDate = ({
 
   const revertFormattedDate = (formatted: string): string => {
     if (!formatted) return '';
-  
+
     // Try to parse formatted "MMM d, yyyy"
     try {
       const date = new Date(formatted);
       if (isNaN(date.getTime())) return formatted;
-  
+
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
-  
+
       return `${year}-${month}-${day}`;
     } catch {
       return formatted;
@@ -107,22 +106,22 @@ const SelectPreferableInspectionDate = ({
   const handleDateSelect = (date: string) => {
     const isSameDate = date === formatSelectedDate(dateTimeObj.selectedDate);
     const isSameTime = counterDateTimeObj.selectedTime === dateTimeObj.selectedTime;
-  
+
     setCounterDateTimeObj({ ...counterDateTimeObj, selectedDate: revertFormattedDate(date) });
-  
+
     if (isSameDate && isSameTime) {
       setInspectionDateStatus('none');
     } else {
       setInspectionDateStatus('countered');
     }
   };
-  
+
   const handleTimeSelect = (time: string) => {
     const isSameTime = time === dateTimeObj.selectedTime;
     const isSameDate = counterDateTimeObj.selectedDate === dateTimeObj.selectedDate;
-  
+
     setCounterDateTimeObj({ ...counterDateTimeObj, selectedTime: time });
-  
+
     if (isSameDate && isSameTime) {
       setInspectionDateStatus('none');
     } else {
@@ -143,32 +142,17 @@ const SelectPreferableInspectionDate = ({
       setIsLoading(false);
     }
   };
-  
+
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 px-[10px]'>
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ delay: 0.1 }}
-        viewport={{ once: true }}
-        className='lg:w-[658px] w-full flex flex-col gap-[26px] rounded-md overflow-hidden'>
-        <div className='flex items-center justify-end'>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            type='button'
-            className='w-[51px] h-[51px] rounded-full bg-white flex items-center justify-center'>
-            <FontAwesomeIcon
-              icon={faClose}
-              width={24}
-              height={24}
-              onClick={() => closeModal(false)}
-              className='w-[24px] h-[24px]'
-              color='#181336'
-            />
-          </motion.button>
-        </div>
+    <ModalWrapper
+      isOpen={true}
+      onClose={() => closeModal(false)}
+      title="Select Inspection Date & Time"
+      size="lg"
+      showCloseButton={true}
+    >
+      <div className="p-4 sm:p-6">
         <form
           onSubmit={(event: React.FormEvent) => {
             event.preventDefault();
@@ -255,9 +239,9 @@ const SelectPreferableInspectionDate = ({
               Close
             </button>
           </div>
-        </form>
-      </motion.div>
-    </div>
+        </motion.form>
+      </div>
+    </ModalWrapper>
   );
 };
 
