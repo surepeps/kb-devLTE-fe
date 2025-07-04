@@ -229,7 +229,7 @@ const Input: FC<InputProps> = ({
           type={
             type === "password" ? (isSeePassword ? "text" : "password") : type
           }
-          value={formik.values[id || title]}
+          value={formik.values[id || "password"]}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           disabled={isDisabled}
