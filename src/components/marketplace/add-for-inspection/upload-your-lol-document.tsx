@@ -414,8 +414,8 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
                     />
                   </div>
                 </div>
-      </motion.div>
-    </div>
+        </form>
+    </motion.div>
   );
 };
 
