@@ -42,7 +42,7 @@ interface CardDataProps {
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (type: boolean) => void;
 }
- 
+
 const Card = ({
   isRed,
   cardData,
@@ -460,6 +460,13 @@ const ImageSwiper = ({ images }: { images: StaticImageData[] }) => {
                 src={validImageUrl}
                 alt={`Slide ${i + 1}`}
                 className="w-full h-full object-cover cursor-pointer"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = randomImage.src;
+                }}
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
               />
             </SwiperSlide>
           );
