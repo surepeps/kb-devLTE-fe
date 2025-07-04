@@ -88,7 +88,7 @@ export default function RootLayout({
                   </html>
                 </MarketplaceProvider>
               </SelectedBriefsProvider>
-            </CreateBriefsProvider>
+            </CreateBriefProvider>
           </PageContextProvider>
         </ModalProvider>
       </UserProvider>
