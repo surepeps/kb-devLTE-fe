@@ -50,6 +50,12 @@ const Form2 = () => {
   const { isContactUsClicked, isModalOpened } = usePageContext();
   const { selectedNav } = usePageContext();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Agent access control
+  const { canAccessBriefs } = useAgentAccess({
+    requireOnboarding: true,
+    requireApproval: true,
+  });
   // const [briefsData, setBriefsData] = useState<any[]>([]);
   // const [isLoading, setIsLoading] = useState<boolean>(true);
   // const [errMessage, setErrMessage] = useState<string>('');
