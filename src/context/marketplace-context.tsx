@@ -29,7 +29,7 @@ export interface MarketTypeSelection {
   subValue: string;
 }
 
-interface SearchParams {
+export interface SearchParams {
   briefType: string;
   page?: number;
   limit?: number;
