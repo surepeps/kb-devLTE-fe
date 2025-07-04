@@ -330,12 +330,26 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  // Search filters state
+  const [searchLocation, setSearchLocation] = useState<{
+    state: string;
+    localGovernment: string;
+    area?: string;
+  } | null>(null);
+
+  const [priceRange, setPriceRange] = useState<{
+    min: number;
+    max: number;
+  } | null>(null);
+
   // Clear all filters
   const clearAllFilters = useCallback(() => {
     setUsageOptions(["All"]);
     setRentFilterBy(["All"]);
     setJvFilterBy(["All"]);
     setHomeCondition("All");
+    setSearchLocation(null);
+    setPriceRange(null);
   }, []);
 
   const contextValue: MarketplaceContextType = useMemo(
@@ -366,6 +380,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       setJvFilterBy,
       homeCondition,
       setHomeCondition,
+
+      // Search filters
+      searchLocation,
+      setSearchLocation,
+      priceRange,
+      setPriceRange,
 
       // Search and loading states
       searchStatus,
@@ -404,6 +424,10 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       setJvFilterBy,
       homeCondition,
       setHomeCondition,
+      searchLocation,
+      setSearchLocation,
+      priceRange,
+      setPriceRange,
       searchStatus,
       setSearchStatus,
       properties,
