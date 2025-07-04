@@ -397,7 +397,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     },
-    [],
+    [isMountedRef],
   );
 
   // Search filters state
