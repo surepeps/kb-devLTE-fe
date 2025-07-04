@@ -73,7 +73,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
     const dates: string[] = [];
     let date = new Date();
     date.setDate(date.getDate() + 3);
-  
+
     while (dates.length < 6) {
       if (date.getDay() !== 0) {
         dates.push(format(date, 'MMM d, yyyy'));
@@ -82,7 +82,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
     }
     return dates;
   };
-  
+
   const availableDates = getAvailableDates();
 
   const [details, setDetails] = useState<DetailsProps>({
@@ -114,7 +114,7 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
     }
   }, [propertyId, getID, allNegotiation]);
 
-  
+
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full Name is required'),
     phoneNumber: Yup.string().required('Phone number is required'),
@@ -181,35 +181,16 @@ const UploadLolDocumentModal: React.FC<UploadLolDocumentProps> = ({
   }, []);
 
   return (
-    <div className='w-full h-full border-black border-[1px] fixed top-0 left-0 transition-all duration-500 flex items-center justify-center bg-[#000000]/[30%]'>
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ delay: 0.1 }}
-        viewport={{ once: true }}
-        className='relative lg:w-[615px] w-full flex flex-col gap-[26px]'>
-        <div className='flex items-center justify-end'>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            type='button'
-            className='w-[51px] h-[51px] rounded-full bg-white flex items-center justify-center'>
-            <FontAwesomeIcon
-              icon={faClose}
-              width={24}
-              height={24}
-              onClick={() => {
-                closeModal?.(false);
-                //setCurrentIndex(allNegotiation.length + 1); //just to close the modal
-              }}
-              className='w-[24px] h-[24px]'
-              color='#181336'
-            />
-          </motion.button>
-        </div>
-        <form
-          onSubmit={formik.handleSubmit}
-          className='w-[95%] md:w-full mx-auto rounded-[4px] h-[437px] overflow-y-auto hide-scrollbar bg-[#FFFFFF] shadow-md py-[40px] px-[20px] md:px-[50px]'>
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ delay: 0.1 }}
+      viewport={{ once: true }}
+      className='w-full max-w-[615px] mx-auto'>
+      <form
+        onSubmit={formik.handleSubmit}
+        className='w-full px-4 sm:px-6 md:px-8 py-6 max-h-[500px] overflow-y-auto'>
           <div className='w-full flex flex-col gap-[20px]'>
             <div className='flex flex-col gap-[10px]'>
               <h2
