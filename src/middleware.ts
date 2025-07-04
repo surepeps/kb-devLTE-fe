@@ -104,6 +104,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Handle agent-restricted routes (agents need approval to access)
+  const isAgentRestrictedRoute = agentRestrictedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + "/"),
+  );
+
+  if (isAgentRestrictedRoute && userToken) {
+    // For simplicity, we'll handle this restriction in the component level
+    // since we can't easily decode JWT in middleware without additional setup
+    return NextResponse.next();
+  }
+
   // Protect user routes
   const isUserProtectedRoute = userProtectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(route + "/"),
