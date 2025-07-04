@@ -95,7 +95,12 @@ export default function LandlordDashboard() {
         `${URLS.BASE}${URLS.myPropertyListings}`,
         `${URLS.BASE}/properties/user/${user?._id}`,
         `${URLS.BASE}/properties/owner`,
+      ];
+
+      // Separate endpoint for briefs
+      const briefEndpoints = [
         `${URLS.BASE}/briefs/user`,
+        `${URLS.BASE}${URLS.fetchBriefs}?owner=${user?.email}`,
       ];
 
       let userProperties = [];
