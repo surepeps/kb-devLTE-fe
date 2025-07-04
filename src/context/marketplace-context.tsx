@@ -275,18 +275,34 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     setErrMessage("");
 
     try {
+      // Check network connectivity first
+      if (!navigator.onLine) {
+        throw new Error(
+          "No internet connection. Please check your network and try again.",
+        );
+      }
+
       // Import utilities dynamically to avoid dependency issues
       const { URLS } = await import("@/utils/URLS");
       const { shuffleArray } = await import("@/utils/shuffleArray");
       const { GET_REQUEST } = await import("@/utils/requests");
 
       // Validate URL construction
-      const apiUrl = URLS.BASE + briefToFetch;
-      if (apiUrl.includes("undefined") || !URLS.BASE) {
-        throw new Error("API URL is not properly configured");
+      if (!URLS.BASE || URLS.BASE.includes("undefined")) {
+        throw new Error(
+          "API URL is not properly configured. Please contact support.",
+        );
       }
 
+      const apiUrl = URLS.BASE + briefToFetch;
       console.log("Fetching from:", apiUrl);
+
+      // Validate the complete URL
+      try {
+        new URL(apiUrl);
+      } catch {
+        throw new Error("Invalid API URL format");
+      }
 
       // Use the safer GET_REQUEST utility
       const response = await GET_REQUEST(apiUrl);
