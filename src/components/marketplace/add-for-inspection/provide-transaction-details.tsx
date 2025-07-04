@@ -13,6 +13,7 @@ import { SubmitInspectionPayloadProp } from "../types/payload";
 import toast from "react-hot-toast";
 import { POST_REQUEST } from "@/utils/requests";
 import { usePageContext } from "@/context/page-context";
+import Cookies from "js-cookie";
 
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
