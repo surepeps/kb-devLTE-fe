@@ -7,6 +7,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import { useAgentAccess } from "@/hooks/useAgentAccess";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
@@ -134,7 +135,6 @@ const PostProperty = () => {
     //   router.push("/auth/login");
     //   return;
     // }
-
     // if (user.userType !== "Landowners" && !user.agentData) {
     //   toast.error("You need to be a landowner or agent to post properties");
     //   router.push("/");
