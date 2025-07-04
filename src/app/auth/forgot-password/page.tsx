@@ -157,7 +157,7 @@ const Input: FC<InputProps> = ({
         <input
           name={id}
           type={type}
-          value={formik.values[id || title]}
+          value={formik.values[id || "email"]}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           disabled={isDisabled}
