@@ -29,6 +29,23 @@ export interface MarketTypeSelection {
   subValue: string;
 }
 
+interface SearchParams {
+  briefType: string;
+  page?: number;
+  limit?: number;
+  location?: string;
+  priceRange?: { min?: number; max?: number };
+  documentType?: string[];
+  bedroom?: number;
+  bathroom?: number;
+  landSizeType?: string;
+  landSize?: number;
+  desireFeature?: string[];
+  homeCondition?: string;
+  tenantCriteria?: string[];
+  type?: string;
+}
+
 interface MarketplaceContextType {
   // Negotiated prices
   negotiatedPrices: NegotiatedPrice[];
@@ -100,8 +117,17 @@ interface MarketplaceContextType {
   errMessage: string;
   setErrMessage: (message: string) => void;
 
-  // Data fetching
+  // Data fetching with search parameters
   fetchInitialData: (briefType: string) => Promise<void>;
+  searchProperties: (searchParams: SearchParams) => Promise<void>;
+
+  // Pagination
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  setItemsPerPage: (items: number) => void;
 
   // Clear all filters
   clearAllFilters: () => void;
@@ -160,6 +186,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     "idle" | "pending" | "success" | "failed"
   >("success");
   const [errMessage, setErrMessage] = useState<string>("");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
 
   // Negotiated prices methods
   const addNegotiatedPrice = useCallback(
@@ -257,20 +289,10 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     return selectedForInspection.length < 2;
   }, [selectedForInspection]);
 
-  // Data fetching with improved error handling and retry mechanism
-  const fetchInitialData = useCallback(
-    async (briefToFetch: string, retryCount = 0) => {
+  // API-based search using backend parameters
+  const searchProperties = useCallback(
+    async (searchParams: SearchParams, retryCount = 0) => {
       const maxRetries = 2;
-
-      // Don't proceed if briefToFetch is empty or invalid
-      if (!briefToFetch || typeof briefToFetch !== "string") {
-        console.warn("Invalid briefToFetch parameter:", briefToFetch);
-        if (isMountedRef.current) {
-          setFormikStatus("failed");
-          setErrMessage("Invalid API endpoint");
-        }
-        return;
-      }
 
       if (!isMountedRef.current) return;
 
@@ -287,7 +309,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Import utilities dynamically to avoid dependency issues
         const { URLS } = await import("@/utils/URLS");
-        const { shuffleArray } = await import("@/utils/shuffleArray");
         const { GET_REQUEST } = await import("@/utils/requests");
 
         // Validate URL construction
@@ -297,17 +318,83 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           );
         }
 
-        const apiUrl = URLS.BASE + briefToFetch;
-        console.log("Fetching from:", apiUrl);
+        // Build query parameters according to backend API
+        const queryParams = new URLSearchParams();
 
-        // Validate the complete URL
-        try {
-          new URL(apiUrl);
-        } catch {
-          throw new Error("Invalid API URL format");
+        // Required parameter
+        queryParams.append("briefType", searchParams.briefType);
+
+        // Pagination parameters
+        queryParams.append("page", String(searchParams.page || currentPage));
+        queryParams.append("limit", String(searchParams.limit || itemsPerPage));
+
+        // Optional filter parameters
+        if (searchParams.location) {
+          queryParams.append("location", searchParams.location);
         }
 
-        // Use the safer GET_REQUEST utility with logging
+        if (searchParams.priceRange) {
+          queryParams.append(
+            "priceRange",
+            JSON.stringify(searchParams.priceRange),
+          );
+        }
+
+        if (searchParams.documentType && searchParams.documentType.length > 0) {
+          queryParams.append(
+            "documentType",
+            searchParams.documentType.join(","),
+          );
+        }
+
+        if (searchParams.bedroom) {
+          queryParams.append("bedroom", String(searchParams.bedroom));
+        }
+
+        if (searchParams.bathroom) {
+          queryParams.append("bathroom", String(searchParams.bathroom));
+        }
+
+        if (searchParams.landSizeType) {
+          queryParams.append("landSizeType", searchParams.landSizeType);
+        }
+
+        if (searchParams.landSize) {
+          queryParams.append("landSize", String(searchParams.landSize));
+        }
+
+        if (
+          searchParams.desireFeature &&
+          searchParams.desireFeature.length > 0
+        ) {
+          queryParams.append(
+            "desireFeature",
+            searchParams.desireFeature.join(","),
+          );
+        }
+
+        if (searchParams.homeCondition) {
+          queryParams.append("homeCondition", searchParams.homeCondition);
+        }
+
+        if (
+          searchParams.tenantCriteria &&
+          searchParams.tenantCriteria.length > 0
+        ) {
+          queryParams.append(
+            "tenantCriteria",
+            searchParams.tenantCriteria.join(","),
+          );
+        }
+
+        if (searchParams.type) {
+          queryParams.append("type", searchParams.type);
+        }
+
+        const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
+        console.log("Fetching from:", apiUrl);
+
+        // Use the GET_REQUEST utility
         console.log("Making API request to:", apiUrl);
         const response = await GET_REQUEST(apiUrl);
         console.log("API response received:", response);
@@ -320,18 +407,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
             response?.message || response?.error || "Failed to fetch data";
           console.error("API Error:", errorMessage);
 
-          // Provide more helpful error messages
-          if (
-            errorMessage.includes("fetch") ||
-            errorMessage.includes("network")
-          ) {
-            setErrMessage(
-              "Unable to connect to the server. Please check your internet connection and try again.",
-            );
-          } else {
-            setErrMessage(errorMessage);
-          }
-
+          setErrMessage(errorMessage);
           setFormikStatus("failed");
           setSearchStatus({
             status: "failed",
@@ -340,41 +416,33 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
 
-        // Handle successful response
+        // Handle successful response with pagination
         setFormikStatus("success");
 
-        // Handle different response structures with better logging
-        const responseData = response?.data || response || [];
+        const responseData = response?.data || [];
+        const pagination = response?.pagination || {};
+
         console.log("Response data structure:", responseData);
+        console.log("Pagination data:", pagination);
 
-        const dataArray = Array.isArray(responseData)
-          ? responseData
-          : Array.isArray(responseData?.properties)
-            ? responseData.properties
-            : [];
-
-        console.log("Data array length:", dataArray.length);
-
-        // More lenient filtering - include if no isApproved field or if explicitly approved
-        const approvedData = dataArray.filter((item: any) => {
-          return (
-            item?.isApproved !== false && item !== null && item !== undefined
-          );
-        });
-
-        const shuffledData = shuffleArray(approvedData);
-        setProperties(shuffledData);
+        // Update properties and pagination state
+        setProperties(responseData);
+        setTotalPages(pagination.totalPages || 1);
+        setTotalItems(pagination.total || responseData.length);
+        setCurrentPage(
+          pagination.currentPage || searchParams.page || currentPage,
+        );
 
         setSearchStatus({
           status: "success",
-          couldNotFindAProperty: shuffledData.length === 0,
+          couldNotFindAProperty: responseData.length === 0,
         });
 
         console.log(
-          `Successfully loaded ${shuffledData.length} properties from ${dataArray.length} total properties`,
+          `Successfully loaded ${responseData.length} properties. Page ${pagination.currentPage} of ${pagination.totalPages}`,
         );
       } catch (err: any) {
-        console.error("Fetch error (attempt " + (retryCount + 1) + "):", err);
+        console.error("Search error (attempt " + (retryCount + 1) + "):", err);
 
         if (!isMountedRef.current) return;
 
@@ -389,29 +457,22 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           setTimeout(
             () => {
               if (isMountedRef.current) {
-                fetchInitialData(briefToFetch, retryCount + 1);
+                searchProperties(searchParams, retryCount + 1);
               }
             },
             1000 * (retryCount + 1),
-          ); // Exponential backoff
+          );
           return;
         }
 
-        let errorMessage = "An error occurred while fetching data";
+        let errorMessage = "An error occurred while searching properties";
 
-        // Better error categorization
         if (err.name === "AbortError") {
           errorMessage =
             "Request timed out. Please check your connection and try again.";
         } else if (err.message?.includes("Failed to fetch")) {
           errorMessage =
             "Network error. Please check your internet connection.";
-        } else if (
-          err.message?.includes("API URL is not properly configured")
-        ) {
-          errorMessage = "API configuration error. Please contact support.";
-        } else if (err.message?.includes("No internet connection")) {
-          errorMessage = err.message;
         } else if (err.message) {
           errorMessage = err.message;
         }
@@ -424,7 +485,20 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     },
-    [isMountedRef],
+    [isMountedRef, currentPage, itemsPerPage],
+  );
+
+  // Simple data fetching for initial load (backward compatibility)
+  const fetchInitialData = useCallback(
+    async (briefType: string) => {
+      const searchParams: SearchParams = {
+        briefType,
+        page: 1,
+        limit: itemsPerPage,
+      };
+      await searchProperties(searchParams);
+    },
+    [searchProperties, itemsPerPage],
   );
 
   // Search filters state
@@ -496,6 +570,15 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Data fetching
       fetchInitialData,
+      searchProperties,
+
+      // Pagination
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      totalItems,
+      itemsPerPage,
+      setItemsPerPage,
 
       // Clear all filters
       clearAllFilters,
@@ -534,6 +617,13 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       errMessage,
       setErrMessage,
       fetchInitialData,
+      searchProperties,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      totalItems,
+      itemsPerPage,
+      setItemsPerPage,
       clearAllFilters,
     ],
   );
