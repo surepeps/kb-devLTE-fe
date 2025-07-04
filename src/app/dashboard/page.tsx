@@ -22,41 +22,26 @@ import {
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
-interface Property {
+interface PendingBrief {
   _id: string;
   propertyType: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  images: string[];
-  status: "active" | "pending" | "sold" | "rented";
-  createdAt: string;
-  views?: number;
+  pictures: string[];
+  isApproved: boolean;
 }
 
-interface Brief {
-  _id: string;
-  propertyType: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  createdAt: string;
-  status: "active" | "assigned" | "completed";
-}
-
-interface DashboardStats {
-  totalProperties: number;
-  activeListings: number;
-  soldProperties: number;
-  rentedProperties: number;
+interface DashboardData {
+  totalBriefs: number;
+  totalActiveBriefs: number;
+  totalInactiveBriefs: number;
+  propertySold: number;
   totalViews: number;
-  totalEarnings: number;
+  recentBriefs: any[];
+  newPendingBriefs: PendingBrief[];
+}
+
+interface DashboardResponse {
+  success: boolean;
+  dashboard: DashboardData;
 }
 
 export default function LandlordDashboard() {
