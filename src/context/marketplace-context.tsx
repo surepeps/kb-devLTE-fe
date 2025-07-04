@@ -485,7 +485,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     },
-    [isMountedRef, currentPage, itemsPerPage],
+    [isMountedRef],
   );
 
   // Simple data fetching for initial load (backward compatibility)
