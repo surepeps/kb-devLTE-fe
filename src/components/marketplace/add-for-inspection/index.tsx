@@ -796,7 +796,7 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
       <ModalWrapper
         isOpen={currentIndex < allNegotiations.length}
         onClose={() => setCurrentIndex(allNegotiations.length)}
-        title="2432 Negotiate Price 234"
+        title="Negotiate Price"
         size="lg"
         preventBackgroundScroll={true}
       >
