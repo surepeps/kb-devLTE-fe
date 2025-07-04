@@ -516,6 +516,16 @@ const Register = () => {
           </div>
         </form>
       </div>
+      <OverlayPreloader
+        isVisible={overlayVisible}
+        message={
+          isSuccess
+            ? formik.values.userType === "Agent"
+              ? "Sending verification email..."
+              : "Setting up your account..."
+            : "Processing registration..."
+        }
+      />
     </section>
   );
 };
