@@ -51,19 +51,23 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
   // Calculate position based on screen size
   useEffect(() => {
     const updatePosition = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth < 768) {
-        // Mobile: Center on screen
-        setPosition({ top: 0, right: 0 });
-      } else {
-        // Desktop: Position relative to button
-        setPosition({ top: 0, right: 0 });
+      if (typeof window !== "undefined") {
+        const screenWidth = window.innerWidth;
+        if (screenWidth < 768) {
+          // Mobile: Center on screen
+          setPosition({ top: 0, right: 0 });
+        } else {
+          // Desktop: Position relative to button
+          setPosition({ top: 0, right: 0 });
+        }
       }
     };
 
     updatePosition();
-    window.addEventListener("resize", updatePosition);
-    return () => window.removeEventListener("resize", updatePosition);
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", updatePosition);
+      return () => window.removeEventListener("resize", updatePosition);
+    }
   }, []);
 
   const menuItems = [
@@ -125,13 +129,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       animate={{ y: 0, opacity: 1, scale: 1 }}
       exit={{ y: 10, opacity: 0, scale: 0.95 }}
       transition={{ type: "spring", damping: 20, stiffness: 300 }}
-      className="fixed top-20 right-4 md:absolute md:top-full md:right-0 z-50 md:mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
-      style={{
-        // Dynamic positioning
-        ...(window.innerWidth >= 768 && {
-          transform: "translateX(-75%)",
-        }),
-      }}
+      className="fixed top-20 right-4 md:absolute md:top-full md:right-0 z-50 md:mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden md:transform md:-translate-x-3/4"
     >
       {/* Header with user info */}
       <div className="bg-gradient-to-r from-[#8DDB90] to-[#09391C] p-4">
