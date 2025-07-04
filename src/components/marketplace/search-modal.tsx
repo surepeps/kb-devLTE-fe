@@ -139,13 +139,13 @@ const SearchModal = ({
       page: 1,
       limit: itemsPerPage,
 
-      // Location filter
+      // Location filter - format as expected by backend
       ...(searchPayload.selectedState && {
-        location: JSON.stringify({
-          state: searchPayload.selectedState,
-          localGovernment: searchPayload.selectedLGA || "",
-          area: searchPayload.selectedArea || "",
-        }),
+        location: searchPayload.selectedArea
+          ? `${searchPayload.selectedArea}, ${searchPayload.selectedLGA}, ${searchPayload.selectedState}`
+          : searchPayload.selectedLGA
+            ? `${searchPayload.selectedLGA}, ${searchPayload.selectedState}`
+            : searchPayload.selectedState,
       }),
 
       // Price range filter
