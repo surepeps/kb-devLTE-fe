@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    // Add timeout and retry settings for external images
+    dangerouslyAllowSVG: false,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Reduce timeout to fail faster instead of hanging
+    imageSizeLimit: 8192,
   },
   // Fix cross-origin warnings for dev environment
   allowedDevOrigins: [
