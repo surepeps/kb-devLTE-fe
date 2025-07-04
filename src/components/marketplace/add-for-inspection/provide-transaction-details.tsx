@@ -70,7 +70,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("token") || "" : ""}`,
         },
       });
 
