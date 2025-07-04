@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { useAgentAccess } from "@/hooks/useAgentAccess";
+import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
