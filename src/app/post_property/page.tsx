@@ -395,7 +395,11 @@ const PostProperty = () => {
   }
 
   return (
-    <>
+    <AgentAccessBarrier
+      requireOnboarding={true}
+      requireApproval={true}
+      customMessage="You must complete onboarding and be approved before you can post properties."
+    >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
         <div className="container mx-auto px-4 md:px-6">
