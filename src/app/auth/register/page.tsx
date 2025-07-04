@@ -53,6 +53,8 @@ const Register = () => {
     useState<boolean>(false);
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Enter email"),
