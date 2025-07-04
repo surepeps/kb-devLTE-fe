@@ -155,41 +155,57 @@ const Form2 = () => {
     const getTotalBriefs = async () => {
       setIsLoading(true);
       try {
-        const response = await GET_REQUEST(
-          URLS.BASE +
-            URLS.fetchBriefs +
-            "?page=1&limit=1000&briefType=Outright Sales",
-          Cookies.get("token"),
+        // Fetch all brief types to show complete agent portfolio
+        const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
+        const allBriefsPromises = briefTypes.map((briefType) =>
+          GET_REQUEST(
+            URLS.BASE +
+              URLS.fetchBriefs +
+              `?page=1&limit=1000&briefType=${briefType}`,
+            Cookies.get("token"),
+          ),
         );
 
-        if (response?.success === false) {
-          console.error("Failed to get agent data:", response);
-          toast.error("Failed to get data");
-          return;
-        }
+        const responses = await Promise.all(allBriefsPromises);
+        let allBriefs: any[] = [];
 
-        const data = response;
-        if (!data?.data) {
-          console.error("Invalid response structure:", data);
-          toast.error("Invalid data structure received");
-          return;
-        }
+        responses.forEach((response, index) => {
+          if (response?.success !== false && response?.data) {
+            const briefsWithType = Array.isArray(response.data)
+              ? response.data.map((item: any) => ({
+                  ...item,
+                  briefType: briefTypes[index],
+                  statusLabel:
+                    item.isApproved === true
+                      ? "Approved"
+                      : item.isApproved === false
+                        ? "Rejected"
+                        : "Pending Review",
+                }))
+              : [];
+            allBriefs = [...allBriefs, ...briefsWithType];
+          }
+        });
 
-        // Filter approved properties and shuffle them
-        const approvedData = Array.isArray(data.data)
-          ? data.data.filter((item: any) => item.isApproved === true)
-          : [];
-        const shuffledData = shuffleArray(approvedData);
-        setTotalBriefData(shuffledData);
+        // Sort by creation date (newest first) and then by approval status
+        const sortedBriefs = allBriefs.sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+
+        setTotalBriefData(sortedBriefs);
       } catch (error) {
         console.log(error);
-        toast.error("Failed to fetch data");
+        toast.error("Failed to fetch briefs data");
       } finally {
         setIsLoading(false);
       }
     };
 
-    getTotalBriefs();
+    if (selectedNav === AgentNavData.TOTAL_BRIEF) {
+      getTotalBriefs();
+    }
   }, [selectedNav]);
 
   return (
@@ -222,9 +238,10 @@ const Form2 = () => {
 const headerData: string[] = [
   "Date",
   "Property Type",
+  "Brief Type",
   "Location",
   "Price Range",
-  "Document",
+  "Status",
   "Full details",
 ];
 
