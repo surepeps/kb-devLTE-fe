@@ -62,13 +62,19 @@ const MarketPlace = () => {
 
   // Handle marketplace errors - this useEffect must come before any early returns
   useEffect(() => {
+    console.log("Marketplace status:", {
+      formikStatus,
+      errMessage,
+      propertiesCount: properties?.length,
+    });
+
     if (formikStatus === "failed" && errMessage) {
       console.error("Marketplace error:", errMessage);
       setHasError(true);
     } else if (formikStatus === "success") {
       setHasError(false);
     }
-  }, [formikStatus, errMessage]);
+  }, [formikStatus, errMessage, properties]);
 
   useEffect(() => {
     if (propertySelectedForInspection) {
