@@ -5,13 +5,9 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import useClickOutside from "@/hooks/clickOutside";
 import Image from "next/image";
-import userIcon from "@/svgs/user2.svg";
-import faLock from "@/svgs/lock.svg";
 import { User, useUserContext } from "@/context/user-context";
 import {
   LayoutDashboardIcon,
-  BellIcon,
-  UserIcon,
   Settings,
   LogOut,
   Home,
@@ -19,11 +15,9 @@ import {
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import microphonesvg from "@/svgs/microphone.svg";
 import Link from "next/link";
 import { usePageContext } from "@/context/page-context";
 import { AgentNavData } from "@/enums";
-import notificationBellIcon from "@/svgs/bell.svg";
 
 interface UserProfileModalProps {
   closeUserProfileModal: (type: boolean) => void;
@@ -77,7 +71,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             icon: <LayoutDashboardIcon size={18} />,
             label: "Dashboard",
             action: () => {
-              router.push("/agent/briefs");
+              router.push("/agent/dashboard");
               closeUserProfileModal(false);
             },
           },
@@ -113,7 +107,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       action: () => {
         if (userType === "Agent") {
           setSelectedNav(AgentNavData.SETTINGS);
-          router.push("/agent");
+          router.push("/agent/settings");
         } else {
           router.push("/preference");
         }
@@ -137,7 +131,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
             {userDetails?.profilePicture ? (
               <Image
-                src={userDetails.profilePicture}
+                src={userDetails?.profilePicture}
                 width={40}
                 height={40}
                 alt="Profile"
@@ -213,6 +207,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          type="button"
           onClick={() => {
             logout(() => closeUserProfileModal(false));
           }}

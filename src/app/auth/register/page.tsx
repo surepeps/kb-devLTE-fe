@@ -143,7 +143,7 @@ const Register = () => {
                 setOverlayVisible(true);
                 setTimeout(() => {
                   setOverlayVisible(false);
-                  router.push("/my_listing");
+                  router.push("/dashboard");
                 }, 1500);
               }
 
@@ -194,7 +194,7 @@ const Register = () => {
           if ((response as any).user?.userType === "Agent") {
             router.push("/agent/onboard");
           } else {
-            router.push("/my_listing");
+            router.push("/dashboard");
           }
         }
         if (response.error) {
@@ -263,7 +263,7 @@ const Register = () => {
                     if (result.user.userType === "Agent") {
                       router.push("/agent/onboard");
                     } else {
-                      router.push("/my_listing");
+                      router.push("/dashboard");
                     }
                   } else {
                     toast.error(result.error || "Facebook registration failed");
@@ -298,7 +298,7 @@ const Register = () => {
       <div className="container flex items-center justify-center py-[20px] md:py-[30px] md:mt-[60px] px-[25px] lg:px-0">
         <form
           onSubmit={formik.handleSubmit}
-          className="lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]"
+          className="lg:w-[700px] w-full min-h-[700px] flex flex-col items-center gap-[20px]"
         >
           <h2 className="text-3xl md:text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]">
             Register with us
@@ -322,31 +322,38 @@ const Register = () => {
                 />
                 <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed group-hover:shadow-lg">
                   <div className="flex items-center justify-between">
+                    
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-4 h-4 text-[#09391C]"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                          </svg>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        
+                        <div className="flex gap-2 items-center">
+                          <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-4 h-4 text-[#09391C]"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                            </svg>
+                          </div>
+                          <span className="text-lg font-semibold text-[#09391C]">
+                            Landlord
+                          </span>
                         </div>
-                        <span className="text-lg font-semibold text-[#09391C]">
-                          Landlord
-                        </span>
+                        
+                        <div className="relative">
+                          <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
+                            <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
+                          </div>
+                          <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
+                        </div>
+
                       </div>
                       <span className="text-sm text-[#5A5D63] leading-relaxed">
                         Property owner looking to sell or rent
                       </span>
                     </div>
-                    <div className="relative">
-                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
-                        <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
-                      </div>
-                      <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
-                    </div>
+                    
                   </div>
                 </div>
               </label>
@@ -364,33 +371,34 @@ const Register = () => {
                 <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed group-hover:shadow-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-4 h-4 text-[#09391C]"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        
+                        <div className="flex gap-2 items-center">
+                          <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-4 h-4 text-[#09391C]"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                            </svg>
+                          </div>
+                          <span className="text-lg font-semibold text-[#09391C]">
+                            Agent
+                          </span>
                         </div>
-                        <span className="text-lg font-semibold text-[#09391C]">
-                          Agent
-                        </span>
+                        
+                        <div className="relative">
+                          <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
+                            <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
+                          </div>
+                          <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
+                        </div>
+
                       </div>
                       <span className="text-sm text-[#5A5D63] leading-relaxed">
                         Professional helping clients buy/sell properties
                       </span>
-                    </div>
-                    <div className="relative">
-                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
-                        <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
-                      </div>
-                      <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -644,7 +652,7 @@ const Input: FC<InputProps> = ({
             alt=""
             width={20}
             height={20}
-            className="w-[20px] h-[20px] absolute ml-[330px] lg:ml-[440px] z-20 mt-[15px]"
+            className="w-[20px] h-[20px] absolute top-4 right-3 z-20"
           />
         ) : null}
       </div>

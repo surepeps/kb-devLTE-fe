@@ -66,15 +66,16 @@ const SubmitPopUp: React.FC<SubmitPopUpProps> = ({
             className='h-[121.88px] w-[121.88px]'
           />
           <Link
-            href="#"
+            href={href}
             // onClick={(e) => {
             //   e.preventDefault(); // Prevent default navigation
             //   if (onClose) onClose();
             //   router.push(href);
             //   //window.location.href = href;
             // }}
-              onClick={(e) => {
+            onClick={(e) => {
               e.preventDefault();
+              router.push(href);
               if (onClose) onClose();
             }}
             className={`min-h-[57px] w-full rounded-[5px] py-[14px] px-[27px] gap-[10px] bg-[#8DDB90] text-white text-[18px] leading-[28.8px] font-bold text-center text-whitespace-nowrap ${product_sans.className}`}>

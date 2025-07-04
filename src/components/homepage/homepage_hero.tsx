@@ -78,7 +78,7 @@ const HeroSection = () => {
               className='h-[50px] md:h-[66px] w-full md:w-1/2 lg:w-[294px] py-[12px] px-[24px] text-white md:text-[20px] text-base md:leading-[32px] font-bold'
               value={'Post a Property'}
               onClick={() => {
-                window.location.href = '/my_listing';
+                window.location.href = '/my-listings';
               }}
             />
           </motion.div>

@@ -32,6 +32,8 @@ const publicRoutes = [
   "/verify-email",
   "/referral",
   "/slots",
+  "/seller-negotiation-inspection",
+  "/negotiation-inspection",
 ];
 
 const agentProtectedRoutes = [
@@ -39,19 +41,16 @@ const agentProtectedRoutes = [
   "/agent/briefs",
   "/agent/onboard",
   "/agent/under-review",
+  "/post_property",
 ];
 
-const agentRestrictedRoutes = ["/post_property", "/new-post-property"];
 
 const userProtectedRoutes = [
   "/dashboard",
   "/profile",
-  "/my_listing",
+  "/my-listings",
   "/preference",
   "/post_property",
-  "/new-post-property",
-  "/negotiation-inspection",
-  "/seller-negotiation-inspection",
   "/payment-details",
 ];
 
@@ -75,8 +74,6 @@ export function middleware(request: NextRequest) {
   // Handle auth redirections for logged-in users
   if (userToken) {
     if (pathname === "/auth/login" || pathname === "/auth/register") {
-      // Redirect based on user type - this would need to be determined from the token
-      // For now, redirecting to a general dashboard
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
@@ -104,16 +101,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Handle agent-restricted routes (agents need approval to access)
-  const isAgentRestrictedRoute = agentRestrictedRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + "/"),
-  );
-
-  if (isAgentRestrictedRoute && userToken) {
-    // For simplicity, we'll handle this restriction in the component level
-    // since we can't easily decode JWT in middleware without additional setup
-    return NextResponse.next();
-  }
 
   // Protect user routes
   const isUserProtectedRoute = userProtectedRoutes.some(

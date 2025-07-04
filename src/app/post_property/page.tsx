@@ -154,7 +154,7 @@ const PostProperty = () => {
 
     if (user.userType !== "Landowners" && user.userType !== "Agent") {
       toast.error("You need to be a landowner or agent to post properties");
-      router.push("/");
+      router.push("/auth/login");
       return;
     }
   }, [user?.id, canPostProperty]); // Only depend on user ID to prevent unnecessary re-renders
@@ -343,14 +343,8 @@ const PostProperty = () => {
         toast.success("Property listed successfully!");
         resetForm();
 
-        // Redirect based on user type
-        if (user?.userType === "Landowners") {
-          router.push("/my_listing");
-        } else if (user?.userType === "Agent") {
-          router.push("/agent/dashboard");
-        } else {
-          router.push("/dashboard");
-        }
+        router.push("/my-listings");
+
       } else {
         const errorMessage =
           (response as any)?.error || "Failed to submit property";

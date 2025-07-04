@@ -372,7 +372,7 @@ export default function AgentDashboard() {
               </Link>
 
               <Link
-                href="/my_listing"
+                href="/my-listings"
                 className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
                 <div className="p-2 bg-blue-500 bg-opacity-10 rounded-lg">

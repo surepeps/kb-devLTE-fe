@@ -24,7 +24,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   const router = useRouter();
 
   const handleViewListings = () => {
-    router.push("/my_listing");
+    router.push("/my-listings");
     onClose();
   };
 

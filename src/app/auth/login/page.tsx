@@ -102,10 +102,10 @@ const Login = () => {
                     response.user.phoneNumber &&
                     response.user.agentData.agentType
                   ) {
-                    router.push("/agent/briefs");
+                    router.push("/agent/dashboard");
                   }
                 } else {
-                  router.push("/my_listing");
+                  router.push("/dashboard");
                 }
                 setOverlayVisible(false);
               }, 1500);
@@ -169,10 +169,10 @@ const Login = () => {
               } else if (user.accountApproved === false) {
                 router.push("/agent/under-review");
               } else if (user.phoneNumber && user.agentData.agentType) {
-                router.push("/agent/briefs");
+                router.push("/agent/dashboard");
               }
             } else {
-              router.push("/my_listing");
+              router.push("/dashboard");
             }
           }
           console.log("response", response);
@@ -253,10 +253,10 @@ const Login = () => {
                       } else if (user.accountApproved === false) {
                         router.push("/agent/under-review");
                       } else if (user.phoneNumber && user.agentData.agentType) {
-                        router.push("/agent/briefs");
+                        router.push("/agent/dashboard");
                       }
                     } else {
-                      router.push("/my_listing");
+                      router.push("/dashboard");
                     }
                   } else {
                     toast.error(result.error || "Facebook login failed");
@@ -436,7 +436,7 @@ const Input: FC<InputProps> = ({
             alt=""
             width={20}
             height={20}
-            className="w-[20px] h-[20px] absolute ml-[330px] lg:ml-[440px] z-20 mt-[15px]"
+            className="w-[20px] h-[20px] absolute top-4 right-3 z-20"
           />
         ) : null}
       </div>

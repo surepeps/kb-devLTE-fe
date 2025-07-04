@@ -213,9 +213,9 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     }
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
-                    {user.profilePicture ? (
+                    {user?.profilePicture ? (
                       <Image
-                        src={user.profilePicture}
+                        src={user?.profilePicture}
                         width={40}
                         height={40}
                         alt="Profile"
@@ -287,9 +287,9 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     }
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-sm"
                   >
-                    {user.profilePicture ? (
+                    {user?.profilePicture ? (
                       <Image
-                        src={user.profilePicture}
+                        src={user?.profilePicture}
                         width={32}
                         height={32}
                         alt="Profile"
@@ -361,7 +361,7 @@ const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
   },
   {
     name: "Sell",
-    url: "/my_listing",
+    url: "/my-listings",
     isClicked: false,
   },
   {

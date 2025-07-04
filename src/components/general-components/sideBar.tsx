@@ -220,7 +220,7 @@ const SideBar = ({
                   <button
                     type='button'
                     className='w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md'
-                    onClick={() => handleItemClick('/agent/briefs')}>
+                    onClick={() => handleItemClick('/agent/dashboard')}>
                     Dashboard
                   </button>
                 </>

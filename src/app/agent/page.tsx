@@ -37,7 +37,7 @@ const Agent = () => {
         router.push("/agent/dashboard");
       }
     } else if (user.userType === "Landowners") {
-      router.push("/landlord");
+      router.push("/dashboard");
     } else {
       router.push("/");
     }

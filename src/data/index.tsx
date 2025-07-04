@@ -32,7 +32,7 @@ export const navData: {
       },
       {
         name: 'Sell',
-        url: '/my_listing',
+        url: '/my-listings',
       },
       {
         name: 'Rent',
@@ -95,7 +95,7 @@ export const agentnavData: {
     additionalLinks: [
       {
         name: 'list a property',
-        url: '/my_listing',
+        url: '/my-listings',
       },
       {
         name: 'Buy a property',
@@ -118,12 +118,12 @@ export const agentnavData: {
   // },
   {
     name: 'Landlord',
-    url: '/my_listing',
+    url: '/dashboard',
     isClicked: false,
   },
   {
     name: 'Agent',
-    url: '/agent/briefs',
+    url: '/agent/dashboard',
     isClicked: false,
   },
   {
@@ -148,7 +148,7 @@ export const exploreData: { name: string; url: string; isClicked: boolean }[] =
   [
     {
       name: 'List a property',
-      url: '/my_listing',
+      url: '/my-listings',
       isClicked: false,
     },
     {

@@ -1480,7 +1480,7 @@ const handleSuccessNo = () => {
               setShowFinalSubmit(false);
               setTimeout(() => {
                 router.push(
-                  commission['userType'] === 'agent' ? '/agent' : '/my_listing'
+                  commission['userType'] === 'agent' ? '/agent' : '/my-listings'
                 );
               }, 100);
             }}
@@ -1504,7 +1504,7 @@ const handleSuccessNo = () => {
           {/* 
           {showFinalSubmit && (
             <Submit
-              href={commission['userType'] === 'agent' ? '/agent' : '/my_listing'}
+              href={commission['userType'] === 'agent' ? '/agent' : '/my-listings'}
               onClose={() => setShowFinalSubmit(false)}
             />
           )} */}

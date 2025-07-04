@@ -241,7 +241,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             </button>
           </motion.form>
         </div>
-        {isSuccessfullySubmitted && <SubmitPopUp />}
+        {isSuccessfullySubmitted && <SubmitPopUp href='/' />}
       </aside>
     </Fragment>
   );

@@ -34,12 +34,12 @@ const EmailVerification = () => {
 							toast.success(
 								"Email verified successfully! Redirecting to your dashboard..."
 							);
-							router.push("/my_listing");
+							router.push("/dashboard");
 						} else if (response.userType === "Agent") {
 							toast.success(
 								"Email verified successfully! Please complete your profile."
 							);
-							router.push("/auth/agent/form");
+							router.push("/agent/onboard");
 						} else {
 							router.push("/auth/login");
 						}

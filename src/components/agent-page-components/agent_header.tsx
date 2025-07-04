@@ -141,30 +141,6 @@ const AgentHeader = () => {
               </svg>
             </button>
             {isDropdownOpen && (
-              // <div className='absolute left-6 transform -translate-x-1/2 mt-2 w-40 max-w-xs bg-white border border-gray-200 rounded-md shadow-lg md:-ml-[40px]'>
-              //   <ul>
-              //     {pathname !== '/agent/under-review' && (
-              //       <>
-              //         <li
-              //           className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
-              //           onClick={() => handleItemClick('/agent/briefs')}>
-              //           Create Brief
-              //         </li>
-              //         <li
-              //           className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
-              //           onClick={() => handleItemClick('/agent/briefs')}>
-              //           Dashboard
-              //         </li>
-              //       </>
-              //     )}
-              //     <li
-              //       className='px-4 py-2 hover:bg-gray-100 cursor-pointer text-[#FF3D00]'
-              //       onClick={() => logout()}>
-              //       Log out
-              //     </li>
-              //   </ul>
-              // </div>
-             
                <UserProfile
                     userDetails={user}
                     closeUserProfileModal={setIsUserProfileModal}
