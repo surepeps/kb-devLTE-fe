@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    dangerouslyAllowSVG: false,
   },
   // Fix cross-origin warnings for dev environment
   allowedDevOrigins: [

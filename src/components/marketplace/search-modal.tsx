@@ -97,6 +97,12 @@ const SearchModal = ({
     toggleInspectionSelection,
     selectedForInspection,
     fetchInitialData,
+    searchProperties,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
   } = useMarketplace();
 
   const router = useRouter();
@@ -109,121 +115,104 @@ const SearchModal = ({
   // Note: State syncing moved to marketplace context to avoid render issues
 
   const handleSearch = async (searchPayload: any) => {
-    setFormikStatus("pending");
-    setSearchStatus({
-      status: "pending",
-      couldNotFindAProperty: false,
-    });
+    setCurrentPage(1); // Reset to first page on new search
 
-    // Enhanced search payload with proper location filtering
-    const enhancedSearchPayload = {
-      ...searchPayload,
-      // Add location filters if they exist
+    // Get the correct briefType based on marketplace selection
+    const getBriefType = (marketPlace: string) => {
+      switch (marketPlace) {
+        case "Buy a property":
+          return "Outright Sales";
+        case "Find property for joint venture":
+          return "Joint Venture";
+        case "Rent/Lease a property":
+          return "Rent";
+        default:
+          return "Outright Sales";
+      }
+    };
+
+    const briefType = getBriefType(userSelectedMarketPlace);
+
+    // Build search parameters according to backend API
+    const searchParams = {
+      briefType,
+      page: 1,
+      limit: itemsPerPage,
+
+      // Location filter
       ...(searchPayload.selectedState && {
-        state: searchPayload.selectedState,
+        location: JSON.stringify({
+          state: searchPayload.selectedState,
+          localGovernment: searchPayload.selectedLGA || "",
+          area: searchPayload.selectedArea || "",
+        }),
       }),
-      ...(searchPayload.selectedLGA && {
-        localGovernment: searchPayload.selectedLGA,
+
+      // Price range filter
+      ...((searchPayload.minPrice || searchPayload.maxPrice) && {
+        priceRange: {
+          ...(searchPayload.minPrice && {
+            min: Number(searchPayload.minPrice),
+          }),
+          ...(searchPayload.maxPrice && {
+            max: Number(searchPayload.maxPrice),
+          }),
+        },
       }),
-      ...(searchPayload.selectedArea && { area: searchPayload.selectedArea }),
-      // Add price range if specified
-      ...(searchPayload.minPrice && {
-        minPrice: Number(searchPayload.minPrice),
+
+      // Property features
+      ...(searchPayload.bedroom && { bedroom: Number(searchPayload.bedroom) }),
+      ...(searchPayload.bathroom && {
+        bathroom: Number(searchPayload.bathroom),
       }),
-      ...(searchPayload.maxPrice && {
-        maxPrice: Number(searchPayload.maxPrice),
-      }),
-      // Add property type filtering
+
+      // Document type filter
+      ...(searchPayload.documentType &&
+        searchPayload.documentType.length > 0 && {
+          documentType: searchPayload.documentType,
+        }),
+
+      // Desire features filter
+      ...(searchPayload.desireFeature &&
+        searchPayload.desireFeature.length > 0 && {
+          desireFeature: searchPayload.desireFeature,
+        }),
+
+      // Home condition filter
+      ...(searchPayload.homeCondition &&
+        searchPayload.homeCondition !== "All" && {
+          homeCondition: searchPayload.homeCondition,
+        }),
+
+      // Tenant criteria filter (for rent)
+      ...(searchPayload.tenantCriteria &&
+        searchPayload.tenantCriteria.length > 0 && {
+          tenantCriteria: searchPayload.tenantCriteria,
+        }),
+
+      // Property type filter
       ...(searchPayload.propertyType &&
         searchPayload.propertyType !== "All" && {
-          propertyType: searchPayload.propertyType,
+          type: searchPayload.propertyType,
         }),
+
+      // Land size filters
+      ...(searchPayload.landSizeType && {
+        landSizeType: searchPayload.landSizeType,
+      }),
+      ...(searchPayload.landSize && {
+        landSize: Number(searchPayload.landSize),
+      }),
     };
 
     try {
-      await toast.promise(
-        POST_REQUEST(URLS.BASE + URLS.searchBrief, enhancedSearchPayload).then(
-          (response) => {
-            const data = Array.isArray(response) ? response : response?.data;
-            if (!data) {
-              setErrMessage("Failed to fetch data");
-              setFormikStatus("failed");
-              setSearchStatus({
-                status: "failed",
-                couldNotFindAProperty: true,
-              });
-              throw new Error("Failed to fetch data");
-            }
-
-            // Apply client-side filtering for more precise results
-            let filteredData = data;
-
-            if (searchPayload.selectedState) {
-              filteredData = filteredData.filter((property: any) =>
-                property.location?.state
-                  ?.toLowerCase()
-                  .includes(searchPayload.selectedState.toLowerCase()),
-              );
-            }
-
-            if (searchPayload.selectedLGA) {
-              filteredData = filteredData.filter((property: any) =>
-                property.location?.localGovernment
-                  ?.toLowerCase()
-                  .includes(searchPayload.selectedLGA.toLowerCase()),
-              );
-            }
-
-            if (searchPayload.minPrice || searchPayload.maxPrice) {
-              filteredData = filteredData.filter((property: any) => {
-                const price = property.price || property.rentalPrice || 0;
-                const minPrice = searchPayload.minPrice
-                  ? Number(searchPayload.minPrice)
-                  : 0;
-                const maxPrice = searchPayload.maxPrice
-                  ? Number(searchPayload.maxPrice)
-                  : Infinity;
-                return price >= minPrice && price <= maxPrice;
-              });
-            }
-
-            setFormikStatus("success");
-            const shuffledData = shuffleArray(filteredData);
-            setProperties(shuffledData);
-
-            // Update search location in context
-            if (searchPayload.selectedState || searchPayload.selectedLGA) {
-              setSearchLocation({
-                state: searchPayload.selectedState || "",
-                localGovernment: searchPayload.selectedLGA || "",
-                area: searchPayload.selectedArea || "",
-              });
-            }
-
-            setSearchStatus({
-              status: "success",
-              couldNotFindAProperty: shuffledData.length === 0,
-            });
-
-            console.log(`Properties found: ${shuffledData.length}`);
-          },
-        ),
-        {
-          loading: "Searching properties...",
-          success: (data) => `Found ${data?.length || 0} properties!`,
-          error: "Failed to search properties",
-        },
-      );
+      await toast.promise(searchProperties(searchParams), {
+        loading: "Searching properties...",
+        success: `Search completed!`,
+        error: "Failed to search properties",
+      });
     } catch (err: any) {
-      if (err.name !== "AbortError") {
-        console.error(err);
-        setErrMessage(err.message || "An error occurred");
-        setFormikStatus("failed");
-        setSearchStatus({
-          status: "failed",
-          couldNotFindAProperty: true,
-        });
-      }
+      console.error("Search failed:", err);
     }
   };
 
@@ -310,7 +299,6 @@ const SearchModal = ({
     return (
       <PropertyGrid
         marketplaceType={type}
-        itemsPerPage={12}
         // JV specific props
         isComingFromSubmitLol={isComingFromSubmitLol}
         setIsComingFromSubmitLol={setIsComingFromSubmitLol}
@@ -371,7 +359,7 @@ const SearchModal = ({
 
   const is_mobile = IsMobile();
 
-  // Data fetching using marketplace context to avoid AbortError issues
+  // Data fetching using marketplace context with proper API search
   useEffect(() => {
     if (!userSelectedMarketPlace) return;
 
@@ -389,11 +377,14 @@ const SearchModal = ({
       default:
         briefType = "Outright Sales";
     }
-    const briefToFetch = `${URLS.fetchBriefs}?page=1&limit=1000&briefType=${encodeURIComponent(briefType)}`;
 
-    // Use the context method for fetching (removed fetchInitialData from deps to avoid re-render loop)
-    fetchInitialData(briefToFetch);
-  }, [userSelectedMarketPlace]);
+    // Use the new search function for initial data loading
+    searchProperties({
+      briefType,
+      page: 1,
+      limit: itemsPerPage,
+    });
+  }, [userSelectedMarketPlace, searchProperties, itemsPerPage]);
 
   return (
     <Fragment>
