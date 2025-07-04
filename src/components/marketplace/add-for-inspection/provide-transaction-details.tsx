@@ -5,9 +5,6 @@ import { archivo } from "@/styles/font";
 import { FormikProps, useFormik } from "formik";
 import React, { Fragment, useEffect, useState } from "react";
 import * as Yup from "yup";
-import banks from "@/data/nigeria-banks.json";
-import { Option } from "../types/option";
-import AttachFile from "@/components/general-components/attach_file";
 import PaymentReceiptUpload from "@/components/general-components/payment-receipt-upload";
 import { URLS } from "@/utils/URLS";
 import { motion } from "framer-motion";
@@ -15,8 +12,6 @@ import SubmitPopUp from "@/components/submit";
 import { SubmitInspectionPayloadProp } from "../types/payload";
 import toast from "react-hot-toast";
 import { POST_REQUEST } from "@/utils/requests";
-import { set } from "date-fns";
-import ImageContainer from "@/components/general-components/image-container";
 import { usePageContext } from "@/context/page-context";
 
 type ProvideTransactionDetailsProps = {
