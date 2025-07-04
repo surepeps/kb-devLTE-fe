@@ -366,6 +366,10 @@ const Login = () => {
           </div>
         </form>
       </div>
+      <OverlayPreloader
+        isVisible={overlayVisible}
+        message="Loading your dashboard..."
+      />
     </section>
   );
 };
