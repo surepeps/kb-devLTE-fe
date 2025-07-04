@@ -219,6 +219,7 @@ const MyListingPage = () => {
                   property={{
                     ...property,
                     status: property.status || "active",
+                    statusLabel: property.statusLabel,
                     views:
                       property.views || Math.floor(Math.random() * 100) + 10,
                   }}
