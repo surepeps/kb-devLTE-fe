@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
 import CustomToast from "@/components/general-components/CustomToast";
+import OverlayPreloader from "@/components/general-components/OverlayPreloader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
@@ -52,6 +53,8 @@ const Register = () => {
     useState<boolean>(false);
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Enter email"),
@@ -115,27 +118,33 @@ const Register = () => {
               );
               localStorage.setItem("token", (response as any).token);
 
-              setIsDisabled(false);
+              setIsSuccess(true);
               formik.resetForm();
               setAgreed(false);
 
               if (values.userType === "Agent") {
                 // For agents, show verification email success page
+                setOverlayVisible(true);
                 setTimeout(() => {
+                  setOverlayVisible(false);
                   toast.custom(
                     <CustomToast
                       title="Registration successful"
                       subtitle="A Verification has been sent to your email. Please verify your email to continue"
                     />,
                   );
+                  router.push("/auth/verification-sent");
                 }, 2000);
-                router.push("/auth/verification-sent");
               } else {
-                // For landlords, auto login them
+                // For landlords, auto login them and show overlay
                 toast.success("Registration successful");
                 Cookies.set("token", (response as any).token);
                 setUser((response as any).user);
-                router.push("/my_listing");
+                setOverlayVisible(true);
+                setTimeout(() => {
+                  setOverlayVisible(false);
+                  router.push("/my_listing");
+                }, 1500);
               }
 
               return "Registration successful";
@@ -144,6 +153,7 @@ const Register = () => {
                 (response as any).error || "Registration failed";
               toast.error(errorMessage);
               setIsDisabled(false);
+              setIsSuccess(false);
               throw new Error(errorMessage);
             }
           }),
@@ -154,6 +164,7 @@ const Register = () => {
       } catch (error) {
         console.log(error);
         setIsDisabled(false);
+        setIsSuccess(false);
       }
     },
   });
@@ -298,30 +309,59 @@ const Register = () => {
             <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
               Are you a Landlord or Agent?
             </span>
-            <div className="flex gap-[20px]">
-              <label className="flex items-center gap-[8px] cursor-pointer">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="relative cursor-pointer">
                 <input
                   type="radio"
                   name="userType"
                   value="Landlord"
                   checked={formik.values.userType === "Landlord"}
                   onChange={formik.handleChange}
-                  className="w-4 h-4 text-[#8DDB90] bg-gray-100 border-gray-300 focus:ring-[#8DDB90] focus:ring-2"
+                  disabled={isDisabled}
+                  className="sr-only peer"
                 />
-                <span className="text-sm font-medium text-gray-900">
-                  Landlord
-                </span>
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-[#09391C] mb-1">
+                        Landlord
+                      </span>
+                      <span className="text-sm text-[#5A5D63]">
+                        Property owner looking to sell or rent
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]">
+                      <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-opacity duration-300 peer-checked:opacity-100"></div>
+                    </div>
+                  </div>
+                </div>
               </label>
-              <label className="flex items-center gap-[8px] cursor-pointer">
+
+              <label className="relative cursor-pointer">
                 <input
                   type="radio"
                   name="userType"
                   value="Agent"
                   checked={formik.values.userType === "Agent"}
                   onChange={formik.handleChange}
-                  className="w-4 h-4 text-[#8DDB90] bg-gray-100 border-gray-300 focus:ring-[#8DDB90] focus:ring-2"
+                  disabled={isDisabled}
+                  className="sr-only peer"
                 />
-                <span className="text-sm font-medium text-gray-900">Agent</span>
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-[#09391C] mb-1">
+                        Agent
+                      </span>
+                      <span className="text-sm text-[#5A5D63]">
+                        Professional helping clients buy/sell properties
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]">
+                      <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-opacity duration-300 peer-checked:opacity-100"></div>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             {formik.touched.userType && formik.errors.userType && (
@@ -396,21 +436,52 @@ const Register = () => {
             />
           </div>
           <div className="flex justify-center items-center w-full lg:px-[60px]">
-            <RadioCheck
-              isDisabled={isDisabled}
-              isChecked={agreed}
-              handleChange={() => setAgreed(!agreed)}
-              type="checkbox"
-              name="agree"
-              className="w-full"
-              value={`By clicking here, I agree to the Khabi-Teq realty <br/> <a href='/policies_page'><span style='color: #0B423D; font-weight: bold'>Policy</span> and <span style='color: #0B423D; font-weight: bold'>Rules</span></a>`}
-            />
+            <div className="flex items-start gap-3 w-full">
+              <label className="relative flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={() => !isDisabled && setAgreed(!agreed)}
+                  disabled={isDisabled}
+                  className="sr-only peer"
+                />
+                <div className="w-5 h-5 border-2 border-gray-300 rounded bg-white transition-all duration-300 peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed flex items-center justify-center">
+                  <svg
+                    className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </label>
+              <div className="flex-1 text-sm text-gray-600 leading-relaxed">
+                By clicking here, I agree to the Khabi-Teq realty{" "}
+                <a
+                  href="/policies_page"
+                  className="text-[#0B423D] font-bold hover:underline"
+                >
+                  Policy and Rules
+                </a>
+              </div>
+            </div>
           </div>
           {/**Button */}
           <Button
-            value={`${isDisabled ? "Registering..." : "Register"}`}
+            value={`${
+              isDisabled
+                ? "Registering..."
+                : isSuccess
+                  ? "Registration Successful!"
+                  : "Register"
+            }`}
             isDisabled={
               isDisabled ||
+              isSuccess ||
               !agreed ||
               !formik.values.email ||
               !formik.values.password ||
@@ -445,6 +516,16 @@ const Register = () => {
           </div>
         </form>
       </div>
+      <OverlayPreloader
+        isVisible={overlayVisible}
+        message={
+          isSuccess
+            ? formik.values.userType === "Agent"
+              ? "Sending verification email..."
+              : "Setting up your account..."
+            : "Processing registration..."
+        }
+      />
     </section>
   );
 };

@@ -17,6 +17,8 @@ import {
   DollarSign as CurrencyDollarIcon,
   Clock as ClockIcon,
   Users as UserGroupIcon,
+  Briefcase as BriefcaseIcon,
+  MapPin as MapPinIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
@@ -35,6 +37,19 @@ interface Property {
   views?: number;
 }
 
+interface Brief {
+  _id: string;
+  propertyType: string;
+  price: number;
+  location: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
+  createdAt: string;
+  status: "active" | "assigned" | "completed";
+}
+
 interface DashboardStats {
   totalProperties: number;
   activeListings: number;
@@ -48,6 +63,7 @@ export default function LandlordDashboard() {
   const router = useRouter();
   const { user } = useUserContext();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [briefs, setBriefs] = useState<Brief[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalProperties: 0,
     activeListings: 0,
@@ -81,7 +97,12 @@ export default function LandlordDashboard() {
         `${URLS.BASE}${URLS.myPropertyListings}`,
         `${URLS.BASE}/properties/user/${user?._id}`,
         `${URLS.BASE}/properties/owner`,
+      ];
+
+      // Separate endpoint for briefs
+      const briefEndpoints = [
         `${URLS.BASE}/briefs/user`,
+        `${URLS.BASE}${URLS.fetchBriefs}?owner=${user?.email}`,
       ];
 
       let userProperties = [];
@@ -159,6 +180,38 @@ export default function LandlordDashboard() {
           totalEarnings: 0,
         });
       }
+
+      // Fetch briefs
+      let userBriefs = [];
+      for (const endpoint of briefEndpoints) {
+        try {
+          const briefsResponse = await GET_REQUEST(
+            endpoint,
+            Cookies.get("token"),
+          );
+
+          if (briefsResponse?.data || briefsResponse) {
+            userBriefs = Array.isArray(briefsResponse?.data)
+              ? briefsResponse.data
+              : Array.isArray(briefsResponse)
+                ? briefsResponse
+                : [];
+            break;
+          }
+        } catch (error) {
+          console.log(`Failed to fetch briefs from ${endpoint}:`, error);
+          continue;
+        }
+      }
+
+      // Filter briefs to only include ones belonging to the current user
+      const filteredBriefs = userBriefs.filter(
+        (brief: any) =>
+          brief.owner?.email === user?.email ||
+          brief.ownerId === user?._id ||
+          brief.userId === user?._id,
+      );
+      setBriefs(filteredBriefs);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Failed to load dashboard data");
@@ -258,100 +311,191 @@ export default function LandlordDashboard() {
           })}
         </div>
 
-        {/* Recent Properties */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-[#09391C]">
-                Recent Properties
-              </h2>
-              <Link
-                href="/my_listing"
-                className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
-              >
-                View All
-              </Link>
+        {/* Properties and Briefs Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Properties */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#09391C]">
+                  Recent Properties
+                </h2>
+                <Link
+                  href="/my_listing"
+                  className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
+                >
+                  View All
+                </Link>
+              </div>
             </div>
+
+            {properties.length === 0 ? (
+              <div className="p-12 text-center">
+                <HomeIcon size={48} className="mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">
+                  No Properties Listed Yet
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Start by listing your first property to manage your real
+                  estate portfolio
+                </p>
+                <Link
+                  href="/post_property"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
+                >
+                  <PlusIcon size={20} />
+                  List Your First Property
+                </Link>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {properties.slice(0, 5).map((property, index) => (
+                  <motion.div
+                    key={property._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-6 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                          {property.images?.[0] ? (
+                            <img
+                              src={property.images[0]}
+                              alt={property.propertyType}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <HomeIcon size={24} className="text-gray-400" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-[#09391C] capitalize">
+                            {property.propertyType}
+                          </h3>
+                          <p className="text-sm text-[#5A5D63]">
+                            {property.location.area},{" "}
+                            {property.location.localGovernment}
+                          </p>
+                          <p className="text-sm text-[#8DDB90] font-medium">
+                            ₦{property.price.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                            property.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : property.status === "sold"
+                                ? "bg-blue-100 text-blue-800"
+                                : property.status === "rented"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {property.status}
+                        </span>
+                        <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
+                          <ClockIcon size={12} />
+                          {new Date(property.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {properties.length === 0 ? (
-            <div className="p-12 text-center">
-              <HomeIcon size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">
-                No Properties Listed Yet
-              </h3>
-              <p className="text-gray-500 mb-6">
-                Start by listing your first property to manage your real estate
-                portfolio
-              </p>
-              <Link
-                href="/post_property"
-                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
-              >
-                <PlusIcon size={20} />
-                List Your First Property
-              </Link>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {properties.slice(0, 5).map((property, index) => (
-                <motion.div
-                  key={property._id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-6 hover:bg-gray-50 transition-colors"
+          {/* Recent Briefs */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#09391C]">
+                  Recent Briefs
+                </h2>
+                <Link
+                  href="/agent_marketplace"
+                  className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        {property.images?.[0] ? (
-                          <img
-                            src={property.images[0]}
-                            alt={property.propertyType}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <HomeIcon size={24} className="text-gray-400" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-[#09391C] capitalize">
-                          {property.propertyType}
-                        </h3>
-                        <p className="text-sm text-[#5A5D63]">
-                          {property.location.area},{" "}
-                          {property.location.localGovernment}
-                        </p>
-                        <p className="text-sm text-[#8DDB90] font-medium">
-                          ₦{property.price.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          property.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : property.status === "sold"
-                              ? "bg-blue-100 text-blue-800"
-                              : property.status === "rented"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {property.status}
-                      </span>
-                      <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
-                        <ClockIcon size={12} />
-                        {new Date(property.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  View All
+                </Link>
+              </div>
             </div>
-          )}
+
+            {briefs.length === 0 ? (
+              <div className="p-8 text-center">
+                <BriefcaseIcon
+                  size={32}
+                  className="mx-auto text-gray-400 mb-3"
+                />
+                <h3 className="text-base font-medium text-gray-600 mb-2">
+                  No Briefs Posted Yet
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Create a brief to find the perfect property for your needs
+                </p>
+                <Link
+                  href="/agent_marketplace"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
+                >
+                  <PlusIcon size={16} />
+                  Create Brief
+                </Link>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+                {briefs.slice(0, 5).map((brief, index) => (
+                  <motion.div
+                    key={brief._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#8DDB90] bg-opacity-10 rounded-lg flex items-center justify-center">
+                          <BriefcaseIcon size={16} className="text-[#8DDB90]" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-[#09391C] capitalize text-sm">
+                            {brief.propertyType}
+                          </h3>
+                          <div className="flex items-center gap-1 text-xs text-[#5A5D63]">
+                            <MapPinIcon size={10} />
+                            {brief.location.area}
+                          </div>
+                          <p className="text-xs text-[#8DDB90] font-medium">
+                            ₦{brief.price.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                            brief.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : brief.status === "assigned"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {brief.status}
+                        </span>
+                        <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
+                          <ClockIcon size={12} />
+                          {new Date(brief.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Quick Actions */}

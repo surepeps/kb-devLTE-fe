@@ -7,6 +7,8 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import { useAgentAccess } from "@/hooks/useAgentAccess";
+import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
@@ -129,18 +131,33 @@ const PostProperty = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  useEffect(() => {
-    // if (!user) {
-    //   router.push("/auth/login");
-    //   return;
-    // }
+  // Agent access control
+  const { canPostProperty } = useAgentAccess({
+    requireOnboarding: true,
+    requireApproval: true,
+  });
 
-    // if (user.userType !== "Landowners" && !user.agentData) {
-    //   toast.error("You need to be a landowner or agent to post properties");
-    //   router.push("/");
-    //   return;
-    // }
-  }, [user, router]);
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    // Only allow landlords or approved agents to post properties
+    if (user.userType === "Agent" && !canPostProperty) {
+      toast.error(
+        "You need to complete onboarding and be approved to post properties",
+      );
+      router.push("/agent/onboard");
+      return;
+    }
+
+    if (user.userType !== "Landowners" && user.userType !== "Agent") {
+      toast.error("You need to be a landowner or agent to post properties");
+      router.push("/");
+      return;
+    }
+  }, [user, router, canPostProperty]);
 
   const steps = [
     {
@@ -378,7 +395,11 @@ const PostProperty = () => {
   }
 
   return (
-    <>
+    <AgentAccessBarrier
+      requireOnboarding={true}
+      requireApproval={true}
+      customMessage="You must complete onboarding and be approved before you can post properties."
+    >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
         <div className="container mx-auto px-4 md:px-6">
@@ -497,7 +518,7 @@ const PostProperty = () => {
           </Formik>
         </div>
       </div>
-    </>
+    </AgentAccessBarrier>
   );
 };
 

@@ -2189,6 +2189,11 @@ jiti@*, jiti@^1.21.6:
   resolved "https://registry.npmjs.org/jiti/-/jiti-1.21.7.tgz"
   integrity sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==
 
+jose@^6.0.11:
+  version "6.0.11"
+  resolved "https://registry.npmjs.org/jose/-/jose-6.0.11.tgz"
+  integrity sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==
+
 js-cookie@^3.0.5:
   version "3.0.5"
   resolved "https://registry.npmjs.org/js-cookie/-/js-cookie-3.0.5.tgz"
@@ -2266,6 +2271,7 @@ keyv@^4.5.4:
     "@fortawesome/react-fontawesome" "^0.2.2"
     "@next/third-parties" "^15.3.3"
     "@react-oauth/google" "^0.12.1"
+    "@types/facebook-js-sdk" "^3.3.12"
     axios "^1.7.9"
     chart.js "^4.5.0"
     country-state-city "^3.2.1"

@@ -31,6 +31,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
+import OverlayPreloader from "@/components/general-components/OverlayPreloader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
@@ -47,6 +48,9 @@ const Login = () => {
   const { setUser, user } = useUserContext();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Enter email"),
@@ -60,6 +64,7 @@ const Login = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      setIsSubmitting(true);
       try {
         const url = URLS.BASE + URLS.user + URLS.login;
         const payload = { ...values };
@@ -79,27 +84,35 @@ const Login = () => {
             sessionStorage.setItem("user", JSON.stringify(user));
 
             if ((response as any)?.user?.id) {
-              if (response.user.userType === "Agent") {
-                if (!response.user.agentData?.agentType) {
-                  router.push("/agent/onboard");
-                } else if (response.user.accountApproved === false) {
-                  router.push("/agent/under-review");
-                } else if (
-                  response.user.phoneNumber &&
-                  response.user.agentData.agentType
-                ) {
-                  router.push("/agent/briefs");
-                }
-              } else {
-                router.push("/my_listing");
-              }
-
+              setIsSuccess(true);
               toast.success("Sign in successful");
               Cookies.set("token", (response as any).token);
               setUser((response as any).user);
 
+              // Show overlay preloader during navigation
+              setOverlayVisible(true);
+
+              setTimeout(() => {
+                if (response.user.userType === "Agent") {
+                  if (!response.user.agentData?.agentType) {
+                    router.push("/agent/onboard");
+                  } else if (response.user.accountApproved === false) {
+                    router.push("/agent/under-review");
+                  } else if (
+                    response.user.phoneNumber &&
+                    response.user.agentData.agentType
+                  ) {
+                    router.push("/agent/briefs");
+                  }
+                } else {
+                  router.push("/my_listing");
+                }
+                setOverlayVisible(false);
+              }, 1500);
+
               return "Sign in successful";
             } else {
+              setIsSubmitting(false);
               throw new Error((response as any).error || "Sign In failed");
             }
           }),
@@ -108,12 +121,16 @@ const Login = () => {
             success: "Welcome Back!",
             error: (error: { message: any }) => {
               console.log("error", error);
+              setIsSubmitting(false);
+              setIsSuccess(false);
               return error.message || "Sign In failed, please try again!";
             },
           },
         );
       } catch (error) {
         console.log("Unexpected error:", error);
+        setIsSubmitting(false);
+        setIsSuccess(false);
       }
     },
   });
@@ -299,9 +316,16 @@ const Login = () => {
           </div>
           {/**Button */}
           <Button
-            value="Sign In"
-            className=" w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+            value={
+              isSubmitting
+                ? "Signing In..."
+                : isSuccess
+                  ? "Login Successful!"
+                  : "Sign In"
+            }
+            className="w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
             type="submit"
+            isDisabled={isSubmitting || isSuccess}
             onSubmit={formik.handleSubmit}
             green={true}
           />
@@ -342,6 +366,10 @@ const Login = () => {
           </div>
         </form>
       </div>
+      <OverlayPreloader
+        isVisible={overlayVisible}
+        message="Loading your dashboard..."
+      />
     </section>
   );
 };
