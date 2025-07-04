@@ -48,6 +48,9 @@ const Login = () => {
   const { setUser, user } = useUserContext();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Enter email"),
