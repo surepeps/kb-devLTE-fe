@@ -130,17 +130,33 @@ const PostProperty = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  // Agent access control
+  const { canPostProperty } = useAgentAccess({
+    requireOnboarding: true,
+    requireApproval: true,
+  });
+
   useEffect(() => {
-    // if (!user) {
-    //   router.push("/auth/login");
-    //   return;
-    // }
-    // if (user.userType !== "Landowners" && !user.agentData) {
-    //   toast.error("You need to be a landowner or agent to post properties");
-    //   router.push("/");
-    //   return;
-    // }
-  }, [user, router]);
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    // Only allow landlords or approved agents to post properties
+    if (user.userType === "Agent" && !canPostProperty) {
+      toast.error(
+        "You need to complete onboarding and be approved to post properties",
+      );
+      router.push("/agent/onboard");
+      return;
+    }
+
+    if (user.userType !== "Landowners" && user.userType !== "Agent") {
+      toast.error("You need to be a landowner or agent to post properties");
+      router.push("/");
+      return;
+    }
+  }, [user, router, canPostProperty]);
 
   const steps = [
     {
