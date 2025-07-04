@@ -350,8 +350,10 @@ const AgentData = () => {
           </div>
         </div>
 
-        <div className="my-2 w-full flex justify-center">
-          <Stepper steps={steps} />
+        <div className="my-8 w-full flex justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+            <Stepper steps={steps} />
+          </div>
         </div>
 
         {currentStep === 0 && (
