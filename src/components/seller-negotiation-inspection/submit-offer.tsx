@@ -54,38 +54,18 @@ const SubmitOffer: React.FC = () => {
       size="md"
       showCloseButton={true}
     >
-      <motion.form
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 20, opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="lg:w-[649px] w-full flex flex-col gap-[26px]"
-      >
-        <div className="flex items-start justify-end">
-          <button
-            type="button"
-            onClick={closeSubmitOfferModal}
-            className="w-[51px] h-[51px] rounded-full flex items-center justify-center bg-[#FFFFFF]"
-          >
-            <FontAwesomeIcon
-              icon={faClose}
-              width={24}
-              height={24}
-              className="w-[24px] h-[24px]"
-              color="#181336"
-            />
-          </button>
-        </div>
-        <div className="lg:w-[649px] w-full py-[40px] px-[20px] md:px-[80px] bg-white rounded-[4px] shadow-md flex items-center justify-center">
-          <div className="w-full flex flex-col gap-[42px] items-center justify-center">
-            <div className="w-full flex flex-col gap-[4px] items-center justify-center">
-              <h2
-                className={`text-2xl text-[#000000] ${archivo.className} font-bold text-center`}
-              >
-                Submit your Offer
-              </h2>
+      <div className="p-4 sm:p-6">
+        <motion.form
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 20, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="w-full flex flex-col gap-[26px]"
+        >
+          <div className="w-full flex flex-col gap-[32px] items-center justify-center">
+            <div className="w-full flex flex-col gap-[8px] items-center justify-center">
               <p
-                className={`text-center text-lg text-[#515B6F] ${archivo.className}`}
+                className={`text-center text-base text-[#515B6F] ${archivo.className}`}
               >
                 Enter you amount you are willing to offer the buyer to acquire
                 your property
@@ -141,8 +121,8 @@ const SubmitOffer: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
-      </motion.form>
+        </motion.form>
+      </div>
     </ModalWrapper>
   );
 };
