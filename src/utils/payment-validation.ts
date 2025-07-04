@@ -3,6 +3,8 @@ interface PaymentValidationResult {
   confidence: number;
   extractedAmount?: number;
   extractedText?: string;
+  referenceId?: string;
+  senderName?: string;
   errors?: string[];
 }
 
@@ -72,11 +74,17 @@ export class PaymentValidator {
       // Parse amounts from extracted text
       const amounts = this.parseAmountsFromText(extractedText);
 
+      // Extract additional information
+      const referenceId = this.extractReferenceId(extractedText);
+      const senderName = this.extractSenderName(extractedText);
+
       if (amounts.length === 0) {
         return {
           isValid: false,
           confidence: 0,
           extractedText,
+          referenceId,
+          senderName,
           errors: [
             "No monetary amounts found in the receipt. Please ensure the receipt is clear and contains payment information.",
           ],
@@ -89,6 +97,8 @@ export class PaymentValidator {
       return {
         ...validationResult,
         extractedText,
+        referenceId,
+        senderName,
       };
     } catch (error) {
       console.error("Payment validation error:", error);
@@ -210,12 +220,13 @@ Status: Processing`,
   }
 
   /**
-   * Parse monetary amounts from text
+   * Parse monetary amounts, reference IDs, and sender names from text
    */
   private parseAmountsFromText(text: string): number[] {
     const amounts: number[] = [];
 
-    // Enhanced regex patterns for Nigerian currency
+    // Enhanced regex patterns for better detection
+    const amountRegex = /\b(N?₦|\$)?\s?(\d{1,3}(,\d{3})*|\d+)(\.\d{1,2})?\b/g;
     const patterns = [
       // ₦1,000.00 or ₦1000
       /₦[\d,]+(?:\.\d{2})?/g,
@@ -231,23 +242,69 @@ Status: Processing`,
       /\b[\d,]{4,}(?:\.\d{2})?\b/g,
     ];
 
-    patterns.forEach((pattern) => {
-      const matches = text.match(pattern);
-      if (matches) {
-        matches.forEach((match) => {
-          // Extract numeric value
-          const numericValue = match.replace(/[^\d.,]/g, "").replace(/,/g, "");
-
-          const amount = parseFloat(numericValue);
-          if (!isNaN(amount) && amount > 0) {
-            amounts.push(amount);
-          }
-        });
+    // Use the enhanced amount regex first
+    let match;
+    while ((match = amountRegex.exec(text)) !== null) {
+      const amountStr = match[0].replace(/[^\d.,]/g, "").replace(/,/g, "");
+      const amount = parseFloat(amountStr);
+      if (!isNaN(amount) && amount > 0) {
+        amounts.push(amount);
       }
-    });
+    }
+
+    // Fallback to other patterns if no amounts found
+    if (amounts.length === 0) {
+      patterns.forEach((pattern) => {
+        const matches = text.match(pattern);
+        if (matches) {
+          matches.forEach((match) => {
+            const numericValue = match
+              .replace(/[^\d.,]/g, "")
+              .replace(/,/g, "");
+            const amount = parseFloat(numericValue);
+            if (!isNaN(amount) && amount > 0) {
+              amounts.push(amount);
+            }
+          });
+        }
+      });
+    }
 
     // Remove duplicates and sort
     return [...new Set(amounts)].sort((a, b) => b - a);
+  }
+
+  /**
+   * Extract reference ID from text
+   */
+  private extractReferenceId(text: string): string | null {
+    const refIdRegex =
+      /\b(ref(erence)?[^\w]?id[:\s]*(\w+)|\bTXN[^\s]*|\b\d{9,})\b/gi;
+    const matches = text.match(refIdRegex);
+    if (matches && matches.length > 0) {
+      // Return the longest match as it's likely the most complete reference
+      return matches.reduce((longest, current) =>
+        current.length > longest.length ? current : longest,
+      );
+    }
+    return null;
+  }
+
+  /**
+   * Extract sender name from text
+   */
+  private extractSenderName(text: string): string | null {
+    const nameLikeRegex =
+      /\b(from|sender|paid by|account name)[:\s]*([A-Z][a-z]+\s[A-Z][a-z]+|[\w\s]+)/gi;
+    const matches = text.match(nameLikeRegex);
+    if (matches && matches.length > 0) {
+      // Extract just the name part after the keyword
+      const nameMatch = matches[0]
+        .replace(/\b(from|sender|paid by|account name)[:\s]*/gi, "")
+        .trim();
+      return nameMatch.length > 2 ? nameMatch : null;
+    }
+    return null;
   }
 
   /**

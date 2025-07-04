@@ -51,6 +51,11 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   const handlePaymentValidation = (result: any) => {
     setValidationResult(result);
     setPaymentValidated(result.isValid);
+
+    // Auto-complete the full name field if sender name is detected
+    if (result.senderName && !formik.values.fullName) {
+      formik.setFieldValue("fullName", result.senderName);
+    }
   };
 
   const handleFileChange = (file: File | null) => {
@@ -263,6 +268,37 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
                     </span>
                   )}
                 </div>
+
+                {/* Display extracted information */}
+                {(validationResult.extractedAmount ||
+                  validationResult.referenceId ||
+                  validationResult.senderName) && (
+                  <div className="mt-3 space-y-2 text-sm">
+                    {validationResult.extractedAmount && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Amount Found:</span>
+                        <span>
+                          ₦{validationResult.extractedAmount.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                    {validationResult.referenceId && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Reference ID:</span>
+                        <span className="font-mono text-xs">
+                          {validationResult.referenceId}
+                        </span>
+                      </div>
+                    )}
+                    {validationResult.senderName && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Sender Name:</span>
+                        <span>{validationResult.senderName}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {!paymentValidated && validationResult.errors && (
                   <div className="mt-2 text-sm">
                     {validationResult.errors.map(
