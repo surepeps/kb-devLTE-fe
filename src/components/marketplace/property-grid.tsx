@@ -29,7 +29,6 @@ interface PropertyGridProps {
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
   marketplaceType,
-  itemsPerPage = 12,
   isComingFromSubmitLol,
   setIsComingFromSubmitLol,
   onSubmitLoi,
