@@ -3,11 +3,8 @@
 "use client";
 import { archivo } from "@/styles/font";
 import { FormikProps, useFormik } from "formik";
-import React, { Fragment, use, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import * as Yup from "yup";
-import banks from "@/data/nigeria-banks.json";
-import { Option } from "../types/option";
-import AttachFile from "@/components/general-components/attach_file";
 import PaymentReceiptUpload from "@/components/general-components/payment-receipt-upload";
 import { URLS } from "@/utils/URLS";
 import { motion } from "framer-motion";
@@ -15,9 +12,8 @@ import SubmitPopUp from "@/components/submit";
 import { SubmitInspectionPayloadProp } from "../types/payload";
 import toast from "react-hot-toast";
 import { POST_REQUEST } from "@/utils/requests";
-import { set } from "date-fns";
-import ImageContainer from "@/components/general-components/image-container";
 import { usePageContext } from "@/context/page-context";
+import Cookies from "js-cookie";
 
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
@@ -42,8 +38,10 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
 
   useEffect(() => {}, [submitInspectionPayload]);
   const [fileURL, setFileURL] = useState<string | null>(null);
+  const [uploadedFileURL, setUploadedFileURL] = useState<string | null>(null);
   const [paymentValidated, setPaymentValidated] = useState<boolean>(false);
   const [validationResult, setValidationResult] = useState<any>(null);
+  const [uploadingFile, setUploadingFile] = useState<boolean>(false);
   const [formStatus, setFormStatus] = useState<
     "success" | "pending" | "failed" | "idle"
   >("idle");
@@ -58,12 +56,59 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
     }
   };
 
-  const handleFileChange = (file: File | null) => {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setUploadingFile(true);
+      const response = await fetch(`${URLS.BASE}${URLS.uploadImg}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("token") || "" : ""}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+
+      if (data.url) {
+        return data.url;
+      } else {
+        throw new Error("No URL returned from upload");
+      }
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw new Error("Failed to upload file");
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  const handleFileChange = async (file: File | null) => {
     if (file) {
+      // Create local preview URL
       const url = URL.createObjectURL(file);
       setFileURL(url);
+
+      // Upload to Cloudinary
+      try {
+        const cloudinaryURL = await uploadToCloudinary(file);
+        setUploadedFileURL(cloudinaryURL);
+        toast.success("File uploaded successfully");
+      } catch (error) {
+        toast.error("Failed to upload file. Please try again.");
+        setFileURL(null);
+        setPaymentValidated(false);
+        setValidationResult(null);
+      }
     } else {
       setFileURL(null);
+      setUploadedFileURL(null);
       setPaymentValidated(false);
       setValidationResult(null);
     }
@@ -79,6 +124,11 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
     },
     validationSchema,
     onSubmit: async (values: TransactionDetailsProps) => {
+      if (!uploadedFileURL) {
+        toast.error("Please wait for file upload to complete");
+        return;
+      }
+
       setFormStatus("pending");
       setIsSubmitting(true);
 
@@ -87,7 +137,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
         transaction: {
           ...submitInspectionPayload.transaction,
           fullName: formik.values.fullName,
-          transactionReceipt: fileURL as string,
+          transactionReceipt: uploadedFileURL,
         },
         status: "pending",
       });
@@ -101,7 +151,7 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
             requestedBy: submitInspectionPayload.requestedBy,
             transaction: {
               fullName: formik.values.fullName,
-              transactionReceipt: fileURL as string,
+              transactionReceipt: uploadedFileURL,
             },
             letterOfIntention: submitInspectionPayload.letterOfIntention || "",
             isNegotiating: submitInspectionPayload.isNegotiating,
@@ -318,7 +368,8 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
                 !formik.isValid ||
                 !formik.dirty ||
                 isSubmitting ||
-                !fileURL ||
+                uploadingFile ||
+                !uploadedFileURL ||
                 !paymentValidated
                   ? "opacity-50 cursor-not-allowed"
                   : ""
@@ -327,17 +378,23 @@ const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
                 !formik.isValid ||
                 !formik.dirty ||
                 isSubmitting ||
-                !fileURL ||
+                uploadingFile ||
+                !uploadedFileURL ||
                 !paymentValidated
               }
             >
-              {formStatus === "pending" ? (
+              {uploadingFile ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span>Submitting </span>
-                  <div className="w-8 h-8 rounded-full border-r-2 border-white border-t-transparent animate-spin"></div>
+                  <span>Uploading File...</span>
+                  <div className="w-6 h-6 rounded-full border-r-2 border-white border-t-transparent animate-spin"></div>
+                </span>
+              ) : formStatus === "pending" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span>Submitting</span>
+                  <div className="w-6 h-6 rounded-full border-r-2 border-white border-t-transparent animate-spin"></div>
                 </span>
               ) : (
-                <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
+                <span>Submit</span>
               )}
             </button>
           </motion.form>

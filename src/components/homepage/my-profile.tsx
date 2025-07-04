@@ -1,30 +1,30 @@
 /** @format */
 
-'use client';
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import useClickOutside from '@/hooks/clickOutside';
-import Image from 'next/image';
-import userIcon from '@/svgs/user2.svg';
-import faLock from '@/svgs/lock.svg';
-import { User, useUserContext } from '@/context/user-context';
-import { archivo } from '@/styles/font';
-import { LayoutDashboardIcon, BellIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import microphonesvg from '@/svgs/microphone.svg';
-import Link from 'next/link';
-import { usePageContext } from '@/context/page-context';
-import { AgentNavData } from '@/enums';
-import notificationBellIcon from '@/svgs/bell.svg';
+"use client";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import useClickOutside from "@/hooks/clickOutside";
+import Image from "next/image";
+import userIcon from "@/svgs/user2.svg";
+import faLock from "@/svgs/lock.svg";
+import { User, useUserContext } from "@/context/user-context";
+import {
+  LayoutDashboardIcon,
+  BellIcon,
+  UserIcon,
+  Settings,
+  LogOut,
+  Home,
+  Briefcase,
+  Users,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import microphonesvg from "@/svgs/microphone.svg";
+import Link from "next/link";
+import { usePageContext } from "@/context/page-context";
+import { AgentNavData } from "@/enums";
+import notificationBellIcon from "@/svgs/bell.svg";
 
-type userDetailsProps = {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-  id: string;
-  _id: string;
-} | null;
 interface UserProfileModalProps {
   closeUserProfileModal: (type: boolean) => void;
   userDetails: User | null;
@@ -37,187 +37,191 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const { logout } = useUserContext();
   const { setSelectedNav } = usePageContext();
-  const [userType, setUserType] = useState<'Agent' | 'Landowners'>('Agent');
+  const [userType, setUserType] = useState<"Agent" | "Landowners">("Agent");
+  const [position, setPosition] = useState({ top: 0, right: 0 });
 
   const router = useRouter();
 
   useClickOutside(ref, () => closeUserProfileModal(false));
 
   useEffect(() => {
-    setUserType(userDetails?.userType as 'Agent' | 'Landowners');
+    setUserType(userDetails?.userType as "Agent" | "Landowners");
   }, [userDetails]);
+
+  // Calculate position based on screen size
+  useEffect(() => {
+    const updatePosition = () => {
+      if (typeof window !== "undefined") {
+        const screenWidth = window.innerWidth;
+        if (screenWidth < 768) {
+          // Mobile: Center on screen
+          setPosition({ top: 0, right: 0 });
+        } else {
+          // Desktop: Position relative to button
+          setPosition({ top: 0, right: 0 });
+        }
+      }
+    };
+
+    updatePosition();
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", updatePosition);
+      return () => window.removeEventListener("resize", updatePosition);
+    }
+  }, []);
+
+  const menuItems = [
+    ...(userType === "Agent"
+      ? [
+          {
+            icon: <LayoutDashboardIcon size={18} />,
+            label: "Dashboard",
+            action: () => {
+              router.push("/agent/briefs");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Home size={18} />,
+            label: "List Property",
+            action: () => {
+              router.push("/post_property");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Briefcase size={18} />,
+            label: "Marketplace",
+            action: () => {
+              router.push("/agent/agent-marketplace");
+              closeUserProfileModal(false);
+            },
+          },
+        ]
+      : []),
+    {
+      icon: <Users size={18} />,
+      label: "Referral",
+      action: () => {
+        router.push("/referral");
+        closeUserProfileModal(false);
+      },
+    },
+    {
+      icon: <Settings size={18} />,
+      label: "Account Settings",
+      action: () => {
+        if (userType === "Agent") {
+          setSelectedNav(AgentNavData.SETTINGS);
+          router.push("/agent");
+        } else {
+          router.push("/preference");
+        }
+        closeUserProfileModal(false);
+      },
+    },
+  ];
+
   return (
     <motion.div
       ref={ref}
-      initial={{ y: 100, opacity: 0 }}
-      whileInView={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.2 }}
-      viewport={{ once: true }}
-      className='absolute mt-[70px] z-50 -ml-[160px] md:-ml-[210px] w-[268px] whitespace-nowrap bg-white flex flex-col gap-[25px] p-[19px] shadow-md'>
-      <h2
-        className={`text-base font-medium text-[#000000] ${archivo.className}`}>
-        My Profile
-      </h2>
-      <div className='flex flex-col gap-[30px]'>
-        <div className='w-full flex flex-col py-[15px] px-[10px] min-h-[154px] gap-[10px] bg-[#F7F7F8] border-[1px] border-[#D6DDEB] overflow-x-auto hide-scrollbar'>
-          {/**User Type */}
-          <div className='flex items-end gap-[10px]'>
-            <span className='text-base text-[#7C8493]'>
-              {userType === 'Agent' ? userType : 'User type'}
-            </span>
-            <span className='text-base text-[#25324B]'>
-              {userType === 'Agent'
-                ? userDetails?.agentData?.agentType
-                  ? userDetails?.agentData?.agentType
-                  : 'N/A'
-                : userType}
+      initial={{ y: 10, opacity: 0, scale: 0.95 }}
+      animate={{ y: 0, opacity: 1, scale: 1 }}
+      exit={{ y: 10, opacity: 0, scale: 0.95 }}
+      transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      className="fixed top-20 right-4 md:absolute md:top-full md:right-0 z-50 md:mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden md:transform md:-translate-x-3/4"
+    >
+      {/* Header with user info */}
+      <div className="bg-gradient-to-r from-[#8DDB90] to-[#09391C] p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+            {userDetails?.profilePicture ? (
+              <Image
+                src={userDetails.profilePicture}
+                width={40}
+                height={40}
+                alt="Profile"
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <span className="text-white font-semibold">
+                {userDetails?.firstName?.charAt(0)?.toUpperCase() || "U"}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-white font-semibold truncate">
+              {userDetails?.firstName} {userDetails?.lastName}
+            </h3>
+            <p className="text-white/80 text-sm truncate">
+              {userDetails?.email}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* User Info */}
+      <div className="p-4 space-y-3 bg-gray-50 border-b border-gray-200">
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <span className="text-gray-500 block">Type</span>
+            <span className="font-semibold text-gray-800">
+              {userType === "Agent"
+                ? userDetails?.agentData?.agentType || "Agent"
+                : "Landowner"}
             </span>
           </div>
-          {/**User ID */}
-          <div className='flex items-center gap-[10px]'>
-            <span className='text-base text-[#7C8493]'>ID</span>
-            <span className='text-base text-[#25324B]'>
+          <div>
+            <span className="text-gray-500 block">ID</span>
+            <span className="font-mono text-xs bg-white px-2 py-1 rounded border">
               {userDetails?.accountId}
             </span>
           </div>
-          {/**Name */}
-          <div className='flex items-center gap-[10px]'>
-            <span className='text-base text-[#7C8493]'>Name</span>
-            <span className='text-base text-[#25324B]'>
-              {userDetails?.firstName} {userDetails?.lastName}
-            </span>
-          </div>
-          {/**Email */}
-          <div className='flex items-center gap-[10px]'>
-            <span className='text-base text-[#7C8493]'>Email</span>
-            <span className='text-base text-[#25324B]'>
-              {userDetails?.email}
-            </span>
-          </div>
-          {/**phone number */}
-          <div className='flex items-center gap-[10px]'>
-            <span className='text-base text-[#7C8493]'>Phone</span>
-            <span className='text-base text-[#25324B]'>
-              {userDetails?.phoneNumber}
-            </span>
-          </div>
         </div>
-
-        {userType === 'Agent' ? (
-          <button
-            onClick={() => router.push('/post_property')}
-            className='h-[50px] bg-[#8DDB90] border-[1px] border-[#5A5D63]/[50%] text-[#FFFFFF]'
-            type='button'>
-            List a property
-          </button>
-        ) : null}
+        <div>
+          <span className="text-gray-500 text-xs block">Phone</span>
+          <span className="font-semibold text-gray-800 text-sm">
+            {userDetails?.phoneNumber}
+          </span>
+        </div>
       </div>
 
-      {/**Dashboard */}
-      {userType === 'Agent' ? (
-        <button
-          type='button'
-          className='w-full h-[26px] flex items-end gap-[10px]'>
-          <LayoutDashboardIcon
-            size={'sm'}
-            width={24}
-            height={24}
-            color='#5A5D63'
-            className='w-[24px] h-[24px]'
-          />
-          <Link
-            href={'/agent/briefs'}
-            className='text-base font-medium underline'>
-            Dashboard
-          </Link>
-        </button>
-      ) : null}
+      {/* Menu Items */}
+      <div className="p-2">
+        {menuItems.map((item, index) => (
+          <motion.button
+            key={index}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05 }}
+            onClick={item.action}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 text-left group"
+          >
+            <div className="text-gray-600 group-hover:text-[#8DDB90] transition-colors">
+              {item.icon}
+            </div>
+            <span className="font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+              {item.label}
+            </span>
+          </motion.button>
+        ))}
+      </div>
 
-      {/**Agent marketplace */}
-      {userType === 'Agent' ? (
-        <button
-          onClick={() => router.push('/agent/agent-marketplace')}
-          type='button'
-          className='w-full h-[26px] flex items-end gap-[10px]'>
-          <Image
-            alt='lock'
-            src={microphonesvg}
-            width={24}
-            height={24}
-            className='w-[24px] h-[24px]'
-          />
-          <span className='text-base font-medium underline'>marketplace</span>
-        </button>
-      ) : null}
-
-      {/**Referral */}
-      <button
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        <Image
-          alt='lock'
-          src={userIcon}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        />
-        <Link href={'/referral'} className='text-base font-medium underline'>
-          Referral
-        </Link>
-      </button>
-
-      {/**Notifications */}
-      <button
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        <Image
-          alt='notifications'
-          src={notificationBellIcon}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        />
-        <span
+      {/* Logout Button */}
+      <div className="p-4 border-t border-gray-200">
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
           onClick={() => {
-            // TODO: Add notification handling
-            console.log('Notifications clicked');
+            logout(() => closeUserProfileModal(false));
           }}
-          className='text-base font-medium underline'> 
-          Notifications
-        </span>
-      </button>
-
-      {/**Change Password */}
-      <button
-        type='button'
-        className='w-full h-[26px] flex items-end gap-[10px]'>
-        <Image
-          alt='lock'
-          src={faLock}
-          width={24}
-          height={24}
-          className='w-[24px] h-[24px]'
-        />
-        <span
-          onClick={() => {
-            setSelectedNav(AgentNavData.SETTINGS);
-            router.push('/agent/briefs');
-          }}
-          className='text-base font-medium underline'>
-          Change Password
-        </span>
-      </button>
-
-      {/**button to sign out */}
-      <button
-        type='button'
-        onClick={() => {
-          console.log('Sign out button clicked');
-          logout(() => closeUserProfileModal(false));
-        }}
-        className='w-full h-[50px] border-[1px] text-base font-medium border-[#FF3D00] text-[#FF2539]'>
-        Sign out
-      </button>
+          className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg text-red-600 font-medium transition-all duration-200 hover:shadow-sm"
+        >
+          <LogOut size={18} />
+          <span>Sign Out</span>
+        </motion.button>
+      </div>
     </motion.div>
   );
 };
