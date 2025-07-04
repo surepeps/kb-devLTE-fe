@@ -310,7 +310,7 @@ const Register = () => {
               Are you a Landlord or Agent?
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label className="relative cursor-pointer">
+              <label className="relative cursor-pointer group">
                 <input
                   type="radio"
                   name="userType"
@@ -320,24 +320,38 @@ const Register = () => {
                   disabled={isDisabled}
                   className="sr-only peer"
                 />
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed group-hover:shadow-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                      <span className="text-lg font-semibold text-[#09391C] mb-1">
-                        Landlord
-                      </span>
-                      <span className="text-sm text-[#5A5D63]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-[#09391C]"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                          </svg>
+                        </div>
+                        <span className="text-lg font-semibold text-[#09391C]">
+                          Landlord
+                        </span>
+                      </div>
+                      <span className="text-sm text-[#5A5D63] leading-relaxed">
                         Property owner looking to sell or rent
                       </span>
                     </div>
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]">
-                      <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-opacity duration-300 peer-checked:opacity-100"></div>
+                    <div className="relative">
+                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
+                        <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
+                      </div>
+                      <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
                     </div>
                   </div>
                 </div>
               </label>
 
-              <label className="relative cursor-pointer">
+              <label className="relative cursor-pointer group">
                 <input
                   type="radio"
                   name="userType"
@@ -347,18 +361,36 @@ const Register = () => {
                   disabled={isDisabled}
                   className="sr-only peer"
                 />
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]/5 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed group-hover:shadow-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                      <span className="text-lg font-semibold text-[#09391C] mb-1">
-                        Agent
-                      </span>
-                      <span className="text-sm text-[#5A5D63]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-[#09391C]"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <span className="text-lg font-semibold text-[#09391C]">
+                          Agent
+                        </span>
+                      </div>
+                      <span className="text-sm text-[#5A5D63] leading-relaxed">
                         Professional helping clients buy/sell properties
                       </span>
                     </div>
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90]">
-                      <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-opacity duration-300 peer-checked:opacity-100"></div>
+                    <div className="relative">
+                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
+                        <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
+                      </div>
+                      <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -370,6 +402,35 @@ const Register = () => {
               </span>
             )}
           </div>
+
+          {/* Google | Facebook - Show only when userType is selected */}
+          {formik.values.userType && (
+            <div className="w-full lg:px-[60px]">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                  <span className="text-sm text-[#5A5D63] font-medium">
+                    or continue with
+                  </span>
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                </div>
+                <div className="flex justify-between lg:flex-row flex-col gap-[15px] w-full">
+                  <RegisterWith
+                    icon={googleIcon}
+                    text="Continue with Google"
+                    onClick={googleLogin}
+                    isDisabled={isDisabled}
+                  />
+                  <RegisterWith
+                    icon={facebookIcon}
+                    text="Continue with Facebook"
+                    onClick={handleFacebookSignup}
+                    isDisabled={isDisabled}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]">
             <div className="flex flex-col lg:flex-row gap-[15px] w-full">
@@ -501,19 +562,6 @@ const Register = () => {
               Sign In
             </Link>
           </span>
-          {/**Google | Facebook */}
-          <div className="flex justify-between lg:flex-row flex-col gap-[15px] w-full">
-            <RegisterWith
-              icon={googleIcon}
-              text="Continue with Google"
-              onClick={googleLogin}
-            />
-            <RegisterWith
-              icon={facebookIcon}
-              text="Continue with Facebook"
-              onClick={handleFacebookSignup}
-            />
-          </div>
         </form>
       </div>
       <OverlayPreloader
