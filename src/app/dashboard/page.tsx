@@ -70,129 +70,21 @@ export default function LandlordDashboard() {
     try {
       setIsLoading(true);
 
-      // Fetch user's properties - try multiple endpoints
-      const endpoints = [
-        `${URLS.BASE}${URLS.myPropertyListings}`,
-        `${URLS.BASE}/properties/user/${user?._id}`,
-        `${URLS.BASE}/properties/owner`,
-      ];
-
-      // Separate endpoint for briefs
-      const briefEndpoints = [
-        `${URLS.BASE}/briefs/user`,
-        `${URLS.BASE}${URLS.fetchBriefs}?owner=${user?.email}`,
-      ];
-
-      let userProperties = [];
-      let fetchSuccessful = false;
-
-      for (const endpoint of endpoints) {
-        try {
-          const propertiesResponse = await GET_REQUEST(
-            endpoint,
-            Cookies.get("token"),
-          );
-
-          if (propertiesResponse?.data || propertiesResponse) {
-            userProperties = Array.isArray(propertiesResponse?.data)
-              ? propertiesResponse.data
-              : Array.isArray(propertiesResponse)
-                ? propertiesResponse
-                : [];
-            fetchSuccessful = true;
-            break;
-          }
-        } catch (error) {
-          console.log(`Failed to fetch from ${endpoint}:`, error);
-          continue;
-        }
-      }
-
-      if (fetchSuccessful) {
-        // Filter properties to only include ones belonging to the current user
-        const filteredProperties = userProperties.filter(
-          (property: any) =>
-            property.owner?.email === user?.email ||
-            property.ownerId === user?._id ||
-            property.userId === user?._id,
-        );
-
-        setProperties(filteredProperties);
-
-        // Calculate stats
-        const totalProperties = filteredProperties.length;
-        const activeListings = filteredProperties.filter(
-          (p: any) => p.status === "active" || p.isApproved === true,
-        ).length;
-        const soldProperties = filteredProperties.filter(
-          (p: any) => p.status === "sold",
-        ).length;
-        const rentedProperties = filteredProperties.filter(
-          (p: any) => p.status === "rented",
-        ).length;
-        const pendingProperties = filteredProperties.filter(
-          (p: any) => p.status === "pending" || p.isApproved === false,
-        ).length;
-        const totalViews = filteredProperties.reduce(
-          (sum: number, p: any) => sum + (p.views || 0),
-          0,
-        );
-
-        setStats({
-          totalProperties,
-          activeListings,
-          soldProperties,
-          rentedProperties,
-          totalViews,
-          totalEarnings: soldProperties * 50000, // Mock calculation
-        });
-      } else {
-        // No properties found
-        setProperties([]);
-        setStats({
-          totalProperties: 0,
-          activeListings: 0,
-          soldProperties: 0,
-          rentedProperties: 0,
-          totalViews: 0,
-          totalEarnings: 0,
-        });
-      }
-
-      // Fetch briefs
-      let userBriefs = [];
-      for (const endpoint of briefEndpoints) {
-        try {
-          const briefsResponse = await GET_REQUEST(
-            endpoint,
-            Cookies.get("token"),
-          );
-
-          if (briefsResponse?.data || briefsResponse) {
-            userBriefs = Array.isArray(briefsResponse?.data)
-              ? briefsResponse.data
-              : Array.isArray(briefsResponse)
-                ? briefsResponse
-                : [];
-            break;
-          }
-        } catch (error) {
-          console.log(`Failed to fetch briefs from ${endpoint}:`, error);
-          continue;
-        }
-      }
-
-      // Filter briefs to only include ones belonging to the current user
-      const filteredBriefs = userBriefs.filter(
-        (brief: any) =>
-          brief.owner?.email === user?.email ||
-          brief.ownerId === user?._id ||
-          brief.userId === user?._id,
+      const response = await GET_REQUEST(
+        `${URLS.BASE}/user/dashboard`,
+        Cookies.get("token"),
       );
-      setBriefs(filteredBriefs);
+
+      if (response?.success && response.dashboard) {
+        setDashboardData(response.dashboard);
+      } else {
+        toast.error("Failed to load dashboard data");
+        setDashboardData(null);
+      }
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Failed to load dashboard data");
+      setDashboardData(null);
     } finally {
       setIsLoading(false);
     }
