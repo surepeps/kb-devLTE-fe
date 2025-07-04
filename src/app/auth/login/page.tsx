@@ -49,8 +49,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const validationSchema = Yup.object({
-    email: Yup.string().required("enter email"),
-    password: Yup.string().required(),
+    email: Yup.string().email("Invalid email address").required("Enter email"),
+    password: Yup.string().required("Password is required"),
   });
 
   const formik = useFormik({
@@ -180,7 +180,7 @@ const Login = () => {
 
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "123456789", // Replace with actual Facebook App ID
+        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "123456789",
         cookie: true,
         xfbml: true,
         version: "v21.0",
@@ -265,164 +265,159 @@ const Login = () => {
 
   return (
     <section
-      className={`flex items-center justify-center bg-[#EEF1F1] w-full min-h-screen ${
+      className={`flex items-center justify-center bg-[#EEF1F1] w-full ${
         isContactUsClicked && "filter brightness-[30%]"
       } transition-all duration-500`}
     >
-      <div className="container flex items-center justify-center py-[40px] px-[25px] lg:px-0">
-        <div className="w-full max-w-md mx-auto">
-          {/* Clean Card Container */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-display font-semibold text-[#09391C] mb-2">
-                Welcome Back
-              </h2>
-              <p className="text-gray-600">Sign in to access your account</p>
-            </div>
-
-            {/* Social Login Buttons */}
-            <div className="space-y-3 mb-6">
-              <button
-                type="button"
-                onClick={googleLogin}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
-              >
-                <Image src={googleIcon} alt="Google" width={20} height={20} />
-                Continue with Google
-              </button>
-              <button
-                type="button"
-                onClick={handleFacebookLogin}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 font-medium"
-              >
-                <Image
-                  src={facebookIcon}
-                  alt="Facebook"
-                  width={20}
-                  height={20}
-                />
-                Continue with Facebook
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Or continue with email
-                </span>
-              </div>
-            </div>
-
-            {/* Login Form */}
-            <form onSubmit={formik.handleSubmit} className="space-y-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Email Address
-                </label>
-                <div className="relative">
-                  <input
-                    name="email"
-                    type="email"
-                    value={formik.values.email}
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200"
-                  />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <Image
-                      src={mailIcon}
-                      alt=""
-                      width={18}
-                      height={18}
-                      className="opacity-40"
-                    />
-                  </div>
-                </div>
-                {formik.touched.email && formik.errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formik.errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formik.values.password}
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    placeholder="Enter your password"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-all duration-200 pr-12"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    <FontAwesomeIcon
-                      icon={showPassword ? faEyeSlash : faEye}
-                      className="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
-                    />
-                  </button>
-                </div>
-                {formik.touched.password && formik.errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formik.errors.password}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex items-center justify-end">
-                <Link
-                  href="/auth/forgot-password"
-                  className="text-sm text-[#09391C] hover:text-[#8DDB90] font-medium transition-colors duration-200"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              <Button
-                value={formik.isSubmitting ? "Signing in..." : "Sign In"}
-                className="w-full py-3 px-4 bg-[#8DDB90] hover:bg-[#7BC97E] text-white text-base font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                type="submit"
-                isDisabled={formik.isSubmitting}
-                green={true}
-              />
-            </form>
-
-            {/* Sign up link */}
-            <div className="mt-6 text-center">
-              <p className="text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                  href="/auth/register"
-                  className="text-[#09391C] hover:text-[#8DDB90] font-semibold transition-colors duration-200"
-                >
-                  Sign up
-                </Link>
-              </p>
-            </div>
+      <div className="container flex items-center justify-center py-[30px] mt-[20px] px-[25px] lg:px-0">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="lg:w-[600px] w-full min-h-[700px] flex flex-col items-center gap-[20px]"
+        >
+          <h2 className="text-[24px] font-display leading-[38.4px] font-semibold text-[#09391C]">
+            Welcome Back
+          </h2>
+          <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
+            <Input
+              formik={formik}
+              title="Email"
+              id="email"
+              icon={mailIcon}
+              type="email"
+              placeholder="Enter your email"
+            />
+            <Input
+              formik={formik}
+              title="Password"
+              id="password"
+              seePassword={setShowPassword}
+              isSeePassword={showPassword}
+              icon={""}
+              type="password"
+              placeholder="Enter your password"
+            />
           </div>
-        </div>
+          {/**Button */}
+          <Button
+            value="Sign In"
+            className=" w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+            type="submit"
+            onSubmit={formik.handleSubmit}
+            green={true}
+          />
+
+          {/**Already have an account */}
+          <p className="text-base leading-[25.6px] font-normal">
+            Don&apos;t have an account?{" "}
+            <Link
+              className="font-semibold text-[#09391C]"
+              href={"/auth/register"}
+            >
+              Sign Up
+            </Link>
+          </p>
+
+          <p className="text-base leading-[25.6px] font-normal">
+            Forgot your password?{" "}
+            <Link
+              className="font-semibold text-[#09391C]"
+              href={"/auth/forgot-password"}
+            >
+              Reset
+            </Link>
+          </p>
+
+          {/**Google | Facebook */}
+          <div className="flex justify-between w-full lg:flex-row flex-col gap-[15px]">
+            <RegisterWith
+              icon={googleIcon}
+              text="Continue with Google"
+              onClick={googleLogin}
+            />
+            <RegisterWith
+              icon={facebookIcon}
+              text="Continue with Facebook"
+              onClick={handleFacebookLogin}
+            />
+          </div>
+        </form>
       </div>
     </section>
+  );
+};
+
+interface InputProps {
+  title: string;
+  placeholder?: string;
+  type: string;
+  className?: string;
+  id?: string;
+  icon: StaticImport | string;
+  formik: any;
+  seePassword?: (type: boolean) => void;
+  isSeePassword?: boolean;
+}
+
+const Input: FC<InputProps> = ({
+  className,
+  id,
+  title,
+  type,
+  placeholder,
+  icon,
+  formik,
+  seePassword,
+  isSeePassword,
+}) => {
+  return (
+    <label
+      htmlFor={id}
+      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}
+    >
+      <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
+        {title}
+      </span>
+      <div className="flex items-center relative">
+        <input
+          name={id}
+          type={
+            type === "password" ? (isSeePassword ? "text" : "password") : type
+          }
+          value={formik.values[id || title]}
+          onBlur={formik.handleBlur}
+          onChange={formik.handleChange}
+          placeholder={placeholder ?? "This is placeholder"}
+          className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar`}
+        />
+
+        {type === "password" && (
+          <FontAwesomeIcon
+            title={isSeePassword ? "Hide password" : "See password"}
+            className="cursor-pointer transition absolute top-5 right-3 duration-500"
+            icon={isSeePassword ? faEye : faEyeSlash}
+            size="sm"
+            color="black"
+            onClick={() => {
+              seePassword?.(!isSeePassword);
+            }}
+          />
+        )}
+        {icon && type !== "password" ? (
+          <Image
+            src={icon}
+            alt=""
+            width={20}
+            height={20}
+            className="w-[20px] h-[20px] absolute ml-[330px] lg:ml-[440px] z-20 mt-[15px]"
+          />
+        ) : null}
+      </div>
+      {formik.touched[id || title] && formik.errors[id || title] && (
+        <span className="text-red-600 text-sm">
+          {formik.errors[id || title]}
+        </span>
+      )}
+    </label>
   );
 };
 
