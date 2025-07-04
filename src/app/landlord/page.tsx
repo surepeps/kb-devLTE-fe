@@ -35,6 +35,19 @@ interface Property {
   views?: number;
 }
 
+interface Brief {
+  _id: string;
+  propertyType: string;
+  price: number;
+  location: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
+  createdAt: string;
+  status: "active" | "assigned" | "completed";
+}
+
 interface DashboardStats {
   totalProperties: number;
   activeListings: number;
