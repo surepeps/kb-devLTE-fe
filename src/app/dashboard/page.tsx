@@ -47,16 +47,9 @@ interface DashboardResponse {
 export default function LandlordDashboard() {
   const router = useRouter();
   const { user } = useUserContext();
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [briefs, setBriefs] = useState<Brief[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProperties: 0,
-    activeListings: 0,
-    soldProperties: 0,
-    rentedProperties: 0,
-    totalViews: 0,
-    totalEarnings: 0,
-  });
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
