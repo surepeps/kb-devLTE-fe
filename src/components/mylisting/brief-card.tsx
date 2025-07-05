@@ -146,76 +146,64 @@ const BriefCard: React.FC<BriefCardProps> = ({
       whileHover={{ y: -2 }}
       className={`group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-[#8DDB90]/20 transition-all duration-300 ${className}`}
     >
-      {/* Image Container */}
-      <div className="relative h-52 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-        {brief.pictures && brief.pictures.length > 0 ? (
-          <img
-            src={brief.pictures[0]}
-            alt={brief.propertyType}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90]/20 to-[#09391C]/20">
-            <div className="text-center">
-              <Building size={32} className="mx-auto text-[#09391C]/60 mb-2" />
-              <span className="text-[#09391C] text-sm font-medium">
-                {brief.propertyType}
-              </span>
-            </div>
-          </div>
-        )}
+      {/* Image Container with Slider */}
+      <div className="relative h-48 sm:h-52 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+        <ImageSlider
+          images={brief.pictures || []}
+          propertyType={brief.propertyType}
+          className="h-full"
+        />
 
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
         {/* Top Badges Row */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <div className="flex flex-col gap-2">
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex items-start justify-between z-20">
+          <div className="flex flex-col gap-1.5">
             {/* Status Badge */}
             <div
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${approval.color}`}
+              className={`inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${approval.color}`}
             >
               <div
                 className={`w-1.5 h-1.5 rounded-full ${approval.dotColor}`}
               />
-              {approval.label}
+              <span className="hidden sm:inline">{approval.label}</span>
+              <span className="sm:hidden">{approval.label.split(" ")[0]}</span>
             </div>
 
             {/* Premium Badge */}
             {brief.isPremium && (
-              <div className="inline-flex items-center gap-1 bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-800 border border-yellow-200 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-                <Star size={11} className="fill-current" />
-                Premium
+              <div className="inline-flex items-center gap-1 bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-800 border border-yellow-200 px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+                <Star size={10} className="fill-current" />
+                <span className="hidden sm:inline">Premium</span>
               </div>
             )}
 
             {/* Preference Badge */}
             {brief.isPreference && (
-              <div className="inline-flex items-center bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
-                <TrendingUp size={11} />
-                <span className="ml-1">Preference</span>
+              <div className="inline-flex items-center bg-blue-50 text-blue-700 border border-blue-200 px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+                <TrendingUp size={10} />
+                <span className="ml-1 hidden sm:inline">Preference</span>
               </div>
             )}
           </div>
-
-          {/* Picture Count */}
-          {brief.pictures && brief.pictures.length > 1 && (
-            <div className="bg-black/60 text-white px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm">
-              {brief.pictures.length} photos
-            </div>
-          )}
         </div>
 
         {/* Availability Badge */}
-        <div className="absolute bottom-3 left-3">
+        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 z-20">
           <div
-            className={`px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm border ${
+            className={`px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm border ${
               brief.isAvailable === "yes"
                 ? "bg-green-50 text-green-700 border-green-200"
                 : "bg-gray-50 text-gray-700 border-gray-200"
             }`}
           >
-            {brief.isAvailable === "yes" ? "Available" : "Not Available"}
+            <span className="hidden sm:inline">
+              {brief.isAvailable === "yes" ? "Available" : "Not Available"}
+            </span>
+            <span className="sm:hidden">
+              {brief.isAvailable === "yes" ? "Avail." : "N/A"}
+            </span>
           </div>
         </div>
       </div>
