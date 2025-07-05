@@ -247,7 +247,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 </div>
 
                 {/* User Profile */}
-                <div className="relative">
+                <div className="relative profile-dropdown">
                   <button
                     type="button"
                     title="Profile"
