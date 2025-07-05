@@ -79,7 +79,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       // Don't close if clicking on dropdown elements
       const target = e.target as HTMLElement;
       if (
-        target.closest(".marketplace-dropdown") ||
+        target.closest(".navigation-dropdown") ||
         target.closest(".notification-dropdown") ||
         target.closest(".profile-dropdown")
       ) {
@@ -87,7 +87,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       }
 
       // Close all dropdowns
-      setIsMarketplaceModalOpened(false);
+      setOpenDropdown(null);
       setIsNotificationModalOpened(false);
       setIsUserProfileModal(false);
     };
