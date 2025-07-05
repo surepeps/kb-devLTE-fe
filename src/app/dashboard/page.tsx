@@ -137,12 +137,12 @@ export default function LandlordDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-8">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-[#EEF1F1] py-4 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#09391C] font-display">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
               Welcome back, {user.firstName}!
             </h1>
             <p className="text-[#5A5D63] mt-2">
@@ -151,10 +151,10 @@ export default function LandlordDashboard() {
           </div>
           <Link
             href="/post_property"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
           >
             <PlusIcon size={20} />
-            List New Property
+            <span className="sm:inline">List New Property</span>
           </Link>
         </div>
 

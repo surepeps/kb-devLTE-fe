@@ -148,10 +148,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     onMouseLeave={() => {
                       // Add delay to prevent flickering when moving to dropdown
                       setTimeout(() => {
-                        if (openDropdown === item.name) {
-                          setOpenDropdown(null);
-                        }
-                      }, 150);
+                        setOpenDropdown(null);
+                      }, 300);
                     }}
                   >
                     <button
@@ -451,7 +449,11 @@ const DropdownOptions = ({
       ref={ref}
       className="w-[231px] mt-[15px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute left-0 z-[999]"
       onMouseEnter={() => setModal(true)}
-      onMouseLeave={() => setModal(false)}
+      onMouseLeave={() => {
+        setTimeout(() => {
+          setModal(false);
+        }, 150);
+      }}
       style={{
         top: "100%",
         left: "50%",
