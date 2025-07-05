@@ -283,10 +283,13 @@ const BriefCard: React.FC<BriefCardProps> = ({
         </div>
 
         {/* Land Size & Documents */}
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-3 sm:mb-4">
           {brief.landSize && brief.landSize.size && (
-            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
-              <Maximize size={14} className="text-[#8DDB90]" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
+              <Maximize
+                size={12}
+                className="text-[#8DDB90] flex-shrink-0 sm:w-[14px] sm:h-[14px]"
+              />
               <span>
                 {brief.landSize.size.toLocaleString()}{" "}
                 {brief.landSize.measurementType}
@@ -295,75 +298,89 @@ const BriefCard: React.FC<BriefCardProps> = ({
           )}
 
           {brief.docOnProperty && brief.docOnProperty.length > 0 && (
-            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
-              <FileText size={14} className="text-[#8DDB90]" />
-              <span>{brief.docOnProperty.length} documents available</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
+              <FileText
+                size={12}
+                className="text-[#8DDB90] flex-shrink-0 sm:w-[14px] sm:h-[14px]"
+              />
+              <span className="hidden sm:inline">
+                {brief.docOnProperty.length} documents available
+              </span>
+              <span className="sm:hidden">
+                {brief.docOnProperty.length} docs
+              </span>
             </div>
           )}
         </div>
 
         {/* Features Tags */}
         {brief.features && brief.features.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
+          <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4">
             {brief.features.slice(0, 2).map((feature, index) => (
               <span
                 key={index}
-                className="bg-[#8DDB90]/10 text-[#09391C] px-2 py-1 rounded-md text-xs font-medium"
+                className="bg-[#8DDB90]/10 text-[#09391C] px-1.5 sm:px-2 py-1 rounded-md text-xs font-medium truncate max-w-[80px] sm:max-w-none"
+                title={feature}
               >
                 {feature}
               </span>
             ))}
             {brief.features.length > 2 && (
-              <span className="text-[#5A5D63] text-xs px-2 py-1 bg-gray-50 rounded-md font-medium">
-                +{brief.features.length - 2} more
+              <span className="text-[#5A5D63] text-xs px-1.5 sm:px-2 py-1 bg-gray-50 rounded-md font-medium">
+                +{brief.features.length - 2}
               </span>
             )}
           </div>
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-100">
           <div className="flex items-center gap-1.5 text-xs text-[#5A5D63]">
-            <Calendar size={12} />
-            <span>{formatDate(brief.createdAt)}</span>
+            <Calendar size={10} className="sm:w-3 sm:h-3" />
+            <span className="hidden sm:inline">
+              {formatDate(brief.createdAt)}
+            </span>
+            <span className="sm:hidden">
+              {formatDate(brief.createdAt).split(",")[0]}
+            </span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {onView && (
               <button
                 onClick={onView}
-                className="p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
                 title="View Details"
               >
-                <Eye size={16} />
+                <Eye size={14} className="sm:w-4 sm:h-4" />
               </button>
             )}
             {onEdit && (
               <button
                 onClick={handleEditClick}
-                className="p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
                 title="Edit Brief"
               >
-                <Edit size={16} />
+                <Edit size={14} className="sm:w-4 sm:h-4" />
               </button>
             )}
             {onShare && (
               <button
                 onClick={onShare}
-                className="p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
                 title="Share"
               >
-                <Share size={16} />
+                <Share size={14} className="sm:w-4 sm:h-4" />
               </button>
             )}
             {onDelete && (
               <button
                 onClick={onDelete}
-                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                 title="Delete"
               >
-                <Trash size={16} />
+                <Trash size={14} className="sm:w-4 sm:h-4" />
               </button>
             )}
           </div>
