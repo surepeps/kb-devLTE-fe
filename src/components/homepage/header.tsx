@@ -11,7 +11,11 @@ import React, {
 import khabiteqIcon from "@/svgs/khabi-teq.svg";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
-import { navData } from "@/data";
+import {
+  mainNavigationData,
+  marketplaceDropdownData,
+  type NavigationItem,
+} from "@/data/navigation-data";
 import Link from "next/link";
 import barIcon from "@/svgs/bars.svg";
 import { usePageContext } from "@/context/page-context";
@@ -38,7 +42,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     isSubmittedSuccessfully,
     setIsContactUsClicked,
   } = usePageContext();
-  const [state, dispatch] = useReducer(reducer, navData);
+  const [navigationState, setNavigationState] = useState(mainNavigationData);
   const pathName = usePathname();
   const [isMarketplaceModalOpened, setIsMarketplaceModalOpened] =
     useState<boolean>(false);
@@ -113,68 +117,54 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             alt=""
           />
           <div className="lg:flex gap-[20px] hidden">
-            {state.map(
-              (
-                item: { name: string; url: string; isClicked: boolean },
-                idx: number,
-              ) => {
-                if (item.name === "Marketplace") {
-                  return (
-                    <div
-                      key={idx}
-                      className="flex flex-col"
-                      onMouseEnter={() => setIsMarketplaceModalOpened(true)}
-                      // onMouseLeave={() =>
-                      //   setIsMarketplaceModalOpened(false)
-                      // }
-                    >
-                      <div className="flex items-center gap-1 cursor-pointer">
-                        <span
-                          className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                            item.url === pathName
-                              ? "text-[#8DDB90]"
-                              : "text-[#000000]"
-                          }`}
-                        >
-                          {item.name}
-                        </span>
-                        {/* <FaCaretDown
-                          size={'sm'}
-                          width={16}
-                          height={16}
-                          className='w-[16px] h-[16px]'
-                        /> */}
-                      </div>
-                      {isMarketplaceModalOpened && (
-                        <MarketplaceOptions
-                          setModal={setIsMarketplaceModalOpened}
-                        />
-                      )}
-                    </div>
-                  );
-                }
+            {navigationState.map((item: NavigationItem, idx: number) => {
+              if (item.name === "Marketplace" && item.subItems) {
                 return (
-                  <Link
+                  <div
                     key={idx}
-                    href={item.url}
-                    onClick={() => {
-                      // e.preventDefault();
-                      dispatch({
-                        type: item.name,
-                        name: item.name,
-                      });
-                    }}
-                    className={` transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                      item.url === pathName
-                        ? "text-[#8DDB90]"
-                        : "text-[#000000]"
-                    }`}
+                    className="flex flex-col"
+                    onMouseEnter={() => setIsMarketplaceModalOpened(true)}
                   >
-                    {item.name}
-                  </Link>
+                    <div className="flex items-center gap-1 cursor-pointer">
+                      <span
+                        className={`transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                          item.url === pathName
+                            ? "text-[#8DDB90]"
+                            : "text-[#000000]"
+                        }`}
+                      >
+                        {item.name}
+                      </span>
+                    </div>
+                    {isMarketplaceModalOpened && (
+                      <MarketplaceOptions
+                        setModal={setIsMarketplaceModalOpened}
+                        items={item.subItems}
+                      />
+                    )}
+                  </div>
                 );
-              },
-            )}
+              }
+              return (
+                <Link
+                  key={idx}
+                  href={item.url}
+                  onClick={() => {
+                    const updatedNav = navigationState.map((navItem) =>
+                      navItem.name === item.name
+                        ? { ...navItem, isClicked: true }
+                        : { ...navItem, isClicked: false },
+                    );
+                    setNavigationState(updatedNav);
+                  }}
+                  className={`transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                    item.url === pathName ? "text-[#8DDB90]" : "text-[#000000]"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
           {/**Buttons for desktop screens */}
           <div className="hidden lg:flex items-center gap-6">
@@ -353,33 +343,12 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   );
 };
 
-const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
-  {
-    name: "Buy",
-    url: "/market-place",
-    isClicked: false,
-  },
-  {
-    name: "Sell",
-    url: "/my-listings",
-    isClicked: false,
-  },
-  {
-    name: "Rent",
-    url: "/market-place",
-    isClicked: false,
-  },
-  {
-    name: "Joint Venture",
-    url: "/market-place",
-    isClicked: false,
-  },
-];
-
 const MarketplaceOptions = ({
   setModal,
+  items,
 }: {
   setModal: (type: boolean) => void;
+  items: NavigationItem[];
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const { setSelectedType } = usePageContext();
@@ -395,33 +364,25 @@ const MarketplaceOptions = ({
       className="w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]"
       onMouseLeave={() => setModal(false)}
     >
-      {marketPlaceData.map(
-        (
-          item: { name: string; url: string; isClicked: boolean },
-          idx: number,
-        ) => (
-          <Link
-            onClick={() => {
-              if (
-                item.name === "Buy a Property" ||
-                item.name === "Sell a Property"
-              ) {
-                setSelectedType("Buy a property");
-              } else if (item.name === "Rent a Property") {
-                setSelectedType("Rent/Lease a property");
-              } else if (item.name === "Property Joint Venture") {
-                setSelectedType("Find property for joint venture");
-              }
-              setModal(false);
-            }}
-            className="text-base font-medium text-[#000000] hover:text-[#8DDB90]"
-            href={item.url}
-            key={idx}
-          >
-            {item.name}
-          </Link>
-        ),
-      )}
+      {items.map((item: NavigationItem, idx: number) => (
+        <Link
+          onClick={() => {
+            if (item.name === "Buy") {
+              setSelectedType("Buy a property");
+            } else if (item.name === "Rent") {
+              setSelectedType("Rent/Lease a property");
+            } else if (item.name === "Joint Venture") {
+              setSelectedType("Find property for joint venture");
+            }
+            setModal(false);
+          }}
+          className="text-base font-medium text-[#000000] hover:text-[#8DDB90] transition-colors"
+          href={item.url}
+          key={idx}
+        >
+          {item.name}
+        </Link>
+      ))}
     </motion.div>
   );
 };
