@@ -353,6 +353,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       e.stopPropagation();
                       setIsUserProfileModal(!isUserProfileModalOpened);
                       // Close other dropdowns
+                      setOpenDropdown(null);
                       setIsNotificationModalOpened(false);
                     }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-sm"
