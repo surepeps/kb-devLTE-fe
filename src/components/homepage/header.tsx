@@ -37,8 +37,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   } = usePageContext();
   const [navigationState, setNavigationState] = useState(mainNavigationData);
   const pathName = usePathname();
-  const [isMarketplaceModalOpened, setIsMarketplaceModalOpened] =
-    useState<boolean>(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { user, logout } = useUserContext();
   const [isNotificationModalOpened, setIsNotificationModalOpened] =
     useState<boolean>(false);
