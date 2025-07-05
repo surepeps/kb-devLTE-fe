@@ -240,8 +240,8 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
         <div className="p-3 border-t border-gray-100 text-center">
           <button
             onClick={() => {
-              // Navigate to full notifications page if exists
               closeNotificationModal(false);
+              window.location.href = "/notifications";
             }}
             className="text-sm text-[#8DDB90] hover:text-[#7BC87F] font-medium"
           >

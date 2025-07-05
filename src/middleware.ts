@@ -41,9 +41,7 @@ const agentProtectedRoutes = [
   "/agent/briefs",
   "/agent/onboard",
   "/agent/under-review",
-  "/post_property",
 ];
-
 
 const userProtectedRoutes = [
   "/dashboard",
@@ -100,7 +98,6 @@ export function middleware(request: NextRequest) {
     }
     return NextResponse.next();
   }
-
 
   // Protect user routes
   const isUserProtectedRoute = userProtectedRoutes.some(
