@@ -445,7 +445,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
         </div>
 
         {/* Price Range */}
-        <div className="space-y-4">
+        <div className="space-y-4 relative">
           <div className="relative" ref={priceDropdownRef}>
             <label className="block text-sm font-medium text-[#09391C] mb-2">
               Price Range
