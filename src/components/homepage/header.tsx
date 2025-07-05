@@ -308,9 +308,12 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   <button
                     type="button"
                     title="Profile"
-                    onClick={() =>
-                      setIsUserProfileModal(!isUserProfileModalOpened)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsUserProfileModal(!isUserProfileModalOpened);
+                      // Close other dropdowns
+                      setIsNotificationModalOpened(false);
+                    }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-sm"
                   >
                     {user?.profilePicture ? (
@@ -327,12 +330,14 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       </span>
                     )}
                   </button>
-                  {isUserProfileModalOpened && (
-                    <UserProfile
-                      userDetails={user}
-                      closeUserProfileModal={setIsUserProfileModal}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {isUserProfileModalOpened && (
+                      <UserProfile
+                        userDetails={user}
+                        closeUserProfileModal={setIsUserProfileModal}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Mobile Notifications Modal */}
