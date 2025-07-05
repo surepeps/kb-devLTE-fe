@@ -1,16 +1,15 @@
 /** @format */
 
 "use client";
-import React, {
-  Fragment,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import khabiteqIcon from "@/svgs/khabi-teq.svg";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
-import { mainNavigationData, marketplaceDropdownData, type NavigationItem } from "@/data/navigation-data";
+import {
+  mainNavigationData,
+  marketplaceDropdownData,
+  type NavigationItem,
+} from "@/data/navigation-data";
 import Link from "next/link";
 import barIcon from "@/svgs/bars.svg";
 import { usePageContext } from "@/context/page-context";
@@ -80,9 +79,11 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     const handleGlobalClick = (e: MouseEvent) => {
       // Don't close if clicking on dropdown elements
       const target = e.target as HTMLElement;
-      if (target.closest('.marketplace-dropdown') ||
-          target.closest('.notification-dropdown') ||
-          target.closest('.profile-dropdown')) {
+      if (
+        target.closest(".marketplace-dropdown") ||
+        target.closest(".notification-dropdown") ||
+        target.closest(".profile-dropdown")
+      ) {
         return;
       }
 
@@ -92,8 +93,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       setIsUserProfileModal(false);
     };
 
-    document.addEventListener('click', handleGlobalClick);
-    return () => document.removeEventListener('click', handleGlobalClick);
+    document.addEventListener("click", handleGlobalClick);
+    return () => document.removeEventListener("click", handleGlobalClick);
   }, []);
 
   useEffect(() => {
@@ -158,7 +159,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     >
                       <span
                         className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          pathName.includes(item.url) || isMarketplaceModalOpened
+                          pathName.includes(item.url) ||
+                          isMarketplaceModalOpened
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}
@@ -192,14 +194,12 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     const updatedNav = navigationState.map((navItem) =>
                       navItem.name === item.name
                         ? { ...navItem, isClicked: true }
-                        : { ...navItem, isClicked: false }
+                        : { ...navItem, isClicked: false },
                     );
                     setNavigationState(updatedNav);
                   }}
                   className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] py-2 ${
-                    item.url === pathName
-                      ? "text-[#8DDB90]"
-                      : "text-[#000000]"
+                    item.url === pathName ? "text-[#8DDB90]" : "text-[#000000]"
                   }`}
                 >
                   {item.name}
@@ -323,18 +323,19 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100 relative"
                   >
-                  <Image
-                    src={notificationBellIcon}
-                    width={18}
-                    height={18}
-                    alt="Notifications"
-                    className="w-[18px] h-[18px]"
-                  />
-                  {/* Mobile Notification Badge */}
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">3</span>
-                  </div>
-                </button>
+                    <Image
+                      src={notificationBellIcon}
+                      width={18}
+                      height={18}
+                      alt="Notifications"
+                      className="w-[18px] h-[18px]"
+                    />
+                    {/* Mobile Notification Badge */}
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">3</span>
+                    </div>
+                  </button>
+                </div>
 
                 {/* Mobile User Profile */}
                 <div className="relative">
