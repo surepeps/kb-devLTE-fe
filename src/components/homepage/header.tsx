@@ -1,13 +1,7 @@
 /** @format */
 
 "use client";
-import React, {
-  Fragment,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import khabiteqIcon from "@/svgs/khabi-teq.svg";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
