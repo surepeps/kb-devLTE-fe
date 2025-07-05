@@ -134,11 +134,11 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           />
           <div className="lg:flex gap-[20px] hidden">
             {navigationState.map((item: NavigationItem, idx: number) => {
-              if (item.name === "Marketplace" && item.subItems) {
+              if (item.subItems && item.subItems.length > 0) {
                 return (
                   <div
                     key={idx}
-                    className="relative flex flex-col marketplace-dropdown"
+                    className={`relative flex flex-col ${item.name.toLowerCase()}-dropdown`}
                     onMouseEnter={() => {
                       // Close other dropdowns if any
                       setIsNotificationModalOpened(false);
@@ -175,9 +175,10 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     </button>
                     <AnimatePresence>
                       {isMarketplaceModalOpened && (
-                        <MarketplaceOptions
+                        <DropdownOptions
                           setModal={setIsMarketplaceModalOpened}
                           items={item.subItems}
+                          parentName={item.name}
                         />
                       )}
                     </AnimatePresence>
