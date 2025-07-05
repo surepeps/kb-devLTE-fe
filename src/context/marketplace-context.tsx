@@ -553,6 +553,20 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     setPriceRange(null);
   }, []);
 
+  // Reset marketplace state - useful when navigating away and back
+  const resetMarketplaceState = useCallback(() => {
+    setFormikStatus("idle");
+    setErrMessage("");
+    setSearchStatus({
+      status: "idle",
+      couldNotFindAProperty: false,
+    });
+    setProperties([]);
+    setCurrentPage(1);
+    setTotalPages(1);
+    setTotalItems(0);
+  }, []);
+
   const contextValue: MarketplaceContextType = useMemo(
     () => ({
       // Negotiated prices
