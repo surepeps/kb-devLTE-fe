@@ -394,10 +394,25 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
         console.log("Fetching from:", apiUrl);
 
+        // Add timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+          if (isMountedRef.current) {
+            setFormikStatus("failed");
+            setErrMessage("Request timed out. Please try again.");
+            setSearchStatus({
+              status: "failed",
+              couldNotFindAProperty: true,
+            });
+          }
+        }, 30000); // 30 second timeout
+
         // Use the GET_REQUEST utility
         console.log("Making API request to:", apiUrl);
         const response = await GET_REQUEST(apiUrl);
         console.log("API response received:", response);
+
+        // Clear timeout if request succeeds
+        clearTimeout(timeoutId);
 
         if (!isMountedRef.current) return;
 
