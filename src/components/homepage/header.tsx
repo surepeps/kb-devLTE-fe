@@ -433,7 +433,7 @@ const DropdownOptions = ({
   items,
   parentName,
 }: {
-  setModal: (type: boolean) => void;
+  setModal: (open: boolean) => void;
   items: NavigationItem[];
   parentName: string;
 }) => {
