@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -45,6 +45,46 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
   const [showBriefTypeDropdown, setShowBriefTypeDropdown] = useState(false);
   const [showPreferenceDropdown, setShowPreferenceDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+
+  const typeDropdownRef = useRef<HTMLDivElement>(null);
+  const briefTypeDropdownRef = useRef<HTMLDivElement>(null);
+  const preferenceDropdownRef = useRef<HTMLDivElement>(null);
+  const priceDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        typeDropdownRef.current &&
+        !typeDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowTypeDropdown(false);
+      }
+      if (
+        briefTypeDropdownRef.current &&
+        !briefTypeDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowBriefTypeDropdown(false);
+      }
+      if (
+        preferenceDropdownRef.current &&
+        !preferenceDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowPreferenceDropdown(false);
+      }
+      if (
+        priceDropdownRef.current &&
+        !priceDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowPriceDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const propertyTypes = ["Land", "Residential", "Commercial", "Duplex"];
   const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
