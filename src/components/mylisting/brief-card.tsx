@@ -10,7 +10,6 @@ import {
   Car,
   Calendar,
   Eye,
-  MoreVertical,
   Edit,
   Trash,
   Share,
@@ -19,8 +18,11 @@ import {
   Clock,
   Star,
   FileText,
+  TrendingUp,
+  Building,
+  Maximize,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Brief {
   _id: string;
@@ -80,28 +82,31 @@ const BriefCard: React.FC<BriefCardProps> = ({
   onShare,
   className = "",
 }) => {
-  const [showMenu, setShowMenu] = useState(false);
+  const router = useRouter();
 
   const getApprovalStatus = () => {
     if (brief.isApproved && !brief.isRejected) {
       return {
         status: "approved",
         label: "Approved",
-        color: "bg-green-100 text-green-800",
+        color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        dotColor: "bg-emerald-500",
         icon: CheckCircle,
       };
     } else if (brief.isRejected) {
       return {
         status: "rejected",
         label: "Rejected",
-        color: "bg-red-100 text-red-800",
+        color: "bg-red-50 text-red-700 border-red-200",
+        dotColor: "bg-red-500",
         icon: XCircle,
       };
     } else {
       return {
         status: "pending",
-        label: "Pending Review",
-        color: "bg-yellow-100 text-yellow-800",
+        label: "Under Review",
+        color: "bg-amber-50 text-amber-700 border-amber-200",
+        dotColor: "bg-amber-500",
         icon: Clock,
       };
     }
@@ -109,19 +114,25 @@ const BriefCard: React.FC<BriefCardProps> = ({
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
       month: "short",
       day: "numeric",
+      year: "numeric",
     });
   };
 
   const formatPrice = (price: number) => {
-    if (price >= 1000000) {
+    if (price >= 1000000000) {
+      return `₦${(price / 1000000000).toFixed(1)}B`;
+    } else if (price >= 1000000) {
       return `₦${(price / 1000000).toFixed(1)}M`;
     } else if (price >= 1000) {
-      return `₦${(price / 1000).toFixed(1)}K`;
+      return `₦${(price / 1000).toFixed(0)}K`;
     }
     return `₦${price.toLocaleString()}`;
+  };
+
+  const handleEditClick = () => {
+    router.push(`/my-listings/edit/${brief._id}`);
   };
 
   const approval = getApprovalStatus();
@@ -131,235 +142,225 @@ const BriefCard: React.FC<BriefCardProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 ${className}`}
+      whileHover={{ y: -2 }}
+      className={`group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-[#8DDB90]/20 transition-all duration-300 ${className}`}
     >
-      {/* Image */}
-      <div className="relative h-48 bg-gray-200">
+      {/* Image Container */}
+      <div className="relative h-52 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
         {brief.pictures && brief.pictures.length > 0 ? (
           <img
             src={brief.pictures[0]}
             alt={brief.propertyType}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C]">
-            <span className="text-white text-lg font-semibold">
-              {brief.propertyType.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
-
-        {/* Approval Status Badge */}
-        <div className="absolute top-3 left-3">
-          <div
-            className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${approval.color}`}
-          >
-            <StatusIcon size={12} />
-            {approval.label}
-          </div>
-        </div>
-
-        {/* Premium Badge */}
-        {brief.isPremium && (
-          <div className="absolute top-3 left-3 mt-8">
-            <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-              <Star size={12} />
-              Premium
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90]/20 to-[#09391C]/20">
+            <div className="text-center">
+              <Building size={32} className="mx-auto text-[#09391C]/60 mb-2" />
+              <span className="text-[#09391C] text-sm font-medium">
+                {brief.propertyType}
+              </span>
             </div>
           </div>
         )}
 
-        {/* Preference Badge */}
-        {brief.isPreference && (
-          <div className="absolute top-3 left-3 mt-16">
-            <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-              Preference
-            </div>
-          </div>
-        )}
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-        {/* Menu Button */}
-        <div className="absolute top-3 right-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+        {/* Top Badges Row */}
+        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+          <div className="flex flex-col gap-2">
+            {/* Status Badge */}
+            <div
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${approval.color}`}
             >
-              <MoreVertical size={16} className="text-gray-600" />
-            </button>
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${approval.dotColor}`}
+              />
+              {approval.label}
+            </div>
 
-            {showMenu && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute right-0 top-10 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[140px] z-10"
-              >
-                {onView && (
-                  <button
-                    onClick={() => {
-                      onView();
-                      setShowMenu(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  >
-                    <Eye size={14} />
-                    View Details
-                  </button>
-                )}
-                {onEdit && (
-                  <button
-                    onClick={() => {
-                      onEdit();
-                      setShowMenu(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  >
-                    <Edit size={14} />
-                    Edit Brief
-                  </button>
-                )}
-                {onShare && (
-                  <button
-                    onClick={() => {
-                      onShare();
-                      setShowMenu(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  >
-                    <Share size={14} />
-                    Share
-                  </button>
-                )}
-                {onDelete && (
-                  <button
-                    onClick={() => {
-                      onDelete();
-                      setShowMenu(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                  >
-                    <Trash size={14} />
-                    Delete
-                  </button>
-                )}
-              </motion.div>
+            {/* Premium Badge */}
+            {brief.isPremium && (
+              <div className="inline-flex items-center gap-1 bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-800 border border-yellow-200 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+                <Star size={11} className="fill-current" />
+                Premium
+              </div>
+            )}
+
+            {/* Preference Badge */}
+            {brief.isPreference && (
+              <div className="inline-flex items-center bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+                <TrendingUp size={11} />
+                <span className="ml-1">Preference</span>
+              </div>
             )}
           </div>
-        </div>
 
-        {/* Picture Count */}
-        {brief.pictures && brief.pictures.length > 1 && (
-          <div className="absolute bottom-3 right-3">
-            <div className="bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs">
+          {/* Picture Count */}
+          {brief.pictures && brief.pictures.length > 1 && (
+            <div className="bg-black/60 text-white px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm">
               {brief.pictures.length} photos
             </div>
+          )}
+        </div>
+
+        {/* Availability Badge */}
+        <div className="absolute bottom-3 left-3">
+          <div
+            className={`px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm border ${
+              brief.isAvailable === "yes"
+                ? "bg-green-50 text-green-700 border-green-200"
+                : "bg-gray-50 text-gray-700 border-gray-200"
+            }`}
+          >
+            {brief.isAvailable === "yes" ? "Available" : "Not Available"}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        {/* Type and Price */}
-        <div className="mb-3">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="font-semibold text-[#09391C] text-lg capitalize">
-              {brief.propertyType}
-            </h3>
-            <span className="text-xs text-[#5A5D63] bg-gray-100 px-2 py-1 rounded-full">
-              {brief.briefType}
-            </span>
+      <div className="p-5">
+        {/* Header */}
+        <div className="mb-4">
+          <div className="flex items-start justify-between mb-2">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-[#09391C] text-lg capitalize truncate">
+                {brief.propertyType}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-[#5A5D63] bg-gray-100 px-2 py-1 rounded-md font-medium">
+                  {brief.briefType}
+                </span>
+                {brief.propertyCondition && (
+                  <span className="text-xs text-[#5A5D63] bg-gray-50 px-2 py-1 rounded-md">
+                    {brief.propertyCondition}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[#8DDB90] font-bold text-xl">
+                {formatPrice(brief.price)}
+              </p>
+            </div>
           </div>
-          <p className="text-[#8DDB90] font-bold text-xl">
-            {formatPrice(brief.price)}
-          </p>
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-1 text-[#5A5D63] text-sm mb-3">
-          <MapPin size={14} />
+        <div className="flex items-center gap-2 text-[#5A5D63] text-sm mb-4">
+          <MapPin size={14} className="text-[#8DDB90] flex-shrink-0" />
           <span className="truncate">
-            {brief.location.area}, {brief.location.localGovernment},{" "}
-            {brief.location.state}
+            {brief.location.area}, {brief.location.localGovernment}
           </span>
         </div>
 
-        {/* Features */}
-        <div className="flex items-center gap-4 text-[#5A5D63] text-sm mb-3">
+        {/* Property Details Grid */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
           {brief.additionalFeatures?.noOfBedroom && (
-            <div className="flex items-center gap-1">
-              <Bed size={14} />
+            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
+              <Bed size={14} className="text-[#8DDB90]" />
               <span>{brief.additionalFeatures.noOfBedroom}</span>
             </div>
           )}
           {brief.additionalFeatures?.noOfBathroom && (
-            <div className="flex items-center gap-1">
-              <Bath size={14} />
+            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
+              <Bath size={14} className="text-[#8DDB90]" />
               <span>{brief.additionalFeatures.noOfBathroom}</span>
             </div>
           )}
           {brief.additionalFeatures?.noOfCarPark && (
-            <div className="flex items-center gap-1">
-              <Car size={14} />
+            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
+              <Car size={14} className="text-[#8DDB90]" />
               <span>{brief.additionalFeatures.noOfCarPark}</span>
             </div>
           )}
         </div>
 
-        {/* Documents */}
-        {brief.docOnProperty && brief.docOnProperty.length > 0 && (
-          <div className="flex items-center gap-1 text-[#5A5D63] text-sm mb-3">
-            <FileText size={14} />
-            <span>{brief.docOnProperty.length} documents</span>
-          </div>
-        )}
+        {/* Land Size & Documents */}
+        <div className="space-y-2 mb-4">
+          {brief.landSize && brief.landSize.size && (
+            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
+              <Maximize size={14} className="text-[#8DDB90]" />
+              <span>
+                {brief.landSize.size.toLocaleString()}{" "}
+                {brief.landSize.measurementType}
+              </span>
+            </div>
+          )}
 
-        {/* Land Size */}
-        {brief.landSize && brief.landSize.size && (
-          <div className="text-[#5A5D63] text-sm mb-3">
-            <span>
-              {brief.landSize.size.toLocaleString()}{" "}
-              {brief.landSize.measurementType}
-            </span>
-          </div>
-        )}
-
-        {/* Property Condition */}
-        {brief.propertyCondition && (
-          <div className="text-[#5A5D63] text-sm mb-3">
-            <span className="bg-gray-100 px-2 py-1 rounded text-xs">
-              {brief.propertyCondition}
-            </span>
-          </div>
-        )}
+          {brief.docOnProperty && brief.docOnProperty.length > 0 && (
+            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
+              <FileText size={14} className="text-[#8DDB90]" />
+              <span>{brief.docOnProperty.length} documents available</span>
+            </div>
+          )}
+        </div>
 
         {/* Features Tags */}
         {brief.features && brief.features.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {brief.features.slice(0, 3).map((feature, index) => (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {brief.features.slice(0, 2).map((feature, index) => (
               <span
                 key={index}
-                className="bg-[#8DDB90] bg-opacity-10 text-[#09391C] px-2 py-1 rounded text-xs"
+                className="bg-[#8DDB90]/10 text-[#09391C] px-2 py-1 rounded-md text-xs font-medium"
               >
                 {feature}
               </span>
             ))}
-            {brief.features.length > 3 && (
-              <span className="text-[#5A5D63] text-xs px-2 py-1">
-                +{brief.features.length - 3} more
+            {brief.features.length > 2 && (
+              <span className="text-[#5A5D63] text-xs px-2 py-1 bg-gray-50 rounded-md font-medium">
+                +{brief.features.length - 2} more
               </span>
             )}
           </div>
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-1 text-xs text-[#5A5D63]">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-1.5 text-xs text-[#5A5D63]">
             <Calendar size={12} />
             <span>{formatDate(brief.createdAt)}</span>
           </div>
 
-          <div className="text-xs text-[#5A5D63]">
-            {brief.isAvailable === "yes" ? "Available" : "Not Available"}
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            {onView && (
+              <button
+                onClick={onView}
+                className="p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
+                title="View Details"
+              >
+                <Eye size={16} />
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={handleEditClick}
+                className="p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
+                title="Edit Brief"
+              >
+                <Edit size={16} />
+              </button>
+            )}
+            {onShare && (
+              <button
+                onClick={onShare}
+                className="p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
+                title="Share"
+              >
+                <Share size={16} />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                title="Delete"
+              >
+                <Trash size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
