@@ -335,32 +335,38 @@ const MyListingPage = () => {
         ) : (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-[#09391C] mb-1">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-[#09391C] mb-1">
                   {filteredBriefs.length}
                 </div>
-                <div className="text-sm text-[#5A5D63]">
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
                   {hasActiveFilters ? "Filtered" : "Total"} Briefs
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-emerald-600 mb-1">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-emerald-600 mb-1">
                   {stats.approved}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Approved</div>
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
+                  Approved
+                </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-amber-600 mb-1">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-amber-600 mb-1">
                   {stats.pending}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Under Review</div>
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
+                  Under Review
+                </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-red-600 mb-1">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-red-600 mb-1">
                   {stats.rejected}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Rejected</div>
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
+                  Rejected
+                </div>
               </div>
             </div>
 
