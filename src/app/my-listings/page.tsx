@@ -289,11 +289,11 @@ const MyListingPage = () => {
   const stats = getApprovalStats();
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-8">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-[#EEF1F1] py-4 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
+          <div className="flex-1">
             <nav className="text-sm text-[#5A5D63] mb-4">
               <button
                 onClick={() => router.push("/")}
@@ -304,19 +304,20 @@ const MyListingPage = () => {
               <span className="mx-2">›</span>
               <span className="text-[#09391C] font-medium">My Listings</span>
             </nav>
-            <h1 className="text-3xl font-bold text-[#09391C] font-display">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
               My Property Briefs
             </h1>
-            <p className="text-[#5A5D63] mt-2">
+            <p className="text-[#5A5D63] mt-2 text-sm sm:text-base">
               Manage and view all your property briefs
             </p>
           </div>
           <Link
             href="/post_property"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors text-sm sm:text-base w-full sm:w-auto"
           >
-            <Plus size={20} />
-            Add New Property
+            <Plus size={18} sm:size={20} />
+            <span className="hidden sm:inline">Add New Property</span>
+            <span className="sm:hidden">Add Property</span>
           </Link>
         </div>
 
@@ -385,7 +386,7 @@ const MyListingPage = () => {
             )}
 
             {/* Briefs Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {getCurrentPageBriefs().map((brief) => (
                 <BriefCard
                   key={brief._id}
