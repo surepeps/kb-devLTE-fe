@@ -222,9 +222,13 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   <button
                     type="button"
                     title="Profile"
-                    onClick={() =>
-                      setIsUserProfileModal(!isUserProfileModalOpened)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsUserProfileModal(!isUserProfileModalOpened);
+                      // Close other dropdowns
+                      setIsMarketplaceModalOpened(false);
+                      setIsNotificationModalOpened(false);
+                    }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
                     {user?.profilePicture ? (
@@ -241,12 +245,14 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       </span>
                     )}
                   </button>
-                  {isUserProfileModalOpened && (
-                    <UserProfile
-                      userDetails={user}
-                      closeUserProfileModal={setIsUserProfileModal}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {isUserProfileModalOpened && (
+                      <UserProfile
+                        userDetails={user}
+                        closeUserProfileModal={setIsUserProfileModal}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
               </>
             ) : (
