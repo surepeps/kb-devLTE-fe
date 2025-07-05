@@ -326,7 +326,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
           </div>
 
           {/* Brief Type Filter */}
-          <div className="relative">
+          <div className="relative" ref={briefTypeDropdownRef}>
             <label className="block text-sm font-medium text-[#09391C] mb-2">
               Brief Type
             </label>
@@ -389,7 +389,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
           </div>
 
           {/* Property Type */}
-          <div className="relative">
+          <div className="relative" ref={typeDropdownRef}>
             <label className="block text-sm font-medium text-[#09391C] mb-2">
               Property Type
             </label>
