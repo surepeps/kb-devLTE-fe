@@ -440,7 +440,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
 
         {/* Price Range */}
         <div className="space-y-4">
-          <div className="relative">
+          <div className="relative" ref={priceDropdownRef}>
             <label className="block text-sm font-medium text-[#09391C] mb-2">
               Price Range
             </label>
@@ -636,7 +636,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
                     <option value="false">Regular Only</option>
                   </select>
                 </div>
-                <div className="relative">
+                <div className="relative" ref={preferenceDropdownRef}>
                   <label className="block text-sm font-medium text-[#09391C] mb-2">
                     Preference Status
                   </label>
