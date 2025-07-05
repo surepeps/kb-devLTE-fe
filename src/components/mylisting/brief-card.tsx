@@ -23,6 +23,7 @@ import {
   Maximize,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import ImageSlider from "./ImageSlider";
 
 interface Brief {
   _id: string;
@@ -220,15 +221,15 @@ const BriefCard: React.FC<BriefCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         {/* Header */}
-        <div className="mb-4">
+        <div className="mb-3 sm:mb-4">
           <div className="flex items-start justify-between mb-2">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-[#09391C] text-lg capitalize truncate">
+            <div className="flex-1 min-w-0 pr-2">
+              <h3 className="font-bold text-[#09391C] text-base sm:text-lg capitalize truncate">
                 {brief.propertyType}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                 <span className="text-xs text-[#5A5D63] bg-gray-100 px-2 py-1 rounded-md font-medium">
                   {brief.briefType}
                 </span>
@@ -239,8 +240,8 @@ const BriefCard: React.FC<BriefCardProps> = ({
                 )}
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-[#8DDB90] font-bold text-xl">
+            <div className="text-right flex-shrink-0">
+              <p className="text-[#8DDB90] font-bold text-lg sm:text-xl">
                 {formatPrice(brief.price)}
               </p>
             </div>
@@ -248,30 +249,46 @@ const BriefCard: React.FC<BriefCardProps> = ({
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-2 text-[#5A5D63] text-sm mb-4">
-          <MapPin size={14} className="text-[#8DDB90] flex-shrink-0" />
-          <span className="truncate">
+        <div className="flex items-center gap-2 text-[#5A5D63] text-sm mb-3 sm:mb-4">
+          <MapPin
+            size={12}
+            sm:size={14}
+            className="text-[#8DDB90] flex-shrink-0"
+          />
+          <span className="truncate text-xs sm:text-sm">
             {brief.location.area}, {brief.location.localGovernment}
           </span>
         </div>
 
         {/* Property Details Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
           {brief.additionalFeatures?.noOfBedroom && (
-            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
-              <Bed size={14} className="text-[#8DDB90]" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
+              <Bed
+                size={12}
+                sm:size={14}
+                className="text-[#8DDB90] flex-shrink-0"
+              />
               <span>{brief.additionalFeatures.noOfBedroom}</span>
             </div>
           )}
           {brief.additionalFeatures?.noOfBathroom && (
-            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
-              <Bath size={14} className="text-[#8DDB90]" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
+              <Bath
+                size={12}
+                sm:size={14}
+                className="text-[#8DDB90] flex-shrink-0"
+              />
               <span>{brief.additionalFeatures.noOfBathroom}</span>
             </div>
           )}
           {brief.additionalFeatures?.noOfCarPark && (
-            <div className="flex items-center gap-1.5 text-sm text-[#5A5D63]">
-              <Car size={14} className="text-[#8DDB90]" />
+            <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
+              <Car
+                size={12}
+                sm:size={14}
+                className="text-[#8DDB90] flex-shrink-0"
+              />
               <span>{brief.additionalFeatures.noOfCarPark}</span>
             </div>
           )}
