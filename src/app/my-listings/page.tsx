@@ -372,18 +372,18 @@ const MyListingPage = () => {
 
             {/* Results Info */}
             {hasActiveFilters && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div className="mb-4 sm:mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl gap-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-blue-700 font-medium">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                    <span className="text-xs sm:text-sm text-blue-700 font-medium">
                       Showing {filteredBriefs.length} result
                       {filteredBriefs.length !== 1 ? "s" : ""} from your search
                     </span>
                   </div>
                   <button
                     onClick={handleClearFilters}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium underline"
+                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium underline self-start sm:self-auto"
                   >
                     Clear filters
                   </button>
