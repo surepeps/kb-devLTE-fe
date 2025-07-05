@@ -347,7 +347,10 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
             </button>
 
             {showBriefTypeDropdown && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <div
+                className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl"
+                style={{ zIndex: 9999 }}
+              >
                 <div className="p-2 max-h-40 overflow-y-auto">
                   {briefTypes.map((type) => (
                     <label
@@ -410,7 +413,10 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
             </button>
 
             {showTypeDropdown && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <div
+                className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl"
+                style={{ zIndex: 9999 }}
+              >
                 <div className="p-2 max-h-40 overflow-y-auto">
                   {propertyTypes.map((type) => (
                     <label
@@ -457,7 +463,10 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
             </button>
 
             {showPriceDropdown && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <div
+                className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-80 overflow-y-auto"
+                style={{ zIndex: 9999 }}
+              >
                 <div className="p-3 space-y-3">
                   <div className="text-xs font-medium text-[#09391C] mb-2">
                     Quick Select:
@@ -486,7 +495,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
                           handlePriceRangeChange("min", e.target.value)
                         }
                         placeholder="Min price"
-                        className="px-2 py-1 border border-gray-300 rounded text-xs"
+                        className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#8DDB90]"
                       />
                       <input
                         type="number"
@@ -495,7 +504,7 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
                           handlePriceRangeChange("max", e.target.value)
                         }
                         placeholder="Max price"
-                        className="px-2 py-1 border border-gray-300 rounded text-xs"
+                        className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#8DDB90]"
                       />
                     </div>
                   </div>
@@ -661,7 +670,10 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
                   </button>
 
                   {showPreferenceDropdown && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                    <div
+                      className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl"
+                      style={{ zIndex: 9999 }}
+                    >
                       <div className="p-2 max-h-40 overflow-y-auto">
                         {preferenceOptions.map((option) => (
                           <label
