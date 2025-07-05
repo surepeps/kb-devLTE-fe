@@ -212,13 +212,17 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             {user?._id ? (
               <>
                 {/* Notifications */}
-                <div className="relative">
+                <div className="relative notification-dropdown">
                   <button
                     type="button"
                     title="Notifications"
-                    onClick={() =>
-                      setIsNotificationModalOpened(!isNotificationModalOpened)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsNotificationModalOpened(!isNotificationModalOpened);
+                      // Close other dropdowns
+                      setIsMarketplaceModalOpened(false);
+                      setIsUserProfileModal(false);
+                    }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 relative"
                   >
                     <Image
