@@ -138,9 +138,11 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 return (
                   <div
                     key={idx}
-                    className="relative flex flex-col"
+                    className="relative flex flex-col marketplace-dropdown"
                     onMouseEnter={() => {
                       // Close other dropdowns if any
+                      setIsNotificationModalOpened(false);
+                      setIsUserProfileModal(false);
                       setIsMarketplaceModalOpened(true);
                     }}
                     onMouseLeave={() => {
