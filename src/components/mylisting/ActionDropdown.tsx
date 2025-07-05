@@ -61,13 +61,13 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
   };
 
   return (
-    <div className="relative z-30" ref={dropdownRef}>
+    <div className="relative z-50" ref={dropdownRef}>
       <button
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:ring-opacity-50 bg-white shadow-sm border border-gray-100"
+        className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:ring-opacity-50 bg-white shadow-md border border-gray-100"
         aria-label="More actions"
         title="More actions"
       >
@@ -79,7 +79,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
           <>
             {/* Mobile backdrop */}
             <div
-              className="fixed inset-0 bg-black bg-opacity-25 z-40 sm:hidden"
+              className="fixed inset-0 bg-black bg-opacity-25 z-[100] sm:hidden"
               onClick={() => setIsOpen(false)}
             />
 
@@ -88,7 +88,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full mt-1 w-44 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden"
+              className="absolute right-0 top-full mt-1 w-44 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-2xl z-[101] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {actionItems.map((item, index) => {

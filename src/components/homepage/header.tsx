@@ -37,8 +37,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   } = usePageContext();
   const [navigationState, setNavigationState] = useState(mainNavigationData);
   const pathName = usePathname();
-  const [isMarketplaceModalOpened, setIsMarketplaceModalOpened] =
-    useState<boolean>(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { user, logout } = useUserContext();
   const [isNotificationModalOpened, setIsNotificationModalOpened] =
     useState<boolean>(false);
@@ -80,7 +79,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       // Don't close if clicking on dropdown elements
       const target = e.target as HTMLElement;
       if (
-        target.closest(".marketplace-dropdown") ||
+        target.closest(".navigation-dropdown") ||
         target.closest(".notification-dropdown") ||
         target.closest(".profile-dropdown")
       ) {
@@ -88,7 +87,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       }
 
       // Close all dropdowns
-      setIsMarketplaceModalOpened(false);
+      setOpenDropdown(null);
       setIsNotificationModalOpened(false);
       setIsUserProfileModal(false);
     };
@@ -134,33 +133,37 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           />
           <div className="lg:flex gap-[20px] hidden">
             {navigationState.map((item: NavigationItem, idx: number) => {
-              if (item.name === "Marketplace" && item.subItems) {
+              if (item.subItems && item.subItems.length > 0) {
+                const isOpen = openDropdown === item.name;
                 return (
                   <div
                     key={idx}
-                    className="relative flex flex-col marketplace-dropdown"
+                    className="relative flex flex-col navigation-dropdown"
                     onMouseEnter={() => {
                       // Close other dropdowns if any
                       setIsNotificationModalOpened(false);
                       setIsUserProfileModal(false);
-                      setIsMarketplaceModalOpened(true);
+                      setOpenDropdown(item.name);
                     }}
                     onMouseLeave={() => {
                       // Add delay to prevent flickering when moving to dropdown
-                      setTimeout(() => setIsMarketplaceModalOpened(false), 150);
+                      setTimeout(() => {
+                        if (openDropdown === item.name) {
+                          setOpenDropdown(null);
+                        }
+                      }, 150);
                     }}
                   >
                     <button
                       className="flex items-center gap-1 cursor-pointer py-2"
                       onClick={(e) => {
                         e.preventDefault();
-                        setIsMarketplaceModalOpened(!isMarketplaceModalOpened);
+                        setOpenDropdown(isOpen ? null : item.name);
                       }}
                     >
                       <span
                         className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          pathName.includes(item.url) ||
-                          isMarketplaceModalOpened
+                          pathName.includes(item.url) || isOpen
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}
@@ -169,15 +172,18 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       </span>
                       <FaCaretDown
                         className={`transition-transform duration-200 w-3 h-3 ${
-                          isMarketplaceModalOpened ? "rotate-180" : ""
+                          isOpen ? "rotate-180" : ""
                         }`}
                       />
                     </button>
                     <AnimatePresence>
-                      {isMarketplaceModalOpened && (
-                        <MarketplaceOptions
-                          setModal={setIsMarketplaceModalOpened}
+                      {isOpen && (
+                        <DropdownOptions
+                          setModal={(open) =>
+                            setOpenDropdown(open ? item.name : null)
+                          }
                           items={item.subItems}
+                          parentName={item.name}
                         />
                       )}
                     </AnimatePresence>
@@ -190,7 +196,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   href={item.url}
                   onClick={() => {
                     // Close any open dropdowns
-                    setIsMarketplaceModalOpened(false);
+                    setOpenDropdown(null);
                     const updatedNav = navigationState.map((navItem) =>
                       navItem.name === item.name
                         ? { ...navItem, isClicked: true }
@@ -220,7 +226,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       e.stopPropagation();
                       setIsNotificationModalOpened(!isNotificationModalOpened);
                       // Close other dropdowns
-                      setIsMarketplaceModalOpened(false);
+                      setOpenDropdown(null);
                       setIsUserProfileModal(false);
                     }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 relative"
@@ -255,7 +261,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       e.stopPropagation();
                       setIsUserProfileModal(!isUserProfileModalOpened);
                       // Close other dropdowns
-                      setIsMarketplaceModalOpened(false);
+                      setOpenDropdown(null);
                       setIsNotificationModalOpened(false);
                     }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
@@ -319,6 +325,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       e.stopPropagation();
                       setIsNotificationModalOpened(!isNotificationModalOpened);
                       // Close other dropdowns
+                      setOpenDropdown(null);
                       setIsUserProfileModal(false);
                     }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100 relative"
@@ -346,6 +353,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       e.stopPropagation();
                       setIsUserProfileModal(!isUserProfileModalOpened);
                       // Close other dropdowns
+                      setOpenDropdown(null);
                       setIsNotificationModalOpened(false);
                     }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-sm"
@@ -420,12 +428,14 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   );
 };
 
-const MarketplaceOptions = ({
+const DropdownOptions = ({
   setModal,
   items,
+  parentName,
 }: {
-  setModal: (type: boolean) => void;
+  setModal: (open: boolean) => void;
   items: NavigationItem[];
+  parentName: string;
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const { setSelectedType } = usePageContext();
@@ -440,6 +450,7 @@ const MarketplaceOptions = ({
       transition={{ duration: 0.2 }}
       ref={ref}
       className="w-[231px] mt-[15px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute left-0 z-[999]"
+      onMouseEnter={() => setModal(true)}
       onMouseLeave={() => setModal(false)}
       style={{
         top: "100%",
@@ -451,12 +462,15 @@ const MarketplaceOptions = ({
         <Link
           onClick={(e) => {
             e.preventDefault();
-            if (item.name === "Buy") {
-              setSelectedType("Buy a property");
-            } else if (item.name === "Rent") {
-              setSelectedType("Rent/Lease a property");
-            } else if (item.name === "Joint Venture") {
-              setSelectedType("Find property for joint venture");
+            // Handle marketplace specific logic
+            if (parentName === "Marketplace") {
+              if (item.name === "Buy") {
+                setSelectedType("Buy a property");
+              } else if (item.name === "Rent") {
+                setSelectedType("Rent/Lease a property");
+              } else if (item.name === "Joint Venture") {
+                setSelectedType("Find property for joint venture");
+              }
             }
             setModal(false);
             // Navigate after setting type
