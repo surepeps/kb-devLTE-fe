@@ -86,11 +86,13 @@ const EditBriefPage = () => {
 
   const [brief, setBrief] = useState<Brief | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [selectedTenantCriteria, setSelectedTenantCriteria] = useState<
     string[]
   >([]);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const availableFeatures = [
     "Air conditioner",
@@ -133,10 +135,18 @@ const EditBriefPage = () => {
   ];
 
   useEffect(() => {
-    fetchBrief();
-  }, [briefId]);
+    if (briefId && !hasFetched) {
+      fetchBrief();
+    }
+  }, [briefId, hasFetched]);
 
   const fetchBrief = async () => {
+    if (hasFetched || !briefId) return;
+
+    setLoading(true);
+    setError(null);
+    setHasFetched(true);
+
     try {
       const response = await GET_REQUEST(
         `${URLS.BASE}/user/briefs/${briefId}`,
@@ -148,14 +158,16 @@ const EditBriefPage = () => {
         setBrief(briefData);
         setSelectedFeatures(briefData.features || []);
         setSelectedTenantCriteria(briefData.tenantCriteria || []);
+        setError(null);
       } else {
-        toast.error("Failed to fetch brief details");
-        router.push("/my-listings");
+        const errorMessage =
+          response?.message || "Failed to fetch brief details";
+        setError(errorMessage);
+        console.error("API response error:", response);
       }
     } catch (error) {
       console.error("Error fetching brief:", error);
-      toast.error("An error occurred while fetching brief details");
-      router.push("/my-listings");
+      setError("An error occurred while fetching brief details");
     } finally {
       setLoading(false);
     }
@@ -210,7 +222,38 @@ const EditBriefPage = () => {
     return <Loading />;
   }
 
-  if (!brief) {
+  if (error && !loading) {
+    return (
+      <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <h2 className="text-2xl font-bold text-[#09391C] mb-4">
+            Unable to Load Brief
+          </h2>
+          <p className="text-[#5A5D63] mb-6">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => {
+                setError(null);
+                setHasFetched(false);
+                fetchBrief();
+              }}
+              className="bg-[#8DDB90] text-white px-6 py-3 rounded-lg hover:bg-[#7BC87F] transition-colors"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => router.push("/my-listings")}
+              className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              Back to My Listings
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!brief && !loading) {
     return (
       <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center">
         <div className="text-center">
