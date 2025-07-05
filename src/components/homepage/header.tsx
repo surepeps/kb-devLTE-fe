@@ -134,32 +134,36 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           <div className="lg:flex gap-[20px] hidden">
             {navigationState.map((item: NavigationItem, idx: number) => {
               if (item.subItems && item.subItems.length > 0) {
+                const isOpen = openDropdown === item.name;
                 return (
                   <div
                     key={idx}
-                    className={`relative flex flex-col ${item.name.toLowerCase()}-dropdown`}
+                    className="relative flex flex-col navigation-dropdown"
                     onMouseEnter={() => {
                       // Close other dropdowns if any
                       setIsNotificationModalOpened(false);
                       setIsUserProfileModal(false);
-                      setIsMarketplaceModalOpened(true);
+                      setOpenDropdown(item.name);
                     }}
                     onMouseLeave={() => {
                       // Add delay to prevent flickering when moving to dropdown
-                      setTimeout(() => setIsMarketplaceModalOpened(false), 150);
+                      setTimeout(() => {
+                        if (openDropdown === item.name) {
+                          setOpenDropdown(null);
+                        }
+                      }, 150);
                     }}
                   >
                     <button
                       className="flex items-center gap-1 cursor-pointer py-2"
                       onClick={(e) => {
                         e.preventDefault();
-                        setIsMarketplaceModalOpened(!isMarketplaceModalOpened);
+                        setOpenDropdown(isOpen ? null : item.name);
                       }}
                     >
                       <span
                         className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          pathName.includes(item.url) ||
-                          isMarketplaceModalOpened
+                          pathName.includes(item.url) || isOpen
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}
@@ -168,14 +172,16 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       </span>
                       <FaCaretDown
                         className={`transition-transform duration-200 w-3 h-3 ${
-                          isMarketplaceModalOpened ? "rotate-180" : ""
+                          isOpen ? "rotate-180" : ""
                         }`}
                       />
                     </button>
                     <AnimatePresence>
-                      {isMarketplaceModalOpened && (
+                      {isOpen && (
                         <DropdownOptions
-                          setModal={setIsMarketplaceModalOpened}
+                          setModal={(open) =>
+                            setOpenDropdown(open ? item.name : null)
+                          }
                           items={item.subItems}
                           parentName={item.name}
                         />
