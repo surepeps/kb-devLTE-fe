@@ -417,8 +417,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         // Handle successful response with pagination
-        setFormikStatus("success");
-
         const responseData = response?.data || [];
         const pagination = response?.pagination || {};
 
@@ -437,6 +435,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           status: "success",
           couldNotFindAProperty: responseData.length === 0,
         });
+
+        // Set success status AFTER all data is updated
+        setFormikStatus("success");
 
         console.log(
           `Successfully loaded ${responseData.length} properties. Page ${pagination.currentPage} of ${pagination.totalPages}`,
