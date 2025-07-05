@@ -13,7 +13,6 @@ import {
 import Link from "next/link";
 import barIcon from "@/svgs/bars.svg";
 import { usePageContext } from "@/context/page-context";
-import { reducer } from "@/hooks/reducer";
 // import { useRouter } from 'next/router';
 import { usePathname, useRouter } from "next/navigation";
 import SideBar from "../general-components/sideBar";

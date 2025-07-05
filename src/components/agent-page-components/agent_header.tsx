@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 import barIcon from "@/svgs/bars.svg";
 import { usePageContext } from "@/context/page-context";
-import { reducer } from "@/hooks/reducer";
 import SideBar from "../general-components/sideBar";
 import { useRouter, usePathname } from "next/navigation";
 // import Cookies from 'js-cookie';
