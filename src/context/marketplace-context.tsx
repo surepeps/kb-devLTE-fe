@@ -626,6 +626,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Clear all filters
       clearAllFilters,
+      resetMarketplaceState,
     }),
     [
       negotiatedPrices,
