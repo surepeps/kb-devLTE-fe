@@ -439,8 +439,13 @@ const MarketplaceOptions = ({
       exit={{ opacity: 0, y: 10 }}
       transition={{ duration: 0.2 }}
       ref={ref}
-      className="w-[231px] mt-[10px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute z-[999]"
+      className="w-[231px] mt-[15px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute left-0 z-[999]"
       onMouseLeave={() => setModal(false)}
+      style={{
+        top: "100%",
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}
     >
       {items.map((item: NavigationItem, idx: number) => (
         <Link
