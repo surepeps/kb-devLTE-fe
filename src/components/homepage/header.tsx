@@ -146,8 +146,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       setIsMarketplaceModalOpened(true);
                     }}
                     onMouseLeave={() => {
-                      // Add small delay to prevent flickering
-                      setTimeout(() => setIsMarketplaceModalOpened(false), 100);
+                      // Add delay to prevent flickering when moving to dropdown
+                      setTimeout(() => setIsMarketplaceModalOpened(false), 150);
                     }}
                   >
                     <button
