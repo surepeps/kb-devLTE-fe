@@ -261,7 +261,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       e.stopPropagation();
                       setIsUserProfileModal(!isUserProfileModalOpened);
                       // Close other dropdowns
-                      setIsMarketplaceModalOpened(false);
+                      setOpenDropdown(null);
                       setIsNotificationModalOpened(false);
                     }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
