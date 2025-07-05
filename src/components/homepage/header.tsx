@@ -196,7 +196,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   href={item.url}
                   onClick={() => {
                     // Close any open dropdowns
-                    setIsMarketplaceModalOpened(false);
+                    setOpenDropdown(null);
                     const updatedNav = navigationState.map((navItem) =>
                       navItem.name === item.name
                         ? { ...navItem, isClicked: true }
