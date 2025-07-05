@@ -16,10 +16,10 @@ interface SearchFilters {
   desireFeature?: string[];
   homeCondition?: string;
   tenantCriteria?: string[];
-  type?: string;
-  briefType?: string;
+  type?: string[];
+  briefType?: string[];
   isPremium?: boolean;
-  isPreference?: boolean;
+  isPreference?: boolean[];
   status?: "approved" | "pending" | "all";
 }
 
@@ -131,6 +131,39 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
     }));
   };
 
+  const handlePricePresetSelect = (preset: { min: number; max?: number }) => {
+    setPriceRange({
+      min: preset.min.toString(),
+      max: preset.max ? preset.max.toString() : "",
+    });
+    setFilters((prev) => ({
+      ...prev,
+      priceRange: preset,
+    }));
+    setShowPriceDropdown(false);
+  };
+
+  const handleMultiSelectChange = (
+    key: keyof SearchFilters,
+    value: any,
+    checked: boolean,
+  ) => {
+    setFilters((prev) => {
+      const currentArray = (prev[key] as any[]) || [];
+      if (checked) {
+        return {
+          ...prev,
+          [key]: [...currentArray, value],
+        };
+      } else {
+        return {
+          ...prev,
+          [key]: currentArray.filter((item) => item !== value),
+        };
+      }
+    });
+  };
+
   const handleSearch = () => {
     onSearch(filters);
   };
@@ -138,11 +171,16 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
   const handleReset = () => {
     setFilters({
       status: "all",
-      briefType: "",
+      briefType: [],
+      type: [],
       isPremium: undefined,
-      isPreference: undefined,
+      isPreference: [],
     });
     setPriceRange({ min: "", max: "" });
+    setShowTypeDropdown(false);
+    setShowBriefTypeDropdown(false);
+    setShowPreferenceDropdown(false);
+    setShowPriceDropdown(false);
     onSearch({});
   };
 
@@ -157,12 +195,33 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
     if (filters.desireFeature?.length) count++;
     if (filters.homeCondition) count++;
     if (filters.tenantCriteria?.length) count++;
-    if (filters.type) count++;
-    if (filters.briefType) count++;
+    if (filters.type?.length) count++;
+    if (filters.briefType?.length) count++;
     if (filters.isPremium !== undefined) count++;
-    if (filters.isPreference !== undefined) count++;
+    if (filters.isPreference?.length) count++;
     if (filters.status !== "all") count++;
     return count;
+  };
+
+  const formatSelectedItems = (items: string[]) => {
+    if (items.length === 0) return "";
+    if (items.length === 1) return items[0];
+    return `${items[0]} +${items.length - 1} more`;
+  };
+
+  const formatPriceDisplay = () => {
+    if (priceRange.min || priceRange.max) {
+      const min = priceRange.min
+        ? `₦${Number(priceRange.min).toLocaleString()}`
+        : "";
+      const max = priceRange.max
+        ? `₦${Number(priceRange.max).toLocaleString()}`
+        : "";
+      if (min && max) return `${min} - ${max}`;
+      if (min) return `${min} +`;
+      if (max) return `Up to ${max}`;
+    }
+    return "Select price range";
   };
 
   return (
@@ -209,22 +268,52 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
           </div>
 
           {/* Brief Type Filter */}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-[#09391C] mb-2">
               Brief Type
             </label>
-            <select
-              value={filters.briefType || ""}
-              onChange={(e) => handleFilterChange("briefType", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+            <button
+              type="button"
+              onClick={() => setShowBriefTypeDropdown(!showBriefTypeDropdown)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-left flex items-center justify-between"
             >
-              <option value="">All Types</option>
-              {briefTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+              <span className="truncate">
+                {filters.briefType?.length
+                  ? formatSelectedItems(filters.briefType)
+                  : "Select brief types"}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${showBriefTypeDropdown ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {showBriefTypeDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                <div className="p-2 max-h-40 overflow-y-auto">
+                  {briefTypes.map((type) => (
+                    <label
+                      key={type}
+                      className="flex items-center p-2 hover:bg-gray-50 cursor-pointer rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={(filters.briefType || []).includes(type)}
+                        onChange={(e) =>
+                          handleMultiSelectChange(
+                            "briefType",
+                            type,
+                            e.target.checked,
+                          )
+                        }
+                        className="mr-2 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                      />
+                      <span className="text-sm">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Location */}
@@ -242,50 +331,119 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
           </div>
 
           {/* Property Type */}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-[#09391C] mb-2">
               Property Type
             </label>
-            <select
-              value={filters.type || ""}
-              onChange={(e) => handleFilterChange("type", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+            <button
+              type="button"
+              onClick={() => setShowTypeDropdown(!showTypeDropdown)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-left flex items-center justify-between"
             >
-              <option value="">All Types</option>
-              {propertyTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+              <span className="truncate">
+                {filters.type?.length
+                  ? formatSelectedItems(filters.type)
+                  : "Select property types"}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${showTypeDropdown ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {showTypeDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                <div className="p-2 max-h-40 overflow-y-auto">
+                  {propertyTypes.map((type) => (
+                    <label
+                      key={type}
+                      className="flex items-center p-2 hover:bg-gray-50 cursor-pointer rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={(filters.type || []).includes(type)}
+                        onChange={(e) =>
+                          handleMultiSelectChange(
+                            "type",
+                            type,
+                            e.target.checked,
+                          )
+                        }
+                        className="mr-2 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                      />
+                      <span className="text-sm">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Price Range */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+        <div className="space-y-4">
+          <div className="relative">
             <label className="block text-sm font-medium text-[#09391C] mb-2">
-              Min Price (₦)
+              Price Range
             </label>
-            <input
-              type="number"
-              value={priceRange.min}
-              onChange={(e) => handlePriceRangeChange("min", e.target.value)}
-              placeholder="Minimum price"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#09391C] mb-2">
-              Max Price (₦)
-            </label>
-            <input
-              type="number"
-              value={priceRange.max}
-              onChange={(e) => handlePriceRangeChange("max", e.target.value)}
-              placeholder="Maximum price"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-            />
+            <button
+              type="button"
+              onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-left flex items-center justify-between"
+            >
+              <span className="truncate">{formatPriceDisplay()}</span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${showPriceDropdown ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {showPriceDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                <div className="p-3 space-y-3">
+                  <div className="text-xs font-medium text-[#09391C] mb-2">
+                    Quick Select:
+                  </div>
+                  <div className="grid gap-1">
+                    {priceRangePresets.map((preset, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handlePricePresetSelect(preset)}
+                        className="text-left p-2 text-sm hover:bg-gray-50 rounded transition-colors"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="border-t pt-3">
+                    <div className="text-xs font-medium text-[#09391C] mb-2">
+                      Custom Range:
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="number"
+                        value={priceRange.min}
+                        onChange={(e) =>
+                          handlePriceRangeChange("min", e.target.value)
+                        }
+                        placeholder="Min price"
+                        className="px-2 py-1 border border-gray-300 rounded text-xs"
+                      />
+                      <input
+                        type="number"
+                        value={priceRange.max}
+                        onChange={(e) =>
+                          handlePriceRangeChange("max", e.target.value)
+                        }
+                        placeholder="Max price"
+                        className="px-2 py-1 border border-gray-300 rounded text-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
