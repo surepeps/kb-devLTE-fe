@@ -69,10 +69,10 @@ interface SearchFilters {
   desireFeature?: string[];
   homeCondition?: string;
   tenantCriteria?: string[];
-  type?: string;
-  briefType?: string;
+  type?: string[];
+  briefType?: string[];
   isPremium?: boolean;
-  isPreference?: boolean;
+  isPreference?: boolean[];
   status?: "approved" | "pending" | "all";
 }
 
