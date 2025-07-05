@@ -18,7 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import SideBar from "../general-components/sideBar";
 import { FaCaretDown } from "react-icons/fa";
 import useClickOutside from "@/hooks/clickOutside";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
 import notificationBellIcon from "@/svgs/bell.svg";
 import userIcon from "@/svgs/user.svg";
