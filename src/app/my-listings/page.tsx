@@ -69,10 +69,10 @@ interface SearchFilters {
   desireFeature?: string[];
   homeCondition?: string;
   tenantCriteria?: string[];
-  type?: string;
-  briefType?: string;
+  type?: string[];
+  briefType?: string[];
   isPremium?: boolean;
-  isPreference?: boolean;
+  isPreference?: boolean[];
   status?: "approved" | "pending" | "all";
 }
 
@@ -289,11 +289,11 @@ const MyListingPage = () => {
   const stats = getApprovalStats();
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-8">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-[#EEF1F1] py-4 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
+          <div className="flex-1">
             <nav className="text-sm text-[#5A5D63] mb-4">
               <button
                 onClick={() => router.push("/")}
@@ -304,19 +304,20 @@ const MyListingPage = () => {
               <span className="mx-2">›</span>
               <span className="text-[#09391C] font-medium">My Listings</span>
             </nav>
-            <h1 className="text-3xl font-bold text-[#09391C] font-display">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
               My Property Briefs
             </h1>
-            <p className="text-[#5A5D63] mt-2">
+            <p className="text-[#5A5D63] mt-2 text-sm sm:text-base">
               Manage and view all your property briefs
             </p>
           </div>
           <Link
             href="/post_property"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors text-sm sm:text-base w-full sm:w-auto"
           >
-            <Plus size={20} />
-            Add New Property
+            <Plus size={18} sm:size={20} />
+            <span className="hidden sm:inline">Add New Property</span>
+            <span className="sm:hidden">Add Property</span>
           </Link>
         </div>
 
@@ -334,49 +335,55 @@ const MyListingPage = () => {
         ) : (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-[#09391C] mb-1">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-[#09391C] mb-1">
                   {filteredBriefs.length}
                 </div>
-                <div className="text-sm text-[#5A5D63]">
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
                   {hasActiveFilters ? "Filtered" : "Total"} Briefs
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-emerald-600 mb-1">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-emerald-600 mb-1">
                   {stats.approved}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Approved</div>
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
+                  Approved
+                </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-amber-600 mb-1">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-amber-600 mb-1">
                   {stats.pending}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Under Review</div>
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
+                  Under Review
+                </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <div className="text-2xl font-bold text-red-600 mb-1">
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
+                <div className="text-xl sm:text-2xl font-bold text-red-600 mb-1">
                   {stats.rejected}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Rejected</div>
+                <div className="text-xs sm:text-sm text-[#5A5D63]">
+                  Rejected
+                </div>
               </div>
             </div>
 
             {/* Results Info */}
             {hasActiveFilters && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div className="mb-4 sm:mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl gap-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-blue-700 font-medium">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                    <span className="text-xs sm:text-sm text-blue-700 font-medium">
                       Showing {filteredBriefs.length} result
                       {filteredBriefs.length !== 1 ? "s" : ""} from your search
                     </span>
                   </div>
                   <button
                     onClick={handleClearFilters}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium underline"
+                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium underline self-start sm:self-auto"
                   >
                     Clear filters
                   </button>
@@ -385,12 +392,13 @@ const MyListingPage = () => {
             )}
 
             {/* Briefs Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {getCurrentPageBriefs().map((brief) => (
                 <BriefCard
                   key={brief._id}
                   brief={brief}
                   onView={() => handleViewBrief(brief)}
+                  onEdit={() => {}}
                   onDelete={() => handleDeleteBrief(brief)}
                   onShare={() => handleShareBrief(brief)}
                 />
