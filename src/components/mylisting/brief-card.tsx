@@ -9,10 +9,6 @@ import {
   Bath,
   Car,
   Calendar,
-  Eye,
-  Edit,
-  Trash,
-  Share,
   CheckCircle,
   XCircle,
   Clock,
@@ -24,6 +20,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ImageSlider from "./ImageSlider";
+import ActionDropdown from "./ActionDropdown";
 
 interface Brief {
   _id: string;
@@ -248,7 +245,6 @@ const BriefCard: React.FC<BriefCardProps> = ({
         <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
           {brief.additionalFeatures?.noOfBedroom && (
             <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
-
               <Bed className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8DDB90] flex-shrink-0" />
               <span>{brief.additionalFeatures.noOfBedroom}</span>
             </div>
@@ -330,45 +326,14 @@ const BriefCard: React.FC<BriefCardProps> = ({
             </span>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            {onView && (
-              <button
-                onClick={onView}
-                className="p-1.5 sm:p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
-                title="View Details"
-              >
-                <Eye size={14} className="sm:w-4 sm:h-4" />
-              </button>
-            )}
-            {onEdit && (
-              <button
-                onClick={handleEditClick}
-                className="p-1.5 sm:p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
-                title="Edit Brief"
-              >
-                <Edit size={14} className="sm:w-4 sm:h-4" />
-              </button>
-            )}
-            {onShare && (
-              <button
-                onClick={onShare}
-                className="p-1.5 sm:p-2 text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50 rounded-lg transition-colors"
-                title="Share"
-              >
-                <Share size={14} className="sm:w-4 sm:h-4" />
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={onDelete}
-                className="p-1.5 sm:p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                title="Delete"
-              >
-                <Trash size={14} className="sm:w-4 sm:h-4" />
-              </button>
-            )}
-          </div>
+          {/* Action Dropdown */}
+          <ActionDropdown
+            briefId={brief._id}
+            onView={onView}
+            onEdit={handleEditClick}
+            onShare={onShare}
+            onDelete={onDelete}
+          />
         </div>
       </div>
     </motion.div>
