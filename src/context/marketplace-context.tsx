@@ -184,7 +184,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   const [properties, setProperties] = useState<any[]>([]);
   const [formikStatus, setFormikStatus] = useState<
     "idle" | "pending" | "success" | "failed"
-  >("success");
+  >("idle");
   const [errMessage, setErrMessage] = useState<string>("");
 
   // Pagination state
@@ -491,6 +491,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   // Simple data fetching for initial load (backward compatibility)
   const fetchInitialData = useCallback(
     async (briefType: string) => {
+      if (!isMountedRef.current) return;
+
+      console.log("Fetching initial data for briefType:", briefType);
       const searchParams: SearchParams = {
         briefType,
         page: 1,
@@ -500,6 +503,17 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [searchProperties, itemsPerPage],
   );
+
+  // Auto-fetch initial data on mount if market type is set
+  useEffect(() => {
+    if (selectedMarketType && formikStatus === "idle") {
+      console.log(
+        "Auto-fetching initial data for:",
+        selectedMarketType.briefType,
+      );
+      fetchInitialData(selectedMarketType.briefType);
+    }
+  }, [selectedMarketType, fetchInitialData, formikStatus]);
 
   // Search filters state
   const [searchLocation, setSearchLocation] = useState<{
