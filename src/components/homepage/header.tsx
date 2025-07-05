@@ -145,7 +145,21 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       setIsUserProfileModal(false);
                       setOpenDropdown(item.name);
                     }}
-                    onMouseLeave={() => {
+                    onMouseLeave={(e) => {
+                      // Check if mouse is moving to the dropdown or staying within the container
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const mouseX = e.clientX;
+                      const mouseY = e.clientY;
+
+                      // If mouse is below the container (moving to dropdown), don't close
+                      if (
+                        mouseY > rect.bottom &&
+                        mouseX >= rect.left &&
+                        mouseX <= rect.right
+                      ) {
+                        return;
+                      }
+
                       // Add delay to prevent flickering when moving to dropdown
                       setTimeout(() => {
                         setOpenDropdown(null);
@@ -449,7 +463,21 @@ const DropdownOptions = ({
       ref={ref}
       className="w-[231px] mt-[15px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute left-0 z-[999]"
       onMouseEnter={() => setModal(true)}
-      onMouseLeave={() => {
+      onMouseLeave={(e) => {
+        // Check if mouse is moving back to parent container
+        const dropdownRect = e.currentTarget.getBoundingClientRect();
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        // If mouse is above the dropdown (moving back to parent), don't close immediately
+        if (
+          mouseY < dropdownRect.top &&
+          mouseX >= dropdownRect.left &&
+          mouseX <= dropdownRect.right
+        ) {
+          return;
+        }
+
         setTimeout(() => {
           setModal(false);
         }, 150);
