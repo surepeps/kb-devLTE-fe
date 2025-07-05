@@ -596,29 +596,58 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
                     <option value="false">Regular Only</option>
                   </select>
                 </div>
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-[#09391C] mb-2">
                     Preference Status
                   </label>
-                  <select
-                    value={
-                      filters.isPreference === undefined
-                        ? ""
-                        : filters.isPreference.toString()
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPreferenceDropdown(!showPreferenceDropdown)
                     }
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      handleFilterChange(
-                        "isPreference",
-                        value === "" ? undefined : value === "true",
-                      );
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-left flex items-center justify-between"
                   >
-                    <option value="">All</option>
-                    <option value="true">Preference Only</option>
-                    <option value="false">Non-Preference Only</option>
-                  </select>
+                    <span className="truncate">
+                      {filters.isPreference?.length
+                        ? filters.isPreference
+                            .map((p) => (p ? "Preference" : "Non-Preference"))
+                            .join(", ")
+                        : "Select preference status"}
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform ${showPreferenceDropdown ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {showPreferenceDropdown && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                      <div className="p-2 max-h-40 overflow-y-auto">
+                        {preferenceOptions.map((option) => (
+                          <label
+                            key={option.label}
+                            className="flex items-center p-2 hover:bg-gray-50 cursor-pointer rounded"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={(filters.isPreference || []).includes(
+                                option.value,
+                              )}
+                              onChange={(e) =>
+                                handleMultiSelectChange(
+                                  "isPreference",
+                                  option.value,
+                                  e.target.checked,
+                                )
+                              }
+                              className="mr-2 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                            />
+                            <span className="text-sm">{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
