@@ -421,12 +421,14 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   );
 };
 
-const MarketplaceOptions = ({
+const DropdownOptions = ({
   setModal,
   items,
+  parentName,
 }: {
   setModal: (type: boolean) => void;
   items: NavigationItem[];
+  parentName: string;
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const { setSelectedType } = usePageContext();
@@ -441,6 +443,7 @@ const MarketplaceOptions = ({
       transition={{ duration: 0.2 }}
       ref={ref}
       className="w-[231px] mt-[15px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute left-0 z-[999]"
+      onMouseEnter={() => setModal(true)}
       onMouseLeave={() => setModal(false)}
       style={{
         top: "100%",
@@ -452,12 +455,15 @@ const MarketplaceOptions = ({
         <Link
           onClick={(e) => {
             e.preventDefault();
-            if (item.name === "Buy") {
-              setSelectedType("Buy a property");
-            } else if (item.name === "Rent") {
-              setSelectedType("Rent/Lease a property");
-            } else if (item.name === "Joint Venture") {
-              setSelectedType("Find property for joint venture");
+            // Handle marketplace specific logic
+            if (parentName === "Marketplace") {
+              if (item.name === "Buy") {
+                setSelectedType("Buy a property");
+              } else if (item.name === "Rent") {
+                setSelectedType("Rent/Lease a property");
+              } else if (item.name === "Joint Venture") {
+                setSelectedType("Find property for joint venture");
+              }
             }
             setModal(false);
             // Navigate after setting type
