@@ -115,26 +115,47 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 return (
                   <div
                     key={idx}
-                    className="flex flex-col"
-                    onMouseEnter={() => setIsMarketplaceModalOpened(true)}
+                    className="relative flex flex-col"
+                    onMouseEnter={() => {
+                      // Close other dropdowns if any
+                      setIsMarketplaceModalOpened(true);
+                    }}
+                    onMouseLeave={() => {
+                      // Add small delay to prevent flickering
+                      setTimeout(() => setIsMarketplaceModalOpened(false), 100);
+                    }}
                   >
-                    <div className="flex items-center gap-1 cursor-pointer">
+                    <button
+                      className="flex items-center gap-1 cursor-pointer py-2"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsMarketplaceModalOpened(!isMarketplaceModalOpened);
+                      }}
+                    >
                       <span
-                        className={`transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          item.url === pathName
+                        className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                          pathName.includes(item.url) ||
+                          isMarketplaceModalOpened
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}
                       >
                         {item.name}
                       </span>
-                    </div>
-                    {isMarketplaceModalOpened && (
-                      <MarketplaceOptions
-                        setModal={setIsMarketplaceModalOpened}
-                        items={item.subItems}
+                      <FaCaretDown
+                        className={`transition-transform duration-200 w-3 h-3 ${
+                          isMarketplaceModalOpened ? "rotate-180" : ""
+                        }`}
                       />
-                    )}
+                    </button>
+                    <AnimatePresence>
+                      {isMarketplaceModalOpened && (
+                        <MarketplaceOptions
+                          setModal={setIsMarketplaceModalOpened}
+                          items={item.subItems}
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               }
@@ -143,6 +164,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   key={idx}
                   href={item.url}
                   onClick={() => {
+                    // Close any open dropdowns
+                    setIsMarketplaceModalOpened(false);
                     const updatedNav = navigationState.map((navItem) =>
                       navItem.name === item.name
                         ? { ...navItem, isClicked: true }
@@ -150,7 +173,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     );
                     setNavigationState(updatedNav);
                   }}
-                  className={`transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                  className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] py-2 ${
                     item.url === pathName ? "text-[#8DDB90]" : "text-[#000000]"
                   }`}
                 >
