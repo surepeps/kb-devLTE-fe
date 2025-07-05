@@ -34,15 +34,33 @@ const MyListingFilters: React.FC<MyListingFiltersProps> = ({
 }) => {
   const [filters, setFilters] = useState<SearchFilters>({
     status: "all",
-    briefType: "",
+    briefType: [],
+    type: [],
     isPremium: undefined,
-    isPreference: undefined,
+    isPreference: [],
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const [showBriefTypeDropdown, setShowBriefTypeDropdown] = useState(false);
+  const [showPreferenceDropdown, setShowPreferenceDropdown] = useState(false);
+  const [showPriceDropdown, setShowPriceDropdown] = useState(false);
 
   const propertyTypes = ["Land", "Residential", "Commercial", "Duplex"];
   const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
+  const preferenceOptions = [
+    { label: "Preference", value: true },
+    { label: "Non-Preference", value: false },
+  ];
+  const priceRangePresets = [
+    { label: "Under ₦500K", min: 0, max: 500000 },
+    { label: "₦500K - ₦1M", min: 500000, max: 1000000 },
+    { label: "₦1M - ₦5M", min: 1000000, max: 5000000 },
+    { label: "₦5M - ₦10M", min: 5000000, max: 10000000 },
+    { label: "₦10M - ₦50M", min: 10000000, max: 50000000 },
+    { label: "₦50M - ₦100M", min: 50000000, max: 100000000 },
+    { label: "Above ₦100M", min: 100000000, max: undefined },
+  ];
   const documentTypes = [
     "Certificate of Occupancy",
     "Deed of Assignment",
