@@ -391,6 +391,7 @@ const MyListingPage = () => {
                   key={brief._id}
                   brief={brief}
                   onView={() => handleViewBrief(brief)}
+                  onEdit={() => {}}
                   onDelete={() => handleDeleteBrief(brief)}
                   onShare={() => handleShareBrief(brief)}
                 />
