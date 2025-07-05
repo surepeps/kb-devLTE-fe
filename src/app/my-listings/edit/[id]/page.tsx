@@ -4,14 +4,30 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Save, Loader, Home } from "lucide-react";
+import { ArrowLeft, Save, Loader, Home, Upload, X } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import ReactSelect from "react-select";
+import PhoneInput from "react-phone-number-input";
 import { PUT_REQUEST, GET_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Loading from "@/components/loading-component/loading";
+import customStyles from "@/styles/inputStyle";
+import {
+  getStates,
+  getLGAsByState,
+  getAreasByStateLGA,
+} from "@/utils/location-utils";
+import { propertyReferenceData } from "@/data/buy_page_data";
+import {
+  featuresData,
+  DocOnPropertyData,
+  JvConditionData,
+} from "@/data/buy_data";
+import { tenantCriteriaData } from "@/data/landlord";
+import "react-phone-number-input/style.css";
 
 interface Brief {
   _id: string;
@@ -52,13 +68,36 @@ interface Brief {
     noOfToilet?: string;
     noOfCarPark?: string;
   };
+  propertyCategory?: string;
+  rentalType?: string;
+  typeOfBuilding?: string;
+  description?: string;
+  isTenanted?: string;
+  contactInfo?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  documents?: string[];
+  jvConditions?: string[];
+  holdDuration?: number;
+  leaseHold?: number;
+  isLegalOwner?: boolean;
+  ownershipDocuments?: string[];
+  additionalInfo?: string;
+}
+
+interface Option {
+  value: string;
+  label: string;
 }
 
 const validationSchema = Yup.object({
   price: Yup.number()
     .required("Price is required")
     .min(1, "Price must be greater than 0"),
-  propertyCondition: Yup.string().required("Property condition is required"),
+  propertyCondition: Yup.string(),
   isAvailable: Yup.string().required("Availability status is required"),
   location: Yup.object({
     state: Yup.string().required("State is required"),
@@ -71,11 +110,17 @@ const validationSchema = Yup.object({
       .min(1, "Land size must be greater than 0"),
     measurementType: Yup.string().required("Measurement type is required"),
   }),
-  additionalFeatures: Yup.object({
-    noOfBedroom: Yup.string(),
-    noOfBathroom: Yup.string(),
-    noOfToilet: Yup.string(),
-    noOfCarPark: Yup.string(),
+  propertyCategory: Yup.string().required("Property category is required"),
+  typeOfBuilding: Yup.string().when("propertyCategory", {
+    is: (val: string) => val !== "Land",
+    then: (schema) => schema.required("Building type is required"),
+    otherwise: (schema) => schema,
+  }),
+  contactInfo: Yup.object({
+    firstName: Yup.string().required("First name is required"),
+    lastName: Yup.string().required("Last name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    phone: Yup.string().required("Phone number is required"),
   }),
 });
 
@@ -92,31 +137,17 @@ const EditBriefPage = () => {
   const [selectedTenantCriteria, setSelectedTenantCriteria] = useState<
     string[]
   >([]);
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+  const [selectedJvConditions, setSelectedJvConditions] = useState<string[]>(
+    [],
+  );
+  const [selectedOwnershipDocs, setSelectedOwnershipDocs] = useState<string[]>(
+    [],
+  );
+  const [stateOptions, setStateOptions] = useState<Option[]>([]);
+  const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
+  const [areaOptions, setAreaOptions] = useState<Option[]>([]);
   const [hasFetched, setHasFetched] = useState(false);
-
-  const availableFeatures = [
-    "Air conditioner",
-    "POP Ceilings",
-    "Built-in cupboards",
-    "Staff Room",
-    "In-house Cinema",
-    "Parking",
-    "Gym house",
-    "Children Playground",
-    "Bath Tub",
-    "Walk-in closet",
-    "Outdoor Kitchen",
-  ];
-
-  const availableTenantCriteria = [
-    "No smoking",
-    "No pets",
-    "Family only",
-    "Working professionals",
-    "Students welcome",
-    "Short term lease",
-    "Long term lease",
-  ];
 
   const propertyConditions = [
     "New",
@@ -125,7 +156,6 @@ const EditBriefPage = () => {
     "Fair",
     "Needs renovation",
   ];
-
   const measurementTypes = [
     "Plot",
     "Acres",
@@ -133,6 +163,14 @@ const EditBriefPage = () => {
     "Square feet",
     "Hectares",
   ];
+
+  useEffect(() => {
+    const states = getStates().map((state: string) => ({
+      value: state,
+      label: state,
+    }));
+    setStateOptions(states);
+  }, []);
 
   useEffect(() => {
     if (briefId && !hasFetched) {
@@ -158,6 +196,32 @@ const EditBriefPage = () => {
         setBrief(briefData);
         setSelectedFeatures(briefData.features || []);
         setSelectedTenantCriteria(briefData.tenantCriteria || []);
+        setSelectedDocuments(briefData.documents || []);
+        setSelectedJvConditions(briefData.jvConditions || []);
+        setSelectedOwnershipDocs(briefData.ownershipDocuments || []);
+
+        // Update location options based on brief data
+        if (briefData.location.state) {
+          const lgas = getLGAsByState(briefData.location.state).map(
+            (lga: string) => ({
+              value: lga,
+              label: lga,
+            }),
+          );
+          setLgaOptions(lgas);
+        }
+
+        if (briefData.location.state && briefData.location.localGovernment) {
+          const areas = getAreasByStateLGA(
+            briefData.location.state,
+            briefData.location.localGovernment,
+          ).map((area: string) => ({
+            value: area,
+            label: area,
+          }));
+          setAreaOptions(areas);
+        }
+
         setError(null);
       } else {
         const errorMessage =
@@ -180,6 +244,11 @@ const EditBriefPage = () => {
         ...values,
         features: selectedFeatures,
         tenantCriteria: selectedTenantCriteria,
+        documents: selectedDocuments,
+        jvConditions: selectedJvConditions,
+        ownershipDocuments: selectedOwnershipDocs,
+        briefType: brief?.briefType,
+        propertyType: brief?.propertyType,
       };
 
       const response = await PUT_REQUEST(
@@ -202,19 +271,13 @@ const EditBriefPage = () => {
     }
   };
 
-  const toggleFeature = (feature: string) => {
-    setSelectedFeatures((prev) =>
-      prev.includes(feature)
-        ? prev.filter((f) => f !== feature)
-        : [...prev, feature],
-    );
-  };
-
-  const toggleTenantCriteria = (criteria: string) => {
-    setSelectedTenantCriteria((prev) =>
-      prev.includes(criteria)
-        ? prev.filter((c) => c !== criteria)
-        : [...prev, criteria],
+  const toggleArrayItem = (
+    item: string,
+    array: string[],
+    setArray: (arr: string[]) => void,
+  ) => {
+    setArray(
+      array.includes(item) ? array.filter((i) => i !== item) : [...array, item],
     );
   };
 
@@ -275,32 +338,58 @@ const EditBriefPage = () => {
   }
 
   const initialValues = {
-    price: brief.price,
-    propertyCondition: brief.propertyCondition,
-    isAvailable: brief.isAvailable,
+    // Basic Details
+    price: brief?.price || 0,
+    propertyCondition: brief?.propertyCondition || "",
+    isAvailable: brief?.isAvailable || "",
+    propertyCategory: brief?.propertyCategory || "Residential",
+    rentalType: brief?.rentalType || "",
+    typeOfBuilding: brief?.typeOfBuilding || "",
+    description: brief?.description || "",
+
+    // Location
     location: {
-      state: brief.location.state,
-      localGovernment: brief.location.localGovernment,
-      area: brief.location.area,
+      state: brief?.location?.state || "",
+      localGovernment: brief?.location?.localGovernment || "",
+      area: brief?.location?.area || "",
     },
+
+    // Land Size
     landSize: {
-      size: brief.landSize.size,
-      measurementType: brief.landSize.measurementType,
+      size: brief?.landSize?.size || 0,
+      measurementType: brief?.landSize?.measurementType || "",
     },
+
+    // Property Details
     additionalFeatures: {
-      noOfBedroom: brief.additionalFeatures?.noOfBedroom || "",
-      noOfBathroom: brief.additionalFeatures?.noOfBathroom || "",
-      noOfToilet: brief.additionalFeatures?.noOfToilet || "",
-      noOfCarPark: brief.additionalFeatures?.noOfCarPark || "",
+      noOfBedroom: brief?.additionalFeatures?.noOfBedroom || "",
+      noOfBathroom: brief?.additionalFeatures?.noOfBathroom || "",
+      noOfToilet: brief?.additionalFeatures?.noOfToilet || "",
+      noOfCarPark: brief?.additionalFeatures?.noOfCarPark || "",
     },
-    areYouTheOwner: brief.areYouTheOwner,
+
+    // Contact Information
+    contactInfo: {
+      firstName: brief?.contactInfo?.firstName || "",
+      lastName: brief?.contactInfo?.lastName || "",
+      email: brief?.contactInfo?.email || "",
+      phone: brief?.contactInfo?.phone || "",
+    },
+
+    // Additional Fields
+    areYouTheOwner: brief?.areYouTheOwner || false,
+    isLegalOwner: brief?.isLegalOwner ?? true,
+    isTenanted: brief?.isTenanted || "",
+    additionalInfo: brief?.additionalInfo || "",
+    holdDuration: brief?.holdDuration || 0,
+    leaseHold: brief?.leaseHold || 0,
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-8">
-      <div className="container mx-auto px-6 max-w-4xl">
+    <div className="min-h-screen bg-[#EEF1F1] py-4 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <nav className="text-sm text-[#5A5D63] mb-4 flex items-center gap-2">
             <button
               onClick={() => router.push("/")}
@@ -309,7 +398,7 @@ const EditBriefPage = () => {
               <Home size={16} />
               Home
             </button>
-            <span>���</span>
+            <span>›</span>
             <button
               onClick={() => router.push("/my-listings")}
               className="hover:text-[#09391C]"
@@ -328,11 +417,11 @@ const EditBriefPage = () => {
               <ArrowLeft size={20} className="text-[#09391C]" />
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-[#09391C] font-display">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
                 Edit Property Brief
               </h1>
-              <p className="text-[#5A5D63] mt-1">
-                Update your {brief.propertyType} brief details
+              <p className="text-[#5A5D63] mt-1 text-sm sm:text-base">
+                Update your {brief?.propertyType} brief details
               </p>
             </div>
           </div>
@@ -344,28 +433,61 @@ const EditBriefPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
         >
-          <div className="p-8">
+          <div className="p-4 sm:p-8">
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
               {({ errors, touched, values, setFieldValue }) => (
-                <Form className="space-y-8">
+                <Form className="space-y-6 sm:space-y-8">
                   {/* Basic Information */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-[#09391C] mb-6">
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
                       Basic Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {/* Property Category */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-[#09391C] mb-3">
+                        Property Category *
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                        {["Residential", "Commercial", "Land"].map(
+                          (category) => (
+                            <button
+                              key={category}
+                              type="button"
+                              onClick={() =>
+                                setFieldValue("propertyCategory", category)
+                              }
+                              className={`p-3 sm:p-4 border-2 rounded-lg text-center transition-all text-sm sm:text-base ${
+                                values.propertyCategory === category
+                                  ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
+                                  : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
+                              }`}
+                            >
+                              {category}
+                            </button>
+                          ),
+                        )}
+                      </div>
+                      <ErrorMessage
+                        name="propertyCategory"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Price (₦)
+                          Price (₦) *
                         </label>
                         <Field
                           name="price"
                           type="number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
                           placeholder="Enter price"
                         />
                         <ErrorMessage
@@ -375,77 +497,141 @@ const EditBriefPage = () => {
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Property Condition
-                        </label>
-                        <Field
-                          as="select"
-                          name="propertyCondition"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                        >
-                          <option value="">Select condition</option>
-                          {propertyConditions.map((condition) => (
-                            <option key={condition} value={condition}>
-                              {condition}
-                            </option>
-                          ))}
-                        </Field>
-                        <ErrorMessage
-                          name="propertyCondition"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
+                      {brief?.briefType === "rent" && (
+                        <div>
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Lease Hold
+                          </label>
+                          <Field
+                            name="leaseHold"
+                            type="number"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                            placeholder="Enter lease hold amount"
+                          />
+                        </div>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Availability */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-[#09391C] mb-4">
-                      Availability
-                    </h3>
-                    <div className="flex gap-6">
-                      <label className="flex items-center cursor-pointer">
-                        <Field
-                          type="radio"
-                          name="isAvailable"
-                          value="yes"
-                          className="mr-3 h-4 w-4 text-[#8DDB90] border-gray-300 focus:ring-[#8DDB90]"
-                        />
-                        <span className="text-[#5A5D63]">Available</span>
+                    {/* Rental Type for rent properties */}
+                    {brief?.briefType === "rent" &&
+                      values.propertyCategory !== "Land" && (
+                        <div className="mt-6">
+                          <label className="block text-sm font-medium text-[#09391C] mb-3">
+                            Rental Type *
+                          </label>
+                          <div className="flex gap-4 sm:gap-6">
+                            <label className="flex items-center text-sm sm:text-base">
+                              <Field
+                                type="radio"
+                                name="rentalType"
+                                value="Rent"
+                                className="mr-2"
+                              />
+                              Rent
+                            </label>
+                            <label className="flex items-center text-sm sm:text-base">
+                              <Field
+                                type="radio"
+                                name="rentalType"
+                                value="Lease"
+                                className="mr-2"
+                              />
+                              Lease
+                            </label>
+                          </div>
+                        </div>
+                      )}
+
+                    {/* Property Condition */}
+                    {brief?.briefType === "rent" &&
+                      values.propertyCategory !== "Land" && (
+                        <div className="mt-6">
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Property Condition
+                          </label>
+                          <Field
+                            as="select"
+                            name="propertyCondition"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                          >
+                            <option value="">Select condition</option>
+                            {propertyConditions.map((condition) => (
+                              <option key={condition} value={condition}>
+                                {condition}
+                              </option>
+                            ))}
+                          </Field>
+                        </div>
+                      )}
+
+                    {/* Availability */}
+                    <div className="mt-6">
+                      <label className="block text-sm font-medium text-[#09391C] mb-3">
+                        Availability *
                       </label>
-                      <label className="flex items-center cursor-pointer">
-                        <Field
-                          type="radio"
-                          name="isAvailable"
-                          value="no"
-                          className="mr-3 h-4 w-4 text-[#8DDB90] border-gray-300 focus:ring-[#8DDB90]"
-                        />
-                        <span className="text-[#5A5D63]">Not Available</span>
-                      </label>
+                      <div className="flex gap-4 sm:gap-6">
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isAvailable"
+                            value="yes"
+                            className="mr-2"
+                          />
+                          Available
+                        </label>
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isAvailable"
+                            value="no"
+                            className="mr-2"
+                          />
+                          Not Available
+                        </label>
+                      </div>
+                      <ErrorMessage
+                        name="isAvailable"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
                     </div>
-                    <ErrorMessage
-                      name="isAvailable"
-                      component="div"
-                      className="text-red-500 text-sm mt-2"
-                    />
                   </div>
 
                   {/* Location */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-[#09391C] mb-6">
-                      Location Details
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                      Property Location
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          State
+                          State *
                         </label>
-                        <Field
-                          name="location.state"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter state"
+                        <ReactSelect
+                          options={stateOptions}
+                          value={stateOptions.find(
+                            (opt) => opt.value === values.location.state,
+                          )}
+                          onChange={(option) => {
+                            setFieldValue(
+                              "location.state",
+                              option?.value || "",
+                            );
+                            setFieldValue("location.localGovernment", "");
+                            setFieldValue("location.area", "");
+                            if (option?.value) {
+                              const lgas = getLGAsByState(option.value).map(
+                                (lga: string) => ({
+                                  value: lga,
+                                  label: lga,
+                                }),
+                              );
+                              setLgaOptions(lgas);
+                            }
+                          }}
+                          placeholder="Select state"
+                          styles={customStyles}
+                          isSearchable
                         />
                         <ErrorMessage
                           name="location.state"
@@ -456,12 +642,35 @@ const EditBriefPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Local Government
+                          Local Government *
                         </label>
-                        <Field
-                          name="location.localGovernment"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter LGA"
+                        <ReactSelect
+                          options={lgaOptions}
+                          value={lgaOptions.find(
+                            (opt) =>
+                              opt.value === values.location.localGovernment,
+                          )}
+                          onChange={(option) => {
+                            setFieldValue(
+                              "location.localGovernment",
+                              option?.value || "",
+                            );
+                            setFieldValue("location.area", "");
+                            if (option?.value && values.location.state) {
+                              const areas = getAreasByStateLGA(
+                                values.location.state,
+                                option.value,
+                              ).map((area: string) => ({
+                                value: area,
+                                label: area,
+                              }));
+                              setAreaOptions(areas);
+                            }
+                          }}
+                          placeholder="Select LGA"
+                          styles={customStyles}
+                          isSearchable
+                          isDisabled={!values.location.state}
                         />
                         <ErrorMessage
                           name="location.localGovernment"
@@ -472,12 +681,20 @@ const EditBriefPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Area
+                          Area/Neighborhood *
                         </label>
-                        <Field
-                          name="location.area"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter area"
+                        <ReactSelect
+                          options={areaOptions}
+                          value={areaOptions.find(
+                            (opt) => opt.value === values.location.area,
+                          )}
+                          onChange={(option) =>
+                            setFieldValue("location.area", option?.value || "")
+                          }
+                          placeholder="Select area"
+                          styles={customStyles}
+                          isSearchable
+                          isDisabled={!values.location.localGovernment}
                         />
                         <ErrorMessage
                           name="location.area"
@@ -489,19 +706,19 @@ const EditBriefPage = () => {
                   </div>
 
                   {/* Land Size */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-[#09391C] mb-6">
-                      Land Size Information
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                      Land Size
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Size
+                          Size *
                         </label>
                         <Field
                           name="landSize.size"
                           type="number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
                           placeholder="Enter size"
                         />
                         <ErrorMessage
@@ -513,12 +730,12 @@ const EditBriefPage = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Measurement Type
+                          Measurement Type *
                         </label>
                         <Field
                           as="select"
                           name="landSize.measurementType"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
                         >
                           {measurementTypes.map((type) => (
                             <option key={type} value={type}>
@@ -535,142 +752,474 @@ const EditBriefPage = () => {
                     </div>
                   </div>
 
-                  {/* Room Details */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-[#09391C] mb-6">
-                      Room Details
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Bedrooms
-                        </label>
-                        <Field
-                          name="additionalFeatures.noOfBedroom"
-                          type="number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="0"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Bathrooms
-                        </label>
-                        <Field
-                          name="additionalFeatures.noOfBathroom"
-                          type="number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="0"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Toilets
-                        </label>
-                        <Field
-                          name="additionalFeatures.noOfToilet"
-                          type="number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="0"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Parking Spaces
-                        </label>
-                        <Field
-                          name="additionalFeatures.noOfCarPark"
-                          type="number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Property Features */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-[#09391C] mb-6">
-                      Property Features
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {availableFeatures.map((feature) => (
-                        <label
-                          key={feature}
-                          className="flex items-center cursor-pointer p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedFeatures.includes(feature)}
-                            onChange={() => toggleFeature(feature)}
-                            className="mr-3 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                          />
-                          <span className="text-sm text-[#5A5D63]">
-                            {feature}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Tenant Criteria (for rent properties) */}
-                  {brief.briefType === "Rent" && (
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#09391C] mb-6">
-                        Tenant Criteria
+                  {/* Property Details (for non-Land properties) */}
+                  {values.propertyCategory !== "Land" && (
+                    <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                        Property Details
                       </h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {availableTenantCriteria.map((criteria) => (
-                          <label
-                            key={criteria}
-                            className="flex items-center cursor-pointer p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedTenantCriteria.includes(
-                                criteria,
-                              )}
-                              onChange={() => toggleTenantCriteria(criteria)}
-                              className="mr-3 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                            />
-                            <span className="text-sm text-[#5A5D63]">
-                              {criteria}
-                            </span>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+                        <div>
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Type of Building *
                           </label>
-                        ))}
+                          <ReactSelect
+                            options={
+                              values.propertyCategory === "Residential"
+                                ? propertyReferenceData[0].options.map(
+                                    (option) => ({
+                                      value: option,
+                                      label: option,
+                                    }),
+                                  )
+                                : values.propertyCategory === "Commercial"
+                                  ? propertyReferenceData[1].options.map(
+                                      (option) => ({
+                                        value: option,
+                                        label: option,
+                                      }),
+                                    )
+                                  : []
+                            }
+                            value={
+                              values.typeOfBuilding
+                                ? {
+                                    value: values.typeOfBuilding,
+                                    label: values.typeOfBuilding,
+                                  }
+                                : null
+                            }
+                            onChange={(option) =>
+                              setFieldValue(
+                                "typeOfBuilding",
+                                option?.value || "",
+                              )
+                            }
+                            placeholder="Select building type"
+                            styles={customStyles}
+                          />
+                          <ErrorMessage
+                            name="typeOfBuilding"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Number of Bedrooms
+                          </label>
+                          <Field
+                            name="additionalFeatures.noOfBedroom"
+                            type="number"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Bathrooms
+                          </label>
+                          <Field
+                            name="additionalFeatures.noOfBathroom"
+                            type="number"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                            placeholder="0"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Toilets
+                          </label>
+                          <Field
+                            name="additionalFeatures.noOfToilet"
+                            type="number"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                            placeholder="0"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-[#09391C] mb-2">
+                            Parking Spaces
+                          </label>
+                          <Field
+                            name="additionalFeatures.noOfCarPark"
+                            type="number"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                            placeholder="0"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Owner Declaration */}
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                      Owner Declaration
+                  {/* Features & Conditions */}
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                      Features & Conditions
                     </h3>
-                    <label className="flex items-start cursor-pointer">
-                      <Field
-                        type="checkbox"
-                        name="areYouTheOwner"
-                        className="mr-3 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90] mt-1"
-                      />
-                      <span className="text-sm text-[#5A5D63] leading-relaxed">
-                        I confirm that I am the legal owner of this property and
-                        have the right to list it for sale, rent, or joint
-                        venture. All information provided is accurate to the
-                        best of my knowledge.
-                      </span>
-                    </label>
+
+                    {/* Documents (for sell and jv) */}
+                    {brief?.briefType !== "rent" && (
+                      <div className="mb-6 sm:mb-8">
+                        <h4 className="text-base sm:text-lg font-semibold text-[#09391C] mb-4">
+                          Documents on Property
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {DocOnPropertyData.map((document, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() =>
+                                toggleArrayItem(
+                                  document,
+                                  selectedDocuments,
+                                  setSelectedDocuments,
+                                )
+                              }
+                              className={`p-3 rounded-md border text-left transition-all text-sm ${
+                                selectedDocuments.includes(document)
+                                  ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-medium"
+                                  : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63] hover:bg-gray-50"
+                              }`}
+                            >
+                              {document}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Property Features */}
+                    <div className="mb-6 sm:mb-8">
+                      <h4 className="text-base sm:text-lg font-semibold text-[#09391C] mb-4">
+                        Property Features
+                      </h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {featuresData.map((feature, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() =>
+                              toggleArrayItem(
+                                feature,
+                                selectedFeatures,
+                                setSelectedFeatures,
+                              )
+                            }
+                            className={`p-3 rounded-md border text-left transition-all text-sm ${
+                              selectedFeatures.includes(feature)
+                                ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-medium"
+                                : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63] hover:bg-gray-50"
+                            }`}
+                          >
+                            {feature}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Tenant Criteria (for rent) */}
+                    {brief?.briefType === "rent" && (
+                      <div className="mb-6 sm:mb-8">
+                        <h4 className="text-base sm:text-lg font-semibold text-[#09391C] mb-4">
+                          Tenant Criteria
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {tenantCriteriaData.map((criteria, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() =>
+                                toggleArrayItem(
+                                  criteria,
+                                  selectedTenantCriteria,
+                                  setSelectedTenantCriteria,
+                                )
+                              }
+                              className={`p-3 sm:p-4 rounded-lg border-2 text-left transition-all text-sm ${
+                                selectedTenantCriteria.includes(criteria)
+                                  ? "border-blue-500 bg-blue-50 text-blue-900"
+                                  : "border-gray-200 hover:border-blue-500 text-gray-700"
+                              }`}
+                            >
+                              {criteria}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Joint Venture Conditions */}
+                    {brief?.briefType === "jv" && (
+                      <div className="mb-6 sm:mb-8">
+                        <h4 className="text-base sm:text-lg font-semibold text-[#09391C] mb-4">
+                          Joint Venture Terms
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {JvConditionData.map((condition, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() =>
+                                toggleArrayItem(
+                                  condition,
+                                  selectedJvConditions,
+                                  setSelectedJvConditions,
+                                )
+                              }
+                              className={`p-3 sm:p-4 rounded-lg border-2 text-left transition-all text-sm ${
+                                selectedJvConditions.includes(condition)
+                                  ? "border-purple-500 bg-purple-50 text-purple-900"
+                                  : "border-gray-200 hover:border-purple-500 text-gray-700"
+                              }`}
+                            >
+                              {condition}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Property Tenancy Status */}
+                    <div>
+                      <h4 className="text-base sm:text-lg font-semibold text-[#09391C] mb-4">
+                        Tenancy Status
+                      </h4>
+                      <div className="flex flex-wrap gap-4 sm:gap-6">
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isTenanted"
+                            value="Yes"
+                            className="mr-2"
+                          />
+                          Yes - Currently Tenanted
+                        </label>
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isTenanted"
+                            value="No"
+                            className="mr-2"
+                          />
+                          No - Vacant
+                        </label>
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isTenanted"
+                            value="I live in it"
+                            className="mr-2"
+                          />
+                          I live in it
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                      Contact Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          First Name *
+                        </label>
+                        <Field
+                          name="contactInfo.firstName"
+                          type="text"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                          placeholder="Enter first name"
+                        />
+                        <ErrorMessage
+                          name="contactInfo.firstName"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Last Name *
+                        </label>
+                        <Field
+                          name="contactInfo.lastName"
+                          type="text"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                          placeholder="Enter last name"
+                        />
+                        <ErrorMessage
+                          name="contactInfo.lastName"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Email *
+                        </label>
+                        <Field
+                          name="contactInfo.email"
+                          type="email"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-sm sm:text-base"
+                          placeholder="Enter email address"
+                        />
+                        <ErrorMessage
+                          name="contactInfo.email"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Phone Number *
+                        </label>
+                        <PhoneInput
+                          international
+                          countryCallingCodeEditable={false}
+                          defaultCountry="NG"
+                          value={values.contactInfo.phone}
+                          onChange={(value) =>
+                            setFieldValue("contactInfo.phone", value || "")
+                          }
+                          className="phone-input"
+                        />
+                        <ErrorMessage
+                          name="contactInfo.phone"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Ownership Declaration */}
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                      Ownership Declaration
+                    </h3>
+
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-[#09391C] mb-3">
+                        Legal Ownership
+                      </label>
+                      <div className="space-y-3">
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isLegalOwner"
+                            value={true}
+                            className="mr-2"
+                          />
+                          I am the legal owner of this property
+                        </label>
+                        <label className="flex items-center text-sm sm:text-base">
+                          <Field
+                            type="radio"
+                            name="isLegalOwner"
+                            value={false}
+                            className="mr-2"
+                          />
+                          I am authorized by the legal owner to list this
+                          property
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <h4 className="text-base sm:text-lg font-semibold text-[#09391C] mb-4">
+                        Available Ownership Documents
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {DocOnPropertyData.map((doc, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() =>
+                              toggleArrayItem(
+                                doc,
+                                selectedOwnershipDocs,
+                                setSelectedOwnershipDocs,
+                              )
+                            }
+                            className={`p-3 sm:p-4 rounded-lg border-2 text-left transition-all text-sm ${
+                              selectedOwnershipDocs.includes(doc)
+                                ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10 text-[#09391C]"
+                                : "border-gray-200 hover:border-[#8DDB90] text-gray-700"
+                            }`}
+                          >
+                            {doc}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="flex items-center cursor-pointer">
+                        <Field
+                          type="checkbox"
+                          name="areYouTheOwner"
+                          className="mr-2 h-4 w-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                        />
+                        <span className="text-sm text-[#5A5D63]">
+                          I confirm that I am the legal owner or authorized
+                          representative of this property
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#09391C] mb-4 sm:mb-6">
+                      Additional Information
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Property Description
+                        </label>
+                        <Field
+                          as="textarea"
+                          name="description"
+                          rows={4}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent resize-none text-sm sm:text-base"
+                          placeholder="Describe your property in detail..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Additional Information
+                        </label>
+                        <Field
+                          as="textarea"
+                          name="additionalInfo"
+                          rows={3}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent resize-none text-sm sm:text-base"
+                          placeholder="Any other relevant information..."
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6 border-t border-gray-200">
                     <button
                       type="button"
                       onClick={() => router.push("/my-listings")}
-                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                      className="w-full sm:flex-1 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm sm:text-base"
                       disabled={isSubmitting}
                     >
                       Cancel Changes
@@ -678,16 +1227,16 @@ const EditBriefPage = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 px-6 py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 font-medium"
+                      className="w-full sm:flex-1 px-4 sm:px-6 py-2 sm:py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 font-medium text-sm sm:text-base"
                     >
                       {isSubmitting ? (
                         <>
-                          <Loader size={20} className="animate-spin" />
+                          <Loader size={16} className="animate-spin" />
                           Saving Changes...
                         </>
                       ) : (
                         <>
-                          <Save size={20} />
+                          <Save size={16} />
                           Save Changes
                         </>
                       )}

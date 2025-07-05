@@ -18,7 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import SideBar from "../general-components/sideBar";
 import { FaCaretDown } from "react-icons/fa";
 import useClickOutside from "@/hooks/clickOutside";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
 import notificationBellIcon from "@/svgs/bell.svg";
 import userIcon from "@/svgs/user.svg";
@@ -74,6 +74,29 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     // console.log(user);
   }, [user]);
 
+  // Global click handler to close dropdowns
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Don't close if clicking on dropdown elements
+      const target = e.target as HTMLElement;
+      if (
+        target.closest(".marketplace-dropdown") ||
+        target.closest(".notification-dropdown") ||
+        target.closest(".profile-dropdown")
+      ) {
+        return;
+      }
+
+      // Close all dropdowns
+      setIsMarketplaceModalOpened(false);
+      setIsNotificationModalOpened(false);
+      setIsUserProfileModal(false);
+    };
+
+    document.addEventListener("click", handleGlobalClick);
+    return () => document.removeEventListener("click", handleGlobalClick);
+  }, []);
+
   useEffect(() => {
     // console.log(pathName)
   }, [pathName]);
@@ -115,26 +138,49 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 return (
                   <div
                     key={idx}
-                    className="flex flex-col"
-                    onMouseEnter={() => setIsMarketplaceModalOpened(true)}
+                    className="relative flex flex-col marketplace-dropdown"
+                    onMouseEnter={() => {
+                      // Close other dropdowns if any
+                      setIsNotificationModalOpened(false);
+                      setIsUserProfileModal(false);
+                      setIsMarketplaceModalOpened(true);
+                    }}
+                    onMouseLeave={() => {
+                      // Add delay to prevent flickering when moving to dropdown
+                      setTimeout(() => setIsMarketplaceModalOpened(false), 150);
+                    }}
                   >
-                    <div className="flex items-center gap-1 cursor-pointer">
+                    <button
+                      className="flex items-center gap-1 cursor-pointer py-2"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsMarketplaceModalOpened(!isMarketplaceModalOpened);
+                      }}
+                    >
                       <span
-                        className={`transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          item.url === pathName
+                        className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                          pathName.includes(item.url) ||
+                          isMarketplaceModalOpened
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}
                       >
                         {item.name}
                       </span>
-                    </div>
-                    {isMarketplaceModalOpened && (
-                      <MarketplaceOptions
-                        setModal={setIsMarketplaceModalOpened}
-                        items={item.subItems}
+                      <FaCaretDown
+                        className={`transition-transform duration-200 w-3 h-3 ${
+                          isMarketplaceModalOpened ? "rotate-180" : ""
+                        }`}
                       />
-                    )}
+                    </button>
+                    <AnimatePresence>
+                      {isMarketplaceModalOpened && (
+                        <MarketplaceOptions
+                          setModal={setIsMarketplaceModalOpened}
+                          items={item.subItems}
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               }
@@ -143,6 +189,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   key={idx}
                   href={item.url}
                   onClick={() => {
+                    // Close any open dropdowns
+                    setIsMarketplaceModalOpened(false);
                     const updatedNav = navigationState.map((navItem) =>
                       navItem.name === item.name
                         ? { ...navItem, isClicked: true }
@@ -150,7 +198,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     );
                     setNavigationState(updatedNav);
                   }}
-                  className={`transition-all duration-500 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
+                  className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] py-2 ${
                     item.url === pathName ? "text-[#8DDB90]" : "text-[#000000]"
                   }`}
                 >
@@ -164,12 +212,18 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             {user?._id ? (
               <>
                 {/* Notifications */}
-                <div className="relative">
+                <div className="relative notification-dropdown">
                   <button
                     type="button"
                     title="Notifications"
-                    onClick={() => setIsNotificationModalOpened(true)}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsNotificationModalOpened(!isNotificationModalOpened);
+                      // Close other dropdowns
+                      setIsMarketplaceModalOpened(false);
+                      setIsUserProfileModal(false);
+                    }}
+                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 relative"
                   >
                     <Image
                       src={notificationBellIcon}
@@ -178,22 +232,32 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       alt="Notifications"
                       className="w-5 h-5"
                     />
+                    {/* Notification Badge */}
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">3</span>
+                    </div>
                   </button>
-                  {isNotificationModalOpened && (
-                    <UserNotifications
-                      closeNotificationModal={setIsNotificationModalOpened}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {isNotificationModalOpened && (
+                      <UserNotifications
+                        closeNotificationModal={setIsNotificationModalOpened}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* User Profile */}
-                <div className="relative">
+                <div className="relative profile-dropdown">
                   <button
                     type="button"
                     title="Profile"
-                    onClick={() =>
-                      setIsUserProfileModal(!isUserProfileModalOpened)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsUserProfileModal(!isUserProfileModalOpened);
+                      // Close other dropdowns
+                      setIsMarketplaceModalOpened(false);
+                      setIsNotificationModalOpened(false);
+                    }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
                     {user?.profilePicture ? (
@@ -210,12 +274,14 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       </span>
                     )}
                   </button>
-                  {isUserProfileModalOpened && (
-                    <UserProfile
-                      userDetails={user}
-                      closeUserProfileModal={setIsUserProfileModal}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {isUserProfileModalOpened && (
+                      <UserProfile
+                        userDetails={user}
+                        closeUserProfileModal={setIsUserProfileModal}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
               </>
             ) : (
@@ -245,29 +311,43 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             {user?._id ? (
               <>
                 {/* Mobile Notifications */}
-                <button
-                  type="button"
-                  title="Notifications"
-                  onClick={() => setIsNotificationModalOpened(true)}
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100"
-                >
-                  <Image
-                    src={notificationBellIcon}
-                    width={18}
-                    height={18}
-                    alt="Notifications"
-                    className="w-[18px] h-[18px]"
-                  />
-                </button>
+                <div className="notification-dropdown">
+                  <button
+                    type="button"
+                    title="Notifications"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsNotificationModalOpened(!isNotificationModalOpened);
+                      // Close other dropdowns
+                      setIsUserProfileModal(false);
+                    }}
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100 relative"
+                  >
+                    <Image
+                      src={notificationBellIcon}
+                      width={18}
+                      height={18}
+                      alt="Notifications"
+                      className="w-[18px] h-[18px]"
+                    />
+                    {/* Mobile Notification Badge */}
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">3</span>
+                    </div>
+                  </button>
+                </div>
 
                 {/* Mobile User Profile */}
-                <div className="relative">
+                <div className="relative profile-dropdown">
                   <button
                     type="button"
                     title="Profile"
-                    onClick={() =>
-                      setIsUserProfileModal(!isUserProfileModalOpened)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsUserProfileModal(!isUserProfileModalOpened);
+                      // Close other dropdowns
+                      setIsNotificationModalOpened(false);
+                    }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-sm"
                   >
                     {user?.profilePicture ? (
@@ -284,20 +364,24 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       </span>
                     )}
                   </button>
-                  {isUserProfileModalOpened && (
-                    <UserProfile
-                      userDetails={user}
-                      closeUserProfileModal={setIsUserProfileModal}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {isUserProfileModalOpened && (
+                      <UserProfile
+                        userDetails={user}
+                        closeUserProfileModal={setIsUserProfileModal}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Mobile Notifications Modal */}
-                {isNotificationModalOpened && (
-                  <UserNotifications
-                    closeNotificationModal={setIsNotificationModalOpened}
-                  />
-                )}
+                <AnimatePresence>
+                  {isNotificationModalOpened && (
+                    <UserNotifications
+                      closeNotificationModal={setIsNotificationModalOpened}
+                    />
+                  )}
+                </AnimatePresence>
               </>
             ) : null}
 
@@ -347,19 +431,26 @@ const MarketplaceOptions = ({
   const { setSelectedType } = usePageContext();
 
   useClickOutside(ref, () => setModal(false));
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
       transition={{ duration: 0.2 }}
-      viewport={{ once: true }}
       ref={ref}
-      className="w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]"
+      className="w-[231px] mt-[15px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute left-0 z-[999]"
       onMouseLeave={() => setModal(false)}
+      style={{
+        top: "100%",
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}
     >
       {items.map((item: NavigationItem, idx: number) => (
         <Link
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             if (item.name === "Buy") {
               setSelectedType("Buy a property");
             } else if (item.name === "Rent") {
@@ -368,8 +459,12 @@ const MarketplaceOptions = ({
               setSelectedType("Find property for joint venture");
             }
             setModal(false);
+            // Navigate after setting type
+            setTimeout(() => {
+              window.location.href = item.url;
+            }, 100);
           }}
-          className="text-base font-medium text-[#000000] hover:text-[#8DDB90] transition-colors"
+          className="text-base font-medium text-[#000000] hover:text-[#8DDB90] transition-colors py-2 px-1 rounded hover:bg-gray-50"
           href={item.url}
           key={idx}
         >
