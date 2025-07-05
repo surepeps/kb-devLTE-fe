@@ -315,7 +315,7 @@ const MyListingPage = () => {
             href="/post_property"
             className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors text-sm sm:text-base w-full sm:w-auto"
           >
-            <Plus size={18} sm:size={20} />
+            <Plus className="text-gray-600 w-5 h-5 sm:w-6 sm:h-6" />
             <span className="hidden sm:inline">Add New Property</span>
             <span className="sm:hidden">Add Property</span>
           </Link>

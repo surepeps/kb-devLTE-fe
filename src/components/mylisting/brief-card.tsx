@@ -238,11 +238,7 @@ const BriefCard: React.FC<BriefCardProps> = ({
 
         {/* Location */}
         <div className="flex items-center gap-2 text-[#5A5D63] text-sm mb-3 sm:mb-4">
-          <MapPin
-            size={12}
-            sm:size={14}
-            className="text-[#8DDB90] flex-shrink-0"
-          />
+          <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8DDB90] flex-shrink-0" />
           <span className="truncate text-xs sm:text-sm">
             {brief.location.area}, {brief.location.localGovernment}
           </span>
@@ -252,31 +248,20 @@ const BriefCard: React.FC<BriefCardProps> = ({
         <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
           {brief.additionalFeatures?.noOfBedroom && (
             <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
-              <Bed
-                size={12}
-                sm:size={14}
-                className="text-[#8DDB90] flex-shrink-0"
-              />
+
+              <Bed className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8DDB90] flex-shrink-0" />
               <span>{brief.additionalFeatures.noOfBedroom}</span>
             </div>
           )}
           {brief.additionalFeatures?.noOfBathroom && (
             <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
-              <Bath
-                size={12}
-                sm:size={14}
-                className="text-[#8DDB90] flex-shrink-0"
-              />
+              <Bath className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8DDB90] flex-shrink-0" />
               <span>{brief.additionalFeatures.noOfBathroom}</span>
             </div>
           )}
           {brief.additionalFeatures?.noOfCarPark && (
             <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#5A5D63]">
-              <Car
-                size={12}
-                sm:size={14}
-                className="text-[#8DDB90] flex-shrink-0"
-              />
+              <Car className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8DDB90] flex-shrink-0" />
               <span>{brief.additionalFeatures.noOfCarPark}</span>
             </div>
           )}
