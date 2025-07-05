@@ -347,19 +347,21 @@ const MarketplaceOptions = ({
   const { setSelectedType } = usePageContext();
 
   useClickOutside(ref, () => setModal(false));
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
       transition={{ duration: 0.2 }}
-      viewport={{ once: true }}
       ref={ref}
-      className="w-[231px] mt-[30px] p-[19px] flex flex-col gap-[25px] bg-[#FFFFFF] shadow-lg absolute z-[9999]"
+      className="w-[231px] mt-[10px] p-[19px] flex flex-col gap-[15px] bg-[#FFFFFF] shadow-xl border border-gray-100 rounded-lg absolute z-[999]"
       onMouseLeave={() => setModal(false)}
     >
       {items.map((item: NavigationItem, idx: number) => (
         <Link
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             if (item.name === "Buy") {
               setSelectedType("Buy a property");
             } else if (item.name === "Rent") {
@@ -368,8 +370,12 @@ const MarketplaceOptions = ({
               setSelectedType("Find property for joint venture");
             }
             setModal(false);
+            // Navigate after setting type
+            setTimeout(() => {
+              window.location.href = item.url;
+            }, 100);
           }}
-          className="text-base font-medium text-[#000000] hover:text-[#8DDB90] transition-colors"
+          className="text-base font-medium text-[#000000] hover:text-[#8DDB90] transition-colors py-2 px-1 rounded hover:bg-gray-50"
           href={item.url}
           key={idx}
         >
