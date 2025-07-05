@@ -191,8 +191,10 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   <button
                     type="button"
                     title="Notifications"
-                    onClick={() => setIsNotificationModalOpened(true)}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
+                    onClick={() =>
+                      setIsNotificationModalOpened(!isNotificationModalOpened)
+                    }
+                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 relative"
                   >
                     <Image
                       src={notificationBellIcon}
@@ -201,12 +203,18 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       alt="Notifications"
                       className="w-5 h-5"
                     />
+                    {/* Notification Badge */}
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">3</span>
+                    </div>
                   </button>
-                  {isNotificationModalOpened && (
-                    <UserNotifications
-                      closeNotificationModal={setIsNotificationModalOpened}
-                    />
-                  )}
+                  <AnimatePresence>
+                    {isNotificationModalOpened && (
+                      <UserNotifications
+                        closeNotificationModal={setIsNotificationModalOpened}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* User Profile */}
