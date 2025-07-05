@@ -11,9 +11,10 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Plus, Home } from "lucide-react";
 import Link from "next/link";
-import MyListingSearch from "@/components/mylisting/my-listing-search";
+import MyListingFilters from "@/components/mylisting/filters/MyListingFilters";
 import BriefCard from "@/components/mylisting/brief-card";
-import EditBriefModal from "@/components/mylisting/edit-brief-modal";
+import Pagination from "@/components/mylisting/Pagination";
+import NoBriefsPlaceholder from "@/components/mylisting/NoBriefsPlaceholder";
 import DeleteConfirmationModal from "@/components/mylisting/delete-confirmation-modal";
 
 interface Brief {
@@ -84,8 +85,8 @@ const MyListingPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedBrief, setSelectedBrief] = useState<Brief | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [hasActiveFilters, setHasActiveFilters] = useState(false);
   const router = useRouter();
 
   const itemsPerPage = 12;
@@ -103,48 +104,82 @@ const MyListingPage = () => {
 
     try {
       const queryParams = new URLSearchParams();
+      let filtersApplied = false;
 
       if (filters) {
-        if (filters.location) queryParams.append("location", filters.location);
-        if (filters.priceRange?.min)
+        if (filters.location) {
+          queryParams.append("location", filters.location);
+          filtersApplied = true;
+        }
+        if (filters.priceRange?.min) {
           queryParams.append("priceMin", filters.priceRange.min.toString());
-        if (filters.priceRange?.max)
+          filtersApplied = true;
+        }
+        if (filters.priceRange?.max) {
           queryParams.append("priceMax", filters.priceRange.max.toString());
+          filtersApplied = true;
+        }
         if (filters.documentType?.length) {
           filters.documentType.forEach((doc) =>
             queryParams.append("documentType", doc),
           );
+          filtersApplied = true;
         }
-        if (filters.bedroom)
+        if (filters.bedroom) {
           queryParams.append("bedroom", filters.bedroom.toString());
-        if (filters.bathroom)
+          filtersApplied = true;
+        }
+        if (filters.bathroom) {
           queryParams.append("bathroom", filters.bathroom.toString());
-        if (filters.landSizeType)
+          filtersApplied = true;
+        }
+        if (filters.landSizeType) {
           queryParams.append("landSizeType", filters.landSizeType);
-        if (filters.landSize)
+          filtersApplied = true;
+        }
+        if (filters.landSize) {
           queryParams.append("landSize", filters.landSize.toString());
+          filtersApplied = true;
+        }
         if (filters.desireFeature?.length) {
           filters.desireFeature.forEach((feature) =>
             queryParams.append("desireFeature", feature),
           );
+          filtersApplied = true;
         }
-        if (filters.homeCondition)
+        if (filters.homeCondition) {
           queryParams.append("homeCondition", filters.homeCondition);
+          filtersApplied = true;
+        }
         if (filters.tenantCriteria?.length) {
           filters.tenantCriteria.forEach((criteria) =>
             queryParams.append("tenantCriteria", criteria),
           );
+          filtersApplied = true;
         }
-        if (filters.type) queryParams.append("type", filters.type);
-        if (filters.briefType)
+        if (filters.type) {
+          queryParams.append("type", filters.type);
+          filtersApplied = true;
+        }
+        if (filters.briefType) {
           queryParams.append("briefType", filters.briefType);
-        if (filters.isPremium !== undefined)
+          filtersApplied = true;
+        }
+        if (filters.isPremium !== undefined) {
           queryParams.append("isPremium", filters.isPremium.toString());
-        if (filters.isPreference !== undefined)
+          filtersApplied = true;
+        }
+        if (filters.isPreference !== undefined) {
           queryParams.append("isPreference", filters.isPreference.toString());
-        if (filters.status && filters.status !== "all")
+          filtersApplied = true;
+        }
+        if (filters.status && filters.status !== "all") {
           queryParams.append("status", filters.status);
+          filtersApplied = true;
+        }
       }
+
+      setHasActiveFilters(filtersApplied);
 
       const url = `${URLS.BASE}/user/briefs${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
       const response = await GET_REQUEST(url, Cookies.get("token"));
@@ -156,19 +191,27 @@ const MyListingPage = () => {
         setTotalPages(Math.ceil(briefsData.length / itemsPerPage));
         setCurrentPage(1);
 
-        if (filters) {
-          toast.success("Search completed!");
+        if (filters && filtersApplied) {
+          toast.success(
+            `Found ${briefsData.length} brief${briefsData.length !== 1 ? "s" : ""}`,
+          );
         }
       } else {
         console.error("Error fetching briefs:", response);
         setBriefs([]);
         setFilteredBriefs([]);
-        toast.error("Failed to fetch briefs");
+        setTotalPages(1);
+        if (filters && filtersApplied) {
+          toast.error("No briefs found matching your criteria");
+        } else {
+          toast.error("Failed to fetch briefs");
+        }
       }
     } catch (err) {
       console.error("Error fetching briefs:", err);
       setBriefs([]);
       setFilteredBriefs([]);
+      setTotalPages(1);
       toast.error("Failed to fetch briefs");
     } finally {
       setLoading(false);
@@ -180,9 +223,9 @@ const MyListingPage = () => {
     fetchBriefs(filters);
   };
 
-  const handleEditBrief = (brief: Brief) => {
-    setSelectedBrief(brief);
-    setShowEditModal(true);
+  const handleClearFilters = () => {
+    setHasActiveFilters(false);
+    fetchBriefs({});
   };
 
   const handleDeleteBrief = (brief: Brief) => {
@@ -277,61 +320,42 @@ const MyListingPage = () => {
           </Link>
         </div>
 
-        {/* Search Component */}
+        {/* Filter Component */}
         <div className="mb-8">
-          <MyListingSearch onSearch={handleSearch} loading={searchLoading} />
+          <MyListingFilters onSearch={handleSearch} loading={searchLoading} />
         </div>
 
-        {/* Properties Grid */}
-        {briefs.length === 0 ? (
-          <div className="text-center py-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-md mx-auto"
-            >
-              <div className="w-24 h-24 bg-[#8DDB90] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Home size={40} className="text-[#8DDB90]" />
-              </div>
-              <h3 className="text-xl font-semibold text-[#09391C] mb-3">
-                No Property Briefs Yet
-              </h3>
-              <p className="text-[#5A5D63] mb-6">
-                Start building your property portfolio by creating your first
-                brief
-              </p>
-              <Link
-                href="/post_property"
-                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
-              >
-                <Plus size={20} />
-                Create Your First Brief
-              </Link>
-            </motion.div>
-          </div>
+        {/* Content */}
+        {filteredBriefs.length === 0 ? (
+          <NoBriefsPlaceholder
+            isFiltered={hasActiveFilters}
+            onClearFilters={handleClearFilters}
+          />
         ) : (
           <>
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <div className="text-2xl font-bold text-[#09391C] mb-1">
-                  {briefs.length}
+                  {filteredBriefs.length}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Total Briefs</div>
+                <div className="text-sm text-[#5A5D63]">
+                  {hasActiveFilters ? "Filtered" : "Total"} Briefs
+                </div>
               </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm">
-                <div className="text-2xl font-bold text-green-600 mb-1">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="text-2xl font-bold text-emerald-600 mb-1">
                   {stats.approved}
                 </div>
                 <div className="text-sm text-[#5A5D63]">Approved</div>
               </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm">
-                <div className="text-2xl font-bold text-yellow-600 mb-1">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="text-2xl font-bold text-amber-600 mb-1">
                   {stats.pending}
                 </div>
-                <div className="text-sm text-[#5A5D63]">Pending Review</div>
+                <div className="text-sm text-[#5A5D63]">Under Review</div>
               </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <div className="text-2xl font-bold text-red-600 mb-1">
                   {stats.rejected}
                 </div>
@@ -339,14 +363,34 @@ const MyListingPage = () => {
               </div>
             </div>
 
+            {/* Results Info */}
+            {hasActiveFilters && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm text-blue-700 font-medium">
+                      Showing {filteredBriefs.length} result
+                      {filteredBriefs.length !== 1 ? "s" : ""} from your search
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleClearFilters}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium underline"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Briefs Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {getCurrentPageBriefs().map((brief, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {getCurrentPageBriefs().map((brief) => (
                 <BriefCard
                   key={brief._id}
                   brief={brief}
                   onView={() => handleViewBrief(brief)}
-                  onEdit={() => handleEditBrief(brief)}
                   onDelete={() => handleDeleteBrief(brief)}
                   onShare={() => handleShareBrief(brief)}
                 />
@@ -355,64 +399,16 @@ const MyListingPage = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(1, prev - 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                  >
-                    Previous
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-4 py-2 border rounded-lg ${
-                          currentPage === page
-                            ? "bg-[#8DDB90] text-white border-[#8DDB90]"
-                            : "bg-white border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ),
-                  )}
-
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                  >
-                    Next
-                  </button>
-                </div>
+              <div className="flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  disabled={searchLoading}
+                />
               </div>
             )}
           </>
-        )}
-
-        {/* Edit Modal */}
-        {showEditModal && selectedBrief && (
-          <EditBriefModal
-            brief={selectedBrief}
-            onClose={() => {
-              setShowEditModal(false);
-              setSelectedBrief(null);
-            }}
-            onSave={() => {
-              setShowEditModal(false);
-              setSelectedBrief(null);
-              fetchBriefs(); // Refresh the list
-              toast.success("Brief updated successfully!");
-            }}
-          />
         )}
 
         {/* Delete Confirmation Modal */}
