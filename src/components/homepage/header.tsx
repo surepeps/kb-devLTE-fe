@@ -74,6 +74,29 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     // console.log(user);
   }, [user]);
 
+  // Global click handler to close dropdowns
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Don't close if clicking on dropdown elements
+      const target = e.target as HTMLElement;
+      if (
+        target.closest(".marketplace-dropdown") ||
+        target.closest(".notification-dropdown") ||
+        target.closest(".profile-dropdown")
+      ) {
+        return;
+      }
+
+      // Close all dropdowns
+      setIsMarketplaceModalOpened(false);
+      setIsNotificationModalOpened(false);
+      setIsUserProfileModal(false);
+    };
+
+    document.addEventListener("click", handleGlobalClick);
+    return () => document.removeEventListener("click", handleGlobalClick);
+  }, []);
+
   useEffect(() => {
     // console.log(pathName)
   }, [pathName]);
