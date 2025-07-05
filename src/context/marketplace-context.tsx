@@ -131,6 +131,7 @@ interface MarketplaceContextType {
 
   // Clear all filters
   clearAllFilters: () => void;
+  resetMarketplaceState: () => void;
 }
 
 const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
@@ -184,7 +185,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   const [properties, setProperties] = useState<any[]>([]);
   const [formikStatus, setFormikStatus] = useState<
     "idle" | "pending" | "success" | "failed"
-  >("success");
+  >("idle");
   const [errMessage, setErrMessage] = useState<string>("");
 
   // Pagination state
@@ -394,10 +395,25 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
         console.log("Fetching from:", apiUrl);
 
+        // Add timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+          if (isMountedRef.current) {
+            setFormikStatus("failed");
+            setErrMessage("Request timed out. Please try again.");
+            setSearchStatus({
+              status: "failed",
+              couldNotFindAProperty: true,
+            });
+          }
+        }, 30000); // 30 second timeout
+
         // Use the GET_REQUEST utility
         console.log("Making API request to:", apiUrl);
         const response = await GET_REQUEST(apiUrl);
         console.log("API response received:", response);
+
+        // Clear timeout if request succeeds
+        clearTimeout(timeoutId);
 
         if (!isMountedRef.current) return;
 
@@ -417,8 +433,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         // Handle successful response with pagination
-        setFormikStatus("success");
-
         const responseData = response?.data || [];
         const pagination = response?.pagination || {};
 
@@ -437,6 +451,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
           status: "success",
           couldNotFindAProperty: responseData.length === 0,
         });
+
+        // Set success status AFTER all data is updated
+        setFormikStatus("success");
 
         console.log(
           `Successfully loaded ${responseData.length} properties. Page ${pagination.currentPage} of ${pagination.totalPages}`,
@@ -491,6 +508,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   // Simple data fetching for initial load (backward compatibility)
   const fetchInitialData = useCallback(
     async (briefType: string) => {
+      if (!isMountedRef.current) return;
+
+      console.log("Fetching initial data for briefType:", briefType);
       const searchParams: SearchParams = {
         briefType,
         page: 1,
@@ -500,6 +520,17 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [searchProperties, itemsPerPage],
   );
+
+  // Auto-fetch initial data on mount if market type is set
+  useEffect(() => {
+    if (selectedMarketType && formikStatus === "idle") {
+      console.log(
+        "Auto-fetching initial data for:",
+        selectedMarketType.briefType,
+      );
+      fetchInitialData(selectedMarketType.briefType);
+    }
+  }, [selectedMarketType, fetchInitialData, formikStatus]);
 
   // Search filters state
   const [searchLocation, setSearchLocation] = useState<{
@@ -521,6 +552,20 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     setHomeCondition("All");
     setSearchLocation(null);
     setPriceRange(null);
+  }, []);
+
+  // Reset marketplace state - useful when navigating away and back
+  const resetMarketplaceState = useCallback(() => {
+    setFormikStatus("idle");
+    setErrMessage("");
+    setSearchStatus({
+      status: "idle",
+      couldNotFindAProperty: false,
+    });
+    setProperties([]);
+    setCurrentPage(1);
+    setTotalPages(1);
+    setTotalItems(0);
   }, []);
 
   const contextValue: MarketplaceContextType = useMemo(
@@ -582,6 +627,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Clear all filters
       clearAllFilters,
+      resetMarketplaceState,
     }),
     [
       negotiatedPrices,

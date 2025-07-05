@@ -61,10 +61,13 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-30" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:ring-opacity-50"
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+        className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:ring-opacity-50 bg-white shadow-sm border border-gray-100"
         aria-label="More actions"
         title="More actions"
       >
@@ -73,30 +76,42 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.1 }}
-            className="absolute right-0 top-full mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1"
-          >
-            {actionItems.map((item, index) => {
-              if (!item.action) return null;
+          <>
+            {/* Mobile backdrop */}
+            <div
+              className="fixed inset-0 bg-black bg-opacity-25 z-40 sm:hidden"
+              onClick={() => setIsOpen(false)}
+            />
 
-              const IconComponent = item.icon;
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-full mt-1 w-44 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {actionItems.map((item, index) => {
+                if (!item.action) return null;
 
-              return (
-                <button
-                  key={index}
-                  onClick={() => handleActionClick(item.action)}
-                  className={`w-full px-3 py-2 text-sm flex items-center gap-2 transition-colors ${item.color}`}
-                >
-                  <IconComponent size={14} />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </motion.div>
+                const IconComponent = item.icon;
+
+                return (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleActionClick(item.action);
+                    }}
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-2 text-sm flex items-center gap-2.5 sm:gap-2 transition-colors border-b border-gray-100 last:border-b-0 ${item.color}`}
+                  >
+                    <IconComponent size={16} className="flex-shrink-0" />
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                );
+              })}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

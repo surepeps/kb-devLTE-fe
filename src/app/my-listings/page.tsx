@@ -16,7 +16,6 @@ import BriefCard from "@/components/mylisting/brief-card";
 import Pagination from "@/components/mylisting/Pagination";
 import NoBriefsPlaceholder from "@/components/mylisting/NoBriefsPlaceholder";
 import DeleteConfirmationModal from "@/components/mylisting/delete-confirmation-modal";
-import EnhancedEditBriefModal from "@/components/mylisting/EnhancedEditBriefModal";
 
 interface Brief {
   _id: string;
@@ -87,8 +86,6 @@ const MyListingPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedBrief, setSelectedBrief] = useState<Brief | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingBrief, setEditingBrief] = useState<Brief | null>(null);
   const [hasActiveFilters, setHasActiveFilters] = useState(false);
   const router = useRouter();
 
@@ -237,8 +234,7 @@ const MyListingPage = () => {
   };
 
   const handleEditBrief = (brief: Brief) => {
-    setEditingBrief(brief);
-    setShowEditModal(true);
+    router.push(`/my-listings/edit/${brief._id}`);
   };
 
   const handleViewBrief = (brief: Brief) => {
@@ -440,22 +436,6 @@ const MyListingPage = () => {
               setSelectedBrief(null);
               fetchBriefs(); // Refresh the list
               toast.success("Brief deleted successfully!");
-            }}
-          />
-        )}
-
-        {/* Enhanced Edit Modal */}
-        {showEditModal && editingBrief && (
-          <EnhancedEditBriefModal
-            brief={editingBrief}
-            onClose={() => {
-              setShowEditModal(false);
-              setEditingBrief(null);
-            }}
-            onSave={() => {
-              setShowEditModal(false);
-              setEditingBrief(null);
-              fetchBriefs(); // Refresh the list
             }}
           />
         )}
