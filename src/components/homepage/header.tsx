@@ -279,8 +279,10 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 <button
                   type="button"
                   title="Notifications"
-                  onClick={() => setIsNotificationModalOpened(true)}
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100"
+                  onClick={() =>
+                    setIsNotificationModalOpened(!isNotificationModalOpened)
+                  }
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100 relative"
                 >
                   <Image
                     src={notificationBellIcon}
@@ -289,6 +291,10 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     alt="Notifications"
                     className="w-[18px] h-[18px]"
                   />
+                  {/* Mobile Notification Badge */}
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">3</span>
+                  </div>
                 </button>
 
                 {/* Mobile User Profile */}
