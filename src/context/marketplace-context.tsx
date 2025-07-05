@@ -131,6 +131,7 @@ interface MarketplaceContextType {
 
   // Clear all filters
   clearAllFilters: () => void;
+  resetMarketplaceState: () => void;
 }
 
 const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
