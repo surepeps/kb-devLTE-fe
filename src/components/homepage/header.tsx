@@ -330,11 +330,13 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 </div>
 
                 {/* Mobile Notifications Modal */}
-                {isNotificationModalOpened && (
-                  <UserNotifications
-                    closeNotificationModal={setIsNotificationModalOpened}
-                  />
-                )}
+                <AnimatePresence>
+                  {isNotificationModalOpened && (
+                    <UserNotifications
+                      closeNotificationModal={setIsNotificationModalOpened}
+                    />
+                  )}
+                </AnimatePresence>
               </>
             ) : null}
 
