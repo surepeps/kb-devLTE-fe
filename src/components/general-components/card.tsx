@@ -41,7 +41,7 @@ interface CardDataProps {
   setPropertySelected?: (type: any[]) => void;
   isComingFromPriceNeg?: boolean;
   setIsComingFromPriceNeg?: (type: boolean) => void;
-}
+} 
 
 const Card = ({
   isRed,

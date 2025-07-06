@@ -25,7 +25,7 @@ interface PropertyGridProps {
   // Card page click
   onCardPageClick: (property: any) => void;
 }
-
+ 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
   marketplaceType,
   isComingFromSubmitLol,
