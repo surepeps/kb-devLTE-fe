@@ -131,11 +131,11 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
             {/* Content */}
             <div
-              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto"} p-1 sm:p-0`}
+              className={`${size === "full" ? "h-full overflow-auto" : "overflow-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]"}`}
             >
               {children}
             </div>
-          </motion.div> 
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
