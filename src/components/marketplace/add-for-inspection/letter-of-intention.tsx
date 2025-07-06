@@ -176,12 +176,12 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
           <button
             onClick={handleSubmitLOI}
             disabled={!fileUrl || isSubmitting}
             className={`
-              flex-1 h-[50px] sm:h-[57px] rounded font-semibold text-white transition-colors text-sm sm:text-base
+              flex-1 h-[45px] sm:h-[50px] md:h-[57px] rounded font-semibold text-white transition-colors text-sm sm:text-base
               ${
                 !fileUrl || isSubmitting
                   ? "bg-gray-300 cursor-not-allowed"
@@ -196,7 +196,7 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             onClick={handleCancel}
             disabled={isSubmitting}
             className={`
-              flex-1 h-[50px] sm:h-[57px] rounded font-semibold border-2 border-[#5A5D63] text-[#5A5D63]
+              flex-1 h-[45px] sm:h-[50px] md:h-[57px] rounded font-semibold border-2 border-[#5A5D63] text-[#5A5D63]
               hover:bg-[#5A5D63] hover:text-white transition-colors text-sm sm:text-base
               ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
             `}
