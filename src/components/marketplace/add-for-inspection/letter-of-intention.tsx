@@ -125,20 +125,22 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         </div>
 
         {/* Sample Format */}
-        <div className="bg-gray-50 border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-          <h4 className="font-semibold text-[#09391C] text-sm sm:text-base">
+        <div className="bg-gray-50 border rounded-md sm:rounded-lg p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3">
+          <h4 className="font-semibold text-[#09391C] text-xs sm:text-sm md:text-base">
             📝 Sample Letter Format:
           </h4>
-          <div className="text-xs sm:text-sm text-[#5A5D63] bg-white p-3 rounded border italic leading-relaxed">
+          <div className="text-xs sm:text-sm text-[#5A5D63] bg-white p-2 sm:p-3 rounded border italic leading-relaxed max-h-32 sm:max-h-40 overflow-y-auto">
             <p>"Dear Khabi-Teq Limited,</p>
-            <p className="mt-2">
+            <p className="mt-1 sm:mt-2">
               I express my intention to enter into a joint venture for the
               property at [Property Address]...
             </p>
-            <p className="mt-2">My contribution: [Financial/Expertise]</p>
+            <p className="mt-1 sm:mt-2">
+              My contribution: [Financial/Expertise]
+            </p>
             <p>Profit sharing: [Percentage/Terms]</p>
-            <p className="mt-2">Contact: [Your details]</p>
-            <p className="mt-2">Sincerely, [Your Name & Signature]"</p>
+            <p className="mt-1 sm:mt-2">Contact: [Your details]</p>
+            <p className="mt-1 sm:mt-2">Sincerely, [Your Name & Signature]"</p>
           </div>
         </div>
 
