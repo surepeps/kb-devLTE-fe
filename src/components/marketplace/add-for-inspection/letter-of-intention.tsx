@@ -110,11 +110,11 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         </div>
 
         {/* LOI Guidelines */}
-        <div className="bg-[#E8F3FE] border border-[#A8ADB7] rounded-lg p-3 sm:p-4 space-y-3">
-          <h3 className="font-semibold text-[#09391C] text-sm sm:text-base">
+        <div className="bg-[#E8F3FE] border border-[#A8ADB7] rounded-md sm:rounded-lg p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3">
+          <h3 className="font-semibold text-[#09391C] text-xs sm:text-sm md:text-base">
             📋 LOI Guidelines:
           </h3>
-          <ul className="text-xs sm:text-sm text-[#5A5D63] space-y-1 sm:space-y-2 list-disc list-inside">
+          <ul className="text-xs sm:text-sm text-[#5A5D63] space-y-1 sm:space-y-2 list-disc list-inside pl-2">
             <li>State your intention for joint venture partnership</li>
             <li>Include proposed terms and profit-sharing arrangement</li>
             <li>Specify your financial contribution or expertise</li>
