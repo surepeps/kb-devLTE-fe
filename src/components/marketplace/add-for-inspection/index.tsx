@@ -897,22 +897,25 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         title="Upload LOI Document"
         size="lg"
         preventBackgroundScroll={true}
+        className="max-h-[95vh] overflow-y-auto"
       >
         {isComingFromSubmitLol && (
-          <UploadLolDocumentModal
-            getID={propertiesSelected[0].id}
-            propertyId={propertiesSelected[0]?._id}
-            allNegotiation={propertiesSelected}
-            closeModal={setIsComingFromSubmitLol}
-            actionTracker={actionTracker}
-            setActionTracker={setActionTracker}
-            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
-            closeSelectPreferableModal={
-              setSelectPreferableInspectionDateModalOpened
-            }
-            setSubmitInspectionPayload={setSubmitPayload}
-            submitInspectionPayload={submitPayload}
-          />
+          <div className="p-1 sm:p-4 md:p-6">
+            <UploadLolDocumentModal
+              getID={propertiesSelected[0].id}
+              propertyId={propertiesSelected[0]?._id}
+              allNegotiation={propertiesSelected}
+              closeModal={setIsComingFromSubmitLol}
+              actionTracker={actionTracker}
+              setActionTracker={setActionTracker}
+              setIsProvideTransactionDetails={setIsProvideTransactionDetails}
+              closeSelectPreferableModal={
+                setSelectPreferableInspectionDateModalOpened
+              }
+              setSubmitInspectionPayload={setSubmitPayload}
+              submitInspectionPayload={submitPayload}
+            />
+          </div>
         )}
       </ModalWrapper>
     </Fragment>
