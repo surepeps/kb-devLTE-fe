@@ -36,6 +36,8 @@ const MarketPlace = () => {
     formikStatus,
     errMessage,
     properties,
+    setSelectedMarketType,
+    fetchInitialData,
   } = useMarketplace();
 
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
