@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import Card from "./add-for-inspection/card";
 import AddForInspection from "./add-for-inspection";
 import { useMarketplace } from "@/context/marketplace-context";
- 
+
 const MarketPlace = () => {
   const router = useRouter();
 
@@ -36,6 +36,8 @@ const MarketPlace = () => {
     formikStatus,
     errMessage,
     properties,
+    setSelectedMarketType,
+    fetchInitialData,
   } = useMarketplace();
 
   const [propertiesSelected, setPropertiesSelected] = React.useState<any[]>([]);
@@ -106,6 +108,42 @@ const MarketPlace = () => {
       setPropertiesSelected(selectedForInspection.map((item) => item.property));
     }
   }, [selectedForInspection]);
+
+  // Update marketplace context when selectedType changes and fetch data
+  useEffect(() => {
+    if (selectedType) {
+      const marketTypeMap = {
+        "Buy a property": {
+          name: "Buy a property",
+          briefType: "Outright Sales",
+          subValue: "Outright Sales",
+        },
+        "Find property for joint venture": {
+          name: "Find property for joint venture",
+          briefType: "Joint Venture",
+          subValue: "Joint Venture",
+        },
+        "Rent/Lease a property": {
+          name: "Rent/Lease a property",
+          briefType: "Rent",
+          subValue: "Rent",
+        },
+      };
+
+      const marketType =
+        marketTypeMap[selectedType as keyof typeof marketTypeMap];
+      if (marketType) {
+        setSelectedMarketType(marketType);
+        console.log(
+          "Fetching data for selectedType:",
+          selectedType,
+          "briefType:",
+          marketType.briefType,
+        );
+        fetchInitialData(marketType.briefType);
+      }
+    }
+  }, [selectedType, setSelectedMarketType, fetchInitialData]);
 
   return (
     <div className="min-h-screen bg-[#EEF1F1]">

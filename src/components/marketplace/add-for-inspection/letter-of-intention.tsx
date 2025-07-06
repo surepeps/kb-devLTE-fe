@@ -91,9 +91,9 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
       exit={{ opacity: 0, y: 20 }}
       transition={{ delay: 0.1 }}
       viewport={{ once: true }}
-      className="w-full max-w-[615px] mx-auto"
+      className="w-full max-w-full sm:max-w-[600px] md:max-w-[700px] mx-auto"
     >
-      <div className="w-full px-4 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 max-h-[500px] overflow-y-auto">
+      <div className="w-full px-2 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 space-y-3 sm:space-y-4 md:space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <h2
@@ -110,11 +110,11 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         </div>
 
         {/* LOI Guidelines */}
-        <div className="bg-[#E8F3FE] border border-[#A8ADB7] rounded-lg p-3 sm:p-4 space-y-3">
-          <h3 className="font-semibold text-[#09391C] text-sm sm:text-base">
+        <div className="bg-[#E8F3FE] border border-[#A8ADB7] rounded-md sm:rounded-lg p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3">
+          <h3 className="font-semibold text-[#09391C] text-xs sm:text-sm md:text-base">
             📋 LOI Guidelines:
           </h3>
-          <ul className="text-xs sm:text-sm text-[#5A5D63] space-y-1 sm:space-y-2 list-disc list-inside">
+          <ul className="text-xs sm:text-sm text-[#5A5D63] space-y-1 sm:space-y-2 list-disc list-inside pl-2">
             <li>State your intention for joint venture partnership</li>
             <li>Include proposed terms and profit-sharing arrangement</li>
             <li>Specify your financial contribution or expertise</li>
@@ -125,20 +125,22 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         </div>
 
         {/* Sample Format */}
-        <div className="bg-gray-50 border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-          <h4 className="font-semibold text-[#09391C] text-sm sm:text-base">
+        <div className="bg-gray-50 border rounded-md sm:rounded-lg p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3">
+          <h4 className="font-semibold text-[#09391C] text-xs sm:text-sm md:text-base">
             📝 Sample Letter Format:
           </h4>
-          <div className="text-xs sm:text-sm text-[#5A5D63] bg-white p-3 rounded border italic leading-relaxed">
+          <div className="text-xs sm:text-sm text-[#5A5D63] bg-white p-2 sm:p-3 rounded border italic leading-relaxed max-h-32 sm:max-h-40 overflow-y-auto">
             <p>"Dear Khabi-Teq Limited,</p>
-            <p className="mt-2">
+            <p className="mt-1 sm:mt-2">
               I express my intention to enter into a joint venture for the
               property at [Property Address]...
             </p>
-            <p className="mt-2">My contribution: [Financial/Expertise]</p>
+            <p className="mt-1 sm:mt-2">
+              My contribution: [Financial/Expertise]
+            </p>
             <p>Profit sharing: [Percentage/Terms]</p>
-            <p className="mt-2">Contact: [Your details]</p>
-            <p className="mt-2">Sincerely, [Your Name & Signature]"</p>
+            <p className="mt-1 sm:mt-2">Contact: [Your details]</p>
+            <p className="mt-1 sm:mt-2">Sincerely, [Your Name & Signature]"</p>
           </div>
         </div>
 
@@ -174,12 +176,12 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
           <button
             onClick={handleSubmitLOI}
             disabled={!fileUrl || isSubmitting}
             className={`
-              flex-1 h-[50px] sm:h-[57px] rounded font-semibold text-white transition-colors text-sm sm:text-base
+              flex-1 h-[45px] sm:h-[50px] md:h-[57px] rounded font-semibold text-white transition-colors text-sm sm:text-base
               ${
                 !fileUrl || isSubmitting
                   ? "bg-gray-300 cursor-not-allowed"
@@ -194,7 +196,7 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             onClick={handleCancel}
             disabled={isSubmitting}
             className={`
-              flex-1 h-[50px] sm:h-[57px] rounded font-semibold border-2 border-[#5A5D63] text-[#5A5D63]
+              flex-1 h-[45px] sm:h-[50px] md:h-[57px] rounded font-semibold border-2 border-[#5A5D63] text-[#5A5D63]
               hover:bg-[#5A5D63] hover:text-white transition-colors text-sm sm:text-base
               ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
             `}
