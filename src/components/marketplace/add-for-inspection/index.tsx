@@ -871,19 +871,22 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         isOpen={isLetterOfIntentionModalOpened}
         onClose={() => setIsLetterOfIntentionModalOpened(false)}
         title="Letter of Intention"
-        size="xl"
+        size="lg"
         preventBackgroundScroll={true}
+        className="max-h-[95vh] overflow-y-auto"
       >
         {isLetterOfIntentionModalOpened && (
-          <LetterOfIntention
-            setIsModalClosed={setIsLetterOfIntentionModalOpened}
-            closeSelectPreferableModal={
-              setSelectPreferableInspectionDateModalOpened
-            }
-            propertyId={propertiesSelected[0]?._id}
-            submitInspectionPayload={submitPayload}
-            setSubmitInspectionPayload={setSubmitPayload}
-          />
+          <div className="p-1 sm:p-4 md:p-6">
+            <LetterOfIntention
+              setIsModalClosed={setIsLetterOfIntentionModalOpened}
+              closeSelectPreferableModal={
+                setSelectPreferableInspectionDateModalOpened
+              }
+              propertyId={propertiesSelected[0]?._id}
+              submitInspectionPayload={submitPayload}
+              setSubmitInspectionPayload={setSubmitPayload}
+            />
+          </div>
         )}
       </ModalWrapper>
 
