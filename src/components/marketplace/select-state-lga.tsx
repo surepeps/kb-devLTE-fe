@@ -88,39 +88,30 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
       location.area,
     );
 
-    // Update formik values
-    formik.setFieldValue("selectedState", location.state || "");
-    formik.setFieldValue("selectedLGA", location.lga || "");
-    formik.setFieldValue("selectedArea", location.area || "");
-
-    // Update the input display value
-    formik.setFieldValue("locationDisplay", locationString);
-
-    // If there's a location property in formik, update it too
-    if (formik.values.hasOwnProperty("location")) {
-      formik.setFieldValue("location", {
-        state: location.state || "",
-        localGovernment: location.lga || "",
-        area: location.area || "",
-      });
-    }
+    // Update formik values in batch to avoid multiple re-renders
+    formik.setValues({
+      ...formik.values,
+      selectedState: location.state || "",
+      selectedLGA: location.lga || "",
+      selectedArea: location.area || "",
+      locationDisplay: locationString,
+      ...(formik.values.hasOwnProperty("location") && {
+        location: {
+          state: location.state || "",
+          localGovernment: location.lga || "",
+          area: location.area || "",
+        },
+      }),
+    });
 
     // Close dropdown
     setShowLocationModal(false);
     setLocationSuggestions([]);
 
-    // Update input value visually
+    // Update input value visually to ensure it shows immediately
     if (inputRef.current) {
       inputRef.current.value = locationString;
     }
-
-    // Trigger formik handleChange to ensure all validations and effects run
-    formik.handleChange({
-      target: {
-        name: "locationDisplay",
-        value: locationString,
-      },
-    } as any);
   };
 
   useClickOutside(inputRef, () => setShowLocationModal(false));
@@ -139,12 +130,16 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
           disabled={isDisabled}
           value={
             formik.values.locationDisplay ||
-            (formik.values.selectedState || formik.values.selectedLGA
-              ? `${formik.values.selectedState}${
-                  formik.values.selectedLGA
-                    ? `, ${formik.values.selectedLGA}`
-                    : ""
-                }`
+            (formik.values.selectedState ||
+            formik.values.selectedLGA ||
+            formik.values.selectedArea
+              ? [
+                  formik.values.selectedArea,
+                  formik.values.selectedLGA,
+                  formik.values.selectedState,
+                ]
+                  .filter(Boolean)
+                  .join(", ")
               : "")
           }
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,17 +148,33 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
             // Update the display value
             formik.setFieldValue("locationDisplay", value);
 
-            // Parse the input for state and LGA
-            const parts = value.split(",").map((part) => part.trim());
+            // If the input is being cleared, clear all location fields
+            if (value === "") {
+              formik.setFieldValue("selectedState", "");
+              formik.setFieldValue("selectedLGA", "");
+              formik.setFieldValue("selectedArea", "");
 
-            if (parts.length >= 1 && parts[0]) {
-              formik.setFieldValue("selectedState", parts[0]);
-            }
-            if (parts.length >= 2 && parts[1]) {
-              formik.setFieldValue("selectedLGA", parts[1]);
-            }
-            if (parts.length >= 3 && parts[2]) {
-              formik.setFieldValue("selectedArea", parts[2]);
+              if (formik.values.hasOwnProperty("location")) {
+                formik.setFieldValue("location", {
+                  state: "",
+                  localGovernment: "",
+                  area: "",
+                });
+              }
+            } else {
+              // Parse the input for state and LGA only if there's actual content
+              const parts = value.split(",").map((part) => part.trim());
+
+              // Only update if there are valid parts
+              if (parts.length >= 1 && parts[0]) {
+                formik.setFieldValue("selectedState", parts[0]);
+              }
+              if (parts.length >= 2 && parts[1]) {
+                formik.setFieldValue("selectedLGA", parts[1]);
+              }
+              if (parts.length >= 3 && parts[2]) {
+                formik.setFieldValue("selectedArea", parts[2]);
+              }
             }
 
             filterBasedOnText(value);

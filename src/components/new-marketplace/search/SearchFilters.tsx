@@ -114,8 +114,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     locationFormik.setValues({
       selectedLGA: filters.selectedLGA || "",
       selectedState: filters.selectedState || "",
+      selectedArea: filters.selectedArea || "",
+      locationDisplay:
+        filters.selectedState || filters.selectedLGA || filters.selectedArea
+          ? [filters.selectedArea, filters.selectedLGA, filters.selectedState]
+              .filter(Boolean)
+              .join(", ")
+          : "",
     });
-  }, [filters.selectedState, filters.selectedLGA]);
+  }, [filters.selectedState, filters.selectedLGA, filters.selectedArea]);
 
   // Sync price formik with filter changes
   useEffect(() => {
@@ -353,6 +360,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 onFilterChange(
                   "selectedLGA",
                   locationFormik.values.selectedLGA,
+                );
+                onFilterChange(
+                  "selectedArea",
+                  locationFormik.values.selectedArea,
                 );
                 onFilterChange("priceRange", {
                   min: priceFormik.values.minPrice,
