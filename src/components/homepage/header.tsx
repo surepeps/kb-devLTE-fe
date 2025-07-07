@@ -40,6 +40,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const pathName = usePathname();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { user, logout } = useUserContext();
+  const { unreadCount, fetchNotifications } = useNotifications();
   const [isNotificationModalOpened, setIsNotificationModalOpened] =
     useState<boolean>(false);
   const [isUserProfileModalOpened, setIsUserProfileModal] =
