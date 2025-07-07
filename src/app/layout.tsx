@@ -75,24 +75,25 @@ export default function RootLayout({
               <CreateBriefProvider>
                 <SelectedBriefsProvider>
                   <MarketplaceProvider>
-                  <html lang="en">
-                    <body
-                      className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                    >
-                      {" "}
-                      {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                      <HeaderFooterWrapper>
-                        <Body>{children}</Body>
-                      </HeaderFooterWrapper>
-                      <Toaster />
-                    </body>
-                    {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
-                  </html>
-                </MarketplaceProvider>
-              </SelectedBriefsProvider>
-            </CreateBriefProvider>
-          </PageContextProvider>
-        </ModalProvider>
+                    <html lang="en">
+                      <body
+                        className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                      >
+                        {" "}
+                        {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
+                        <HeaderFooterWrapper>
+                          <Body>{children}</Body>
+                        </HeaderFooterWrapper>
+                        <Toaster />
+                      </body>
+                      {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
+                    </html>
+                  </MarketplaceProvider>
+                </SelectedBriefsProvider>
+              </CreateBriefProvider>
+            </PageContextProvider>
+          </ModalProvider>
+        </NotificationProvider>
       </UserProvider>
     </GoogleOAuthProvider>
   );
