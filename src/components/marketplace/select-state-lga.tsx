@@ -139,12 +139,16 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
           disabled={isDisabled}
           value={
             formik.values.locationDisplay ||
-            (formik.values.selectedState || formik.values.selectedLGA
-              ? `${formik.values.selectedState}${
-                  formik.values.selectedLGA
-                    ? `, ${formik.values.selectedLGA}`
-                    : ""
-                }`
+            (formik.values.selectedState ||
+            formik.values.selectedLGA ||
+            formik.values.selectedArea
+              ? [
+                  formik.values.selectedArea,
+                  formik.values.selectedLGA,
+                  formik.values.selectedState,
+                ]
+                  .filter(Boolean)
+                  .join(", ")
               : "")
           }
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
