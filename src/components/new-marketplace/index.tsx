@@ -53,12 +53,12 @@ const NewMarketPlace = () => {
           </nav>
 
           {/* Header */}
-          <div className="text-center mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#09391C] font-display mb-4">
+          <div className="text-center mb-6 md:mb-8 lg:mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#09391C] font-display mb-3 md:mb-4 leading-tight">
               Welcome to <span className="text-[#8DDB90]">Khabiteq Realty</span>{" "}
               Marketplace
             </h1>
-            <p className="text-lg md:text-xl text-[#5A5D63] max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-[#5A5D63] max-w-3xl mx-auto px-4">
               Whether you're buying, selling, renting, or investing (JV), how
               can we assist you?
             </p>
