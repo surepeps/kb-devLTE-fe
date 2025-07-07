@@ -1,10 +1,13 @@
 /** @format */
 
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import PropertyCard from "./cards/PropertyCard";
 import JVPropertyCard from "./cards/JVPropertyCard";
+import PriceNegotiationModal from "./modals/PriceNegotiationModal";
+import LOIUploadModal from "./modals/LOIUploadModal";
+import { useNewMarketplace } from "@/context/new-marketplace-context";
 
 interface PropertySlotsProps {
   selectedProperties: any[];
@@ -29,6 +32,31 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   negotiatedPrices = [],
   loiDocuments = [],
 }) => {
+  const {
+    addNegotiatedPrice,
+    getNegotiatedPrice,
+    addLOIDocument,
+    getLOIDocument,
+    toggleInspectionSelection,
+    isSelectedForInspection,
+  } = useNewMarketplace();
+
+  const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
+    isOpen: boolean;
+    property: any;
+  }>({
+    isOpen: false,
+    property: null,
+  });
+
+  const [loiUploadModal, setLoiUploadModal] = useState<{
+    isOpen: boolean;
+    property: any;
+  }>({
+    isOpen: false,
+    property: null,
+  });
+
   const slots = Array.from({ length: maxSlots }, (_, index) => {
     const property = selectedProperties[index];
     return { index, property };
@@ -79,6 +107,37 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
     }
   };
 
+  const handlePriceNegotiation = (property: any) => {
+    setPriceNegotiationModal({
+      isOpen: true,
+      property,
+    });
+  };
+
+  const handleNegotiationSubmit = (property: any, negotiatedPrice: number) => {
+    const originalPrice = property.price || 0;
+    if (tab === "buy" || tab === "rent") {
+      addNegotiatedPrice(tab, property._id, originalPrice, negotiatedPrice);
+    }
+    setPriceNegotiationModal({ isOpen: false, property: null });
+  };
+
+  const handleLOIUpload = (property: any) => {
+    setLoiUploadModal({
+      isOpen: true,
+      property,
+    });
+  };
+
+  const handleLOISubmit = (
+    property: any,
+    document: File,
+    documentUrl?: string,
+  ) => {
+    addLOIDocument(property._id, document, documentUrl);
+    setLoiUploadModal({ isOpen: false, property: null });
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
       {slots.map(({ index, property }) => (
@@ -97,10 +156,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   isPremium={property.property?.isPremium || false}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)}
-                  onLOIUpload={(propertyId: string, document: File) => {
-                    // Handle LOI upload in inspection view
-                    // You can add context method call here if needed
-                  }}
+                  onLOIUpload={() => handleLOIUpload(property.property)}
                   onRemoveLOI={onClearLOIDocument || (() => {})}
                   isSelected={true}
                   loiDocument={loiDocuments.find(
@@ -120,10 +176,9 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   isPremium={property.property?.isPremium || false}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)}
-                  onPriceNegotiation={(property: any) => {
-                    // Handle price negotiation in inspection view
-                    // You can add modal state here if needed
-                  }}
+                  onPriceNegotiation={() =>
+                    handlePriceNegotiation(property.property)
+                  }
                   onRemoveNegotiation={onClearNegotiatedPrice || (() => {})}
                   isSelected={true}
                   negotiatedPrice={negotiatedPrices.find(
@@ -166,6 +221,33 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
           )}
         </div>
       ))}
+
+      {/* Price Negotiation Modal */}
+      {priceNegotiationModal.isOpen && (tab === "buy" || tab === "rent") && (
+        <PriceNegotiationModal
+          isOpen={priceNegotiationModal.isOpen}
+          property={priceNegotiationModal.property}
+          onClose={() =>
+            setPriceNegotiationModal({ isOpen: false, property: null })
+          }
+          onSubmit={handleNegotiationSubmit}
+          existingNegotiation={getNegotiatedPrice(
+            tab as "buy" | "rent",
+            priceNegotiationModal.property?._id,
+          )}
+        />
+      )}
+
+      {/* LOI Upload Modal */}
+      {loiUploadModal.isOpen && tab === "jv" && (
+        <LOIUploadModal
+          isOpen={loiUploadModal.isOpen}
+          property={loiUploadModal.property}
+          onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
+          onSubmit={handleLOISubmit}
+          existingDocument={getLOIDocument(loiUploadModal.property?._id)}
+        />
+      )}
     </div>
   );
 };
