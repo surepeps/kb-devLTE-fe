@@ -130,6 +130,22 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         onClearAll={onClearFilters}
       />
 
+      {/* Mobile Filter Button */}
+      <div className="lg:hidden bg-white border border-gray-200 rounded-lg p-4 mb-4">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-[#09391C]">
+            Filter Properties
+          </span>
+          <button
+            onClick={onSearch}
+            disabled={loading}
+            className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
+          >
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </div>
+      </div>
+
       {/* Filter by checkboxes - exact copy of existing design - Hidden on mobile */}
       <div className="container min-h-[181px] hidden lg:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20">
         <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
