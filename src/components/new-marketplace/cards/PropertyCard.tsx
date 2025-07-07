@@ -175,7 +175,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-auto pt-4">
           {/* Price Negotiation Button */}
           {hasNegotiatedPrice ? (
             <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between rounded">
