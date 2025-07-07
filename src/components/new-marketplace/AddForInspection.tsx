@@ -142,18 +142,21 @@ const AddForInspection = () => {
     <div className="min-h-screen bg-[#EEF1F1]">
       <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 md:py-8 lg:py-12">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
           <button
             onClick={handleBack}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0 mt-1"
           >
-            <FontAwesomeIcon icon={faArrowLeft} className="text-[#09391C]" />
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              className="text-[#09391C] text-sm sm:text-base"
+            />
           </button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#09391C] font-display leading-tight">
               {getStepTitle()}
             </h1>
-            <p className="text-[#5A5D63] mt-1">
+            <p className="text-[#5A5D63] mt-1 text-sm sm:text-base">
               {getTabDisplayName()} Properties • Maximum 2 properties allowed
             </p>
           </div>
