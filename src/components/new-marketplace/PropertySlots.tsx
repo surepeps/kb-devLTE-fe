@@ -138,18 +138,18 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
               className="bg-white rounded-lg border-2 border-dashed border-gray-300 hover:border-[#8DDB90] transition-colors cursor-pointer min-h-[450px] flex flex-col"
             >
               <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                <div className="w-12 h-12 bg-[#E4EFE7] rounded-full flex items-center justify-center mb-3">
-                  <Plus size={20} className="text-[#8DDB90]" />
+                <div className="w-20 h-20 bg-[#E4EFE7] rounded-full flex items-center justify-center mb-4">
+                  <Plus size={32} className="text-[#8DDB90]" />
                 </div>
-                <h3 className="text-base font-semibold text-[#09391C] mb-2">
+                <h3 className="text-lg font-semibold text-[#09391C] mb-3">
                   Property Slot {index + 1}
                 </h3>
-                <p className="text-sm text-[#5A5D63] mb-3">
+                <p className="text-sm text-[#5A5D63] mb-4">
                   Click to browse and add a property for inspection
                 </p>
                 <button
                   type="button"
-                  className="px-3 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors"
+                  className="px-4 py-3 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors"
                 >
                   Browse Properties
                 </button>
