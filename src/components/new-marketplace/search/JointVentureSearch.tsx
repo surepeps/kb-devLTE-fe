@@ -41,7 +41,7 @@ const JointVentureSearch = () => {
         handlePaginationSearch as EventListener,
       );
     };
-  }, []);
+  }, [handleSearch]);
 
   // Search form
   const searchFormik = useFormik({
