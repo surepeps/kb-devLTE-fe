@@ -123,6 +123,18 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             </button>
           ))}
         </div>
+
+        {/* Show More Dates Button */}
+        {!showMoreDates && (
+          <div className="text-center mt-4">
+            <button
+              onClick={() => setShowMoreDates(true)}
+              className="text-[#8DDB90] hover:text-[#76c77a] font-medium text-sm"
+            >
+              Show More Dates →
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Time Selection */}
