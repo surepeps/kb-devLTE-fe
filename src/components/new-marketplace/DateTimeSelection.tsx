@@ -67,7 +67,40 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       alert("Please select both date and time for inspection.");
       return;
     }
+
+    if (
+      !buyerInfo.fullName.trim() ||
+      !buyerInfo.phoneNumber.trim() ||
+      !buyerInfo.email.trim()
+    ) {
+      alert(
+        "Please fill in all buyer information fields (Full Name, Phone Number, and Email).",
+      );
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(buyerInfo.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    // Basic phone number validation (should contain only numbers, spaces, +, -, ())
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    if (!phoneRegex.test(buyerInfo.phoneNumber)) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+
     onProceed();
+  };
+
+  const handleBuyerInfoChange = (field: string, value: string) => {
+    setBuyerInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   return (
