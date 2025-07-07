@@ -137,16 +137,12 @@ const RentPropertySearch = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Auto-search when filters change
+  // Initial load only
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (activeTab === "rent") {
-        handleSearch();
-      }
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-  }, [filters, activeTab]);
+    if (activeTab === "rent" && rentTab.formikStatus === "idle") {
+      handleSearch();
+    }
+  }, [activeTab]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
