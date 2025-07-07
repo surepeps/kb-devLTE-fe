@@ -10,14 +10,17 @@ import {
   faFile,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import toast from "react-hot-toast";
 import Button from "@/components/general-components/button";
 import { archivo } from "@/styles/font";
+import { POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
 
 interface LOIUploadModalProps {
   isOpen: boolean;
   property: any;
   onClose: () => void;
-  onSubmit: (property: any, document: File) => void;
+  onSubmit: (property: any, document: File, documentUrl?: string) => void;
   existingDocument?: {
     propertyId: string;
     document: File | null;
@@ -35,7 +38,11 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(
     existingDocument?.document || null,
   );
+  const [fileUrl, setFileUrl] = useState<string | null>(
+    existingDocument?.documentUrl || null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,18 +57,56 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
 
   const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = async (file: File) => {
     if (!acceptedFileTypes.includes(file.type)) {
-      alert("Please select a valid file type (PDF, DOC, DOCX, JPG, PNG)");
+      toast.error("Please select a valid file type (PDF, DOC, DOCX, JPG, PNG)");
       return;
     }
 
     if (file.size > maxFileSize) {
-      alert("File size must be less than 5MB");
+      toast.error("File size must be less than 5MB");
       return;
     }
 
     setSelectedFile(file);
+
+    // Auto-upload the file
+    await uploadFile(file);
+  };
+
+  const uploadFile = async (file: File) => {
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file as Blob);
+
+    const url = URLS.BASE + URLS.uploadImg;
+
+    try {
+      await toast.promise(
+        POST_REQUEST_FILE_UPLOAD(url, formData).then((response) => {
+          console.log("Response from file upload:", response);
+          if ((response as unknown as { url: string }).url) {
+            setFileUrl((response as unknown as { url: string }).url as string);
+            return "Document uploaded successfully";
+          } else {
+            toast.error("Document upload failed");
+            throw new Error("Document upload failed");
+          }
+        }),
+        {
+          loading: "Uploading...",
+          success: "Document uploaded successfully",
+          error: "Document upload failed",
+        },
+      );
+    } catch (error) {
+      console.error("Upload error:", error);
+      setSelectedFile(null);
+      setFileUrl(null);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -93,13 +138,22 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      toast.error("Please select a document to upload");
+      return;
+    }
+
+    if (!fileUrl) {
+      toast.error("Document is still uploading, please wait");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      onSubmit(property, selectedFile);
+      onSubmit(property, selectedFile, fileUrl);
     } catch (error) {
-      console.error("Error uploading LOI:", error);
+      console.error("Error submitting LOI:", error);
+      toast.error("Failed to submit LOI. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -107,6 +161,7 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
 
   const removeFile = () => {
     setSelectedFile(null);
+    setFileUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -120,6 +175,19 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -129,8 +197,9 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-hidden"
           onClick={onClose}
+          style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -289,8 +358,16 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
                 <Button
                   type="button"
                   onClick={handleSubmit}
-                  value={isSubmitting ? "Uploading..." : "Upload LOI"}
-                  disabled={isSubmitting || !selectedFile}
+                  value={
+                    isSubmitting
+                      ? "Submitting..."
+                      : isUploading
+                        ? "Uploading..."
+                        : "Submit LOI"
+                  }
+                  disabled={
+                    isSubmitting || isUploading || !selectedFile || !fileUrl
+                  }
                   className="flex-1 py-3 px-4 bg-[#FF9800] text-white rounded-lg font-medium hover:bg-[#F57C00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
