@@ -20,6 +20,7 @@ import { FaCaretDown } from "react-icons/fa";
 import useClickOutside from "@/hooks/clickOutside";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
+import { useNotifications } from "@/context/notification-context";
 import notificationBellIcon from "@/svgs/bell.svg";
 import userIcon from "@/svgs/user.svg";
 import UserNotifications from "./user-notifications";
@@ -124,7 +125,6 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
         }`}
       >
         <nav className={`h-[50px] container flex justify-between items-center`}>
-          
           <Image
             src={khabiteqIcon}
             width={1000}
