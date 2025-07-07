@@ -43,6 +43,7 @@ const NotificationsPage: React.FC = () => {
     [],
   );
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const { user } = useUserContext();
 
