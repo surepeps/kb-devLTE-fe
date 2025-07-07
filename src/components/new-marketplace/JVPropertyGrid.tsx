@@ -113,8 +113,25 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
   const selectedCount = selectedForInspection.length;
   const hasSelectedProperties = selectedCount > 0;
 
+  // Check if we're in demo mode (properties have demo IDs)
+  const isDemoMode =
+    properties.length > 0 && properties.some((p) => p._id?.includes("demo"));
+
   return (
     <div className="space-y-6">
+      {/* Demo Mode Warning */}
+      {isDemoMode && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-400 rounded-full flex-shrink-0"></div>
+            <p className="text-yellow-800 text-sm">
+              <strong>Demo Mode:</strong> Showing sample data due to server
+              connectivity issues. The marketplace functionality is working
+              normally.
+            </p>
+          </div>
+        </div>
+      )}
       {/* Selected Properties Bar - Mobile */}
       {isMobile && hasSelectedProperties && (
         <div className="fixed bottom-0 left-0 right-0 bg-[#09391C] text-white p-4 z-50">
