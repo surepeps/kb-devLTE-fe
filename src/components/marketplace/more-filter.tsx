@@ -143,36 +143,38 @@ const MoreFilter: FC<MoreFilterProps> = ({
             <button
               type="button"
               key={idx}
-              onClick={() => setSelectedLandType(item)}
-              className={`w-1/3 px-[15px] text-xs h-[36px] ${
+              onClick={() => handleLandTypeChange(item)}
+              className={`w-1/3 px-[15px] text-xs h-[36px] rounded transition-colors ${
                 selectedLandType === item
                   ? "bg-[#8DDB90] font-medium text-white"
-                  : "bg-transparent text-[#5A5D63]"
+                  : "bg-transparent text-[#5A5D63] hover:bg-gray-100"
               } border-[1px] border-[#C7CAD0]`}
             >
               {item}
             </button>
           ))}
         </div>
-        <div className="h-[47px] border-[1px] border-[#D6DDEB] w-full flex justify-between items-center px-[12px] py-[16px]">
-          <span>min</span>
-          <label htmlFor="landSize">
+        <div className="h-[47px] border-[1px] border-[#D6DDEB] w-full flex justify-between items-center px-[12px] py-[16px] rounded">
+          <span className="text-sm text-[#5A5D63]">min</span>
+          <label htmlFor="landSize" className="flex-1 mx-2">
             <input
               type="number"
               name="landSize"
               onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                const value = event.target.value;
                 setFilters({
                   ...filters,
                   landSize: {
                     type: selectedLandType,
-                    size: Number(event.target.value),
+                    size: value ? Number(value) : undefined,
                   },
                 });
               }}
               id="landSize"
-              value={filters.landSize.size}
+              value={filters.landSize.size || ""}
               title="Land size"
-              className="outline-none h-full w-full text-center"
+              placeholder="Enter size"
+              className="outline-none h-full w-full text-center border-none focus:outline-none"
             />
           </label>
           <span className="text-sm text-black">{selectedLandType}</span>
