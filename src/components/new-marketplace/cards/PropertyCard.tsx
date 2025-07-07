@@ -43,7 +43,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   isSelected,
   negotiatedPrice,
 }) => {
-  const hasNegotiatedPrice = negotiatedPrice !== null;
+  const hasNegotiatedPrice =
+    negotiatedPrice != null && negotiatedPrice !== undefined;
 
   return (
     <motion.div
