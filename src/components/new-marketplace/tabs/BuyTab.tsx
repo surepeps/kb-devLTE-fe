@@ -29,12 +29,16 @@ const BuyTab = () => {
     property: null,
   });
 
-  // Fetch initial data when tab becomes active
+  // Fetch initial data when tab becomes active (only once)
   useEffect(() => {
-    if (activeTab === "buy" && buyTab.formikStatus === "idle") {
-      // fetchTabData("buy");
+    if (
+      activeTab === "buy" &&
+      buyTab.formikStatus === "idle" &&
+      buyTab.properties.length === 0
+    ) {
+      fetchTabData("buy");
     }
-  }, []);
+  }, [activeTab, buyTab.formikStatus, buyTab.properties.length, fetchTabData]);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page
