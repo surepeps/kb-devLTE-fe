@@ -759,6 +759,107 @@ const ProductDetailsPage = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Mobile Sidebar - shows on smaller screens */}
+              <div className="lg:hidden w-full mt-8">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                  <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                    Property Information
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-[#7C8493]">
+                        Reference ID:
+                      </span>
+                      <span className="text-sm text-[#25324B] font-medium break-all">
+                        {details.owner}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-[#7C8493]">
+                        Date added:
+                      </span>
+                      <span className="text-sm text-[#25324B]">
+                        {details.createdAt.split("T")[0]}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-[#7C8493]">
+                        Last Update:
+                      </span>
+                      <span className="text-sm text-[#25324B]">
+                        {details.updatedAt.split("T")[0]}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-[#7C8493]">
+                        Market Status:
+                      </span>
+                      <span className="text-sm text-[#25324B]">
+                        {details.isAvailable ? "Available" : "Not Available"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Selected briefs section for mobile */}
+                {Array.from(selectedBriefs).length > 0 && (
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                      Selected Briefs
+                    </h3>
+                    <button
+                      type="button"
+                      className="w-full h-[48px] border border-[#FF3D00] text-[#FF3D00] font-medium text-base rounded-lg"
+                    >
+                      {Array.from(selectedBriefs).length} selected brief
+                      {Array.from(selectedBriefs).length !== 1 ? "s" : ""}
+                    </button>
+                  </div>
+                )}
+
+                {/* Similar properties for mobile */}
+                {data.length > 0 && (
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                      Similar Properties
+                    </h3>
+                    <div className="space-y-4">
+                      {data.map((property, idx) => (
+                        <Card
+                          key={idx}
+                          isAddForInspectionModalOpened={
+                            isAddForInspectionModalOpened
+                          }
+                          style={{ width: "100%" }}
+                          images={property?.pictures}
+                          onCardPageClick={() => {
+                            router.push(`/property/Rent/${property._id}`);
+                          }}
+                          cardData={[
+                            {
+                              header: "Property Type",
+                              value: property.propertyType,
+                            },
+                            {
+                              header: "Price",
+                              value: `₦${Number(property.rentalPrice).toLocaleString()}`,
+                            },
+                            {
+                              header: "Bedrooms",
+                              value: property.noOfBedrooms || "N/A",
+                            },
+                            {
+                              header: "Location",
+                              value: `${property.location.state}, ${property.location.localGovernment}`,
+                            },
+                          ]}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             {selectedBriefs && selectedBriefs.length > 0 && (
               <MobileSelectedBottomBar
