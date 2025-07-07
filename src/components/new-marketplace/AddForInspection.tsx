@@ -205,7 +205,7 @@ const AddForInspection = () => {
               className="space-y-6"
             >
               {/* Inspection Fee Info */}
-              <div className="bg-[#E4EFE7] border border-[#8DDB90] rounded-lg p-4">
+              <div className="bg-[#E4EFE7] mx-auto max-w-3xl border border-[#8DDB90] rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold text-[#09391C]">

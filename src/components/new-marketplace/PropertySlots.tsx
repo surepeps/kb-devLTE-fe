@@ -139,7 +139,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-3xl mx-auto">
       {slots.map(({ index, property }) => (
         <div key={index} className="relative max-w-sm mx-auto lg:max-w-none">
           {property ? (
@@ -198,7 +198,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
           ) : (
             <div
               onClick={onAddProperty}
-              className="bg-white rounded-lg border-2 border-dashed border-gray-300 hover:border-[#8DDB90] transition-colors cursor-pointer min-h-[450px] flex flex-col"
+              className="bg-white rounded-lg flex justify-center items-center border-2 border-dashed border-gray-300 hover:border-[#8DDB90] transition-colors cursor-pointer md:w-[296px] min-h-[400px] flex-col"
             >
               <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                 <div className="w-20 h-20 bg-[#E4EFE7] rounded-full flex items-center justify-center mb-4">
@@ -210,12 +210,6 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                 <p className="text-sm text-[#5A5D63] mb-4">
                   Click to browse and add a property for inspection
                 </p>
-                <button
-                  type="button"
-                  className="px-4 py-3 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors"
-                >
-                  Browse Properties
-                </button>
               </div>
             </div>
           )}

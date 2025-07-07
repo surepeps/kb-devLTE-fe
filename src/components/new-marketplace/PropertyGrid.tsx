@@ -59,7 +59,10 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         header: "Price",
         value: `₦${Number(property.price || 0).toLocaleString()}`,
       },
-      { header: "Bedrooms", value: property.noOfBedrooms || "0" },
+      { header: "Bedrooms", value: property.additionalFeatures.noOfBedrooms || "0" },
+      { header: "Bathrooms", value: property.additionalFeatures.noOfBathrooms || "0" },
+      { header: "Toilets", value: property.additionalFeatures.noOfToilets || "0" },
+      { header: "CarParks", value: property.additionalFeatures.noOfCarParks || "0" },
       {
         header: "Location",
         value: property.location
@@ -117,113 +120,115 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     properties.length > 0 && properties.some((p) => p._id?.includes("demo"));
 
   return (
-    <div className="space-y-6">
-      {/* Demo Mode Warning */}
-      {isDemoMode && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-400 rounded-full flex-shrink-0"></div>
-            <p className="text-yellow-800 text-sm">
-              <strong>Demo Mode:</strong> Showing sample data due to server
-              connectivity issues. The marketplace functionality is working
-              normally.
-            </p>
-          </div>
-        </div>
-      )}
-      {/* Selected Properties Bar - Mobile */}
-      {isMobile && hasSelectedProperties && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#09391C] text-white p-4 z-50">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">
-              {selectedCount} propert{selectedCount === 1 ? "y" : "ies"}{" "}
-              selected
-            </span>
-            <button
-              onClick={onOpenAddForInspection}
-              className="bg-[#8DDB90] text-white px-4 py-2 rounded-lg text-sm font-semibold"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Selected Properties Bar - Desktop */}
-      {!isMobile && hasSelectedProperties && (
-        <div className="bg-[#E4EFE7] border border-[#8DDB90] rounded-lg p-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <span className="text-[#09391C] font-semibold">
-                {selectedCount} propert{selectedCount === 1 ? "y" : "ies"}{" "}
-                selected for inspection
-              </span>
-              <span className="text-[#5A5D63] text-sm">
-                (Maximum 2 properties allowed)
-              </span>
+    <div className="w-full">
+      <div className="space-y-6 mx-auto max-w-7xl">
+        {/* Demo Mode Warning */}
+        {isDemoMode && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-400 rounded-full flex-shrink-0"></div>
+              <p className="text-yellow-800 text-sm">
+                <strong>Demo Mode:</strong> Showing sample data due to server
+                connectivity issues. The marketplace functionality is working
+                normally.
+              </p>
             </div>
-            <button
-              onClick={onOpenAddForInspection}
-              className="bg-[#8DDB90] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#76c77a] transition-colors"
-            >
-              Continue to Inspection
-            </button>
           </div>
+        )}
+        {/* Selected Properties Bar - Mobile */}
+        {isMobile && hasSelectedProperties && (
+          <div className="fixed bottom-0 left-0 right-0 bg-[#09391C] text-white p-4 z-50">
+            <div className="flex justify-between items-center">
+              <span className="text-sm">
+                {selectedCount} propert{selectedCount === 1 ? "y" : "ies"}{" "}
+                selected
+              </span>
+              <button
+                onClick={onOpenAddForInspection}
+                className="bg-[#8DDB90] text-white px-4 py-2 rounded-lg text-sm font-semibold"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Selected Properties Bar - Desktop */}
+        {!isMobile && hasSelectedProperties && (
+          <div className="bg-[#E4EFE7] border border-[#8DDB90] rounded-lg p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <span className="text-[#09391C] font-semibold">
+                  {selectedCount} propert{selectedCount === 1 ? "y" : "ies"}{" "}
+                  selected for inspection
+                </span>
+                <span className="text-[#5A5D63] text-sm">
+                  (Maximum 2 properties allowed)
+                </span>
+              </div>
+              <button
+                onClick={onOpenAddForInspection}
+                className="bg-[#8DDB90] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#76c77a] transition-colors"
+              >
+                Continue to Inspection
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Properties Grid */}
+        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-x-1 sm:gap-y-3">
+          <AnimatePresence>
+            {properties.map((property, index) => (
+              <motion.div
+                key={property._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <PropertyCard
+                  tab={tab}
+                  property={property}
+                  cardData={getPropertyCardData(property)}
+                  images={property.pictures || property.images || []}
+                  isPremium={property.isPremium || false}
+                  onPropertyClick={() => onPropertyClick(property)}
+                  onInspectionToggle={() => onInspectionToggle(property)}
+                  onPriceNegotiation={() => onPriceNegotiation(property)}
+                  onRemoveNegotiation={onRemoveNegotiation}
+                  isSelected={selectedForInspection.some(
+                    (item) => item.propertyId === property._id,
+                  )}
+                  negotiatedPrice={negotiatedPrices.find(
+                    (price) => price.propertyId === property._id,
+                  )}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
-      )}
 
-      {/* Properties Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        <AnimatePresence>
-          {properties.map((property, index) => (
-            <motion.div
-              key={property._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <PropertyCard
-                tab={tab}
-                property={property}
-                cardData={getPropertyCardData(property)}
-                images={property.pictures || property.images || []}
-                isPremium={property.isPremium || false}
-                onPropertyClick={() => onPropertyClick(property)}
-                onInspectionToggle={() => onInspectionToggle(property)}
-                onPriceNegotiation={() => onPriceNegotiation(property)}
-                onRemoveNegotiation={onRemoveNegotiation}
-                isSelected={selectedForInspection.some(
-                  (item) => item.propertyId === property._id,
-                )}
-                negotiatedPrice={negotiatedPrices.find(
-                  (price) => price.propertyId === property._id,
-                )}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {/* Results Summary */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-[#5A5D63] text-xs sm:text-sm">
+          <span className="text-center sm:text-left">
+            Showing {(currentPage - 1) * 12 + 1} -{" "}
+            {Math.min(currentPage * 12, totalItems)} of {totalItems} properties
+          </span>
+          <span className="text-center sm:text-right">
+            Page {currentPage} of {totalPages}
+          </span>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
-
-      {/* Results Summary */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-[#5A5D63] text-xs sm:text-sm">
-        <span className="text-center sm:text-left">
-          Showing {(currentPage - 1) * 12 + 1} -{" "}
-          {Math.min(currentPage * 12, totalItems)} of {totalItems} properties
-        </span>
-        <span className="text-center sm:text-right">
-          Page {currentPage} of {totalPages}
-        </span>
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      )}
     </div>
   );
 };
