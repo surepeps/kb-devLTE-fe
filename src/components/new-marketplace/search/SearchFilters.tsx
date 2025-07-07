@@ -361,6 +361,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                   "selectedLGA",
                   locationFormik.values.selectedLGA,
                 );
+                onFilterChange(
+                  "selectedArea",
+                  locationFormik.values.selectedArea,
+                );
                 onFilterChange("priceRange", {
                   min: priceFormik.values.minPrice,
                   max: priceFormik.values.maxPrice,
