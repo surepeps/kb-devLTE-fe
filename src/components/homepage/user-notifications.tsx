@@ -138,18 +138,28 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
         return;
       }
 
+      // Optimistically update UI first
       setNotifications((prev) =>
         prev.map((notif) => ({ ...notif, isRead: true })),
       );
 
       toast.success("All notifications marked as read");
 
-      // Attempt API call
-      await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/mark-all-read`,
-        {},
-        Cookies.get("token"),
+      // Use proper PATCH endpoint
+      const response = await fetch(
+        `${URLS.BASE}/user/notifications/markAllRead`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        },
       );
+
+      if (!response.ok) {
+        console.error("Failed to mark all notifications as read on server");
+      }
     } catch (error) {
       console.error("Error marking all as read:", error);
     }
