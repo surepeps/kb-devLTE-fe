@@ -21,13 +21,15 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
-  // Generate available dates (next 6 weekdays, excluding Sundays)
-  const getAvailableDates = () => {
+  const [showMoreDates, setShowMoreDates] = useState(false);
+
+  // Generate available dates (at least 10 weekdays, excluding Sundays)
+  const getAvailableDates = (count: number = 10) => {
     const dates = [];
     let date = new Date();
     date.setDate(date.getDate() + 3); // Start from 3 days from now
 
-    while (dates.length < 6) {
+    while (dates.length < count) {
       if (date.getDay() !== 0) {
         // Exclude Sundays
         dates.push(format(date, "MMM d, yyyy"));
@@ -38,6 +40,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   };
 
   const availableTimes = [
+    "8:00 AM",
     "9:00 AM",
     "10:00 AM",
     "11:00 AM",
@@ -46,6 +49,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     "2:00 PM",
     "3:00 PM",
     "4:00 PM",
+    "5:00 PM",
+    "6:00 PM",
   ];
 
   const availableDates = getAvailableDates();
