@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import toast from "react-hot-toast";
 import Input from "@/components/general-components/Input";
 import Button from "@/components/general-components/button";
 import { archivo } from "@/styles/font";
@@ -32,13 +33,36 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Format number with commas
+  const formatNumber = (value: string | number): string => {
+    const numValue =
+      typeof value === "string" ? value.replace(/,/g, "") : value.toString();
+    if (!numValue || isNaN(Number(numValue))) return "";
+    return Number(numValue).toLocaleString();
+  };
+
+  // Remove commas for numeric operations
+  const unformatNumber = (value: string): string => {
+    return value.replace(/,/g, "");
+  };
+
   const validationSchema = Yup.object({
-    negotiatedPrice: Yup.number()
+    negotiatedPrice: Yup.string()
       .required("Negotiated price is required")
-      .positive("Price must be greater than 0")
-      .max(
-        property?.price || 0,
+      .test("is-valid-number", "Please enter a valid number", (value) => {
+        if (!value) return false;
+        const numValue = Number(unformatNumber(value));
+        return !isNaN(numValue) && numValue > 0;
+      })
+      .test(
+        "not-greater-than-asking",
         "Negotiated price cannot be higher than asking price",
+        (value) => {
+          if (!value) return true;
+          const numValue = Number(unformatNumber(value));
+          const askingPrice = property?.price || 0;
+          return numValue <= askingPrice;
+        },
       ),
   });
 
@@ -50,9 +74,18 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        onSubmit(property, Number(values.negotiatedPrice));
+        const numericPrice = Number(unformatNumber(values.negotiatedPrice));
+        const askingPrice = property?.price || 0;
+
+        if (numericPrice > askingPrice) {
+          toast.error("Negotiated price cannot be higher than asking price");
+          return;
+        }
+
+        onSubmit(property, numericPrice);
       } catch (error) {
         console.error("Error submitting negotiation:", error);
+        toast.error("Failed to submit negotiation. Please try again.");
       } finally {
         setIsSubmitting(false);
       }
@@ -63,14 +96,28 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
     if (existingNegotiation) {
       formik.setFieldValue(
         "negotiatedPrice",
-        existingNegotiation.negotiatedPrice,
+        formatNumber(existingNegotiation.negotiatedPrice),
       );
     }
   }, [existingNegotiation]);
 
+  // Handle input change with formatting
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const unformattedValue = unformatNumber(value);
+
+    // Only allow numeric input
+    if (unformattedValue === "" || /^\d+$/.test(unformattedValue)) {
+      const formattedValue = unformattedValue
+        ? formatNumber(unformattedValue)
+        : "";
+      formik.setFieldValue("negotiatedPrice", formattedValue);
+    }
+  };
+
   const askingPrice = property?.price || 0;
   const savings = formik.values.negotiatedPrice
-    ? askingPrice - Number(formik.values.negotiatedPrice)
+    ? askingPrice - Number(unformatNumber(formik.values.negotiatedPrice))
     : 0;
 
   if (!isOpen) return null;
@@ -82,8 +129,9 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-hidden"
           onClick={onClose}
+          style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -147,10 +195,10 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
                     <input
                       name="negotiatedPrice"
                       id="negotiatedPrice"
-                      type="number"
+                      type="text"
                       placeholder="Enter your offer price"
                       value={formik.values.negotiatedPrice}
-                      onChange={formik.handleChange}
+                      onChange={handlePriceChange}
                       onBlur={formik.handleBlur}
                       className={`pl-8 pr-3 h-[50px] bg-[#FFFFFF] border-[1px] border-[#E9EBEB] w-full text-base placeholder:text-[#A7A9AD] text-black ${archivo.className} rounded-[5px] outline-none focus:border-[#8DDB90]`}
                     />
@@ -208,7 +256,9 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
                     disabled={
                       isSubmitting ||
                       !formik.isValid ||
-                      !formik.values.negotiatedPrice
+                      !formik.values.negotiatedPrice ||
+                      Number(unformatNumber(formik.values.negotiatedPrice)) >
+                        askingPrice
                     }
                     className="flex-1 py-3 px-4 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />
