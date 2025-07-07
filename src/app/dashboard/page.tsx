@@ -387,7 +387,7 @@ export default function LandlordDashboard() {
           <h2 className="text-xl font-semibold text-[#09391C] mb-6">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Link
               href="/post_property"
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
@@ -427,12 +427,31 @@ export default function LandlordDashboard() {
             </Link>
 
             <Link
-              href="/preference"
+              href="/notifications"
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-purple-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
                   <UserGroupIcon size={24} className="text-purple-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#09391C]">
+                    Notifications
+                  </h3>
+                  <p className="text-sm text-[#5A5D63]">
+                    View your notifications
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/preference"
+              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
+                  <UserGroupIcon size={24} className="text-blue-500" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#09391C]">Settings</h3>
