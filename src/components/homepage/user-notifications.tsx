@@ -24,7 +24,17 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const divRef = useRef<HTMLDivElement | null>(null);
 
-  useClickOutside(divRef, () => closeNotificationModal(false));
+  // Prevent closing when clicking on tab buttons
+  useClickOutside(divRef, (event) => {
+    // Don't close if clicking on filter tab buttons
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-notification-tabs]")
+    ) {
+      return;
+    }
+    closeNotificationModal(false);
+  });
 
   const deleteNotification = async (notificationId: string) => {
     try {
