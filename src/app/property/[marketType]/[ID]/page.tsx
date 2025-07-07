@@ -636,10 +636,10 @@ const ProductDetailsPage = () => {
                 </div>
               </div>
               <div className="hidden lg:flex w-full lg:w-[30%] flex-col items-end">
-                <div className="w-full lg:w-[282px] flex justify-center items-center">
-                  <div className="flex justify-between items-start container">
-                    <div className="w-full flex flex-col gap-[26px] h-[inherit]">
-                      <div className="flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar">
+                <div className="w-full lg:w-[300px] xl:w-[320px] flex justify-center items-center">
+                  <div className="flex justify-between items-start w-full">
+                    <div className="w-full flex flex-col gap-6 h-[inherit]">
+                      <div className="flex flex-col bg-white gap-3 border border-[#D6DDEB] w-full py-4 px-4 rounded-lg shadow-sm overflow-x-auto hide-scrollbar">
                         <div className="flex w-full gap-[10px] flex-nowrap items-center">
                           <span className="text-base text-[#7C8493] whitespace-nowrap">
                             Reference ID:
