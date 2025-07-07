@@ -18,7 +18,7 @@ interface ImageSwiperProps {
   images: any[];
 }
 
-const getValidImageUrl = (url: any) => {
+const getValidImageUrl = (url: any): string => {
   if (!url) return randomImage.src;
   if (typeof url === "string") {
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -26,8 +26,12 @@ const getValidImageUrl = (url: any) => {
     if (url.startsWith("/")) return url;
     return randomImage.src;
   }
-  // If it's a StaticImport (local import), return as is
-  return url;
+  // If it's a StaticImport (local import), try to get src property
+  if (typeof url === "object" && url.src) {
+    return url.src;
+  }
+  // Fallback to random image if we can't determine the URL
+  return randomImage.src;
 };
 
 const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
