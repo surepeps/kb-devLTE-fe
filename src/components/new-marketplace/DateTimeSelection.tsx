@@ -288,7 +288,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         <Button
           onClick={handleProceed}
           value="Proceed to Payment"
-          disabled={!selectedDate || !selectedTime}
+          disabled={
+            !selectedDate ||
+            !selectedTime ||
+            !buyerInfo.fullName.trim() ||
+            !buyerInfo.phoneNumber.trim() ||
+            !buyerInfo.email.trim()
+          }
           className="flex-1 px-6 py-3 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
