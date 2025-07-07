@@ -563,8 +563,15 @@ export const NewMarketplaceProvider: React.FC<{
         // Build query parameters
         const queryParams = new URLSearchParams();
 
-        // Required parameter
-        queryParams.append("briefType", searchParams.briefType);
+        // Required parameter - Map tab to correct briefType for API
+        const briefTypeMapping = {
+          buy: "Outright Sales",
+          jv: "Joint Venture",
+          rent: "Rent",
+        };
+        const apiBriefType =
+          briefTypeMapping[searchParams.briefType] || searchParams.briefType;
+        queryParams.append("briefType", apiBriefType);
 
         // Pagination parameters
         const currentTabState = getCurrentTabState();
