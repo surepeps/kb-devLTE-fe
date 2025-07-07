@@ -35,28 +35,36 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
 
   useClickOutside(divRef, () => closeNotificationModal(false));
 
+  // Track if notifications have been fetched to prevent multiple calls
+  const [hasFetched, setHasFetched] = useState(false);
+
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    if (!hasFetched) {
+      fetchNotifications();
+    }
+  }, [hasFetched]);
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
+      // Limit to 5 notifications for the dropdown
       const response = await GET_REQUEST(
-        `${URLS.BASE}/user/notifications`,
+        `${URLS.BASE}/user/notifications?limit=5&page=1`,
         Cookies.get("token"),
       );
 
       if (response?.success && response?.data) {
         setNotifications(response.data);
       } else {
-        // If API doesn't exist yet, show sample notifications
-        setNotifications(sampleNotifications);
+        // If API doesn't exist yet, show sample notifications (limited to 5)
+        setNotifications(sampleNotifications.slice(0, 5));
       }
+      setHasFetched(true);
     } catch (error) {
       console.error("Error fetching notifications:", error);
-      // Show sample notifications as fallback
-      setNotifications(sampleNotifications);
+      // Show sample notifications as fallback (limited to 5)
+      setNotifications(sampleNotifications.slice(0, 5));
+      setHasFetched(true);
     } finally {
       setLoading(false);
     }
@@ -64,27 +72,30 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
 
   const markAsRead = async (notificationId: string) => {
     try {
-      const response = await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/${notificationId}/read`,
-        {},
-        Cookies.get("token"),
-      );
-
-      if (response?.success) {
-        setNotifications((prev) =>
-          prev.map((notif) =>
-            notif._id === notificationId ? { ...notif, isRead: true } : notif,
-          ),
-        );
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      // Update local state anyway for better UX
+      // Optimistically update UI first
       setNotifications((prev) =>
         prev.map((notif) =>
           notif._id === notificationId ? { ...notif, isRead: true } : notif,
         ),
       );
+
+      // Then update server using PATCH
+      const response = await fetch(
+        `${URLS.BASE}/user/notifications/${notificationId}/markRead`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.error("Failed to mark notification as read on server");
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
     }
   };
 
