@@ -194,16 +194,22 @@ const MoreFilter: FC<MoreFilterProps> = ({
                 (text: string) => text === item,
               )}
               handleChange={() => {
-                const uniqueFeatures: Set<string> = new Set([
-                  ...filters.desirer_features,
-                ]);
-                if (uniqueFeatures.has(item)) {
-                  uniqueFeatures.delete(item);
+                const currentFeatures = filters.desirer_features || [];
+                let updatedFeatures;
+
+                if (currentFeatures.includes(item)) {
+                  // Remove the feature if it's already selected
+                  updatedFeatures = currentFeatures.filter(
+                    (feature) => feature !== item,
+                  );
+                } else {
+                  // Add the feature if it's not selected
+                  updatedFeatures = [...currentFeatures, item];
                 }
-                uniqueFeatures.add(item);
+
                 setFilters({
                   ...filters,
-                  desirer_features: Array.from(uniqueFeatures),
+                  desirer_features: updatedFeatures,
                 });
               }}
             />
