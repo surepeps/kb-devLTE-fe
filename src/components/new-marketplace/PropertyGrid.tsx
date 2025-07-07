@@ -187,7 +187,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                 tab={tab}
                 property={property}
                 cardData={getPropertyCardData(property)}
-                images={property.images || []}
+                images={property.pictures || property.images || []}
                 isPremium={property.isPremium || false}
                 onPropertyClick={() => onPropertyClick(property)}
                 onInspectionToggle={() => onInspectionToggle(property)}
