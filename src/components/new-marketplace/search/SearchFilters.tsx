@@ -1,9 +1,16 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
-import { ChevronDown, Search, X } from "lucide-react";
-import Button from "@/components/general-components/button";
+import React, { useState, Fragment } from "react";
+import { useFormik } from "formik";
+import SelectStateLGA from "../../marketplace/select-state-lga";
+import Input from "../../general-components/Input";
+import PriceRange from "../../marketplace/price-range";
+import BedroomComponent from "../../marketplace/bedroom";
+import MoreFilter from "../../marketplace/more-filter";
+import DocumentTypeComponent from "../../marketplace/document-type";
+import RadioCheck from "../../general-components/radioCheck";
+import { AnimatePresence } from "framer-motion";
 
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent";
@@ -22,382 +29,269 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onSearch,
   loading,
 }) => {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  // Modal states for existing components
+  const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] = useState(false);
+  const [isDocumentModalOpened, setIsDocumentModalOpened] = useState(false);
+  const [isBedroomModalOpened, setIsBedroomModalOpened] = useState(false);
+  const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] = useState(false);
+  const [priceRadioValue, setPriceRadioValue] = useState("");
 
-  const handleStateChange = (state: string) => {
-    onFilterChange("selectedState", state);
-    onFilterChange("selectedLGA", ""); // Reset LGA when state changes
-    onFilterChange("selectedArea", ""); // Reset area when state changes
+  // Usage options for tab
+  const getUsageOptions = () => {
+    switch (tab) {
+      case "buy":
+        return ["All", "Land", "Residential", "Commercial", "Duplex"];
+      case "jv":
+        return [
+          "All",
+          "Land Development",
+          "Commercial",
+          "Residential",
+          "Mixed Use",
+        ];
+      case "rent":
+        return ["All", "Apartment", "House", "Office", "Shop", "Warehouse"];
+      default:
+        return ["All"];
+    }
   };
 
-  const handleLGAChange = (lga: string) => {
-    onFilterChange("selectedLGA", lga);
-    onFilterChange("selectedArea", ""); // Reset area when LGA changes
+  // State/LGA formik for existing SelectStateLGA component
+  const locationFormik = useFormik({
+    initialValues: {
+      selectedLGA: filters.selectedLGA || "",
+      selectedState: filters.selectedState || "",
+    },
+    onSubmit: () => {},
+  });
+
+  // Price formik for existing PriceRange component
+  const priceFormik = useFormik({
+    initialValues: {
+      minPrice: filters.priceRange?.min || 0,
+      maxPrice: filters.priceRange?.max || 0,
+    },
+    onSubmit: () => {},
+  });
+
+  // More filters state for existing MoreFilter component
+  const [moreFilters, setMoreFilters] = useState({
+    bathroom: filters.bathrooms || undefined,
+    landSize: filters.landSize || {
+      type: "plot",
+      size: undefined,
+    },
+    desirer_features: filters.desiredFeatures || [],
+  });
+
+  const formatPriceDisplay = (radioValue: string, formik: any) => {
+    if (radioValue) {
+      return radioValue;
+    }
+    const { minPrice, maxPrice } = formik.values;
+    if (minPrice > 0 || maxPrice > 0) {
+      const min = minPrice > 0 ? `₦${minPrice.toLocaleString()}` : "Min";
+      const max = maxPrice > 0 ? `₦${maxPrice.toLocaleString()}` : "Max";
+      return `${min} - ${max}`;
+    }
+    return "";
   };
 
-  const handlePriceRangeChange = (min: number, max: number) => {
-    onFilterChange("priceRange", { min, max });
+  const formatDocumentsDisplay = () => {
+    const docs = filters.documentTypes || [];
+    return docs.length > 0 ? `${docs.length} documents selected` : "";
   };
 
-  const states = [
-    "Lagos",
-    "Abuja",
-    "Ogun",
-    "Oyo",
-    "Kano",
-    "Rivers",
-    "Kaduna",
-    "Anambra",
-    "Imo",
-    "Enugu",
-  ];
-
-  const lgas = {
-    Lagos: [
-      "Ikeja",
-      "Victoria Island",
-      "Lekki",
-      "Ajah",
-      "Surulere",
-      "Yaba",
-      "Ikoyi",
-    ],
-    Abuja: ["Garki", "Wuse", "Maitama", "Asokoro", "Gwarinpa", "Kubwa"],
-    Ogun: ["Abeokuta North", "Sagamu", "Ijebu Ode", "Ado-Odo/Ota"],
-  };
-
-  const documentTypes = [
-    "Certificate of Occupancy (C of O)",
-    "Deed of Assignment",
-    "Governor's Consent",
-    "Survey Plan",
-    "Building Plan Approval",
-  ];
-
-  const desiredFeatures = [
-    "Swimming Pool",
-    "Gym",
-    "Parking Space",
-    "Generator",
-    "Security",
-    "Garden",
-    "Balcony",
-    "Air Conditioning",
-    "Internet",
-    "Elevator",
-  ];
-
-  const homeConditions = [
-    "New",
-    "Renovated",
-    "Good",
-    "Fair",
-    "Needs Renovation",
-  ];
+  const usageOptions = getUsageOptions();
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Basic Filters Row 1 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* State Selection */}
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            State
-          </label>
-          <select
-            value={filters.selectedState}
-            onChange={(e) => handleStateChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-          >
-            <option value="">Select State</option>
-            {states.map((state) => (
-              <option key={state} value={state}>
-                {state}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* LGA Selection */}
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            LGA
-          </label>
-          <select
-            value={filters.selectedLGA}
-            onChange={(e) => handleLGAChange(e.target.value)}
-            disabled={!filters.selectedState}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm disabled:bg-gray-100"
-          >
-            <option value="">Select LGA</option>
-            {filters.selectedState &&
-              lgas[filters.selectedState as keyof typeof lgas]?.map((lga) => (
-                <option key={lga} value={lga}>
-                  {lga}
-                </option>
-              ))}
-          </select>
-        </div>
-
-        {/* Area Input */}
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            Area
-          </label>
-          <input
-            type="text"
-            value={filters.selectedArea}
-            onChange={(e) => onFilterChange("selectedArea", e.target.value)}
-            placeholder="Enter specific area"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-          />
-        </div>
-      </div>
-
-      {/* Basic Filters Row 2 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Price Range */}
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            Min Price (₦)
-          </label>
-          <input
-            type="number"
-            value={filters.priceRange.min || ""}
-            onChange={(e) =>
-              handlePriceRangeChange(
-                parseInt(e.target.value) || 0,
-                filters.priceRange.max,
-              )
-            }
-            placeholder="Minimum"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            Max Price (₦)
-          </label>
-          <input
-            type="number"
-            value={filters.priceRange.max || ""}
-            onChange={(e) =>
-              handlePriceRangeChange(
-                filters.priceRange.min,
-                parseInt(e.target.value) || 0,
-              )
-            }
-            placeholder="Maximum"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-          />
-        </div>
-
-        {/* Bedrooms */}
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            Bedrooms
-          </label>
-          <select
-            value={filters.bedrooms || ""}
-            onChange={(e) =>
-              onFilterChange("bedrooms", parseInt(e.target.value) || undefined)
-            }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-          >
-            <option value="">Any</option>
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <option key={num} value={num}>
-                {num}+ Bedroom{num > 1 ? "s" : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Bathrooms */}
-        <div>
-          <label className="block text-sm font-medium text-[#24272C] mb-1">
-            Bathrooms
-          </label>
-          <select
-            value={filters.bathrooms || ""}
-            onChange={(e) =>
-              onFilterChange("bathrooms", parseInt(e.target.value) || undefined)
-            }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-          >
-            <option value="">Any</option>
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <option key={num} value={num}>
-                {num}+ Bathroom{num > 1 ? "s" : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Advanced Filters Toggle */}
-      <div className="border-t pt-4">
-        <button
-          type="button"
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-2 text-[#8DDB90] font-medium text-sm hover:text-[#76c77a] transition-colors"
-        >
-          Advanced Filters
-          <ChevronDown
-            size={16}
-            className={`transform transition-transform ${showAdvanced ? "rotate-180" : ""}`}
-          />
-        </button>
-      </div>
-
-      {/* Advanced Filters */}
-      {showAdvanced && (
-        <div className="space-y-4 pt-4 border-t">
-          {/* Document Types */}
-          {tab !== "jv" && (
-            <div>
-              <label className="block text-sm font-medium text-[#24272C] mb-2">
-                Required Documents
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {documentTypes.map((doc) => (
-                  <label key={doc} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={filters.documentTypes.includes(doc)}
-                      onChange={(e) => {
-                        const updatedDocs = e.target.checked
-                          ? [...filters.documentTypes, doc]
-                          : filters.documentTypes.filter(
-                              (d: string) => d !== doc,
-                            );
-                        onFilterChange("documentTypes", updatedDocs);
-                      }}
-                      className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]"
-                    />
-                    <span className="text-sm text-[#24272C]">{doc}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Home Condition */}
-          {tab !== "jv" && (
-            <div>
-              <label className="block text-sm font-medium text-[#24272C] mb-2">
-                Property Condition
-              </label>
-              <select
-                value={filters.homeCondition}
-                onChange={(e) =>
-                  onFilterChange("homeCondition", e.target.value)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-              >
-                <option value="">Any Condition</option>
-                {homeConditions.map((condition) => (
-                  <option key={condition} value={condition}>
-                    {condition}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Desired Features */}
-          <div>
-            <label className="block text-sm font-medium text-[#24272C] mb-2">
-              Desired Features
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {desiredFeatures.map((feature) => (
-                <label key={feature} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={filters.desiredFeatures.includes(feature)}
-                    onChange={(e) => {
-                      const updatedFeatures = e.target.checked
-                        ? [...filters.desiredFeatures, feature]
-                        : filters.desiredFeatures.filter(
-                            (f: string) => f !== feature,
-                          );
-                      onFilterChange("desiredFeatures", updatedFeatures);
-                    }}
-                    className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm text-[#24272C]">{feature}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Land Size */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-[#24272C] mb-1">
-                Land Size Type
-              </label>
-              <select
-                value={filters.landSize.type}
-                onChange={(e) =>
-                  onFilterChange("landSize", {
-                    ...filters.landSize,
-                    type: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
-              >
-                <option value="plot">Plot</option>
-                <option value="acre">Acre</option>
-                <option value="hectare">Hectare</option>
-                <option value="sqm">Square Meters</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[#24272C] mb-1">
-                Land Size
-              </label>
-              <input
-                type="number"
-                value={filters.landSize.size || ""}
-                onChange={(e) =>
-                  onFilterChange("landSize", {
-                    ...filters.landSize,
-                    size: parseInt(e.target.value) || undefined,
-                  })
-                }
-                placeholder="Enter size"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#8DDB90] text-sm"
+    <Fragment>
+      {/* Filter by checkboxes - exact copy of existing design */}
+      <div className="container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20">
+        <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
+          <div className="flex flex-wrap gap-[15px]">
+            <h3 className="font-semibold text-[#1E1E1E]">Filter by</h3>
+            {usageOptions.map((item: string, idx: number) => (
+              <RadioCheck
+                key={idx}
+                type="checkbox"
+                name="filterBy"
+                isChecked={filters.usageOptions?.includes(item) || false}
+                value={item}
+                handleChange={() => {
+                  const current = filters.usageOptions || [];
+                  const updated = current.includes(item)
+                    ? current.filter((opt: string) => opt !== item)
+                    : [...current, item];
+                  onFilterChange("usageOptions", updated);
+                }}
               />
-            </div>
+            ))}
+          </div>
+          <div className="flex gap-[30px]">
+            <button
+              className="h-[34px] w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm"
+              type="button"
+              onClick={() => {
+                // Navigate to post property
+                window.open("/post_property", "_blank");
+              }}
+            >
+              List property
+            </button>
+            <button
+              className="h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm"
+              type="button"
+              onClick={() => {
+                // Handle selected briefs - this will be managed by parent component
+                console.log("Selected briefs clicked");
+              }}
+            >
+              0 selected briefs
+            </button>
           </div>
         </div>
-      )}
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between pt-4 border-t">
-        <button
-          type="button"
-          onClick={onClearFilters}
-          className="text-[#5A5D63] hover:text-[#24272C] font-medium text-sm transition-colors"
-        >
-          Clear All Filters
-        </button>
+        {/* Filter inputs row - exact copy of existing design */}
+        <div className="w-full flex items-center gap-[15px]">
+          {/* Location Input - Fixed width */}
+          <div className="w-[280px]">
+            <SelectStateLGA
+              placeholder="Enter state, lga, city...."
+              formik={locationFormik}
+            />
+          </div>
 
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            onClick={onSearch}
-            value={loading ? "Searching..." : "Search Properties"}
-            disabled={loading}
-            className="px-6 py-2 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
-          />
+          {/* Price Range Input - Equal flex */}
+          <div className="flex-1 min-w-0">
+            <Input
+              className="w-full h-[50px]"
+              style={{ marginTop: "-30px" }}
+              placeholder="Price Range"
+              type="text"
+              label=""
+              readOnly
+              showDropdownIcon={true}
+              value={formatPriceDisplay(priceRadioValue, priceFormik)}
+              name="price"
+              onClick={() => setIsPriceRangeModalOpened(true)}
+            />
+            {isPriceRangeModalOpened && (
+              <PriceRange
+                heading="Price Range"
+                formik={priceFormik}
+                closeModal={setIsPriceRangeModalOpened}
+                setSlectedRadioValue={setPriceRadioValue}
+                selectedRadioValue={priceRadioValue}
+              />
+            )}
+          </div>
+
+          {/* Document Type Input - Equal flex */}
+          {tab !== "jv" && (
+            <div className="flex-1 min-w-0">
+              <Input
+                className="w-full h-[50px] text-sm"
+                style={{ marginTop: "-30px" }}
+                placeholder="Document Type"
+                type="text"
+                label=""
+                readOnly
+                showDropdownIcon={true}
+                name=""
+                value={formatDocumentsDisplay()}
+                onClick={() => setIsDocumentModalOpened(true)}
+              />
+              {isDocumentModalOpened && (
+                <DocumentTypeComponent
+                  docsSelected={filters.documentTypes || []}
+                  setDocsSelected={(docs: string[]) =>
+                    onFilterChange("documentTypes", docs)
+                  }
+                  closeModal={setIsDocumentModalOpened}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Bedroom Input - Equal flex */}
+          <div className="flex-1 min-w-0">
+            <Input
+              className="w-full h-[50px] text-sm"
+              style={{ marginTop: "-30px" }}
+              placeholder="bedroom"
+              type="text"
+              label=""
+              readOnly
+              showDropdownIcon={true}
+              name=""
+              value={filters.bedrooms || ""}
+              onClick={() => setIsBedroomModalOpened(true)}
+            />
+            {isBedroomModalOpened && (
+              <BedroomComponent
+                noOfBedrooms={filters.bedrooms}
+                closeModal={setIsBedroomModalOpened}
+                setNumberOfBedrooms={(bedrooms: number) =>
+                  onFilterChange("bedrooms", bedrooms)
+                }
+              />
+            )}
+          </div>
+
+          {/* Buttons Container - Fixed width */}
+          <div className="flex gap-[15px] shrink-0">
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsMoreFilterModalOpened(true)}
+                className="w-[120px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C] font-medium"
+              >
+                More filter
+              </button>
+              {isMoreFilterModalOpened && (
+                <MoreFilter
+                  filters={moreFilters}
+                  setFilters={(newFilters: any) => {
+                    setMoreFilters(newFilters);
+                    onFilterChange("bathrooms", newFilters.bathroom);
+                    onFilterChange("landSize", newFilters.landSize);
+                    onFilterChange(
+                      "desiredFeatures",
+                      newFilters.desirer_features,
+                    );
+                  }}
+                  closeModal={setIsMoreFilterModalOpened}
+                />
+              )}
+            </div>
+            <button
+              type="button"
+              className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold"
+              onClick={() => {
+                // Update filters based on form values before searching
+                onFilterChange(
+                  "selectedState",
+                  locationFormik.values.selectedState,
+                );
+                onFilterChange(
+                  "selectedLGA",
+                  locationFormik.values.selectedLGA,
+                );
+                onFilterChange("priceRange", {
+                  min: priceFormik.values.minPrice,
+                  max: priceFormik.values.maxPrice,
+                });
+                onSearch();
+              }}
+              disabled={loading}
+            >
+              {loading ? "Searching..." : "Search"}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Fragment>
   );
 };
 
