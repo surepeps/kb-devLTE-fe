@@ -515,8 +515,8 @@ const ProductDetailsPage = () => {
                       />
                     </div>
 
-                    {/* <div className='w-full py-[40px] border-b-[1px] border-[#C7CAD0]'> */}
-                    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[10px] border-b-[1px] border-[#C7CAD0] pb-[20px]">
+                    {/* Property Information Grid */}
+                    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 border-b border-[#C7CAD0] pb-4 md:pb-6">
                       <BoxContainer
                         heading="Listing Type"
                         subHeading={details.briefType || "Nil"}
