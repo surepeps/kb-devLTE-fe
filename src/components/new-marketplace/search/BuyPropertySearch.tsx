@@ -158,12 +158,14 @@ const BuyPropertySearch = () => {
   });
 
   const handleClearFilters = () => {
-    setFilters({
+    const clearedFilters = {
       selectedState: "",
       selectedLGA: "",
       selectedArea: "",
+      locationDisplay: "",
       priceRange: { min: 0, max: 0 },
       documentTypes: [],
+      usageOptions: [],
       bedrooms: undefined,
       bathrooms: undefined,
       landSize: {
@@ -172,10 +174,14 @@ const BuyPropertySearch = () => {
       },
       desiredFeatures: [],
       homeCondition: "",
-    });
+    };
 
+    setFilters(clearedFilters);
     searchFormik.resetForm();
     clearTabFilters("buy");
+
+    // Trigger search with cleared filters
+    handleSearch(1);
   };
 
   const updateFilter = (key: string, value: any) => {
