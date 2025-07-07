@@ -231,43 +231,18 @@ const AddForInspection = () => {
                 </div>
               </div>
 
-              {/* Selected Properties */}
-              {selectedProperties.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {selectedProperties.map((item) => (
-                    <InspectionPropertyCard
-                      key={item.propertyId}
-                      property={item.property}
-                      tab={activeTab}
-                      onRemove={() => handleRemoveProperty(item.propertyId)}
-                      onClearNegotiatedPrice={() =>
-                        handleClearNegotiatedPrice(item.propertyId)
-                      }
-                      onClearLOIDocument={() =>
-                        handleClearLOIDocument(item.propertyId)
-                      }
-                      negotiatedPrice={negotiatedPrices.find(
-                        (price) => price.propertyId === item.propertyId,
-                      )}
-                      loiDocument={loiDocuments.find(
-                        (doc) => doc.propertyId === item.propertyId,
-                      )}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="text-[#5A5D63] text-lg mb-4">
-                    No properties selected for inspection
-                  </div>
-                  <button
-                    onClick={() => setIsAddForInspectionOpen(false)}
-                    className="text-[#8DDB90] hover:text-[#76c77a] font-medium"
-                  >
-                    Go back to marketplace
-                  </button>
-                </div>
-              )}
+              {/* Property Slots */}
+              <PropertySlots
+                selectedProperties={selectedProperties}
+                maxSlots={2}
+                tab={activeTab}
+                onRemove={handleRemoveProperty}
+                onClearNegotiatedPrice={handleClearNegotiatedPrice}
+                onClearLOIDocument={handleClearLOIDocument}
+                onAddProperty={() => setIsAddForInspectionOpen(false)}
+                negotiatedPrices={negotiatedPrices}
+                loiDocuments={loiDocuments}
+              />
 
               {/* Action Buttons */}
               {selectedProperties.length > 0 && (
