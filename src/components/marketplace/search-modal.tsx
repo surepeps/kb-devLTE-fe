@@ -27,7 +27,7 @@ type PayloadProps = {
   initialAmount: number;
   toBeIncreaseBy: number;
 };
- 
+  
 const SearchModal = ({
   isAddForInspectionModalOpened,
   setIsAddInspectionModalOpened,
@@ -99,7 +99,7 @@ const SearchModal = ({
     setUniqueProperties(new Set());
     setPropertiesSelected([]);
   };
-
+ 
   // Sync local selection to context
   useEffect(() => {
     setSelectedBriefs(Array.from(uniqueProperties));
