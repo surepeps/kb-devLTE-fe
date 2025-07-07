@@ -61,19 +61,31 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
       },
       {
         header: "Bedrooms",
-        value: property.additionalFeatures.noOfBedrooms || "0",
+        value:
+          property.additionalFeatures?.noOfBedrooms ||
+          property.noOfBedrooms ||
+          "0",
       },
       {
         header: "Bathrooms",
-        value: property.additionalFeatures.noOfBathrooms || "0",
+        value:
+          property.additionalFeatures?.noOfBathrooms ||
+          property.noOfBathrooms ||
+          "0",
       },
       {
         header: "Toilets",
-        value: property.additionalFeatures.noOfToilets || "0",
+        value:
+          property.additionalFeatures?.noOfToilets ||
+          property.noOfToilets ||
+          "0",
       },
       {
         header: "CarParks",
-        value: property.additionalFeatures.noOfCarParks || "0",
+        value:
+          property.additionalFeatures?.noOfCarParks ||
+          property.noOfCarParks ||
+          "0",
       },
       {
         header: "Location",
