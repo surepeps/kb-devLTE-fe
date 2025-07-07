@@ -33,7 +33,17 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
   const swiperRef = React.useRef<any>(null);
   const { setViewImage, setImageData } = usePageContext();
 
-  const validImages = images && images.length > 0 ? images : [randomImage];
+  // Handle both images array and pictures array from API
+  let imageArray = images;
+  if (!imageArray || imageArray.length === 0) {
+    // Check if the first item has a pictures property (API data structure)
+    if (images && images[0] && images[0].pictures) {
+      imageArray = images[0].pictures;
+    }
+  }
+
+  const validImages =
+    imageArray && imageArray.length > 0 ? imageArray : [randomImage];
 
   return (
     <div className="w-full h-full absolute">
