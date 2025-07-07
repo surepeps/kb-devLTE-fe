@@ -129,16 +129,12 @@ const JointVentureSearch = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Auto-search when filters change
+  // Initial load only
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (activeTab === "jv") {
-        handleSearch();
-      }
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-  }, [filters, activeTab]);
+    if (activeTab === "jv" && jvTab.formikStatus === "idle") {
+      handleSearch();
+    }
+  }, [activeTab]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
