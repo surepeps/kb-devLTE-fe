@@ -56,8 +56,8 @@ const InspectionPropertyCard: React.FC<InspectionPropertyCardProps> = ({
   };
 
   const getOriginalPrice = () => {
-    if (hasNegotiatedPrice) {
-      return `₦${Number(negotiatedPrice!.originalPrice).toLocaleString()}`;
+    if (hasNegotiatedPrice && negotiatedPrice) {
+      return `₦${Number(negotiatedPrice.originalPrice).toLocaleString()}`;
     }
     return null;
   };
