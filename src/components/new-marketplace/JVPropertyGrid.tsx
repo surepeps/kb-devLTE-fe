@@ -210,12 +210,12 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
       </div>
 
       {/* Results Summary */}
-      <div className="flex justify-between items-center text-[#5A5D63] text-sm">
-        <span>
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-[#5A5D63] text-xs sm:text-sm">
+        <span className="text-center sm:text-left">
           Showing {(currentPage - 1) * 12 + 1} -{" "}
-          {Math.min(currentPage * 12, totalItems)} of {totalItems} properties
+          {Math.min(currentPage * 12, totalItems)} of {totalItems} opportunities
         </span>
-        <span>
+        <span className="text-center sm:text-right">
           Page {currentPage} of {totalPages}
         </span>
       </div>
