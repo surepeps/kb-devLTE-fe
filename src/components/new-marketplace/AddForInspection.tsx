@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import { IsMobile } from "@/hooks/isMobile";
 import InspectionPropertyCard from "./InspectionPropertyCard";
+import PropertySlots from "./PropertySlots";
 import DateTimeSelection from "./DateTimeSelection";
 import PaymentUpload from "./PaymentUpload";
 import Button from "@/components/general-components/button";
