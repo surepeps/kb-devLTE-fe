@@ -59,10 +59,22 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         header: "Price",
         value: `₦${Number(property.price || 0).toLocaleString()}`,
       },
-      { header: "Bedrooms", value: property.additionalFeatures.noOfBedrooms || "0" },
-      { header: "Bathrooms", value: property.additionalFeatures.noOfBathrooms || "0" },
-      { header: "Toilets", value: property.additionalFeatures.noOfToilets || "0" },
-      { header: "CarParks", value: property.additionalFeatures.noOfCarParks || "0" },
+      {
+        header: "Bedrooms",
+        value: property.additionalFeatures.noOfBedrooms || "0",
+      },
+      {
+        header: "Bathrooms",
+        value: property.additionalFeatures.noOfBathrooms || "0",
+      },
+      {
+        header: "Toilets",
+        value: property.additionalFeatures.noOfToilets || "0",
+      },
+      {
+        header: "CarParks",
+        value: property.additionalFeatures.noOfCarParks || "0",
+      },
       {
         header: "Location",
         value: property.location
@@ -177,7 +189,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         )}
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-x-1 sm:gap-y-3">
+        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-x-2 sm:gap-y-4 justify-items-center">
           <AnimatePresence>
             {properties.map((property, index) => (
               <motion.div

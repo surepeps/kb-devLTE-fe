@@ -53,7 +53,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       transition={{ delay: 0.2, duration: 0.5 }}
       exit={{ opacity: 0, y: 20 }}
       viewport={{ once: true }}
-      className="w-full md:w-[286px] h-auto min-h-[400px] rounded-md shrink-0 bg-white border-[1px] py-[11px] px-[10px] gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col"
+      className="w-full max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[400px] rounded-md shrink-0 bg-white border-[1px] py-[11px] px-[10px] gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col"
     >
       <div className="flex flex-col gap-[5px] w-full flex-grow">
         {/* Image Section */}
