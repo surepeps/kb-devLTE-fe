@@ -184,7 +184,7 @@ const JVPropertyCard: React.FC<JVPropertyCardProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-auto pt-4">
           {/* Submit LOI Button */}
           {hasLOIDocument ? (
             <div className="min-h-[50px] py-[12px] px-[24px] bg-[#FF9800] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between rounded">
