@@ -184,14 +184,22 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               List property
             </button>
             <button
-              className="h-[34px] w-[133px] bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00] font-medium text-sm"
+              className={`h-[34px] w-[140px] font-medium text-sm ${
+                selectedCount > 0
+                  ? "bg-[#FF3D00] text-white border-[1px] border-[#FF3D00] hover:bg-[#E53100]"
+                  : "bg-transparent text-[#FF3D00] border-[1px] border-[#FF3D00]"
+              }`}
               type="button"
               onClick={() => {
-                // Handle selected briefs - this will be managed by parent component
-                console.log("Selected briefs clicked");
+                if (selectedCount > 0 && onOpenInspection) {
+                  onOpenInspection();
+                } else {
+                  console.log("No properties selected");
+                }
               }}
+              disabled={selectedCount === 0}
             >
-              0 selected briefs
+              {selectedCount} selected brief{selectedCount !== 1 ? "s" : ""}
             </button>
           </div>
         </div>
