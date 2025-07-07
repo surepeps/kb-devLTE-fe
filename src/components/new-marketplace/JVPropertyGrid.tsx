@@ -81,6 +81,10 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
 
   const handlePageChange = (page: number) => {
     setTabPage(tab, page);
+    // Trigger search with new page
+    window.dispatchEvent(
+      new CustomEvent("marketplace-search", { detail: { tab, page } }),
+    );
   };
 
   // Loading state
