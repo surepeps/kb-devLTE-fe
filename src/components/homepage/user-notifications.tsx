@@ -39,10 +39,11 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
   const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (!hasFetched) {
+    // Only fetch if we haven't fetched before and we don't have notifications
+    if (!hasFetched && notifications.length === 0) {
       fetchNotifications();
     }
-  }, [hasFetched]);
+  }, []);
 
   const fetchNotifications = async () => {
     try {
