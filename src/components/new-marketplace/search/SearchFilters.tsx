@@ -31,6 +31,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onClearFilters,
   onSearch,
   loading,
+  selectedCount = 0,
+  onOpenInspection,
 }) => {
   // Modal states for existing components
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] = useState(false);
