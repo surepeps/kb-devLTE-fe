@@ -163,12 +163,12 @@ const AddForInspection = () => {
         </div>
 
         {/* Progress Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-center space-x-2 sm:space-x-4">
             {["selection", "datetime", "payment"].map((step, index) => (
               <div key={step} className="flex items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${
                     currentStep === step
                       ? "bg-[#8DDB90] text-white"
                       : index <
@@ -183,7 +183,7 @@ const AddForInspection = () => {
                 </div>
                 {index < 2 && (
                   <div
-                    className={`w-16 h-1 mx-2 ${
+                    className={`w-8 sm:w-16 h-1 mx-1 sm:mx-2 ${
                       index <
                       ["selection", "datetime", "payment"].indexOf(currentStep)
                         ? "bg-[#09391C]"
@@ -194,7 +194,7 @@ const AddForInspection = () => {
               </div>
             ))}
           </div>
-          <div className="flex justify-center space-x-12 mt-2">
+          <div className="flex justify-center space-x-6 sm:space-x-12 mt-2">
             <span className="text-xs text-[#5A5D63]">Selection</span>
             <span className="text-xs text-[#5A5D63]">Date & Time</span>
             <span className="text-xs text-[#5A5D63]">Payment</span>
