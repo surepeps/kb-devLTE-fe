@@ -43,7 +43,8 @@ export const optimizeCloudinaryUrl = (
     format?: "auto" | "webp" | "jpg" | "png";
   },
 ): string => {
-  if (!url?.includes("cloudinary.com")) return url;
+  if (!url || typeof url !== "string" || !url.includes("cloudinary.com"))
+    return url;
 
   const {
     width = 800,
@@ -91,7 +92,8 @@ export const getImageProps = (
     quality?: number;
   },
 ) => {
-  const isCloudinary = src?.includes("cloudinary.com");
+  const isCloudinary =
+    typeof src === "string" && src?.includes("cloudinary.com");
   const isDev = process.env.NODE_ENV === "development";
 
   return {

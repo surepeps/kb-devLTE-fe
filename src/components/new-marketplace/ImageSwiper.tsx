@@ -18,7 +18,7 @@ interface ImageSwiperProps {
   images: any[];
 }
 
-const getValidImageUrl = (url: any) => {
+const getValidImageUrl = (url: any): string => {
   if (!url) return randomImage.src;
   if (typeof url === "string") {
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -26,8 +26,12 @@ const getValidImageUrl = (url: any) => {
     if (url.startsWith("/")) return url;
     return randomImage.src;
   }
-  // If it's a StaticImport (local import), return as is
-  return url;
+  // If it's a StaticImport (local import), try to get src property
+  if (typeof url === "object" && url.src) {
+    return url.src;
+  }
+  // Fallback to random image if we can't determine the URL
+  return randomImage.src;
 };
 
 const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
@@ -43,8 +47,11 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
     }
   }
 
+  // Ensure we have a valid array and filter out null/undefined entries
   const validImages =
-    imageArray && imageArray.length > 0 ? imageArray : [randomImage];
+    imageArray && Array.isArray(imageArray) && imageArray.length > 0
+      ? imageArray.filter((img) => img != null)
+      : [randomImage];
 
   return (
     <div className="w-full h-full absolute">
@@ -58,29 +65,35 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
         loop={true}
         className="w-full h-[148px] cursor-pointer"
       >
-        {validImages.map((src, i) => {
-          const validImageUrl = getValidImageUrl(src);
-          return (
-            <SwiperSlide
-              onClick={() => {
-                setImageData(validImages);
-                setViewImage(true);
-              }}
-              key={i}
-            >
-              <CloudinaryImage
-                width={1000}
-                height={1000}
-                src={validImageUrl}
-                alt={`Slide ${i + 1}`}
-                className="w-full h-full object-cover cursor-pointer"
-                fallbackSrc={randomImage.src}
-                priority={i === 0} // Only first image is priority
-                timeout={8000} // 8 second timeout
-              />
-            </SwiperSlide>
-          );
-        })}
+        {validImages
+          .map((src, i) => {
+            const validImageUrl = getValidImageUrl(src);
+            // Ensure we have a valid string URL before rendering
+            if (!validImageUrl || typeof validImageUrl !== "string") {
+              return null;
+            }
+            return (
+              <SwiperSlide
+                onClick={() => {
+                  setImageData(validImages);
+                  setViewImage(true);
+                }}
+                key={i}
+              >
+                <CloudinaryImage
+                  width={1000}
+                  height={1000}
+                  src={validImageUrl}
+                  alt={`Slide ${i + 1}`}
+                  className="w-full h-full object-cover cursor-pointer"
+                  fallbackSrc={randomImage.src}
+                  priority={i === 0} // Only first image is priority
+                  timeout={8000} // 8 second timeout
+                />
+              </SwiperSlide>
+            );
+          })
+          .filter(Boolean)}
       </Swiper>
     </div>
   );
