@@ -68,12 +68,12 @@ const NewMarketPlace = () => {
           <MarketplaceTabs />
 
           {/* CTA Section */}
-          <div className="text-center mb-8">
-            <p className="text-lg text-[#5A5D63] mb-4">
+          <div className="text-center mb-6 md:mb-8 px-4">
+            <p className="text-base sm:text-lg text-[#5A5D63] mb-3 md:mb-4">
               Didn't find a match for your search?
             </p>
             <button
-              className="bg-transparent border-2 border-[#09391C] text-[#09391C] px-6 py-3 rounded-lg font-semibold hover:bg-[#09391C] hover:text-white transition-colors"
+              className="bg-transparent border-2 border-[#09391C] text-[#09391C] px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-[#09391C] hover:text-white transition-colors text-sm sm:text-base"
               type="button"
               onClick={() => router.push("/preference")}
             >
