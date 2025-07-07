@@ -13,6 +13,8 @@ import RadioCheck from "../../general-components/radioCheck";
 import { AnimatePresence } from "framer-motion";
 import SelectedFiltersCard from "../SelectedFiltersCard";
 import LocationSearch from "./LocationSearch";
+import FilterModal from "../FilterModal";
+import StandardPreloader from "../StandardPreloader";
 
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent";
