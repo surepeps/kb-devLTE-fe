@@ -88,39 +88,30 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
       location.area,
     );
 
-    // Update formik values
-    formik.setFieldValue("selectedState", location.state || "");
-    formik.setFieldValue("selectedLGA", location.lga || "");
-    formik.setFieldValue("selectedArea", location.area || "");
-
-    // Update the input display value
-    formik.setFieldValue("locationDisplay", locationString);
-
-    // If there's a location property in formik, update it too
-    if (formik.values.hasOwnProperty("location")) {
-      formik.setFieldValue("location", {
-        state: location.state || "",
-        localGovernment: location.lga || "",
-        area: location.area || "",
-      });
-    }
+    // Update formik values in batch to avoid multiple re-renders
+    formik.setValues({
+      ...formik.values,
+      selectedState: location.state || "",
+      selectedLGA: location.lga || "",
+      selectedArea: location.area || "",
+      locationDisplay: locationString,
+      ...(formik.values.hasOwnProperty("location") && {
+        location: {
+          state: location.state || "",
+          localGovernment: location.lga || "",
+          area: location.area || "",
+        },
+      }),
+    });
 
     // Close dropdown
     setShowLocationModal(false);
     setLocationSuggestions([]);
 
-    // Update input value visually
+    // Update input value visually to ensure it shows immediately
     if (inputRef.current) {
       inputRef.current.value = locationString;
     }
-
-    // Trigger formik handleChange to ensure all validations and effects run
-    formik.handleChange({
-      target: {
-        name: "locationDisplay",
-        value: locationString,
-      },
-    } as any);
   };
 
   useClickOutside(inputRef, () => setShowLocationModal(false));
