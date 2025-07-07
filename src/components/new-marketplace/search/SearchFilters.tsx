@@ -140,6 +140,24 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   return (
     <Fragment>
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={loading}
+        message="Searching properties..."
+        overlay={false}
+      />
+
+      {/* Mobile Filter Modal */}
+      <FilterModal
+        isOpen={isMobileFilterModalOpen}
+        onClose={() => setIsMobileFilterModalOpen(false)}
+        tab={tab}
+        filters={filters}
+        onFilterChange={onFilterChange}
+        onApplyFilters={onSearch}
+        onClearFilters={onClearFilters}
+      />
+
       {/* Selected Filters Card */}
       <SelectedFiltersCard
         filters={filters}
