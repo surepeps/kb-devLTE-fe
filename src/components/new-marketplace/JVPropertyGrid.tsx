@@ -100,12 +100,17 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
   // Error state
   if (error) {
     return (
-      <div className="flex flex-col justify-center items-center py-12 text-center">
-        <div className="text-red-500 text-lg font-semibold mb-2">
-          Something went wrong
-        </div>
-        <div className="text-[#5A5D63] text-sm">{error}</div>
-      </div>
+      <FailedRequest
+        message={error}
+        onRetry={() => {
+          // Trigger search retry
+          window.dispatchEvent(
+            new CustomEvent("marketplace-search", {
+              detail: { tab, page: currentPage },
+            }),
+          );
+        }}
+      />
     );
   }
 
