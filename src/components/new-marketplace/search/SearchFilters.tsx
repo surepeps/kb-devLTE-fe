@@ -153,19 +153,27 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           <span className="text-sm font-medium text-[#09391C]">
             Filter Properties
           </span>
-          <button
-            onClick={onSearch}
-            disabled={loading}
-            className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
-          >
-            {loading ? "Searching..." : "Search"}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsMobileFilterModalOpen(true)}
+              className="px-4 py-2 border border-[#8DDB90] text-[#8DDB90] rounded-lg text-sm font-medium hover:bg-[#8DDB90] hover:text-white transition-colors"
+            >
+              Filters
+            </button>
+            <button
+              onClick={onSearch}
+              disabled={loading}
+              className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
+            >
+              {loading ? "Searching..." : "Search"}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Location Filter */}
+        {/* Quick Location Search for Mobile */}
         <div className="w-full">
           <LocationSearch
-            placeholder="Enter state, LGA, or area..."
+            placeholder="Quick location search..."
             value={filters.locationDisplay || ""}
             onChange={(location, details) => {
               if (details) {
@@ -186,7 +194,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         {/* Selected Properties Button for Mobile */}
         {selectedCount > 0 && (
           <button
-            className="w-full bg-[#FF3D00] text-white py-3 rounded-lg font-medium"
+            className="w-full bg-[#FF3D00] text-white py-3 rounded-lg font-medium hover:bg-[#E53100] transition-colors"
             type="button"
             onClick={() => {
               if (onOpenInspection) {
