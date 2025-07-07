@@ -52,7 +52,7 @@ const JVPropertyCard: React.FC<JVPropertyCardProps> = ({
       viewport={{ once: true }}
       className="w-full md:w-[296px] h-auto min-h-[450px] rounded-md shrink-0 bg-white border-[1px] py-[16px] px-[15px] gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col"
     >
-      <div className="flex flex-col gap-[11px] w-full">
+      <div className="flex flex-col gap-[11px] w-full flex-grow">
         {/* Image Section */}
         <div className="w-full h-[148px] bg-gray-200 relative">
           {/* Premium Badge */}
