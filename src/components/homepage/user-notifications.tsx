@@ -38,11 +38,13 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
   // Track if notifications have been fetched to prevent multiple calls
   const [hasFetched, setHasFetched] = useState(false);
 
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
-    // Only fetch if we haven't fetched before and we don't have notifications
-    if (!hasFetched && notifications.length === 0) {
-      fetchNotifications();
-    }
+    if (hasFetchedRef.current) return;
+
+    hasFetchedRef.current = true;
+    fetchNotifications();
   }, []);
 
   const fetchNotifications = async () => {

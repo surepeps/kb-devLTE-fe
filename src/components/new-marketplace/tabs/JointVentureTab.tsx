@@ -34,7 +34,7 @@ const JointVentureTab = () => {
     if (activeTab === "jv" && jvTab.formikStatus === "idle") {
       fetchTabData("jv");
     }
-  }, [activeTab, jvTab.formikStatus, fetchTabData]);
+  }, []);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page

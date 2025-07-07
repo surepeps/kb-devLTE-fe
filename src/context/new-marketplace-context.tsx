@@ -893,13 +893,13 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   // Auto-fetch initial data on mount for active tab
-  useEffect(() => {
-    const currentTabState = getCurrentTabState();
-    if (currentTabState.formikStatus === "idle") {
-      console.log(`Auto-fetching initial data for ${activeTab} tab`);
-      fetchTabData(activeTab);
-    }
-  }, [activeTab, fetchTabData, getCurrentTabState]);
+  // useEffect(() => {
+  //   const currentTabState = getCurrentTabState();
+  //   if (currentTabState.formikStatus === "idle") {
+  //     console.log(`Auto-fetching initial data for ${activeTab} tab`);
+  //     fetchTabData(activeTab);
+  //   }
+  // }, [activeTab, fetchTabData, getCurrentTabState]);
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {

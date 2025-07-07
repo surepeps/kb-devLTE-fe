@@ -3,8 +3,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { useNewMarketplace } from "@/context/new-marketplace-context";
-import { SearchParams } from "@/context/new-marketplace-context";
+import { useNewMarketplace, SearchParams } from "@/context/new-marketplace-context";
 import SearchFilters from "./SearchFilters";
 import { IsMobile } from "@/hooks/isMobile";
 

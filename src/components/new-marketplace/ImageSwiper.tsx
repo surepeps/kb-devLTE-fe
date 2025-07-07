@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { usePageContext } from "@/context/page-context";
-import randomImage from "@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png";
+import randomImage from "@/assets/noImageAvailable.png";
 import CloudinaryImage from "@/components/general-components/CloudinaryImage";
 
 // Import Swiper styles

@@ -34,7 +34,7 @@ const RentTab = () => {
     if (activeTab === "rent" && rentTab.formikStatus === "idle") {
       fetchTabData("rent");
     }
-  }, [activeTab, rentTab.formikStatus, fetchTabData]);
+  }, []);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page

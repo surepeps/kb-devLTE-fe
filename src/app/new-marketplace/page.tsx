@@ -12,5 +12,5 @@ const NewMarketplacePage = () => {
     </NewMarketplaceProvider>
   );
 };
-
+ 
 export default NewMarketplacePage;

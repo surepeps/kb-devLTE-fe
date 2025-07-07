@@ -30,7 +30,7 @@ interface PropertyGridProps {
   selectedForInspection: any[];
   negotiatedPrices: any[];
   onOpenAddForInspection: () => void;
-}
+} 
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
   tab,
@@ -151,7 +151,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
 
   return (
     <div className="w-full">
-      <div className="space-y-6 mx-auto max-w-7xl">
+      <div className="space-y-6 mx-auto max-w-6xl">
         {/* Demo Mode Warning */}
         {isDemoMode && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -207,7 +207,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         )}
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 xl:gap-1.5 justify-items-center px-2 lg:px-2">
+        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 xl:gap-4 justify-items-center px-2 lg:px-2">
           <AnimatePresence>
             {properties.map((property, index) => (
               <motion.div

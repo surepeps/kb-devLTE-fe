@@ -378,7 +378,7 @@ const Sell: React.FC<SellProps> = ({ briefId, onClose, buyerPreference }) => {
         isPremium: values.isPremium || false,
         preferenceFeeTransaction: values.preferenceFeeTransaction || undefined,
         pictures: uploadedImageUrls,
-      };
+      }; 
       // Remove undefined fields
       Object.keys(payload).forEach(
         (key) => payload[key] === undefined && delete payload[key]

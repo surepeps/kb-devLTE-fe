@@ -124,6 +124,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
         }`}
       >
         <nav className={`h-[50px] container flex justify-between items-center`}>
+          
           <Image
             src={khabiteqIcon}
             width={1000}
@@ -131,6 +132,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             className="md:w-[169px] md:h-[25px] w-[144px] h-[30px]"
             alt=""
           />
+
           <div className="lg:flex gap-[20px] hidden">
             {navigationState.map((item: NavigationItem, idx: number) => {
               if (item.subItems && item.subItems.length > 0) {
@@ -225,6 +227,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               );
             })}
           </div>
+
           {/**Buttons for desktop screens */}
           <div className="hidden lg:flex items-center gap-6">
             {user?._id ? (

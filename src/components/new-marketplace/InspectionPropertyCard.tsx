@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { X, FileText } from "lucide-react";
 import markerSVG from "@/svgs/marker.svg";
-import randomImage from "@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png";
+import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "./ImageSwiper";
 import Button from "@/components/general-components/button";
 

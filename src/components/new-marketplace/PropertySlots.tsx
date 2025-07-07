@@ -139,11 +139,11 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-3xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-2xl mx-auto">
       {slots.map(({ index, property }) => (
-        <div key={index} className="relative max-w-sm mx-auto lg:max-w-none">
+        <div key={index} className="relative w-full flex justify-center max-w-sm mx-auto lg:max-w-none">
           {property ? (
-            <div className="relative">
+            <div className="relative w-full flex justify-end">
               {tab === "jv" ? (
                 <JVPropertyCard
                   property={property.property}

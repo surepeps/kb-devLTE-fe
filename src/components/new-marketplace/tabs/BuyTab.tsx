@@ -32,9 +32,9 @@ const BuyTab = () => {
   // Fetch initial data when tab becomes active
   useEffect(() => {
     if (activeTab === "buy" && buyTab.formikStatus === "idle") {
-      fetchTabData("buy");
+      // fetchTabData("buy");
     }
-  }, [activeTab, buyTab.formikStatus, fetchTabData]);
+  }, []);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page

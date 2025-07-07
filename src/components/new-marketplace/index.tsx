@@ -9,7 +9,7 @@ import BuyTab from "./tabs/BuyTab";
 import JointVentureTab from "./tabs/JointVentureTab";
 import RentTab from "./tabs/RentTab";
 import AddForInspection from "./AddForInspection";
-
+ 
 const NewMarketPlace = () => {
   const router = useRouter();
   const {
