@@ -1,13 +1,14 @@
 /** @format */
 
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
   faFile,
   faTrash,
   faCopy,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/general-components/button";
 import toast from "react-hot-toast";
@@ -131,8 +132,38 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     }
   };
 
+  // Lock body scroll when uploading
+  useEffect(() => {
+    if (isUploading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isUploading]);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 relative">
+      {/* Loading Overlay */}
+      {isUploading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
+            <FontAwesomeIcon
+              icon={faSpinner}
+              className="text-[#8DDB90] text-4xl mb-4 animate-spin"
+            />
+            <h3 className="text-lg font-semibold text-[#24272C] mb-2">
+              Submitting Request
+            </h3>
+            <p className="text-[#5A5D63] text-sm">
+              Please wait while we process your inspection request...
+            </p>
+          </div>
+        </div>
+      )}
       {/* Payment Instructions */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">

@@ -53,8 +53,12 @@ const JointVentureTab = () => {
     });
   };
 
-  const handleLOISubmit = (property: any, document: File) => {
-    addLOIDocument(property._id, document);
+  const handleLOISubmit = (
+    property: any,
+    document: File,
+    documentUrl?: string,
+  ) => {
+    addLOIDocument(property._id, document, documentUrl);
 
     // Automatically select for inspection
     if (!isSelectedForInspection("jv", property._id)) {
