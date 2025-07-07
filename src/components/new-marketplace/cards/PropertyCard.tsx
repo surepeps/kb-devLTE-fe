@@ -71,7 +71,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
 
         {/* Content Section */}
-        <div className="flex flex-col gap-[2px] flex-grow">
+        <div className="flex flex-col gap-[6px] flex-grow">
           {/* Property Type */}
           <div className="flex gap-[7px]">
             {cardData.map((item, idx) => {
