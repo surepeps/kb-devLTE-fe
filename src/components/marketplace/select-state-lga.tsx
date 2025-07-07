@@ -113,6 +113,14 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
     if (inputRef.current) {
       inputRef.current.value = locationString;
     }
+
+    // Trigger formik handleChange to ensure all validations and effects run
+    formik.handleChange({
+      target: {
+        name: "locationDisplay",
+        value: locationString,
+      },
+    } as any);
   };
 
   useClickOutside(inputRef, () => setShowLocationModal(false));
@@ -198,8 +206,12 @@ const SelectStateLGA: FC<SelectStateLGAProps> = ({
                 <button
                   key={index}
                   type="button"
-                  onClick={() => handleLocationSelect(suggestion)}
-                  className="w-full px-4 py-3 text-left hover:bg-blue-50 hover:border-l-4 hover:border-l-blue-500 border-b border-gray-100 last:border-b-0 transition-all duration-200"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleLocationSelect(suggestion);
+                  }}
+                  className="w-full px-4 py-3 text-left hover:bg-blue-50 hover:border-l-4 hover:border-l-blue-500 border-b border-gray-100 last:border-b-0 transition-all duration-200 cursor-pointer"
                 >
                   <div className="font-medium text-gray-900 mb-1">
                     {formatLocationString(
