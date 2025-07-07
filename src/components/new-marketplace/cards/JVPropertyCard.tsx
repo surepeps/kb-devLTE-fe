@@ -41,7 +41,7 @@ const JVPropertyCard: React.FC<JVPropertyCardProps> = ({
   isSelected,
   loiDocument,
 }) => {
-  const hasLOIDocument = loiDocument !== null;
+  const hasLOIDocument = loiDocument != null && loiDocument !== undefined;
 
   return (
     <motion.div
