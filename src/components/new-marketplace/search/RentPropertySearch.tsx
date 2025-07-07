@@ -195,6 +195,8 @@ const RentPropertySearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={rentTab.formikStatus === "pending"}
+          selectedCount={rentTab.selectedForInspection.length}
+          onOpenInspection={() => setIsAddForInspectionOpen(true)}
         />
       </div>
 
