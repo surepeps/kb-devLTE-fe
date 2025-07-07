@@ -41,7 +41,7 @@ const RentPropertySearch = () => {
         handlePaginationSearch as EventListener,
       );
     };
-  }, []);
+  }, [handleSearch]);
 
   // Search form
   const searchFormik = useFormik({
