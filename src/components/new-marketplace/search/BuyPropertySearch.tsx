@@ -21,6 +21,61 @@ const BuyPropertySearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
+  const handleSearch = async (page = 1) => {
+    const searchParams: SearchParams = {
+      briefType: "buy",
+      page,
+      limit: 12,
+    };
+
+    // Add location filter
+    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
+      const locationParts = [
+        filters.selectedArea,
+        filters.selectedLGA,
+        filters.selectedState,
+      ].filter(Boolean);
+      searchParams.location = locationParts.join(", ");
+    }
+
+    // Add price range
+    if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
+      searchParams.priceRange = {
+        min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
+        max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
+      };
+    }
+
+    // Add other filters
+    if (filters.documentTypes.length > 0) {
+      searchParams.documentType = filters.documentTypes;
+    }
+
+    if (filters.bedrooms) {
+      searchParams.bedroom = filters.bedrooms;
+    }
+
+    if (filters.bathrooms) {
+      searchParams.bathroom = filters.bathrooms;
+    }
+
+    if (filters.landSize.size) {
+      searchParams.landSize = filters.landSize.size;
+      searchParams.landSizeType = filters.landSize.type;
+    }
+
+    if (filters.desiredFeatures.length > 0) {
+      searchParams.desireFeature = filters.desiredFeatures;
+    }
+
+    if (filters.homeCondition) {
+      searchParams.homeCondition = filters.homeCondition;
+    }
+
+    // Perform search
+    await searchTabProperties("buy", searchParams);
+  };
+
   // Listen for pagination events
   useEffect(() => {
     const handlePaginationSearch = (event: CustomEvent) => {
