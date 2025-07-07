@@ -20,6 +20,8 @@ interface SearchFiltersProps {
   onClearFilters: () => void;
   onSearch: () => void;
   loading: boolean;
+  selectedCount?: number;
+  onOpenInspection?: () => void;
 }
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({
