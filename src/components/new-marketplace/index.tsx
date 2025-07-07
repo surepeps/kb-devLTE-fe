@@ -21,6 +21,16 @@ const NewMarketPlace = () => {
   } = useNewMarketplace();
 
   const [hasError, setHasError] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // Track initial loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1000); // Give time for components to initialize
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
