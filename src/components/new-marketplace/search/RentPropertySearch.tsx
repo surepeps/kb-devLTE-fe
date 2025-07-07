@@ -74,10 +74,10 @@ const RentPropertySearch = () => {
     tenantCriteria: [] as string[],
   });
 
-  const handleSearch = async () => {
+  const handleSearch = async (page = 1) => {
     const searchParams: SearchParams = {
       briefType: "rent",
-      page: 1,
+      page,
       limit: 12,
     };
 
