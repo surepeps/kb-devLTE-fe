@@ -93,7 +93,10 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   isPremium={property.property?.isPremium || false}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)}
-                  onLOIUpload={() => {}} // Disabled in inspection view
+                  onLOIUpload={(propertyId: string, document: File) => {
+                    // Handle LOI upload in inspection view
+                    // You can add context method call here if needed
+                  }}
                   onRemoveLOI={onClearLOIDocument || (() => {})}
                   isSelected={true}
                   loiDocument={loiDocuments.find(
