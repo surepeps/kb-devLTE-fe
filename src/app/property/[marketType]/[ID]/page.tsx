@@ -468,7 +468,7 @@ const ProductDetailsPage = () => {
                     ) : null}
 
                     {/**Details */}
-                    <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-[10px] border-b-[1px] border-[#C7CAD0] pb-[40px]">
+                    <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 border-b border-[#C7CAD0] pb-6 md:pb-8">
                       <BoxContainer
                         heading="Bedrooms"
                         subHeading={
