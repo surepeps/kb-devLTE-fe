@@ -122,57 +122,6 @@ const JointVentureSearch = () => {
     projectDuration: "",
   });
 
-  const handleSearch = async (page = 1) => {
-    const searchParams: SearchParams = {
-      briefType: "jv",
-      page,
-      limit: 12,
-    };
-
-    // Add location filter
-    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
-      const locationParts = [
-        filters.selectedArea,
-        filters.selectedLGA,
-        filters.selectedState,
-      ].filter(Boolean);
-      searchParams.location = locationParts.join(", ");
-    }
-
-    // Add investment amount range (using priceRange for API compatibility)
-    if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
-      searchParams.priceRange = {
-        min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
-        max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
-      };
-    }
-
-    // Add other filters
-    if (filters.bedrooms) {
-      searchParams.bedroom = filters.bedrooms;
-    }
-
-    if (filters.bathrooms) {
-      searchParams.bathroom = filters.bathrooms;
-    }
-
-    if (filters.landSize.size) {
-      searchParams.landSize = filters.landSize.size;
-      searchParams.landSizeType = filters.landSize.type;
-    }
-
-    if (filters.desiredFeatures.length > 0) {
-      searchParams.desireFeature = filters.desiredFeatures;
-    }
-
-    if (filters.investmentType) {
-      searchParams.type = filters.investmentType;
-    }
-
-    // Perform search
-    await searchTabProperties("jv", searchParams);
-  };
-
   const handleClearFilters = () => {
     setFilters({
       selectedState: "",
