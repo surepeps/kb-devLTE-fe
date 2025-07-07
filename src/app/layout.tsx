@@ -69,11 +69,12 @@ export default function RootLayout({
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
     >
       <UserProvider>
-        <ModalProvider>
-          <PageContextProvider>
-            <CreateBriefProvider>
-              <SelectedBriefsProvider>
-                <MarketplaceProvider>
+        <NotificationProvider>
+          <ModalProvider>
+            <PageContextProvider>
+              <CreateBriefProvider>
+                <SelectedBriefsProvider>
+                  <MarketplaceProvider>
                   <html lang="en">
                     <body
                       className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
