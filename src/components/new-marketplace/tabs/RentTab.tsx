@@ -29,12 +29,21 @@ const RentTab = () => {
     property: null,
   });
 
-  // Fetch initial data when tab becomes active
+  // Fetch initial data when tab becomes active (only once)
   useEffect(() => {
-    if (activeTab === "rent" && rentTab.formikStatus === "idle") {
+    if (
+      activeTab === "rent" &&
+      rentTab.formikStatus === "idle" &&
+      rentTab.properties.length === 0
+    ) {
       fetchTabData("rent");
     }
-  }, []);
+  }, [
+    activeTab,
+    rentTab.formikStatus,
+    rentTab.properties.length,
+    fetchTabData,
+  ]);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page
