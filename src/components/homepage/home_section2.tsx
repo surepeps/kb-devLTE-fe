@@ -92,15 +92,15 @@ const cardData: CardProps[] = [
     link: '/contact-us',
   },
   {
-    heading: 'Market Insights and Analytics',
+    heading: 'Verify your document',
     image: bookIcon,
     paragraphs: [
-      'Access data-driven insights to make smarter real estate decisions. Stay ahead of trends with our expert market analysis.',
+      'Need to verify a document? Upload it and we’ll handle the verification for you—fast, secure, and independent',
     ],
     color: '#F00952',
     secondaryColor: '#FFF2FB',
-    buttonText: 'Contact us',
-    link: '/contact-us',
+    buttonText: 'Verify',
+    link: '/document_verification',
   },
 ];
 

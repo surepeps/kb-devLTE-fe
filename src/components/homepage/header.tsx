@@ -321,6 +321,11 @@ const marketPlaceData: { name: string; url: string; isClicked: boolean }[] = [
     url: '/market-place',
     isClicked: false,
   },
+  {
+    name: 'Verify Document',
+    url: '/document_verification',
+    isClicked: false,
+  },
 ];
 
 const MarketplaceOptions = ({
