@@ -189,6 +189,8 @@ const BuyPropertySearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={buyTab.formikStatus === "pending"}
+          selectedCount={buyTab.selectedForInspection.length}
+          onOpenInspection={() => setIsAddForInspectionOpen(true)}
         />
       </div>
 
