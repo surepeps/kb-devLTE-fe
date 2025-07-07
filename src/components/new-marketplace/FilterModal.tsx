@@ -6,12 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
 import LocationSearch from "./search/LocationSearch";
-import PriceRange from "../marketplace/price-range";
-import BedroomComponent from "../marketplace/bedroom";
-import MoreFilter from "../marketplace/more-filter";
-import DocumentTypeComponent from "../marketplace/document-type";
 import RadioCheck from "../general-components/radioCheck";
-import { useFormik } from "formik";
+import PriceRangeFilter from "./filters/PriceRangeFilter";
+import BedroomFilter from "./filters/BedroomFilter";
+import DocumentTypeFilter from "./filters/DocumentTypeFilter";
+import MoreFiltersModal from "./filters/MoreFiltersModal";
+import { Check } from "lucide-react";
 
 interface FilterModalProps {
   isOpen: boolean;
