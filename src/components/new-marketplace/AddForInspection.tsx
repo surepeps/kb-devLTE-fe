@@ -37,14 +37,7 @@ const AddForInspection = () => {
   const negotiatedPrices = activeTab !== "jv" ? tabState.negotiatedPrices : [];
   const loiDocuments = activeTab === "jv" ? tabState.loiDocuments : [];
 
-  // Auto-return to marketplace when 2 properties selected
-  useEffect(() => {
-    if (selectedProperties.length === 2 && currentStep === "selection") {
-      setTimeout(() => {
-        setIsAddForInspectionOpen(false);
-      }, 1000); // Small delay to show the selection
-    }
-  }, [selectedProperties.length, currentStep, setIsAddForInspectionOpen]);
+  // No auto-redirection when 2 properties selected - let user stay and proceed
 
   // Calculate inspection fee
   const inspectionFee = useMemo(() => {
