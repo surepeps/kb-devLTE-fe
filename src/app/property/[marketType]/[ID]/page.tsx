@@ -435,10 +435,10 @@ const ProductDetailsPage = () => {
               </h2> */}
             </div>
 
-            {/* <div className='w-full flex justify-center items-center'> */}
-            <div className="flex flex-col lg:flex-row justify-between items-start container px-[15px] md:px-[20px] xl:px-[40px] max-w-7xl">
+            {/* Responsive layout container */}
+            <div className="flex flex-col lg:flex-row justify-between items-start container px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto">
               <div className="w-full lg:w-[70%] flex flex-col">
-                <div className="w-full max-w-[837px] flex flex-col gap-[20px]">
+                <div className="w-full flex flex-col gap-4 md:gap-6">
                   <ImageSwiper
                     images={
                       details.pictures["length"] !== 0
