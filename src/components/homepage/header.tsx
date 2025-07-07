@@ -58,6 +58,13 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     // console.log(isModalOpened);
   }, [isModalOpened]);
 
+  // Fetch notifications when user is available
+  useEffect(() => {
+    if (user?._id && !isComingSoon) {
+      fetchNotifications();
+    }
+  }, [user?._id, fetchNotifications, isComingSoon]);
+
   useEffect(() => {
     const user = sessionStorage.getItem("user");
     try {
