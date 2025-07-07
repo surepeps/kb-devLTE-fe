@@ -15,6 +15,7 @@ const RentPropertySearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
+    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
