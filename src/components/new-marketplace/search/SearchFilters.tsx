@@ -11,6 +11,7 @@ import MoreFilter from "../../marketplace/more-filter";
 import DocumentTypeComponent from "../../marketplace/document-type";
 import RadioCheck from "../../general-components/radioCheck";
 import { AnimatePresence } from "framer-motion";
+import SelectedFiltersCard from "../SelectedFiltersCard";
 
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent";
