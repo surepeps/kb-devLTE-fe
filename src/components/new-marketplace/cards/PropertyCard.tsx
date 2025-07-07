@@ -142,20 +142,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
           {/* Location and View Details */}
           <div className="flex justify-between items-center">
-            <div className="flex gap-[5px]">
+            <div className="flex gap-[5px] flex-1 min-w-0">
               <Image
                 src={markerSVG}
                 width={16}
                 height={16}
                 alt="marker"
-                className="w-[16px] h-[16px]"
+                className="w-[16px] h-[16px] flex-shrink-0"
               />
               {cardData.map((item, idx) => {
                 if (item.header === "Location") {
                   return (
                     <h2
                       key={idx}
-                      className="text-xs font-normal text-[#000000]"
+                      className="text-xs font-normal text-[#000000] truncate"
                     >
                       {item.value}
                     </h2>
@@ -167,7 +167,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             <button
               type="button"
               onClick={onPropertyClick}
-              className="text-xs font-semibold text-[#0B423D] underline"
+              className="text-xs font-semibold text-[#0B423D] underline flex-shrink-0 ml-2"
             >
               View Details
             </button>
