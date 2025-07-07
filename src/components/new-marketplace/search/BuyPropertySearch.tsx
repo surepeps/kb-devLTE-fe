@@ -15,6 +15,7 @@ const BuyPropertySearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
+    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
