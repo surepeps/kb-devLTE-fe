@@ -74,10 +74,10 @@ const JointVentureSearch = () => {
     projectDuration: "",
   });
 
-  const handleSearch = async () => {
+  const handleSearch = async (page = 1) => {
     const searchParams: SearchParams = {
       briefType: "jv",
-      page: 1,
+      page,
       limit: 12,
     };
 
