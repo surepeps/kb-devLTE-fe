@@ -38,12 +38,13 @@ const InspectionPropertyCard: React.FC<InspectionPropertyCardProps> = ({
   negotiatedPrice,
   loiDocument,
 }) => {
-  const hasNegotiatedPrice = negotiatedPrice !== null;
-  const hasLOIDocument = loiDocument !== null;
+  const hasNegotiatedPrice =
+    negotiatedPrice != null && negotiatedPrice !== undefined;
+  const hasLOIDocument = loiDocument != null && loiDocument !== undefined;
 
   const getPropertyPrice = () => {
-    if (hasNegotiatedPrice) {
-      return `₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`;
+    if (hasNegotiatedPrice && negotiatedPrice) {
+      return `₦${Number(negotiatedPrice.negotiatedPrice).toLocaleString()}`;
     }
 
     const price =
