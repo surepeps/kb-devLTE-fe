@@ -94,7 +94,7 @@ const BriefDetailPage = () => {
       setLoadingBrief(true);
       try {
         // Fix: Use the correct endpoint with pagination parameters and find specific ID
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/agent/all-preferences?page=1&limit=100`;
+        const url = `https://khabiteq-realty.onrender.com/api/agent/all-preferences?page=1&limit=100`;
         console.log('Fetching from URL:', url);
         
         const response = await fetch(url, {
@@ -139,7 +139,7 @@ const BriefDetailPage = () => {
               // Additional details for the modal
               referenceId: specificPreference._id?.slice(-7) || Math.floor(Math.random() * 9999999),
               briefType: specificPreference.preferenceType === 'buy' ? 'Outright sales' : 
-                        specificPreference.preferenceType === 'rent' ? 'Rent' : 'Joint venture(VJ)',
+                        specificPreference.preferenceType === 'rent' ? 'Rent' : 'Joint Venture(JV)',
               bedroom: specificPreference.noOfBedrooms?.toString() || 'N/A',
               bathroom: specificPreference.noOfBathrooms?.toString() || 'N/A',
               landSize: specificPreference.landSize ? `${specificPreference.landSize} ${specificPreference.measurementType || ''}` : 'N/A',
