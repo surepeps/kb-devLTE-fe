@@ -780,8 +780,14 @@ export const NewMarketplaceProvider: React.FC<{
       if (!isMountedRef.current) return;
 
       console.log(`Fetching initial data for ${tab} tab`);
+      // Map tab to correct briefType for API
+      const briefTypeMapping = {
+        buy: "Outright Sales",
+        jv: "Joint Venture",
+        rent: "Rent",
+      };
       const defaultSearchParams: SearchParams = {
-        briefType: tab,
+        briefType: briefTypeMapping[tab],
         page: 1,
         limit: itemsPerPage,
         ...searchParams,
