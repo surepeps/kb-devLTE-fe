@@ -131,33 +131,41 @@ const PostProperty = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Agent access control
-  const { canPostProperty } = useAgentAccess({
-    requireOnboarding: true,
-    requireApproval: true,
-  });
-
   useEffect(() => {
     if (!user) {
       router.push("/auth/login");
       return;
     }
 
-    // Only allow landlords or approved agents to post properties
-    if (user.userType === "Agent" && !canPostProperty) {
-      toast.error(
-        "You need to complete onboarding and be approved to post properties",
-      );
-      router.push("/agent/onboard");
+    // Allow Landowners to access directly
+    if (user.userType === "Landowners") {
       return;
     }
 
-    if (user.userType !== "Landowners" && user.userType !== "Agent") {
-      toast.error("You need to be a landowner or agent to post properties");
-      router.push("/dashboard");
+    // For Agents, check requirements
+    if (user.userType === "Agent") {
+      // Check if agent has completed onboarding
+      if (!user.agentData?.agentType) {
+        toast.error("You need to complete onboarding to post properties");
+        router.push("/agent/onboard");
+        return;
+      }
+
+      // Check if agent is approved
+      if (user.accountApproved === false) {
+        toast.error("Your account needs to be approved to post properties");
+        router.push("/agent/under-review");
+        return;
+      }
+
+      // Agent is onboarded and approved, allow access
       return;
     }
-  }, [user?.id, canPostProperty]); // Only depend on user ID to prevent unnecessary re-renders
+
+    // User is neither landowner nor agent
+    toast.error("You need to be a landowner or agent to post properties");
+    router.push("/dashboard");
+  }, [user, router]);
 
   const steps = [
     {
