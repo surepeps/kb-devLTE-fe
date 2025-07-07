@@ -447,9 +447,9 @@ const ProductDetailsPage = () => {
                     }
                   />
 
-                  <div className="w-full lg:w-[90%] h-full flex flex-col gap-[20px]">
+                  <div className="w-full h-full flex flex-col gap-4 md:gap-6">
                     {details.pictures["length"] !== 0 ? (
-                      <div className="flex gap-[12px] overflow-x-auto w-full justify-center lg:justify-start">
+                      <div className="flex gap-2 md:gap-3 overflow-x-auto w-full justify-start scrollbar-hide">
                         {details.pictures.map((src: string, idx: number) => (
                           <img
                             src={src}
@@ -460,9 +460,8 @@ const ProductDetailsPage = () => {
                               setImageData([src]);
                               setViewImage(true);
                             }}
-                            className="md:w-[80px] md:h-[60px] w-[63px] h-[48px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded"
-                            // style={{ maxWidth: '100%', flex: '0 0 auto' }}
-                            alt={"image"}
+                            className="w-16 h-12 md:w-20 md:h-16 lg:w-24 lg:h-18 object-cover bg-gray-200 rounded cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
+                            alt={`Property image ${idx + 1}`}
                           />
                         ))}
                       </div>
