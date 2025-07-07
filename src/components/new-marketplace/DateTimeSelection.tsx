@@ -53,7 +53,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     "6:00 PM",
   ];
 
-  const availableDates = getAvailableDates();
+  const availableDates = getAvailableDates(showMoreDates ? 20 : 10);
 
   const handleProceed = () => {
     if (!selectedDate || !selectedTime) {
