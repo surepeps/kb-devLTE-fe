@@ -101,17 +101,27 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
 
   const deleteNotification = async (notificationId: string) => {
     try {
+      // Optimistically update UI first
       setNotifications((prev) =>
         prev.filter((notif) => notif._id !== notificationId),
       );
       toast.success("Notification deleted");
 
-      // Attempt API call
-      await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/${notificationId}`,
-        { deleted: true },
-        Cookies.get("token"),
+      // Use proper DELETE endpoint
+      const response = await fetch(
+        `${URLS.BASE}/user/notifications/${notificationId}/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        },
       );
+
+      if (!response.ok) {
+        console.error("Failed to delete notification on server");
+      }
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
