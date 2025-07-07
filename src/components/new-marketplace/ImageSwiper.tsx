@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { usePageContext } from "@/context/page-context";
 import randomImage from "@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png";
+import CloudinaryImage from "@/components/general-components/CloudinaryImage";
 
 // Import Swiper styles
 import "swiper/css";
@@ -67,19 +68,15 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
               }}
               key={i}
             >
-              <Image
+              <CloudinaryImage
                 width={1000}
                 height={1000}
                 src={validImageUrl}
                 alt={`Slide ${i + 1}`}
                 className="w-full h-full object-cover cursor-pointer"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = randomImage.src;
-                }}
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                fallbackSrc={randomImage.src}
+                priority={i === 0} // Only first image is priority
+                timeout={8000} // 8 second timeout
               />
             </SwiperSlide>
           );
