@@ -191,7 +191,7 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
               <JVPropertyCard
                 property={property}
                 cardData={getJVPropertyCardData(property)}
-                images={property.images || []}
+                images={property.pictures || property.images || []}
                 isPremium={property.isPremium || false}
                 onPropertyClick={() => onPropertyClick(property)}
                 onInspectionToggle={() => onInspectionToggle(property)}
