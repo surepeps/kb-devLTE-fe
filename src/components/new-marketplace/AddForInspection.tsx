@@ -36,6 +36,15 @@ const AddForInspection = () => {
   const negotiatedPrices = activeTab !== "jv" ? tabState.negotiatedPrices : [];
   const loiDocuments = activeTab === "jv" ? tabState.loiDocuments : [];
 
+  // Auto-return to marketplace when 2 properties selected
+  useEffect(() => {
+    if (selectedProperties.length === 2 && currentStep === "selection") {
+      setTimeout(() => {
+        setIsAddForInspectionOpen(false);
+      }, 1000); // Small delay to show the selection
+    }
+  }, [selectedProperties.length, currentStep, setIsAddForInspectionOpen]);
+
   // Calculate inspection fee
   const inspectionFee = useMemo(() => {
     const baseAmount = 10000;
