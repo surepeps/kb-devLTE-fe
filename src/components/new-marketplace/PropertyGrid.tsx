@@ -207,7 +207,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         )}
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-x-2 sm:gap-y-4 justify-items-center">
+        <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-2 lg:gap-3 xl:gap-2 justify-items-center px-2 lg:px-4">
           <AnimatePresence>
             {properties.map((property, index) => (
               <motion.div
@@ -216,6 +216,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="w-full"
               >
                 <PropertyCard
                   tab={tab}
