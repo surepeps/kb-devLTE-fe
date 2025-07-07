@@ -44,6 +44,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] = useState(false);
   const [priceRadioValue, setPriceRadioValue] = useState("");
 
+  // Mobile filter modal state
+  const [isMobileFilterModalOpen, setIsMobileFilterModalOpen] = useState(false);
+
   // Usage options for tab
   const getUsageOptions = () => {
     switch (tab) {
