@@ -65,33 +65,35 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
         loop={true}
         className="w-full h-[148px] cursor-pointer"
       >
-        {validImages.map((src, i) => {
-          const validImageUrl = getValidImageUrl(src);
-          // Ensure we have a valid string URL before rendering
-          if (!validImageUrl || typeof validImageUrl !== "string") {
-            return null;
-          }
-          return (
-            <SwiperSlide
-              onClick={() => {
-                setImageData(validImages);
-                setViewImage(true);
-              }}
-              key={i}
-            >
-              <CloudinaryImage
-                width={1000}
-                height={1000}
-                src={validImageUrl}
-                alt={`Slide ${i + 1}`}
-                className="w-full h-full object-cover cursor-pointer"
-                fallbackSrc={randomImage.src}
-                priority={i === 0} // Only first image is priority
-                timeout={8000} // 8 second timeout
-              />
-            </SwiperSlide>
-          );
-        })}
+        {validImages
+          .map((src, i) => {
+            const validImageUrl = getValidImageUrl(src);
+            // Ensure we have a valid string URL before rendering
+            if (!validImageUrl || typeof validImageUrl !== "string") {
+              return null;
+            }
+            return (
+              <SwiperSlide
+                onClick={() => {
+                  setImageData(validImages);
+                  setViewImage(true);
+                }}
+                key={i}
+              >
+                <CloudinaryImage
+                  width={1000}
+                  height={1000}
+                  src={validImageUrl}
+                  alt={`Slide ${i + 1}`}
+                  className="w-full h-full object-cover cursor-pointer"
+                  fallbackSrc={randomImage.src}
+                  priority={i === 0} // Only first image is priority
+                  timeout={8000} // 8 second timeout
+                />
+              </SwiperSlide>
+            );
+          })
+          .filter(Boolean)}
       </Swiper>
     </div>
   );
