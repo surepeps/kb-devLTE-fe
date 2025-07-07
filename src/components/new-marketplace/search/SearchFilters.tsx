@@ -134,8 +134,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         onClearAll={onClearFilters}
       />
 
-      {/* Mobile Filter Button */}
-      <div className="lg:hidden bg-white border border-gray-200 rounded-lg p-4 mb-4">
+      {/* Mobile Filter Section */}
+      <div className="lg:hidden bg-white border border-gray-200 rounded-lg p-4 mb-4 space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-[#09391C]">
             Filter Properties
@@ -148,6 +148,30 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             {loading ? "Searching..." : "Search"}
           </button>
         </div>
+
+        {/* Mobile Location Filter */}
+        <div className="w-full">
+          <SelectStateLGA
+            placeholder="Enter state, lga, city...."
+            formik={locationFormik}
+          />
+        </div>
+
+        {/* Selected Properties Button for Mobile */}
+        {selectedCount > 0 && (
+          <button
+            className="w-full bg-[#FF3D00] text-white py-3 rounded-lg font-medium"
+            type="button"
+            onClick={() => {
+              if (onOpenInspection) {
+                onOpenInspection();
+              }
+            }}
+          >
+            {selectedCount} selected brief{selectedCount !== 1 ? "s" : ""} -
+            Continue
+          </button>
+        )}
       </div>
 
       {/* Filter by checkboxes - exact copy of existing design - Hidden on mobile */}
