@@ -68,7 +68,7 @@ const JVPropertyCard: React.FC<JVPropertyCardProps> = ({
         </div>
 
         {/* Content Section */}
-        <div className="flex flex-col gap-[2px]">
+        <div className="flex flex-col gap-[2px] flex-grow">
           {/* Property Type */}
           <div className="flex gap-[7px]">
             {cardData.map((item, idx) => {
