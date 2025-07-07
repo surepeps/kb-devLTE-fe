@@ -103,14 +103,20 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+        <div
+          className="flex space-x-1 bg-gray-100 rounded-lg p-1"
+          data-notification-tabs
+        >
           {[
             { key: "all", label: `All (${notifications.length})` },
             { key: "unread", label: `Unread (${unreadCount})` },
           ].map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setFilter(tab.key as "all" | "unread")}
+              onClick={(e) => {
+                e.stopPropagation();
+                setFilter(tab.key as "all" | "unread");
+              }}
               className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 filter === tab.key
                   ? "bg-white text-gray-900 shadow-sm"
