@@ -15,6 +15,7 @@ const JointVentureSearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
+    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
