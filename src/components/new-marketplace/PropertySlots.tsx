@@ -198,7 +198,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
           ) : (
             <div
               onClick={onAddProperty}
-              className="bg-white rounded-lg flex justify-center items-center border-2 border-dashed border-gray-300 hover:border-[#8DDB90] transition-colors cursor-pointer md:w-[296px] min-h-[400px] flex-col"
+              className="bg-white rounded-lg flex justify-center items-center border-2 border-dashed border-gray-300 hover:border-[#8DDB90] transition-colors cursor-pointer w-full max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px] min-h-[400px] flex-col mx-auto"
             >
               <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                 <div className="w-20 h-20 bg-[#E4EFE7] rounded-full flex items-center justify-center mb-4">

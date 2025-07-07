@@ -57,8 +57,9 @@ const NotificationsPage: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
+      // Use pagination with 5 notifications per page as specified
       const response = await GET_REQUEST(
-        `${URLS.BASE}/user/notifications`,
+        `${URLS.BASE}/user/notifications?limit=5&page=${currentPage}`,
         Cookies.get("token"),
       );
 
@@ -79,29 +80,31 @@ const NotificationsPage: React.FC = () => {
 
   const markAsRead = async (notificationId: string) => {
     try {
-      const response = await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/${notificationId}/read`,
-        {},
-        Cookies.get("token"),
-      );
-
-      if (response?.success) {
-        setNotifications((prev) =>
-          prev.map((notif) =>
-            notif._id === notificationId ? { ...notif, isRead: true } : notif,
-          ),
-        );
-        toast.success("Marked as read");
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      // Update local state anyway for better UX
+      // Optimistically update UI first
       setNotifications((prev) =>
         prev.map((notif) =>
           notif._id === notificationId ? { ...notif, isRead: true } : notif,
         ),
       );
       toast.success("Marked as read");
+
+      // Use proper PATCH endpoint
+      const response = await fetch(
+        `${URLS.BASE}/user/notifications/${notificationId}/markRead`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.error("Failed to mark notification as read on server");
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
     }
   };
 
