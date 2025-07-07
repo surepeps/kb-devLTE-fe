@@ -7,6 +7,7 @@ import JVPropertyCard from "./cards/JVPropertyCard";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import Loading from "@/components/loading-component/loading";
+import FailedRequest from "@/components/general-components/FailedRequest";
 import { IsMobile } from "@/hooks/isMobile";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 
