@@ -104,6 +104,22 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   const usageOptions = getUsageOptions();
 
+  // Sync location formik with filter changes
+  useEffect(() => {
+    locationFormik.setValues({
+      selectedLGA: filters.selectedLGA || "",
+      selectedState: filters.selectedState || "",
+    });
+  }, [filters.selectedState, filters.selectedLGA]);
+
+  // Sync price formik with filter changes
+  useEffect(() => {
+    priceFormik.setValues({
+      minPrice: filters.priceRange?.min || 0,
+      maxPrice: filters.priceRange?.max || 0,
+    });
+  }, [filters.priceRange]);
+
   return (
     <Fragment>
       {/* Filter by checkboxes - exact copy of existing design */}
