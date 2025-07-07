@@ -123,6 +123,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   return (
     <Fragment>
+      {/* Selected Filters Card */}
+      <SelectedFiltersCard
+        filters={filters}
+        onRemoveFilter={onFilterChange}
+        onClearAll={onClearFilters}
+      />
+
       {/* Filter by checkboxes - exact copy of existing design */}
       <div className="container min-h-[181px] hidden md:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20">
         <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
