@@ -9,7 +9,8 @@ import BuyTab from "./tabs/BuyTab";
 import JointVentureTab from "./tabs/JointVentureTab";
 import RentTab from "./tabs/RentTab";
 import AddForInspection from "./AddForInspection";
- 
+import StandardPreloader from "./StandardPreloader";
+
 const NewMarketPlace = () => {
   const router = useRouter();
   const {
