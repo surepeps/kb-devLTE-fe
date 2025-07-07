@@ -178,12 +178,7 @@ const ClientTestimonials = () => {
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex gap-8 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitScrollbar: { display: "none" },
-            }}
+            className="flex gap-8 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-hide"
           >
             {testimonials.map((testimonial, index) => (
               <motion.div
