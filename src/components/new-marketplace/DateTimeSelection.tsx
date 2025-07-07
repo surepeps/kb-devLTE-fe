@@ -21,6 +21,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
+  // Buyer information form state
+  const [buyerInfo, setBuyerInfo] = useState({
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+  });
+
   const [showMoreDates, setShowMoreDates] = useState(false);
 
   // Generate available dates (at least 10 weekdays, excluding Sundays)
