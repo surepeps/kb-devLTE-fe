@@ -53,9 +53,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       transition={{ delay: 0.2, duration: 0.5 }}
       exit={{ opacity: 0, y: 20 }}
       viewport={{ once: true }}
-      className="w-full md:w-[296px] h-auto min-h-[450px] rounded-md shrink-0 bg-white border-[1px] py-[16px] px-[15px] gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col"
+      className="w-full md:w-[286px] h-auto min-h-[400px] rounded-md shrink-0 bg-white border-[1px] py-[11px] px-[10px] gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col"
     >
-      <div className="flex flex-col gap-[8px] w-full flex-grow">
+      <div className="flex flex-col gap-[5px] w-full flex-grow">
         {/* Image Section */}
         <div className="w-full h-[148px] bg-gray-200 relative">
           {/* Premium Badge */}
@@ -134,6 +134,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                 return (
                   <h2 key={idx} className="text-xs font-normal text-[#000000]">
                     {item.value} Bedrooms
+                  </h2>
+                );
+              }
+
+              if (item.header === "Bathrooms") {
+                return (
+                  <h2 key={idx} className="text-xs font-normal text-[#000000]">
+                    {item.value} Bathrooms
                   </h2>
                 );
               }
