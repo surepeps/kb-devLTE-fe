@@ -20,6 +20,28 @@ const JointVentureSearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
+  // Listen for pagination events
+  useEffect(() => {
+    const handlePaginationSearch = (event: CustomEvent) => {
+      const { tab, page } = event.detail;
+      if (tab === "jv") {
+        handleSearch(page);
+      }
+    };
+
+    window.addEventListener(
+      "marketplace-search",
+      handlePaginationSearch as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "marketplace-search",
+        handlePaginationSearch as EventListener,
+      );
+    };
+  }, []);
+
   // Search form
   const searchFormik = useFormik({
     initialValues: {
