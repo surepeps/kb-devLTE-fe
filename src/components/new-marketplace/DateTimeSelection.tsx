@@ -1,8 +1,9 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format, addDays } from "date-fns";
+import toast from "react-hot-toast";
 import Button from "@/components/general-components/button";
 
 interface DateTimeSelectionProps {
@@ -18,8 +19,63 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   onProceed,
   onBack,
 }) => {
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  // Auto-select current date (or next available date if today is Sunday)
+  const getInitialDate = () => {
+    let date = new Date();
+    date.setDate(date.getDate() + 3); // Start from 3 days from now
+
+    // Skip Sundays
+    while (date.getDay() === 0) {
+      date.setDate(date.getDate() + 1);
+    }
+
+    return format(date, "MMM d, yyyy");
+  };
+
+  // Auto-select next available hour
+  const getInitialTime = () => {
+    const currentHour = new Date().getHours();
+    const nextHour = currentHour + 1;
+
+    const availableTimes = [
+      "8:00 AM",
+      "9:00 AM",
+      "10:00 AM",
+      "11:00 AM",
+      "12:00 PM",
+      "1:00 PM",
+      "2:00 PM",
+      "3:00 PM",
+      "4:00 PM",
+      "5:00 PM",
+      "6:00 PM",
+    ];
+
+    // Find the next available time slot
+    const hourMap: { [key: number]: string } = {
+      8: "8:00 AM",
+      9: "9:00 AM",
+      10: "10:00 AM",
+      11: "11:00 AM",
+      12: "12:00 PM",
+      13: "1:00 PM",
+      14: "2:00 PM",
+      15: "3:00 PM",
+      16: "4:00 PM",
+      17: "5:00 PM",
+      18: "6:00 PM",
+    };
+
+    // If next hour is within business hours, select it; otherwise select first available time
+    if (nextHour >= 8 && nextHour <= 18 && hourMap[nextHour]) {
+      return hourMap[nextHour];
+    }
+
+    return availableTimes[0]; // Default to first available time
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getInitialDate());
+  const [selectedTime, setSelectedTime] = useState(getInitialTime());
 
   // Buyer information form state
   const [buyerInfo, setBuyerInfo] = useState({
@@ -64,7 +120,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const handleProceed = () => {
     if (!selectedDate || !selectedTime) {
-      alert("Please select both date and time for inspection.");
+      toast.error("Please select both date and time for inspection.");
       return;
     }
 
@@ -73,7 +129,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       !buyerInfo.phoneNumber.trim() ||
       !buyerInfo.email.trim()
     ) {
-      alert(
+      toast.error(
         "Please fill in all buyer information fields (Full Name, Phone Number, and Email).",
       );
       return;
@@ -82,14 +138,14 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(buyerInfo.email)) {
-      alert("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     // Basic phone number validation (should contain only numbers, spaces, +, -, ())
     const phoneRegex = /^[\d\s\-\+\(\)]+$/;
     if (!phoneRegex.test(buyerInfo.phoneNumber)) {
-      alert("Please enter a valid phone number.");
+      toast.error("Please enter a valid phone number.");
       return;
     }
 
