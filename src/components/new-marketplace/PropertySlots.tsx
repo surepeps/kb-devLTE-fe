@@ -89,7 +89,11 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                 <JVPropertyCard
                   property={property.property}
                   cardData={getPropertyCardData(property.property)}
-                  images={property.property?.images || []}
+                  images={
+                    property.property?.pictures ||
+                    property.property?.images ||
+                    []
+                  }
                   isPremium={property.property?.isPremium || false}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)}
