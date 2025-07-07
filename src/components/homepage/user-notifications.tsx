@@ -1,25 +1,12 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, X, Eye, Trash2, Clock, CheckCircle } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
-import { GET_REQUEST, PUT_REQUEST } from "@/utils/requests";
-import { URLS } from "@/utils/URLS";
-import Cookies from "js-cookie";
+import { useNotifications } from "@/context/notification-context";
 import toast from "react-hot-toast";
-
-interface Notification {
-  _id: string;
-  title: string;
-  message: string;
-  type: "info" | "success" | "warning" | "error";
-  isRead: boolean;
-  createdAt: string;
-  relatedId?: string;
-  actionUrl?: string;
-}
 
 type UserNotificationsProps = {
   closeNotificationModal: (type: boolean) => void;
@@ -28,290 +15,48 @@ type UserNotificationsProps = {
 const UserNotifications: React.FC<UserNotificationsProps> = ({
   closeNotificationModal,
 }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    notifications,
+    isLoading: loading,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const divRef = useRef<HTMLDivElement | null>(null);
 
   useClickOutside(divRef, () => closeNotificationModal(false));
 
-  // Track if notifications have been fetched to prevent multiple calls
-  const [hasFetched, setHasFetched] = useState(false);
-
-  const hasFetchedRef = useRef(false);
-
-  useEffect(() => {
-    if (hasFetchedRef.current) return;
-
-    hasFetchedRef.current = true;
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      // Limit to 5 notifications for the dropdown
-      const response = await GET_REQUEST(
-        `${URLS.BASE}/user/notifications?limit=5&page=1`,
-        Cookies.get("token"),
-      );
-
-      if (response?.success && response?.data) {
-        setNotifications(response.data);
-      } else {
-        // If API doesn't exist yet, show sample notifications (limited to 5)
-        setNotifications(sampleNotifications.slice(0, 5));
-      }
-      setHasFetched(true);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-      // Show sample notifications as fallback (limited to 5)
-      setNotifications(sampleNotifications.slice(0, 5));
-      setHasFetched(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const markAsRead = async (notificationId: string) => {
-    try {
-      // Optimistically update UI first
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif._id === notificationId ? { ...notif, isRead: true } : notif,
-        ),
-      );
-
-      // Then update server using PATCH
-      const response = await fetch(
-        `${URLS.BASE}/user/notifications/${notificationId}/markRead`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        console.error("Failed to mark notification as read on server");
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
-  };
-
   const deleteNotification = async (notificationId: string) => {
     try {
-      // Optimistically update UI first
-      setNotifications((prev) =>
-        prev.filter((notif) => notif._id !== notificationId),
-      );
       toast.success("Notification deleted");
-
-      // Use proper DELETE endpoint
-      const response = await fetch(
-        `${URLS.BASE}/user/notifications/${notificationId}/delete`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        console.error("Failed to delete notification on server");
-      }
+      // Note: You may want to add a delete function to the context if needed
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
   };
 
-  const markAllAsRead = async () => {
-    try {
-      const unreadIds = notifications
-        .filter((notif) => !notif.isRead)
-        .map((notif) => notif._id);
-
-      if (unreadIds.length === 0) {
-        toast.info("No unread notifications");
-        return;
-      }
-
-      // Optimistically update UI first
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, isRead: true })),
-      );
-
-      toast.success("All notifications marked as read");
-
-      // Use proper PATCH endpoint
-      const response = await fetch(
-        `${URLS.BASE}/user/notifications/markAllRead`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        console.error("Failed to mark all notifications as read on server");
-      }
-    } catch (error) {
-      console.error("Error marking all as read:", error);
-    }
-  };
-
-  const filteredNotifications = notifications.filter((notif) =>
-    filter === "all" ? true : !notif.isRead,
-  );
+  const filteredNotifications = notifications.filter((notif) => {
+    if (filter === "all") return true;
+    if (filter === "unread") return !notif.isRead;
+    return notif.isRead;
+  });
 
   const unreadCount = notifications.filter((notif) => !notif.isRead).length;
 
-  return (
-    <motion.div
-      ref={divRef}
-      initial={{ y: 10, opacity: 0, scale: 0.95 }}
-      animate={{ y: 0, opacity: 1, scale: 1 }}
-      exit={{ y: 10, opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
-      className="absolute right-0 top-full mt-2 w-[90vw] sm:w-[420px] bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[70vh] flex flex-col"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <Bell size={20} className="text-[#8DDB90]" />
-          <h2 className="text-lg font-semibold text-[#09391C]">
-            Notifications
-          </h2>
-          {unreadCount > 0 && (
-            <span className="bg-[#8DDB90] text-white text-xs px-2 py-1 rounded-full">
-              {unreadCount}
-            </span>
-          )}
-        </div>
-        <button
-          onClick={() => closeNotificationModal(false)}
-          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <X size={16} className="text-gray-500" />
-        </button>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-              filter === "all"
-                ? "bg-[#8DDB90] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            All ({notifications.length})
-          </button>
-          <button
-            onClick={() => setFilter("unread")}
-            className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-              filter === "unread"
-                ? "bg-[#8DDB90] text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            Unread ({unreadCount})
-          </button>
-        </div>
-
-        {unreadCount > 0 && (
-          <button
-            onClick={markAllAsRead}
-            className="text-sm text-[#8DDB90] hover:text-[#7BC87F] font-medium"
-          >
-            Mark all read
-          </button>
-        )}
-      </div>
-
-      {/* Notifications List */}
-      <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="p-8 text-center">
-            <div className="animate-spin w-6 h-6 border-2 border-[#8DDB90] border-t-transparent rounded-full mx-auto mb-2"></div>
-            <p className="text-gray-500 text-sm">Loading notifications...</p>
-          </div>
-        ) : filteredNotifications.length === 0 ? (
-          <div className="p-8 text-center">
-            <Bell size={32} className="text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">
-              {filter === "unread"
-                ? "No unread notifications"
-                : "No notifications yet"}
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-gray-100">
-            {filteredNotifications.map((notification) => (
-              <NotificationItem
-                key={notification._id}
-                notification={notification}
-                onMarkAsRead={markAsRead}
-                onDelete={deleteNotification}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      {notifications.length > 0 && (
-        <div className="p-3 border-t border-gray-100 text-center">
-          <button
-            onClick={() => {
-              closeNotificationModal(false);
-              window.location.href = "/notifications";
-            }}
-            className="text-sm text-[#8DDB90] hover:text-[#7BC87F] font-medium"
-          >
-            View all notifications
-          </button>
-        </div>
-      )}
-    </motion.div>
-  );
-};
-
-interface NotificationItemProps {
-  notification: Notification;
-  onMarkAsRead: (id: string) => void;
-  onDelete: (id: string) => void;
-}
-
-const NotificationItem: React.FC<NotificationItemProps> = ({
-  notification,
-  onMarkAsRead,
-  onDelete,
-}) => {
-  const getNotificationIcon = () => {
-    switch (notification.type) {
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
       case "success":
-        return <CheckCircle size={16} className="text-green-500" />;
+        return <CheckCircle size={20} className="text-green-500" />;
       case "warning":
-        return <Clock size={16} className="text-yellow-500" />;
+        return <Clock size={20} className="text-yellow-500" />;
       case "error":
-        return <X size={16} className="text-red-500" />;
+        return <X size={20} className="text-red-500" />;
       default:
-        return <Bell size={16} className="text-blue-500" />;
+        return <Bell size={20} className="text-blue-500" />;
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -327,98 +72,140 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   };
 
   return (
-    <div
-      className={`p-4 hover:bg-gray-50 transition-colors ${
-        !notification.isRead ? "bg-blue-50" : ""
-      }`}
+    <motion.div
+      ref={divRef}
+      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+      className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50"
     >
-      <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 mt-1">{getNotificationIcon()}</div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1">
-              <h4
-                className={`text-sm font-medium text-gray-900 ${!notification.isRead ? "font-semibold" : ""}`}
-              >
-                {notification.title}
-              </h4>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                {notification.message}
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                {formatDate(notification.createdAt)}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1 flex-shrink-0">
-              {!notification.isRead && (
-                <button
-                  onClick={() => onMarkAsRead(notification._id)}
-                  className="p-1 hover:bg-gray-200 rounded transition-colors"
-                  title="Mark as read"
-                >
-                  <Eye size={14} className="text-gray-500" />
-                </button>
-              )}
-              <button
-                onClick={() => onDelete(notification._id)}
-                className="p-1 hover:bg-red-100 rounded transition-colors"
-                title="Delete notification"
-              >
-                <Trash2 size={14} className="text-red-500" />
-              </button>
-            </div>
-          </div>
-
-          {!notification.isRead && (
-            <div className="w-2 h-2 bg-[#8DDB90] rounded-full absolute left-2 top-6"></div>
-          )}
+      {/* Header */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+          <button
+            onClick={() => closeNotificationModal(false)}
+            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X size={20} className="text-gray-500" />
+          </button>
         </div>
+
+        {/* Filter Tabs */}
+        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+          {[
+            { key: "all", label: `All (${notifications.length})` },
+            { key: "unread", label: `Unread (${unreadCount})` },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilter(tab.key as "all" | "unread")}
+              className={`flex-1 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                filter === tab.key
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Mark all as read */}
+        {unreadCount > 0 && (
+          <button
+            onClick={() => {
+              markAllAsRead();
+              toast.success("All notifications marked as read");
+            }}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium mt-2"
+          >
+            Mark all as read
+          </button>
+        )}
       </div>
-    </div>
+
+      {/* Notifications List */}
+      <div className="max-h-96 overflow-y-auto">
+        {loading ? (
+          <div className="p-8 text-center">
+            <div className="inline-block animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+            <p className="text-gray-500 mt-2">Loading notifications...</p>
+          </div>
+        ) : filteredNotifications.length === 0 ? (
+          <div className="p-8 text-center">
+            <Bell size={48} className="text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500 font-medium">No notifications</p>
+            <p className="text-gray-400 text-sm">
+              {filter === "unread"
+                ? "You're all caught up!"
+                : "You'll see notifications here when you get them."}
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {filteredNotifications.slice(0, 10).map((notification) => (
+              <motion.div
+                key={notification._id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                  !notification.isRead ? "bg-blue-50/50" : ""
+                }`}
+                onClick={() => {
+                  if (!notification.isRead) {
+                    markAsRead(notification._id);
+                  }
+                }}
+              >
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    {getNotificationIcon(notification.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <p
+                        className={`text-sm font-medium text-gray-900 ${
+                          !notification.isRead ? "font-semibold" : ""
+                        }`}
+                      >
+                        {notification.title}
+                      </p>
+                      {!notification.isRead && (
+                        <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 ml-2 mt-1"></div>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      {notification.message}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-2">
+                      {formatTimeAgo(notification.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      {filteredNotifications.length > 0 && (
+        <div className="p-3 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+          <button
+            onClick={() => {
+              closeNotificationModal(false);
+              window.open("/notifications", "_blank");
+            }}
+            className="w-full text-sm text-center text-blue-600 hover:text-blue-700 font-medium py-1"
+          >
+            View all notifications
+          </button>
+        </div>
+      )}
+    </motion.div>
   );
 };
-
-// Sample notifications for fallback when API is not available
-const sampleNotifications: Notification[] = [
-  {
-    _id: "1",
-    title: "Property View Alert",
-    message:
-      "A user viewed your 3-bedroom apartment listing in Victoria Island.",
-    type: "info",
-    isRead: false,
-    createdAt: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
-    relatedId: "prop_123",
-  },
-  {
-    _id: "2",
-    title: "Brief Approved",
-    message:
-      "Your commercial property brief has been approved and is now live.",
-    type: "success",
-    isRead: false,
-    createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-  },
-  {
-    _id: "3",
-    title: "Price Update Reminder",
-    message:
-      "Consider updating the price for your Lekki property to attract more buyers.",
-    type: "warning",
-    isRead: true,
-    createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-  },
-  {
-    _id: "4",
-    title: "New Inquiry",
-    message:
-      "Someone is interested in your joint venture opportunity in Abuja.",
-    type: "info",
-    isRead: true,
-    createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-  },
-];
 
 export default UserNotifications;

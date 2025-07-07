@@ -15,6 +15,7 @@ import { ModalProvider } from "@/context/modalContext";
 import { CreateBriefProvider } from "@/context/create-brief-context";
 import { SelectedBriefsProvider } from "@/context/selected-briefs-context";
 import { MarketplaceProvider } from "@/context/marketplace-context";
+import { NotificationProvider } from "@/context/notification-context";
 import Homepage from "@/app/homepage/page";
 import Countdown from "./coming-soon-modal/page";
 // import { GoogleAnalytics } from '@next/third-parties/google';
@@ -38,37 +39,7 @@ export default function RootLayout({
   if (SHOW_COMING_SOON) {
     return (
       <UserProvider>
-        <PageContextProvider>
-          <CreateBriefProvider>
-            <SelectedBriefsProvider>
-              <MarketplaceProvider>
-                <html lang="en">
-                  <body
-                    className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                  >
-                    {" "}
-                    {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                    <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
-                      <Homepage isComingSoon={SHOW_COMING_SOON} />
-                      <Countdown />
-                    </HeaderFooterWrapper>
-                    <Toaster />
-                  </body>
-                  {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
-                </html>
-              </MarketplaceProvider>
-            </SelectedBriefsProvider>
-          </CreateBriefProvider>
-        </PageContextProvider>
-      </UserProvider>
-    );
-  }
-  return (
-    <GoogleOAuthProvider
-      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
-    >
-      <UserProvider>
-        <ModalProvider>
+        <NotificationProvider>
           <PageContextProvider>
             <CreateBriefProvider>
               <SelectedBriefsProvider>
@@ -79,8 +50,9 @@ export default function RootLayout({
                     >
                       {" "}
                       {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                      <HeaderFooterWrapper>
-                        <Body>{children}</Body>
+                      <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
+                        <Homepage isComingSoon={SHOW_COMING_SOON} />
+                        <Countdown />
                       </HeaderFooterWrapper>
                       <Toaster />
                     </body>
@@ -90,7 +62,40 @@ export default function RootLayout({
               </SelectedBriefsProvider>
             </CreateBriefProvider>
           </PageContextProvider>
-        </ModalProvider>
+        </NotificationProvider>
+      </UserProvider>
+    );
+  }
+  return (
+    <GoogleOAuthProvider
+      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+    >
+      <UserProvider>
+        <NotificationProvider>
+          <ModalProvider>
+            <PageContextProvider>
+              <CreateBriefProvider>
+                <SelectedBriefsProvider>
+                  <MarketplaceProvider>
+                    <html lang="en">
+                      <body
+                        className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                      >
+                        {" "}
+                        {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
+                        <HeaderFooterWrapper>
+                          <Body>{children}</Body>
+                        </HeaderFooterWrapper>
+                        <Toaster />
+                      </body>
+                      {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
+                    </html>
+                  </MarketplaceProvider>
+                </SelectedBriefsProvider>
+              </CreateBriefProvider>
+            </PageContextProvider>
+          </ModalProvider>
+        </NotificationProvider>
       </UserProvider>
     </GoogleOAuthProvider>
   );

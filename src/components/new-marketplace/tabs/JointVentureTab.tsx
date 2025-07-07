@@ -29,12 +29,16 @@ const JointVentureTab = () => {
     property: null,
   });
 
-  // Fetch initial data when tab becomes active
+  // Fetch initial data when tab becomes active (only once)
   useEffect(() => {
-    if (activeTab === "jv" && jvTab.formikStatus === "idle") {
+    if (
+      activeTab === "jv" &&
+      jvTab.formikStatus === "idle" &&
+      jvTab.properties.length === 0
+    ) {
       fetchTabData("jv");
     }
-  }, []);
+  }, [activeTab, jvTab.formikStatus, jvTab.properties.length, fetchTabData]);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page
