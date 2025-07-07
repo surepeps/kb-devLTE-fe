@@ -47,8 +47,11 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
     }
   }
 
+  // Ensure we have a valid array and filter out null/undefined entries
   const validImages =
-    imageArray && imageArray.length > 0 ? imageArray : [randomImage];
+    imageArray && Array.isArray(imageArray) && imageArray.length > 0
+      ? imageArray.filter((img) => img != null)
+      : [randomImage];
 
   return (
     <div className="w-full h-full absolute">
@@ -64,6 +67,10 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
       >
         {validImages.map((src, i) => {
           const validImageUrl = getValidImageUrl(src);
+          // Ensure we have a valid string URL before rendering
+          if (!validImageUrl || typeof validImageUrl !== "string") {
+            return null;
+          }
           return (
             <SwiperSlide
               onClick={() => {
