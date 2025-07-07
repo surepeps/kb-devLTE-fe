@@ -114,9 +114,11 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loading />
-      </div>
+      <StandardPreloader
+        isVisible={true}
+        message="Loading properties..."
+        overlay={false}
+      />
     );
   }
 
