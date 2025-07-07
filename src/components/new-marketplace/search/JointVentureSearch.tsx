@@ -195,6 +195,8 @@ const JointVentureSearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={jvTab.formikStatus === "pending"}
+          selectedCount={jvTab.selectedForInspection.length}
+          onOpenInspection={() => setIsAddForInspectionOpen(true)}
         />
       </div>
 
