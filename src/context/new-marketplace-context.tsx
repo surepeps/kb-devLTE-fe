@@ -144,7 +144,11 @@ interface NewMarketplaceContextType {
   ) => NegotiatedPrice | null;
 
   // LOI documents (for JV tab)
-  addLOIDocument: (propertyId: string, document: File) => void;
+  addLOIDocument: (
+    propertyId: string,
+    document: File,
+    documentUrl?: string,
+  ) => void;
   removeLOIDocument: (propertyId: string) => void;
   getLOIDocument: (propertyId: string) => LOIDocument | null;
 
@@ -464,7 +468,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   // LOI document methods (for JV tab)
   const addLOIDocument = useCallback(
-    (propertyId: string, document: File) => {
+    (propertyId: string, document: File, documentUrl?: string) => {
       updateTabState("jv", (state) => {
         const existingIndex = state.loiDocuments.findIndex(
           (doc) => doc.propertyId === propertyId,
@@ -473,9 +477,12 @@ export const NewMarketplaceProvider: React.FC<{
         let updatedDocs;
         if (existingIndex >= 0) {
           updatedDocs = [...state.loiDocuments];
-          updatedDocs[existingIndex] = { propertyId, document };
+          updatedDocs[existingIndex] = { propertyId, document, documentUrl };
         } else {
-          updatedDocs = [...state.loiDocuments, { propertyId, document }];
+          updatedDocs = [
+            ...state.loiDocuments,
+            { propertyId, document, documentUrl },
+          ];
         }
 
         return { ...state, loiDocuments: updatedDocs };
