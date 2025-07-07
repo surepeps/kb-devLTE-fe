@@ -200,6 +200,68 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         </div>
       </div>
 
+      {/* Buyer Information Form */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+          Buyer Information <span className="text-red-500">*</span>
+        </h3>
+        <p className="text-sm text-[#5A5D63] mb-6">
+          Please provide your contact information for the inspection
+          appointment.
+        </p>
+
+        <div className="space-y-4">
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-[#24272C] mb-2">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={buyerInfo.fullName}
+              onChange={(e) =>
+                handleBuyerInfoChange("fullName", e.target.value)
+              }
+              placeholder="Enter your full name"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+              required
+            />
+          </div>
+
+          {/* Phone Number */}
+          <div>
+            <label className="block text-sm font-medium text-[#24272C] mb-2">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              value={buyerInfo.phoneNumber}
+              onChange={(e) =>
+                handleBuyerInfoChange("phoneNumber", e.target.value)
+              }
+              placeholder="Enter your phone number"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+              required
+            />
+          </div>
+
+          {/* Email Address */}
+          <div>
+            <label className="block text-sm font-medium text-[#24272C] mb-2">
+              Email Address <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              value={buyerInfo.email}
+              onChange={(e) => handleBuyerInfoChange("email", e.target.value)}
+              placeholder="Enter your email address"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Important Notes */}
       <div className="bg-[#FFF3E0] border border-[#FFB74D] rounded-lg p-4">
         <h4 className="font-semibold text-[#E65100] mb-2">Important Notes:</h4>
@@ -210,6 +272,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
           <li>• Please arrive 15 minutes before your scheduled time</li>
           <li>• Bring a valid form of identification</li>
           <li>• Payment confirmation is required before inspection</li>
+          <li>• Confirmation details will be sent to your provided email</li>
         </ul>
       </div>
 
