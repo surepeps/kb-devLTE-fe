@@ -351,12 +351,28 @@ export const NewMarketplaceProvider: React.FC<{
 
   const removeFromInspection = useCallback(
     (tab: "buy" | "jv" | "rent", propertyId: string) => {
-      updateTabState(tab, (state) => ({
-        ...state,
-        selectedForInspection: state.selectedForInspection.filter(
+      updateTabState(tab, (state) => {
+        // Remove from inspection selection
+        const updatedSelection = state.selectedForInspection.filter(
           (item) => item.propertyId !== propertyId,
-        ),
-      }));
+        );
+
+        // Also clear associated negotiated prices and LOI documents
+        const updatedNegotiatedPrices = state.negotiatedPrices.filter(
+          (price) => price.propertyId !== propertyId,
+        );
+
+        const updatedLoiDocuments = state.loiDocuments.filter(
+          (doc) => doc.propertyId !== propertyId,
+        );
+
+        return {
+          ...state,
+          selectedForInspection: updatedSelection,
+          negotiatedPrices: updatedNegotiatedPrices,
+          loiDocuments: updatedLoiDocuments,
+        };
+      });
     },
     [updateTabState],
   );
