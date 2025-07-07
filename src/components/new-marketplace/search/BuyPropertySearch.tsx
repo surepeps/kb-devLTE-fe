@@ -73,10 +73,10 @@ const BuyPropertySearch = () => {
     homeCondition: "",
   });
 
-  const handleSearch = async () => {
+  const handleSearch = async (page = 1) => {
     const searchParams: SearchParams = {
       briefType: "buy",
-      page: 1,
+      page,
       limit: 12,
     };
 
