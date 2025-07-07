@@ -31,69 +31,57 @@ const ClientTestimonials = () => {
     try {
       setLoading(true);
       const response = await fetch(`${URLS.BASE}/testimonials`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
 
-      if (data.success && data.data) {
-        setTestimonials(
-          data.data.filter((t: Testimonial) => t.status === "approved"),
+      if (data.success && data.data && Array.isArray(data.data)) {
+        const approvedTestimonials = data.data.filter(
+          (t: Testimonial) => t.status === "approved",
         );
+        setTestimonials(approvedTestimonials);
       } else {
-        // Fallback testimonials if API fails
-        setTestimonials([
-          {
-            _id: "1",
-            fullName: "Michael .A",
-            occupation: "Business Owner",
-            rating: 5,
-            message:
-              "Khabi-teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
-            status: "approved",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            _id: "2",
-            fullName: "Tunde Ajayi",
-            occupation: "Software Engineer",
-            rating: 5,
-            message:
-              "Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
-            status: "approved",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        ]);
+        console.warn(
+          "Invalid API response format, using fallback testimonials",
+        );
+        setFallbackTestimonials();
       }
     } catch (error) {
       console.error("Error fetching testimonials:", error);
-      // Fallback testimonials on error
-      setTestimonials([
-        {
-          _id: "1",
-          fullName: "Michael .A",
-          occupation: "Business Owner",
-          rating: 5,
-          message:
-            "Khabi-teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
-          status: "approved",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          _id: "2",
-          fullName: "Tunde Ajayi",
-          occupation: "Software Engineer",
-          rating: 5,
-          message:
-            "Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
-          status: "approved",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ]);
+      setFallbackTestimonials();
     } finally {
       setLoading(false);
     }
+  };
+
+  const setFallbackTestimonials = () => {
+    setTestimonials([
+      {
+        _id: "1",
+        fullName: "Michael .A",
+        occupation: "Business Owner",
+        rating: 5,
+        message:
+          "Khabi-teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
+        status: "approved",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        _id: "2",
+        fullName: "Tunde Ajayi",
+        occupation: "Software Engineer",
+        rating: 5,
+        message:
+          "Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
+        status: "approved",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ]);
   };
 
   const scrollToIndex = (index: number) => {
