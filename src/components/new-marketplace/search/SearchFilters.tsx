@@ -253,9 +253,22 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         <div className="w-full flex items-center gap-[15px]">
           {/* Location Input - Fixed width */}
           <div className="w-[280px]">
-            <SelectStateLGA
-              placeholder="Enter state, lga, city...."
-              formik={locationFormik}
+            <LocationSearch
+              placeholder="Enter state, LGA, or area..."
+              value={filters.locationDisplay || ""}
+              onChange={(location, details) => {
+                if (details) {
+                  onFilterChange("selectedState", details.state);
+                  onFilterChange("selectedLGA", details.lga);
+                  onFilterChange("selectedArea", details.area || "");
+                  onFilterChange("locationDisplay", location);
+                } else {
+                  onFilterChange("selectedState", "");
+                  onFilterChange("selectedLGA", "");
+                  onFilterChange("selectedArea", "");
+                  onFilterChange("locationDisplay", "");
+                }
+              }}
             />
           </div>
 
