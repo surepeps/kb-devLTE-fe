@@ -609,32 +609,28 @@ const ProductDetailsPage = () => {
                       </p>
                     </div>
 
-                    <div className="w-full flex flex-col sm:flex-row items-center mt-10 gap-3">
-                      <Link href={"/market-place"} className="w-full sm:w-auto">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPropertySelectedForInspection(details);
-                            setIsAddForInspectionModalOpened(true);
-                          }}
-                          className="w-full sm:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] hover:bg-[#7BC87F] text-base font-bold text-white rounded-lg transition-colors"
-                        >
-                          Select for inspection
-                        </button>
-                      </Link>
-                      <Link href={"/market-place"} className="w-full sm:w-auto">
-                        <button
-                          onClick={() => {
-                            setPropertySelectedForInspection(details);
-                            setIsAddForInspectionModalOpened(true);
-                            setIsComingFromPriceNeg(true);
-                          }}
-                          type="button"
-                          className="w-full sm:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] hover:bg-[#1565C0] text-base font-bold text-white rounded-lg transition-colors"
-                        >
-                          Price Negotiation
-                        </button>
-                      </Link>
+                    <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center mt-8 md:mt-10 gap-3 md:gap-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPropertySelectedForInspection(details);
+                          setIsAddForInspectionModalOpened(true);
+                        }}
+                        className="flex-1 sm:flex-none sm:min-w-[200px] h-12 md:h-14 bg-[#8DDB90] hover:bg-[#7BC87F] text-sm md:text-base font-bold text-white rounded-lg transition-colors"
+                      >
+                        Select for inspection
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPropertySelectedForInspection(details);
+                          setIsAddForInspectionModalOpened(true);
+                          setIsComingFromPriceNeg(true);
+                        }}
+                        type="button"
+                        className="flex-1 sm:flex-none sm:min-w-[200px] h-12 md:h-14 bg-[#1976D2] hover:bg-[#1565C0] text-sm md:text-base font-bold text-white rounded-lg transition-colors"
+                      >
+                        Price Negotiation
+                      </button>
                     </div>
                   </div>
                 </div>
