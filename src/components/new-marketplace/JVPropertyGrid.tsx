@@ -184,7 +184,7 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
       )}
 
       {/* Properties Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-2 lg:gap-3 xl:gap-2 px-2 lg:px-4">
         <AnimatePresence>
           {properties.map((property, index) => (
             <motion.div
@@ -193,6 +193,7 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
+              className="w-full"
             >
               <JVPropertyCard
                 property={property}
