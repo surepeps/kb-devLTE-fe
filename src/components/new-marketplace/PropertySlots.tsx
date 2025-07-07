@@ -112,7 +112,10 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   isPremium={property.property?.isPremium || false}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)}
-                  onPriceNegotiation={() => {}} // Disabled in inspection view
+                  onPriceNegotiation={(property: any) => {
+                    // Handle price negotiation in inspection view
+                    // You can add modal state here if needed
+                  }}
                   onRemoveNegotiation={onClearNegotiatedPrice || (() => {})}
                   isSelected={true}
                   negotiatedPrice={negotiatedPrices.find(
