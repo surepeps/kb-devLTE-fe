@@ -46,7 +46,14 @@ const NewMarketPlace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1]">
+    <div className="min-h-screen bg-[#EEF1F1] relative">
+      {/* Initial Loading */}
+      <StandardPreloader
+        isVisible={isInitialLoading}
+        message="Loading marketplace..."
+        overlay={true}
+      />
+
       {isAddForInspectionOpen ? (
         <AddForInspection />
       ) : (
