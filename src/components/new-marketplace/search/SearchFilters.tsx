@@ -241,7 +241,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className="container min-h-[181px] hidden lg:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20">
         <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
           <div className="flex flex-wrap gap-[15px]">
-            <h3 className="font-semibold text-[#1E1E1E]">Filter by</h3>
+            <h3 className="font-semibold text-[#1E1E1E]">
+              {tab === "jv" ? "Usage Options" : "Filter by"}
+            </h3>
             {usageOptions.map((item: string, idx: number) => (
               <RadioCheck
                 key={idx}
