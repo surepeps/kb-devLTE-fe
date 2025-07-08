@@ -294,7 +294,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Properties management
   const setTabProperties = useCallback(
-    (tab: "buy" | "jv" | "rent", properties: any[]) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", properties: any[]) => {
       updateTabState(tab, (state) => ({ ...state, properties }));
     },
     [updateTabState],
