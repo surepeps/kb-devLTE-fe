@@ -65,43 +65,48 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     }
   };
 
-  // State/LGA formik for existing SelectStateLGA component
-  const locationFormik = useFormik({
-    initialValues: {
-      selectedLGA: filters.selectedLGA || "",
-      selectedState: filters.selectedState || "",
-    },
-    onSubmit: () => {},
-  });
+  // Handlers for new filter components
+  const handlePriceRangeSelect = (priceRange: {
+    min: number;
+    max: number;
+    display: string;
+  }) => {
+    onFilterChange("priceRange", priceRange);
+    setIsPriceRangeModalOpened(false);
+  };
 
-  // Price formik for existing PriceRange component
-  const priceFormik = useFormik({
-    initialValues: {
-      minPrice: filters.priceRange?.min || 0,
-      maxPrice: filters.priceRange?.max || 0,
-    },
-    onSubmit: () => {},
-  });
+  const handleBedroomSelect = (bedrooms: number | string) => {
+    onFilterChange("bedrooms", bedrooms);
+    setIsBedroomModalOpened(false);
+  };
 
-  // More filters state for existing MoreFilter component
-  const [moreFilters, setMoreFilters] = useState({
-    bathroom: filters.bathrooms || undefined,
-    landSize: filters.landSize || {
-      type: "plot",
-      size: undefined,
-    },
-    desirer_features: filters.desiredFeatures || [],
-  });
+  const handleDocumentSelect = (documents: string[]) => {
+    onFilterChange("documentTypes", documents);
+    setIsDocumentModalOpened(false);
+  };
 
-  const formatPriceDisplay = (radioValue: string, formik: any) => {
-    if (radioValue) {
-      return radioValue;
+  const handleMoreFiltersApply = (moreFilters: any) => {
+    if (moreFilters.bathrooms) {
+      onFilterChange("bathrooms", moreFilters.bathrooms);
     }
-    const { minPrice, maxPrice } = formik.values;
-    if (minPrice > 0 || maxPrice > 0) {
-      const min = minPrice > 0 ? `₦${minPrice.toLocaleString()}` : "Min";
-      const max = maxPrice > 0 ? `₦${maxPrice.toLocaleString()}` : "Max";
-      return `${min} - ${max}`;
+    if (moreFilters.landSize) {
+      onFilterChange("landSize", moreFilters.landSize);
+    }
+    if (moreFilters.features) {
+      onFilterChange("desiredFeatures", moreFilters.features);
+    }
+    setIsMoreFilterModalOpened(false);
+  };
+
+  const formatPriceDisplay = () => {
+    if (
+      filters.priceRange &&
+      (filters.priceRange.min > 0 || filters.priceRange.max > 0)
+    ) {
+      return (
+        filters.priceRange.display ||
+        `₦${filters.priceRange.min?.toLocaleString() || 0} - ₦${filters.priceRange.max?.toLocaleString() || 0}`
+      );
     }
     return "";
   };
