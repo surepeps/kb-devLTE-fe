@@ -50,6 +50,7 @@ export interface SearchParams {
   desireFeature?: string[];
   homeCondition?: string;
   tenantCriteria?: string[];
+  propertyType?: string[];
   type?: string;
 }
 
@@ -601,7 +602,7 @@ export const NewMarketplaceProvider: React.FC<{
   // Data fetching
   const searchTabProperties = useCallback(
     async (
-      tab: "buy" | "jv" | "rent",
+      tab: "buy" | "jv" | "rent" | "shortlet",
       searchParams: SearchParams,
       retryCount = 0,
     ) => {
@@ -639,9 +640,12 @@ export const NewMarketplaceProvider: React.FC<{
           buy: "Outright Sales",
           jv: "Joint Venture",
           rent: "Rent",
+          shortlet: "Shortlet",
         };
         const apiBriefType =
-          briefTypeMapping[searchParams.briefType] || searchParams.briefType;
+          briefTypeMapping[
+            searchParams.briefType as keyof typeof briefTypeMapping
+          ] || searchParams.briefType;
         queryParams.append("briefType", apiBriefType);
 
         // Pagination parameters
@@ -711,8 +715,8 @@ export const NewMarketplaceProvider: React.FC<{
           );
         }
 
-        if (searchParams.type) {
-          queryParams.append("type", searchParams.type);
+        if (searchParams.propertyType && searchParams.propertyType.length > 0) {
+          queryParams.append("type", searchParams.propertyType.join(","));
         }
 
         const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
@@ -945,7 +949,10 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Simple data fetching for initial load
   const fetchTabData = useCallback(
-    async (tab: "buy" | "jv" | "rent", searchParams?: SearchParams) => {
+    async (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      searchParams?: SearchParams,
+    ) => {
       if (!isMountedRef.current) return;
 
       console.log(`Fetching initial data for ${tab} tab`);
@@ -957,7 +964,7 @@ export const NewMarketplaceProvider: React.FC<{
         shortlet: "Shortlet",
       };
       const defaultSearchParams: SearchParams = {
-        briefType: briefTypeMapping[tab],
+        briefType: briefTypeMapping[tab as keyof typeof briefTypeMapping],
         page: 1,
         limit: itemsPerPage,
         ...searchParams,
