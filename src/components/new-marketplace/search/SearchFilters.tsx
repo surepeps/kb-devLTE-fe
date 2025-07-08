@@ -50,18 +50,24 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       case "buy":
         return ["All", "Land", "Residential", "Commercial", "Duplex"];
       case "jv":
-        return [
-          "All",
-          "Land Development",
-          "Commercial",
-          "Residential",
-          "Mixed Use",
-        ];
+        return ["All", "Land", "Residential", "Commercial"];
       case "rent":
-        return ["All", "Apartment", "House", "Office", "Shop", "Warehouse"];
+        return ["All", "Land", "Residential", "Commercial", "Duplex"];
       default:
         return ["All"];
     }
+  };
+
+  // Home condition options for rent tab
+  const getHomeConditionOptions = () => {
+    return [
+      "All",
+      "Brand New",
+      "Good Condition",
+      "Fairly Used",
+      "Need Renovation",
+      "New Building",
+    ];
   };
 
   // Handlers for new filter components
