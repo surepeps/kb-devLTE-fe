@@ -445,10 +445,10 @@ export const NewMarketplaceProvider: React.FC<{
     [buyTab, jvTab, rentTab],
   );
 
-  // Price negotiation methods (for buy and rent tabs)
+  // Price negotiation methods (for buy, rent and shortlet tabs)
   const addNegotiatedPrice = useCallback(
     (
-      tab: "buy" | "rent",
+      tab: "buy" | "rent" | "shortlet",
       propertyId: string,
       originalPrice: number,
       negotiatedPrice: number,
