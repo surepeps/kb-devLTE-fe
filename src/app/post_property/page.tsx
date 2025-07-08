@@ -251,7 +251,7 @@ const PostProperty = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
-      setShowPreview(true);
+      setShowPropertySummary(true);
     }
   };
 
