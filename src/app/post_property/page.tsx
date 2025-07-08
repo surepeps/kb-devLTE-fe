@@ -448,7 +448,7 @@ const PostProperty = () => {
           </div>
 
           {/* Stepper */}
-          {!showPreview && (
+          {!showPropertySummary && !showCommissionModal && (
             <div className="mb-6 md:mb-8 overflow-x-auto">
               <Stepper steps={steps} />
             </div>
