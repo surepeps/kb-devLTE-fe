@@ -928,6 +928,7 @@ export const NewMarketplaceProvider: React.FC<{
         buy: "Outright Sales",
         jv: "Joint Venture",
         rent: "Rent",
+        shortlet: "Shortlet",
       };
       const defaultSearchParams: SearchParams = {
         briefType: briefTypeMapping[tab],
