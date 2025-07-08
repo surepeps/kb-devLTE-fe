@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import { briefTypesConfig } from "@/data/post-property-form-config";
 
 interface StepProps {
   errors?: any;
@@ -16,31 +17,10 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
 }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
-  const propertyTypes = [
-    {
-      value: "sell",
-      label: "Sell Property",
-      description: "I want to sell my property for an outright sale",
-      icon: "🏡",
-    },
-    {
-      value: "rent",
-      label: "Rent Property",
-      description: "I want to rent out my property to tenants",
-      icon: "🔑",
-    },
-    {
-      value: "jv",
-      label: "Joint Venture",
-      description: "I want to partner with investors for development",
-      icon: "🤝",
-    },
-  ];
-
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updatePropertyData(
       "propertyType",
-      e.target.value as "sell" | "rent" | "jv",
+      e.target.value as "sell" | "rent" | "jv" | "shortlet",
     );
   };
 
