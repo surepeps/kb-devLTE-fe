@@ -119,6 +119,27 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     });
   }
 
+  // Tenant Criteria (for rent tab)
+  if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+    filters.tenantCriteria.forEach((criteria) => {
+      const shortCriteria =
+        criteria.length > 15 ? criteria.substring(0, 15) + "..." : criteria;
+      activeFilters.push({
+        key: "tenantCriteria",
+        label: `Criteria: ${shortCriteria}`,
+        value: criteria,
+      });
+    });
+  }
+
+  // Home Condition (for rent tab)
+  if (filters.homeCondition) {
+    activeFilters.push({
+      key: "homeCondition",
+      label: `Condition: ${filters.homeCondition}`,
+    });
+  }
+
   if (activeFilters.length === 0) {
     return null;
   }
