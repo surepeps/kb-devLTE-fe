@@ -13,6 +13,11 @@ import PriceRangeFilter from "../filters/PriceRangeFilter";
 import BedroomFilter from "../filters/BedroomFilter";
 import DocumentTypeFilter from "../filters/DocumentTypeFilter";
 import MoreFiltersModal from "../filters/MoreFiltersModal";
+import {
+  getUsageOptions,
+  getUsageOptionsLabel,
+  getHomeConditionOptions,
+} from "@/data/filter-data";
 
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent";
