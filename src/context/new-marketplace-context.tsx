@@ -376,7 +376,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const removeFromInspection = useCallback(
-    (tab: "buy" | "jv" | "rent", propertyId: string) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", propertyId: string) => {
       updateTabState(tab, (state) => {
         // Remove from inspection selection
         const updatedSelection = state.selectedForInspection.filter(
