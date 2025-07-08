@@ -200,6 +200,24 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     setImages([]);
     setPropertyData(initialPropertyData);
     setIsSubmitting(false);
+    setShowCommissionModal(false);
+    setShowPropertySummary(false);
+  };
+
+  const getUserType = (): "landowner" | "agent" => {
+    // This would typically come from your user context
+    // For now, we'll return 'landowner' as default
+    if (typeof window !== "undefined") {
+      // You can get this from user context or localStorage
+      const userType = localStorage.getItem("userType");
+      return userType === "Agent" ? "agent" : "landowner";
+    }
+    return "landowner";
+  };
+
+  const getUserCommissionRate = (): number => {
+    const { getCommissionRate } = require("@/data/post-property-form-config");
+    return getCommissionRate(propertyData.propertyType, getUserType());
   };
 
   const contextValue: PostPropertyContextType = {
