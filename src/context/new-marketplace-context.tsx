@@ -431,8 +431,15 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const canSelectMoreForInspection = useCallback(
-    (tab: "buy" | "jv" | "rent"): boolean => {
-      const tabState = tab === "buy" ? buyTab : tab === "jv" ? jvTab : rentTab;
+    (tab: "buy" | "jv" | "rent" | "shortlet"): boolean => {
+      const tabState =
+        tab === "buy"
+          ? buyTab
+          : tab === "jv"
+            ? jvTab
+            : tab === "rent"
+              ? rentTab
+              : shortletTab;
       return tabState.selectedForInspection.length < 2;
     },
     [buyTab, jvTab, rentTab],
