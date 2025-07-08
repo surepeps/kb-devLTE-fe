@@ -139,11 +139,13 @@ const DocumentTypeFilter: React.FC<DocumentTypeFilterProps> = ({
                         ? "bg-[#8DDB90] border-[#8DDB90]"
                         : "border-gray-300"
                     }`}
+                    style={{ zIndex: 10001 }}
                   >
                     {selectedDocuments.includes(document) && (
                       <Check
                         size={12}
                         className="text-white absolute top-0.5 left-0.5"
+                        style={{ zIndex: 10002 }}
                       />
                     )}
                   </div>
