@@ -523,9 +523,10 @@ const PostProperty = () => {
             commission={`${getUserCommissionRate()}%`}
             userName={
               `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`.trim() ||
+              user?.firstName ||
               "User"
             }
-            userType={getUserType()}
+            userType={user?.userType === "Agent" ? "agent" : "landowner"}
             briefType={getBriefTypeConfig(propertyData.propertyType)?.label}
           />
         </div>
