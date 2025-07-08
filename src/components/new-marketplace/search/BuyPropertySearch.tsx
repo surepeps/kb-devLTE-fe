@@ -174,6 +174,7 @@ const BuyPropertySearch = () => {
         size: undefined,
       },
       desiredFeatures: [],
+      tenantCriteria: [],
       homeCondition: "",
     };
 
