@@ -53,7 +53,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
     }
   }, [currentValue]);
 
-  const handlePredefinedRangeSelect = (range: (typeof priceRanges)[0]) => {
+  const handlePredefinedRangeSelect = (range: PriceRange) => {
     setSelectedRange(range.label);
     setCustomMin("");
     setCustomMax("");
