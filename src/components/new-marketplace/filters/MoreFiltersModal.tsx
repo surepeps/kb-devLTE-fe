@@ -262,6 +262,55 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
             </div>
           </div>
 
+          {/* Tenant Criteria Section - Only for rent tab */}
+          {tab === "rent" && tenantCriteria.length > 0 && (
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="text-sm font-medium text-gray-700">
+                  Tenant Criteria
+                </h4>
+                <span className="text-xs text-gray-500">
+                  {selectedTenantCriteria.length} selected
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                {tenantCriteria.map((criteria) => (
+                  <label
+                    key={criteria}
+                    className="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors text-sm"
+                  >
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={selectedTenantCriteria.includes(criteria)}
+                        onChange={() => handleTenantCriteriaToggle(criteria)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`w-4 h-4 border-2 rounded transition-colors ${
+                          selectedTenantCriteria.includes(criteria)
+                            ? "bg-[#8DDB90] border-[#8DDB90]"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        {selectedTenantCriteria.includes(criteria) && (
+                          <Check
+                            size={10}
+                            className="text-white absolute top-0.5 left-0.5"
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <span className="ml-2 text-gray-700 text-xs">
+                      {criteria}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex gap-2 sticky bottom-0 bg-white pt-2">
             <button
