@@ -41,7 +41,7 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
       </div>
 
       <div className="space-y-4">
-        {propertyTypes.map((type) => (
+        {briefTypesConfig.map((type) => (
           <motion.div
             key={type.value}
             initial={{ opacity: 0, x: -20 }}
@@ -55,7 +55,7 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
             onClick={() =>
               updatePropertyData(
                 "propertyType",
-                type.value as "sell" | "rent" | "jv",
+                type.value as "sell" | "rent" | "jv" | "shortlet",
               )
             }
           >
