@@ -112,6 +112,9 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
     if (currentFilters.features) {
       setSelectedFeatures([...currentFilters.features]);
     }
+    if (currentFilters.tenantCriteria) {
+      setSelectedTenantCriteria([...currentFilters.tenantCriteria]);
+    }
   }, [currentFilters]);
 
   const handleBathroomSelect = (value: number | string) => {
