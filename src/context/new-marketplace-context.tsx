@@ -414,8 +414,15 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const isSelectedForInspection = useCallback(
-    (tab: "buy" | "jv" | "rent", propertyId: string): boolean => {
-      const tabState = tab === "buy" ? buyTab : tab === "jv" ? jvTab : rentTab;
+    (tab: "buy" | "jv" | "rent" | "shortlet", propertyId: string): boolean => {
+      const tabState =
+        tab === "buy"
+          ? buyTab
+          : tab === "jv"
+            ? jvTab
+            : tab === "rent"
+              ? rentTab
+              : shortletTab;
       return tabState.selectedForInspection.some(
         (item) => item.propertyId === propertyId,
       );
