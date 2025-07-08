@@ -174,11 +174,12 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
             </div>
           </div>
 
-          {/* Land Size Section */}
-          <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-700 mb-3">
-              Land Size
-            </h4>
+          {/* Land Size Section - Only for buy and jv tabs */}
+          {(tab === "buy" || tab === "jv") && landSizeTypes.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">
+                Land Size
+              </h4>
 
             {/* Land Size Type */}
             <div className="flex gap-2 mb-3">
