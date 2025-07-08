@@ -308,6 +308,7 @@ const PostProperty = () => {
       let briefType = "";
       if (propertyData.propertyType === "sell") briefType = "Outright Sales";
       else if (propertyData.propertyType === "rent") briefType = "Rent";
+      else if (propertyData.propertyType === "shortlet") briefType = "Shortlet";
       else if (propertyData.propertyType === "jv") briefType = "Joint Venture";
 
       // 3. Prepare property payload
