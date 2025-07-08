@@ -80,18 +80,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const handleMoreFiltersApply = (moreFilters: any) => {
-    if (moreFilters.bathrooms) {
-      onFilterChange("bathrooms", moreFilters.bathrooms);
-    }
-    if (moreFilters.landSize) {
-      onFilterChange("landSize", moreFilters.landSize);
-    }
-    if (moreFilters.features) {
-      onFilterChange("desiredFeatures", moreFilters.features);
-    }
-    if (moreFilters.tenantCriteria) {
-      onFilterChange("tenantCriteria", moreFilters.tenantCriteria);
-    }
+    // Apply all filters, including clearing ones that are undefined
+    onFilterChange("bathrooms", moreFilters.bathrooms);
+    onFilterChange("landSize", moreFilters.landSize);
+    onFilterChange("desiredFeatures", moreFilters.features);
+    onFilterChange("tenantCriteria", moreFilters.tenantCriteria);
     setIsMoreFilterModalOpened(false);
   };
 
