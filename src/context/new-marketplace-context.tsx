@@ -826,8 +826,19 @@ export const NewMarketplaceProvider: React.FC<{
             const baseData = [
               {
                 _id: `demo-${tabType}-1`,
-                propertyType: tabType === "jv" ? "Land Development" : "Duplex",
-                price: tabType === "jv" ? 50000000 : 25000000,
+                propertyType:
+                  tabType === "jv"
+                    ? "Land Development"
+                    : tabType === "shortlet"
+                      ? "Apartment"
+                      : "Duplex",
+                price:
+                  tabType === "jv"
+                    ? 50000000
+                    : tabType === "shortlet"
+                      ? 25000
+                      : 25000000,
+                shortletDuration: tabType === "shortlet" ? "Daily" : undefined,
                 investmentAmount: tabType === "jv" ? 50000000 : undefined,
                 expectedROI: tabType === "jv" ? "20-25%" : undefined,
                 investmentType: tabType === "jv" ? "Joint Venture" : undefined,
@@ -839,12 +850,26 @@ export const NewMarketplaceProvider: React.FC<{
                 },
                 images: [],
                 isPremium: true,
-                docOnProperty: ["Certificate of Occupancy", "Survey Plan"],
+                docOnProperty:
+                  tabType === "shortlet"
+                    ? []
+                    : ["Certificate of Occupancy", "Survey Plan"],
               },
               {
                 _id: `demo-${tabType}-2`,
-                propertyType: tabType === "jv" ? "Commercial" : "Apartment",
-                price: tabType === "jv" ? 30000000 : 15000000,
+                propertyType:
+                  tabType === "jv"
+                    ? "Commercial"
+                    : tabType === "shortlet"
+                      ? "Studio"
+                      : "Apartment",
+                price:
+                  tabType === "jv"
+                    ? 30000000
+                    : tabType === "shortlet"
+                      ? 15000
+                      : 15000000,
+                shortletDuration: tabType === "shortlet" ? "Weekly" : undefined,
                 investmentAmount: tabType === "jv" ? 30000000 : undefined,
                 expectedROI: tabType === "jv" ? "15-20%" : undefined,
                 investmentType: tabType === "jv" ? "Joint Venture" : undefined,
@@ -856,7 +881,8 @@ export const NewMarketplaceProvider: React.FC<{
                 },
                 images: [],
                 isPremium: false,
-                docOnProperty: ["Deed of Assignment"],
+                docOnProperty:
+                  tabType === "shortlet" ? [] : ["Deed of Assignment"],
               },
             ];
             return baseData;
