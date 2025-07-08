@@ -492,8 +492,12 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const getNegotiatedPrice = useCallback(
-    (tab: "buy" | "rent", propertyId: string): NegotiatedPrice | null => {
-      const tabState = tab === "buy" ? buyTab : rentTab;
+    (
+      tab: "buy" | "rent" | "shortlet",
+      propertyId: string,
+    ): NegotiatedPrice | null => {
+      const tabState =
+        tab === "buy" ? buyTab : tab === "rent" ? rentTab : shortletTab;
       return (
         tabState.negotiatedPrices.find((p) => p.propertyId === propertyId) ||
         null
