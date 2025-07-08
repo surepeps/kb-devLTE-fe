@@ -164,6 +164,7 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
     setLandSizeType("plot");
     setLandSizeValue("");
     setSelectedFeatures([]);
+    setSelectedTenantCriteria([]);
     onFiltersApply({});
   };
 
