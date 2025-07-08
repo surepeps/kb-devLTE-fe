@@ -1,8 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, Fragment, useEffect } from "react";
-import { useFormik } from "formik";
+import React, { useState, Fragment } from "react";
 import Input from "../../general-components/Input";
 import RadioCheck from "../../general-components/radioCheck";
 import { AnimatePresence } from "framer-motion";
