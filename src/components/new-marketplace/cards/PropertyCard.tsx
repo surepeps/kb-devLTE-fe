@@ -13,7 +13,7 @@ import ImageSwiper from "../ImageSwiper";
 import Button from "@/components/general-components/button";
 
 interface PropertyCardProps {
-  tab: "buy" | "rent";
+  tab: "buy" | "rent" | "shortlet";
   property: any;
   cardData: { header: string; value: string }[];
   images: any[];
