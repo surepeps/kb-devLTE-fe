@@ -588,7 +588,11 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const setTabPagination = useCallback(
-    (tab: "buy" | "jv" | "rent", totalPages: number, totalItems: number) => {
+    (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      totalPages: number,
+      totalItems: number,
+    ) => {
       updateTabState(tab, (state) => ({ ...state, totalPages, totalItems }));
     },
     [updateTabState],
