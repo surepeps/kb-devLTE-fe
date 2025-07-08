@@ -48,63 +48,11 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
 
   useClickOutside(modalRef, onClose);
 
-  // Property features
-  const propertyFeatures = [
-    "Air Conditioning",
-    "Swimming Pool",
-    "Garden/Lawn",
-    "Gym/Fitness Center",
-    "Security System",
-    "Backup Generator",
-    "Solar Power",
-    "Balcony/Terrace",
-    "Garage",
-    "Servant Quarters",
-    "Study Room",
-    "Dining Room",
-    "Family Lounge",
-    "Kitchen Pantry",
-    "Walk-in Closet",
-    "En-suite Bathroom",
-    "Guest Toilet",
-    "Laundry Room",
-    "Storage Room",
-    "Elevator",
-    "Playground",
-    "24/7 Security",
-    "CCTV Surveillance",
-    "Intercom System",
-    "Gated Community",
-    "Paved Roads",
-    "Street Lighting",
-    "Water Treatment Plant",
-    "Sewage Treatment",
-    "Waste Management",
-  ];
-
-  // Tenant criteria for rent tab
-  const tenantCriteria = [
-    "No Pets",
-    "Pets Allowed",
-    "No Smoking",
-    "Smoking Allowed",
-    "Students Welcome",
-    "No Students",
-    "Family Only",
-    "Professionals Only",
-    "Long-term Lease",
-    "Short-term Lease",
-    "Furnished",
-    "Unfurnished",
-    "Utilities Included",
-    "Utilities Excluded",
-  ];
-
-  const landSizeTypes = [
-    { value: "plot", label: "Plot" },
-    { value: "acres", label: "Acres" },
-    { value: "sqm", label: "Sqr Meter" },
-  ];
+  // Get dynamic data for the specific tab
+  const propertyFeatures = getPropertyFeatures(tab);
+  const tenantCriteria = getTenantCriteria(tab);
+  const landSizeTypes = getLandSizeTypes(tab);
+  const bathroomOptions = getBathroomOptions(tab);
 
   // Initialize values
   useEffect(() => {
