@@ -266,6 +266,11 @@ const PostProperty = () => {
     }
   };
 
+  const handleCommissionAccept = () => {
+    setShowCommissionModal(false);
+    handleSubmit();
+  };
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
