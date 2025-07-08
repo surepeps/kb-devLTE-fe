@@ -554,7 +554,11 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Filter management
   const setTabFilter = useCallback(
-    (tab: "buy" | "jv" | "rent", filterType: string, value: any) => {
+    (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      filterType: string,
+      value: any,
+    ) => {
       updateTabState(tab, (state) => ({ ...state, [filterType]: value }));
     },
     [updateTabState],
