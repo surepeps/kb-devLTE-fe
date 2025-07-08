@@ -86,28 +86,32 @@ interface TabState {
 
 interface NewMarketplaceContextType {
   // Active tab management
-  activeTab: "buy" | "jv" | "rent";
-  setActiveTab: (tab: "buy" | "jv" | "rent") => void;
+  activeTab: "buy" | "jv" | "rent" | "shortlet";
+  setActiveTab: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
 
   // Tab states
   buyTab: TabState;
   jvTab: TabState;
   rentTab: TabState;
+  shortletTab: TabState;
 
   // Current tab state getters
   getCurrentTabState: () => TabState;
 
   // Properties management
-  setTabProperties: (tab: "buy" | "jv" | "rent", properties: any[]) => void;
+  setTabProperties: (
+    tab: "buy" | "jv" | "rent" | "shortlet",
+    properties: any[],
+  ) => void;
 
   // Loading and error states
   setTabStatus: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     status: "idle" | "pending" | "success" | "failed",
   ) => void;
-  setTabError: (tab: "buy" | "jv" | "rent", error: string) => void;
+  setTabError: (tab: "buy" | "jv" | "rent" | "shortlet", error: string) => void;
   setTabSearchStatus: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     status: {
       status: "pending" | "success" | "failed" | "idle";
       couldNotFindAProperty: boolean;
@@ -116,30 +120,35 @@ interface NewMarketplaceContextType {
 
   // Inspection selection (max 2 properties per tab)
   toggleInspectionSelection: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     property: any,
   ) => void;
   removeFromInspection: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     propertyId: string,
   ) => void;
-  clearInspectionSelection: (tab: "buy" | "jv" | "rent") => void;
+  clearInspectionSelection: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
   isSelectedForInspection: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     propertyId: string,
   ) => boolean;
-  canSelectMoreForInspection: (tab: "buy" | "jv" | "rent") => boolean;
+  canSelectMoreForInspection: (
+    tab: "buy" | "jv" | "rent" | "shortlet",
+  ) => boolean;
 
-  // Price negotiation (for buy and rent tabs)
+  // Price negotiation (for buy, rent and shortlet tabs)
   addNegotiatedPrice: (
-    tab: "buy" | "rent",
+    tab: "buy" | "rent" | "shortlet",
     propertyId: string,
     originalPrice: number,
     negotiatedPrice: number,
   ) => void;
-  removeNegotiatedPrice: (tab: "buy" | "rent", propertyId: string) => void;
+  removeNegotiatedPrice: (
+    tab: "buy" | "rent" | "shortlet",
+    propertyId: string,
+  ) => void;
   getNegotiatedPrice: (
-    tab: "buy" | "rent",
+    tab: "buy" | "rent" | "shortlet",
     propertyId: string,
   ) => NegotiatedPrice | null;
 
@@ -154,27 +163,27 @@ interface NewMarketplaceContextType {
 
   // Filter management
   setTabFilter: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     filterType: string,
     value: any,
   ) => void;
-  clearTabFilters: (tab: "buy" | "jv" | "rent") => void;
+  clearTabFilters: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
 
   // Pagination
-  setTabPage: (tab: "buy" | "jv" | "rent", page: number) => void;
+  setTabPage: (tab: "buy" | "jv" | "rent" | "shortlet", page: number) => void;
   setTabPagination: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     totalPages: number,
     totalItems: number,
   ) => void;
 
   // Data fetching
   fetchTabData: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     searchParams?: SearchParams,
   ) => Promise<void>;
   searchTabProperties: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     searchParams: SearchParams,
   ) => Promise<void>;
 
@@ -229,10 +238,15 @@ export const NewMarketplaceProvider: React.FC<{
   }, []);
 
   // Tab management
-  const [activeTab, setActiveTab] = useState<"buy" | "jv" | "rent">("buy");
+  const [activeTab, setActiveTab] = useState<
+    "buy" | "jv" | "rent" | "shortlet"
+  >("buy");
   const [buyTab, setBuyTab] = useState<TabState>(createInitialTabState);
   const [jvTab, setJvTab] = useState<TabState>(createInitialTabState);
   const [rentTab, setRentTab] = useState<TabState>(createInitialTabState);
+  const [shortletTab, setShortletTab] = useState<TabState>(
+    createInitialTabState,
+  );
 
   // Add for inspection modal
   const [isAddForInspectionOpen, setIsAddForInspectionOpen] = useState(false);
@@ -247,14 +261,19 @@ export const NewMarketplaceProvider: React.FC<{
         return jvTab;
       case "rent":
         return rentTab;
+      case "shortlet":
+        return shortletTab;
       default:
         return buyTab;
     }
-  }, [activeTab, buyTab, jvTab, rentTab]);
+  }, [activeTab, buyTab, jvTab, rentTab, shortletTab]);
 
   // Update tab state helper
   const updateTabState = useCallback(
-    (tab: "buy" | "jv" | "rent", updater: (state: TabState) => TabState) => {
+    (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      updater: (state: TabState) => TabState,
+    ) => {
       switch (tab) {
         case "buy":
           setBuyTab(updater);
@@ -265,6 +284,9 @@ export const NewMarketplaceProvider: React.FC<{
         case "rent":
           setRentTab(updater);
           break;
+        case "shortlet":
+          setShortletTab(updater);
+          break;
       }
     },
     [],
@@ -272,7 +294,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Properties management
   const setTabProperties = useCallback(
-    (tab: "buy" | "jv" | "rent", properties: any[]) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", properties: any[]) => {
       updateTabState(tab, (state) => ({ ...state, properties }));
     },
     [updateTabState],
@@ -281,7 +303,7 @@ export const NewMarketplaceProvider: React.FC<{
   // Status management
   const setTabStatus = useCallback(
     (
-      tab: "buy" | "jv" | "rent",
+      tab: "buy" | "jv" | "rent" | "shortlet",
       status: "idle" | "pending" | "success" | "failed",
     ) => {
       updateTabState(tab, (state) => ({ ...state, formikStatus: status }));
@@ -290,7 +312,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const setTabError = useCallback(
-    (tab: "buy" | "jv" | "rent", error: string) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", error: string) => {
       updateTabState(tab, (state) => ({ ...state, errMessage: error }));
     },
     [updateTabState],
@@ -298,7 +320,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   const setTabSearchStatus = useCallback(
     (
-      tab: "buy" | "jv" | "rent",
+      tab: "buy" | "jv" | "rent" | "shortlet",
       searchStatus: {
         status: "pending" | "success" | "failed" | "idle";
         couldNotFindAProperty: boolean;
@@ -311,7 +333,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Inspection selection methods
   const toggleInspectionSelection = useCallback(
-    (tab: "buy" | "jv" | "rent", property: any) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", property: any) => {
       const propertyId = property._id;
 
       updateTabState(tab, (state) => {
@@ -354,7 +376,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const removeFromInspection = useCallback(
-    (tab: "buy" | "jv" | "rent", propertyId: string) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", propertyId: string) => {
       updateTabState(tab, (state) => {
         // Remove from inspection selection
         const updatedSelection = state.selectedForInspection.filter(
@@ -382,7 +404,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const clearInspectionSelection = useCallback(
-    (tab: "buy" | "jv" | "rent") => {
+    (tab: "buy" | "jv" | "rent" | "shortlet") => {
       updateTabState(tab, (state) => ({
         ...state,
         selectedForInspection: [],
@@ -392,8 +414,15 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const isSelectedForInspection = useCallback(
-    (tab: "buy" | "jv" | "rent", propertyId: string): boolean => {
-      const tabState = tab === "buy" ? buyTab : tab === "jv" ? jvTab : rentTab;
+    (tab: "buy" | "jv" | "rent" | "shortlet", propertyId: string): boolean => {
+      const tabState =
+        tab === "buy"
+          ? buyTab
+          : tab === "jv"
+            ? jvTab
+            : tab === "rent"
+              ? rentTab
+              : shortletTab;
       return tabState.selectedForInspection.some(
         (item) => item.propertyId === propertyId,
       );
@@ -402,17 +431,24 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const canSelectMoreForInspection = useCallback(
-    (tab: "buy" | "jv" | "rent"): boolean => {
-      const tabState = tab === "buy" ? buyTab : tab === "jv" ? jvTab : rentTab;
+    (tab: "buy" | "jv" | "rent" | "shortlet"): boolean => {
+      const tabState =
+        tab === "buy"
+          ? buyTab
+          : tab === "jv"
+            ? jvTab
+            : tab === "rent"
+              ? rentTab
+              : shortletTab;
       return tabState.selectedForInspection.length < 2;
     },
     [buyTab, jvTab, rentTab],
   );
 
-  // Price negotiation methods (for buy and rent tabs)
+  // Price negotiation methods (for buy, rent and shortlet tabs)
   const addNegotiatedPrice = useCallback(
     (
-      tab: "buy" | "rent",
+      tab: "buy" | "rent" | "shortlet",
       propertyId: string,
       originalPrice: number,
       negotiatedPrice: number,
@@ -444,7 +480,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const removeNegotiatedPrice = useCallback(
-    (tab: "buy" | "rent", propertyId: string) => {
+    (tab: "buy" | "rent" | "shortlet", propertyId: string) => {
       updateTabState(tab, (state) => ({
         ...state,
         negotiatedPrices: state.negotiatedPrices.filter(
@@ -456,8 +492,12 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const getNegotiatedPrice = useCallback(
-    (tab: "buy" | "rent", propertyId: string): NegotiatedPrice | null => {
-      const tabState = tab === "buy" ? buyTab : rentTab;
+    (
+      tab: "buy" | "rent" | "shortlet",
+      propertyId: string,
+    ): NegotiatedPrice | null => {
+      const tabState =
+        tab === "buy" ? buyTab : tab === "rent" ? rentTab : shortletTab;
       return (
         tabState.negotiatedPrices.find((p) => p.propertyId === propertyId) ||
         null
@@ -514,14 +554,18 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Filter management
   const setTabFilter = useCallback(
-    (tab: "buy" | "jv" | "rent", filterType: string, value: any) => {
+    (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      filterType: string,
+      value: any,
+    ) => {
       updateTabState(tab, (state) => ({ ...state, [filterType]: value }));
     },
     [updateTabState],
   );
 
   const clearTabFilters = useCallback(
-    (tab: "buy" | "jv" | "rent") => {
+    (tab: "buy" | "jv" | "rent" | "shortlet") => {
       updateTabState(tab, (state) => ({
         ...state,
         usageOptions: [],
@@ -537,14 +581,18 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Pagination
   const setTabPage = useCallback(
-    (tab: "buy" | "jv" | "rent", page: number) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", page: number) => {
       updateTabState(tab, (state) => ({ ...state, currentPage: page }));
     },
     [updateTabState],
   );
 
   const setTabPagination = useCallback(
-    (tab: "buy" | "jv" | "rent", totalPages: number, totalItems: number) => {
+    (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      totalPages: number,
+      totalItems: number,
+    ) => {
       updateTabState(tab, (state) => ({ ...state, totalPages, totalItems }));
     },
     [updateTabState],
@@ -778,8 +826,19 @@ export const NewMarketplaceProvider: React.FC<{
             const baseData = [
               {
                 _id: `demo-${tabType}-1`,
-                propertyType: tabType === "jv" ? "Land Development" : "Duplex",
-                price: tabType === "jv" ? 50000000 : 25000000,
+                propertyType:
+                  tabType === "jv"
+                    ? "Land Development"
+                    : tabType === "shortlet"
+                      ? "Apartment"
+                      : "Duplex",
+                price:
+                  tabType === "jv"
+                    ? 50000000
+                    : tabType === "shortlet"
+                      ? 25000
+                      : 25000000,
+                shortletDuration: tabType === "shortlet" ? "Daily" : undefined,
                 investmentAmount: tabType === "jv" ? 50000000 : undefined,
                 expectedROI: tabType === "jv" ? "20-25%" : undefined,
                 investmentType: tabType === "jv" ? "Joint Venture" : undefined,
@@ -791,12 +850,26 @@ export const NewMarketplaceProvider: React.FC<{
                 },
                 images: [],
                 isPremium: true,
-                docOnProperty: ["Certificate of Occupancy", "Survey Plan"],
+                docOnProperty:
+                  tabType === "shortlet"
+                    ? []
+                    : ["Certificate of Occupancy", "Survey Plan"],
               },
               {
                 _id: `demo-${tabType}-2`,
-                propertyType: tabType === "jv" ? "Commercial" : "Apartment",
-                price: tabType === "jv" ? 30000000 : 15000000,
+                propertyType:
+                  tabType === "jv"
+                    ? "Commercial"
+                    : tabType === "shortlet"
+                      ? "Studio"
+                      : "Apartment",
+                price:
+                  tabType === "jv"
+                    ? 30000000
+                    : tabType === "shortlet"
+                      ? 15000
+                      : 15000000,
+                shortletDuration: tabType === "shortlet" ? "Weekly" : undefined,
                 investmentAmount: tabType === "jv" ? 30000000 : undefined,
                 expectedROI: tabType === "jv" ? "15-20%" : undefined,
                 investmentType: tabType === "jv" ? "Joint Venture" : undefined,
@@ -808,7 +881,8 @@ export const NewMarketplaceProvider: React.FC<{
                 },
                 images: [],
                 isPremium: false,
-                docOnProperty: ["Deed of Assignment"],
+                docOnProperty:
+                  tabType === "shortlet" ? [] : ["Deed of Assignment"],
               },
             ];
             return baseData;
@@ -880,6 +954,7 @@ export const NewMarketplaceProvider: React.FC<{
         buy: "Outright Sales",
         jv: "Joint Venture",
         rent: "Rent",
+        shortlet: "Shortlet",
       };
       const defaultSearchParams: SearchParams = {
         briefType: briefTypeMapping[tab],
@@ -906,6 +981,7 @@ export const NewMarketplaceProvider: React.FC<{
     setBuyTab(createInitialTabState());
     setJvTab(createInitialTabState());
     setRentTab(createInitialTabState());
+    setShortletTab(createInitialTabState());
   }, []);
 
   const contextValue: NewMarketplaceContextType = useMemo(
@@ -918,6 +994,7 @@ export const NewMarketplaceProvider: React.FC<{
       buyTab,
       jvTab,
       rentTab,
+      shortletTab,
 
       // Current tab state
       getCurrentTabState,
@@ -976,6 +1053,7 @@ export const NewMarketplaceProvider: React.FC<{
       buyTab,
       jvTab,
       rentTab,
+      shortletTab,
       getCurrentTabState,
       setTabProperties,
       setTabStatus,

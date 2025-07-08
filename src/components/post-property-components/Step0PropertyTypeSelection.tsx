@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import { briefTypesConfig } from "@/data/post-property-form-config";
 
 interface StepProps {
   errors?: any;
@@ -16,31 +17,10 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
 }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
-  const propertyTypes = [
-    {
-      value: "sell",
-      label: "Sell Property",
-      description: "I want to sell my property for an outright sale",
-      icon: "🏡",
-    },
-    {
-      value: "rent",
-      label: "Rent Property",
-      description: "I want to rent out my property to tenants",
-      icon: "🔑",
-    },
-    {
-      value: "jv",
-      label: "Joint Venture",
-      description: "I want to partner with investors for development",
-      icon: "🤝",
-    },
-  ];
-
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updatePropertyData(
       "propertyType",
-      e.target.value as "sell" | "rent" | "jv",
+      e.target.value as "sell" | "rent" | "jv" | "shortlet",
     );
   };
 
@@ -61,7 +41,7 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
       </div>
 
       <div className="space-y-4">
-        {propertyTypes.map((type) => (
+        {briefTypesConfig.map((type) => (
           <motion.div
             key={type.value}
             initial={{ opacity: 0, x: -20 }}
@@ -75,7 +55,7 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
             onClick={() =>
               updatePropertyData(
                 "propertyType",
-                type.value as "sell" | "rent" | "jv",
+                type.value as "sell" | "rent" | "jv" | "shortlet",
               )
             }
           >
@@ -114,14 +94,16 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-lg">
               {
-                propertyTypes.find((t) => t.value === propertyData.propertyType)
-                  ?.icon
+                briefTypesConfig.find(
+                  (t) => t.value === propertyData.propertyType,
+                )?.icon
               }
             </span>
             <span className="text-[#09391C] font-medium">
               {
-                propertyTypes.find((t) => t.value === propertyData.propertyType)
-                  ?.label
+                briefTypesConfig.find(
+                  (t) => t.value === propertyData.propertyType,
+                )?.label
               }{" "}
               selected
             </span>

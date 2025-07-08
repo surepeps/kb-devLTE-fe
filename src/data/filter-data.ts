@@ -4,6 +4,7 @@ export interface FilterConfig {
   buy: TabFilterConfig;
   jv: TabFilterConfig;
   rent: TabFilterConfig;
+  shortlet: TabFilterConfig;
 }
 
 export interface TabFilterConfig {
@@ -359,59 +360,167 @@ export const FILTER_DATA: FilterConfig = {
     // Rent tab excludes land size types as per specification
     landSizeTypes: [],
   },
+  shortlet: {
+    usageOptions: {
+      label: "Filter by Property Type",
+      options: ["All", "Apartment", "Studio", "House", "Duplex", "Penthouse"],
+    },
+    homeCondition: {
+      label: "Property Condition",
+      options: ["All", "Brand New", "Good Condition", "Needs Renovation"],
+    },
+    documentTypes: [
+      "Certificate of Occupancy",
+      "Deed of Assignment",
+      "Survey Plan",
+      "Building Approval",
+      "Governor's Consent",
+      "Receipt of Purchase",
+      "Customary Right of Occupancy",
+      "Statutory Right of Occupancy",
+      "Power of Attorney",
+      "Probate/Letters of Administration",
+    ],
+    propertyFeatures: [
+      "24/7 Security",
+      "Power Generator",
+      "Water Supply",
+      "Swimming Pool",
+      "Gym/Fitness Center",
+      "Parking Space",
+      "Air Conditioning",
+      "WiFi/Internet",
+      "Furnished",
+      "Kitchen Appliances",
+      "Balcony/Terrace",
+      "Garden/Green Area",
+      "Elevator",
+      "CCTV Surveillance",
+      "Gated Community",
+      "Cleaning Service",
+      "Laundry Service",
+      "24/7 Concierge",
+      "Conference Room",
+      "Children's Playground",
+    ],
+    tenantCriteria: [
+      "No Pets Allowed",
+      "Pets Allowed",
+      "No Smoking",
+      "Smoking Allowed",
+      "Professionals Only",
+      "Students Welcome",
+      "Families Preferred",
+      "Singles Only",
+      "Corporate Guests",
+      "Short Notice OK",
+      "Long-term Stays",
+      "Monthly Billing",
+      "Weekly Billing",
+      "Daily Billing",
+    ],
+    bedroomOptions: [
+      { value: 0, label: "Studio" },
+      { value: 1, label: "1 Bedroom" },
+      { value: 2, label: "2 Bedrooms" },
+      { value: 3, label: "3 Bedrooms" },
+      { value: 4, label: "4 Bedrooms" },
+      { value: 5, label: "5 Bedrooms" },
+      { value: 6, label: "6 Bedrooms" },
+      { value: 7, label: "7 Bedrooms" },
+      { value: 8, label: "8 Bedrooms" },
+      { value: 9, label: "9 Bedrooms" },
+      { value: "10+", label: "10+ Bedrooms" },
+    ],
+    bathroomOptions: [
+      { value: 1, label: "1" },
+      { value: 2, label: "2" },
+      { value: 3, label: "3" },
+      { value: 4, label: "4" },
+      { value: 5, label: "5" },
+      { value: 6, label: "6" },
+      { value: 7, label: "7" },
+      { value: 8, label: "8" },
+      { value: 9, label: "9" },
+      { value: "10+", label: "10+" },
+    ],
+    priceRanges: [
+      { label: "Under ₦5K", min: 0, max: 5000 },
+      { label: "₦5K - ₦10K", min: 5000, max: 10000 },
+      { label: "₦10K - ₦20K", min: 10000, max: 20000 },
+      { label: "₦20K - ₦30K", min: 20000, max: 30000 },
+      { label: "₦30K - ₦50K", min: 30000, max: 50000 },
+      { label: "₦50K - ₦100K", min: 50000, max: 100000 },
+      { label: "Above ₦100K", min: 100000, max: 0 },
+    ],
+    // Shortlet tab excludes land size types
+    landSizeTypes: [],
+  },
 };
 
 // Helper functions to get data for specific tabs
 export const getTabFilterData = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): TabFilterConfig => {
   return FILTER_DATA[tab];
 };
 
-export const getUsageOptions = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getUsageOptions = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].usageOptions.options;
 };
 
-export const getUsageOptionsLabel = (tab: "buy" | "jv" | "rent"): string => {
+export const getUsageOptionsLabel = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string => {
   return FILTER_DATA[tab].usageOptions.label;
 };
 
 export const getHomeConditionOptions = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): string[] => {
   return FILTER_DATA[tab].homeCondition?.options || [];
 };
 
-export const getDocumentTypes = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getDocumentTypes = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].documentTypes;
 };
 
-export const getPropertyFeatures = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getPropertyFeatures = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].propertyFeatures;
 };
 
-export const getTenantCriteria = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getTenantCriteria = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].tenantCriteria || [];
 };
 
 export const getLandSizeTypes = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): LandSizeType[] => {
   return FILTER_DATA[tab].landSizeTypes;
 };
 
 export const getBedroomOptions = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): BedroomOption[] => {
   return FILTER_DATA[tab].bedroomOptions;
 };
 
 export const getBathroomOptions = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): BathroomOption[] => {
   return FILTER_DATA[tab].bathroomOptions;
 };
 
-export const getPriceRanges = (tab: "buy" | "jv" | "rent"): PriceRange[] => {
+export const getPriceRanges = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): PriceRange[] => {
   return FILTER_DATA[tab].priceRanges;
 };

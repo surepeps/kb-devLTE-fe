@@ -9,14 +9,20 @@ interface PropertyImage {
 }
 
 interface PropertyData {
-  propertyType: "sell" | "rent" | "jv" | "";
-  propertyCategory: "Residential" | "Commercial" | "Land" | "";
+  propertyType: "sell" | "rent" | "jv" | "shortlet" | "";
+  propertyCategory:
+    | "Residential"
+    | "Commercial"
+    | "Land"
+    | "Mixed Development"
+    | "";
   propertyCondition: string;
   typeOfBuilding: string;
   rentalType: string;
   price: string;
   leaseHold: string;
   holdDuration?: string;
+  shortletDuration?: string;
   description: string;
   state: { value: string; label: string } | null;
   lga: { value: string; label: string } | null;
@@ -57,6 +63,12 @@ interface PostPropertyContextType {
   resetForm: () => void;
   getMinimumRequiredImages: () => number;
   areImagesValid: () => boolean;
+  showCommissionModal: boolean;
+  setShowCommissionModal: (show: boolean) => void;
+  showPropertySummary: boolean;
+  setShowPropertySummary: (show: boolean) => void;
+  getUserCommissionRate: () => number;
+  getUserType: () => "landowner" | "agent";
 }
 
 const PostPropertyContext = createContext<PostPropertyContextType | undefined>(
@@ -72,6 +84,7 @@ const initialPropertyData: PropertyData = {
   price: "",
   leaseHold: "",
   holdDuration: "",
+  shortletDuration: "",
   description: "",
   state: null,
   lga: null,
@@ -104,6 +117,8 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   const [propertyData, setPropertyData] =
     useState<PropertyData>(initialPropertyData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCommissionModal, setShowCommissionModal] = useState(false);
+  const [showPropertySummary, setShowPropertySummary] = useState(false);
 
   const updatePropertyData = (field: keyof PropertyData, value: any) => {
     setPropertyData((prev) => ({
@@ -134,14 +149,22 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
 
         // Additional validations based on property type
         if (
-          propertyData.propertyType === "rent" &&
+          (propertyData.propertyType === "rent" ||
+            propertyData.propertyType === "shortlet") &&
           propertyData.propertyCategory !== "Land"
         ) {
-          return (
-            basicFieldsValid &&
-            !!propertyData.rentalType &&
-            !!propertyData.propertyCondition
-          );
+          let additionalValid = !!propertyData.propertyCondition;
+
+          if (propertyData.propertyType === "rent") {
+            additionalValid = additionalValid && !!propertyData.rentalType;
+          }
+
+          if (propertyData.propertyType === "shortlet") {
+            additionalValid =
+              additionalValid && !!propertyData.shortletDuration;
+          }
+
+          return basicFieldsValid && additionalValid;
         }
 
         if (propertyData.propertyCategory !== "Land") {
@@ -155,8 +178,11 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
         return basicFieldsValid;
 
       case 2: // Features and conditions
-        if (propertyData.propertyType === "rent") {
-          return true; // No required fields for rent
+        if (
+          propertyData.propertyType === "rent" ||
+          propertyData.propertyType === "shortlet"
+        ) {
+          return true; // No required fields for rent/shortlet
         }
         if (propertyData.propertyType === "jv") {
           return propertyData.jvConditions.length > 0;
@@ -185,6 +211,31 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     setImages([]);
     setPropertyData(initialPropertyData);
     setIsSubmitting(false);
+    setShowCommissionModal(false);
+    setShowPropertySummary(false);
+  };
+
+  const getUserType = (): "landowner" | "agent" => {
+    // Import useUserContext here to avoid circular dependencies
+    if (typeof window !== "undefined") {
+      try {
+        // Try to get from global context first
+        const userContextString = localStorage.getItem("user");
+        if (userContextString) {
+          const userData = JSON.parse(userContextString);
+          return userData.userType === "Agent" ? "agent" : "landowner";
+        }
+      } catch (error) {
+        console.error("Error parsing user data from localStorage", error);
+      }
+    }
+    // Default to landowner for property owners/individuals
+    return "landowner";
+  };
+
+  const getUserCommissionRate = (): number => {
+    const { getCommissionRate } = require("@/data/post-property-form-config");
+    return getCommissionRate(propertyData.propertyType, getUserType());
   };
 
   const contextValue: PostPropertyContextType = {
@@ -201,6 +252,12 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     resetForm,
     getMinimumRequiredImages,
     areImagesValid,
+    showCommissionModal,
+    setShowCommissionModal,
+    showPropertySummary,
+    setShowPropertySummary,
+    getUserCommissionRate,
+    getUserType,
   };
 
   return (

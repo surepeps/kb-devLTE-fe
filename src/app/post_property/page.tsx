@@ -20,6 +20,8 @@ import Step0PropertyTypeSelection from "@/components/post-property-components/St
 import Step1BasicDetails from "@/components/post-property-components/Step1BasicDetails";
 import Step3ImageUpload from "@/components/post-property-components/Step3ImageUpload";
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
+import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
+import CommissionModal from "@/components/post-property-components/CommissionModal";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
 import Preloader from "@/components/general-components/preloader";
@@ -27,6 +29,9 @@ import Preloader from "@/components/general-components/preloader";
 // Import additional step components
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
 import Step4OwnershipDeclaration from "@/components/post-property-components/Step4OwnershipDeclaration";
+
+// Import configuration helpers
+import { getBriefTypeConfig } from "@/data/post-property-form-config";
 
 // Validation schemas for each step
 const getValidationSchema = (currentStep: number, propertyData: any) => {
@@ -51,17 +56,29 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
 
       // Additional validations based on property type
       if (
-        propertyData.propertyType === "rent" &&
+        (propertyData.propertyType === "rent" ||
+          propertyData.propertyType === "shortlet") &&
         propertyData.propertyCategory !== "Land"
       ) {
-        basicSchema = basicSchema.concat(
-          Yup.object({
-            rentalType: Yup.string().required("Rental type is required"),
-            propertyCondition: Yup.string().required(
-              "Property condition is required",
-            ),
-          }),
-        );
+        const additionalFields: any = {
+          propertyCondition: Yup.string().required(
+            "Property condition is required",
+          ),
+        };
+
+        if (propertyData.propertyType === "rent") {
+          additionalFields.rentalType = Yup.string().required(
+            "Rental type is required",
+          );
+        }
+
+        if (propertyData.propertyType === "shortlet") {
+          additionalFields.shortletDuration = Yup.string().required(
+            "Shortlet duration is required",
+          );
+        }
+
+        basicSchema = basicSchema.concat(Yup.object(additionalFields));
       }
 
       if (propertyData.propertyCategory !== "Land") {
@@ -126,9 +143,14 @@ const PostProperty = () => {
     validateCurrentStep,
     resetForm,
     areImagesValid,
+    showCommissionModal,
+    setShowCommissionModal,
+    showPropertySummary,
+    setShowPropertySummary,
+    getUserCommissionRate,
+    getUserType,
   } = usePostPropertyContext();
 
-  const [showPreview, setShowPreview] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
@@ -241,16 +263,24 @@ const PostProperty = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
-      setShowPreview(true);
+      setShowPropertySummary(true);
     }
   };
 
   const handlePrevious = () => {
-    if (showPreview) {
-      setShowPreview(false);
+    if (showPropertySummary) {
+      setShowPropertySummary(false);
+    } else if (showCommissionModal) {
+      setShowCommissionModal(false);
+      setShowPropertySummary(true);
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleCommissionAccept = () => {
+    setShowCommissionModal(false);
+    handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -295,6 +325,7 @@ const PostProperty = () => {
       let briefType = "";
       if (propertyData.propertyType === "sell") briefType = "Outright Sales";
       else if (propertyData.propertyType === "rent") briefType = "Rent";
+      else if (propertyData.propertyType === "shortlet") briefType = "Shortlet";
       else if (propertyData.propertyType === "jv") briefType = "Joint Venture";
 
       // 3. Prepare property payload
@@ -315,6 +346,7 @@ const PostProperty = () => {
         },
         price: propertyData.price,
         leaseHold: propertyData.leaseHold,
+        shortletDuration: propertyData.shortletDuration,
         owner: {
           fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
           phoneNumber: propertyData.contactInfo.phone,
@@ -351,7 +383,12 @@ const PostProperty = () => {
         toast.success("Property listed successfully!");
         resetForm();
 
-        router.push("/my-listings");
+        // Redirect based on user type
+        if (user?.userType === "Agent") {
+          router.push("/agent");
+        } else {
+          router.push("/my-listings");
+        }
       } else {
         const errorMessage =
           (response as any)?.error || "Failed to submit property";
@@ -366,8 +403,8 @@ const PostProperty = () => {
   };
 
   const renderCurrentStep = (errors: any, touched: any) => {
-    if (showPreview) {
-      return <PropertyPreview />;
+    if (showPropertySummary) {
+      return <EnhancedPropertySummary />;
     }
 
     switch (currentStep) {
@@ -387,7 +424,8 @@ const PostProperty = () => {
   };
 
   const getStepTitle = () => {
-    if (showPreview) return "Property Preview";
+    if (showPropertySummary) return "Property Summary";
+    if (showCommissionModal) return "Commission Agreement";
     return steps[currentStep]?.label || "Post Property";
   };
 
@@ -419,14 +457,16 @@ const PostProperty = () => {
               List Your Property
             </h1>
             <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
-              {showPreview
+              {showPropertySummary
                 ? "Review your property listing before submission"
-                : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
+                : showCommissionModal
+                  ? "Review and accept the commission terms"
+                  : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
             </p>
           </div>
 
           {/* Stepper */}
-          {!showPreview && (
+          {!showPropertySummary && !showCommissionModal && (
             <div className="mb-6 md:mb-8 overflow-x-auto">
               <Stepper steps={steps} />
             </div>
@@ -446,68 +486,43 @@ const PostProperty = () => {
                 </div>
 
                 {/* Navigation Buttons */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
-                  <Button
-                    type="button"
-                    value={
-                      showPreview
-                        ? "Edit Property"
-                        : currentStep === 0
-                          ? "Cancel"
-                          : "Previous"
-                    }
-                    onClick={
-                      showPreview
-                        ? () => setShowPreview(false)
-                        : currentStep === 0
+                {!showCommissionModal && !showPropertySummary && (
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
+                    <Button
+                      type="button"
+                      value={currentStep === 0 ? "Cancel" : "Previous"}
+                      onClick={
+                        currentStep === 0
                           ? () => router.push("/")
                           : handlePrevious
-                    }
-                    className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                    isDisabled={isSubmitting}
-                  />
+                      }
+                      className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                      isDisabled={isSubmitting}
+                    />
 
-                  <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                    {showPreview ? (
-                      <div className="relative w-full md:w-auto">
+                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                      {currentStep === 4 && (
                         <Button
                           type="button"
-                          value={
-                            isSubmitting ? "Submitting..." : "Submit Property"
-                          }
-                          onClick={handleSubmit}
-                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                          isDisabled={isSubmitting}
+                          value="Review Property"
+                          onClick={() => setShowPropertySummary(true)}
+                          className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                          isDisabled={!validateCurrentStep() || isSubmitting}
                         />
-                        {isSubmitting && (
-                          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        )}
-                      </div>
-                    ) : (
-                      <>
-                        {currentStep === 4 && (
-                          <Button
-                            type="button"
-                            value="Preview"
-                            onClick={() => setShowPreview(true)}
-                            className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                            isDisabled={!validateCurrentStep() || isSubmitting}
-                          />
-                        )}
-                        <Button
-                          type="button"
-                          value={currentStep === 4 ? "Complete" : "Next"}
-                          onClick={() => handleNext(validateForm, errors)}
-                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                          isDisabled={isSubmitting}
-                        />
-                      </>
-                    )}
+                      )}
+                      <Button
+                        type="button"
+                        value={currentStep === 4 ? "Complete" : "Next"}
+                        onClick={() => handleNext(validateForm, errors)}
+                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                        isDisabled={isSubmitting}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Progress Indicator */}
-                {!showPreview && (
+                {!showPropertySummary && !showCommissionModal && (
                   <div className="text-center mt-6">
                     <span className="text-sm text-[#5A5D63]">
                       Step {currentStep + 1} of {steps.length}
@@ -517,6 +532,21 @@ const PostProperty = () => {
               </Form>
             )}
           </Formik>
+
+          {/* Commission Modal */}
+          <CommissionModal
+            open={showCommissionModal}
+            onClose={() => setShowCommissionModal(false)}
+            onAccept={handleCommissionAccept}
+            commission={`${getUserCommissionRate()}%`}
+            userName={
+              `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`.trim() ||
+              user?.firstName ||
+              "User"
+            }
+            userType={user?.userType === "Agent" ? "agent" : "landowner"}
+            briefType={getBriefTypeConfig(propertyData.propertyType)?.label}
+          />
         </div>
       </div>
     </AgentAccessBarrier>

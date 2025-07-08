@@ -21,7 +21,7 @@ import {
 } from "@/data/filter-data";
 
 interface SearchFiltersProps {
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
   filters: any;
   onFilterChange: (key: string, value: any) => void;
   onClearFilters: () => void;

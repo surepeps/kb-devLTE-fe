@@ -23,6 +23,11 @@ const MarketplaceTabs = () => {
       label: "Rent/Lease a property",
       briefType: "rent",
     },
+    {
+      id: "shortlet" as const,
+      label: "Find shortlet property",
+      briefType: "shortlet",
+    },
   ];
 
   return (
