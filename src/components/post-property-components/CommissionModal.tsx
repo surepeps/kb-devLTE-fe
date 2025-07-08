@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/general-components/button";
 import Green from "@/assets/green.png";
 
@@ -9,6 +10,8 @@ interface CommissionModalProps {
   onAccept: () => void;
   commission?: string;
   userName?: string;
+  userType?: "landowner" | "agent";
+  briefType?: string;
 }
 
 const CommissionModal: React.FC<CommissionModalProps> = ({
@@ -23,9 +26,12 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white shadow-lg p-8 w-[90%] md:w-[50%] relative">
-        <h2 className="text-lg sm:text-3xl font-bold text-center my-3">Commission Details</h2>
+        <h2 className="text-lg sm:text-3xl font-bold text-center my-3">
+          Commission Details
+        </h2>
         <p className="text-center text-[#5A5D63] mb-6 text-sm sm:text-lg">
-          Below is your applicable commission rate. This fee will be deducted when we close the deal
+          Below is your applicable commission rate. This fee will be deducted
+          when we close the deal
         </p>
         <div className="flex flex-col mb-6 border-[1px] border-[#A7A9A9] p-4 bg-[#F4FFF4] w-full sm:w-[65%] mx-auto ">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center self-start">
@@ -36,12 +42,15 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
               <span className="text-xl font-bold text-black">{commission}</span>
             </div>
             <p className="text-center text-[#1E1E1E] font-medium  text-sm sm:text-base mb-6">
-              I <b>{userName}</b> agree that <b>Khabiteq realty</b> shall earn <b>{commission}</b> of the total value generated from this transaction as commission when the deal is closed.
+              I <b>{userName}</b> agree that <b>Khabiteq realty</b> shall earn{" "}
+              <b>{commission}</b> of the total value generated from this
+              transaction as commission when the deal is closed.
             </p>
           </div>
         </div>
         <p className="text-center text-[#5A5D63] mb-6 text-xs sm:text-sm">
-          Please click Yes to accept the commission policy, and let Khabiteq Realty handle the rest for you.
+          Please click Yes to accept the commission policy, and let Khabiteq
+          Realty handle the rest for you.
         </p>
         <div className="flex justify-between gap-4">
           <Button
