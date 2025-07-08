@@ -367,6 +367,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <DocumentTypeFilter
               isOpen={isDocumentModalOpened}
               onClose={() => setIsDocumentModalOpened(false)}
+              tab={tab}
               onDocumentSelect={handleDocumentSelect}
               currentValue={filters.documentTypes}
             />
