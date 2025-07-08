@@ -4,6 +4,7 @@ export interface FilterConfig {
   buy: TabFilterConfig;
   jv: TabFilterConfig;
   rent: TabFilterConfig;
+  shortlet: TabFilterConfig;
 }
 
 export interface TabFilterConfig {
