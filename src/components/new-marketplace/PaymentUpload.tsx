@@ -88,7 +88,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
 
   const uploadImageToServer = async (file: File): Promise<string> => {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file);
 
     try {
       const response = await fetch(`${URLS.BASE}/upload-image`, {
