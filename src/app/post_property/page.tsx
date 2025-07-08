@@ -131,6 +131,12 @@ const PostProperty = () => {
     validateCurrentStep,
     resetForm,
     areImagesValid,
+    showCommissionModal,
+    setShowCommissionModal,
+    showPropertySummary,
+    setShowPropertySummary,
+    getUserCommissionRate,
+    getUserType,
   } = usePostPropertyContext();
 
   const [showPreview, setShowPreview] = useState(false);
