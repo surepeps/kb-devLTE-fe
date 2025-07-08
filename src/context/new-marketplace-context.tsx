@@ -99,16 +99,19 @@ interface NewMarketplaceContextType {
   getCurrentTabState: () => TabState;
 
   // Properties management
-  setTabProperties: (tab: "buy" | "jv" | "rent", properties: any[]) => void;
+  setTabProperties: (
+    tab: "buy" | "jv" | "rent" | "shortlet",
+    properties: any[],
+  ) => void;
 
   // Loading and error states
   setTabStatus: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     status: "idle" | "pending" | "success" | "failed",
   ) => void;
-  setTabError: (tab: "buy" | "jv" | "rent", error: string) => void;
+  setTabError: (tab: "buy" | "jv" | "rent" | "shortlet", error: string) => void;
   setTabSearchStatus: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     status: {
       status: "pending" | "success" | "failed" | "idle";
       couldNotFindAProperty: boolean;
@@ -117,19 +120,21 @@ interface NewMarketplaceContextType {
 
   // Inspection selection (max 2 properties per tab)
   toggleInspectionSelection: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     property: any,
   ) => void;
   removeFromInspection: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     propertyId: string,
   ) => void;
-  clearInspectionSelection: (tab: "buy" | "jv" | "rent") => void;
+  clearInspectionSelection: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
   isSelectedForInspection: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     propertyId: string,
   ) => boolean;
-  canSelectMoreForInspection: (tab: "buy" | "jv" | "rent") => boolean;
+  canSelectMoreForInspection: (
+    tab: "buy" | "jv" | "rent" | "shortlet",
+  ) => boolean;
 
   // Price negotiation (for buy and rent tabs)
   addNegotiatedPrice: (
