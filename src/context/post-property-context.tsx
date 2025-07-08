@@ -117,6 +117,8 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   const [propertyData, setPropertyData] =
     useState<PropertyData>(initialPropertyData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCommissionModal, setShowCommissionModal] = useState(false);
+  const [showPropertySummary, setShowPropertySummary] = useState(false);
 
   const updatePropertyData = (field: keyof PropertyData, value: any) => {
     setPropertyData((prev) => ({
