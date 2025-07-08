@@ -205,13 +205,20 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   };
 
   const getUserType = (): "landowner" | "agent" => {
-    // This would typically come from your user context
-    // For now, we'll return 'landowner' as default
+    // Import useUserContext here to avoid circular dependencies
     if (typeof window !== "undefined") {
-      // You can get this from user context or localStorage
-      const userType = localStorage.getItem("userType");
-      return userType === "Agent" ? "agent" : "landowner";
+      try {
+        // Try to get from global context first
+        const userContextString = localStorage.getItem("user");
+        if (userContextString) {
+          const userData = JSON.parse(userContextString);
+          return userData.userType === "Agent" ? "agent" : "landowner";
+        }
+      } catch (error) {
+        console.error("Error parsing user data from localStorage", error);
+      }
     }
+    // Default to landowner for property owners/individuals
     return "landowner";
   };
 
