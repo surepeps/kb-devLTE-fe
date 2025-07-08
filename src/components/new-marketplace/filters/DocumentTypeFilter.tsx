@@ -10,6 +10,7 @@ import { getDocumentTypes } from "@/data/filter-data";
 interface DocumentTypeFilterProps {
   isOpen: boolean;
   onClose: () => void;
+  tab: "buy" | "jv" | "rent";
   onDocumentSelect: (documents: string[]) => void;
   currentValue?: string[];
 }
@@ -17,6 +18,7 @@ interface DocumentTypeFilterProps {
 const DocumentTypeFilter: React.FC<DocumentTypeFilterProps> = ({
   isOpen,
   onClose,
+  tab,
   onDocumentSelect,
   currentValue = [],
 }) => {
@@ -25,21 +27,8 @@ const DocumentTypeFilter: React.FC<DocumentTypeFilterProps> = ({
 
   useClickOutside(modalRef, onClose);
 
-  // Document types available
-  const documentTypes = [
-    "Certificate of Occupancy (C of O)",
-    "Deed of Assignment",
-    "Survey Plan",
-    "Building Plan Approval",
-    "Tax Receipt",
-    "Power of Attorney",
-    "Probate/Letters of Administration",
-    "Gazette",
-    "Registered Conveyance",
-    "Consent to Assignment",
-    "Right of Occupancy",
-    "Customary Right of Occupancy",
-  ];
+  // Get document types for the specific tab
+  const documentTypes = getDocumentTypes(tab);
 
   // Initialize selected documents
   useEffect(() => {
