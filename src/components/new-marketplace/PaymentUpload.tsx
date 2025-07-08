@@ -12,10 +12,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/general-components/button";
 import toast from "react-hot-toast";
+import { URLS } from "@/utils/URLS";
+import Cookies from "js-cookie";
 
 interface PaymentUploadProps {
   selectedProperties: any[];
   inspectionFee: number;
+  inspectionDetails: {
+    date: string;
+    time: string;
+    buyerInfo: {
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+    };
+  };
+  activeTab: "buy" | "jv" | "rent" | "shortlet";
+  negotiatedPrices: any[];
+  loiDocuments: any[];
   onBack: () => void;
   onComplete: () => void;
 }
@@ -23,13 +37,24 @@ interface PaymentUploadProps {
 const PaymentUpload: React.FC<PaymentUploadProps> = ({
   selectedProperties,
   inspectionFee,
+  inspectionDetails,
+  activeTab,
+  negotiatedPrices,
+  loiDocuments,
   onBack,
   onComplete,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadedReceiptUrl, setUploadedReceiptUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Transaction details form
+  const [transactionDetails, setTransactionDetails] = useState({
+    fullName: inspectionDetails.buyerInfo.fullName,
+  });
 
   // Bank details for payment
   const bankDetails = {
@@ -48,19 +73,117 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
 
   const maxFileSize = 5 * 1024 * 1024; // 5MB
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const uploadImageToServer = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch(`${URLS.BASE}/upload-image`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const data = await response.json();
+      return data.imageUrl || data.url || data.data?.url;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
+
+  const buildInspectionPayload = () => {
+    // Get brief type mapping
+    const briefTypeMapping = {
+      buy: "Outright Sales",
+      rent: "Rent",
+      shortlet: "Shortlet",
+      jv: "Joint Venture",
+    };
+
+    const briefType = briefTypeMapping[activeTab];
+
+    // Base payload
+    const payload: any = {
+      briefType,
+      inspectionDate: inspectionDetails.date,
+      inspectionTime: inspectionDetails.time,
+      requestedBy: inspectionDetails.buyerInfo,
+      transaction: {
+        fullName: transactionDetails.fullName,
+        transactionReceipt: uploadedReceiptUrl,
+      },
+    };
+
+    // Build properties array based on tab type
+    if (activeTab === "jv") {
+      // Joint Venture - include LOI documents
+      payload.properties = selectedProperties.map((property) => {
+        const loiDoc = loiDocuments.find(
+          (doc) => doc.propertyId === property.propertyId,
+        );
+        const propertyData: any = {
+          propertyId: property.propertyId,
+        };
+
+        if (loiDoc?.documentUrl) {
+          propertyData.letterOfIntention = loiDoc.documentUrl;
+        }
+
+        return propertyData;
+      });
+    } else {
+      // Buy/Rent/Shortlet - include negotiated prices
+      payload.properties = selectedProperties.map((property) => {
+        const negotiatedPrice = negotiatedPrices.find(
+          (price) => price.propertyId === property.propertyId,
+        );
+        const propertyData: any = {
+          propertyId: property.propertyId,
+        };
+
+        if (negotiatedPrice?.negotiatedPrice) {
+          propertyData.negotiationPrice = negotiatedPrice.negotiatedPrice;
+        }
+
+        return propertyData;
+      });
+    }
+
+    return payload;
+  };
+
   const handleFileSelect = (file: File) => {
     if (!acceptedFileTypes.includes(file.type)) {
-      toast.error("Please select a valid file type (JPG, PNG, PDF)");
+      toast.error("Please select a valid file type (JPEG, PNG, or PDF)");
       return;
     }
 
     if (file.size > maxFileSize) {
-      toast.error("File size must be less than 5MB");
+      toast.error("File size should be less than 5MB");
       return;
     }
 
     setSelectedFile(file);
-    toast.success("Payment proof uploaded successfully");
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -68,8 +191,8 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     e.stopPropagation();
     setDragActive(false);
 
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
       handleFileSelect(files[0]);
     }
   };
@@ -86,55 +209,95 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files[0]) {
+    if (files && files.length > 0) {
       handleFileSelect(files[0]);
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
   const removeFile = () => {
     setSelectedFile(null);
+    setUploadedReceiptUrl("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-  const handleSubmitRequest = async () => {
+  const handleUploadReceipt = async () => {
     if (!selectedFile) {
-      toast.error("Please upload payment proof before submitting");
+      toast.error("Please select a file to upload");
       return;
     }
 
     setIsUploading(true);
 
     try {
-      // Simulate API call for uploading payment proof
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      toast.success("Inspection request submitted successfully!");
-      onComplete();
+      const imageUrl = await uploadImageToServer(selectedFile);
+      setUploadedReceiptUrl(imageUrl);
+      toast.success("Payment receipt uploaded successfully!");
     } catch (error) {
-      toast.error("Failed to submit request. Please try again.");
+      toast.error("Failed to upload receipt. Please try again.");
+      console.error("Upload error:", error);
     } finally {
       setIsUploading(false);
     }
   };
 
-  // Lock body scroll when uploading
+  const handleSubmitInspectionRequest = async () => {
+    if (!uploadedReceiptUrl) {
+      toast.error("Please upload your payment receipt first");
+      return;
+    }
+
+    if (!transactionDetails.fullName.trim()) {
+      toast.error("Please enter the full name used for the transaction");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const payload = buildInspectionPayload();
+
+      console.log("Submitting inspection request:", payload);
+
+      const response = await fetch(`${URLS.BASE}/buyers/request-inspection`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || "Failed to submit inspection request",
+        );
+      }
+
+      const result = await response.json();
+      toast.success("Inspection request submitted successfully!");
+
+      // Wait a moment for user to see the success message
+      setTimeout(() => {
+        onComplete();
+      }, 1500);
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit request. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Lock body scroll when uploading or submitting
   useEffect(() => {
-    if (isUploading) {
+    if (isUploading || isSubmitting) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -143,12 +306,12 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isUploading]);
+  }, [isUploading, isSubmitting]);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 relative">
       {/* Loading Overlay */}
-      {isUploading && (
+      {(isUploading || isSubmitting) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
             <FontAwesomeIcon
@@ -156,14 +319,17 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
               className="text-[#8DDB90] text-4xl mb-4 animate-spin"
             />
             <h3 className="text-lg font-semibold text-[#24272C] mb-2">
-              Submitting Request
+              {isUploading ? "Uploading Receipt" : "Submitting Request"}
             </h3>
             <p className="text-[#5A5D63] text-sm">
-              Please wait while we process your inspection request...
+              {isUploading
+                ? "Please wait while we upload your payment receipt..."
+                : "Please wait while we process your inspection request..."}
             </p>
           </div>
         </div>
       )}
+
       {/* Payment Instructions */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
@@ -275,10 +441,40 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
         </div>
       </div>
 
+      {/* Transaction Details */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+          Transaction Details
+        </h3>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-[#24272C] mb-2">
+              Full Name on Transaction *
+            </label>
+            <input
+              type="text"
+              value={transactionDetails.fullName}
+              onChange={(e) =>
+                setTransactionDetails({
+                  ...transactionDetails,
+                  fullName: e.target.value,
+                })
+              }
+              placeholder="Enter the full name used for the bank transfer"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent outline-none transition-colors"
+            />
+            <p className="text-xs text-[#5A5D63] mt-1">
+              This should match the name used when making the bank transfer
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Payment Proof Upload */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-          Upload Payment Proof
+          Upload Payment Receipt
         </h3>
 
         {!selectedFile ? (
@@ -298,94 +494,89 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
               icon={faUpload}
               className="text-[#8DDB90] text-3xl mb-4"
             />
-            <p className="text-[#24272C] font-medium mb-1">
-              Drop your payment receipt here, or click to browse
+            <h4 className="text-lg font-semibold text-[#24272C] mb-2">
+              Choose file or drag and drop
+            </h4>
+            <p className="text-[#5A5D63] mb-4">
+              Upload your payment receipt or bank transfer screenshot
             </p>
-            <p className="text-[#5A5D63] text-sm">
-              Supports: JPG, PNG, PDF (Max 5MB)
+            <p className="text-sm text-[#5A5D63]">
+              Supported formats: JPEG, PNG, PDF (Max 5MB)
             </p>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              onChange={handleFileInputChange}
+              className="hidden"
+            />
           </div>
         ) : (
-          <div className="border border-[#E9EBEB] rounded-lg p-4">
+          <div className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center space-x-3">
                 <FontAwesomeIcon
                   icon={faFile}
                   className="text-[#8DDB90] text-xl"
                 />
                 <div>
-                  <p className="text-[#24272C] font-medium">
+                  <p className="font-medium text-[#24272C]">
                     {selectedFile.name}
                   </p>
-                  <p className="text-[#5A5D63] text-sm">
+                  <p className="text-sm text-[#5A5D63]">
                     {formatFileSize(selectedFile.size)}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={removeFile}
-                className="p-2 hover:bg-red-50 rounded-full transition-colors"
-                title="Remove file"
-              >
-                <FontAwesomeIcon icon={faTrash} className="text-red-500" />
-              </button>
+              <div className="flex items-center space-x-2">
+                {!uploadedReceiptUrl && (
+                  <Button
+                    onClick={handleUploadReceipt}
+                    value={isUploading ? "Uploading..." : "Upload"}
+                    className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
+                    disabled={isUploading}
+                  />
+                )}
+                <button
+                  onClick={removeFile}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Remove file"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
             </div>
+
+            {uploadedReceiptUrl && (
+              <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-700 text-sm font-medium">
+                  ✓ Receipt uploaded successfully
+                </p>
+              </div>
+            )}
           </div>
         )}
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".jpg,.jpeg,.png,.pdf"
-          onChange={handleFileInputChange}
-          className="hidden"
-        />
-      </div>
-
-      {/* Inspection Summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-          Final Summary
-        </h3>
-
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-[#5A5D63]">Properties Selected:</span>
-            <span className="text-[#24272C]">{selectedProperties.length}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#5A5D63]">Inspection Fee:</span>
-            <span className="text-[#24272C]">
-              ₦{inspectionFee.toLocaleString()}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#5A5D63]">Payment Status:</span>
-            <span
-              className={selectedFile ? "text-[#8DDB90]" : "text-[#E65100]"}
-            >
-              {selectedFile ? "Proof Uploaded" : "Pending Upload"}
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
         <button
           onClick={onBack}
-          className="flex-1 px-6 py-3 border border-[#E9EBEB] text-[#5A5D63] rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          className="px-6 py-3 border border-[#E9EBEB] text-[#5A5D63] rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          disabled={isSubmitting}
         >
           Back to Date Selection
         </button>
-
         <Button
-          onClick={handleSubmitRequest}
-          value={
-            isUploading ? "Submitting Request..." : "Submit Inspection Request"
+          onClick={handleSubmitInspectionRequest}
+          value={isSubmitting ? "Submitting..." : "Submit Inspection Request"}
+          className="px-6 py-3 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
+          disabled={
+            !uploadedReceiptUrl ||
+            !transactionDetails.fullName.trim() ||
+            isSubmitting
           }
-          disabled={!selectedFile || isUploading}
-          className="flex-1 px-6 py-3 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
     </div>
