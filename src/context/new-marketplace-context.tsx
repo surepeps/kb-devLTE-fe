@@ -261,10 +261,12 @@ export const NewMarketplaceProvider: React.FC<{
         return jvTab;
       case "rent":
         return rentTab;
+      case "shortlet":
+        return shortletTab;
       default:
         return buyTab;
     }
-  }, [activeTab, buyTab, jvTab, rentTab]);
+  }, [activeTab, buyTab, jvTab, rentTab, shortletTab]);
 
   // Update tab state helper
   const updateTabState = useCallback(
