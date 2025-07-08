@@ -22,6 +22,7 @@ interface PriceRangeFilterProps {
 const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   isOpen,
   onClose,
+  tab,
   onPriceSelect,
   currentValue,
 }) => {
@@ -32,16 +33,8 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
 
   useClickOutside(modalRef, onClose);
 
-  // Predefined price ranges
-  const priceRanges = [
-    { label: "Under ₦1M", min: 0, max: 1000000 },
-    { label: "₦1M - ₦5M", min: 1000000, max: 5000000 },
-    { label: "₦5M - ₦10M", min: 5000000, max: 10000000 },
-    { label: "₦10M - ₦20M", min: 10000000, max: 20000000 },
-    { label: "₦20M - ₦50M", min: 20000000, max: 50000000 },
-    { label: "₦50M - ₦100M", min: 50000000, max: 100000000 },
-    { label: "Above ₦100M", min: 100000000, max: 0 },
-  ];
+  // Get predefined price ranges for the specific tab
+  const priceRanges = getPriceRanges(tab);
 
   // Initialize values
   useEffect(() => {
