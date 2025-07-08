@@ -404,7 +404,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const clearInspectionSelection = useCallback(
-    (tab: "buy" | "jv" | "rent") => {
+    (tab: "buy" | "jv" | "rent" | "shortlet") => {
       updateTabState(tab, (state) => ({
         ...state,
         selectedForInspection: [],
