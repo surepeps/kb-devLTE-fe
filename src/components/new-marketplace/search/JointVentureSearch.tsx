@@ -46,6 +46,16 @@ const JointVentureSearch = () => {
       };
     }
 
+    // Add usage options filter (property type)
+    if (filters.usageOptions && filters.usageOptions.length > 0) {
+      const validUsageOptions = filters.usageOptions.filter(
+        (option) => option && option !== "All",
+      );
+      if (validUsageOptions.length > 0) {
+        searchParams.propertyType = validUsageOptions;
+      }
+    }
+
     // Add other JV-specific filters
     if (filters.bedrooms) {
       searchParams.bedroom = filters.bedrooms;
@@ -109,7 +119,9 @@ const JointVentureSearch = () => {
     selectedState: "",
     selectedLGA: "",
     selectedArea: "",
+    locationDisplay: "",
     priceRange: { min: 0, max: 0 }, // Investment amount range
+    usageOptions: [] as string[],
     bedrooms: undefined as number | undefined,
     bathrooms: undefined as number | undefined,
     landSize: {
@@ -127,7 +139,9 @@ const JointVentureSearch = () => {
       selectedState: "",
       selectedLGA: "",
       selectedArea: "",
+      locationDisplay: "",
       priceRange: { min: 0, max: 0 },
+      usageOptions: [],
       bedrooms: undefined,
       bathrooms: undefined,
       landSize: {

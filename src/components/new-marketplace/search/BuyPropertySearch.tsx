@@ -53,7 +53,7 @@ const BuyPropertySearch = () => {
       }
     }
 
-    // Add usage options filter
+    // Add usage options filter (property type)
     if (filters.usageOptions && filters.usageOptions.length > 0) {
       const validUsageOptions = filters.usageOptions.filter(
         (option) => option && option !== "All",

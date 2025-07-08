@@ -3,7 +3,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { useNewMarketplace, SearchParams } from "@/context/new-marketplace-context";
+import {
+  useNewMarketplace,
+  SearchParams,
+} from "@/context/new-marketplace-context";
 import SearchFilters from "./SearchFilters";
 import { IsMobile } from "@/hooks/isMobile";
 
@@ -43,6 +46,16 @@ const RentPropertySearch = () => {
         min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
         max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
       };
+    }
+
+    // Add usage options filter (property type)
+    if (filters.usageOptions && filters.usageOptions.length > 0) {
+      const validUsageOptions = filters.usageOptions.filter(
+        (option) => option && option !== "All",
+      );
+      if (validUsageOptions.length > 0) {
+        searchParams.propertyType = validUsageOptions;
+      }
     }
 
     // Add other filters
@@ -120,8 +133,10 @@ const RentPropertySearch = () => {
     selectedState: "",
     selectedLGA: "",
     selectedArea: "",
+    locationDisplay: "",
     priceRange: { min: 0, max: 0 },
     documentTypes: [] as string[],
+    usageOptions: [] as string[],
     bedrooms: undefined as number | undefined,
     bathrooms: undefined as number | undefined,
     landSize: {
@@ -138,8 +153,10 @@ const RentPropertySearch = () => {
       selectedState: "",
       selectedLGA: "",
       selectedArea: "",
+      locationDisplay: "",
       priceRange: { min: 0, max: 0 },
       documentTypes: [],
+      usageOptions: [],
       bedrooms: undefined,
       bathrooms: undefined,
       landSize: {
