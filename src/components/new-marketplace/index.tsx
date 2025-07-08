@@ -41,6 +41,8 @@ const NewMarketPlace = () => {
         return <JointVentureTab />;
       case "rent":
         return <RentTab />;
+      case "shortlet":
+        return <ShortletTab />;
       default:
         return <BuyTab />;
     }
