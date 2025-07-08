@@ -172,7 +172,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     return payload;
   };
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = async (file: File) => {
     if (!acceptedFileTypes.includes(file.type)) {
       toast.error("Please select a valid file type (JPEG, PNG, or PDF)");
       return;
@@ -184,6 +184,9 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     }
 
     setSelectedFile(file);
+
+    // Automatically upload the file
+    await handleUploadReceipt(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
