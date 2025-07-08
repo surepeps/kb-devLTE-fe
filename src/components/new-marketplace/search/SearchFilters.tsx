@@ -84,6 +84,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     if (moreFilters.features) {
       onFilterChange("desiredFeatures", moreFilters.features);
     }
+    if (moreFilters.tenantCriteria) {
+      onFilterChange("tenantCriteria", moreFilters.tenantCriteria);
+    }
     setIsMoreFilterModalOpened(false);
   };
 
