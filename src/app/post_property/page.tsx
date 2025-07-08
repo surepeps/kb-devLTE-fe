@@ -468,69 +468,43 @@ const PostProperty = () => {
                 </div>
 
                 {/* Navigation Buttons */}
-                {!showCommissionModal && (
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
-                  <Button
-                    type="button"
-                    value={
-                      showPreview
-                        ? "Edit Property"
-                        : currentStep === 0
-                          ? "Cancel"
-                          : "Previous"
-                    }
-                    onClick={
-                      showPreview
-                        ? () => setShowPreview(false)
-                        : currentStep === 0
+                {!showCommissionModal && !showPropertySummary && (
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
+                    <Button
+                      type="button"
+                      value={currentStep === 0 ? "Cancel" : "Previous"}
+                      onClick={
+                        currentStep === 0
                           ? () => router.push("/")
                           : handlePrevious
-                    }
-                    className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                    isDisabled={isSubmitting}
-                  />
+                      }
+                      className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                      isDisabled={isSubmitting}
+                    />
 
-                  <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                    {showPreview ? (
-                      <div className="relative w-full md:w-auto">
+                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                      {currentStep === 4 && (
                         <Button
                           type="button"
-                          value={
-                            isSubmitting ? "Submitting..." : "Submit Property"
-                          }
-                          onClick={handleSubmit}
-                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                          isDisabled={isSubmitting}
+                          value="Review Property"
+                          onClick={() => setShowPropertySummary(true)}
+                          className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                          isDisabled={!validateCurrentStep() || isSubmitting}
                         />
-                        {isSubmitting && (
-                          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        )}
-                      </div>
-                    ) : (
-                      <>
-                        {currentStep === 4 && (
-                          <Button
-                            type="button"
-                            value="Preview"
-                            onClick={() => setShowPreview(true)}
-                            className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                            isDisabled={!validateCurrentStep() || isSubmitting}
-                          />
-                        )}
-                        <Button
-                          type="button"
-                          value={currentStep === 4 ? "Complete" : "Next"}
-                          onClick={() => handleNext(validateForm, errors)}
-                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                          isDisabled={isSubmitting}
-                        />
-                      </>
-                    )}
+                      )}
+                      <Button
+                        type="button"
+                        value={currentStep === 4 ? "Complete" : "Next"}
+                        onClick={() => handleNext(validateForm, errors)}
+                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                        isDisabled={isSubmitting}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Progress Indicator */}
-                {!showPreview && (
+                {!showPropertySummary && !showCommissionModal && (
                   <div className="text-center mt-6">
                     <span className="text-sm text-[#5A5D63]">
                       Step {currentStep + 1} of {steps.length}
