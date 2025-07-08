@@ -350,7 +350,7 @@ export const FILTER_DATA: FilterConfig = {
     ],
     priceRanges: [
       { label: "Under ₦100K", min: 0, max: 100000 },
-      { label: "₦100K - ��300K", min: 100000, max: 300000 },
+      { label: "₦100K - ₦300K", min: 100000, max: 300000 },
       { label: "₦300K - ₦500K", min: 300000, max: 500000 },
       { label: "₦500K - ₦1M", min: 500000, max: 1000000 },
       { label: "₦1M - ₦2M", min: 1000000, max: 2000000 },
@@ -460,55 +460,67 @@ export const FILTER_DATA: FilterConfig = {
 
 // Helper functions to get data for specific tabs
 export const getTabFilterData = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): TabFilterConfig => {
   return FILTER_DATA[tab];
 };
 
-export const getUsageOptions = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getUsageOptions = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].usageOptions.options;
 };
 
-export const getUsageOptionsLabel = (tab: "buy" | "jv" | "rent"): string => {
+export const getUsageOptionsLabel = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string => {
   return FILTER_DATA[tab].usageOptions.label;
 };
 
 export const getHomeConditionOptions = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): string[] => {
   return FILTER_DATA[tab].homeCondition?.options || [];
 };
 
-export const getDocumentTypes = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getDocumentTypes = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].documentTypes;
 };
 
-export const getPropertyFeatures = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getPropertyFeatures = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].propertyFeatures;
 };
 
-export const getTenantCriteria = (tab: "buy" | "jv" | "rent"): string[] => {
+export const getTenantCriteria = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): string[] => {
   return FILTER_DATA[tab].tenantCriteria || [];
 };
 
 export const getLandSizeTypes = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): LandSizeType[] => {
   return FILTER_DATA[tab].landSizeTypes;
 };
 
 export const getBedroomOptions = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): BedroomOption[] => {
   return FILTER_DATA[tab].bedroomOptions;
 };
 
 export const getBathroomOptions = (
-  tab: "buy" | "jv" | "rent",
+  tab: "buy" | "jv" | "rent" | "shortlet",
 ): BathroomOption[] => {
   return FILTER_DATA[tab].bathroomOptions;
 };
 
-export const getPriceRanges = (tab: "buy" | "jv" | "rent"): PriceRange[] => {
+export const getPriceRanges = (
+  tab: "buy" | "jv" | "rent" | "shortlet",
+): PriceRange[] => {
   return FILTER_DATA[tab].priceRanges;
 };
