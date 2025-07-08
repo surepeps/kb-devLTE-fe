@@ -86,13 +86,14 @@ interface TabState {
 
 interface NewMarketplaceContextType {
   // Active tab management
-  activeTab: "buy" | "jv" | "rent";
-  setActiveTab: (tab: "buy" | "jv" | "rent") => void;
+  activeTab: "buy" | "jv" | "rent" | "shortlet";
+  setActiveTab: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
 
   // Tab states
   buyTab: TabState;
   jvTab: TabState;
   rentTab: TabState;
+  shortletTab: TabState;
 
   // Current tab state getters
   getCurrentTabState: () => TabState;
