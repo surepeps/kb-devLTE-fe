@@ -270,7 +270,10 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Update tab state helper
   const updateTabState = useCallback(
-    (tab: "buy" | "jv" | "rent", updater: (state: TabState) => TabState) => {
+    (
+      tab: "buy" | "jv" | "rent" | "shortlet",
+      updater: (state: TabState) => TabState,
+    ) => {
       switch (tab) {
         case "buy":
           setBuyTab(updater);
@@ -280,6 +283,9 @@ export const NewMarketplaceProvider: React.FC<{
           break;
         case "rent":
           setRentTab(updater);
+          break;
+        case "shortlet":
+          setShortletTab(updater);
           break;
       }
     },
