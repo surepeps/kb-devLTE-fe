@@ -49,31 +49,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   // Mobile filter modal state
   const [isMobileFilterModalOpen, setIsMobileFilterModalOpen] = useState(false);
 
-  // Usage options for tab
-  const getUsageOptions = () => {
-    switch (tab) {
-      case "buy":
-        return ["All", "Land", "Residential", "Commercial", "Duplex"];
-      case "jv":
-        return ["All", "Land", "Residential", "Commercial"];
-      case "rent":
-        return ["All", "Land", "Residential", "Commercial", "Duplex"];
-      default:
-        return ["All"];
-    }
-  };
-
-  // Home condition options for rent tab
-  const getHomeConditionOptions = () => {
-    return [
-      "All",
-      "Brand New",
-      "Good Condition",
-      "Fairly Used",
-      "Need Renovation",
-      "New Building",
-    ];
-  };
+  // Get dynamic filter data
+  const usageOptions = getUsageOptions(tab);
+  const usageOptionsLabel = getUsageOptionsLabel(tab);
+  const homeConditionOptions = getHomeConditionOptions(tab);
 
   // Handlers for new filter components
   const handlePriceRangeSelect = (priceRange: {
