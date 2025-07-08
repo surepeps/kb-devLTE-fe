@@ -20,6 +20,8 @@ import Step0PropertyTypeSelection from "@/components/post-property-components/St
 import Step1BasicDetails from "@/components/post-property-components/Step1BasicDetails";
 import Step3ImageUpload from "@/components/post-property-components/Step3ImageUpload";
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
+import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
+import CommissionModal from "@/components/post-property-components/CommissionModal";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
 import Preloader from "@/components/general-components/preloader";
@@ -27,6 +29,9 @@ import Preloader from "@/components/general-components/preloader";
 // Import additional step components
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
 import Step4OwnershipDeclaration from "@/components/post-property-components/Step4OwnershipDeclaration";
+
+// Import configuration helpers
+import { getBriefTypeConfig } from "@/data/post-property-form-config";
 
 // Validation schemas for each step
 const getValidationSchema = (currentStep: number, propertyData: any) => {
