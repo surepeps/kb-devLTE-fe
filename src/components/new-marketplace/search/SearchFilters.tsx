@@ -118,29 +118,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   const usageOptions = getUsageOptions();
 
-  // Sync location formik with filter changes
-  useEffect(() => {
-    locationFormik.setValues({
-      selectedLGA: filters.selectedLGA || "",
-      selectedState: filters.selectedState || "",
-      selectedArea: filters.selectedArea || "",
-      locationDisplay:
-        filters.selectedState || filters.selectedLGA || filters.selectedArea
-          ? [filters.selectedArea, filters.selectedLGA, filters.selectedState]
-              .filter(Boolean)
-              .join(", ")
-          : "",
-    });
-  }, [filters.selectedState, filters.selectedLGA, filters.selectedArea]);
-
-  // Sync price formik with filter changes
-  useEffect(() => {
-    priceFormik.setValues({
-      minPrice: filters.priceRange?.min || 0,
-      maxPrice: filters.priceRange?.max || 0,
-    });
-  }, [filters.priceRange]);
-
   return (
     <Fragment>
       {/* Loading Overlay */}
@@ -161,10 +138,36 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         onClearFilters={onClearFilters}
       />
 
-      {/* Selected Filters Card */}
-      <SelectedFiltersCard
+      {/* Active Filters */}
+      <ActiveFilters
         filters={filters}
-        onRemoveFilter={onFilterChange}
+        onRemoveFilter={(key, value) => {
+          if (key === "usageOptions" && value) {
+            const current = filters.usageOptions || [];
+            const updated = current.filter((opt: string) => opt !== value);
+            onFilterChange("usageOptions", updated);
+          } else if (key === "documentTypes" && value) {
+            const current = filters.documentTypes || [];
+            const updated = current.filter((doc: string) => doc !== value);
+            onFilterChange("documentTypes", updated);
+          } else if (key === "desiredFeatures" && value) {
+            const current = filters.desiredFeatures || [];
+            const updated = current.filter(
+              (feature: string) => feature !== value,
+            );
+            onFilterChange("desiredFeatures", updated);
+          } else if (key === "location") {
+            onFilterChange("selectedState", "");
+            onFilterChange("selectedLGA", "");
+            onFilterChange("selectedArea", "");
+            onFilterChange("locationDisplay", "");
+          } else {
+            onFilterChange(
+              key,
+              key === "priceRange" ? { min: 0, max: 0, display: "" } : "",
+            );
+          }
+        }}
         onClearAll={onClearFilters}
       />
 
