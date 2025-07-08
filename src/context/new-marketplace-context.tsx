@@ -981,6 +981,7 @@ export const NewMarketplaceProvider: React.FC<{
     setBuyTab(createInitialTabState());
     setJvTab(createInitialTabState());
     setRentTab(createInitialTabState());
+    setShortletTab(createInitialTabState());
   }, []);
 
   const contextValue: NewMarketplaceContextType = useMemo(
