@@ -385,8 +385,8 @@ const PostProperty = () => {
   };
 
   const renderCurrentStep = (errors: any, touched: any) => {
-    if (showPreview) {
-      return <PropertyPreview />;
+    if (showPropertySummary) {
+      return <EnhancedPropertySummary />;
     }
 
     switch (currentStep) {
