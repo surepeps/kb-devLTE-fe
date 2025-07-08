@@ -51,73 +51,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [landSizeValue, setLandSizeValue] = useState<string>("");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
-  // Usage options for tab
-  const getUsageOptions = () => {
-    switch (tab) {
-      case "buy":
-        return ["All", "Land", "Residential", "Commercial", "Duplex"];
-      case "jv":
-        return [
-          "All",
-          "Land Development",
-          "Commercial",
-          "Residential",
-          "Mixed Use",
-        ];
-      case "rent":
-        return ["All", "Apartment", "House", "Office", "Shop", "Warehouse"];
-      default:
-        return ["All"];
-    }
-  };
-
-  // Property features
-  const propertyFeatures = [
-    "Air Conditioning",
-    "Swimming Pool",
-    "Garden/Lawn",
-    "Gym/Fitness Center",
-    "Security System",
-    "Backup Generator",
-    "Solar Power",
-    "Balcony/Terrace",
-    "Garage",
-    "Servant Quarters",
-    "Study Room",
-    "Dining Room",
-    "Family Lounge",
-    "Kitchen Pantry",
-    "Walk-in Closet",
-    "En-suite Bathroom",
-    "Guest Toilet",
-    "Laundry Room",
-    "Storage Room",
-    "Elevator",
-    "Playground",
-    "24/7 Security",
-    "CCTV Surveillance",
-    "Intercom System",
-    "Gated Community",
-    "Paved Roads",
-    "Street Lighting",
-    "Water Treatment Plant",
-  ];
-
-  // Document types
-  const documentTypes = [
-    "Certificate of Occupancy (C of O)",
-    "Deed of Assignment",
-    "Survey Plan",
-    "Building Plan Approval",
-    "Tax Receipt",
-    "Power of Attorney",
-    "Probate/Letters of Administration",
-    "Gazette",
-    "Registered Conveyance",
-    "Consent to Assignment",
-    "Right of Occupancy",
-    "Customary Right of Occupancy",
-  ];
+  // Get dynamic data for the specific tab
+  const usageOptions = getUsageOptions(tab);
+  const homeConditionOptions = getHomeConditionOptions(tab);
+  const documentTypes = getDocumentTypes(tab);
+  const propertyFeatures = getPropertyFeatures(tab);
 
   // Initialize values from filters
   useEffect(() => {
