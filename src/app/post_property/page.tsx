@@ -56,17 +56,29 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
 
       // Additional validations based on property type
       if (
-        propertyData.propertyType === "rent" &&
+        (propertyData.propertyType === "rent" ||
+          propertyData.propertyType === "shortlet") &&
         propertyData.propertyCategory !== "Land"
       ) {
-        basicSchema = basicSchema.concat(
-          Yup.object({
-            rentalType: Yup.string().required("Rental type is required"),
-            propertyCondition: Yup.string().required(
-              "Property condition is required",
-            ),
-          }),
-        );
+        const additionalFields: any = {
+          propertyCondition: Yup.string().required(
+            "Property condition is required",
+          ),
+        };
+
+        if (propertyData.propertyType === "rent") {
+          additionalFields.rentalType = Yup.string().required(
+            "Rental type is required",
+          );
+        }
+
+        if (propertyData.propertyType === "shortlet") {
+          additionalFields.shortletDuration = Yup.string().required(
+            "Shortlet duration is required",
+          );
+        }
+
+        basicSchema = basicSchema.concat(Yup.object(additionalFields));
       }
 
       if (propertyData.propertyCategory !== "Land") {
