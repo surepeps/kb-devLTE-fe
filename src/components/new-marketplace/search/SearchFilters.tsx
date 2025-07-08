@@ -13,6 +13,7 @@ import PriceRangeFilter from "../filters/PriceRangeFilter";
 import BedroomFilter from "../filters/BedroomFilter";
 import DocumentTypeFilter from "../filters/DocumentTypeFilter";
 import MoreFiltersModal from "../filters/MoreFiltersModal";
+import SubmitPreferenceModal from "../modals/SubmitPreferenceModal";
 import {
   getUsageOptions,
   getUsageOptionsLabel,
@@ -49,6 +50,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   // Mobile filter modal state
   const [isMobileFilterModalOpen, setIsMobileFilterModalOpen] = useState(false);
 
+  // Submit preference modal state
+  const [isSubmitPreferenceModalOpen, setIsSubmitPreferenceModalOpen] =
+    useState(false);
+
   // Get dynamic filter data
   const usageOptions = getUsageOptions(tab);
   const usageOptionsLabel = getUsageOptionsLabel(tab);
@@ -75,18 +80,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const handleMoreFiltersApply = (moreFilters: any) => {
-    if (moreFilters.bathrooms) {
-      onFilterChange("bathrooms", moreFilters.bathrooms);
-    }
-    if (moreFilters.landSize) {
-      onFilterChange("landSize", moreFilters.landSize);
-    }
-    if (moreFilters.features) {
-      onFilterChange("desiredFeatures", moreFilters.features);
-    }
-    if (moreFilters.tenantCriteria) {
-      onFilterChange("tenantCriteria", moreFilters.tenantCriteria);
-    }
+    // Apply all filters, including clearing ones that are undefined
+    onFilterChange("bathrooms", moreFilters.bathrooms);
+    onFilterChange("landSize", moreFilters.landSize);
+    onFilterChange("desiredFeatures", moreFilters.features);
+    onFilterChange("tenantCriteria", moreFilters.tenantCriteria);
     setIsMoreFilterModalOpened(false);
   };
 
@@ -106,6 +104,119 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const formatDocumentsDisplay = () => {
     const docs = filters.documentTypes || [];
     return docs.length > 0 ? `${docs.length} documents selected` : "";
+  };
+
+  // Generate active filters array for the modal
+  const getActiveFiltersForModal = () => {
+    const activeFilters: Array<{ key: string; label: string; value?: any }> =
+      [];
+
+    // Price Range
+    if (
+      filters.priceRange &&
+      (filters.priceRange.min > 0 || filters.priceRange.max > 0)
+    ) {
+      activeFilters.push({
+        key: "priceRange",
+        label: `Price: ${filters.priceRange.display || `₦${filters.priceRange.min?.toLocaleString() || 0} - ₦${filters.priceRange.max?.toLocaleString() || 0}`}`,
+      });
+    }
+
+    // Location
+    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
+      const locationParts = [
+        filters.selectedArea,
+        filters.selectedLGA,
+        filters.selectedState,
+      ].filter(Boolean);
+      if (locationParts.length > 0) {
+        activeFilters.push({
+          key: "location",
+          label: `Location: ${locationParts.join(", ")}`,
+        });
+      }
+    }
+
+    // Usage Options
+    if (filters.usageOptions && filters.usageOptions.length > 0) {
+      const validOptions = filters.usageOptions.filter(
+        (option) => option !== "All",
+      );
+      validOptions.forEach((option) => {
+        activeFilters.push({
+          key: "usageOptions",
+          label: `Type: ${option}`,
+          value: option,
+        });
+      });
+    }
+
+    // Bedrooms
+    if (filters.bedrooms) {
+      activeFilters.push({
+        key: "bedrooms",
+        label: `Bedrooms: ${filters.bedrooms}`,
+      });
+    }
+
+    // Bathrooms
+    if (filters.bathrooms) {
+      activeFilters.push({
+        key: "bathrooms",
+        label: `Bathrooms: ${filters.bathrooms}`,
+      });
+    }
+
+    // Document Types
+    if (filters.documentTypes && filters.documentTypes.length > 0) {
+      filters.documentTypes.forEach((doc) => {
+        activeFilters.push({
+          key: "documentTypes",
+          label: `Doc: ${doc}`,
+          value: doc,
+        });
+      });
+    }
+
+    // Land Size
+    if (filters.landSize && filters.landSize.size) {
+      activeFilters.push({
+        key: "landSize",
+        label: `Land: ${filters.landSize.size} ${filters.landSize.type}`,
+      });
+    }
+
+    // Desired Features
+    if (filters.desiredFeatures && filters.desiredFeatures.length > 0) {
+      filters.desiredFeatures.forEach((feature) => {
+        activeFilters.push({
+          key: "desiredFeatures",
+          label: `Feature: ${feature}`,
+          value: feature,
+        });
+      });
+    }
+
+    // Tenant Criteria
+    if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+      filters.tenantCriteria.forEach((criteria) => {
+        activeFilters.push({
+          key: "tenantCriteria",
+          label: `Criteria: ${criteria}`,
+          value: criteria,
+        });
+      });
+    }
+
+    // Home Condition
+    if (filters.homeCondition) {
+      activeFilters.push({
+        key: "homeCondition",
+        label: `Condition: ${filters.homeCondition}`,
+      });
+    }
+
+    return activeFilters;
   };
 
   return (
@@ -146,6 +257,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               (feature: string) => feature !== value,
             );
             onFilterChange("desiredFeatures", updated);
+          } else if (key === "tenantCriteria" && value) {
+            const current = filters.tenantCriteria || [];
+            const updated = current.filter(
+              (criteria: string) => criteria !== value,
+            );
+            onFilterChange("tenantCriteria", updated);
           } else if (key === "location") {
             onFilterChange("selectedState", "");
             onFilterChange("selectedLGA", "");
@@ -159,6 +276,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           }
         }}
         onClearAll={onClearFilters}
+        onSubmitPreference={() => setIsSubmitPreferenceModalOpen(true)}
       />
 
       {/* Mobile Filter Section */}
@@ -279,37 +397,35 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         </div>
 
         {tab === "rent" && homeConditionOptions.length > 0 && (
-            <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
-              <div className="flex flex-wrap gap-[15px]">
-                <h3 className="font-semibold text-[#1E1E1E]">Home Condition</h3>
-                {homeConditionOptions.map((condition: string, idx: number) => (
-                  <RadioCheck
-                    key={idx}
-                    type="checkbox"
-                    name="homeCondition"
-                    isChecked={
-                      filters.homeCondition === condition ||
-                      (condition === "All" && !filters.homeCondition)
+          <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
+            <div className="flex flex-wrap gap-[15px]">
+              <h3 className="font-semibold text-[#1E1E1E]">Home Condition</h3>
+              {homeConditionOptions.map((condition: string, idx: number) => (
+                <RadioCheck
+                  key={idx}
+                  type="checkbox"
+                  name="homeCondition"
+                  isChecked={
+                    filters.homeCondition === condition ||
+                    (condition === "All" && !filters.homeCondition)
+                  }
+                  value={condition}
+                  handleChange={() => {
+                    if (condition === "All") {
+                      onFilterChange("homeCondition", "");
+                    } else {
+                      onFilterChange("homeCondition", condition);
                     }
-                    value={condition}
-                    handleChange={() => {
-                      if (condition === "All") {
-                        onFilterChange("homeCondition", "");
-                      } else {
-                        onFilterChange("homeCondition", condition);
-                      }
-                    }}
-                  />
-                ))}
-              </div>
+                  }}
+                />
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          
         {/* Filter inputs row - customized per tab */}
         <div className="w-full flex items-center gap-[15px] flex-wrap lg:flex-nowrap">
           {/* Home Condition Filter for Rent Tab - Display like Filter by */}
-          
 
           {/* Location Input - Fixed width */}
           <div className="w-[280px] min-w-[250px]">
@@ -439,6 +555,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Submit Preference Modal */}
+      <SubmitPreferenceModal
+        isOpen={isSubmitPreferenceModalOpen}
+        onClose={() => setIsSubmitPreferenceModalOpen(false)}
+        activeFilters={getActiveFiltersForModal()}
+      />
     </Fragment>
   );
 };

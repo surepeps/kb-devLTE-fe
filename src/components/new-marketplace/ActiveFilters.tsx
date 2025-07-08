@@ -17,15 +17,19 @@ interface ActiveFiltersProps {
     selectedArea?: string;
     landSize?: { type: string; size?: number };
     desiredFeatures?: string[];
+    tenantCriteria?: string[];
+    homeCondition?: string;
   };
   onRemoveFilter: (filterKey: string, value?: any) => void;
   onClearAll: () => void;
+  onSubmitPreference?: () => void;
 }
 
 const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   filters,
   onRemoveFilter,
   onClearAll,
+  onSubmitPreference,
 }) => {
   const activeFilters: Array<{ key: string; label: string; value?: any }> = [];
 
@@ -119,6 +123,27 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     });
   }
 
+  // Tenant Criteria (for rent tab)
+  if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+    filters.tenantCriteria.forEach((criteria) => {
+      const shortCriteria =
+        criteria.length > 15 ? criteria.substring(0, 15) + "..." : criteria;
+      activeFilters.push({
+        key: "tenantCriteria",
+        label: `Criteria: ${shortCriteria}`,
+        value: criteria,
+      });
+    });
+  }
+
+  // Home Condition (for rent tab)
+  if (filters.homeCondition) {
+    activeFilters.push({
+      key: "homeCondition",
+      label: `Condition: ${filters.homeCondition}`,
+    });
+  }
+
   if (activeFilters.length === 0) {
     return null;
   }
@@ -130,11 +155,22 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       exit={{ opacity: 0, height: 0 }}
       className="bg-white rounded-lg border border-gray-200 p-4 mb-4"
     >
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-[#09391C]">Active Filters</h3>
+      {/* Header with Submit Preference Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3">
+          {onSubmitPreference && (
+            <button
+              onClick={onSubmitPreference}
+              className="bg-[#09391C] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0B423D] transition-colors whitespace-nowrap"
+            >
+              Submit Your Preference
+            </button>
+          )}
+          <h3 className="text-sm font-medium text-[#09391C]">Active Filters</h3>
+        </div>
         <button
           onClick={onClearAll}
-          className="text-xs text-[#FF3D00] hover:text-[#E53100] font-medium transition-colors"
+          className="text-xs text-[#FF3D00] hover:text-[#E53100] font-medium transition-colors self-start sm:self-auto"
         >
           Clear All
         </button>
@@ -148,12 +184,12 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="inline-flex items-center gap-1 bg-[#8DDB90] text-white px-3 py-1 rounded-full text-xs font-medium"
+              className="inline-flex items-center gap-1 bg-[#8DDB90] text-white px-3 py-1 rounded-full text-xs font-medium max-w-full"
             >
-              <span>{filter.label}</span>
+              <span className="truncate">{filter.label}</span>
               <button
                 onClick={() => onRemoveFilter(filter.key, filter.value)}
-                className="ml-1 hover:bg-white hover:bg-opacity-20 rounded-full p-0.5 transition-colors"
+                className="ml-1 hover:bg-white hover:bg-opacity-20 rounded-full p-0.5 transition-colors flex-shrink-0"
               >
                 <X size={12} />
               </button>
