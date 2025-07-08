@@ -27,6 +27,7 @@ interface MoreFiltersModalProps {
 const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
   isOpen,
   onClose,
+  tab,
   onFiltersApply,
   currentFilters = {},
 }) => {
