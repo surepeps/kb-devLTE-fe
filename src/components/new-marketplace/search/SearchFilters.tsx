@@ -36,12 +36,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   selectedCount = 0,
   onOpenInspection,
 }) => {
-  // Modal states for existing components
+  // Modal states for new filter components
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] = useState(false);
   const [isDocumentModalOpened, setIsDocumentModalOpened] = useState(false);
   const [isBedroomModalOpened, setIsBedroomModalOpened] = useState(false);
   const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] = useState(false);
-  const [priceRadioValue, setPriceRadioValue] = useState("");
 
   // Mobile filter modal state
   const [isMobileFilterModalOpen, setIsMobileFilterModalOpen] = useState(false);
