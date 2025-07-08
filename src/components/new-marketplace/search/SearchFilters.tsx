@@ -555,6 +555,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Submit Preference Modal */}
+      <SubmitPreferenceModal
+        isOpen={isSubmitPreferenceModalOpen}
+        onClose={() => setIsSubmitPreferenceModalOpen(false)}
+        activeFilters={getActiveFiltersForModal()}
+      />
     </Fragment>
   );
 };
