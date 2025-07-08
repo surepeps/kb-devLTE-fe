@@ -371,7 +371,12 @@ const PostProperty = () => {
         toast.success("Property listed successfully!");
         resetForm();
 
-        router.push("/my-listings");
+        // Redirect based on user type
+        if (user?.userType === "Agent") {
+          router.push("/agent");
+        } else {
+          router.push("/my-listings");
+        }
       } else {
         const errorMessage =
           (response as any)?.error || "Failed to submit property";
