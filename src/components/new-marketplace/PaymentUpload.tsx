@@ -504,7 +504,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
               Choose file or drag and drop
             </h4>
             <p className="text-[#5A5D63] mb-4">
-              Upload your payment receipt or bank transfer screenshot
+              Your payment receipt will be uploaded automatically
             </p>
             <p className="text-sm text-[#5A5D63]">
               Supported formats: JPEG, PNG, PDF (Max 5MB)
@@ -524,7 +524,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
               <div className="flex items-center space-x-3">
                 <FontAwesomeIcon
                   icon={faFile}
-                  className="text-[#8DDB90] text-xl"
+                  className={`text-xl ${isUploading ? "text-[#8DDB90]" : uploadedReceiptUrl ? "text-green-500" : "text-[#8DDB90]"}`}
                 />
                 <div>
                   <p className="font-medium text-[#24272C]">
@@ -532,29 +532,31 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
                   </p>
                   <p className="text-sm text-[#5A5D63]">
                     {formatFileSize(selectedFile.size)}
+                    {isUploading && (
+                      <span className="ml-2 text-[#8DDB90]">
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          className="animate-spin"
+                        />{" "}
+                        Uploading...
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                {!uploadedReceiptUrl && (
-                  <Button
-                    onClick={handleUploadReceipt}
-                    value={isUploading ? "Uploading..." : "Upload"}
-                    className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
-                    disabled={isUploading}
-                  />
-                )}
                 <button
                   onClick={removeFile}
                   className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   title="Remove file"
+                  disabled={isUploading}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
             </div>
 
-            {uploadedReceiptUrl && (
+            {uploadedReceiptUrl && !isUploading && (
               <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-green-700 text-sm font-medium">
                   ✓ Receipt uploaded successfully
