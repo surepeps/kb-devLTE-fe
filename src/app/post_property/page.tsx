@@ -334,6 +334,7 @@ const PostProperty = () => {
         },
         price: propertyData.price,
         leaseHold: propertyData.leaseHold,
+        shortletDuration: propertyData.shortletDuration,
         owner: {
           fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
           phoneNumber: propertyData.contactInfo.phone,
