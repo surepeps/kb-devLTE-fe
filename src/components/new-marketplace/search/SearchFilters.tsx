@@ -279,33 +279,29 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
         {/* Filter inputs row - customized per tab */}
         <div className="w-full flex items-center gap-[15px] flex-wrap lg:flex-nowrap">
-          {/* Home Condition for Rent Tab */}
-          {tab === "rent" && (
-            <div className="flex-1 min-w-0">
-              <div className="relative">
-                <select
-                  value={filters.homeCondition || ""}
-                  onChange={(e) =>
-                    onFilterChange("homeCondition", e.target.value)
-                  }
-                  className="w-full h-[50px] px-[12px] border-[1px] border-[#D6DDEB] bg-[#FAFAFA] text-base outline-none appearance-none cursor-pointer"
-                  style={{ marginTop: "-30px" }}
-                >
-                  <option value="">Home Condition</option>
-                  {getHomeConditionOptions().map((condition) => (
-                    <option
-                      key={condition}
-                      value={condition === "All" ? "" : condition}
-                    >
-                      {condition}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                  </svg>
-                </div>
+          {/* Home Condition Filter for Rent Tab - Display like Filter by */}
+          {tab === "rent" && homeConditionOptions.length > 0 && (
+            <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
+              <div className="flex flex-wrap gap-[15px]">
+                <h3 className="font-semibold text-[#1E1E1E]">Home Condition</h3>
+                {homeConditionOptions.map((condition: string, idx: number) => (
+                  <RadioCheck
+                    key={idx}
+                    type="checkbox"
+                    name="homeCondition"
+                    isChecked={
+                      filters.homeCondition?.includes(condition) || false
+                    }
+                    value={condition}
+                    handleChange={() => {
+                      const current = filters.homeCondition || [];
+                      const updated = current.includes(condition)
+                        ? current.filter((opt: string) => opt !== condition)
+                        : [...current, condition];
+                      onFilterChange("homeCondition", updated);
+                    }}
+                  />
+                ))}
               </div>
             </div>
           )}
