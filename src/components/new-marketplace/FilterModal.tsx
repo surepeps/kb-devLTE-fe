@@ -34,12 +34,16 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Modal states for nested components
-  const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] = useState(false);
-  const [isDocumentModalOpened, setIsDocumentModalOpened] = useState(false);
-  const [isBedroomModalOpened, setIsBedroomModalOpened] = useState(false);
-  const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] = useState(false);
-  const [priceRadioValue, setPriceRadioValue] = useState("");
+  // State for form values
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 0, display: "" });
+  const [selectedBedrooms, setSelectedBedrooms] = useState<number | string>("");
+  const [selectedBathrooms, setSelectedBathrooms] = useState<number | string>(
+    "",
+  );
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+  const [landSizeType, setLandSizeType] = useState<string>("plot");
+  const [landSizeValue, setLandSizeValue] = useState<string>("");
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
   // Usage options for tab
   const getUsageOptions = () => {
@@ -61,59 +65,110 @@ const FilterModal: React.FC<FilterModalProps> = ({
     }
   };
 
-  // Price formik for existing PriceRange component
-  const priceFormik = useFormik({
-    initialValues: {
-      minPrice: filters.priceRange?.min || 0,
-      maxPrice: filters.priceRange?.max || 0,
-    },
-    onSubmit: () => {},
-  });
+  // Property features
+  const propertyFeatures = [
+    "Air Conditioning",
+    "Swimming Pool",
+    "Garden/Lawn",
+    "Gym/Fitness Center",
+    "Security System",
+    "Backup Generator",
+    "Solar Power",
+    "Balcony/Terrace",
+    "Garage",
+    "Servant Quarters",
+    "Study Room",
+    "Dining Room",
+    "Family Lounge",
+    "Kitchen Pantry",
+    "Walk-in Closet",
+    "En-suite Bathroom",
+    "Guest Toilet",
+    "Laundry Room",
+    "Storage Room",
+    "Elevator",
+    "Playground",
+    "24/7 Security",
+    "CCTV Surveillance",
+    "Intercom System",
+    "Gated Community",
+    "Paved Roads",
+    "Street Lighting",
+    "Water Treatment Plant",
+  ];
 
-  // More filters state for existing MoreFilter component
-  const [moreFilters, setMoreFilters] = useState({
-    bathroom: filters.bathrooms || undefined,
-    landSize: filters.landSize || {
-      type: "plot",
-      size: undefined,
-    },
-    desirer_features: filters.desiredFeatures || [],
-  });
+  // Document types
+  const documentTypes = [
+    "Certificate of Occupancy (C of O)",
+    "Deed of Assignment",
+    "Survey Plan",
+    "Building Plan Approval",
+    "Tax Receipt",
+    "Power of Attorney",
+    "Probate/Letters of Administration",
+    "Gazette",
+    "Registered Conveyance",
+    "Consent to Assignment",
+    "Right of Occupancy",
+    "Customary Right of Occupancy",
+  ];
+
+  // Initialize values from filters
+  useEffect(() => {
+    if (filters.priceRange) {
+      setPriceRange(filters.priceRange);
+    }
+    if (filters.bedrooms) {
+      setSelectedBedrooms(filters.bedrooms);
+    }
+    if (filters.bathrooms) {
+      setSelectedBathrooms(filters.bathrooms);
+    }
+    if (filters.documentTypes) {
+      setSelectedDocuments([...filters.documentTypes]);
+    }
+    if (filters.landSize) {
+      setLandSizeType(filters.landSize.type || "plot");
+      setLandSizeValue(filters.landSize.size?.toString() || "");
+    }
+    if (filters.desiredFeatures) {
+      setSelectedFeatures([...filters.desiredFeatures]);
+    }
+  }, [filters]);
 
   useClickOutside(modalRef, onClose);
 
-  const formatPriceDisplay = (radioValue: string, formik: any) => {
-    if (radioValue) {
-      return radioValue;
-    }
-    const { minPrice, maxPrice } = formik.values;
-    if (minPrice > 0 || maxPrice > 0) {
-      const min = minPrice > 0 ? `₦${minPrice.toLocaleString()}` : "Min";
-      const max = maxPrice > 0 ? `₦${maxPrice.toLocaleString()}` : "Max";
-      return `${min} - ${max}`;
-    }
-    return "";
-  };
-
-  const formatDocumentsDisplay = () => {
-    const docs = filters.documentTypes || [];
-    return docs.length > 0 ? `${docs.length} documents selected` : "";
-  };
-
   const handleApplyFilters = () => {
-    // Update price range from formik
-    onFilterChange("priceRange", {
-      min: priceFormik.values.minPrice,
-      max: priceFormik.values.maxPrice,
-    });
-
-    // Update more filters
-    onFilterChange("bathrooms", moreFilters.bathroom);
-    onFilterChange("landSize", moreFilters.landSize);
-    onFilterChange("desiredFeatures", moreFilters.desirer_features);
+    // Apply all current form values to filters
+    if (priceRange.min > 0 || priceRange.max > 0) {
+      onFilterChange("priceRange", priceRange);
+    }
+    if (selectedBedrooms) {
+      onFilterChange("bedrooms", selectedBedrooms);
+    }
+    if (selectedBathrooms) {
+      onFilterChange("bathrooms", selectedBathrooms);
+    }
+    if (selectedDocuments.length > 0) {
+      onFilterChange("documentTypes", selectedDocuments);
+    }
+    if (landSizeValue) {
+      onFilterChange("landSize", {
+        type: landSizeType,
+        size: parseInt(landSizeValue.replace(/,/g, "")),
+      });
+    }
+    if (selectedFeatures.length > 0) {
+      onFilterChange("desiredFeatures", selectedFeatures);
+    }
 
     onApplyFilters();
     onClose();
+  };
+
+  const formatNumberInput = (value: string) => {
+    const number = value.replace(/[^0-9]/g, "");
+    return number ? parseInt(number).toLocaleString() : "";
   };
 
   const usageOptions = getUsageOptions();
