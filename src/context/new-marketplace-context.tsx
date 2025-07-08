@@ -136,16 +136,19 @@ interface NewMarketplaceContextType {
     tab: "buy" | "jv" | "rent" | "shortlet",
   ) => boolean;
 
-  // Price negotiation (for buy and rent tabs)
+  // Price negotiation (for buy, rent and shortlet tabs)
   addNegotiatedPrice: (
-    tab: "buy" | "rent",
+    tab: "buy" | "rent" | "shortlet",
     propertyId: string,
     originalPrice: number,
     negotiatedPrice: number,
   ) => void;
-  removeNegotiatedPrice: (tab: "buy" | "rent", propertyId: string) => void;
+  removeNegotiatedPrice: (
+    tab: "buy" | "rent" | "shortlet",
+    propertyId: string,
+  ) => void;
   getNegotiatedPrice: (
-    tab: "buy" | "rent",
+    tab: "buy" | "rent" | "shortlet",
     propertyId: string,
   ) => NegotiatedPrice | null;
 
