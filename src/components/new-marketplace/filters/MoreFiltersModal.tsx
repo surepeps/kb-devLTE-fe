@@ -36,6 +36,9 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
   const [landSizeType, setLandSizeType] = useState<string>("plot");
   const [landSizeValue, setLandSizeValue] = useState<string>("");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [selectedTenantCriteria, setSelectedTenantCriteria] = useState<
+    string[]
+  >([]);
 
   useClickOutside(modalRef, onClose);
 
@@ -71,6 +74,24 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
     "Water Treatment Plant",
     "Sewage Treatment",
     "Waste Management",
+  ];
+
+  // Tenant criteria for rent tab
+  const tenantCriteria = [
+    "No Pets",
+    "Pets Allowed",
+    "No Smoking",
+    "Smoking Allowed",
+    "Students Welcome",
+    "No Students",
+    "Family Only",
+    "Professionals Only",
+    "Long-term Lease",
+    "Short-term Lease",
+    "Furnished",
+    "Unfurnished",
+    "Utilities Included",
+    "Utilities Excluded",
   ];
 
   const landSizeTypes = [
