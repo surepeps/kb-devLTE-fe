@@ -3,18 +3,17 @@
 "use client";
 import React, { useState, Fragment, useEffect } from "react";
 import { useFormik } from "formik";
-import SelectStateLGA from "../../marketplace/select-state-lga";
 import Input from "../../general-components/Input";
-import PriceRange from "../../marketplace/price-range";
-import BedroomComponent from "../../marketplace/bedroom";
-import MoreFilter from "../../marketplace/more-filter";
-import DocumentTypeComponent from "../../marketplace/document-type";
 import RadioCheck from "../../general-components/radioCheck";
 import { AnimatePresence } from "framer-motion";
-import SelectedFiltersCard from "../SelectedFiltersCard";
 import LocationSearch from "./LocationSearch";
 import FilterModal from "../FilterModal";
 import StandardPreloader from "../StandardPreloader";
+import ActiveFilters from "../ActiveFilters";
+import PriceRangeFilter from "../filters/PriceRangeFilter";
+import BedroomFilter from "../filters/BedroomFilter";
+import DocumentTypeFilter from "../filters/DocumentTypeFilter";
+import MoreFiltersModal from "../filters/MoreFiltersModal";
 
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent";
