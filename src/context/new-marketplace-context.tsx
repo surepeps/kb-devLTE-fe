@@ -238,10 +238,15 @@ export const NewMarketplaceProvider: React.FC<{
   }, []);
 
   // Tab management
-  const [activeTab, setActiveTab] = useState<"buy" | "jv" | "rent">("buy");
+  const [activeTab, setActiveTab] = useState<
+    "buy" | "jv" | "rent" | "shortlet"
+  >("buy");
   const [buyTab, setBuyTab] = useState<TabState>(createInitialTabState);
   const [jvTab, setJvTab] = useState<TabState>(createInitialTabState);
   const [rentTab, setRentTab] = useState<TabState>(createInitialTabState);
+  const [shortletTab, setShortletTab] = useState<TabState>(
+    createInitialTabState,
+  );
 
   // Add for inspection modal
   const [isAddForInspectionOpen, setIsAddForInspectionOpen] = useState(false);
