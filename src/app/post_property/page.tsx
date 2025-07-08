@@ -256,8 +256,11 @@ const PostProperty = () => {
   };
 
   const handlePrevious = () => {
-    if (showPreview) {
-      setShowPreview(false);
+    if (showPropertySummary) {
+      setShowPropertySummary(false);
+    } else if (showCommissionModal) {
+      setShowCommissionModal(false);
+      setShowPropertySummary(true);
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
