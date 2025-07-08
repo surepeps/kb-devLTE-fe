@@ -139,7 +139,6 @@ const PostProperty = () => {
     getUserType,
   } = usePostPropertyContext();
 
-  const [showPreview, setShowPreview] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
