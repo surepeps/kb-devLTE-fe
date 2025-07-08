@@ -9,7 +9,15 @@ import Button from "@/components/general-components/button";
 interface DateTimeSelectionProps {
   selectedProperties: any[];
   inspectionFee: number;
-  onProceed: () => void;
+  onProceed: (data: {
+    date: string;
+    time: string;
+    buyerInfo: {
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+    };
+  }) => void;
   onBack: () => void;
 }
 
