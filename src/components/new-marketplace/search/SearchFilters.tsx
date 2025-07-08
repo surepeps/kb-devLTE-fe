@@ -288,15 +288,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     type="checkbox"
                     name="homeCondition"
                     isChecked={
-                      filters.homeCondition?.includes(condition) || false
+                      filters.homeCondition === condition ||
+                      (condition === "All" && !filters.homeCondition)
                     }
                     value={condition}
                     handleChange={() => {
-                      const current = filters.homeCondition || [];
-                      const updated = current.includes(condition)
-                        ? current.filter((opt: string) => opt !== condition)
-                        : [...current, condition];
-                      onFilterChange("homeCondition", updated);
+                      if (condition === "All") {
+                        onFilterChange("homeCondition", "");
+                      } else {
+                        onFilterChange("homeCondition", condition);
+                      }
                     }}
                   />
                 ))}
