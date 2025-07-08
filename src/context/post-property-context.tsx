@@ -178,8 +178,11 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
         return basicFieldsValid;
 
       case 2: // Features and conditions
-        if (propertyData.propertyType === "rent") {
-          return true; // No required fields for rent
+        if (
+          propertyData.propertyType === "rent" ||
+          propertyData.propertyType === "shortlet"
+        ) {
+          return true; // No required fields for rent/shortlet
         }
         if (propertyData.propertyType === "jv") {
           return propertyData.jvConditions.length > 0;
