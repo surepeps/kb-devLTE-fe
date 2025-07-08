@@ -390,6 +390,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <BedroomFilter
               isOpen={isBedroomModalOpened}
               onClose={() => setIsBedroomModalOpened(false)}
+              tab={tab}
               onBedroomSelect={handleBedroomSelect}
               currentValue={filters.bedrooms}
             />
