@@ -13,7 +13,7 @@ import { IsMobile } from "@/hooks/isMobile";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 
 interface PropertyGridProps {
-  tab: "buy" | "rent";
+  tab: "buy" | "rent" | "shortlet";
   properties: any[];
   loading: boolean;
   error: string;
