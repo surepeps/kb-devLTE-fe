@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
