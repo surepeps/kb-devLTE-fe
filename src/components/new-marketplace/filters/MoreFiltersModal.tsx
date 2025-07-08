@@ -119,7 +119,13 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
     setLandSizeValue("");
     setSelectedFeatures([]);
     setSelectedTenantCriteria([]);
-    onFiltersApply({});
+    // Clear filters immediately
+    onFiltersApply({
+      bathrooms: undefined,
+      landSize: undefined,
+      features: undefined,
+      tenantCriteria: undefined,
+    });
   };
 
   const formatNumberInput = (value: string) => {
