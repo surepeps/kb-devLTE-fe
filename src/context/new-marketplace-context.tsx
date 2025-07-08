@@ -994,6 +994,7 @@ export const NewMarketplaceProvider: React.FC<{
       buyTab,
       jvTab,
       rentTab,
+      shortletTab,
 
       // Current tab state
       getCurrentTabState,
