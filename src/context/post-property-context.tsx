@@ -78,6 +78,7 @@ const initialPropertyData: PropertyData = {
   price: "",
   leaseHold: "",
   holdDuration: "",
+  shortletDuration: "",
   description: "",
   state: null,
   lga: null,
