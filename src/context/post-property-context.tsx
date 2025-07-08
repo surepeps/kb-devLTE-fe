@@ -234,6 +234,12 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     resetForm,
     getMinimumRequiredImages,
     areImagesValid,
+    showCommissionModal,
+    setShowCommissionModal,
+    showPropertySummary,
+    setShowPropertySummary,
+    getUserCommissionRate,
+    getUserType,
   };
 
   return (
