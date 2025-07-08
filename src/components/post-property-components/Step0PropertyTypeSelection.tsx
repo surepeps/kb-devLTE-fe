@@ -94,14 +94,16 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-lg">
               {
-                propertyTypes.find((t) => t.value === propertyData.propertyType)
-                  ?.icon
+                briefTypesConfig.find(
+                  (t) => t.value === propertyData.propertyType,
+                )?.icon
               }
             </span>
             <span className="text-[#09391C] font-medium">
               {
-                propertyTypes.find((t) => t.value === propertyData.propertyType)
-                  ?.label
+                briefTypesConfig.find(
+                  (t) => t.value === propertyData.propertyType,
+                )?.label
               }{" "}
               selected
             </span>
