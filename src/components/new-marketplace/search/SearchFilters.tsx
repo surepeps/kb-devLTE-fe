@@ -106,6 +106,119 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     return docs.length > 0 ? `${docs.length} documents selected` : "";
   };
 
+  // Generate active filters array for the modal
+  const getActiveFiltersForModal = () => {
+    const activeFilters: Array<{ key: string; label: string; value?: any }> =
+      [];
+
+    // Price Range
+    if (
+      filters.priceRange &&
+      (filters.priceRange.min > 0 || filters.priceRange.max > 0)
+    ) {
+      activeFilters.push({
+        key: "priceRange",
+        label: `Price: ${filters.priceRange.display || `₦${filters.priceRange.min?.toLocaleString() || 0} - ₦${filters.priceRange.max?.toLocaleString() || 0}`}`,
+      });
+    }
+
+    // Location
+    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
+      const locationParts = [
+        filters.selectedArea,
+        filters.selectedLGA,
+        filters.selectedState,
+      ].filter(Boolean);
+      if (locationParts.length > 0) {
+        activeFilters.push({
+          key: "location",
+          label: `Location: ${locationParts.join(", ")}`,
+        });
+      }
+    }
+
+    // Usage Options
+    if (filters.usageOptions && filters.usageOptions.length > 0) {
+      const validOptions = filters.usageOptions.filter(
+        (option) => option !== "All",
+      );
+      validOptions.forEach((option) => {
+        activeFilters.push({
+          key: "usageOptions",
+          label: `Type: ${option}`,
+          value: option,
+        });
+      });
+    }
+
+    // Bedrooms
+    if (filters.bedrooms) {
+      activeFilters.push({
+        key: "bedrooms",
+        label: `Bedrooms: ${filters.bedrooms}`,
+      });
+    }
+
+    // Bathrooms
+    if (filters.bathrooms) {
+      activeFilters.push({
+        key: "bathrooms",
+        label: `Bathrooms: ${filters.bathrooms}`,
+      });
+    }
+
+    // Document Types
+    if (filters.documentTypes && filters.documentTypes.length > 0) {
+      filters.documentTypes.forEach((doc) => {
+        activeFilters.push({
+          key: "documentTypes",
+          label: `Doc: ${doc}`,
+          value: doc,
+        });
+      });
+    }
+
+    // Land Size
+    if (filters.landSize && filters.landSize.size) {
+      activeFilters.push({
+        key: "landSize",
+        label: `Land: ${filters.landSize.size} ${filters.landSize.type}`,
+      });
+    }
+
+    // Desired Features
+    if (filters.desiredFeatures && filters.desiredFeatures.length > 0) {
+      filters.desiredFeatures.forEach((feature) => {
+        activeFilters.push({
+          key: "desiredFeatures",
+          label: `Feature: ${feature}`,
+          value: feature,
+        });
+      });
+    }
+
+    // Tenant Criteria
+    if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+      filters.tenantCriteria.forEach((criteria) => {
+        activeFilters.push({
+          key: "tenantCriteria",
+          label: `Criteria: ${criteria}`,
+          value: criteria,
+        });
+      });
+    }
+
+    // Home Condition
+    if (filters.homeCondition) {
+      activeFilters.push({
+        key: "homeCondition",
+        label: `Condition: ${filters.homeCondition}`,
+      });
+    }
+
+    return activeFilters;
+  };
+
   return (
     <Fragment>
       {/* Loading Overlay */}
