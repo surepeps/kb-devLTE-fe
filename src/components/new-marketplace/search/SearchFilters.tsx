@@ -371,29 +371,27 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             />
           </div>
 
-          {/* Document Type Input - Equal flex */}
-          {tab !== "jv" && (
-            <div className="flex-1 min-w-0 relative">
-              <Input
-                className="w-full h-[50px] text-sm"
-                style={{ marginTop: "-30px" }}
-                placeholder="Document Type"
-                type="text"
-                label=""
-                readOnly
-                showDropdownIcon={true}
-                name=""
-                value={formatDocumentsDisplay()}
-                onClick={() => setIsDocumentModalOpened(!isDocumentModalOpened)}
-              />
-              <DocumentTypeFilter
-                isOpen={isDocumentModalOpened}
-                onClose={() => setIsDocumentModalOpened(false)}
-                onDocumentSelect={handleDocumentSelect}
-                currentValue={filters.documentTypes}
-              />
-            </div>
-          )}
+          {/* Document Type Input - Show for all tabs as per specification */}
+          <div className="flex-1 min-w-0 relative">
+            <Input
+              className="w-full h-[50px] text-sm"
+              style={{ marginTop: "-30px" }}
+              placeholder={tab === "jv" ? "Document" : "Document Type"}
+              type="text"
+              label=""
+              readOnly
+              showDropdownIcon={true}
+              name=""
+              value={formatDocumentsDisplay()}
+              onClick={() => setIsDocumentModalOpened(!isDocumentModalOpened)}
+            />
+            <DocumentTypeFilter
+              isOpen={isDocumentModalOpened}
+              onClose={() => setIsDocumentModalOpened(false)}
+              onDocumentSelect={handleDocumentSelect}
+              currentValue={filters.documentTypes}
+            />
+          </div>
 
           {/* Bedroom Input - Equal flex */}
           <div className="flex-1 min-w-0 relative">
