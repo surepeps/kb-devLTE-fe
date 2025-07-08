@@ -32,6 +32,25 @@ const AddForInspection = () => {
     "selection" | "datetime" | "payment"
   >("selection");
 
+  // Store inspection details between steps
+  const [inspectionDetails, setInspectionDetails] = useState<{
+    date: string;
+    time: string;
+    buyerInfo: {
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+    };
+  }>({
+    date: "",
+    time: "",
+    buyerInfo: {
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+    },
+  });
+
   const tabState = getCurrentTabState();
   const selectedProperties = tabState.selectedForInspection;
   const negotiatedPrices = activeTab !== "jv" ? tabState.negotiatedPrices : [];
@@ -269,7 +288,10 @@ const AddForInspection = () => {
               <DateTimeSelection
                 selectedProperties={selectedProperties}
                 inspectionFee={inspectionFee}
-                onProceed={handleProceedToPayment}
+                onProceed={(data) => {
+                  setInspectionDetails(data);
+                  handleProceedToPayment();
+                }}
                 onBack={() => setCurrentStep("selection")}
               />
             </motion.div>
@@ -285,6 +307,10 @@ const AddForInspection = () => {
               <PaymentUpload
                 selectedProperties={selectedProperties}
                 inspectionFee={inspectionFee}
+                inspectionDetails={inspectionDetails}
+                activeTab={activeTab}
+                negotiatedPrices={negotiatedPrices}
+                loiDocuments={loiDocuments}
                 onBack={() => setCurrentStep("datetime")}
                 onComplete={() => {
                   // Clear selection and go back to marketplace
