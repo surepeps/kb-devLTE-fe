@@ -257,6 +257,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               (feature: string) => feature !== value,
             );
             onFilterChange("desiredFeatures", updated);
+          } else if (key === "tenantCriteria" && value) {
+            const current = filters.tenantCriteria || [];
+            const updated = current.filter(
+              (criteria: string) => criteria !== value,
+            );
+            onFilterChange("tenantCriteria", updated);
           } else if (key === "location") {
             onFilterChange("selectedState", "");
             onFilterChange("selectedLGA", "");
@@ -270,6 +276,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           }
         }}
         onClearAll={onClearFilters}
+        onSubmitPreference={() => setIsSubmitPreferenceModalOpen(true)}
       />
 
       {/* Mobile Filter Section */}
