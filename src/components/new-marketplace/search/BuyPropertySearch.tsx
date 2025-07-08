@@ -3,7 +3,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { useNewMarketplace, SearchParams } from "@/context/new-marketplace-context";
+import {
+  useNewMarketplace,
+  SearchParams,
+} from "@/context/new-marketplace-context";
 import SearchFilters from "./SearchFilters";
 import { IsMobile } from "@/hooks/isMobile";
 
@@ -27,49 +30,73 @@ const BuyPropertySearch = () => {
       limit: 12,
     };
 
-    // Add location filter
+    // Add location filter - ensure proper values
     if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
       const locationParts = [
-        filters.selectedArea,
-        filters.selectedLGA,
-        filters.selectedState,
+        filters.selectedArea?.trim(),
+        filters.selectedLGA?.trim(),
+        filters.selectedState?.trim(),
       ].filter(Boolean);
-      searchParams.location = locationParts.join(", ");
+      if (locationParts.length > 0) {
+        searchParams.location = locationParts.join(", ");
+      }
     }
 
-    // Add price range
-    if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
-      searchParams.priceRange = {
-        min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
-        max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
-      };
+    // Add price range - ensure valid numbers
+    if (filters.priceRange?.min > 0 || filters.priceRange?.max > 0) {
+      searchParams.priceRange = {};
+      if (filters.priceRange.min > 0 && !isNaN(filters.priceRange.min)) {
+        searchParams.priceRange.min = filters.priceRange.min;
+      }
+      if (filters.priceRange.max > 0 && !isNaN(filters.priceRange.max)) {
+        searchParams.priceRange.max = filters.priceRange.max;
+      }
     }
 
-    // Add other filters
-    if (filters.documentTypes.length > 0) {
+    // Add usage options filter
+    if (filters.usageOptions && filters.usageOptions.length > 0) {
+      const validUsageOptions = filters.usageOptions.filter(
+        (option) => option && option !== "All",
+      );
+      if (validUsageOptions.length > 0) {
+        searchParams.propertyType = validUsageOptions;
+      }
+    }
+
+    // Add document types filter
+    if (filters.documentTypes && filters.documentTypes.length > 0) {
       searchParams.documentType = filters.documentTypes;
     }
 
-    if (filters.bedrooms) {
-      searchParams.bedroom = filters.bedrooms;
+    // Add bedrooms filter
+    if (filters.bedrooms && !isNaN(Number(filters.bedrooms))) {
+      searchParams.bedroom = Number(filters.bedrooms);
     }
 
-    if (filters.bathrooms) {
-      searchParams.bathroom = filters.bathrooms;
+    // Add bathrooms filter
+    if (filters.bathrooms && !isNaN(Number(filters.bathrooms))) {
+      searchParams.bathroom = Number(filters.bathrooms);
     }
 
-    if (filters.landSize.size) {
-      searchParams.landSize = filters.landSize.size;
-      searchParams.landSizeType = filters.landSize.type;
+    // Add land size filter
+    if (filters.landSize?.size && !isNaN(Number(filters.landSize.size))) {
+      searchParams.landSize = Number(filters.landSize.size);
+      if (filters.landSize.type) {
+        searchParams.landSizeType = filters.landSize.type;
+      }
     }
 
-    if (filters.desiredFeatures.length > 0) {
+    // Add desired features filter
+    if (filters.desiredFeatures && filters.desiredFeatures.length > 0) {
       searchParams.desireFeature = filters.desiredFeatures;
     }
 
-    if (filters.homeCondition) {
-      searchParams.homeCondition = filters.homeCondition;
+    // Add home condition filter
+    if (filters.homeCondition && filters.homeCondition.trim()) {
+      searchParams.homeCondition = filters.homeCondition.trim();
     }
+
+    console.log("Search params:", searchParams); // Debug log
 
     // Perform search
     await searchTabProperties("buy", searchParams);
@@ -111,13 +138,15 @@ const BuyPropertySearch = () => {
     },
   });
 
-  // Filter states
+  // Filter states with better initialization
   const [filters, setFilters] = useState({
     selectedState: "",
     selectedLGA: "",
     selectedArea: "",
+    locationDisplay: "",
     priceRange: { min: 0, max: 0 },
     documentTypes: [] as string[],
+    usageOptions: [] as string[],
     bedrooms: undefined as number | undefined,
     bathrooms: undefined as number | undefined,
     landSize: {
@@ -129,12 +158,14 @@ const BuyPropertySearch = () => {
   });
 
   const handleClearFilters = () => {
-    setFilters({
+    const clearedFilters = {
       selectedState: "",
       selectedLGA: "",
       selectedArea: "",
+      locationDisplay: "",
       priceRange: { min: 0, max: 0 },
       documentTypes: [],
+      usageOptions: [],
       bedrooms: undefined,
       bathrooms: undefined,
       landSize: {
@@ -143,10 +174,14 @@ const BuyPropertySearch = () => {
       },
       desiredFeatures: [],
       homeCondition: "",
-    });
+    };
 
+    setFilters(clearedFilters);
     searchFormik.resetForm();
     clearTabFilters("buy");
+
+    // Trigger search with cleared filters
+    handleSearch(1);
   };
 
   const updateFilter = (key: string, value: any) => {

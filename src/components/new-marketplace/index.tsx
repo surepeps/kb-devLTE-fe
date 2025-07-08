@@ -9,7 +9,8 @@ import BuyTab from "./tabs/BuyTab";
 import JointVentureTab from "./tabs/JointVentureTab";
 import RentTab from "./tabs/RentTab";
 import AddForInspection from "./AddForInspection";
- 
+import StandardPreloader from "./StandardPreloader";
+
 const NewMarketPlace = () => {
   const router = useRouter();
   const {
@@ -20,6 +21,16 @@ const NewMarketPlace = () => {
   } = useNewMarketplace();
 
   const [hasError, setHasError] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // Track initial loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1000); // Give time for components to initialize
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -35,7 +46,14 @@ const NewMarketPlace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1]">
+    <div className="min-h-screen bg-[#EEF1F1] relative">
+      {/* Initial Loading */}
+      <StandardPreloader
+        isVisible={isInitialLoading}
+        message="Loading marketplace..."
+        overlay={true}
+      />
+
       {isAddForInspectionOpen ? (
         <AddForInspection />
       ) : (

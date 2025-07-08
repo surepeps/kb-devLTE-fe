@@ -8,6 +8,7 @@ import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import Loading from "@/components/loading-component/loading";
 import FailedRequest from "@/components/general-components/FailedRequest";
+import StandardPreloader from "./StandardPreloader";
 import { IsMobile } from "@/hooks/isMobile";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 
@@ -30,7 +31,7 @@ interface PropertyGridProps {
   selectedForInspection: any[];
   negotiatedPrices: any[];
   onOpenAddForInspection: () => void;
-} 
+}
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
   tab,
@@ -113,9 +114,11 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loading />
-      </div>
+      <StandardPreloader
+        isVisible={true}
+        message="Loading properties..."
+        overlay={false}
+      />
     );
   }
 

@@ -435,10 +435,10 @@ const ProductDetailsPage = () => {
               </h2> */}
             </div>
 
-            {/* <div className='w-full flex justify-center items-center'> */}
-            <div className="flex flex-col lg:flex-row justify-between items-start container px-[15px] md:px-[20px] xl:px-[40px] max-w-7xl">
+            {/* Responsive layout container */}
+            <div className="flex flex-col lg:flex-row justify-between items-start container px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto">
               <div className="w-full lg:w-[70%] flex flex-col">
-                <div className="w-full max-w-[837px] flex flex-col gap-[20px]">
+                <div className="w-full flex flex-col gap-4 md:gap-6">
                   <ImageSwiper
                     images={
                       details.pictures["length"] !== 0
@@ -447,9 +447,9 @@ const ProductDetailsPage = () => {
                     }
                   />
 
-                  <div className="w-full lg:w-[90%] h-full flex flex-col gap-[20px]">
+                  <div className="w-full h-full flex flex-col gap-4 md:gap-6">
                     {details.pictures["length"] !== 0 ? (
-                      <div className="flex gap-[12px] overflow-x-auto w-full justify-center lg:justify-start">
+                      <div className="flex gap-2 md:gap-3 overflow-x-auto w-full justify-start scrollbar-hide">
                         {details.pictures.map((src: string, idx: number) => (
                           <img
                             src={src}
@@ -460,16 +460,15 @@ const ProductDetailsPage = () => {
                               setImageData([src]);
                               setViewImage(true);
                             }}
-                            className="md:w-[80px] md:h-[60px] w-[63px] h-[48px] sm:w-[120px] sm:h-[92px] object-cover bg-gray-200 rounded"
-                            // style={{ maxWidth: '100%', flex: '0 0 auto' }}
-                            alt={"image"}
+                            className="w-16 h-12 md:w-20 md:h-16 lg:w-24 lg:h-18 object-cover bg-gray-200 rounded cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
+                            alt={`Property image ${idx + 1}`}
                           />
                         ))}
                       </div>
                     ) : null}
 
                     {/**Details */}
-                    <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-[10px] border-b-[1px] border-[#C7CAD0] pb-[40px]">
+                    <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 border-b border-[#C7CAD0] pb-6 md:pb-8">
                       <BoxContainer
                         heading="Bedrooms"
                         subHeading={
@@ -516,8 +515,8 @@ const ProductDetailsPage = () => {
                       />
                     </div>
 
-                    {/* <div className='w-full py-[40px] border-b-[1px] border-[#C7CAD0]'> */}
-                    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[10px] border-b-[1px] border-[#C7CAD0] pb-[20px]">
+                    {/* Property Information Grid */}
+                    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 border-b border-[#C7CAD0] pb-4 md:pb-6">
                       <BoxContainer
                         heading="Listing Type"
                         subHeading={details.briefType || "Nil"}
@@ -610,41 +609,37 @@ const ProductDetailsPage = () => {
                       </p>
                     </div>
 
-                    <div className="w-full flex flex-col sm:flex-row items-center mt-10 gap-3">
-                      <Link href={"/market-place"} className="w-full sm:w-auto">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPropertySelectedForInspection(details);
-                            setIsAddForInspectionModalOpened(true);
-                          }}
-                          className="w-full sm:w-[200px] h-[48px] md:h-[56px] bg-[#8DDB90] hover:bg-[#7BC87F] text-base font-bold text-white rounded-lg transition-colors"
-                        >
-                          Select for inspection
-                        </button>
-                      </Link>
-                      <Link href={"/market-place"} className="w-full sm:w-auto">
-                        <button
-                          onClick={() => {
-                            setPropertySelectedForInspection(details);
-                            setIsAddForInspectionModalOpened(true);
-                            setIsComingFromPriceNeg(true);
-                          }}
-                          type="button"
-                          className="w-full sm:w-[200px] h-[48px] md:h-[56px] bg-[#1976D2] hover:bg-[#1565C0] text-base font-bold text-white rounded-lg transition-colors"
-                        >
-                          Price Negotiation
-                        </button>
-                      </Link>
+                    <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center mt-8 md:mt-10 gap-3 md:gap-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPropertySelectedForInspection(details);
+                          setIsAddForInspectionModalOpened(true);
+                        }}
+                        className="flex-1 sm:flex-none sm:min-w-[200px] h-12 md:h-14 bg-[#8DDB90] hover:bg-[#7BC87F] text-sm md:text-base font-bold text-white rounded-lg transition-colors"
+                      >
+                        Select for inspection
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPropertySelectedForInspection(details);
+                          setIsAddForInspectionModalOpened(true);
+                          setIsComingFromPriceNeg(true);
+                        }}
+                        type="button"
+                        className="flex-1 sm:flex-none sm:min-w-[200px] h-12 md:h-14 bg-[#1976D2] hover:bg-[#1565C0] text-sm md:text-base font-bold text-white rounded-lg transition-colors"
+                      >
+                        Price Negotiation
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="hidden lg:flex w-full lg:w-[30%] flex-col items-end">
-                <div className="w-full lg:w-[282px] flex justify-center items-center">
-                  <div className="flex justify-between items-start container">
-                    <div className="w-full flex flex-col gap-[26px] h-[inherit]">
-                      <div className="flex flex-col flex-wrap bg-white gap-[10px] border-[1px] border-[#D6DDEB] w-full py-[15px] px-[10px] overflow-x-auto hide-scrollbar">
+                <div className="w-full lg:w-[300px] xl:w-[320px] flex justify-center items-center">
+                  <div className="flex justify-between items-start w-full">
+                    <div className="w-full flex flex-col gap-6 h-[inherit]">
+                      <div className="flex flex-col bg-white gap-3 border border-[#D6DDEB] w-full py-4 px-4 rounded-lg shadow-sm overflow-x-auto hide-scrollbar">
                         <div className="flex w-full gap-[10px] flex-nowrap items-center">
                           <span className="text-base text-[#7C8493] whitespace-nowrap">
                             Reference ID:

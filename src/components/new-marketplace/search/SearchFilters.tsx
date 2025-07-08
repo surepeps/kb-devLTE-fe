@@ -1,18 +1,23 @@
 /** @format */
 
 "use client";
-import React, { useState, Fragment, useEffect } from "react";
-import { useFormik } from "formik";
-import SelectStateLGA from "../../marketplace/select-state-lga";
+import React, { useState, Fragment } from "react";
 import Input from "../../general-components/Input";
-import PriceRange from "../../marketplace/price-range";
-import BedroomComponent from "../../marketplace/bedroom";
-import MoreFilter from "../../marketplace/more-filter";
-import DocumentTypeComponent from "../../marketplace/document-type";
 import RadioCheck from "../../general-components/radioCheck";
 import { AnimatePresence } from "framer-motion";
-import SelectedFiltersCard from "../SelectedFiltersCard";
 import LocationSearch from "./LocationSearch";
+import FilterModal from "../FilterModal";
+import StandardPreloader from "../StandardPreloader";
+import ActiveFilters from "../ActiveFilters";
+import PriceRangeFilter from "../filters/PriceRangeFilter";
+import BedroomFilter from "../filters/BedroomFilter";
+import DocumentTypeFilter from "../filters/DocumentTypeFilter";
+import MoreFiltersModal from "../filters/MoreFiltersModal";
+import {
+  getUsageOptions,
+  getUsageOptionsLabel,
+  getHomeConditionOptions,
+} from "@/data/filter-data";
 
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent";
@@ -35,70 +40,65 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   selectedCount = 0,
   onOpenInspection,
 }) => {
-  // Modal states for existing components
+  // Modal states for new filter components
   const [isPriceRangeModalOpened, setIsPriceRangeModalOpened] = useState(false);
   const [isDocumentModalOpened, setIsDocumentModalOpened] = useState(false);
   const [isBedroomModalOpened, setIsBedroomModalOpened] = useState(false);
   const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] = useState(false);
-  const [priceRadioValue, setPriceRadioValue] = useState("");
 
-  // Usage options for tab
-  const getUsageOptions = () => {
-    switch (tab) {
-      case "buy":
-        return ["All", "Land", "Residential", "Commercial", "Duplex"];
-      case "jv":
-        return [
-          "All",
-          "Land Development",
-          "Commercial",
-          "Residential",
-          "Mixed Use",
-        ];
-      case "rent":
-        return ["All", "Apartment", "House", "Office", "Shop", "Warehouse"];
-      default:
-        return ["All"];
-    }
+  // Mobile filter modal state
+  const [isMobileFilterModalOpen, setIsMobileFilterModalOpen] = useState(false);
+
+  // Get dynamic filter data
+  const usageOptions = getUsageOptions(tab);
+  const usageOptionsLabel = getUsageOptionsLabel(tab);
+  const homeConditionOptions = getHomeConditionOptions(tab);
+
+  // Handlers for new filter components
+  const handlePriceRangeSelect = (priceRange: {
+    min: number;
+    max: number;
+    display: string;
+  }) => {
+    onFilterChange("priceRange", priceRange);
+    setIsPriceRangeModalOpened(false);
   };
 
-  // State/LGA formik for existing SelectStateLGA component
-  const locationFormik = useFormik({
-    initialValues: {
-      selectedLGA: filters.selectedLGA || "",
-      selectedState: filters.selectedState || "",
-    },
-    onSubmit: () => {},
-  });
+  const handleBedroomSelect = (bedrooms: number | string) => {
+    onFilterChange("bedrooms", bedrooms);
+    setIsBedroomModalOpened(false);
+  };
 
-  // Price formik for existing PriceRange component
-  const priceFormik = useFormik({
-    initialValues: {
-      minPrice: filters.priceRange?.min || 0,
-      maxPrice: filters.priceRange?.max || 0,
-    },
-    onSubmit: () => {},
-  });
+  const handleDocumentSelect = (documents: string[]) => {
+    onFilterChange("documentTypes", documents);
+    setIsDocumentModalOpened(false);
+  };
 
-  // More filters state for existing MoreFilter component
-  const [moreFilters, setMoreFilters] = useState({
-    bathroom: filters.bathrooms || undefined,
-    landSize: filters.landSize || {
-      type: "plot",
-      size: undefined,
-    },
-    desirer_features: filters.desiredFeatures || [],
-  });
-
-  const formatPriceDisplay = (radioValue: string, formik: any) => {
-    if (radioValue) {
-      return radioValue;
+  const handleMoreFiltersApply = (moreFilters: any) => {
+    if (moreFilters.bathrooms) {
+      onFilterChange("bathrooms", moreFilters.bathrooms);
     }
-    const { minPrice, maxPrice } = formik.values;
-    if (minPrice > 0 || maxPrice > 0) {
-      const min = minPrice > 0 ? `₦${minPrice.toLocaleString()}` : "Min";
-      const max = maxPrice > 0 ? `₦${maxPrice.toLocaleString()}` : "Max";
-      return `${min} - ${max}`;
+    if (moreFilters.landSize) {
+      onFilterChange("landSize", moreFilters.landSize);
+    }
+    if (moreFilters.features) {
+      onFilterChange("desiredFeatures", moreFilters.features);
+    }
+    if (moreFilters.tenantCriteria) {
+      onFilterChange("tenantCriteria", moreFilters.tenantCriteria);
+    }
+    setIsMoreFilterModalOpened(false);
+  };
+
+  const formatPriceDisplay = () => {
+    if (
+      filters.priceRange &&
+      (filters.priceRange.min > 0 || filters.priceRange.max > 0)
+    ) {
+      return (
+        filters.priceRange.display ||
+        `₦${filters.priceRange.min?.toLocaleString() || 0} - ₦${filters.priceRange.max?.toLocaleString() || 0}`
+      );
     }
     return "";
   };
@@ -108,37 +108,56 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     return docs.length > 0 ? `${docs.length} documents selected` : "";
   };
 
-  const usageOptions = getUsageOptions();
-
-  // Sync location formik with filter changes
-  useEffect(() => {
-    locationFormik.setValues({
-      selectedLGA: filters.selectedLGA || "",
-      selectedState: filters.selectedState || "",
-      selectedArea: filters.selectedArea || "",
-      locationDisplay:
-        filters.selectedState || filters.selectedLGA || filters.selectedArea
-          ? [filters.selectedArea, filters.selectedLGA, filters.selectedState]
-              .filter(Boolean)
-              .join(", ")
-          : "",
-    });
-  }, [filters.selectedState, filters.selectedLGA, filters.selectedArea]);
-
-  // Sync price formik with filter changes
-  useEffect(() => {
-    priceFormik.setValues({
-      minPrice: filters.priceRange?.min || 0,
-      maxPrice: filters.priceRange?.max || 0,
-    });
-  }, [filters.priceRange]);
-
   return (
     <Fragment>
-      {/* Selected Filters Card */}
-      <SelectedFiltersCard
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={loading}
+        message="Searching properties..."
+        overlay={false}
+      />
+
+      {/* Mobile Filter Modal */}
+      <FilterModal
+        isOpen={isMobileFilterModalOpen}
+        onClose={() => setIsMobileFilterModalOpen(false)}
+        tab={tab}
         filters={filters}
-        onRemoveFilter={onFilterChange}
+        onFilterChange={onFilterChange}
+        onApplyFilters={onSearch}
+        onClearFilters={onClearFilters}
+      />
+
+      {/* Active Filters */}
+      <ActiveFilters
+        filters={filters}
+        onRemoveFilter={(key, value) => {
+          if (key === "usageOptions" && value) {
+            const current = filters.usageOptions || [];
+            const updated = current.filter((opt: string) => opt !== value);
+            onFilterChange("usageOptions", updated);
+          } else if (key === "documentTypes" && value) {
+            const current = filters.documentTypes || [];
+            const updated = current.filter((doc: string) => doc !== value);
+            onFilterChange("documentTypes", updated);
+          } else if (key === "desiredFeatures" && value) {
+            const current = filters.desiredFeatures || [];
+            const updated = current.filter(
+              (feature: string) => feature !== value,
+            );
+            onFilterChange("desiredFeatures", updated);
+          } else if (key === "location") {
+            onFilterChange("selectedState", "");
+            onFilterChange("selectedLGA", "");
+            onFilterChange("selectedArea", "");
+            onFilterChange("locationDisplay", "");
+          } else {
+            onFilterChange(
+              key,
+              key === "priceRange" ? { min: 0, max: 0, display: "" } : "",
+            );
+          }
+        }}
         onClearAll={onClearFilters}
       />
 
@@ -148,19 +167,27 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           <span className="text-sm font-medium text-[#09391C]">
             Filter Properties
           </span>
-          <button
-            onClick={onSearch}
-            disabled={loading}
-            className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
-          >
-            {loading ? "Searching..." : "Search"}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsMobileFilterModalOpen(true)}
+              className="px-4 py-2 border border-[#8DDB90] text-[#8DDB90] rounded-lg text-sm font-medium hover:bg-[#8DDB90] hover:text-white transition-colors"
+            >
+              Filters
+            </button>
+            <button
+              onClick={onSearch}
+              disabled={loading}
+              className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
+            >
+              {loading ? "Searching..." : "Search"}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Location Filter */}
+        {/* Quick Location Search for Mobile */}
         <div className="w-full">
           <LocationSearch
-            placeholder="Enter state, LGA, or area..."
+            placeholder="Quick location search..."
             value={filters.locationDisplay || ""}
             onChange={(location, details) => {
               if (details) {
@@ -181,7 +208,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         {/* Selected Properties Button for Mobile */}
         {selectedCount > 0 && (
           <button
-            className="w-full bg-[#FF3D00] text-white py-3 rounded-lg font-medium"
+            className="w-full bg-[#FF3D00] text-white py-3 rounded-lg font-medium hover:bg-[#E53100] transition-colors"
             type="button"
             onClick={() => {
               if (onOpenInspection) {
@@ -199,7 +226,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className="container min-h-[181px] hidden lg:flex flex-col gap-[25px] py-[25px] px-[30px] bg-[#FFFFFF] sticky top-0 z-20">
         <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
           <div className="flex flex-wrap gap-[15px]">
-            <h3 className="font-semibold text-[#1E1E1E]">Filter by</h3>
+            <h3 className="font-semibold text-[#1E1E1E]">
+              {usageOptionsLabel}
+            </h3>
             {usageOptions.map((item: string, idx: number) => (
               <RadioCheck
                 key={idx}
@@ -249,10 +278,38 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
         </div>
 
-        {/* Filter inputs row - exact copy of existing design */}
-        <div className="w-full flex items-center gap-[15px]">
+        {/* Filter inputs row - customized per tab */}
+        <div className="w-full flex items-center gap-[15px] flex-wrap lg:flex-nowrap">
+          {/* Home Condition Filter for Rent Tab - Display like Filter by */}
+          {tab === "rent" && homeConditionOptions.length > 0 && (
+            <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
+              <div className="flex flex-wrap gap-[15px]">
+                <h3 className="font-semibold text-[#1E1E1E]">Home Condition</h3>
+                {homeConditionOptions.map((condition: string, idx: number) => (
+                  <RadioCheck
+                    key={idx}
+                    type="checkbox"
+                    name="homeCondition"
+                    isChecked={
+                      filters.homeCondition === condition ||
+                      (condition === "All" && !filters.homeCondition)
+                    }
+                    value={condition}
+                    handleChange={() => {
+                      if (condition === "All") {
+                        onFilterChange("homeCondition", "");
+                      } else {
+                        onFilterChange("homeCondition", condition);
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Location Input - Fixed width */}
-          <div className="w-[280px]">
+          <div className="w-[280px] min-w-[250px]">
             <LocationSearch
               placeholder="Enter state, LGA, or area..."
               value={filters.locationDisplay || ""}
@@ -273,7 +330,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
 
           {/* Price Range Input - Equal flex */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 relative">
             <Input
               className="w-full h-[50px]"
               style={{ marginTop: "-30px" }}
@@ -282,50 +339,46 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               label=""
               readOnly
               showDropdownIcon={true}
-              value={formatPriceDisplay(priceRadioValue, priceFormik)}
+              value={formatPriceDisplay()}
               name="price"
-              onClick={() => setIsPriceRangeModalOpened(true)}
+              onClick={() =>
+                setIsPriceRangeModalOpened(!isPriceRangeModalOpened)
+              }
             />
-            {isPriceRangeModalOpened && (
-              <PriceRange
-                heading="Price Range"
-                formik={priceFormik}
-                closeModal={setIsPriceRangeModalOpened}
-                setSlectedRadioValue={setPriceRadioValue}
-                selectedRadioValue={priceRadioValue}
-              />
-            )}
+            <PriceRangeFilter
+              isOpen={isPriceRangeModalOpened}
+              onClose={() => setIsPriceRangeModalOpened(false)}
+              tab={tab}
+              onPriceSelect={handlePriceRangeSelect}
+              currentValue={filters.priceRange}
+            />
           </div>
 
-          {/* Document Type Input - Equal flex */}
-          {tab !== "jv" && (
-            <div className="flex-1 min-w-0">
-              <Input
-                className="w-full h-[50px] text-sm"
-                style={{ marginTop: "-30px" }}
-                placeholder="Document Type"
-                type="text"
-                label=""
-                readOnly
-                showDropdownIcon={true}
-                name=""
-                value={formatDocumentsDisplay()}
-                onClick={() => setIsDocumentModalOpened(true)}
-              />
-              {isDocumentModalOpened && (
-                <DocumentTypeComponent
-                  docsSelected={filters.documentTypes || []}
-                  setDocsSelected={(docs: string[]) =>
-                    onFilterChange("documentTypes", docs)
-                  }
-                  closeModal={setIsDocumentModalOpened}
-                />
-              )}
-            </div>
-          )}
+          {/* Document Type Input - Show for all tabs as per specification */}
+          <div className="flex-1 min-w-0 relative">
+            <Input
+              className="w-full h-[50px] text-sm"
+              style={{ marginTop: "-30px" }}
+              placeholder={tab === "jv" ? "Document" : "Document Type"}
+              type="text"
+              label=""
+              readOnly
+              showDropdownIcon={true}
+              name=""
+              value={formatDocumentsDisplay()}
+              onClick={() => setIsDocumentModalOpened(!isDocumentModalOpened)}
+            />
+            <DocumentTypeFilter
+              isOpen={isDocumentModalOpened}
+              onClose={() => setIsDocumentModalOpened(false)}
+              tab={tab}
+              onDocumentSelect={handleDocumentSelect}
+              currentValue={filters.documentTypes}
+            />
+          </div>
 
           {/* Bedroom Input - Equal flex */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 relative">
             <Input
               className="w-full h-[50px] text-sm"
               style={{ marginTop: "-30px" }}
@@ -336,17 +389,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               showDropdownIcon={true}
               name=""
               value={filters.bedrooms || ""}
-              onClick={() => setIsBedroomModalOpened(true)}
+              onClick={() => setIsBedroomModalOpened(!isBedroomModalOpened)}
             />
-            {isBedroomModalOpened && (
-              <BedroomComponent
-                noOfBedrooms={filters.bedrooms}
-                closeModal={setIsBedroomModalOpened}
-                setNumberOfBedrooms={(bedrooms: number) =>
-                  onFilterChange("bedrooms", bedrooms)
-                }
-              />
-            )}
+            <BedroomFilter
+              isOpen={isBedroomModalOpened}
+              onClose={() => setIsBedroomModalOpened(false)}
+              tab={tab}
+              onBedroomSelect={handleBedroomSelect}
+              currentValue={filters.bedrooms}
+            />
           </div>
 
           {/* Buttons Container - Fixed width */}
@@ -354,50 +405,30 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setIsMoreFilterModalOpened(true)}
-                className="w-[120px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C] font-medium"
+                onClick={() =>
+                  setIsMoreFilterModalOpened(!isMoreFilterModalOpened)
+                }
+                className="w-[120px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C] font-medium hover:bg-[#09391C] hover:text-white transition-colors"
               >
                 More filter
               </button>
-              {isMoreFilterModalOpened && (
-                <MoreFilter
-                  filters={moreFilters}
-                  setFilters={(newFilters: any) => {
-                    setMoreFilters(newFilters);
-                    onFilterChange("bathrooms", newFilters.bathroom);
-                    onFilterChange("landSize", newFilters.landSize);
-                    onFilterChange(
-                      "desiredFeatures",
-                      newFilters.desirer_features,
-                    );
-                  }}
-                  closeModal={setIsMoreFilterModalOpened}
-                />
-              )}
+              <MoreFiltersModal
+                isOpen={isMoreFilterModalOpened}
+                onClose={() => setIsMoreFilterModalOpened(false)}
+                tab={tab}
+                onFiltersApply={handleMoreFiltersApply}
+                currentFilters={{
+                  bathrooms: filters.bathrooms,
+                  landSize: filters.landSize,
+                  features: filters.desiredFeatures,
+                  tenantCriteria: filters.tenantCriteria,
+                }}
+              />
             </div>
             <button
               type="button"
-              className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold"
-              onClick={() => {
-                // Update filters based on form values before searching
-                onFilterChange(
-                  "selectedState",
-                  locationFormik.values.selectedState,
-                );
-                onFilterChange(
-                  "selectedLGA",
-                  locationFormik.values.selectedLGA,
-                );
-                onFilterChange(
-                  "selectedArea",
-                  locationFormik.values.selectedArea,
-                );
-                onFilterChange("priceRange", {
-                  min: priceFormik.values.minPrice,
-                  max: priceFormik.values.maxPrice,
-                });
-                onSearch();
-              }}
+              className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold hover:bg-[#7BC87F] transition-colors"
+              onClick={onSearch}
               disabled={loading}
             >
               {loading ? "Searching..." : "Search"}
