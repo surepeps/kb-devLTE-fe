@@ -29,6 +29,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   filters,
   onRemoveFilter,
   onClearAll,
+  onSubmitPreference,
 }) => {
   const activeFilters: Array<{ key: string; label: string; value?: any }> = [];
 
