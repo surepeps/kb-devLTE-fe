@@ -293,7 +293,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               Filters
             </button>
             <button
-              onClick={onSearch}
+              onClick={() => onSearch()}
               disabled={loading}
               className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg text-sm font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
             >
@@ -547,7 +547,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <button
               type="button"
               className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold hover:bg-[#7BC87F] transition-colors"
-              onClick={onSearch}
+              onClick={() => onSearch()}
               disabled={loading}
             >
               {loading ? "Searching..." : "Search"}
