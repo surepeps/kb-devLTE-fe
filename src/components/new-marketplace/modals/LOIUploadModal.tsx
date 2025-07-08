@@ -74,40 +74,80 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
     await uploadFile(file);
   };
 
+  // const uploadFile = async (file: File) => {
+  //   setIsUploading(true);
+
+  //   const formData = new FormData();
+  //   formData.append("file", file as Blob);
+
+  //   const url = URLS.BASE + URLS.uploadImg;
+
+  //   try {
+  //     await toast.promise(
+  //       POST_REQUEST_FILE_UPLOAD(url, formData).then((response) => {
+  //         console.log("Response from file upload:", response);
+  //         if ((response as unknown as { url: string }).url) {
+  //           setFileUrl((response as unknown as { url: string }).url as string);
+  //           return "Document uploaded successfully";
+  //         } else {
+  //           toast.error("Document upload failed");
+  //           throw new Error("Document upload failed");
+  //         }
+  //       }),
+  //       {
+  //         loading: "Uploading...",
+  //         success: "Document uploaded successfully",
+  //         error: "Document upload failed",
+  //       },
+  //     );
+  //   } catch (error) {
+  //     console.error("Upload error:", error);
+  //     setSelectedFile(null);
+  //     setFileUrl(null);
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // };
+
+
   const uploadFile = async (file: File) => {
-    setIsUploading(true);
+  setIsUploading(true);
 
-    const formData = new FormData();
-    formData.append("file", file as Blob);
+  const formData = new FormData();
+  formData.append('file', file);               // no need to cast to Blob
 
-    const url = URLS.BASE + URLS.uploadImg;
+  const url = `${URLS.BASE}${URLS.uploadImg}`;
 
-    try {
-      await toast.promise(
-        POST_REQUEST_FILE_UPLOAD(url, formData).then((response) => {
-          console.log("Response from file upload:", response);
-          if ((response as unknown as { url: string }).url) {
-            setFileUrl((response as unknown as { url: string }).url as string);
-            return "Document uploaded successfully";
-          } else {
-            toast.error("Document upload failed");
-            throw new Error("Document upload failed");
-          }
-        }),
-        {
-          loading: "Uploading...",
-          success: "Document uploaded successfully",
-          error: "Document upload failed",
-        },
-      );
-    } catch (error) {
-      console.error("Upload error:", error);
-      setSelectedFile(null);
-      setFileUrl(null);
-    } finally {
-      setIsUploading(false);
+  try {
+    // wrap the *exact* promise returned by helper in toast.promise
+    const data = await toast.promise(
+      POST_REQUEST_FILE_UPLOAD(url, formData),
+      {
+        loading: 'Uploading...',
+        success: 'Document uploaded successfully',
+        error: 'Document upload failed',
+      }
+    );
+
+    // Cloudinary route can return { url } OR { imageUrl } OR { data: { url } }
+    const uploadedUrl =
+      data.imageUrl || data.url || data.data?.url;
+
+    if (!uploadedUrl) {
+      throw new Error('No URL in server response');
     }
-  };
+
+    setFileUrl(uploadedUrl);
+  } catch (error) {
+    console.error('Upload error:', error);
+    toast.error('Document upload failed');
+    setSelectedFile(null);
+    setFileUrl(null);
+  } finally {
+    setIsUploading(false);
+  }
+};
+
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
