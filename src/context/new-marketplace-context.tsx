@@ -480,7 +480,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const removeNegotiatedPrice = useCallback(
-    (tab: "buy" | "rent", propertyId: string) => {
+    (tab: "buy" | "rent" | "shortlet", propertyId: string) => {
       updateTabState(tab, (state) => ({
         ...state,
         negotiatedPrices: state.negotiatedPrices.filter(
