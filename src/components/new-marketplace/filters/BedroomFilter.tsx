@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
+import { getBedroomOptions } from "@/data/filter-data";
 
 interface BedroomFilterProps {
   isOpen: boolean;
