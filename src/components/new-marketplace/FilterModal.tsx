@@ -207,7 +207,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className="p-4 space-y-6">
+            <div className="p-4 space-y-6 max-h-[70vh] overflow-y-auto">
               {/* Usage Options */}
               <div>
                 <h3 className="text-sm font-medium text-[#09391C] mb-3">
@@ -257,95 +257,236 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 />
               </div>
 
-              {/* Price Range */}
+              {/* Price Range - Direct Form */}
               <div>
                 <h3 className="text-sm font-medium text-[#09391C] mb-3">
                   Price Range
                 </h3>
-                <button
-                  onClick={() => setIsPriceRangeModalOpened(true)}
-                  className="w-full h-12 px-4 border border-gray-300 rounded-lg text-left text-sm text-[#5A5D63] bg-white hover:border-[#8DDB90] transition-colors"
-                >
-                  {formatPriceDisplay(priceRadioValue, priceFormik) ||
-                    "Select price range"}
-                </button>
-                {isPriceRangeModalOpened && (
-                  <PriceRange
-                    heading="Price Range"
-                    formik={priceFormik}
-                    closeModal={setIsPriceRangeModalOpened}
-                    setSlectedRadioValue={setPriceRadioValue}
-                    selectedRadioValue={priceRadioValue}
-                  />
-                )}
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">
+                        Min Price
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Enter min"
+                        value={
+                          priceRange.min > 0
+                            ? priceRange.min.toLocaleString()
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const value = formatNumberInput(e.target.value);
+                          setPriceRange((prev) => ({
+                            ...prev,
+                            min: value ? parseInt(value.replace(/,/g, "")) : 0,
+                          }));
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#8DDB90] text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">
+                        Max Price
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Enter max"
+                        value={
+                          priceRange.max > 0
+                            ? priceRange.max.toLocaleString()
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const value = formatNumberInput(e.target.value);
+                          setPriceRange((prev) => ({
+                            ...prev,
+                            max: value ? parseInt(value.replace(/,/g, "")) : 0,
+                          }));
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#8DDB90] text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Document Type */}
+              {/* Document Type - Direct Form */}
               {tab !== "jv" && (
                 <div>
                   <h3 className="text-sm font-medium text-[#09391C] mb-3">
-                    Document Type
+                    Document Types ({selectedDocuments.length} selected)
                   </h3>
-                  <button
-                    onClick={() => setIsDocumentModalOpened(true)}
-                    className="w-full h-12 px-4 border border-gray-300 rounded-lg text-left text-sm text-[#5A5D63] bg-white hover:border-[#8DDB90] transition-colors"
-                  >
-                    {formatDocumentsDisplay() || "Select documents"}
-                  </button>
-                  {isDocumentModalOpened && (
-                    <DocumentTypeComponent
-                      docsSelected={filters.documentTypes || []}
-                      setDocsSelected={(docs: string[]) =>
-                        onFilterChange("documentTypes", docs)
-                      }
-                      closeModal={setIsDocumentModalOpened}
-                    />
-                  )}
+                  <div className="max-h-32 overflow-y-auto space-y-2">
+                    {documentTypes.map((doc) => (
+                      <label
+                        key={doc}
+                        className="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors"
+                      >
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={selectedDocuments.includes(doc)}
+                            onChange={() => {
+                              if (selectedDocuments.includes(doc)) {
+                                setSelectedDocuments((prev) =>
+                                  prev.filter((d) => d !== doc),
+                                );
+                              } else {
+                                setSelectedDocuments((prev) => [...prev, doc]);
+                              }
+                            }}
+                            className="sr-only"
+                          />
+                          <div
+                            className={`w-4 h-4 border-2 rounded transition-colors ${
+                              selectedDocuments.includes(doc)
+                                ? "bg-[#8DDB90] border-[#8DDB90]"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {selectedDocuments.includes(doc) && (
+                              <Check
+                                size={10}
+                                className="text-white absolute top-0.5 left-0.5"
+                              />
+                            )}
+                          </div>
+                        </div>
+                        <span className="ml-3 text-sm text-gray-700 flex-1">
+                          {doc}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* Bedrooms */}
+              {/* Bedrooms - Direct Form */}
               <div>
                 <h3 className="text-sm font-medium text-[#09391C] mb-3">
                   Bedrooms
                 </h3>
-                <button
-                  onClick={() => setIsBedroomModalOpened(true)}
-                  className="w-full h-12 px-4 border border-gray-300 rounded-lg text-left text-sm text-[#5A5D63] bg-white hover:border-[#8DDB90] transition-colors"
-                >
-                  {filters.bedrooms || "Select bedrooms"}
-                </button>
-                {isBedroomModalOpened && (
-                  <BedroomComponent
-                    noOfBedrooms={filters.bedrooms}
-                    closeModal={setIsBedroomModalOpened}
-                    setNumberOfBedrooms={(bedrooms: number) =>
-                      onFilterChange("bedrooms", bedrooms)
-                    }
-                  />
-                )}
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, "10+"].map((bedroom) => (
+                    <button
+                      key={bedroom}
+                      onClick={() => setSelectedBedrooms(bedroom)}
+                      className={`p-2 rounded border text-sm font-medium transition-colors ${
+                        selectedBedrooms === bedroom
+                          ? "bg-[#8DDB90] text-white border-[#8DDB90]"
+                          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {bedroom}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* More Filters */}
+              {/* Bathrooms - Direct Form */}
               <div>
                 <h3 className="text-sm font-medium text-[#09391C] mb-3">
-                  Additional Filters
+                  Bathrooms
                 </h3>
-                <button
-                  onClick={() => setIsMoreFilterModalOpened(true)}
-                  className="w-full h-12 px-4 border border-gray-300 rounded-lg text-left text-sm text-[#5A5D63] bg-white hover:border-[#8DDB90] transition-colors"
-                >
-                  Bathrooms, Land Size & Features
-                </button>
-                {isMoreFilterModalOpened && (
-                  <MoreFilter
-                    filters={moreFilters}
-                    setFilters={(newFilters: any) => {
-                      setMoreFilters(newFilters);
-                    }}
-                    closeModal={setIsMoreFilterModalOpened}
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, "10+"].map((bathroom) => (
+                    <button
+                      key={bathroom}
+                      onClick={() => setSelectedBathrooms(bathroom)}
+                      className={`p-2 rounded border text-sm font-medium transition-colors ${
+                        selectedBathrooms === bathroom
+                          ? "bg-[#8DDB90] text-white border-[#8DDB90]"
+                          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {bathroom}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Land Size - Direct Form */}
+              <div>
+                <h3 className="text-sm font-medium text-[#09391C] mb-3">
+                  Land Size
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    {["plot", "acres", "sqm"].map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setLandSizeType(type)}
+                        className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors capitalize ${
+                          landSizeType === type
+                            ? "bg-[#8DDB90] text-white border-[#8DDB90]"
+                            : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter land size"
+                    value={landSizeValue}
+                    onChange={(e) =>
+                      setLandSizeValue(formatNumberInput(e.target.value))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#8DDB90] text-sm"
                   />
-                )}
+                </div>
+              </div>
+
+              {/* Features - Direct Form */}
+              <div>
+                <h3 className="text-sm font-medium text-[#09391C] mb-3">
+                  Desired Features ({selectedFeatures.length} selected)
+                </h3>
+                <div className="max-h-40 overflow-y-auto space-y-2">
+                  {propertyFeatures.map((feature) => (
+                    <label
+                      key={feature}
+                      className="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={selectedFeatures.includes(feature)}
+                          onChange={() => {
+                            if (selectedFeatures.includes(feature)) {
+                              setSelectedFeatures((prev) =>
+                                prev.filter((f) => f !== feature),
+                              );
+                            } else {
+                              setSelectedFeatures((prev) => [...prev, feature]);
+                            }
+                          }}
+                          className="sr-only"
+                        />
+                        <div
+                          className={`w-4 h-4 border-2 rounded transition-colors ${
+                            selectedFeatures.includes(feature)
+                              ? "bg-[#8DDB90] border-[#8DDB90]"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {selectedFeatures.includes(feature) && (
+                            <Check
+                              size={10}
+                              className="text-white absolute top-0.5 left-0.5"
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <span className="ml-3 text-sm text-gray-700 flex-1">
+                        {feature}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
 
