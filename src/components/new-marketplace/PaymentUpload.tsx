@@ -220,13 +220,16 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
   const removeFile = () => {
     setSelectedFile(null);
     setUploadedReceiptUrl("");
+    setIsUploading(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
-  const handleUploadReceipt = async () => {
-    if (!selectedFile) {
+  const handleUploadReceipt = async (file?: File) => {
+    const fileToUpload = file || selectedFile;
+
+    if (!fileToUpload) {
       toast.error("Please select a file to upload");
       return;
     }
@@ -234,7 +237,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     setIsUploading(true);
 
     try {
-      const imageUrl = await uploadImageToServer(selectedFile);
+      const imageUrl = await uploadImageToServer(fileToUpload);
       setUploadedReceiptUrl(imageUrl);
       toast.success("Payment receipt uploaded successfully!");
     } catch (error) {
