@@ -115,8 +115,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
     return number ? parseInt(number).toLocaleString() : "";
   };
 
-  const usageOptions = getUsageOptions();
-
   return (
     <AnimatePresence>
       {isOpen && (
