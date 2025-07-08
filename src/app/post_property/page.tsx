@@ -514,6 +514,20 @@ const PostProperty = () => {
               </Form>
             )}
           </Formik>
+
+          {/* Commission Modal */}
+          <CommissionModal
+            open={showCommissionModal}
+            onClose={() => setShowCommissionModal(false)}
+            onAccept={handleCommissionAccept}
+            commission={`${getUserCommissionRate()}%`}
+            userName={
+              `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`.trim() ||
+              "User"
+            }
+            userType={getUserType()}
+            briefType={getBriefTypeConfig(propertyData.propertyType)?.label}
+          />
         </div>
       </div>
     </AgentAccessBarrier>
