@@ -12,6 +12,12 @@ import BedroomFilter from "./filters/BedroomFilter";
 import DocumentTypeFilter from "./filters/DocumentTypeFilter";
 import MoreFiltersModal from "./filters/MoreFiltersModal";
 import { Check } from "lucide-react";
+import {
+  getUsageOptions,
+  getHomeConditionOptions,
+  getDocumentTypes,
+  getPropertyFeatures,
+} from "@/data/filter-data";
 
 interface FilterModalProps {
   isOpen: boolean;
