@@ -303,7 +303,7 @@ export const NewMarketplaceProvider: React.FC<{
   // Status management
   const setTabStatus = useCallback(
     (
-      tab: "buy" | "jv" | "rent",
+      tab: "buy" | "jv" | "rent" | "shortlet",
       status: "idle" | "pending" | "success" | "failed",
     ) => {
       updateTabState(tab, (state) => ({ ...state, formikStatus: status }));
@@ -312,7 +312,7 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   const setTabError = useCallback(
-    (tab: "buy" | "jv" | "rent", error: string) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", error: string) => {
       updateTabState(tab, (state) => ({ ...state, errMessage: error }));
     },
     [updateTabState],
@@ -320,7 +320,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   const setTabSearchStatus = useCallback(
     (
-      tab: "buy" | "jv" | "rent",
+      tab: "buy" | "jv" | "rent" | "shortlet",
       searchStatus: {
         status: "pending" | "success" | "failed" | "idle";
         couldNotFindAProperty: boolean;
