@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
+import { getPriceRanges, PriceRange } from "@/data/filter-data";
 
 interface PriceRangeFilterProps {
   isOpen: boolean;
