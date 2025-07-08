@@ -105,8 +105,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     return docs.length > 0 ? `${docs.length} documents selected` : "";
   };
 
-  const usageOptions = getUsageOptions();
-
   return (
     <Fragment>
       {/* Loading Overlay */}
