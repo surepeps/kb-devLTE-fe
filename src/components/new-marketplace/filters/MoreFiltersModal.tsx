@@ -131,6 +131,16 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
     });
   };
 
+  const handleTenantCriteriaToggle = (criteria: string) => {
+    setSelectedTenantCriteria((prev) => {
+      if (prev.includes(criteria)) {
+        return prev.filter((c) => c !== criteria);
+      } else {
+        return [...prev, criteria];
+      }
+    });
+  };
+
   const handleApply = () => {
     const filters = {
       bathrooms: bathrooms || undefined,
@@ -141,6 +151,8 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
           }
         : undefined,
       features: selectedFeatures.length > 0 ? selectedFeatures : undefined,
+      tenantCriteria:
+        selectedTenantCriteria.length > 0 ? selectedTenantCriteria : undefined,
     };
 
     onFiltersApply(filters);
