@@ -181,40 +181,41 @@ const MoreFiltersModal: React.FC<MoreFiltersModalProps> = ({
                 Land Size
               </h4>
 
-            {/* Land Size Type */}
-            <div className="flex gap-2 mb-3">
-              {landSizeTypes.map((type) => (
-                <button
-                  key={type.value}
-                  onClick={() => setLandSizeType(type.value)}
-                  className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors ${
-                    landSizeType === type.value
-                      ? "bg-[#8DDB90] text-white border-[#8DDB90]"
-                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-                  }`}
-                >
-                  {type.label}
-                </button>
-              ))}
-            </div>
+              {/* Land Size Type */}
+              <div className="flex gap-2 mb-3">
+                {landSizeTypes.map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => setLandSizeType(type.value)}
+                    className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors ${
+                      landSizeType === type.value
+                        ? "bg-[#8DDB90] text-white border-[#8DDB90]"
+                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                    }`}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
 
-            {/* Land Size Input */}
-            <div className="flex items-center gap-2 p-2 border border-gray-300 rounded">
-              <span className="text-sm text-gray-500">Min</span>
-              <input
-                type="text"
-                placeholder="Enter size"
-                value={landSizeValue}
-                onChange={(e) =>
-                  setLandSizeValue(formatNumberInput(e.target.value))
-                }
-                className="flex-1 outline-none text-center text-sm"
-              />
-              <span className="text-sm text-gray-700">
-                {landSizeTypes.find((t) => t.value === landSizeType)?.label}
-              </span>
+              {/* Land Size Input */}
+              <div className="flex items-center gap-2 p-2 border border-gray-300 rounded">
+                <span className="text-sm text-gray-500">Min</span>
+                <input
+                  type="text"
+                  placeholder="Enter size"
+                  value={landSizeValue}
+                  onChange={(e) =>
+                    setLandSizeValue(formatNumberInput(e.target.value))
+                  }
+                  className="flex-1 outline-none text-center text-sm"
+                />
+                <span className="text-sm text-gray-700">
+                  {landSizeTypes.find((t) => t.value === landSizeType)?.label}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Features Section */}
           <div className="mb-6">
