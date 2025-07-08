@@ -278,10 +278,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
         </div>
 
-        {/* Filter inputs row - customized per tab */}
-        <div className="w-full flex items-center gap-[15px] flex-wrap lg:flex-nowrap">
-          {/* Home Condition Filter for Rent Tab - Display like Filter by */}
-          {tab === "rent" && homeConditionOptions.length > 0 && (
+        {tab === "rent" && homeConditionOptions.length > 0 && (
             <div className="w-full pb-[10px] flex flex-wrap justify-between items-center gap-[20px] border-b-[1px] border-[#C7CAD0]">
               <div className="flex flex-wrap gap-[15px]">
                 <h3 className="font-semibold text-[#1E1E1E]">Home Condition</h3>
@@ -307,6 +304,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               </div>
             </div>
           )}
+
+          
+        {/* Filter inputs row - customized per tab */}
+        <div className="w-full flex items-center gap-[15px] flex-wrap lg:flex-nowrap">
+          {/* Home Condition Filter for Rent Tab - Display like Filter by */}
+          
 
           {/* Location Input - Fixed width */}
           <div className="w-[280px] min-w-[250px]">
