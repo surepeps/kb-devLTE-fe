@@ -293,10 +293,41 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
         </div>
 
-        {/* Filter inputs row - exact copy of existing design */}
-        <div className="w-full flex items-center gap-[15px]">
+        {/* Filter inputs row - customized per tab */}
+        <div className="w-full flex items-center gap-[15px] flex-wrap lg:flex-nowrap">
+          {/* Home Condition for Rent Tab */}
+          {tab === "rent" && (
+            <div className="flex-1 min-w-0">
+              <div className="relative">
+                <select
+                  value={filters.homeCondition || ""}
+                  onChange={(e) =>
+                    onFilterChange("homeCondition", e.target.value)
+                  }
+                  className="w-full h-[50px] px-[12px] border-[1px] border-[#D6DDEB] bg-[#FAFAFA] text-base outline-none appearance-none cursor-pointer"
+                  style={{ marginTop: "-30px" }}
+                >
+                  <option value="">Home Condition</option>
+                  {getHomeConditionOptions().map((condition) => (
+                    <option
+                      key={condition}
+                      value={condition === "All" ? "" : condition}
+                    >
+                      {condition}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Location Input - Fixed width */}
-          <div className="w-[280px]">
+          <div className="w-[280px] min-w-[250px]">
             <LocationSearch
               placeholder="Enter state, LGA, or area..."
               value={filters.locationDisplay || ""}
