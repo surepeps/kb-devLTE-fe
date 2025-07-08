@@ -310,7 +310,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
 
           {/* Price Range Input - Equal flex */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 relative">
             <Input
               className="w-full h-[50px]"
               style={{ marginTop: "-30px" }}
@@ -319,24 +319,23 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               label=""
               readOnly
               showDropdownIcon={true}
-              value={formatPriceDisplay(priceRadioValue, priceFormik)}
+              value={formatPriceDisplay()}
               name="price"
-              onClick={() => setIsPriceRangeModalOpened(true)}
+              onClick={() =>
+                setIsPriceRangeModalOpened(!isPriceRangeModalOpened)
+              }
             />
-            {isPriceRangeModalOpened && (
-              <PriceRange
-                heading="Price Range"
-                formik={priceFormik}
-                closeModal={setIsPriceRangeModalOpened}
-                setSlectedRadioValue={setPriceRadioValue}
-                selectedRadioValue={priceRadioValue}
-              />
-            )}
+            <PriceRangeFilter
+              isOpen={isPriceRangeModalOpened}
+              onClose={() => setIsPriceRangeModalOpened(false)}
+              onPriceSelect={handlePriceRangeSelect}
+              currentValue={filters.priceRange}
+            />
           </div>
 
           {/* Document Type Input - Equal flex */}
           {tab !== "jv" && (
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 relative">
               <Input
                 className="w-full h-[50px] text-sm"
                 style={{ marginTop: "-30px" }}
@@ -347,22 +346,19 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 showDropdownIcon={true}
                 name=""
                 value={formatDocumentsDisplay()}
-                onClick={() => setIsDocumentModalOpened(true)}
+                onClick={() => setIsDocumentModalOpened(!isDocumentModalOpened)}
               />
-              {isDocumentModalOpened && (
-                <DocumentTypeComponent
-                  docsSelected={filters.documentTypes || []}
-                  setDocsSelected={(docs: string[]) =>
-                    onFilterChange("documentTypes", docs)
-                  }
-                  closeModal={setIsDocumentModalOpened}
-                />
-              )}
+              <DocumentTypeFilter
+                isOpen={isDocumentModalOpened}
+                onClose={() => setIsDocumentModalOpened(false)}
+                onDocumentSelect={handleDocumentSelect}
+                currentValue={filters.documentTypes}
+              />
             </div>
           )}
 
           {/* Bedroom Input - Equal flex */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 relative">
             <Input
               className="w-full h-[50px] text-sm"
               style={{ marginTop: "-30px" }}
@@ -373,17 +369,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               showDropdownIcon={true}
               name=""
               value={filters.bedrooms || ""}
-              onClick={() => setIsBedroomModalOpened(true)}
+              onClick={() => setIsBedroomModalOpened(!isBedroomModalOpened)}
             />
-            {isBedroomModalOpened && (
-              <BedroomComponent
-                noOfBedrooms={filters.bedrooms}
-                closeModal={setIsBedroomModalOpened}
-                setNumberOfBedrooms={(bedrooms: number) =>
-                  onFilterChange("bedrooms", bedrooms)
-                }
-              />
-            )}
+            <BedroomFilter
+              isOpen={isBedroomModalOpened}
+              onClose={() => setIsBedroomModalOpened(false)}
+              onBedroomSelect={handleBedroomSelect}
+              currentValue={filters.bedrooms}
+            />
           </div>
 
           {/* Buttons Container - Fixed width */}
@@ -391,50 +384,28 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setIsMoreFilterModalOpened(true)}
-                className="w-[120px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C] font-medium"
+                onClick={() =>
+                  setIsMoreFilterModalOpened(!isMoreFilterModalOpened)
+                }
+                className="w-[120px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C] font-medium hover:bg-[#09391C] hover:text-white transition-colors"
               >
                 More filter
               </button>
-              {isMoreFilterModalOpened && (
-                <MoreFilter
-                  filters={moreFilters}
-                  setFilters={(newFilters: any) => {
-                    setMoreFilters(newFilters);
-                    onFilterChange("bathrooms", newFilters.bathroom);
-                    onFilterChange("landSize", newFilters.landSize);
-                    onFilterChange(
-                      "desiredFeatures",
-                      newFilters.desirer_features,
-                    );
-                  }}
-                  closeModal={setIsMoreFilterModalOpened}
-                />
-              )}
+              <MoreFiltersModal
+                isOpen={isMoreFilterModalOpened}
+                onClose={() => setIsMoreFilterModalOpened(false)}
+                onFiltersApply={handleMoreFiltersApply}
+                currentFilters={{
+                  bathrooms: filters.bathrooms,
+                  landSize: filters.landSize,
+                  features: filters.desiredFeatures,
+                }}
+              />
             </div>
             <button
               type="button"
-              className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold"
-              onClick={() => {
-                // Update filters based on form values before searching
-                onFilterChange(
-                  "selectedState",
-                  locationFormik.values.selectedState,
-                );
-                onFilterChange(
-                  "selectedLGA",
-                  locationFormik.values.selectedLGA,
-                );
-                onFilterChange(
-                  "selectedArea",
-                  locationFormik.values.selectedArea,
-                );
-                onFilterChange("priceRange", {
-                  min: priceFormik.values.minPrice,
-                  max: priceFormik.values.maxPrice,
-                });
-                onSearch();
-              }}
+              className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold hover:bg-[#7BC87F] transition-colors"
+              onClick={onSearch}
               disabled={loading}
             >
               {loading ? "Searching..." : "Search"}
