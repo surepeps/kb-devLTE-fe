@@ -138,7 +138,7 @@ export const agentNavigationData: NavigationItem[] = [
 export const marketplaceDropdownData: NavigationItem[] = [
   {
     name: "Buy",
-    url: "/market-place",
+    url: "/new-marketplace",
     isClicked: false,
   },
   {
@@ -148,12 +148,17 @@ export const marketplaceDropdownData: NavigationItem[] = [
   },
   {
     name: "Rent",
-    url: "/market-place",
+    url: "/new-marketplace",
+    isClicked: false,
+  },
+  {
+    name: "Shortlet",
+    url: "/new-marketplace",
     isClicked: false,
   },
   {
     name: "Joint Venture",
-    url: "/market-place",
+    url: "/new-marketplace",
     isClicked: false,
   },
 ];
