@@ -17,9 +17,12 @@ interface ActiveFiltersProps {
     selectedArea?: string;
     landSize?: { type: string; size?: number };
     desiredFeatures?: string[];
+    tenantCriteria?: string[];
+    homeCondition?: string;
   };
   onRemoveFilter: (filterKey: string, value?: any) => void;
   onClearAll: () => void;
+  onSubmitPreference?: () => void;
 }
 
 const ActiveFilters: React.FC<ActiveFiltersProps> = ({
