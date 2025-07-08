@@ -280,38 +280,42 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         </p>
 
         <div className="space-y-4">
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-[#24272C] mb-2">
-              Full Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={buyerInfo.fullName}
-              onChange={(e) =>
-                handleBuyerInfoChange("fullName", e.target.value)
-              }
-              placeholder="Enter your full name"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-              required
-            />
-          </div>
+          <div className="w-full flex flex-col gap-4 md:flex-row">
 
-          {/* Phone Number */}
-          <div>
-            <label className="block text-sm font-medium text-[#24272C] mb-2">
-              Phone Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              value={buyerInfo.phoneNumber}
-              onChange={(e) =>
-                handleBuyerInfoChange("phoneNumber", e.target.value)
-              }
-              placeholder="Enter your phone number"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-              required
-            />
+            {/* Full Name */}
+            <div className="w-full">
+              <label className="block text-sm font-medium text-[#24272C] mb-2">
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={buyerInfo.fullName}
+                onChange={(e) =>
+                  handleBuyerInfoChange("fullName", e.target.value)
+                }
+                placeholder="Enter your full name"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* Phone Number */}
+            <div className="w-full">
+              <label className="block text-sm font-medium text-[#24272C] mb-2">
+                Phone Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                value={buyerInfo.phoneNumber}
+                onChange={(e) =>
+                  handleBuyerInfoChange("phoneNumber", e.target.value)
+                }
+                placeholder="Enter your phone number"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                required
+              />
+            </div>
+
           </div>
 
           {/* Email Address */}
