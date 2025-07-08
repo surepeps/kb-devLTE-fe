@@ -50,6 +50,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   // Mobile filter modal state
   const [isMobileFilterModalOpen, setIsMobileFilterModalOpen] = useState(false);
 
+  // Submit preference modal state
+  const [isSubmitPreferenceModalOpen, setIsSubmitPreferenceModalOpen] =
+    useState(false);
+
   // Get dynamic filter data
   const usageOptions = getUsageOptions(tab);
   const usageOptionsLabel = getUsageOptionsLabel(tab);
