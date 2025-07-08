@@ -406,7 +406,8 @@ const PostProperty = () => {
   };
 
   const getStepTitle = () => {
-    if (showPreview) return "Property Preview";
+    if (showPropertySummary) return "Property Summary";
+    if (showCommissionModal) return "Commission Agreement";
     return steps[currentStep]?.label || "Post Property";
   };
 
