@@ -163,27 +163,27 @@ interface NewMarketplaceContextType {
 
   // Filter management
   setTabFilter: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     filterType: string,
     value: any,
   ) => void;
-  clearTabFilters: (tab: "buy" | "jv" | "rent") => void;
+  clearTabFilters: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
 
   // Pagination
-  setTabPage: (tab: "buy" | "jv" | "rent", page: number) => void;
+  setTabPage: (tab: "buy" | "jv" | "rent" | "shortlet", page: number) => void;
   setTabPagination: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     totalPages: number,
     totalItems: number,
   ) => void;
 
   // Data fetching
   fetchTabData: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     searchParams?: SearchParams,
   ) => Promise<void>;
   searchTabProperties: (
-    tab: "buy" | "jv" | "rent",
+    tab: "buy" | "jv" | "rent" | "shortlet",
     searchParams: SearchParams,
   ) => Promise<void>;
 
