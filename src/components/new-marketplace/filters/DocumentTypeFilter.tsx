@@ -84,7 +84,12 @@ const DocumentTypeFilter: React.FC<DocumentTypeFilterProps> = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ duration: 0.15 }}
-          className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] p-4 max-h-96 overflow-y-auto"
+          className="absolute top-full left-0 mt-1 w-full max-w-sm sm:max-w-md bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] p-4 max-h-96 overflow-y-auto"
+          style={{
+            minWidth: "280px",
+            maxWidth: "min(90vw, 400px)",
+            zIndex: 10000,
+          }}
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white">
