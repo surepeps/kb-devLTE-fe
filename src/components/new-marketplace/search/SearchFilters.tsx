@@ -344,6 +344,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <PriceRangeFilter
               isOpen={isPriceRangeModalOpened}
               onClose={() => setIsPriceRangeModalOpened(false)}
+              tab={tab}
               onPriceSelect={handlePriceRangeSelect}
               currentValue={filters.priceRange}
             />
