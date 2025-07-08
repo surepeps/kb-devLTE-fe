@@ -439,9 +439,11 @@ const PostProperty = () => {
               List Your Property
             </h1>
             <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
-              {showPreview
+              {showPropertySummary
                 ? "Review your property listing before submission"
-                : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
+                : showCommissionModal
+                  ? "Review and accept the commission terms"
+                  : "Follow these simple steps to list your property and connect with potential buyers or tenants"}
             </p>
           </div>
 
