@@ -1053,6 +1053,7 @@ export const NewMarketplaceProvider: React.FC<{
       buyTab,
       jvTab,
       rentTab,
+      shortletTab,
       getCurrentTabState,
       setTabProperties,
       setTabStatus,
