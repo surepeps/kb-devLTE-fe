@@ -157,7 +157,12 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       return;
     }
 
-    onProceed();
+    // Pass data to parent component
+    onProceed({
+      date: selectedDate,
+      time: selectedTime,
+      buyerInfo,
+    });
   };
 
   const handleBuyerInfoChange = (field: string, value: string) => {
