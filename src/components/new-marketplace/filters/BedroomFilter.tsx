@@ -10,6 +10,7 @@ import { getBedroomOptions } from "@/data/filter-data";
 interface BedroomFilterProps {
   isOpen: boolean;
   onClose: () => void;
+  tab: "buy" | "jv" | "rent";
   onBedroomSelect: (bedrooms: number | string) => void;
   currentValue?: number | string;
 }
@@ -17,6 +18,7 @@ interface BedroomFilterProps {
 const BedroomFilter: React.FC<BedroomFilterProps> = ({
   isOpen,
   onClose,
+  tab,
   onBedroomSelect,
   currentValue,
 }) => {
@@ -32,18 +34,8 @@ const BedroomFilter: React.FC<BedroomFilterProps> = ({
     }
   }, [currentValue]);
 
-  const bedroomOptions = [
-    { value: 1, label: "1 Bedroom" },
-    { value: 2, label: "2 Bedrooms" },
-    { value: 3, label: "3 Bedrooms" },
-    { value: 4, label: "4 Bedrooms" },
-    { value: 5, label: "5 Bedrooms" },
-    { value: 6, label: "6 Bedrooms" },
-    { value: 7, label: "7 Bedrooms" },
-    { value: 8, label: "8 Bedrooms" },
-    { value: 9, label: "9 Bedrooms" },
-    { value: "10+", label: "10+ Bedrooms" },
-  ];
+  // Get bedroom options for the specific tab
+  const bedroomOptions = getBedroomOptions(tab);
 
   const handleBedroomSelect = (bedrooms: number | string) => {
     setSelectedBedrooms(bedrooms);
