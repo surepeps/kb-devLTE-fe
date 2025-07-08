@@ -333,7 +333,7 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Inspection selection methods
   const toggleInspectionSelection = useCallback(
-    (tab: "buy" | "jv" | "rent", property: any) => {
+    (tab: "buy" | "jv" | "rent" | "shortlet", property: any) => {
       const propertyId = property._id;
 
       updateTabState(tab, (state) => {
