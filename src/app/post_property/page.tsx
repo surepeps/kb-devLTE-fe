@@ -468,6 +468,7 @@ const PostProperty = () => {
                 </div>
 
                 {/* Navigation Buttons */}
+                {!showCommissionModal && (
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
                   <Button
                     type="button"
