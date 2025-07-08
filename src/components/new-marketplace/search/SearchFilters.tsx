@@ -410,11 +410,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               <MoreFiltersModal
                 isOpen={isMoreFilterModalOpened}
                 onClose={() => setIsMoreFilterModalOpened(false)}
+                tab={tab}
                 onFiltersApply={handleMoreFiltersApply}
                 currentFilters={{
                   bathrooms: filters.bathrooms,
                   landSize: filters.landSize,
                   features: filters.desiredFeatures,
+                  tenantCriteria: filters.tenantCriteria,
                 }}
               />
             </div>
