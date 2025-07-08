@@ -5,6 +5,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
+import {
+  getBathroomOptions,
+  getLandSizeTypes,
+  getPropertyFeatures,
+  getTenantCriteria,
+} from "@/data/filter-data";
 
 interface MoreFiltersModalProps {
   isOpen: boolean;
