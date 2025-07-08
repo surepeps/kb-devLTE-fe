@@ -149,14 +149,22 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
 
         // Additional validations based on property type
         if (
-          propertyData.propertyType === "rent" &&
+          (propertyData.propertyType === "rent" ||
+            propertyData.propertyType === "shortlet") &&
           propertyData.propertyCategory !== "Land"
         ) {
-          return (
-            basicFieldsValid &&
-            !!propertyData.rentalType &&
-            !!propertyData.propertyCondition
-          );
+          let additionalValid = !!propertyData.propertyCondition;
+
+          if (propertyData.propertyType === "rent") {
+            additionalValid = additionalValid && !!propertyData.rentalType;
+          }
+
+          if (propertyData.propertyType === "shortlet") {
+            additionalValid =
+              additionalValid && !!propertyData.shortletDuration;
+          }
+
+          return basicFieldsValid && additionalValid;
         }
 
         if (propertyData.propertyCategory !== "Land") {
