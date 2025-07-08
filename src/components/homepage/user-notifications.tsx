@@ -88,7 +88,7 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50"
+      className="fixed md:absolute right-2 md:right-0 top-16 md:top-full mt-2 w-[calc(100vw-1rem)] max-w-sm md:w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50"
     >
       {/* Header */}
       <div className="p-4 border-b border-gray-100">
@@ -143,7 +143,7 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
       </div>
 
       {/* Notifications List */}
-      <div className="max-h-96 overflow-y-auto">
+      <div className="max-h-[60vh] md:max-h-96 overflow-y-auto">
         {loading ? (
           <div className="p-8 text-center">
             <div className="inline-block animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"></div>
