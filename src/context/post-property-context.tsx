@@ -9,14 +9,20 @@ interface PropertyImage {
 }
 
 interface PropertyData {
-  propertyType: "sell" | "rent" | "jv" | "";
-  propertyCategory: "Residential" | "Commercial" | "Land" | "";
+  propertyType: "sell" | "rent" | "jv" | "shortlet" | "";
+  propertyCategory:
+    | "Residential"
+    | "Commercial"
+    | "Land"
+    | "Mixed Development"
+    | "";
   propertyCondition: string;
   typeOfBuilding: string;
   rentalType: string;
   price: string;
   leaseHold: string;
   holdDuration?: string;
+  shortletDuration?: string;
   description: string;
   state: { value: string; label: string } | null;
   lga: { value: string; label: string } | null;
