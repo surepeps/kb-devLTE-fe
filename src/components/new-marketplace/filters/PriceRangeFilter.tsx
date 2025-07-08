@@ -109,7 +109,8 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ duration: 0.15 }}
-          className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] p-4"
+          className="absolute top-full left-0 mt-1 w-full max-w-sm sm:max-w-md bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] p-4"
+          style={{ minWidth: "280px", maxWidth: "min(90vw, 400px)" }}
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
