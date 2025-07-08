@@ -63,6 +63,12 @@ interface PostPropertyContextType {
   resetForm: () => void;
   getMinimumRequiredImages: () => number;
   areImagesValid: () => boolean;
+  showCommissionModal: boolean;
+  setShowCommissionModal: (show: boolean) => void;
+  showPropertySummary: boolean;
+  setShowPropertySummary: (show: boolean) => void;
+  getUserCommissionRate: () => number;
+  getUserType: () => "landowner" | "agent";
 }
 
 const PostPropertyContext = createContext<PostPropertyContextType | undefined>(
