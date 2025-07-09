@@ -129,8 +129,10 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     ? availableDates
     : availableDates.slice(0, 10);
 
-  const currentDate = details?.inspectionDate || "";
-  const currentTime = details?.inspectionTime || "";
+  const currentDate =
+    details?.inspectionDate || newDate || availableDates[0]?.date || "";
+  const currentTime =
+    details?.inspectionTime || newTime || availableTimes[0]?.value || "";
   const propertyAddress = details?.propertyId?.location
     ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
     : "Property address not specified";
