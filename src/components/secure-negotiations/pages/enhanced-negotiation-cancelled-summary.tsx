@@ -21,7 +21,7 @@ interface EnhancedNegotiationCancelledSummaryProps {
 const EnhancedNegotiationCancelledSummary: React.FC<
   EnhancedNegotiationCancelledSummaryProps
 > = ({ userType }) => {
-  const { state, addActivity } = useSecureNegotiation();
+  const { state } = useSecureNegotiation();
   const { details, negotiationType, currentUserId } = state;
   const [feedback, setFeedback] = useState("");
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
@@ -44,13 +44,7 @@ const EnhancedNegotiationCancelledSummary: React.FC<
     setIsSubmittingFeedback(true);
 
     try {
-      addActivity({
-        type: "message_sent",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} provided feedback: ${feedback}`,
-        userId: currentUserId!,
-        userType,
-      });
-
+      
       setShowFeedbackForm(false);
       setFeedback("");
 
