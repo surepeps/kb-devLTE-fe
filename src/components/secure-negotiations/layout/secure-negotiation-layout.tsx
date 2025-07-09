@@ -70,25 +70,27 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
         />
       )}
 
-      <div className="w-full min-h-screen flex items-start justify-center flex-col gap-4 sm:gap-6 md:gap-8 py-4 sm:py-6 md:py-12 px-4 sm:px-6 bg-[#EEF1F1]">
+      <div className="w-full min-h-screen flex items-start justify-center flex-col gap-6 sm:gap-8 md:gap-10 py-6 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-[#EEF1F1]">
         {/* Security Banner */}
-        <div className="w-full max-w-4xl bg-[#09391C] text-white py-2 sm:py-3 px-3 sm:px-6 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <FiShield className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-medium text-sm sm:text-base">
+        <div className="w-full max-w-5xl bg-[#09391C] text-white py-3 sm:py-4 px-4 sm:px-6 lg:px-8 rounded-xl">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                <FiShield className="w-5 h-5 sm:w-6 sm:h-6" />
+              </div>
+              <span className="font-semibold text-base sm:text-lg">
                 Secure Negotiation Portal
               </span>
             </div>
             <button
               onClick={refreshData}
               disabled={loadingStates.loading}
-              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 bg-white bg-opacity-20 rounded hover:bg-opacity-30 transition-colors duration-200 disabled:opacity-50"
+              className="flex items-center space-x-2 px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-colors duration-200 disabled:opacity-50"
             >
               <FiRefreshCw
-                className={`w-3 h-3 sm:w-4 sm:h-4 ${loadingStates.loading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 ${loadingStates.loading ? "animate-spin" : ""}`}
               />
-              <span className="text-xs sm:text-sm">Refresh</span>
+              <span className="text-sm font-medium">Refresh</span>
             </button>
           </div>
         </div>
@@ -132,7 +134,7 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-4xl flex flex-col gap-6 sm:gap-8 bg-[#FFFFFF] py-6 sm:py-8 md:py-10 px-4 sm:px-8 md:px-10 border border-[#C7CAD0] rounded-xl mx-auto">
+        <div className="w-full max-w-5xl flex flex-col gap-6 sm:gap-8 lg:gap-10 bg-[#FFFFFF] py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-10 border border-[#C7CAD0] rounded-2xl mx-auto min-h-[400px]">
           {/* Timer */}
           <div className="flex items-center justify-center p-4 sm:p-5 bg-gradient-to-r from-[#EEF1F1] to-[#F8F9FA] rounded-xl border border-[#C7CAD0]">
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-center">
