@@ -102,8 +102,8 @@ const SubmitPreferenceModal: React.FC<SubmitPreferenceModalProps> = ({
               {/* Message */}
               <div className="bg-[#E4EFE7] rounded-lg p-4 mb-6">
                 <p className="text-sm text-[#09391C] mb-3">
-                  Can&apos;t find the brief you&apos;re looking for? Don&apos;t worry! We&apos;ll
-                  provide a reference brief for you.
+                  Can&apos;t find the brief you&apos;re looking for? Don&apos;t
+                  worry! We&apos;ll provide a reference brief for you.
                 </p>
 
                 {/* Active Filters Display */}
@@ -199,7 +199,7 @@ const SubmitPreferenceModal: React.FC<SubmitPreferenceModalProps> = ({
                     type="submit"
                     value={isSubmitting ? "Submitting..." : "Submit Preference"}
                     className="flex-1 bg-[#8DDB90] text-white px-4 py-3 rounded-lg hover:bg-[#7BC87F] transition-colors disabled:opacity-50"
-                    disabled={isSubmitting}
+                    isDisabled={isSubmitting}
                   />
                 </div>
               </form>
