@@ -27,10 +27,29 @@ const ClientTestimonials = () => {
     fetchTestimonials();
   }, []);
 
-  const fetchTestimonials = async () => {
+  const fetchTestimonials = async (retryCount = 0) => {
     try {
       setLoading(true);
-      const response = await fetch(`${URLS.BASE}/testimonials`);
+
+      // Check if API URL is available
+      if (!URLS.BASE || URLS.BASE.includes("undefined")) {
+        console.warn("API URL not configured, using fallback testimonials");
+        setFallbackTestimonials();
+        return;
+      }
+
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch(`${URLS.BASE}/testimonials`, {
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,6 +70,15 @@ const ClientTestimonials = () => {
       }
     } catch (error) {
       console.error("Error fetching testimonials:", error);
+
+      // Retry once if it's a network error and we haven't retried yet
+      if (retryCount === 0 && (error as Error).name !== "AbortError") {
+        console.log("Retrying testimonials fetch...");
+        setTimeout(() => fetchTestimonials(1), 2000);
+        return;
+      }
+
+      // Always use fallback data on error
       setFallbackTestimonials();
     } finally {
       setLoading(false);
