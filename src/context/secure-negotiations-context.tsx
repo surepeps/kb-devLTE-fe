@@ -805,6 +805,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       rejectOffer,
       submitCounterOffer,
       updateInspectionDateTime,
+      refreshData,
     }),
     [
       state,
@@ -831,6 +832,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       rejectOffer,
       submitCounterOffer,
       updateInspectionDateTime,
+      refreshData,
     ],
   );
 

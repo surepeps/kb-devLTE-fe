@@ -2,13 +2,8 @@
 
 import React from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
-import {
-  FiShield,
-  FiUser,
-  FiClock,
-  FiCheckCircle,
-  FiAlertCircle,
-} from "react-icons/fi";
+import { motion } from "framer-motion";
+import { FiShield, FiRefreshCw, FiClock } from "react-icons/fi";
 
 interface SecureNegotiationLayoutProps {
   children: React.ReactNode;
@@ -19,120 +14,134 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
   children,
   userType,
 }) => {
-  const { state } = useSecureNegotiation();
-  const { details, createdAt, inspectionStatus, isRealTimeEnabled } = state;
+  const { state, refreshData } = useSecureNegotiation();
+  const { details, loadingStates } = state;
 
-  const getStatusColor = () => {
-    switch (inspectionStatus) {
-      case "accept":
-        return "text-green-600 bg-green-50 border-green-200";
-      case "reject":
-        return "text-red-600 bg-red-50 border-red-200";
-      case "countered":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
-      case "pending":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+  const getStatusMessage = () => {
+    if (!details) return "";
+
+    const pendingResponseFrom = details.pendingResponseFrom;
+    const stage = details.stage;
+
+    if (pendingResponseFrom !== userType) {
+      return `Awaiting response from ${pendingResponseFrom}...`;
+    }
+
+    switch (stage) {
+      case "negotiation":
+        return details.negotiationPrice > 0 || details.isNegotiating
+          ? "Please review and respond to the price negotiation"
+          : "Please confirm the inspection date and time";
+      case "inspection":
+        return "Please confirm the inspection schedule";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "Please review and respond";
     }
   };
 
-  const getStatusIcon = () => {
-    switch (inspectionStatus) {
-      case "accept":
-        return <FiCheckCircle className="w-4 h-4" />;
-      case "reject":
-        return <FiAlertCircle className="w-4 h-4" />;
-      case "countered":
-        return <FiClock className="w-4 h-4" />;
-      case "pending":
-        return <FiClock className="w-4 h-4" />;
-      default:
-        return <FiClock className="w-4 h-4" />;
+  const getFullName = () => {
+    if (userType === "seller") {
+      return `${details?.owner?.firstName || ""} ${details?.owner?.lastName || ""}`.trim();
+    } else {
+      return details?.requestedBy?.fullName || "";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen flex items-center justify-center flex-col gap-[20px] md:gap-[40px] py-[20px] md:py-[50px] px-[20px] bg-[#EEF1F1]">
       {/* Security Banner */}
-      <div className="bg-green-600 text-white py-2 px-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-sm">
+      <div className="w-full max-w-[933px] bg-[#09391C] text-white py-3 px-6 rounded-lg">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <FiShield className="w-4 h-4" />
-            <span>Secure Negotiation Portal</span>
+            <FiShield className="w-5 h-5" />
+            <span className="font-medium">Secure Negotiation Portal</span>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <FiUser className="w-4 h-4" />
-              <span className="capitalize">{userType}</span>
-            </div>
-            {isRealTimeEnabled && (
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-                <span>Live Updates</span>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={refreshData}
+            disabled={loadingStates.loading}
+            className="flex items-center space-x-2 px-3 py-1 bg-white bg-opacity-20 rounded hover:bg-opacity-30 transition-colors duration-200 disabled:opacity-50"
+          >
+            <FiRefreshCw
+              className={`w-4 h-4 ${loadingStates.loading ? "animate-spin" : ""}`}
+            />
+            <span className="text-sm">Refresh</span>
+          </button>
         </div>
       </div>
 
-      {/* Property Info Bar */}
-      {details && (
-        <div className="bg-white border-b border-gray-200 py-4 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-              <div className="flex items-center space-x-4">
-                <div>
-                  <h3 className="font-semibold text-gray-800">
-                    {details.propertyTitle || "Property Negotiation"}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {details.propertyLocation || "Location not specified"}
-                  </p>
-                </div>
-                {details.propertyPrice && (
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">Listed Price</p>
-                    <p className="font-semibold text-green-600">
-                      ₦{details.propertyPrice.toLocaleString()}
-                    </p>
-                  </div>
-                )}
-              </div>
+      {/* Header */}
+      <div className="flex gap-[20px] md:gap-[40px] justify-center items-center flex-col">
+        <motion.h2
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.2 }}
+          className="font-display text-3xl md:text-4xl text-center font-semibold text-[#09391C]"
+        >
+          {userType === "seller" ? "Seller Response" : "Buyer Response"}
+        </motion.h2>
 
-              <div className="flex items-center space-x-4">
-                {inspectionStatus && (
-                  <div
-                    className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full border text-sm ${getStatusColor()}`}
-                  >
-                    {getStatusIcon()}
-                    <span className="capitalize">{inspectionStatus}</span>
-                  </div>
-                )}
-                {createdAt && (
-                  <div className="text-sm text-gray-500">
-                    <p>Started</p>
-                    <p>{new Date(createdAt).toLocaleDateString()}</p>
-                  </div>
-                )}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col gap-[1px] items-center justify-center"
+        >
+          <p className="text-center text-base md:text-lg text-black">
+            Hi, {getFullName()},
+          </p>
+          <p className="text-center text-base md:text-lg text-black">
+            {getStatusMessage()}
+          </p>
+          <p className="text-center text-base md:text-lg text-black">
+            Please reply within{" "}
+            <span className="text-base md:text-lg text-[#FF3D00]">
+              48 hours
+            </span>{" "}
+            — the countdown starts now.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Main Content */}
+      <div className="w-full max-w-[933px] flex flex-col gap-[30px] bg-[#FFFFFF] py-[30px] md:py-[50px] px-[20px] md:px-[50px] border-[1px] border-[#C7CAD0] rounded-lg shadow-sm mx-auto">
+        {/* Timer */}
+        <div className="flex items-center justify-center p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+          <div className="flex items-center space-x-3">
+            <FiClock className="w-6 h-6 text-[#09391C]" />
+            <div className="text-center">
+              <div className="text-sm text-gray-600">
+                Time remaining to respond
+              </div>
+              <div className="text-lg font-semibold text-[#FF3D00]">
+                {details?.updatedAt
+                  ? (() => {
+                      const updateTime = new Date(details.updatedAt).getTime();
+                      const now = new Date().getTime();
+                      const elapsed = now - updateTime;
+                      const fortyEightHours = 48 * 60 * 60 * 1000;
+                      const remaining = fortyEightHours - elapsed;
+
+                      if (remaining > 0) {
+                        const hours = Math.floor(remaining / (1000 * 60 * 60));
+                        const minutes = Math.floor(
+                          (remaining % (1000 * 60 * 60)) / (1000 * 60),
+                        );
+                        return `${hours}h ${minutes}m`;
+                      } else {
+                        return "Expired";
+                      }
+                    })()
+                  : "Loading..."}
               </div>
             </div>
           </div>
         </div>
-      )}
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto">{children}</div>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-auto py-6 px-4">
-        <div className="max-w-6xl mx-auto text-center text-sm text-gray-500">
-          <p>Secure negotiations powered by Khabiteq</p>
-          <p className="mt-1">
-            All communications are encrypted and logged for security purposes
-          </p>
-        </div>
-      </footer>
+        {/* Content */}
+        <div className="negotiation-content">{children}</div>
+      </div>
     </div>
   );
 };
