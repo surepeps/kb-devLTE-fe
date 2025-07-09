@@ -292,8 +292,8 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                 isAddForInspectionModalOpened={isAddForInspectionModalOpened}
                 setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
                 setPropertySelected={setPropertySelected}
-                isComingFromPriceNeg={isComingFromPriceNeg}
-                setIsComingFromPriceNeg={setIsComingFromPriceNeg}
+                isComingFromPriceNeg={isComingFromPriceNeg ?? false}
+                setIsComingFromPriceNeg={setIsComingFromPriceNeg ?? (() => {})}
                 isPremium={property?.isPremium}
                 property={property}
                 onCardPageClick={() => onCardPageClick(property)}
