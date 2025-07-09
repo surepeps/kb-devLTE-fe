@@ -31,10 +31,27 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
-  const [newDate, setNewDate] = useState(details?.inspectionDate || "");
-  const [newTime, setNewTime] = useState(details?.inspectionTime || "");
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
+
+  // Initialize date and time with defaults
+  useEffect(() => {
+    if (!newDate && availableDates.length > 0) {
+      setNewDate(details?.inspectionDate || availableDates[0]?.date || "");
+    }
+    if (!newTime && availableTimes.length > 0) {
+      setNewTime(details?.inspectionTime || availableTimes[0]?.value || "");
+    }
+  }, [
+    availableDates,
+    availableTimes,
+    details?.inspectionDate,
+    details?.inspectionTime,
+    newDate,
+    newTime,
+  ]);
 
   // Prevent background scroll when modal is open
   useEffect(() => {
