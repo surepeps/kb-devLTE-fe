@@ -388,7 +388,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     async (userId: string, inspectionId: string): Promise<boolean> => {
       try {
         const response = await GET_REQUEST(
-          `${ URLS.BASE + URLS.validateInspectionAccess}/${userId}/${inspectionId}`,
+          `${URLS.BASE + URLS.validateInspectionAccess}/${userId}/${inspectionId}`,
         );
         const isValid = response?.status === "success";
         dispatch({ type: "VALIDATE_ACCESS", payload: { isValid } });
@@ -427,8 +427,8 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       try {
         const response = await GET_REQUEST(
-          `${ URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
-        ); 
+          `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
+        );
 
         if (response?.status === "success") {
           dispatch({ type: "SET_DETAILS", payload: response.data });
@@ -590,6 +590,186 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
+  // API Action Methods
+  const acceptOffer = useCallback(
+    async (inspectionId: string, userType: "seller" | "buyer") => {
+      dispatch({
+        type: "SET_LOADING",
+        payload: { type: "accepting", isLoading: true },
+      });
+
+      try {
+        const response = await PUT_REQUEST(
+          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/accept`,
+          {
+            userType,
+            action: "accept",
+          },
+        );
+
+        if (response?.status === "success") {
+          addActivity({
+            type: "offer_accepted",
+            message: `${userType === "seller" ? "Seller" : "Buyer"} accepted the offer`,
+            userId: state.currentUserId!,
+            userType,
+          });
+
+          // Refetch data to get updated state
+          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
+        }
+
+        return response;
+      } catch (error) {
+        console.error("Failed to accept offer:", error);
+        throw error;
+      } finally {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { type: "accepting", isLoading: false },
+        });
+      }
+    },
+    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+  );
+
+  const rejectOffer = useCallback(
+    async (inspectionId: string, userType: "seller" | "buyer") => {
+      dispatch({
+        type: "SET_LOADING",
+        payload: { type: "rejecting", isLoading: true },
+      });
+
+      try {
+        const response = await PUT_REQUEST(
+          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/reject`,
+          {
+            userType,
+            action: "reject",
+          },
+        );
+
+        if (response?.status === "success") {
+          addActivity({
+            type: "offer_rejected",
+            message: `${userType === "seller" ? "Seller" : "Buyer"} rejected the offer`,
+            userId: state.currentUserId!,
+            userType,
+          });
+
+          // Refetch data to get updated state
+          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
+        }
+
+        return response;
+      } catch (error) {
+        console.error("Failed to reject offer:", error);
+        throw error;
+      } finally {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { type: "rejecting", isLoading: false },
+        });
+      }
+    },
+    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+  );
+
+  const submitCounterOffer = useCallback(
+    async (
+      inspectionId: string,
+      counterPrice: number,
+      userType: "seller" | "buyer",
+    ) => {
+      dispatch({
+        type: "SET_LOADING",
+        payload: { type: "countering", isLoading: true },
+      });
+
+      try {
+        const response = await PUT_REQUEST(
+          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/counter`,
+          {
+            userType,
+            action: "counter",
+            counterPrice,
+          },
+        );
+
+        if (response?.status === "success") {
+          addActivity({
+            type: "offer_countered",
+            message: `${userType === "seller" ? "Seller" : "Buyer"} made a counter offer of ₦${counterPrice.toLocaleString()}`,
+            userId: state.currentUserId!,
+            userType,
+          });
+
+          // Refetch data to get updated state
+          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
+        }
+
+        return response;
+      } catch (error) {
+        console.error("Failed to submit counter offer:", error);
+        throw error;
+      } finally {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { type: "countering", isLoading: false },
+        });
+      }
+    },
+    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+  );
+
+  const updateInspectionDateTime = useCallback(
+    async (
+      inspectionId: string,
+      date: string,
+      time: string,
+      userType: "seller" | "buyer",
+    ) => {
+      dispatch({
+        type: "SET_LOADING",
+        payload: { type: "submitting", isLoading: true },
+      });
+
+      try {
+        const response = await PUT_REQUEST(
+          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/schedule`,
+          {
+            userType,
+            inspectionDate: date,
+            inspectionTime: time,
+          },
+        );
+
+        if (response?.status === "success") {
+          addActivity({
+            type: "inspection_scheduled",
+            message: `${userType === "seller" ? "Seller" : "Buyer"} updated inspection to ${new Date(date).toLocaleDateString()} at ${time}`,
+            userId: state.currentUserId!,
+            userType,
+          });
+
+          // Refetch data to get updated state
+          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
+        }
+
+        return response;
+      } catch (error) {
+        console.error("Failed to update inspection date/time:", error);
+        throw error;
+      } finally {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { type: "submitting", isLoading: false },
+        });
+      }
+    },
+    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+  );
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -621,6 +801,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setOfferPrice,
       setCounterOffer,
       setLoading,
+      acceptOffer,
+      rejectOffer,
+      submitCounterOffer,
+      updateInspectionDateTime,
     }),
     [
       state,
@@ -643,6 +827,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setOfferPrice,
       setCounterOffer,
       setLoading,
+      acceptOffer,
+      rejectOffer,
+      submitCounterOffer,
+      updateInspectionDateTime,
     ],
   );
 
