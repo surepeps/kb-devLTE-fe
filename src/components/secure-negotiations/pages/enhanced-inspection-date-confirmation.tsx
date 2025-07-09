@@ -53,12 +53,7 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const handleRejectInspection = async () => {
     try {
-      addActivity({
-        type: "offer_rejected",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} rejected the proposed inspection time`,
-        userId: currentUserId!,
-        userType,
-      });
+      
 
       console.log("Inspection rejected");
     } catch (error) {
@@ -73,12 +68,7 @@ const EnhancedInspectionDateConfirmation: React.FC<
     }
 
     try {
-      addActivity({
-        type: "inspection_scheduled",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} proposed alternative inspection time: ${alternativeDate} at ${alternativeTime}`,
-        userId: currentUserId!,
-        userType,
-      });
+    
 
       setShowAlternativeForm(false);
       setAlternativeDate("");
