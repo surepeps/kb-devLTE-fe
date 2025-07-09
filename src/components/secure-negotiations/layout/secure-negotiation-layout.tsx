@@ -72,7 +72,7 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
 
       <div className="w-full min-h-screen flex items-start justify-center flex-col gap-6 sm:gap-8 md:gap-10 py-6 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 bg-[#EEF1F1]">
         {/* Security Banner */}
-        <div className="w-full max-w-5xl bg-[#09391C] text-white py-3 sm:py-4 px-4 sm:px-6 lg:px-8 rounded-xl">
+        <div className="w-full max-w-5xl mx-auto bg-[#09391C] text-white py-3 sm:py-4 px-4 sm:px-6 lg:px-8 rounded-xl">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-white bg-opacity-20 rounded-lg">
@@ -96,7 +96,7 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
         </div>
 
         {/* Header - Matching seller negotiation style */}
-        <div className="flex gap-[20px] md:gap-[40px] justify-center items-center flex-col">
+        <div className="flex gap-[20px] mx-auto md:gap-[40px] justify-center items-center flex-col">
           <motion.h2
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
