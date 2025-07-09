@@ -1,12 +1,12 @@
 /** @format */
 
-'use client';
-import { BriefType, GlobalContextTypes } from '@/types';
-import { UserAgentDataProps } from '@/types/agent_data_props';
-import { PropertyProps } from '@/types/property.types';
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
-import { createContext, useContext, useState } from 'react';
-import { string } from 'yup';
+"use client";
+import { BriefType, GlobalContextTypes } from "@/types";
+import { UserAgentDataProps } from "@/types/agent_data_props";
+import { PropertyProps } from "@/types/property.types";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import { createContext, useContext, useState } from "react";
+import { string } from "yup";
 
 interface Option {
   value: string;
@@ -28,7 +28,7 @@ export const PageContextProvider = ({
   const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 
   // const [selectedNav, setSelectedNav] = useState<string>('Create Brief'); //Agent Navigation
-  const [selectedNav, setSelectedNav] = useState<string>('Overview'); //Agent Navigation
+  const [selectedNav, setSelectedNav] = useState<string>("Overview"); //Agent Navigation
 
   /**Property Details */
   const [propertyDetails, setPropertyDetails] = useState<{
@@ -36,19 +36,21 @@ export const PageContextProvider = ({
     usageOptions: string[];
     price: string | number;
     documents: string[];
-    docOnProperty: Array<string | { isProvided: boolean; _id: string; docName: string }>;
+    docOnProperty: Array<
+      string | { isProvided: boolean; _id: string; docName: string }
+    >;
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
     selectedCity: Option | null;
   }>({
-    propertyType: '',
+    propertyType: "",
     usageOptions: [],
-    price: '',
+    price: "",
     documents: [],
     docOnProperty: [],
-    noOfBedroom: '',
-    additionalFeatures: '',
+    noOfBedroom: "",
+    additionalFeatures: "",
     selectedCity: null,
     selectedState: null,
   });
@@ -65,10 +67,10 @@ export const PageContextProvider = ({
 
   //Buy page and rent page - property referenece
   const [propertyReference, setPropertyReference] = useState<{
-    type: 'buy' | 'rental' | '';
-    payload: {};
+    type: "buy" | "rental" | "";
+    payload: Record<string, unknown>;
   }>({
-    type: '',
+    type: "",
     payload: {},
   });
 
@@ -82,7 +84,7 @@ export const PageContextProvider = ({
 
   //selecting cards for inspection
   const [selectedBriefs, setSelectedBriefs] = useState<Set<BriefType>>(
-    new Set()
+    new Set(),
   );
 
   const addBrief = (brief: BriefType) => {
@@ -105,7 +107,7 @@ export const PageContextProvider = ({
    * Agent Brief Settings
    */
   const [settings, setSettings] = useState({
-    selectedNav: 'Change Password',
+    selectedNav: "Change Password",
     isUpgradeButtonClicked: false,
     upgradeStatus: {
       isYetToUpgrade: true,
@@ -113,14 +115,14 @@ export const PageContextProvider = ({
       isUpgraded: false,
     },
     onUpgradeData: {
-      companyName: '',
+      companyName: "",
       regNo: 0,
-      image: [''],
+      image: [""],
     },
   });
 
   const [userDetails, setUserDetails] = useState<UserAgentDataProps>(
-    {} as UserAgentDataProps
+    {} as UserAgentDataProps,
   );
 
   /**
@@ -137,7 +139,7 @@ export const PageContextProvider = ({
   /**
    * Market Place
    */
-  const [selectedType, setSelectedType] = useState<string>('Buy a property');
+  const [selectedType, setSelectedType] = useState<string>("Buy a property");
 
   /**
    * Property selected for inspection from the property detailss page
@@ -157,13 +159,13 @@ export const PageContextProvider = ({
 
   //commission
   type CommissionType = {
-    userType: 'agent' | 'land_owners';
+    userType: "agent" | "land_owners";
     commission: string;
     payload: any;
   };
   const [commission, setCommission] = useState<CommissionType>({
-    userType: 'land_owners',
-    commission: '10%',
+    userType: "land_owners",
+    commission: "10%",
     payload: {},
   }); //default for land owners, agent is 20%
 
@@ -212,7 +214,8 @@ export const PageContextProvider = ({
         setIsComingFromPriceNeg,
         commission,
         setCommission,
-      }}>
+      }}
+    >
       {children}
     </PageContext.Provider>
   );
@@ -221,7 +224,7 @@ export const PageContextProvider = ({
 export const usePageContext = () => {
   const context = useContext(PageContext);
   if (context === undefined) {
-    throw new Error('');
+    throw new Error("");
   }
   return context;
 };
