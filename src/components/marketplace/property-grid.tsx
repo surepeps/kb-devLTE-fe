@@ -267,8 +267,10 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                   onClick={() => toggleInspectionSelection(property)}
                   isDisabled={isPropertySelected(property)}
                   onCardPageClick={() => onCardPageClick(property)}
-                  isComingFromSubmitLol={isComingFromSubmitLol}
-                  setIsComingFromSubmitLol={setIsComingFromSubmitLol}
+                  isComingFromSubmitLol={isComingFromSubmitLol ?? false}
+                  setIsComingFromSubmitLol={
+                    setIsComingFromSubmitLol ?? (() => {})
+                  }
                   cardData={createCardData(property)}
                   images={property?.pictures || []}
                   property={property}
