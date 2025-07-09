@@ -38,31 +38,6 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [hasTimedOut, setHasTimedOut] = useState(false);
 
-  // Validate src parameter
-  if (!src || typeof src !== "string") {
-    return (
-      <div
-        className={`bg-gray-200 flex items-center justify-center ${className}`}
-        style={style}
-      >
-        {fallbackSrc ? (
-          <Image
-            src={fallbackSrc}
-            alt={alt}
-            width={width}
-            height={height}
-            fill={fill}
-            className={className}
-            style={style}
-            unoptimized
-          />
-        ) : (
-          <ImageIcon className="w-12 h-12 text-gray-400" />
-        )}
-      </div>
-    );
-  }
-
   // Check if the image is from Cloudinary with proper type checking
   const isCloudinaryImage =
     typeof src === "string" && src?.includes("cloudinary.com");
@@ -90,6 +65,31 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isCloudinaryImage, isLoading, timeout]);
+
+  // Validate src parameter
+  if (!src || typeof src !== "string") {
+    return (
+      <div
+        className={`bg-gray-200 flex items-center justify-center ${className}`}
+        style={style}
+      >
+        {fallbackSrc ? (
+          <Image
+            src={fallbackSrc}
+            alt={alt}
+            width={width}
+            height={height}
+            fill={fill}
+            className={className}
+            style={style}
+            unoptimized
+          />
+        ) : (
+          <ImageIcon className="w-12 h-12 text-gray-400" />
+        )}
+      </div>
+    );
+  }
 
   // Optimize Cloudinary URL
   const optimizeCloudinaryUrl = (url: string) => {
