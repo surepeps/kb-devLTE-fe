@@ -424,13 +424,13 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         payload: { type: "loading", isLoading: true },
       });
       dispatch({ type: "SET_FORM_STATUS", payload: "pending" });
-
+ 
       try {
         const response = await GET_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
         );
 
-        if (response?.status === "success") {
+        if (response?.success) {
           dispatch({ type: "SET_DETAILS", payload: response.data });
           dispatch({ type: "SET_FORM_STATUS", payload: "success" });
 
