@@ -114,6 +114,25 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={
+          loadingStates.accepting ||
+          loadingStates.rejecting ||
+          loadingStates.submitting
+        }
+        message={
+          loadingStates.accepting
+            ? "Accepting LOI..."
+            : loadingStates.rejecting
+              ? "Rejecting LOI..."
+              : loadingStates.submitting
+                ? "Submitting response..."
+                : "Processing..."
+        }
+        overlay={true}
+      />
+
       {/* Header */}
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-2">
