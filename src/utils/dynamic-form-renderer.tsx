@@ -57,8 +57,8 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
             name={field.id}
             value={value || ""}
             onChange={(e) => handleChange(parseInt(e.target.value) || 0)}
-            min={field.validation?.min}
-            max={field.validation?.max}
+            minNumber={field.validation?.min}
+            maxNumber={field.validation?.max}
           />
           {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>
