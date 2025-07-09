@@ -36,15 +36,17 @@ export interface DataProps {
     _id: string;
     criteria: string;
   }[];
+  briefType?: string;
+  statusLabel?: string;
 }
 
 export interface UserAgentDataProps {
   accountApproved: boolean;
   accountId: string;
-  accountStatus: 'active' | 'inactive';
+  accountStatus: "active" | "inactive";
   agentData: {
     accountApproved: boolean;
-    accountStatus: 'active' | 'inactive';
+    accountStatus: "active" | "inactive";
     address: {
       homeNo: string;
       street: string;
@@ -88,7 +90,7 @@ export interface UserAgentDataProps {
   lastName: string;
   phoneNumber: string;
   updatedAt: string;
-  userType: 'Agent' | string;
+  userType: "Agent" | string;
   __v?: number;
   _id?: string;
 }

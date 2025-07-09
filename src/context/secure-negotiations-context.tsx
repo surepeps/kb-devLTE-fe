@@ -149,10 +149,10 @@ const initialState: SecureNegotiationState = {
   // Data states
   formStatus: "idle",
   details: null,
-  negotiationType: "Normal",
+  negotiationType: "NORMAL",
   createdAt: null,
-  dateTimeObj: { date: "", time: "" },
-  counterDateTimeObj: { date: "", time: "" },
+  dateTimeObj: { selectedDate: "", selectedTime: "" },
+  counterDateTimeObj: { selectedDate: "", selectedTime: "" },
   inspectionStatus: null,
   inspectionDateStatus: null,
   currentUserId: null,
