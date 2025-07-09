@@ -199,12 +199,7 @@ const EnhancedNegotiationCancelledSummary: React.FC<
                   <div className="text-sm text-gray-500">
                     Messages Exchanged
                   </div>
-                  <div className="font-medium text-gray-800">
-                    {
-                      state.activityLog.filter((a) => a.type === "message_sent")
-                        .length
-                    }
-                  </div>
+                  <div className="font-medium text-gray-800">0</div>
                 </div>
               </div>
             </div>
