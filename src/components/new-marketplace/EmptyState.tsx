@@ -5,7 +5,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 interface EmptyStateProps {
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({ tab }) => {
