@@ -9,7 +9,6 @@ import {
   FiDollarSign,
   FiFileText,
   FiDownload,
-  FiPrint,
   FiShare2,
   FiMapPin,
   FiClock,
