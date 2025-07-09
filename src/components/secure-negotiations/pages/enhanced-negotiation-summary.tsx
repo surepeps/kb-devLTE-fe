@@ -89,10 +89,6 @@ This summary serves as confirmation of the negotiated terms.
     document.body.removeChild(element);
   };
 
-  const printSummary = () => {
-    window.print();
-  };
-
   const shareSummary = async () => {
     if (navigator.share) {
       try {
