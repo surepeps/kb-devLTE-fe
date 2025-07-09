@@ -182,7 +182,7 @@ const ClientTestimonials = () => {
                     {renderStars(testimonial.rating)}
                   </div>
                   <p className="text-gray-700 text-lg leading-relaxed">
-                    "{testimonial.message}"
+                    &ldquo;{testimonial.message}&rdquo;
                   </p>
                   <div>
                     <h3 className="text-black font-semibold text-xl">
