@@ -12,11 +12,11 @@ export const unlockBodyScroll = () => {
   }
 };
 
-export const useModalBodyLock = (isOpen: boolean) => {
-  if (typeof window !== "undefined") {
-    const { useEffect } = require("react");
+import { useEffect } from "react";
 
-    useEffect(() => {
+export const useModalBodyLock = (isOpen: boolean) => {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
       if (isOpen) {
         lockBodyScroll();
       } else {
@@ -26,8 +26,8 @@ export const useModalBodyLock = (isOpen: boolean) => {
       return () => {
         unlockBodyScroll();
       };
-    }, [isOpen]);
-  }
+    }
+  }, [isOpen]);
 };
 
 export const getModalMaxWidth = (
