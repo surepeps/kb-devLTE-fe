@@ -167,61 +167,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
           </div>
         </div>
 
-        {/* Parties Involved */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Buyer Info */}
-          <div>
-            <div className="flex items-center space-x-2 mb-3">
-              <FiUser className="w-5 h-5 text-[#09391C]" />
-              <h4 className="font-medium text-gray-800">Buyer Information</h4>
-            </div>
-            <div className="bg-[#EEF1F1] p-4 rounded-lg space-y-2">
-              <div>
-                <div className="text-sm text-gray-600">Name</div>
-                <div className="font-medium text-gray-800">
-                  {requestedBy.fullName}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Email</div>
-                <div className="text-gray-700 text-sm">{requestedBy.email}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Phone</div>
-                <div className="text-gray-700">{requestedBy.phoneNumber}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Seller Info */}
-          <div>
-            <div className="flex items-center space-x-2 mb-3">
-              <FiUser className="w-5 h-5 text-[#09391C]" />
-              <h4 className="font-medium text-gray-800">Seller Information</h4>
-            </div>
-            <div className="bg-[#EEF1F1] p-4 rounded-lg space-y-2">
-              <div>
-                <div className="text-sm text-gray-600">Name</div>
-                <div className="font-medium text-gray-800">
-                  {owner.firstName} {owner.lastName}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Type</div>
-                <div className="text-gray-700">{owner.userType}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Email</div>
-                <div className="text-gray-700 text-sm">{owner.email}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Phone</div>
-                <div className="text-gray-700">{owner.phoneNumber}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Request Info */}
         <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="flex items-center space-x-2 mb-3">
