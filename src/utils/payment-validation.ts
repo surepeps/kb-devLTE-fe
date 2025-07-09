@@ -83,8 +83,8 @@ export class PaymentValidator {
           isValid: false,
           confidence: 0,
           extractedText,
-          referenceId,
-          senderName,
+          referenceId: referenceId || undefined,
+          senderName: senderName || undefined,
           errors: [
             "No monetary amounts found in the receipt. Please ensure the receipt is clear and contains payment information.",
           ],
@@ -97,8 +97,8 @@ export class PaymentValidator {
       return {
         ...validationResult,
         extractedText,
-        referenceId,
-        senderName,
+        referenceId: referenceId || undefined,
+        senderName: senderName || undefined,
       };
     } catch (error) {
       console.error("Payment validation error:", error);
