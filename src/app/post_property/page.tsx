@@ -42,7 +42,7 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-      let basicSchema = Yup.object({
+      let basicSchema: any = Yup.object({
         propertyCategory: Yup.string().required(
           "Property category is required",
         ),
