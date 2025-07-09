@@ -97,7 +97,7 @@ const VerificationSent = () => {
               Congratulations! Your agent registration was successful.
             </p>
             <p className="text-gray-600">
-              We've sent a verification email to <strong>{email}</strong>.
+              We&apos;ve sent a verification email to <strong>{email}</strong>.
               Please check your email and click the verification link to
               activate your account.
             </p>
