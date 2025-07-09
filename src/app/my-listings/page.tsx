@@ -158,11 +158,19 @@ const MyListingPage = () => {
           filtersApplied = true;
         }
         if (filters.type) {
-          queryParams.append("type", filters.type);
+          queryParams.append(
+            "type",
+            Array.isArray(filters.type) ? filters.type.join(",") : filters.type,
+          );
           filtersApplied = true;
         }
         if (filters.briefType) {
-          queryParams.append("briefType", filters.briefType);
+          queryParams.append(
+            "briefType",
+            Array.isArray(filters.briefType)
+              ? filters.briefType.join(",")
+              : filters.briefType,
+          );
           filtersApplied = true;
         }
         if (filters.isPremium !== undefined) {
