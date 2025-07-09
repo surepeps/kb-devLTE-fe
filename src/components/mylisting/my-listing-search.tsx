@@ -237,14 +237,19 @@ const MyListingSearch = ({
     }
 
     // Land Size
-    if (filters.landSize && filters.landSize.size) {
+    if (
+      filters.landSize &&
+      typeof filters.landSize === "object" &&
+      "size" in filters.landSize &&
+      filters.landSize.size
+    ) {
       filters.landSizeType = filters.landSize.type;
       filters.landSize = filters.landSize.size;
     }
 
     // Desired Features
-    if (filters.desirer_features.length > 0) {
-      filters.desireFeature = filters.desirer_features;
+    if (filters.desireFeature && filters.desireFeature.length > 0) {
+      // desireFeature is already correctly named
     }
 
     // Home Condition
