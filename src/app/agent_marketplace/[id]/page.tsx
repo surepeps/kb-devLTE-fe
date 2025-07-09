@@ -385,6 +385,11 @@ const BriefDetailPage = () => {
     },
   });
 
+  // Conditional return after all hooks
+  if (!params) {
+    return <div>Loading...</div>;
+  }
+
   const handleSubmitBrief = () => {
     if (!user) {
       // If not logged in, redirect to login or show a modal
