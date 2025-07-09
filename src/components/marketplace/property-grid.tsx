@@ -85,7 +85,8 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   const currentProperties = filteredProperties; // API handles pagination
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages || isLoading === "pending") return;
+    if (page < 1 || page > totalPages || (isLoading as string) === "pending")
+      return;
 
     setCurrentPage(page);
 
@@ -163,7 +164,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   };
 
   // Loading state
-  if (isLoading === "pending") {
+  if ((isLoading as string) === "pending") {
     return (
       <div className="flex justify-center items-center py-20">
         <Loading />
@@ -313,7 +314,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
-        isLoading={isLoading === "pending"}
+        isLoading={(isLoading as string) === "pending"}
       />
     </div>
   );
