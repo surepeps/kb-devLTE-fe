@@ -232,19 +232,29 @@ const MyListingSearch = ({
     }
 
     // Bathroom
-    if (filters.bathroom !== undefined && filters.bathroom !== "") {
+    if (
+      filters.bathroom !== undefined &&
+      filters.bathroom !== "" &&
+      filters.bathroom !== 0
+    ) {
       filters.bathroom = Number(filters.bathroom);
     }
 
     // Land Size
-    if (filters.landSize && filters.landSize.size) {
-      filters.landSizeType = filters.landSize.type;
-      filters.landSize = filters.landSize.size;
+    if (
+      filters.landSize &&
+      typeof filters.landSize === "object" &&
+      "size" in filters.landSize &&
+      filters.landSize.size
+    ) {
+      const landSizeObj = filters.landSize as { type: string; size: number };
+      (filters as any).landSizeType = landSizeObj.type;
+      (filters as any).landSize = landSizeObj.size;
     }
 
     // Desired Features
-    if (filters.desirer_features.length > 0) {
-      filters.desireFeature = filters.desirer_features;
+    if (filters.desireFeature && filters.desireFeature.length > 0) {
+      // desireFeature is already correctly named
     }
 
     // Home Condition
@@ -253,7 +263,7 @@ const MyListingSearch = ({
     }
 
     // Tenant Criteria
-    if (filters.tenantCriteria.length > 0) {
+    if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
       filters.tenantCriteria = filters.tenantCriteria;
     }
 

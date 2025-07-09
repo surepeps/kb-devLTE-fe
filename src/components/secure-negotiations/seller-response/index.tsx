@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
-import { AnimatePresence, motion } from "framer-motion";
 import Loading from "@/components/loading-component/loading";
 import SecureNegotiationLayout from "../layout/secure-negotiation-layout";
 import TwoStepNegotiationFlow from "../flow/two-step-negotiation-flow";

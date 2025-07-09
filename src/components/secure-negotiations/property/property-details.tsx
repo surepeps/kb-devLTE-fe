@@ -5,9 +5,7 @@ import { motion } from "framer-motion";
 import {
   FiHome,
   FiMapPin,
-  FiDollarSign,
   FiCalendar,
-  FiUser,
   FiFileText,
   FiChevronDown,
   FiChevronUp,
@@ -51,8 +49,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
     propertyId,
     inspectionDate,
     inspectionTime,
-    requestedBy,
-    owner,
     createdAt,
   } = propertyData;
   const [isExpanded, setIsExpanded] = useState(false);

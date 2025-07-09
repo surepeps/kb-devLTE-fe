@@ -622,7 +622,11 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
 
   // Callback for handling the "Enter your price" input change
   const handleNegotiationPriceChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (
+      event:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>,
+    ) => {
       const rawValue = event.target.value;
       const numericValue = Number(rawValue.replace(/,/g, ""));
       const askingPrice = Number(selectedProperty.askingPrice);
