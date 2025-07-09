@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +12,7 @@ import {
   FiUser,
   FiPhone,
   FiMail,
+  FiChevronDown,
 } from "react-icons/fi";
 
 interface InspectionDateTimeStepProps {
@@ -29,6 +30,75 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [showAllDays, setShowAllDays] = useState(false);
+
+  // Generate available dates (next 15 days excluding Sundays)
+  const availableDates = useMemo(() => {
+    const dates = [];
+    const today = new Date();
+    let currentDate = new Date(today);
+    currentDate.setDate(today.getDate() + 1); // Start from tomorrow
+
+    while (dates.length < 15) {
+      // Skip Sundays (0 = Sunday)
+      if (currentDate.getDay() !== 0) {
+        dates.push({
+          date: currentDate.toISOString().split("T")[0],
+          displayDate: currentDate.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          }),
+          fullDate: currentDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+        });
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  }, []);
+
+  // Generate available times (8 AM to 6 PM)
+  const availableTimes = useMemo(() => {
+    const times = [];
+    for (let hour = 8; hour <= 18; hour++) {
+      const time24 = `${hour.toString().padStart(2, "0")}:00`;
+      const time12 =
+        hour <= 12
+          ? `${hour}:00 ${hour === 12 ? "PM" : "AM"}`
+          : `${hour - 12}:00 PM`;
+
+      times.push({
+        value: time12,
+        display: time12,
+      });
+
+      // Add 30-minute intervals
+      if (hour < 18) {
+        const time24Half = `${hour.toString().padStart(2, "0")}:30`;
+        const time12Half =
+          hour < 12
+            ? `${hour}:30 ${hour === 12 ? "PM" : "AM"}`
+            : hour === 12
+              ? `12:30 PM`
+              : `${hour - 12}:30 PM`;
+
+        times.push({
+          value: time12Half,
+          display: time12Half,
+        });
+      }
+    }
+    return times;
+  }, []);
+
+  const displayedDates = showAllDays
+    ? availableDates
+    : availableDates.slice(0, 10);
 
   const currentDate = details?.inspectionDate || "";
   const currentTime = details?.inspectionTime || "";
@@ -261,48 +331,104 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
       {/* Update Schedule Modal */}
       {showUpdateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4"
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#C7CAD0]"
           >
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <h3 className="text-lg font-semibold text-[#09391C] mb-6">
                 Update Inspection Schedule
               </h3>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Date Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    New Date
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Select New Date
                   </label>
-                  <input
-                    type="date"
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    min={minDate}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                    {displayedDates.map((dateObj) => (
+                      <button
+                        key={dateObj.date}
+                        onClick={() => setNewDate(dateObj.date)}
+                        className={`p-3 text-left rounded-lg border transition-colors duration-200 ${
+                          newDate === dateObj.date
+                            ? "border-[#09391C] bg-green-50 text-[#09391C]"
+                            : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="font-medium">{dateObj.displayDate}</div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {dateObj.fullDate}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* View More Button */}
+                  {!showAllDays && availableDates.length > 10 && (
+                    <button
+                      onClick={() => setShowAllDays(true)}
+                      className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
+                    >
+                      <span className="text-sm font-medium">
+                        View More Dates
+                      </span>
+                      <FiChevronDown className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
 
+                {/* Time Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    New Time
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Select New Time
                   </label>
-                  <input
-                    type="time"
-                    value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+                    {availableTimes.map((timeObj) => (
+                      <button
+                        key={timeObj.value}
+                        onClick={() => setNewTime(timeObj.value)}
+                        className={`p-2 text-center rounded-lg border transition-colors duration-200 ${
+                          newTime === timeObj.value
+                            ? "border-[#09391C] bg-green-50 text-[#09391C]"
+                            : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="text-sm font-medium">
+                          {timeObj.display}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Selected Summary */}
+                {newDate && newTime && (
+                  <div className="p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+                    <h4 className="font-medium text-[#09391C] mb-2">
+                      Selected Schedule:
+                    </h4>
+                    <div className="text-sm text-gray-700">
+                      <div>
+                        Date:{" "}
+                        {
+                          availableDates.find((d) => d.date === newDate)
+                            ?.fullDate
+                        }
+                      </div>
+                      <div>Time: {newTime}</div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex space-x-4">
                   <button
                     onClick={handleUpdateDateTime}
                     disabled={!newDate || !newTime || loadingStates.submitting}
-                    className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+                    className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
                     {loadingStates.submitting
                       ? "Updating..."
@@ -313,6 +439,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                       setShowUpdateForm(false);
                       setNewDate("");
                       setNewTime("");
+                      setShowAllDays(false);
                     }}
                     className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
                   >
