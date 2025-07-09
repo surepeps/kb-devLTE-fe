@@ -5,9 +5,7 @@ import { motion } from "framer-motion";
 import {
   FiHome,
   FiMapPin,
-  FiDollarSign,
   FiCalendar,
-  FiUser,
   FiFileText,
   FiChevronDown,
   FiChevronUp,
