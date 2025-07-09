@@ -87,7 +87,7 @@ export default function LandlordPage() {
               <RegisterWith
                 icon={googleIcon}
                 text="Continue with Google"
-                onClick={googleLogin}
+                onClick={handleGoogleLogin}
               />
               <RegisterWith icon={facebookIcon} text="Continue with Facebook" />
             </div>
