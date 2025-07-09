@@ -232,7 +232,11 @@ const MyListingSearch = ({
     }
 
     // Bathroom
-    if (filters.bathroom !== undefined && filters.bathroom !== "") {
+    if (
+      filters.bathroom !== undefined &&
+      filters.bathroom !== "" &&
+      filters.bathroom !== 0
+    ) {
       filters.bathroom = Number(filters.bathroom);
     }
 
