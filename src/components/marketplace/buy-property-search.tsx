@@ -177,10 +177,6 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
           inspectionType={inspectionType}
           setInspectionType={setInspectionType}
           onSearch={handleSearch}
-          searchStatus={{
-            status: loading ? "pending" : "success",
-            couldNotFindAProperty: false,
-          }}
           addForInspectionPayload={addForInspectionPayload}
         />
       </div>
