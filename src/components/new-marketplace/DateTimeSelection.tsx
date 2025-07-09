@@ -29,7 +29,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 }) => {
   // Auto-select current date (or next available date if today is Sunday)
   const getInitialDate = () => {
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + 3); // Start from 3 days from now
 
     // Skip Sundays
@@ -97,7 +97,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   // Generate available dates (at least 10 weekdays, excluding Sundays)
   const getAvailableDates = (count: number = 10) => {
     const dates = [];
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + 3); // Start from 3 days from now
 
     while (dates.length < count) {
@@ -281,7 +281,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
         <div className="space-y-4">
           <div className="w-full flex flex-col gap-4 md:flex-row">
-
             {/* Full Name */}
             <div className="w-full">
               <label className="block text-sm font-medium text-[#24272C] mb-2">
@@ -315,7 +314,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                 required
               />
             </div>
-
           </div>
 
           {/* Email Address */}

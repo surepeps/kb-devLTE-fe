@@ -89,8 +89,8 @@ const ForgotPassword = () => {
             Forgot Password
           </h2>
           <p className="text-center text-gray-600 max-w-md">
-            Enter your email address and we'll send you a link to reset your
-            password.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </p>
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
             <Input

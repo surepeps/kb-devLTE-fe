@@ -558,9 +558,11 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
                     >
                       <button
                         onClick={() => {
-                          notification.isRead
-                            ? onMarkAsUnread()
-                            : onMarkAsRead();
+                          if (notification.isRead) {
+                            onMarkAsUnread();
+                          } else {
+                            onMarkAsRead();
+                          }
                           setShowActions(false);
                         }}
                         className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors text-sm first:rounded-t-lg"

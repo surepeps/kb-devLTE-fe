@@ -1,9 +1,9 @@
 /** @format */
 //import { useRouter } from 'next/router';
 
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
-import { PropertyProps } from './property.types';
-import { UserAgentDataProps } from './agent_data_props';
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import { PropertyProps } from "./property.types";
+import { UserAgentDataProps } from "./agent_data_props";
 
 interface Option {
   value: string;
@@ -44,7 +44,9 @@ export interface GlobalContextTypes {
     usageOptions: string[];
     price: string | number;
     documents: string[];
-    docOnProperty: Array<string | { isProvided: boolean; _id: string; docName: string }>;
+    docOnProperty: Array<
+      string | { isProvided: boolean; _id: string; docName: string }
+    >;
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
@@ -55,19 +57,19 @@ export interface GlobalContextTypes {
     usageOptions: string[];
     price: string | number;
     documents: string[];
-    docOnProperty: [], 
+    docOnProperty: [];
     noOfBedroom: string;
     additionalFeatures: string;
     selectedState: Option | null;
     selectedCity: Option | null;
   }) => void;
   propertyReference: {
-    type: 'buy' | 'rental' | '';
-    payload: {};
+    type: "buy" | "rental" | "";
+    payload: Record<string, unknown>;
   };
-  setPropertyReference: ({}: {
-    type: 'buy' | 'rental' | '';
-    payload: {};
+  setPropertyReference: (value: {
+    type: "buy" | "rental" | "";
+    payload: Record<string, unknown>;
   }) => void;
   cardData: [];
   setCardData: ([]: []) => void;
@@ -136,7 +138,7 @@ export interface GlobalContextTypes {
    */
   propertySelectedForInspection: PropertyProps | undefined;
   setPropertySelectedForInspection: (
-    property: PropertyProps | undefined
+    property: PropertyProps | undefined,
   ) => void;
 
   //add for inspection modal
@@ -153,7 +155,7 @@ export interface GlobalContextTypes {
 }
 
 type CommissionType = {
-  userType: 'agent' | 'land_owners';
+  userType: "agent" | "land_owners";
   commission: string;
   payload: any;
 };

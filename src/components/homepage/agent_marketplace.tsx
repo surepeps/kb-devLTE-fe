@@ -17,10 +17,10 @@ const AgentMarketplace = () => {
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 30,
-      scale: 0.95 
+      scale: 0.95,
     },
     visible: {
       opacity: 1,
@@ -62,7 +62,8 @@ const AgentMarketplace = () => {
     {
       icon: Shield,
       title: "Verified Opportunities",
-      description: "Every preference is screened and backed by negotiation and inspection support",
+      description:
+        "Every preference is screened and backed by negotiation and inspection support",
       color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
@@ -90,13 +91,14 @@ const AgentMarketplace = () => {
           >
             Connect with Ready Buyers
           </motion.h1>
-          
+
           <motion.p
             variants={itemVariants}
             className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed"
           >
-            When a buyer submits a preference, they're actively looking for a property that matches
-            their exact needs. This is your chance to submit a matching brief and close deals faster.
+            When a buyer submits a preference, they&apos;re actively looking for
+            a property that matches their exact needs. This is your chance to
+            submit a matching brief and close deals faster.
           </motion.p>
         </motion.div>
 
@@ -118,7 +120,7 @@ const AgentMarketplace = () => {
                 <h3 className="text-xl font-semibold text-[#1976D2] mb-4 text-center">
                   {feature.title}
                 </h3>
-                
+
                 <p className="text-lg md:text-xl text-gray-600 leading-relaxed text-center">
                   {feature.description}
                 </p>
@@ -129,22 +131,20 @@ const AgentMarketplace = () => {
           ))}
         </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="text-center"
-        >
+        <motion.div variants={itemVariants} className="text-center">
           <Link href="/agent/agent-marketplace">
-          <motion.button
-            whileHover={{ 
-              scale: 1.05,
-              boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.3), 0 10px 10px -5px rgba(59, 130, 246, 0.04)"
-            }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center px-16 py-4 bg-[#8DDB90] text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 group"
-          >
-            <span>Agent Marketplace</span>
-          </motion.button>
-         </Link>
+            <motion.button
+              whileHover={{
+                scale: 1.05,
+                boxShadow:
+                  "0 20px 25px -5px rgba(59, 130, 246, 0.3), 0 10px 10px -5px rgba(59, 130, 246, 0.04)",
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center px-16 py-4 bg-[#8DDB90] text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 group"
+            >
+              <span>Agent Marketplace</span>
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </section>

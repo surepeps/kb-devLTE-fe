@@ -80,6 +80,44 @@ const Form2 = () => {
     setDetailsToCheckForTransactionHistory,
   ] = useState<DataProps>(briefData[0]);
 
+  useEffect(() => {
+    const getTotalBriefs = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch all brief types to show complete agent portfolio
+        const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
+        const allBriefsPromises = briefTypes.map((briefType) =>
+          GET_REQUEST(
+            URLS.BASE +
+              URLS.fetchBriefs +
+              `?page=1&limit=1000&briefType=${briefType}`,
+          ),
+        );
+
+        const results = await Promise.all(allBriefsPromises);
+        const allBriefs: any[] = [];
+
+        results.forEach((result) => {
+          if (result?.data?.briefs && Array.isArray(result.data.briefs)) {
+            allBriefs.push(...result.data.briefs);
+          }
+        });
+
+        console.log("All agent briefs fetched:", allBriefs);
+        setTotalBriefData(allBriefs);
+      } catch (error) {
+        console.error("Error fetching agent briefs:", error);
+        setTotalBriefData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (canAccessBriefs) {
+      getTotalBriefs();
+    }
+  }, [canAccessBriefs]);
+
   const renderComponent = () => {
     switch (selectedNav) {
       case AgentNavData.OVERVIEW:
@@ -150,63 +188,6 @@ const Form2 = () => {
   if (!canAccessBriefs) {
     return null;
   }
-
-  useEffect(() => {
-    const getTotalBriefs = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch all brief types to show complete agent portfolio
-        const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
-        const allBriefsPromises = briefTypes.map((briefType) =>
-          GET_REQUEST(
-            URLS.BASE +
-              URLS.fetchBriefs +
-              `?page=1&limit=1000&briefType=${briefType}`,
-            Cookies.get("token"),
-          ),
-        );
-
-        const responses = await Promise.all(allBriefsPromises);
-        let allBriefs: any[] = [];
-
-        responses.forEach((response, index) => {
-          if (response?.success !== false && response?.data) {
-            const briefsWithType = Array.isArray(response.data)
-              ? response.data.map((item: any) => ({
-                  ...item,
-                  briefType: briefTypes[index],
-                  statusLabel:
-                    item.isApproved === true
-                      ? "Approved"
-                      : item.isApproved === false
-                        ? "Rejected"
-                        : "Pending Review",
-                }))
-              : [];
-            allBriefs = [...allBriefs, ...briefsWithType];
-          }
-        });
-
-        // Sort by creation date (newest first) and then by approval status
-        const sortedBriefs = allBriefs.sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return dateB - dateA;
-        });
-
-        setTotalBriefData(sortedBriefs);
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to fetch briefs data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (selectedNav === AgentNavData.TOTAL_BRIEF) {
-      getTotalBriefs();
-    }
-  }, [selectedNav]);
 
   return (
     <div

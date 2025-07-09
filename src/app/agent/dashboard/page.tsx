@@ -202,7 +202,7 @@ export default function AgentDashboard() {
                 ₦{stats.monthlyCommission.toLocaleString()}
               </div>
               <p className="text-sm sm:text-base text-[#5A5D63]">
-                This Month's Commission
+                This Month&apos;s Commission
               </p>
             </div>
             <div className="text-center">

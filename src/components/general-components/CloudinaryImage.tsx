@@ -38,6 +38,34 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [hasTimedOut, setHasTimedOut] = useState(false);
 
+  // Check if the image is from Cloudinary with proper type checking
+  const isCloudinaryImage =
+    typeof src === "string" && src?.includes("cloudinary.com");
+
+  const handleError = React.useCallback(() => {
+    setImageError(true);
+    setIsLoading(false);
+  }, []);
+
+  const handleLoad = React.useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  // Create a timeout for Cloudinary images
+  React.useEffect(() => {
+    if (isCloudinaryImage && isLoading) {
+      const timer = setTimeout(() => {
+        if (isLoading) {
+          setHasTimedOut(true);
+          setImageError(true);
+          setIsLoading(false);
+        }
+      }, timeout);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isCloudinaryImage, isLoading, timeout]);
+
   // Validate src parameter
   if (!src || typeof src !== "string") {
     return (
@@ -62,34 +90,6 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
       </div>
     );
   }
-
-  // Check if the image is from Cloudinary with proper type checking
-  const isCloudinaryImage =
-    typeof src === "string" && src?.includes("cloudinary.com");
-
-  const handleError = useCallback(() => {
-    setImageError(true);
-    setIsLoading(false);
-  }, []);
-
-  const handleLoad = useCallback(() => {
-    setIsLoading(false);
-  }, []);
-
-  // Create a timeout for Cloudinary images
-  React.useEffect(() => {
-    if (isCloudinaryImage && isLoading) {
-      const timer = setTimeout(() => {
-        if (isLoading) {
-          setHasTimedOut(true);
-          setImageError(true);
-          setIsLoading(false);
-        }
-      }, timeout);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isCloudinaryImage, isLoading, timeout]);
 
   // Optimize Cloudinary URL
   const optimizeCloudinaryUrl = (url: string) => {
