@@ -19,6 +19,7 @@ import { shuffleArray } from "@/utils/shuffleArray";
 import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
+import { waitForInitialization } from "@/utils/appInit";
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -161,6 +162,18 @@ const Section2 = () => {
       URLS.fetchBriefs
     }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
+    const initAndFetch = async () => {
+      try {
+        await waitForInitialization();
+        fetchData();
+      } catch (error) {
+        console.error("Failed to initialize section2:", error);
+        setProperties([]);
+        setCardData([]);
+        setIsLoading(false);
+      }
+    };
+
     const fetchData = async (retryCount = 0) => {
       setIsLoading(true);
       try {
@@ -235,7 +248,7 @@ const Section2 = () => {
       }
     };
 
-    fetchData();
+    initAndFetch();
   }, [selectedMarketPlace, setCardData, buttons.button2]);
 
   return (
