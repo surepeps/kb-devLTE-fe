@@ -30,7 +30,6 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   const handleAcceptLOI = async () => {
     try {
-      
       console.log("Accepting LOI");
     } catch (error) {
       console.error("Failed to accept LOI:", error);
@@ -39,8 +38,6 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   const handleRejectLOI = async () => {
     try {
-      
-
       console.log("Rejecting LOI");
     } catch (error) {
       console.error("Failed to reject LOI:", error);
@@ -54,7 +51,6 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
     }
 
     try {
-      
       setShowResponseForm(false);
       setResponse("");
 
@@ -65,23 +61,54 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   };
 
   const downloadLOI = () => {
-    const element = document.createElement("a");
-    const file = new Blob([letterOfIntention], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = `letter-of-intention-${Date.now()}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    try {
+      const element = document.createElement("a");
+      const file = new Blob([letterOfIntention], { type: "application/pdf" });
+      element.href = URL.createObjectURL(file);
+      element.download = `letter-of-intention-${new Date().toISOString().split("T")[0]}.pdf`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    } catch (error) {
+      console.error("Download failed:", error);
+      alert("Failed to download document. Please try again.");
+    }
+  };
+
+  const viewFullLOI = () => {
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>Letter of Intention</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+              .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+              .content { white-space: pre-wrap; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Letter of Intention</h1>
+              <p>Date: ${new Date().toLocaleDateString()}</p>
+            </div>
+            <div class="content">${letterOfIntention}</div>
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+    }
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-2">
           Letter of Intention Review
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm sm:text-base">
           {userType === "seller"
             ? "Review the buyer's Letter of Intention for joint venture partnership."
             : "Your Letter of Intention is being reviewed by the seller."}
@@ -92,30 +119,55 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+        className="bg-white rounded-xl border border-[#C7CAD0] mb-6 sm:mb-8"
       >
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
             <div className="flex items-center space-x-3">
-              <FiFileText className="w-6 h-6 text-blue-600" />
-              <h3 className="text-lg font-semibold text-gray-800">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <FiFileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">
                 Letter of Intention Document
               </h3>
             </div>
-            <button
-              onClick={downloadLOI}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-            >
-              <FiDownload className="w-4 h-4" />
-              <span>Download</span>
-            </button>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={viewFullLOI}
+                className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm"
+              >
+                <FiFileText className="w-4 h-4" />
+                <span>View Full</span>
+              </button>
+
+              <button
+                onClick={downloadLOI}
+                className="flex items-center justify-center space-x-2 px-4 py-2 bg-[#09391C] text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm"
+              >
+                <FiDownload className="w-4 h-4" />
+                <span>Download</span>
+              </button>
+            </div>
           </div>
 
-          {/* LOI Content */}
-          <div className="bg-gray-50 rounded-lg p-6 max-h-96 overflow-y-auto">
-            <div className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
-              {letterOfIntention}
+          {/* LOI Preview */}
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 sm:p-6 max-h-60 sm:max-h-80 overflow-y-auto border border-gray-200">
+            <div className="whitespace-pre-wrap text-xs sm:text-sm text-gray-700 leading-relaxed">
+              {letterOfIntention.length > 500
+                ? `${letterOfIntention.substring(0, 500)}...`
+                : letterOfIntention}
             </div>
+            {letterOfIntention.length > 500 && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={viewFullLOI}
+                  className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                >
+                  Read Full Document →
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Document Info */}
