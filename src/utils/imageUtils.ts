@@ -1,6 +1,6 @@
 /** @format */
 
-import randomImage from "@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png";
+import randomImage from "@/assets/noImageAvailable.png";
 
 /**
  * Check if an image URL is valid and accessible
