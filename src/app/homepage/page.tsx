@@ -34,6 +34,20 @@ import Agent from "../agent/page";
  *
  * @returns - Homepage contents
  */
+
+interface VerifiedUser {
+  id: string;
+  token: string;
+  email: string;
+  password: string;
+  lastName: string;
+  firstName: string;
+  phoneNumber: string;
+  accountApproved: boolean;
+  userType: string;
+}
+
+
 const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   //Simulating the loading page
   const isLoading = useLoading();
@@ -60,7 +74,7 @@ const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
         `?access_token=${searchParams?.get("access_token")}`;
 
       (async () => {
-        await GET_REQUEST(url).then((response) => {
+        await GET_REQUEST(url).then((response: VerifiedUser) => {
           if ((response as unknown as { id: string; token: string }).id) {
             Cookies.set(
               "token",
