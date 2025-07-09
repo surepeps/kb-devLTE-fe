@@ -18,11 +18,13 @@ import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 interface EnhancedLOINegotiationPageProps {
   letterOfIntention: string;
   userType: "seller" | "buyer";
+  onNavigateToInspection?: () => void;
 }
 
 const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   letterOfIntention,
   userType,
+  onNavigateToInspection,
 }) => {
   const { state, toggleMessageModal } = useSecureNegotiation();
 
@@ -36,9 +38,13 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
     try {
       setShowAcceptConfirm(false);
       // Navigate to inspection date and time selection
-      // This would typically trigger a navigation or step change
+      if (onNavigateToInspection) {
+        onNavigateToInspection();
+      } else {
+        // Fallback: trigger context navigation
+        toggleMessageModal(); // This could be replaced with proper navigation
+      }
       console.log("Accepting LOI - navigating to inspection date/time");
-      // Add actual navigation logic here
     } catch (error) {
       console.error("Failed to accept LOI:", error);
     }
@@ -66,6 +72,13 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
       setResponse("");
 
       console.log("LOI response submitted:", response);
+
+      // After submitting changes, navigate to inspection page
+      if (onNavigateToInspection) {
+        setTimeout(() => {
+          onNavigateToInspection();
+        }, 500); // Small delay for better UX
+      }
     } catch (error) {
       console.error("Failed to submit response:", error);
     }
