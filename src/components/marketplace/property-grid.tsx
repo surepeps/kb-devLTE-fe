@@ -276,11 +276,15 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                   images={property?.pictures || []}
                   property={property}
                   properties={properties}
-                  isPremium={property?.isPremium}
-                  isAddInspectionalModalOpened={isAddForInspectionModalOpened}
-                  setPropertySelected={setPropertySelected}
-                  setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
-                  onSubmitLoi={onSubmitLoi}
+                  isPremium={property?.isPremium ?? false}
+                  isAddInspectionalModalOpened={
+                    isAddForInspectionModalOpened ?? false
+                  }
+                  setPropertySelected={setPropertySelected ?? (() => {})}
+                  setIsAddInspectionModalOpened={
+                    setIsAddInspectionModalOpened ?? (() => {})
+                  }
+                  onSubmitLoi={onSubmitLoi ?? (() => {})}
                 />
               );
             }
