@@ -55,9 +55,9 @@ const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
         setInspectionStatus("countered");
         goToNextPage("Negotiation");
       } else if (negotiationStatus === "cancelled") {
-        goToNextPage("Cancelled");
+        // Status will be handled by renderContent logic
       } else if (negotiationStatus === "completed") {
-        goToNextPage("Summary");
+        // Status will be handled by renderContent logic
       } else if (negotiationStatus === "awaiting_seller_response") {
         goToNextPage("Negotiation");
       } else if (letterOfIntention && letterOfIntention !== "") {
