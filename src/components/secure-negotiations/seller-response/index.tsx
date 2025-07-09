@@ -20,7 +20,8 @@ const SecureSellerResponseIndex: React.FC<SecureSellerResponseIndexProps> = ({
   userId,
   inspectionId,
 }) => {
-  const { state, fetchNegotiationDetails } = useSecureNegotiation();
+  const { state, fetchNegotiationDetails, setInspectionStatus, goToNextPage } =
+    useSecureNegotiation();
 
   const { formStatus, details, negotiationType } = state;
 
@@ -53,9 +54,9 @@ const SecureSellerResponseIndex: React.FC<SecureSellerResponseIndexProps> = ({
         setInspectionStatus("countered");
         goToNextPage("Negotiation");
       } else if (negotiationStatus === "cancelled") {
-        goToNextPage("Cancelled");
+        // Status will be handled by renderContent logic
       } else if (negotiationStatus === "completed") {
-        goToNextPage("Summary");
+        // Status will be handled by renderContent logic
       } else if (letterOfIntention && letterOfIntention !== "") {
         goToNextPage("Negotiation");
       } else if (buyOffer > 0) {

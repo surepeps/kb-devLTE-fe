@@ -10,9 +10,6 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiEdit3,
-  FiUser,
-  FiPhone,
-  FiMail,
 } from "react-icons/fi";
 
 interface EnhancedInspectionDateConfirmationProps {
@@ -22,17 +19,12 @@ interface EnhancedInspectionDateConfirmationProps {
 const EnhancedInspectionDateConfirmation: React.FC<
   EnhancedInspectionDateConfirmationProps
 > = ({ userType }) => {
-  const { state, addActivity } = useSecureNegotiation();
+  const { state } = useSecureNegotiation();
 
   const { details, loadingStates, currentUserId, inspectionStatus } = state;
   const [alternativeDate, setAlternativeDate] = useState("");
   const [alternativeTime, setAlternativeTime] = useState("");
   const [showAlternativeForm, setShowAlternativeForm] = useState(false);
-  const [contactInfo, setContactInfo] = useState({
-    name: "",
-    phone: "",
-    email: "",
-  });
 
   const proposedDate = details?.inspectionDate || "";
   const proposedTime = details?.inspectionTime || "";
@@ -41,13 +33,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const handleConfirmInspection = async () => {
     try {
-      addActivity({
-        type: "inspection_scheduled",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} confirmed inspection for ${proposedDate} at ${proposedTime}`,
-        userId: currentUserId!,
-        userType,
-      });
-
       console.log("Inspection confirmed for:", {
         date: proposedDate,
         time: proposedTime,
@@ -59,13 +44,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const handleRejectInspection = async () => {
     try {
-      addActivity({
-        type: "offer_rejected",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} rejected the proposed inspection time`,
-        userId: currentUserId!,
-        userType,
-      });
-
       console.log("Inspection rejected");
     } catch (error) {
       console.error("Failed to reject inspection:", error);
@@ -79,13 +57,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
     }
 
     try {
-      addActivity({
-        type: "inspection_scheduled",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} proposed alternative inspection time: ${alternativeDate} at ${alternativeTime}`,
-        userId: currentUserId!,
-        userType,
-      });
-
       setShowAlternativeForm(false);
       setAlternativeDate("");
       setAlternativeTime("");
@@ -319,69 +290,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
           </div>
         </motion.div>
       )}
-
-      {/* Contact Information */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Contact Information for Inspection
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FiUser className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-800">
-                  Primary Contact
-                </span>
-              </div>
-              <p className="text-gray-700">
-                {details?.contactName || userType === "seller"
-                  ? "Property Owner"
-                  : "Prospective Buyer"}
-              </p>
-            </div>
-
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FiPhone className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-800">Phone</span>
-              </div>
-              <p className="text-gray-700">
-                {details?.contactPhone || "Will be shared upon confirmation"}
-              </p>
-            </div>
-
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FiMail className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-800">Email</span>
-              </div>
-              <p className="text-gray-700">
-                {details?.contactEmail || "Will be shared upon confirmation"}
-              </p>
-            </div>
-          </div>
-
-          {/* Important Notes */}
-          <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <h4 className="font-medium text-yellow-800 mb-2">
-              Important Notes:
-            </h4>
-            <ul className="text-sm text-yellow-700 space-y-1">
-              <li>• Please arrive 10 minutes before the scheduled time</li>
-              <li>• Bring a valid ID for verification</li>
-              <li>• Contact information will be exchanged upon confirmation</li>
-              <li>• Inspection typically takes 30-45 minutes</li>
-            </ul>
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 };

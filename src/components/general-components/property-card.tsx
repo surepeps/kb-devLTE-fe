@@ -116,8 +116,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               }`}
             >
               {property.statusLabel ||
-                property.status?.charAt(0).toUpperCase() +
-                  property.status?.slice(1)}
+                (property.status?.charAt(0).toUpperCase() ?? "") +
+                  (property.status?.slice(1) ?? "")}
             </span>
           </div>
         )}

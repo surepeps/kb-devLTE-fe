@@ -22,7 +22,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   letterOfIntention,
   userType,
 }) => {
-  const { state, addActivity, toggleMessageModal } = useSecureNegotiation();
+  const { state, toggleMessageModal } = useSecureNegotiation();
 
   const { details, loadingStates, currentUserId } = state;
   const [response, setResponse] = useState("");
@@ -30,13 +30,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   const handleAcceptLOI = async () => {
     try {
-      addActivity({
-        type: "offer_accepted",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} accepted the Letter of Intention`,
-        userId: currentUserId!,
-        userType,
-      });
-
+      
       console.log("Accepting LOI");
     } catch (error) {
       console.error("Failed to accept LOI:", error);
@@ -45,12 +39,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   const handleRejectLOI = async () => {
     try {
-      addActivity({
-        type: "offer_rejected",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} rejected the Letter of Intention`,
-        userId: currentUserId!,
-        userType,
-      });
+      
 
       console.log("Rejecting LOI");
     } catch (error) {
@@ -65,13 +54,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
     }
 
     try {
-      addActivity({
-        type: "message_sent",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} responded to LOI: ${response}`,
-        userId: currentUserId!,
-        userType,
-      });
-
+      
       setShowResponseForm(false);
       setResponse("");
 

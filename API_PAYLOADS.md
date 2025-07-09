@@ -10,13 +10,21 @@ All endpoints follow this pattern:
 {BASE_URL}/inspections/inspection-details/{inspectionId}/{action}
 ```
 
+## Date/Time Change Detection
+
+The system now detects if the inspection date or time has been changed from the original and includes this information in the payload:
+
+- **dateTimeCountered**: Boolean indicating if date/time was modified
+  - `true`: User changed either date, time, or both
+  - `false`: User kept original date and time
+
 ## Negotiation Flow
 
 The negotiation follows this flow:
 
 1. **Price Negotiation Step**: User chooses Accept, Counter, or Reject
 2. **Inspection Date/Time Step**: If Accept/Counter chosen, user selects inspection schedule
-3. **Final Submission**: Accept/Counter submitted with inspection date/time included
+3. **Final Submission**: Accept/Counter submitted with inspection date/time and change detection
 
 ## 1. Accept Offer (with Inspection Schedule)
 
@@ -29,18 +37,20 @@ The negotiation follows this flow:
   "userType": "seller",
   "action": "accept",
   "inspectionDate": "2025-01-15",
-  "inspectionTime": "2:30 PM"
+  "inspectionTime": "2:30 PM",
+  "dateTimeCountered": false
 }
 ```
 
-**Example:**
+**Example (with date/time change):**
 
 ```json
 {
   "userType": "buyer",
   "action": "accept",
-  "inspectionDate": "2025-01-15",
-  "inspectionTime": "10:00 AM"
+  "inspectionDate": "2025-01-16",
+  "inspectionTime": "10:00 AM",
+  "dateTimeCountered": true
 }
 ```
 
@@ -57,6 +67,7 @@ The negotiation follows this flow:
     "stage": "inspection",
     "inspectionDate": "2025-01-15T00:00:00.000Z",
     "inspectionTime": "2:30 PM",
+    "dateTimeCountered": false,
     "updatedAt": "2025-01-08T15:30:00.000Z"
   }
 }
@@ -75,14 +86,7 @@ The negotiation follows this flow:
 }
 ```
 
-**Example:**
-
-```json
-{
-  "userType": "buyer",
-  "action": "reject"
-}
-```
+**Note:** Reject offers do not include inspection date/time or dateTimeCountered fields.
 
 **Response:**
 
@@ -111,31 +115,21 @@ The negotiation follows this flow:
   "action": "counter",
   "counterPrice": 4500000,
   "inspectionDate": "2025-01-15",
-  "inspectionTime": "2:30 PM"
+  "inspectionTime": "2:30 PM",
+  "dateTimeCountered": false
 }
 ```
 
-**Example (Seller Counter):**
+**Example (Seller Counter with modified schedule):**
 
 ```json
 {
   "userType": "seller",
   "action": "counter",
   "counterPrice": 4500000,
-  "inspectionDate": "2025-01-16",
-  "inspectionTime": "11:30 AM"
-}
-```
-
-**Example (Buyer Counter):**
-
-```json
-{
-  "userType": "buyer",
-  "action": "counter",
-  "counterPrice": 4200000,
   "inspectionDate": "2025-01-17",
-  "inspectionTime": "3:00 PM"
+  "inspectionTime": "11:30 AM",
+  "dateTimeCountered": true
 }
 ```
 
@@ -152,8 +146,9 @@ The negotiation follows this flow:
     "stage": "negotiation",
     "sellerCounterOffer": 4500000,
     "negotiationPrice": 4000000,
-    "inspectionDate": "2025-01-15T00:00:00.000Z",
-    "inspectionTime": "2:30 PM",
+    "inspectionDate": "2025-01-17T00:00:00.000Z",
+    "inspectionTime": "11:30 AM",
+    "dateTimeCountered": true,
     "updatedAt": "2025-01-08T15:30:00.000Z"
   }
 }
@@ -169,29 +164,12 @@ The negotiation follows this flow:
 {
   "userType": "seller",
   "inspectionDate": "2025-01-15",
-  "inspectionTime": "10:00 AM"
+  "inspectionTime": "10:00 AM",
+  "dateTimeCountered": true
 }
 ```
 
-**Note:** This endpoint is used when only updating the inspection schedule without accepting/countering an offer.
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "message": "Inspection schedule updated successfully",
-  "data": {
-    "inspectionId": "686d86db9705e4892949e703",
-    "status": "pending_inspection",
-    "pendingResponseFrom": "seller",
-    "stage": "inspection",
-    "inspectionDate": "2025-01-15T00:00:00.000Z",
-    "inspectionTime": "10:00 AM",
-    "updatedAt": "2025-01-08T15:30:00.000Z"
-  }
-}
-```
+**Note:** This endpoint is used when only updating the inspection schedule without accepting/countering an offer. dateTimeCountered is always true for this endpoint since the user is explicitly changing the schedule.
 
 ## 5. Reopen Expired Inspection
 
@@ -205,35 +183,28 @@ The negotiation follows this flow:
 }
 ```
 
-**Response:**
+## Date/Time Change Detection Logic
 
-```json
-{
-  "success": true,
-  "message": "Inspection reopened successfully",
-  "data": {
-    "inspectionId": "686d86db9705e4892949e703",
-    "status": "pending_negotiation",
-    "pendingResponseFrom": "seller",
-    "stage": "negotiation",
-    "updatedAt": "2025-01-08T15:30:00.000Z"
-  }
-}
-```
+### When dateTimeCountered = true:
 
-## Key Differences in Flow
+1. User explicitly clicked "Update Schedule" and selected new date/time
+2. User confirmed existing schedule but had previously modified it in the form
+3. Any change from the original inspection date or time
 
-### Accept/Counter Flow:
+### When dateTimeCountered = false:
 
-1. User selects "Accept" or "Counter" → Goes to inspection date/time selection
-2. User selects/confirms inspection date and time
-3. **Final payload includes both the negotiation action AND inspection details**
+1. User confirmed the original inspection date and time without changes
+2. User selected the same date and time as originally proposed
 
-### Reject Flow:
+## Mobile Responsiveness Features
 
-1. User selects "Reject" → **Immediately submits rejection**
-2. **No inspection date/time selection required**
-3. **Payload only includes the rejection action**
+The system now includes:
+
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **Touch-Friendly**: Larger buttons and touch targets on mobile
+- **Collapsible Sections**: Property details collapsed by default on mobile
+- **Reduced Shadows**: Minimal shadow usage for better mobile performance
+- **Flexible Layouts**: Grid layouts adapt to screen size
 
 ## Date/Time Constraints
 
@@ -257,6 +228,7 @@ The negotiation follows this flow:
 - `action`: "accept"
 - `inspectionDate`: YYYY-MM-DD format
 - `inspectionTime`: 12-hour format string
+- `dateTimeCountered`: Boolean
 
 ### Required for Counter:
 
@@ -265,12 +237,13 @@ The negotiation follows this flow:
 - `counterPrice`: Number (price in base currency unit)
 - `inspectionDate`: YYYY-MM-DD format
 - `inspectionTime`: 12-hour format string
+- `dateTimeCountered`: Boolean
 
 ### Required for Reject:
 
 - `userType`: "seller" or "buyer"
 - `action`: "reject"
-- **No inspection fields required**
+- **No inspection fields or dateTimeCountered required**
 
 ## Error Responses
 
@@ -287,9 +260,10 @@ The negotiation follows this flow:
 
 ## Important Notes
 
-1. **Accept and Counter** actions always require inspection date/time
-2. **Reject** action never includes inspection date/time
-3. The flow ensures users select inspection details before final submission
-4. Sundays are automatically excluded from available dates
-5. Time slots are restricted to business hours (8 AM - 6 PM)
-6. All inspection times are in 12-hour format for user-friendly display
+1. **Accept and Counter** actions always require inspection date/time and dateTimeCountered
+2. **Reject** action never includes inspection date/time or dateTimeCountered
+3. **dateTimeCountered** helps the backend understand if the user modified the schedule
+4. The system automatically detects changes by comparing with original values
+5. All inspection times are in 12-hour format for user-friendly display
+6. Mobile-responsive design ensures usability across all devices
+7. Property details are collapsible and collapsed by default for better mobile UX

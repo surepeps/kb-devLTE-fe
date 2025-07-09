@@ -328,6 +328,7 @@ interface SecureNegotiationContextType {
     userType: "seller" | "buyer",
     inspectionDate: string,
     inspectionTime: string,
+    dateTimeCountered?: boolean,
   ) => Promise<any>;
   rejectOffer: (
     inspectionId: string,
@@ -339,12 +340,14 @@ interface SecureNegotiationContextType {
     userType: "seller" | "buyer",
     inspectionDate: string,
     inspectionTime: string,
+    dateTimeCountered?: boolean,
   ) => Promise<any>;
   updateInspectionDateTime: (
     inspectionId: string,
     date: string,
     time: string,
     userType: "seller" | "buyer",
+    dateTimeCountered?: boolean,
   ) => Promise<any>;
 }
 
@@ -582,6 +585,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       userType: "seller" | "buyer",
       inspectionDate: string,
       inspectionTime: string,
+      dateTimeCountered: boolean = false,
     ) => {
       dispatch({
         type: "SET_LOADING",
@@ -596,6 +600,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
             action: "accept",
             inspectionDate,
             inspectionTime,
+            dateTimeCountered,
           },
         );
 
@@ -660,6 +665,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       userType: "seller" | "buyer",
       inspectionDate: string,
       inspectionTime: string,
+      dateTimeCountered: boolean = false,
     ) => {
       dispatch({
         type: "SET_LOADING",
@@ -675,6 +681,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
             counterPrice,
             inspectionDate,
             inspectionTime,
+            dateTimeCountered,
           },
         );
 
@@ -703,6 +710,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       date: string,
       time: string,
       userType: "seller" | "buyer",
+      dateTimeCountered: boolean = false,
     ) => {
       dispatch({
         type: "SET_LOADING",
@@ -716,6 +724,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
             userType,
             inspectionDate: date,
             inspectionTime: time,
+            dateTimeCountered,
           },
         );
 
