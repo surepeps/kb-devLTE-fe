@@ -73,7 +73,8 @@ interface BasePayload {
 }
 
 interface AcceptOfferPayload extends BasePayload {
-  // Inherits all properties from BasePayload
+  // Placeholder field to avoid ESLint error
+  _brand?: "AcceptOfferPayload";
 }
 
 interface RejectOfferPayload extends BasePayload {
@@ -677,7 +678,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
             pendingResponseFrom:
               responseData.inspectionData.pendingResponseFrom,
           });
-
+ 
           return true;
         }
 

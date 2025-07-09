@@ -44,7 +44,7 @@ class ErrorBoundary extends Component<Props, State> {
               Something went wrong
             </h2>
             <p className="text-gray-600 mb-4">
-              We're having trouble loading this content. Please try refreshing
+              We&apos;re having trouble loading this content. Please try refreshing
               the page.
             </p>
             <button

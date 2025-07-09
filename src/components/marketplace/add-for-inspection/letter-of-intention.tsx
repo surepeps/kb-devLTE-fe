@@ -130,7 +130,7 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             📝 Sample Letter Format:
           </h4>
           <div className="text-xs sm:text-sm text-[#5A5D63] bg-white p-3 rounded border italic leading-relaxed">
-            <p>"Dear Khabi-Teq Limited,</p>
+            <p>Dear Khabi-Teq Limited,</p>
             <p className="mt-2">
               I express my intention to enter into a joint venture for the
               property at [Property Address]...
@@ -138,7 +138,7 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             <p className="mt-2">My contribution: [Financial/Expertise]</p>
             <p>Profit sharing: [Percentage/Terms]</p>
             <p className="mt-2">Contact: [Your details]</p>
-            <p className="mt-2">Sincerely, [Your Name & Signature]"</p>
+            <p className="mt-2">Sincerely, [Your Name & Signature]</p>
           </div>
         </div>
 

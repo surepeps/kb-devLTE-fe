@@ -31,7 +31,7 @@ const ConnectBuyersSection = () => {
         <div className='text-center mb-12'>
           <h2 className='text-[35px] text-[#09391C] font-bold mb-4'>Connect with Ready Buyers</h2>
           <p className='text-[20px] text-black max-w-3xl mx-auto'>
-            When a buyer submits a preference, they're actively looking for a property that matches 
+            When a buyer submits a preference, they&apos;re actively looking for a property that matches 
             their exact needs. This is your chance to submit a matching brief and close deals faster.
           </p>
         </div>

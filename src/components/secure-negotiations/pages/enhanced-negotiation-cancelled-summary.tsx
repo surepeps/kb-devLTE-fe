@@ -210,7 +210,7 @@ const EnhancedNegotiationCancelledSummary: React.FC<
       >
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            What's Next?
+            What&apos;s Next?
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

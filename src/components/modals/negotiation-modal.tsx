@@ -68,17 +68,18 @@ const timeSlots = [
 
 const getAvailableDates = () => {
   const dates: string[] = [];
-  let date = new Date();
-  date.setDate(date.getDate() + 3); // Start from 3 days from now
+  const dateI = new Date();
+  dateI.setDate(dateI.getDate() + 3); // Start from 3 days from now
 
   // Get dates for the next 30 days
   for (let i = 0; i < 30; i++) {
-    // Exclude Sundays
-    if (date.getDay() !== 0) {
-      dates.push(format(date, "MMM d, yyyy"));
+    // Exclude Sundays (0 = Sunday)
+    if (dateI.getDay() !== 0) {
+      dates.push(format(dateI, "MMM d, yyyy"));
     }
-    date.setDate(date.getDate() + 1);
+    dateI.setDate(dateI.getDate() + 1);
   }
+
   return dates;
 };
 

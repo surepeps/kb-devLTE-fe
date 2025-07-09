@@ -116,8 +116,8 @@ const AccessValidator: React.FC<AccessValidatorProps> = ({
             <div className="text-sm text-gray-500 border-t pt-4">
               <p className="mb-2">If you believe this is an error:</p>
               <ul className="text-left space-y-1">
-                <li>• Check that you're using the correct link</li>
-                <li>• Ensure the link hasn't expired</li>
+                <li>• Check that you&apos;re using the correct link</li>
+                <li>• Ensure the link hasn&apos;t expired</li>
                 <li>• Contact the other party for a new link</li>
               </ul>
             </div>

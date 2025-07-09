@@ -32,7 +32,7 @@ const NoBriefsPlaceholder: React.FC<NoBriefsPlaceholderProps> = ({
           </h3>
 
           <p className="text-[#5A5D63] mb-6">
-            We couldn't find any property briefs that match your current search
+            We couldn&apos;t find any property briefs that match your current search
             criteria. Try adjusting your filters or clearing them to see all
             your briefs.
           </p>
@@ -76,7 +76,7 @@ const NoBriefsPlaceholder: React.FC<NoBriefsPlaceholderProps> = ({
         </h3>
 
         <p className="text-[#5A5D63] mb-6 leading-relaxed">
-          You haven't created any property briefs yet. Start building your
+          You haven&apos;t created any property briefs yet. Start building your
           property portfolio by creating your first brief and connect with
           potential buyers, tenants, or joint venture partners.
         </p>

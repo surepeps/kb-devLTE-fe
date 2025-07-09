@@ -83,7 +83,7 @@ export const NormalNegotiationPage = ({ currentAmount, buyOffer }: NormalNegotia
       ) : (
         <>
           <p className="text-base font-semibold text-black">
-            Note: You've initiated this negotiation by making a deposit.
+            Note: You&apos;ve initiated this negotiation by making a deposit.
           </p>
           <p className="text-base font-semibold text-black">
             The seller will respond to your proposed price—either by{" "}
@@ -92,7 +92,7 @@ export const NormalNegotiationPage = ({ currentAmount, buyOffer }: NormalNegotia
             <span className="text-[#4285F4] text-base font-semibold">countering</span> it.
           </p>
           <p className="text-base font-semibold text-black">
-            We’ll notify you once they respond.
+            We&apos;ll notify you once they respond.
           </p>
         </>
       )}

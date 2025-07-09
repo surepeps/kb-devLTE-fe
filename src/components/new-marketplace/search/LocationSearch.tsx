@@ -339,7 +339,7 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
 
             {suggestions.length === 0 && !loading && inputValue.length >= 2 && (
               <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                No locations found for "{inputValue}"
+                No locations found for &quot;{inputValue}&quot;
               </div>
             )}
           </motion.div>

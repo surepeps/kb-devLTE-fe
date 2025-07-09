@@ -102,7 +102,7 @@ const SubmitPreferenceModal: React.FC<SubmitPreferenceModalProps> = ({
               {/* Message */}
               <div className="bg-[#E4EFE7] rounded-lg p-4 mb-6">
                 <p className="text-sm text-[#09391C] mb-3">
-                  Can't find the brief you're looking for? Don't worry! We'll
+                  Can&apos;t find the brief you&apos;re looking for? Don&apos;t worry! We&apos;ll
                   provide a reference brief for you.
                 </p>
 

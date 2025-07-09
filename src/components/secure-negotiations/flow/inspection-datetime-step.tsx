@@ -54,7 +54,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   const availableDates = useMemo(() => {
     const dates = [];
     const today = new Date();
-    let currentDate = new Date(today);
+    const currentDate = new Date(today);
     currentDate.setDate(today.getDate() + 1); // Start from tomorrow
 
     while (dates.length < 15) {
