@@ -12,15 +12,17 @@ import {
 
 interface PriceNegotiationStepProps {
   userType: "seller" | "buyer";
-  onStepComplete: () => void;
+  onActionSelected: (
+    action: "accept" | "counter",
+    counterPrice?: number,
+  ) => void;
 }
 
 const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   userType,
-  onStepComplete,
+  onActionSelected,
 }) => {
-  const { state, acceptOffer, rejectOffer, submitCounterOffer } =
-    useSecureNegotiation();
+  const { state, rejectOffer } = useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
   const [counterPrice, setCounterPrice] = useState<string>("");
@@ -62,13 +64,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const isAboveAsk = currentOffer > propertyPrice;
   const difference = calculateDifference();
 
-  const handleAccept = async () => {
-    try {
-      await acceptOffer(inspectionId!, userType);
-      onStepComplete();
-    } catch (error) {
-      console.error("Failed to accept offer:", error);
-    }
+  const handleAccept = () => {
+    onActionSelected("accept");
   };
 
   const handleReject = async () => {
@@ -80,7 +77,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     }
   };
 
-  const handleCounterSubmit = async () => {
+  const handleCounterSubmit = () => {
     const counterAmount = parseFloat(counterPrice.replace(/[^\d.-]/g, ""));
 
     if (!counterAmount || counterAmount <= 0) {
@@ -88,18 +85,23 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       return;
     }
 
-    try {
-      await submitCounterOffer(inspectionId!, counterAmount, userType);
-      setShowCounterModal(false);
-      setCounterPrice("");
-      onStepComplete();
-    } catch (error) {
-      console.error("Failed to submit counter offer:", error);
-    }
+    onActionSelected("counter", counterAmount);
+    setShowCounterModal(false);
+    setCounterPrice("");
   };
 
   return (
     <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-semibold text-[#09391C] mb-2">
+          Price Negotiation
+        </h2>
+        <p className="text-gray-600">
+          Review the offer and choose your response. You'll select inspection
+          date/time on the next step.
+        </p>
+      </div>
+
       {/* Price Comparison */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -107,7 +109,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
         className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
       >
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-          Price Negotiation
+          Price Comparison
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -174,8 +176,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           {/* Accept Button */}
           <button
             onClick={handleAccept}
-            disabled={loadingStates.accepting}
-            className="flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+            className="flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
           >
             <FiCheckCircle className="w-5 h-5" />
             <span>Accept Offer</span>
@@ -184,8 +185,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           {/* Counter Offer Button */}
           <button
             onClick={() => setShowCounterModal(true)}
-            disabled={loadingStates.countering}
-            className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors duration-200"
+            className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200"
           >
             <FiDollarSign className="w-5 h-5" />
             <span>Counter Offer</span>
@@ -238,12 +238,10 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                 <div className="flex space-x-4">
                   <button
                     onClick={handleCounterSubmit}
-                    disabled={!counterPrice.trim() || loadingStates.countering}
+                    disabled={!counterPrice.trim()}
                     className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
-                    {loadingStates.countering
-                      ? "Submitting..."
-                      : "Submit Counter"}
+                    Continue to Inspection
                   </button>
                   <button
                     onClick={() => {

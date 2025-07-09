@@ -326,6 +326,8 @@ interface SecureNegotiationContextType {
   acceptOffer: (
     inspectionId: string,
     userType: "seller" | "buyer",
+    inspectionDate: string,
+    inspectionTime: string,
   ) => Promise<any>;
   rejectOffer: (
     inspectionId: string,
@@ -335,6 +337,8 @@ interface SecureNegotiationContextType {
     inspectionId: string,
     counterPrice: number,
     userType: "seller" | "buyer",
+    inspectionDate: string,
+    inspectionTime: string,
   ) => Promise<any>;
   updateInspectionDateTime: (
     inspectionId: string,
@@ -573,7 +577,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
   // API Action Methods
   const acceptOffer = useCallback(
-    async (inspectionId: string, userType: "seller" | "buyer") => {
+    async (
+      inspectionId: string,
+      userType: "seller" | "buyer",
+      inspectionDate: string,
+      inspectionTime: string,
+    ) => {
       dispatch({
         type: "SET_LOADING",
         payload: { type: "accepting", isLoading: true },
@@ -585,6 +594,8 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           {
             userType,
             action: "accept",
+            inspectionDate,
+            inspectionTime,
           },
         );
 
@@ -647,6 +658,8 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       inspectionId: string,
       counterPrice: number,
       userType: "seller" | "buyer",
+      inspectionDate: string,
+      inspectionTime: string,
     ) => {
       dispatch({
         type: "SET_LOADING",
@@ -660,6 +673,8 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
             userType,
             action: "counter",
             counterPrice,
+            inspectionDate,
+            inspectionTime,
           },
         );
 

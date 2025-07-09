@@ -19,6 +19,10 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   const [currentStep, setCurrentStep] = useState<"price" | "inspection">(
     "price",
   );
+  const [negotiationAction, setNegotiationAction] = useState<{
+    type: "accept" | "counter";
+    counterPrice?: number;
+  } | null>(null);
 
   // Determine if we need price negotiation step
   const hasPriceNegotiation =
@@ -34,10 +38,12 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     }
   }, [hasPriceNegotiation]);
 
-  const handleStepComplete = (step: "price" | "inspection") => {
-    if (step === "price" && currentStep === "price") {
-      setCurrentStep("inspection");
-    }
+  const handlePriceNegotiationComplete = (
+    action: "accept" | "counter",
+    counterPrice?: number,
+  ) => {
+    setNegotiationAction({ type: action, counterPrice });
+    setCurrentStep("inspection");
   };
 
   // Show awaiting response if it's not user's turn
@@ -65,7 +71,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
           >
             <PriceNegotiationStep
               userType={userType}
-              onStepComplete={() => handleStepComplete("price")}
+              onActionSelected={handlePriceNegotiationComplete}
             />
           </motion.div>
         )}
@@ -80,7 +86,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
           >
             <InspectionDateTimeStep
               userType={userType}
-              onStepComplete={() => handleStepComplete("inspection")}
+              negotiationAction={negotiationAction}
             />
           </motion.div>
         )}

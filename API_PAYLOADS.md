@@ -10,7 +10,15 @@ All endpoints follow this pattern:
 {BASE_URL}/inspections/inspection-details/{inspectionId}/{action}
 ```
 
-## 1. Accept Offer
+## Negotiation Flow
+
+The negotiation follows this flow:
+
+1. **Price Negotiation Step**: User chooses Accept, Counter, or Reject
+2. **Inspection Date/Time Step**: If Accept/Counter chosen, user selects inspection schedule
+3. **Final Submission**: Accept/Counter submitted with inspection date/time included
+
+## 1. Accept Offer (with Inspection Schedule)
 
 **Endpoint:** `PUT {BASE_URL}/inspections/inspection-details/{inspectionId}/accept`
 
@@ -19,7 +27,9 @@ All endpoints follow this pattern:
 ```json
 {
   "userType": "seller",
-  "action": "accept"
+  "action": "accept",
+  "inspectionDate": "2025-01-15",
+  "inspectionTime": "2:30 PM"
 }
 ```
 
@@ -27,8 +37,10 @@ All endpoints follow this pattern:
 
 ```json
 {
-  "userType": "seller",
-  "action": "accept"
+  "userType": "buyer",
+  "action": "accept",
+  "inspectionDate": "2025-01-15",
+  "inspectionTime": "10:00 AM"
 }
 ```
 
@@ -43,12 +55,14 @@ All endpoints follow this pattern:
     "status": "negotiation_accepted",
     "pendingResponseFrom": "buyer",
     "stage": "inspection",
+    "inspectionDate": "2025-01-15T00:00:00.000Z",
+    "inspectionTime": "2:30 PM",
     "updatedAt": "2025-01-08T15:30:00.000Z"
   }
 }
 ```
 
-## 2. Reject Offer
+## 2. Reject Offer (No Inspection Schedule Required)
 
 **Endpoint:** `PUT {BASE_URL}/inspections/inspection-details/{inspectionId}/reject`
 
@@ -85,7 +99,7 @@ All endpoints follow this pattern:
 }
 ```
 
-## 3. Counter Offer
+## 3. Counter Offer (with Inspection Schedule)
 
 **Endpoint:** `PUT {BASE_URL}/inspections/inspection-details/{inspectionId}/counter`
 
@@ -95,7 +109,9 @@ All endpoints follow this pattern:
 {
   "userType": "seller",
   "action": "counter",
-  "counterPrice": 4500000
+  "counterPrice": 4500000,
+  "inspectionDate": "2025-01-15",
+  "inspectionTime": "2:30 PM"
 }
 ```
 
@@ -105,7 +121,9 @@ All endpoints follow this pattern:
 {
   "userType": "seller",
   "action": "counter",
-  "counterPrice": 4500000
+  "counterPrice": 4500000,
+  "inspectionDate": "2025-01-16",
+  "inspectionTime": "11:30 AM"
 }
 ```
 
@@ -115,7 +133,9 @@ All endpoints follow this pattern:
 {
   "userType": "buyer",
   "action": "counter",
-  "counterPrice": 4200000
+  "counterPrice": 4200000,
+  "inspectionDate": "2025-01-17",
+  "inspectionTime": "3:00 PM"
 }
 ```
 
@@ -132,12 +152,14 @@ All endpoints follow this pattern:
     "stage": "negotiation",
     "sellerCounterOffer": 4500000,
     "negotiationPrice": 4000000,
+    "inspectionDate": "2025-01-15T00:00:00.000Z",
+    "inspectionTime": "2:30 PM",
     "updatedAt": "2025-01-08T15:30:00.000Z"
   }
 }
 ```
 
-## 4. Update Inspection Schedule
+## 4. Update Inspection Schedule Only
 
 **Endpoint:** `PUT {BASE_URL}/inspections/inspection-details/{inspectionId}/schedule`
 
@@ -151,15 +173,7 @@ All endpoints follow this pattern:
 }
 ```
 
-**Example:**
-
-```json
-{
-  "userType": "buyer",
-  "inspectionDate": "2025-01-15",
-  "inspectionTime": "2:30 PM"
-}
-```
+**Note:** This endpoint is used when only updating the inspection schedule without accepting/countering an offer.
 
 **Response:**
 
@@ -173,7 +187,7 @@ All endpoints follow this pattern:
     "pendingResponseFrom": "seller",
     "stage": "inspection",
     "inspectionDate": "2025-01-15T00:00:00.000Z",
-    "inspectionTime": "2:30 PM",
+    "inspectionTime": "10:00 AM",
     "updatedAt": "2025-01-08T15:30:00.000Z"
   }
 }
@@ -188,14 +202,6 @@ All endpoints follow this pattern:
 ```json
 {
   "userType": "seller"
-}
-```
-
-**Example:**
-
-```json
-{
-  "userType": "buyer"
 }
 ```
 
@@ -215,45 +221,58 @@ All endpoints follow this pattern:
 }
 ```
 
-## Common Response Fields
+## Key Differences in Flow
 
-All responses include these common fields:
+### Accept/Counter Flow:
 
-- **success**: Boolean indicating if the operation was successful
-- **message**: Human-readable message describing the result
-- **data**: Object containing updated inspection details
+1. User selects "Accept" or "Counter" → Goes to inspection date/time selection
+2. User selects/confirms inspection date and time
+3. **Final payload includes both the negotiation action AND inspection details**
 
-### Data Object Fields:
+### Reject Flow:
 
-- **inspectionId**: Unique identifier for the inspection
-- **status**: Current status of the inspection/negotiation
-- **pendingResponseFrom**: Which party needs to respond next ("seller" or "buyer")
-- **stage**: Current stage of the process ("negotiation", "inspection", "completed", "cancelled")
-- **updatedAt**: Timestamp when the inspection was last updated
+1. User selects "Reject" → **Immediately submits rejection**
+2. **No inspection date/time selection required**
+3. **Payload only includes the rejection action**
 
-## Status Values
+## Date/Time Constraints
 
-### Negotiation Statuses:
+### Available Dates:
 
-- `pending_negotiation` - Initial state, waiting for negotiation
-- `negotiation_countered` - A counter offer has been made
-- `negotiation_accepted` - Offer has been accepted
-- `offer_rejected` - Offer has been rejected
+- Next 15 days (excluding Sundays)
+- Show first 10 days by default
+- "View More" reveals remaining 5 days
 
-### Inspection Statuses:
+### Available Times:
 
-- `pending_inspection` - Waiting for inspection confirmation
-- `inspection_scheduled` - Inspection date/time confirmed
-- `inspection_completed` - Inspection has been completed
+- 8:00 AM to 6:00 PM
+- 30-minute intervals
+- 12-hour format (e.g., "10:00 AM", "2:30 PM")
 
-### Final Statuses:
+## Payload Field Requirements
 
-- `completed` - Transaction completed successfully
-- `cancelled` - Transaction was cancelled
+### Required for Accept:
+
+- `userType`: "seller" or "buyer"
+- `action`: "accept"
+- `inspectionDate`: YYYY-MM-DD format
+- `inspectionTime`: 12-hour format string
+
+### Required for Counter:
+
+- `userType`: "seller" or "buyer"
+- `action`: "counter"
+- `counterPrice`: Number (price in base currency unit)
+- `inspectionDate`: YYYY-MM-DD format
+- `inspectionTime`: 12-hour format string
+
+### Required for Reject:
+
+- `userType`: "seller" or "buyer"
+- `action`: "reject"
+- **No inspection fields required**
 
 ## Error Responses
-
-If an error occurs, the response will have this structure:
 
 ```json
 {
@@ -266,11 +285,11 @@ If an error occurs, the response will have this structure:
 }
 ```
 
-## Notes
+## Important Notes
 
-1. **userType** field should always be either "seller" or "buyer"
-2. **counterPrice** should be a number representing the price in the base currency unit
-3. **inspectionDate** should be in YYYY-MM-DD format
-4. **inspectionTime** should be in 12-hour format (e.g., "10:00 AM", "2:30 PM")
-5. All endpoints require valid user and inspection IDs in the URL path
-6. The system automatically updates the **pendingResponseFrom** field based on who made the last action
+1. **Accept and Counter** actions always require inspection date/time
+2. **Reject** action never includes inspection date/time
+3. The flow ensures users select inspection details before final submission
+4. Sundays are automatically excluded from available dates
+5. Time slots are restricted to business hours (8 AM - 6 PM)
+6. All inspection times are in 12-hour format for user-friendly display

@@ -17,14 +17,18 @@ import {
 
 interface InspectionDateTimeStepProps {
   userType: "seller" | "buyer";
-  onStepComplete: () => void;
+  negotiationAction?: {
+    type: "accept" | "counter";
+    counterPrice?: number;
+  } | null;
 }
 
 const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   userType,
-  onStepComplete,
+  negotiationAction,
 }) => {
-  const { state, updateInspectionDateTime } = useSecureNegotiation();
+  const { state, acceptOffer, submitCounterOffer, updateInspectionDateTime } =
+    useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
   const [newDate, setNewDate] = useState("");
@@ -123,14 +127,31 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const handleConfirmDateTime = async () => {
     try {
-      // If no changes needed, just confirm the existing date/time
-      await updateInspectionDateTime(
-        inspectionId!,
-        currentDate,
-        currentTime,
-        userType,
-      );
-      onStepComplete();
+      if (negotiationAction) {
+        // Submit final negotiation action with inspection date/time
+        if (negotiationAction.type === "accept") {
+          await acceptOffer(inspectionId!, userType, currentDate, currentTime);
+        } else if (
+          negotiationAction.type === "counter" &&
+          negotiationAction.counterPrice
+        ) {
+          await submitCounterOffer(
+            inspectionId!,
+            negotiationAction.counterPrice,
+            userType,
+            currentDate,
+            currentTime,
+          );
+        }
+      } else {
+        // Just update the inspection date/time
+        await updateInspectionDateTime(
+          inspectionId!,
+          currentDate,
+          currentTime,
+          userType,
+        );
+      }
     } catch (error) {
       console.error("Failed to confirm inspection date/time:", error);
     }
@@ -143,11 +164,35 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     }
 
     try {
-      await updateInspectionDateTime(inspectionId!, newDate, newTime, userType);
+      if (negotiationAction) {
+        // Submit final negotiation action with new inspection date/time
+        if (negotiationAction.type === "accept") {
+          await acceptOffer(inspectionId!, userType, newDate, newTime);
+        } else if (
+          negotiationAction.type === "counter" &&
+          negotiationAction.counterPrice
+        ) {
+          await submitCounterOffer(
+            inspectionId!,
+            negotiationAction.counterPrice,
+            userType,
+            newDate,
+            newTime,
+          );
+        }
+      } else {
+        // Just update the inspection date/time
+        await updateInspectionDateTime(
+          inspectionId!,
+          newDate,
+          newTime,
+          userType,
+        );
+      }
+
       setShowUpdateForm(false);
       setNewDate("");
       setNewTime("");
-      onStepComplete();
     } catch (error) {
       console.error("Failed to update inspection date/time:", error);
     }
@@ -164,8 +209,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           Inspection Schedule
         </h2>
         <p className="text-gray-600">
-          Review and confirm the inspection date and time
+          {negotiationAction
+            ? `You've chosen to ${negotiationAction.type} the offer. Now confirm the inspection date and time.`
+            : "Review and confirm the inspection date and time"}
         </p>
+        {negotiationAction?.type === "counter" &&
+          negotiationAction.counterPrice && (
+            <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800 font-medium">
+                Counter Offer: ₦
+                {negotiationAction.counterPrice.toLocaleString()}
+              </p>
+            </div>
+          )}
       </div>
 
       {/* Current Schedule */}
@@ -229,24 +285,36 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       >
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Choose Your Action
+            {negotiationAction ? "Submit Your Response" : "Choose Your Action"}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Confirm Current Schedule */}
             <button
               onClick={handleConfirmDateTime}
-              disabled={loadingStates.submitting}
-              className="flex items-center justify-center space-x-2 p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+              disabled={
+                loadingStates.submitting ||
+                loadingStates.accepting ||
+                loadingStates.countering
+              }
+              className="flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
             >
               <FiCheckCircle className="w-5 h-5" />
-              <span>Confirm Schedule</span>
+              <span>
+                {negotiationAction
+                  ? `${negotiationAction.type === "accept" ? "Accept" : "Counter"} & Confirm`
+                  : "Confirm Schedule"}
+              </span>
             </button>
 
             {/* Update Schedule */}
             <button
               onClick={() => setShowUpdateForm(true)}
-              disabled={loadingStates.submitting}
+              disabled={
+                loadingStates.submitting ||
+                loadingStates.accepting ||
+                loadingStates.countering
+              }
               className="flex items-center justify-center space-x-2 p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
             >
               <FiEdit3 className="w-5 h-5" />
@@ -427,12 +495,22 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                 <div className="flex space-x-4">
                   <button
                     onClick={handleUpdateDateTime}
-                    disabled={!newDate || !newTime || loadingStates.submitting}
+                    disabled={
+                      !newDate ||
+                      !newTime ||
+                      loadingStates.submitting ||
+                      loadingStates.accepting ||
+                      loadingStates.countering
+                    }
                     className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
-                    {loadingStates.submitting
-                      ? "Updating..."
-                      : "Update Schedule"}
+                    {loadingStates.submitting ||
+                    loadingStates.accepting ||
+                    loadingStates.countering
+                      ? "Submitting..."
+                      : negotiationAction
+                        ? `${negotiationAction.type === "accept" ? "Accept" : "Counter"} & Update`
+                        : "Update Schedule"}
                   </button>
                   <button
                     onClick={() => {
