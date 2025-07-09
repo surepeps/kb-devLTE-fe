@@ -140,9 +140,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     // Usage Options
     if (filters.usageOptions && filters.usageOptions.length > 0) {
       const validOptions = filters.usageOptions.filter(
-        (option) => option !== "All",
+        (option: string) => option !== "All",
       );
-      validOptions.forEach((option) => {
+      validOptions.forEach((option: string) => {
         activeFilters.push({
           key: "usageOptions",
           label: `Type: ${option}`,
@@ -169,7 +169,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
     // Document Types
     if (filters.documentTypes && filters.documentTypes.length > 0) {
-      filters.documentTypes.forEach((doc) => {
+      filters.documentTypes.forEach((doc: string) => {
         activeFilters.push({
           key: "documentTypes",
           label: `Doc: ${doc}`,
@@ -188,7 +188,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
     // Desired Features
     if (filters.desiredFeatures && filters.desiredFeatures.length > 0) {
-      filters.desiredFeatures.forEach((feature) => {
+      filters.desiredFeatures.forEach((feature: string) => {
         activeFilters.push({
           key: "desiredFeatures",
           label: `Feature: ${feature}`,
@@ -199,7 +199,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
     // Tenant Criteria
     if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
-      filters.tenantCriteria.forEach((criteria) => {
+      filters.tenantCriteria.forEach((criteria: string) => {
         activeFilters.push({
           key: "tenantCriteria",
           label: `Criteria: ${criteria}`,
