@@ -20,6 +20,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
   className,
   id, // Destructure id prop
   style,
+  acceptedFileTypes = "*",
 }) => {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
