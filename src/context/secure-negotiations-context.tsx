@@ -545,6 +545,21 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, []);
 
+  const refreshData = useCallback(async () => {
+    if (state.userId && state.inspectionId && state.currentUserType) {
+      await fetchNegotiationDetails(
+        state.userId,
+        state.inspectionId,
+        state.currentUserType,
+      );
+    }
+  }, [
+    state.userId,
+    state.inspectionId,
+    state.currentUserType,
+    fetchNegotiationDetails,
+  ]);
+
   // Navigation Methods
   const goToNextPage = useCallback((page: ContentTracker) => {
     dispatch({ type: "SET_CONTENT_TRACKER", payload: page });
