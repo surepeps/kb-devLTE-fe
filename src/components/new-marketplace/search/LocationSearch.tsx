@@ -27,7 +27,7 @@ interface LocationDetails {
 
 interface LocationSuggestion {
   state: string;
-  lga: string;
+  lga?: string;
   area?: string;
   display: string;
 }
