@@ -92,11 +92,7 @@ const BriefDetailPage = () => {
   const [formatedHold, setFormatedHold] = useState<string>("");
   const [formattedLandSizeNumber, setFormatedLandNumber] = useState<string>("");
 
-  if (!params) {
-    return <div>Loading...</div>;
-  }
-
-  const briefId = params.id;
+  const briefId = params?.id;
 
   // Fetch specific buyer preference
   useEffect(() => {
