@@ -241,7 +241,7 @@ const NegiotiatePrice = ({
 
       setSubmitInspectionPayload((prev) => {
         // Find the property to update or add it if it doesn't exist
-        let updatedProperties = prev.properties ? [...prev.properties] : [];
+        const updatedProperties = prev.properties ? [...prev.properties] : [];
         const existingPropertyIndex = updatedProperties.findIndex(
           (item) => item.propertyId === selectedProperty.id,
         );
