@@ -339,7 +339,13 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                 <div className="flex space-x-4">
                   <button
                     onClick={handleCounterSubmit}
-                    disabled={!counterPrice.trim()}
+                    disabled={(() => {
+                      if (!counterPrice.trim()) return true;
+                      const amount = parseFloat(
+                        counterPrice.replace(/[^\d.-]/g, ""),
+                      );
+                      return !validateCounterPrice(amount).isValid;
+                    })()}
                     className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
                     Continue to Inspection
