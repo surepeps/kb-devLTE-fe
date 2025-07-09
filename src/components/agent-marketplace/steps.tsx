@@ -1795,7 +1795,7 @@ const SuccessBriefModal: React.FC<SuccessBriefModalProps> = ({
             className="w-full border border-[#8DDB90] text-black font-semibold py-3 rounded hover:bg-gray-100 transition"
             onClick={onNo}
           >
-            I don't have
+            I don&apos;t have
           </button>
         </div>
       </div>
