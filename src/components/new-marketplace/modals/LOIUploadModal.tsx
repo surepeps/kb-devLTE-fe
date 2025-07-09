@@ -109,45 +109,42 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
   //   }
   // };
 
-
   const uploadFile = async (file: File) => {
-  setIsUploading(true);
+    setIsUploading(true);
 
-  const formData = new FormData();
-  formData.append('file', file);               // no need to cast to Blob
+    const formData = new FormData();
+    formData.append("file", file); // no need to cast to Blob
 
-  const url = `${URLS.BASE}${URLS.uploadImg}`;
+    const url = `${URLS.BASE}${URLS.uploadImg}`;
 
-  try {
-    // wrap the *exact* promise returned by helper in toast.promise
-    const data = await toast.promise(
-      POST_REQUEST_FILE_UPLOAD(url, formData),
-      {
-        loading: 'Uploading...',
-        success: 'Document uploaded successfully',
-        error: 'Document upload failed',
+    try {
+      // wrap the *exact* promise returned by helper in toast.promise
+      const data = await toast.promise(
+        POST_REQUEST_FILE_UPLOAD(url, formData),
+        {
+          loading: "Uploading...",
+          success: "Document uploaded successfully",
+          error: "Document upload failed",
+        },
+      );
+
+      // Cloudinary route can return { url } OR { imageUrl } OR { data: { url } }
+      const uploadedUrl = data.imageUrl || data.url || data.data?.url;
+
+      if (!uploadedUrl) {
+        throw new Error("No URL in server response");
       }
-    );
 
-    // Cloudinary route can return { url } OR { imageUrl } OR { data: { url } }
-    const uploadedUrl =
-      data.imageUrl || data.url || data.data?.url;
-
-    if (!uploadedUrl) {
-      throw new Error('No URL in server response');
+      setFileUrl(uploadedUrl);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Document upload failed");
+      setSelectedFile(null);
+      setFileUrl(null);
+    } finally {
+      setIsUploading(false);
     }
-
-    setFileUrl(uploadedUrl);
-  } catch (error) {
-    console.error('Upload error:', error);
-    toast.error('Document upload failed');
-    setSelectedFile(null);
-    setFileUrl(null);
-  } finally {
-    setIsUploading(false);
-  }
-};
-
+  };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -405,7 +402,7 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
                         ? "Uploading..."
                         : "Submit LOI"
                   }
-                  disabled={
+                  isDisabled={
                     isSubmitting || isUploading || !selectedFile || !fileUrl
                   }
                   className="flex-1 py-3 px-4 bg-[#FF9800] text-white rounded-lg font-medium hover:bg-[#F57C00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

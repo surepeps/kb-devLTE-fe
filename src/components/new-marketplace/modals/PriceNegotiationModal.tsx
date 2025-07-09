@@ -266,7 +266,7 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
                           ? "Update Offer"
                           : "Submit Offer"
                     }
-                    disabled={
+                    isDisabled={
                       isSubmitting ||
                       !formik.isValid ||
                       !formik.values.negotiatedPrice ||
