@@ -5,9 +5,8 @@ import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import { AnimatePresence, motion } from "framer-motion";
 import Loading from "@/components/loading-component/loading";
 import SecureNegotiationLayout from "../layout/secure-negotiation-layout";
-import EnhancedNormalNegotiationPage from "../pages/enhanced-normal-negotiation-page";
+import TwoStepNegotiationFlow from "../flow/two-step-negotiation-flow";
 import EnhancedLOINegotiationPage from "../pages/enhanced-loi-negotiation-page";
-import EnhancedInspectionDateConfirmation from "../pages/enhanced-inspection-date-confirmation";
 import EnhancedNegotiationSummary from "../pages/enhanced-negotiation-summary";
 import EnhancedNegotiationCancelledSummary from "../pages/enhanced-negotiation-cancelled-summary";
 import ActivityFeed from "../interactive/activity-feed";
@@ -102,36 +101,29 @@ const SecureSellerResponseIndex: React.FC<SecureSellerResponseIndexProps> = ({
   const renderContent = () => {
     if (!details) return null;
 
-    switch (contentTracker) {
-      case "Negotiation":
-        if (negotiationType === "LOI") {
-          return (
-            <EnhancedLOINegotiationPage
-              letterOfIntention={details.letterOfIntention}
-              userType="seller"
-            />
-          );
-        }
-        return (
-          <EnhancedNormalNegotiationPage
-            currentAmount={details.currentAmount}
-            buyOffer={details.buyOffer}
-            userType="seller"
-          />
-        );
+    // Handle different statuses
+    const status = details.status;
 
-      case "Confirm Inspection Date":
-        return <EnhancedInspectionDateConfirmation userType="seller" />;
-
-      case "Summary":
-        return <EnhancedNegotiationSummary userType="seller" />;
-
-      case "Cancelled":
-        return <EnhancedNegotiationCancelledSummary userType="seller" />;
-
-      default:
-        return null;
+    if (status === "cancelled" || status === "rejected") {
+      return <EnhancedNegotiationCancelledSummary userType="seller" />;
     }
+
+    if (status === "completed") {
+      return <EnhancedNegotiationSummary userType="seller" />;
+    }
+
+    // Handle LOI flow
+    if (negotiationType === "LOI") {
+      return (
+        <EnhancedLOINegotiationPage
+          letterOfIntention={details.letterOfIntention}
+          userType="seller"
+        />
+      );
+    }
+
+    // Handle two-step negotiation flow for normal properties
+    return <TwoStepNegotiationFlow userType="seller" />;
   };
 
   if (formStatus === "pending") {

@@ -827,6 +827,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setOfferPrice,
       setCounterOffer,
       setLoading,
+      acceptOffer,
+      rejectOffer,
+      submitCounterOffer,
+      updateInspectionDateTime,
     ],
   );
 
