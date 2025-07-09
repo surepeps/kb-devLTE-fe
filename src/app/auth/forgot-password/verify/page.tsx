@@ -95,7 +95,8 @@ const VerifyResetRequest = () => {
             Click the link in the email to reset your password.
           </p>
           <p className="text-sm text-gray-500">
-            Didn't receive the email? Check your spam folder or try resending.
+            Didn&apos;t receive the email? Check your spam folder or try
+            resending.
           </p>
 
           <div className="flex flex-col gap-4 w-full lg:px-[60px] mt-6">
