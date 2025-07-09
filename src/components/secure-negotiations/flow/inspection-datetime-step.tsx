@@ -14,6 +14,7 @@ import {
   FiMail,
   FiChevronDown,
 } from "react-icons/fi";
+import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
 interface InspectionDateTimeStepProps {
   userType: "seller" | "buyer";
@@ -244,6 +245,25 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={
+          loadingStates.submitting ||
+          loadingStates.accepting ||
+          loadingStates.countering
+        }
+        message={
+          loadingStates.accepting
+            ? "Accepting offer with inspection schedule..."
+            : loadingStates.countering
+              ? "Submitting counter offer with inspection schedule..."
+              : loadingStates.submitting
+                ? "Updating inspection schedule..."
+                : "Processing..."
+        }
+        overlay={true}
+      />
+
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
