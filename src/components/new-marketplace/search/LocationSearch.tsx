@@ -213,8 +213,8 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
 
     onChange(suggestion.display, {
       state: suggestion.state,
-      lga: suggestion.lga,
-      area: suggestion.area,
+      lga: suggestion.lga || "",
+      area: suggestion.area || "",
     });
   };
 
