@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import { motion } from "framer-motion";
 import {
@@ -28,6 +28,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const [counterPrice, setCounterPrice] = useState<string>("");
   const [showCounterModal, setShowCounterModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
+
+  // Prevent background scroll when modals are open
+  useEffect(() => {
+    if (showCounterModal || showRejectModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showCounterModal, showRejectModal]);
 
   const propertyPrice = details?.propertyId?.price || 0;
   const negotiationPrice = details?.negotiationPrice || 0;
@@ -75,6 +89,18 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     } catch (error) {
       console.error("Failed to reject offer:", error);
     }
+  };
+
+  const formatCounterPrice = (value: string) => {
+    // Remove all non-digit characters
+    const numericValue = value.replace(/[^\d]/g, "");
+    // Add commas for thousands separator
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const handleCounterPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatCounterPrice(e.target.value);
+    setCounterPrice(formattedValue);
   };
 
   const handleCounterSubmit = () => {
@@ -205,7 +231,19 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
       {/* Counter Offer Modal */}
       {showCounterModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            overflowY: "hidden",
+          }}
+          onWheel={(e) => e.preventDefault()}
+          onTouchMove={(e) => e.preventDefault()}
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -228,7 +266,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                     <input
                       type="text"
                       value={counterPrice}
-                      onChange={(e) => setCounterPrice(e.target.value)}
+                      onChange={handleCounterPriceChange}
                       placeholder="Enter amount"
                       className="w-full pl-8 pr-4 py-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent"
                     />
