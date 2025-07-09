@@ -243,8 +243,9 @@ const MyListingSearch = ({
       "size" in filters.landSize &&
       filters.landSize.size
     ) {
-      filters.landSizeType = filters.landSize.type;
-      filters.landSize = filters.landSize.size;
+      const landSizeObj = filters.landSize as { type: string; size: number };
+      (filters as any).landSizeType = landSizeObj.type;
+      (filters as any).landSize = landSizeObj.size;
     }
 
     // Desired Features
