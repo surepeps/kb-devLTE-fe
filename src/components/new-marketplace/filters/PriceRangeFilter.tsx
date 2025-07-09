@@ -10,7 +10,7 @@ import { getPriceRanges, PriceRange } from "@/data/filter-data";
 interface PriceRangeFilterProps {
   isOpen: boolean;
   onClose: () => void;
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
   onPriceSelect: (priceRange: {
     min: number;
     max: number;

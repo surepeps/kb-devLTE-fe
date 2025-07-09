@@ -10,7 +10,7 @@ import { getDocumentTypes } from "@/data/filter-data";
 interface DocumentTypeFilterProps {
   isOpen: boolean;
   onClose: () => void;
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
   onDocumentSelect: (documents: string[]) => void;
   currentValue?: string[];
 }

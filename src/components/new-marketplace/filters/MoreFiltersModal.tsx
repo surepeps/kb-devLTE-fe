@@ -15,7 +15,7 @@ import {
 interface MoreFiltersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
   onFiltersApply: (filters: {
     bathrooms?: number | string;
     landSize?: { type: string; size?: number };
