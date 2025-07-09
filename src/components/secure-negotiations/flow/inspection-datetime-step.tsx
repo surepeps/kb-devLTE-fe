@@ -37,36 +37,22 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
 
-  // Initialize date and time with defaults
-  useEffect(() => {
-    if (!newDate && availableDates.length > 0) {
-      setNewDate(details?.inspectionDate || availableDates[0]?.date || "");
-    }
-    if (!newTime && availableTimes.length > 0) {
-      setNewTime(details?.inspectionTime || availableTimes[0]?.value || "");
-    }
-  }, [
-    availableDates,
-    availableTimes,
-    details?.inspectionDate,
-    details?.inspectionTime,
-    newDate,
-    newTime,
-  ]);
+  // Generate available times (8 AM to 6 PM, hourly only)
+  const availableTimes = useMemo(() => {
+    const times = [];
+    for (let hour = 8; hour <= 18; hour++) {
+      const time12 =
+        hour <= 12
+          ? `${hour}:00 ${hour === 12 ? "PM" : "AM"}`
+          : `${hour - 12}:00 PM`;
 
-  // Prevent background scroll when modal is open
-  useEffect(() => {
-    if (showUpdateForm) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+      times.push({
+        value: time12,
+        display: time12,
+      });
     }
-
-    // Cleanup on unmount
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showUpdateForm]);
+    return times;
+  }, []);
 
   // Generate available dates (next 15 days excluding Sundays)
   const availableDates = useMemo(() => {
@@ -98,22 +84,37 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return dates;
   }, []);
 
-  // Generate available times (8 AM to 6 PM, hourly only)
-  const availableTimes = useMemo(() => {
-    const times = [];
-    for (let hour = 8; hour <= 18; hour++) {
-      const time12 =
-        hour <= 12
-          ? `${hour}:00 ${hour === 12 ? "PM" : "AM"}`
-          : `${hour - 12}:00 PM`;
-
-      times.push({
-        value: time12,
-        display: time12,
-      });
+  // Initialize date and time with defaults
+  useEffect(() => {
+    if (!newDate && availableDates.length > 0) {
+      setNewDate(details?.inspectionDate || availableDates[0]?.date || "");
     }
-    return times;
-  }, []);
+    if (!newTime && availableTimes.length > 0) {
+      setNewTime(details?.inspectionTime || availableTimes[0]?.value || "");
+    }
+  }, [
+    availableDates,
+    availableTimes,
+    details?.inspectionDate,
+    details?.inspectionTime,
+    newDate,
+    newTime,
+  ]);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (showUpdateForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showUpdateForm]);
+
 
   const displayedDates = showAllDays
     ? availableDates
@@ -145,7 +146,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       // Detect if date or time was changed
       const isDateChanged = newDate && newDate !== currentDate;
       const isTimeChanged = newTime && newTime !== currentTime;
-      const dateTimeCountered = isDateChanged || isTimeChanged;
+      const dateTimeCountered: boolean = !!(isDateChanged || isTimeChanged);
 
       const finalDate = newDate || currentDate;
       const finalTime = newTime || currentTime;
