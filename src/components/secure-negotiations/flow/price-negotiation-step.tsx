@@ -104,11 +104,32 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     setCounterPrice(formattedValue);
   };
 
+  const validateCounterPrice = (
+    amount: number,
+  ): { isValid: boolean; message: string } => {
+    if (!amount || amount <= 0) {
+      return {
+        isValid: false,
+        message: "Please enter a valid counter offer amount",
+      };
+    }
+
+    if (amount > propertyPrice) {
+      return {
+        isValid: false,
+        message: `Counter offer cannot exceed the original property price of ${formatCurrency(propertyPrice)}`,
+      };
+    }
+
+    return { isValid: true, message: "" };
+  };
+
   const handleCounterSubmit = () => {
     const counterAmount = parseFloat(counterPrice.replace(/[^\d.-]/g, ""));
+    const validation = validateCounterPrice(counterAmount);
 
-    if (!counterAmount || counterAmount <= 0) {
-      alert("Please enter a valid counter offer amount");
+    if (!validation.isValid) {
+      alert(validation.message);
       return;
     }
 
