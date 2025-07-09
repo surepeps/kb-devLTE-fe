@@ -102,8 +102,8 @@ const VerificationSent = () => {
               activate your account.
             </p>
             <p className="text-sm text-gray-500">
-              Once verified, you'll be able to access all agent features and
-              start connecting with potential clients.
+              Once verified, you&apos;ll be able to access all agent features
+              and start connecting with potential clients.
             </p>
           </div>
 
