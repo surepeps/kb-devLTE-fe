@@ -189,63 +189,6 @@ const Form2 = () => {
     return null;
   }
 
-  useEffect(() => {
-    const getTotalBriefs = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch all brief types to show complete agent portfolio
-        const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
-        const allBriefsPromises = briefTypes.map((briefType) =>
-          GET_REQUEST(
-            URLS.BASE +
-              URLS.fetchBriefs +
-              `?page=1&limit=1000&briefType=${briefType}`,
-            Cookies.get("token"),
-          ),
-        );
-
-        const responses = await Promise.all(allBriefsPromises);
-        let allBriefs: any[] = [];
-
-        responses.forEach((response, index) => {
-          if (response?.success !== false && response?.data) {
-            const briefsWithType = Array.isArray(response.data)
-              ? response.data.map((item: any) => ({
-                  ...item,
-                  briefType: briefTypes[index],
-                  statusLabel:
-                    item.isApproved === true
-                      ? "Approved"
-                      : item.isApproved === false
-                        ? "Rejected"
-                        : "Pending Review",
-                }))
-              : [];
-            allBriefs = [...allBriefs, ...briefsWithType];
-          }
-        });
-
-        // Sort by creation date (newest first) and then by approval status
-        const sortedBriefs = allBriefs.sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return dateB - dateA;
-        });
-
-        setTotalBriefData(sortedBriefs);
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to fetch briefs data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (selectedNav === AgentNavData.TOTAL_BRIEF) {
-      getTotalBriefs();
-    }
-  }, [selectedNav]);
-
   return (
     <div
       className={`min-h-screen bg-[#EEF1F1] transition duration-500 ${
