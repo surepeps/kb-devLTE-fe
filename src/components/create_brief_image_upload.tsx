@@ -137,6 +137,8 @@ const AttachFile = forwardRef<HTMLInputElement, any>((props: any, ref) => {
   );
 });
 
+AttachFile.displayName = "AttachFile";
+
 export default AttachFile;
 
 /**
