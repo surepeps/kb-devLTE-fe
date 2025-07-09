@@ -416,7 +416,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           const negotiationType = response.data.letterOfIntention
             ? "LOI"
             : "Normal";
-          dispatch({ type: "SET_NEGOTIATION_TYPE", payload: negotiationType });
+          dispatch({
+            type: "SET_NEGOTIATION_TYPE",
+            payload: negotiationType === "Normal" ? "NORMAL" : negotiationType,
+          });
 
           // Set created date
           if (response.data.createdAt) {
