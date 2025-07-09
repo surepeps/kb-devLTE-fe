@@ -41,13 +41,7 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const handleConfirmInspection = async () => {
     try {
-      addActivity({
-        type: "inspection_scheduled",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} confirmed inspection for ${proposedDate} at ${proposedTime}`,
-        userId: currentUserId!,
-        userType,
-      });
-
+    
       console.log("Inspection confirmed for:", {
         date: proposedDate,
         time: proposedTime,
