@@ -536,7 +536,10 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
               ) : (
                 <button
                   type="submit"
-                  onClick={formik.handleSubmit}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    formik.handleSubmit();
+                  }}
                   disabled={!canProceedFromStep(currentStep)}
                   className="px-6 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >

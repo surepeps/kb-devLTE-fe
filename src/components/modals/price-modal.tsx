@@ -355,7 +355,10 @@ const PriceModal: React.FC<PriceModalProps> = ({
               </button>
               <button
                 type="submit"
-                onClick={formik.handleSubmit}
+                onClick={(e) => {
+                  e.preventDefault();
+                  formik.handleSubmit();
+                }}
                 className="px-6 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
               >
                 Apply Filters

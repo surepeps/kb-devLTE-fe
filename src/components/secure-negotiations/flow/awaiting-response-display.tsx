@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FiClock, FiUser, FiRefreshCw } from "react-icons/fi";
+import { FiClock, FiRefreshCw } from "react-icons/fi";
 
 interface AwaitingResponseDisplayProps {
   userType: "seller" | "buyer";
@@ -31,17 +31,16 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
+        className="bg-white rounded-xl border border-[#C7CAD0]"
       >
-        <div className="p-8 text-center">
-          {/* Animated Clock Icon */}
+        <div className="p-6 sm:p-8 text-center">
+          {/* Animated Icon */}
           <motion.div
             animate={{
-              rotate: [0, 360],
               scale: [1, 1.1, 1],
             }}
             transition={{
@@ -49,39 +48,44 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-6"
+            className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mb-6 border-4 border-blue-300"
           >
-            <FiClock className="w-8 h-8 text-yellow-600" />
+            <FiClock className="w-10 h-10 text-blue-600" />
           </motion.div>
 
           {/* Waiting Message */}
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#09391C] mb-4">
             {getWaitingMessage()}
           </h2>
 
-          <p className="text-gray-600 mb-6">
-            You have submitted your response and it's now the other party's turn
-            to respond. You'll be notified once they take action.
-          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 mb-6">
+            <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+              ✓ Your response has been submitted successfully!
+              <br />
+              The other party will be notified and has time to respond.
+            </p>
+          </div>
 
           {/* Timer Display */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <FiUser className="w-5 h-5 text-yellow-600" />
-              <span className="font-medium text-yellow-800">
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
+            <div className="flex items-center justify-center space-x-2 mb-3">
+              <div className="p-2 bg-yellow-200 rounded-full">
+                <FiClock className="w-5 h-5 text-yellow-700" />
+              </div>
+              <span className="font-semibold text-yellow-800 text-sm sm:text-base">
                 Response Timer
               </span>
             </div>
-            <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-2">
               {timeRemaining || "Loading..."}
             </div>
-            <div className="text-sm text-yellow-700 mt-1">
+            <div className="text-sm sm:text-base text-yellow-700">
               remaining for {pendingResponseFrom} to respond
             </div>
           </div>
 
           {/* Status Indicators */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div
               className={`p-3 rounded-lg border ${
                 userType === pendingResponseFrom
@@ -126,27 +130,37 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
           {/* Refresh Button */}
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
           >
             <FiRefreshCw className="w-4 h-4" />
-            <span>Refresh Status</span>
+            <span>Check for Updates</span>
           </button>
 
           {/* Additional Info */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="font-medium text-blue-800 mb-2">
+          <div className="mt-6 p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+            <h4 className="font-semibold text-gray-800 mb-3 text-sm sm:text-base">
               What happens next?
             </h4>
-            <ul className="text-sm text-blue-700 space-y-1 text-left">
-              <li>
-                • The {pendingResponseFrom} has {timeRemaining} to respond
-              </li>
-              <li>• You'll receive a notification when they take action</li>
-              <li>
-                • If they don't respond in time, the negotiation may expire
-              </li>
-              <li>• You can refresh this page to check for updates</li>
-            </ul>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span>
+                  The {pendingResponseFrom} has {timeRemaining} to respond
+                </span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span>You'll receive a notification when they respond</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span>Negotiation may expire if no response</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                <span>Refresh to check for updates</span>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
