@@ -57,8 +57,42 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     );
   }
 
+  const canGoBackToPrice =
+    currentStep === "inspection" &&
+    details?.counterOffer &&
+    details.counterOffer > 0;
+
+  const handleGoBackToPrice = () => {
+    if (canGoBackToPrice) {
+      setCurrentStep("price");
+      setNegotiationAction(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Navigation Bar */}
+      {currentStep === "inspection" && canGoBackToPrice && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+        >
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-blue-700">
+              <span className="font-medium">Price was countered.</span> You can
+              go back to review the price negotiation.
+            </div>
+            <button
+              onClick={handleGoBackToPrice}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm"
+            >
+              ← Back to Price Negotiation
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Step Content */}
       <AnimatePresence mode="wait">
         {currentStep === "price" && hasPriceNegotiation && (
