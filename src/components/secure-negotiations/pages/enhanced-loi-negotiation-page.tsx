@@ -208,7 +208,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+          className="bg-white rounded-xl border border-[#C7CAD0] mb-8"
         >
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -218,7 +218,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {/* Accept Button */}
               <button
-                onClick={handleAcceptLOI}
+                onClick={() => setShowAcceptConfirm(true)}
                 disabled={loadingStates.accepting}
                 className="flex items-center justify-center space-x-2 p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
               >
@@ -238,7 +238,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
               {/* Reject Button */}
               <button
-                onClick={handleRejectLOI}
+                onClick={() => setShowRejectConfirm(true)}
                 disabled={loadingStates.rejecting}
                 className="flex items-center justify-center space-x-2 p-4 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
               >
@@ -255,7 +255,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+          className="bg-white rounded-xl border border-[#C7CAD0] mb-8"
         >
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -300,62 +300,6 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
           </div>
         </motion.div>
       )}
-
-      {/* Key Terms Summary */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Joint Venture Highlights
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="p-3 bg-green-50 rounded-lg">
-                <div className="text-sm font-medium text-green-800">
-                  Partnership Type
-                </div>
-                <div className="text-sm text-green-600">
-                  Joint Venture Development
-                </div>
-              </div>
-
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <div className="text-sm font-medium text-blue-800">
-                  Investment Model
-                </div>
-                <div className="text-sm text-blue-600">
-                  {details?.investmentType || "Land + Capital Partnership"}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <div className="text-sm font-medium text-purple-800">
-                  Profit Sharing
-                </div>
-                <div className="text-sm text-purple-600">
-                  {details?.profitSharing || "As outlined in LOI"}
-                </div>
-              </div>
-
-              <div className="p-3 bg-orange-50 rounded-lg">
-                <div className="text-sm font-medium text-orange-800">
-                  Timeline
-                </div>
-                <div className="text-sm text-orange-600">
-                  {details?.projectTimeline || "As specified in LOI"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 };
