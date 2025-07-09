@@ -401,4 +401,4 @@ export const formatAmount = (
 export type ValidationStatus = "idle" | "validating" | "success" | "error";
 
 // Export types
-export type { PaymentValidationResult, PaymentDetails, ValidationStatus };
+export type { PaymentValidationResult, PaymentDetails };
