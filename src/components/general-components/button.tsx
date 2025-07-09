@@ -27,6 +27,7 @@ const Button: FC<ButtonProps> = ({
   type,
   green,
   red,
+  children,
 }) => {
   return (
     <motion.button
@@ -45,7 +46,7 @@ const Button: FC<ButtonProps> = ({
       } transition-all duration-500`}
       type={type ? type : "button"}
     >
-      {value}
+      {children || value}
     </motion.button>
   );
 };
