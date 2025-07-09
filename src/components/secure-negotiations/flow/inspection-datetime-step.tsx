@@ -14,6 +14,7 @@ import {
   FiMail,
   FiChevronDown,
 } from "react-icons/fi";
+import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
 interface InspectionDateTimeStepProps {
   userType: "seller" | "buyer";
@@ -31,10 +32,27 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
-  const [newDate, setNewDate] = useState(details?.inspectionDate || "");
-  const [newTime, setNewTime] = useState(details?.inspectionTime || "");
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
+
+  // Initialize date and time with defaults
+  useEffect(() => {
+    if (!newDate && availableDates.length > 0) {
+      setNewDate(details?.inspectionDate || availableDates[0]?.date || "");
+    }
+    if (!newTime && availableTimes.length > 0) {
+      setNewTime(details?.inspectionTime || availableTimes[0]?.value || "");
+    }
+  }, [
+    availableDates,
+    availableTimes,
+    details?.inspectionDate,
+    details?.inspectionTime,
+    newDate,
+    newTime,
+  ]);
 
   // Prevent background scroll when modal is open
   useEffect(() => {
@@ -227,6 +245,25 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={
+          loadingStates.submitting ||
+          loadingStates.accepting ||
+          loadingStates.countering
+        }
+        message={
+          loadingStates.accepting
+            ? "Accepting offer with inspection schedule..."
+            : loadingStates.countering
+              ? "Submitting counter offer with inspection schedule..."
+              : loadingStates.submitting
+                ? "Updating inspection schedule..."
+                : "Processing..."
+        }
+        overlay={true}
+      />
+
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">

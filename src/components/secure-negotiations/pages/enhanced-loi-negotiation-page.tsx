@@ -11,7 +11,9 @@ import {
   FiMessageSquare,
   FiClock,
   FiUser,
+  FiAlertTriangle,
 } from "react-icons/fi";
+import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
 interface EnhancedLOINegotiationPageProps {
   letterOfIntention: string;
@@ -27,18 +29,27 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   const { details, loadingStates, currentUserId } = state;
   const [response, setResponse] = useState("");
   const [showResponseForm, setShowResponseForm] = useState(false);
+  const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
   const handleAcceptLOI = async () => {
     try {
-      console.log("Accepting LOI Message");
+      setShowAcceptConfirm(false);
+      // Navigate to inspection date and time selection
+      // This would typically trigger a navigation or step change
+      console.log("Accepting LOI - navigating to inspection date/time");
+      // Add actual navigation logic here
     } catch (error) {
-      console.error("Failed to accept LOI Message:", error);
+      console.error("Failed to accept LOI:", error);
     }
   };
 
   const handleRejectLOI = async () => {
     try {
-      console.log("Rejecting LOI");
+      setShowRejectConfirm(false);
+      // End the flow - show confirmation and terminate
+      console.log("Rejecting LOI - ending negotiation flow");
+      // Add actual rejection logic here
     } catch (error) {
       console.error("Failed to reject LOI:", error);
     }
@@ -103,6 +114,25 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={
+          loadingStates.accepting ||
+          loadingStates.rejecting ||
+          loadingStates.submitting
+        }
+        message={
+          loadingStates.accepting
+            ? "Accepting LOI..."
+            : loadingStates.rejecting
+              ? "Rejecting LOI..."
+              : loadingStates.submitting
+                ? "Submitting response..."
+                : "Processing..."
+        }
+        overlay={true}
+      />
+
       {/* Header */}
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-2">
@@ -197,7 +227,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+          className="bg-white rounded-xl border border-[#C7CAD0] mb-8"
         >
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -207,7 +237,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {/* Accept Button */}
               <button
-                onClick={handleAcceptLOI}
+                onClick={() => setShowAcceptConfirm(true)}
                 disabled={loadingStates.accepting}
                 className="flex items-center justify-center space-x-2 p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
               >
@@ -227,7 +257,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
               {/* Reject Button */}
               <button
-                onClick={handleRejectLOI}
+                onClick={() => setShowRejectConfirm(true)}
                 disabled={loadingStates.rejecting}
                 className="flex items-center justify-center space-x-2 p-4 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
               >
@@ -244,7 +274,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+          className="bg-white rounded-xl border border-[#C7CAD0] mb-8"
         >
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -290,61 +320,90 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
         </motion.div>
       )}
 
-      {/* Key Terms Summary */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Joint Venture Highlights
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="p-3 bg-green-50 rounded-lg">
-                <div className="text-sm font-medium text-green-800">
-                  Partnership Type
-                </div>
-                <div className="text-sm text-green-600">
-                  Joint Venture Development
-                </div>
+      {/* Accept Confirmation Modal */}
+      {showAcceptConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+          >
+            <div className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <FiCheckCircle className="w-6 h-6 text-green-600" />
+                <h3 className="text-lg font-semibold text-[#09391C]">
+                  Accept Letter of Intention
+                </h3>
               </div>
 
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <div className="text-sm font-medium text-blue-800">
-                  Investment Model
-                </div>
-                <div className="text-sm text-blue-600">
-                  {details?.investmentType || "Land + Capital Partnership"}
-                </div>
-              </div>
-            </div>
+              <p className="text-gray-600 mb-6">
+                By accepting this LOI, you agree to proceed with the joint
+                venture partnership. You will be taken to schedule an inspection
+                date and time.
+              </p>
 
-            <div className="space-y-3">
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <div className="text-sm font-medium text-purple-800">
-                  Profit Sharing
-                </div>
-                <div className="text-sm text-purple-600">
-                  {details?.profitSharing || "As outlined in LOI"}
-                </div>
-              </div>
-
-              <div className="p-3 bg-orange-50 rounded-lg">
-                <div className="text-sm font-medium text-orange-800">
-                  Timeline
-                </div>
-                <div className="text-sm text-orange-600">
-                  {details?.projectTimeline || "As specified in LOI"}
-                </div>
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleAcceptLOI}
+                  disabled={loadingStates.accepting}
+                  className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+                >
+                  {loadingStates.accepting
+                    ? "Accepting..."
+                    : "Yes, Accept & Continue"}
+                </button>
+                <button
+                  onClick={() => setShowAcceptConfirm(false)}
+                  className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </motion.div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+          >
+            <div className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <FiAlertTriangle className="w-6 h-6 text-red-600" />
+                <h3 className="text-lg font-semibold text-[#09391C]">
+                  Reject Letter of Intention
+                </h3>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to reject this Letter of Intention? This
+                will terminate the joint venture negotiation process.
+              </p>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleRejectLOI}
+                  disabled={loadingStates.rejecting}
+                  className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+                >
+                  {loadingStates.rejecting ? "Rejecting..." : "Yes, Reject"}
+                </button>
+                <button
+                  onClick={() => setShowRejectConfirm(false)}
+                  className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
