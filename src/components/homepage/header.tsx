@@ -185,7 +185,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     >
                       <span
                         className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          pathName.includes(item.url) || isOpen
+                          pathName?.includes(item.url) || isOpen
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}

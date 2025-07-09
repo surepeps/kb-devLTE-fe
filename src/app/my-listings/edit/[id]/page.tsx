@@ -127,7 +127,7 @@ const validationSchema = Yup.object({
 const EditBriefPage = () => {
   const router = useRouter();
   const params = useParams();
-  const briefId = params.id as string;
+  const briefId = typeof params?.id === "string" ? params.id : "";
 
   const [brief, setBrief] = useState<Brief | null>(null);
   const [loading, setLoading] = useState(true);
