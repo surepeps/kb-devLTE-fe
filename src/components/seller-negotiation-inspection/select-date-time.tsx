@@ -72,7 +72,7 @@ const SelectPreferableInspectionDate = ({
 
   const getAvailableDates = () => {
     const dates: string[] = [];
-    const date = new Date();
+    let date = new Date();
     date.setDate(date.getDate() + 1);
     while (dates.length < 14) {
       if (date.getDay() !== 0) {
