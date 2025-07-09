@@ -5,25 +5,24 @@ import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import { motion } from "framer-motion";
 import {
   FiDollarSign,
-  FiTrendingUp,
-  FiTrendingDown,
   FiCheckCircle,
   FiXCircle,
-  FiArrowRight,
   FiAlertTriangle,
 } from "react-icons/fi";
 
 interface PriceNegotiationStepProps {
   userType: "seller" | "buyer";
-  onStepComplete: () => void;
+  onActionSelected: (
+    action: "accept" | "counter",
+    counterPrice?: number,
+  ) => void;
 }
 
 const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   userType,
-  onStepComplete,
+  onActionSelected,
 }) => {
-  const { state, acceptOffer, rejectOffer, submitCounterOffer } =
-    useSecureNegotiation();
+  const { state, rejectOffer } = useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
   const [counterPrice, setCounterPrice] = useState<string>("");
@@ -65,26 +64,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const isAboveAsk = currentOffer > propertyPrice;
   const difference = calculateDifference();
 
-  const handleAccept = async () => {
-    try {
-      await acceptOffer(inspectionId!, userType);
-      onStepComplete();
-    } catch (error) {
-      console.error("Failed to accept offer:", error);
-    }
+  const handleAccept = () => {
+    onActionSelected("accept");
   };
 
   const handleReject = async () => {
     try {
       await rejectOffer(inspectionId!, userType);
       setShowRejectModal(false);
-      // Navigation will be handled by the parent component based on status
     } catch (error) {
       console.error("Failed to reject offer:", error);
     }
   };
 
-  const handleCounterSubmit = async () => {
+  const handleCounterSubmit = () => {
     const counterAmount = parseFloat(counterPrice.replace(/[^\d.-]/g, ""));
 
     if (!counterAmount || counterAmount <= 0) {
@@ -92,27 +85,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       return;
     }
 
-    try {
-      await submitCounterOffer(inspectionId!, counterAmount, userType);
-      setShowCounterModal(false);
-      setCounterPrice("");
-      onStepComplete();
-    } catch (error) {
-      console.error("Failed to submit counter offer:", error);
-    }
+    onActionSelected("counter", counterAmount);
+    setShowCounterModal(false);
+    setCounterPrice("");
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-semibold text-[#09391C] mb-2">
           Price Negotiation
         </h2>
         <p className="text-gray-600">
-          {userType === "seller"
-            ? "Review and respond to the buyer's offer"
-            : "Review the seller's response to your offer"}
+          Review the offer and choose your response. You'll select inspection
+          date/time on the next step.
         </p>
       </div>
 
@@ -120,68 +106,56 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
+        className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
       >
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Original Price */}
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-500 mb-1">Original Price</div>
-              <div className="text-2xl font-bold text-gray-800">
-                {formatCurrency(propertyPrice)}
-              </div>
-            </div>
+        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+          Price Comparison
+        </h3>
 
-            {/* Arrow */}
-            <div className="flex items-center justify-center">
-              <FiArrowRight className="w-8 h-8 text-gray-400" />
-            </div>
-
-            {/* Current Offer */}
-            <div
-              className={`text-center p-4 rounded-lg ${
-                isAboveAsk ? "bg-green-50" : "bg-red-50"
-              }`}
-            >
-              <div className="text-sm text-gray-500 mb-1">
-                {userType === "seller" ? "Buyer's Offer" : "Current Offer"}
-              </div>
-              <div
-                className={`text-2xl font-bold ${
-                  isAboveAsk ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {formatCurrency(currentOffer)}
-              </div>
-              <div className="flex items-center justify-center mt-2 space-x-1">
-                {isAboveAsk ? (
-                  <FiTrendingUp className="w-4 h-4 text-green-600" />
-                ) : (
-                  <FiTrendingDown className="w-4 h-4 text-red-600" />
-                )}
-                <span
-                  className={`text-sm ${
-                    isAboveAsk ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {isAboveAsk ? "+" : "-"}
-                  {difference.percentage}%
-                </span>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Original Price */}
+          <div className="bg-white p-4 rounded-lg border border-[#C7CAD0]">
+            <div className="text-sm text-gray-600 mb-1">Original Price</div>
+            <div className="text-2xl font-bold text-[#09391C]">
+              {formatCurrency(propertyPrice)}
             </div>
           </div>
 
-          {/* Difference Summary */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">
-                {isAboveAsk
-                  ? "Above original price by"
-                  : "Below original price by"}
-              </div>
-              <div className="text-xl font-semibold text-blue-600">
-                {formatCurrency(difference.amount)}
-              </div>
+          {/* Current Offer */}
+          <div
+            className={`p-4 rounded-lg border ${
+              isAboveAsk
+                ? "bg-green-50 border-green-200"
+                : "bg-red-50 border-red-200"
+            }`}
+          >
+            <div className="text-sm text-gray-600 mb-1">
+              {userType === "seller" ? "Buyer's Offer" : "Current Offer"}
+            </div>
+            <div
+              className={`text-2xl font-bold ${
+                isAboveAsk ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {formatCurrency(currentOffer)}
+            </div>
+            <div className="text-sm text-gray-600 mt-1">
+              {isAboveAsk ? "+" : "-"}
+              {difference.percentage}% from original
+            </div>
+          </div>
+        </div>
+
+        {/* Difference Summary */}
+        <div className="mt-4 p-4 bg-white rounded-lg border border-[#C7CAD0]">
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-1">
+              {isAboveAsk
+                ? "Above original price by"
+                : "Below original price by"}
+            </div>
+            <div className="text-xl font-semibold text-[#09391C]">
+              {formatCurrency(difference.amount)}
             </div>
           </div>
         </div>
@@ -192,44 +166,40 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
+        className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
       >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Choose Your Response
-          </h3>
+        <h4 className="font-medium text-[#09391C] mb-4">
+          Choose Your Response
+        </h4>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Accept Button */}
-            <button
-              onClick={handleAccept}
-              disabled={loadingStates.accepting}
-              className="flex items-center justify-center space-x-2 p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
-            >
-              <FiCheckCircle className="w-5 h-5" />
-              <span>Accept Offer</span>
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Accept Button */}
+          <button
+            onClick={handleAccept}
+            className="flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+          >
+            <FiCheckCircle className="w-5 h-5" />
+            <span>Accept Offer</span>
+          </button>
 
-            {/* Counter Offer Button */}
-            <button
-              onClick={() => setShowCounterModal(true)}
-              disabled={loadingStates.countering}
-              className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors duration-200"
-            >
-              <FiDollarSign className="w-5 h-5" />
-              <span>Counter Offer</span>
-            </button>
+          {/* Counter Offer Button */}
+          <button
+            onClick={() => setShowCounterModal(true)}
+            className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200"
+          >
+            <FiDollarSign className="w-5 h-5" />
+            <span>Counter Offer</span>
+          </button>
 
-            {/* Reject Button */}
-            <button
-              onClick={() => setShowRejectModal(true)}
-              disabled={loadingStates.rejecting}
-              className="flex items-center justify-center space-x-2 p-4 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
-            >
-              <FiXCircle className="w-5 h-5" />
-              <span>Reject Offer</span>
-            </button>
-          </div>
+          {/* Reject Button */}
+          <button
+            onClick={() => setShowRejectModal(true)}
+            disabled={loadingStates.rejecting}
+            className="flex items-center justify-center space-x-2 p-4 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+          >
+            <FiXCircle className="w-5 h-5" />
+            <span>Reject Offer</span>
+          </button>
         </div>
       </motion.div>
 
@@ -239,10 +209,10 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4"
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
           >
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Make Counter Offer
               </h3>
 
@@ -260,7 +230,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                       value={counterPrice}
                       onChange={(e) => setCounterPrice(e.target.value)}
                       placeholder="Enter amount"
-                      className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="w-full pl-8 pr-4 py-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -268,12 +238,10 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                 <div className="flex space-x-4">
                   <button
                     onClick={handleCounterSubmit}
-                    disabled={!counterPrice.trim() || loadingStates.countering}
-                    className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+                    disabled={!counterPrice.trim()}
+                    className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
-                    {loadingStates.countering
-                      ? "Submitting..."
-                      : "Submit Counter"}
+                    Continue to Inspection
                   </button>
                   <button
                     onClick={() => {
@@ -297,12 +265,12 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4"
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
           >
             <div className="p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <FiAlertTriangle className="w-6 h-6 text-red-600" />
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className="text-lg font-semibold text-[#09391C]">
                   Confirm Rejection
                 </h3>
               </div>

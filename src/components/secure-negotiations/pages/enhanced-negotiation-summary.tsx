@@ -9,7 +9,6 @@ import {
   FiDollarSign,
   FiFileText,
   FiDownload,
-  FiPrint,
   FiShare2,
   FiMapPin,
   FiClock,
@@ -90,10 +89,6 @@ This summary serves as confirmation of the negotiated terms.
     document.body.removeChild(element);
   };
 
-  const printSummary = () => {
-    window.print();
-  };
-
   const shareSummary = async () => {
     if (navigator.share) {
       try {
@@ -146,14 +141,6 @@ This summary serves as confirmation of the negotiated terms.
             >
               <FiDownload className="w-4 h-4" />
               <span>Download Summary</span>
-            </button>
-
-            <button
-              onClick={printSummary}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-            >
-              <FiPrint className="w-4 h-4" />
-              <span>Print</span>
             </button>
 
             <button

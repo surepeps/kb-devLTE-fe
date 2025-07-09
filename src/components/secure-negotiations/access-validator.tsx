@@ -9,7 +9,7 @@ interface AccessValidatorProps {
   inspectionId: string;
   userType: "seller" | "buyer";
   children: React.ReactNode;
-} 
+}
 
 const AccessValidator: React.FC<AccessValidatorProps> = ({
   userId,
@@ -68,7 +68,7 @@ const AccessValidator: React.FC<AccessValidatorProps> = ({
 
   if (isValidating) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8">
           <div className="relative mb-6">
             <FiShield className="w-16 h-16 text-green-500 mx-auto animate-pulse" />
@@ -93,7 +93,7 @@ const AccessValidator: React.FC<AccessValidatorProps> = ({
 
   if (validationError || !state.isValidAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg">
           <FiAlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-gray-800 mb-4">

@@ -42,24 +42,6 @@ type LoadingType =
   | "rejecting"
   | "countering"
   | "loading";
-type ActivityType =
-  | "offer_made"
-  | "offer_countered"
-  | "offer_accepted"
-  | "offer_rejected"
-  | "inspection_scheduled"
-  | "inspection_completed"
-  | "message_sent";
-
-interface ActivityLog {
-  id: string;
-  type: ActivityType;
-  message: string;
-  timestamp: Date;
-  userId: string;
-  userType: "seller" | "buyer";
-  metadata?: any;
-}
 
 interface SecureNegotiationState {
   // Security & Identity
@@ -80,17 +62,14 @@ interface SecureNegotiationState {
   currentUserId: string | null;
   currentUserType: "seller" | "buyer" | null;
 
-  // Enhanced Interactive Features
-  activityLog: ActivityLog[];
-  unreadActivities: number;
+  // Interactive Features
   isRealTimeEnabled: boolean;
-  lastSeen: Date | null;
+  isExpired: boolean;
 
   // UI states
   contentTracker: ContentTracker;
   isNegotiated: boolean;
   isInteractive: boolean;
-  showActivityFeed: boolean;
 
   // Modal states
   showSubmitOfferModal: boolean;
@@ -136,15 +115,12 @@ type SecureNegotiationAction =
     }
 
   // Interactive Actions
-  | { type: "ADD_ACTIVITY"; payload: ActivityLog }
-  | { type: "MARK_ACTIVITIES_READ" }
   | { type: "SET_REAL_TIME_STATUS"; payload: boolean }
-  | { type: "UPDATE_LAST_SEEN" }
+  | { type: "SET_EXPIRED_STATUS"; payload: boolean }
 
   // UI Actions
   | { type: "SET_CONTENT_TRACKER"; payload: ContentTracker }
   | { type: "SET_IS_NEGOTIATED"; payload: boolean }
-  | { type: "TOGGLE_ACTIVITY_FEED" }
   | { type: "TOGGLE_INTERACTIVE_MODE" }
 
   // Modal Actions
@@ -183,16 +159,13 @@ const initialState: SecureNegotiationState = {
   currentUserType: null,
 
   // Interactive Features
-  activityLog: [],
-  unreadActivities: 0,
   isRealTimeEnabled: false,
-  lastSeen: null,
+  isExpired: false,
 
   // UI states
   contentTracker: "Negotiation",
   isNegotiated: false,
   isInteractive: true,
-  showActivityFeed: false,
 
   // Modal states
   showSubmitOfferModal: false,
@@ -262,38 +235,17 @@ function secureNegotiationReducer(
         currentUserType: action.payload.userType,
       };
 
-    case "ADD_ACTIVITY":
-      const newActivity = action.payload;
-      const isCurrentUser = newActivity.userId === state.currentUserId;
-      return {
-        ...state,
-        activityLog: [...state.activityLog, newActivity],
-        unreadActivities: isCurrentUser
-          ? state.unreadActivities
-          : state.unreadActivities + 1,
-      };
-
-    case "MARK_ACTIVITIES_READ":
-      return {
-        ...state,
-        unreadActivities: 0,
-        lastSeen: new Date(),
-      };
-
     case "SET_REAL_TIME_STATUS":
       return { ...state, isRealTimeEnabled: action.payload };
 
-    case "UPDATE_LAST_SEEN":
-      return { ...state, lastSeen: new Date() };
+    case "SET_EXPIRED_STATUS":
+      return { ...state, isExpired: action.payload };
 
     case "SET_CONTENT_TRACKER":
       return { ...state, contentTracker: action.payload };
 
     case "SET_IS_NEGOTIATED":
       return { ...state, isNegotiated: action.payload };
-
-    case "TOGGLE_ACTIVITY_FEED":
-      return { ...state, showActivityFeed: !state.showActivityFeed };
 
     case "TOGGLE_INTERACTIVE_MODE":
       return { ...state, isInteractive: !state.isInteractive };
@@ -347,16 +299,14 @@ interface SecureNegotiationContextType {
   setFormStatus: (status: "idle" | "success" | "failed" | "pending") => void;
   setInspectionStatus: (status: InspectionStatus) => void;
   setCurrentUser: (userId: string, userType: "seller" | "buyer") => void;
+  refreshData: () => Promise<void>;
 
   // Interactive Methods
-  addActivity: (activity: Omit<ActivityLog, "id" | "timestamp">) => void;
-  markActivitiesAsRead: () => void;
-  enableRealTime: () => void;
-  disableRealTime: () => void;
+  setExpiredStatus: (isExpired: boolean) => void;
+  reopenInspection: () => Promise<any>;
 
   // Navigation Methods
   goToNextPage: (page: ContentTracker) => void;
-  toggleActivityFeed: () => void;
   toggleInteractiveMode: () => void;
 
   // Modal Methods
@@ -371,6 +321,31 @@ interface SecureNegotiationContextType {
     type: keyof SecureNegotiationState["loadingStates"],
     isLoading: boolean,
   ) => void;
+
+  // API Methods
+  acceptOffer: (
+    inspectionId: string,
+    userType: "seller" | "buyer",
+    inspectionDate: string,
+    inspectionTime: string,
+  ) => Promise<any>;
+  rejectOffer: (
+    inspectionId: string,
+    userType: "seller" | "buyer",
+  ) => Promise<any>;
+  submitCounterOffer: (
+    inspectionId: string,
+    counterPrice: number,
+    userType: "seller" | "buyer",
+    inspectionDate: string,
+    inspectionTime: string,
+  ) => Promise<any>;
+  updateInspectionDateTime: (
+    inspectionId: string,
+    date: string,
+    time: string,
+    userType: "seller" | "buyer",
+  ) => Promise<any>;
 }
 
 const SecureNegotiationContext = createContext<
@@ -390,7 +365,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         const response = await GET_REQUEST(
           `${URLS.BASE + URLS.validateInspectionAccess}/${userId}/${inspectionId}`,
         );
-        const isValid = response?.status === "success";
+        const isValid = response?.success;
         dispatch({ type: "VALIDATE_ACCESS", payload: { isValid } });
         return isValid;
       } catch (error) {
@@ -424,7 +399,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         payload: { type: "loading", isLoading: true },
       });
       dispatch({ type: "SET_FORM_STATUS", payload: "pending" });
- 
+
       try {
         const response = await GET_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
@@ -434,7 +409,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           dispatch({ type: "SET_DETAILS", payload: response.data });
           dispatch({ type: "SET_FORM_STATUS", payload: "success" });
 
-          // Set negotiation type
+          // Set negotiation type based on letterOfIntention
           const negotiationType = response.data.letterOfIntention
             ? "LOI"
             : "Normal";
@@ -448,22 +423,15 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
             });
           }
 
-          // Load activity log
-          if (response.data.activityLog) {
-            response.data.activityLog.forEach((activity: any) => {
-              dispatch({
-                type: "ADD_ACTIVITY",
-                payload: {
-                  id: activity.id,
-                  type: activity.type,
-                  message: activity.message,
-                  timestamp: new Date(activity.timestamp),
-                  userId: activity.userId,
-                  userType: activity.userType,
-                  metadata: activity.metadata,
-                },
-              });
-            });
+          // Check if inspection has expired (48 hours)
+          if (response.data.updatedAt) {
+            const updateTime = new Date(response.data.updatedAt).getTime();
+            const now = new Date().getTime();
+            const elapsed = now - updateTime;
+            const fortyEightHours = 48 * 60 * 60 * 1000;
+            const isExpired = elapsed > fortyEightHours;
+
+            dispatch({ type: "SET_EXPIRED_STATUS", payload: isExpired });
           }
         } else {
           dispatch({ type: "SET_FORM_STATUS", payload: "failed" });
@@ -499,36 +467,13 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
-  // Interactive Methods
-  const addActivity = useCallback(
-    (activity: Omit<ActivityLog, "id" | "timestamp">) => {
-      const newActivity: ActivityLog = {
-        ...activity,
-        id: `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: new Date(),
-      };
-      dispatch({ type: "ADD_ACTIVITY", payload: newActivity });
-    },
-    [],
-  );
-
-  const markActivitiesAsRead = useCallback(() => {
-    dispatch({ type: "MARK_ACTIVITIES_READ" });
-  }, []);
-
-  const enableRealTime = useCallback(() => {
-    dispatch({ type: "SET_REAL_TIME_STATUS", payload: true });
-
-    // Set up polling for real-time updates
-    if (state.userId && state.inspectionId && !intervalRef.current) {
-      intervalRef.current = setInterval(() => {
-        // Poll for updates every 5 seconds
-        fetchNegotiationDetails(
-          state.userId!,
-          state.inspectionId!,
-          state.currentUserType!,
-        );
-      }, 5000);
+  const refreshData = useCallback(async () => {
+    if (state.userId && state.inspectionId && state.currentUserType) {
+      await fetchNegotiationDetails(
+        state.userId,
+        state.inspectionId,
+        state.currentUserType,
+      );
     }
   }, [
     state.userId,
@@ -536,6 +481,50 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     state.currentUserType,
     fetchNegotiationDetails,
   ]);
+
+  // Expiry Methods
+  const setExpiredStatus = useCallback((isExpired: boolean) => {
+    dispatch({ type: "SET_EXPIRED_STATUS", payload: isExpired });
+  }, []);
+
+  const reopenInspection = useCallback(async () => {
+    if (state.userId && state.inspectionId && state.currentUserType) {
+      try {
+        const response = await PUT_REQUEST(
+          `${URLS.BASE + URLS.getOneInspection}/${state.inspectionId}/reopen`,
+          {
+            userType: state.currentUserType,
+          },
+        );
+
+        if (response?.success) {
+          // Refetch data to get updated state
+          await fetchNegotiationDetails(
+            state.userId,
+            state.inspectionId,
+            state.currentUserType,
+          );
+          setExpiredStatus(false);
+        }
+
+        return response;
+      } catch (error) {
+        console.error("Failed to reopen inspection:", error);
+        throw error;
+      }
+    }
+  }, [
+    state.userId,
+    state.inspectionId,
+    state.currentUserType,
+    fetchNegotiationDetails,
+    setExpiredStatus,
+  ]);
+
+  const enableRealTime = useCallback(() => {
+    dispatch({ type: "SET_REAL_TIME_STATUS", payload: true });
+    // Removed auto-polling - users will use refresh button instead
+  }, []);
 
   const disableRealTime = useCallback(() => {
     dispatch({ type: "SET_REAL_TIME_STATUS", payload: false });
@@ -548,10 +537,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
   // Navigation Methods
   const goToNextPage = useCallback((page: ContentTracker) => {
     dispatch({ type: "SET_CONTENT_TRACKER", payload: page });
-  }, []);
-
-  const toggleActivityFeed = useCallback(() => {
-    dispatch({ type: "TOGGLE_ACTIVITY_FEED" });
   }, []);
 
   const toggleInteractiveMode = useCallback(() => {
@@ -592,7 +577,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
   // API Action Methods
   const acceptOffer = useCallback(
-    async (inspectionId: string, userType: "seller" | "buyer") => {
+    async (
+      inspectionId: string,
+      userType: "seller" | "buyer",
+      inspectionDate: string,
+      inspectionTime: string,
+    ) => {
       dispatch({
         type: "SET_LOADING",
         payload: { type: "accepting", isLoading: true },
@@ -604,17 +594,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           {
             userType,
             action: "accept",
+            inspectionDate,
+            inspectionTime,
           },
         );
 
-        if (response?.status === "success") {
-          addActivity({
-            type: "offer_accepted",
-            message: `${userType === "seller" ? "Seller" : "Buyer"} accepted the offer`,
-            userId: state.currentUserId!,
-            userType,
-          });
-
+        if (response?.success) {
           // Refetch data to get updated state
           await fetchNegotiationDetails(state.userId!, inspectionId, userType);
         }
@@ -630,7 +615,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         });
       }
     },
-    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+    [state.userId, fetchNegotiationDetails],
   );
 
   const rejectOffer = useCallback(
@@ -649,14 +634,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           },
         );
 
-        if (response?.status === "success") {
-          addActivity({
-            type: "offer_rejected",
-            message: `${userType === "seller" ? "Seller" : "Buyer"} rejected the offer`,
-            userId: state.currentUserId!,
-            userType,
-          });
-
+        if (response?.success) {
           // Refetch data to get updated state
           await fetchNegotiationDetails(state.userId!, inspectionId, userType);
         }
@@ -672,7 +650,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         });
       }
     },
-    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+    [state.userId, fetchNegotiationDetails],
   );
 
   const submitCounterOffer = useCallback(
@@ -680,6 +658,8 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       inspectionId: string,
       counterPrice: number,
       userType: "seller" | "buyer",
+      inspectionDate: string,
+      inspectionTime: string,
     ) => {
       dispatch({
         type: "SET_LOADING",
@@ -693,17 +673,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
             userType,
             action: "counter",
             counterPrice,
+            inspectionDate,
+            inspectionTime,
           },
         );
 
-        if (response?.status === "success") {
-          addActivity({
-            type: "offer_countered",
-            message: `${userType === "seller" ? "Seller" : "Buyer"} made a counter offer of ₦${counterPrice.toLocaleString()}`,
-            userId: state.currentUserId!,
-            userType,
-          });
-
+        if (response?.success) {
           // Refetch data to get updated state
           await fetchNegotiationDetails(state.userId!, inspectionId, userType);
         }
@@ -719,7 +694,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         });
       }
     },
-    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+    [state.userId, fetchNegotiationDetails],
   );
 
   const updateInspectionDateTime = useCallback(
@@ -744,14 +719,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           },
         );
 
-        if (response?.status === "success") {
-          addActivity({
-            type: "inspection_scheduled",
-            message: `${userType === "seller" ? "Seller" : "Buyer"} updated inspection to ${new Date(date).toLocaleDateString()} at ${time}`,
-            userId: state.currentUserId!,
-            userType,
-          });
-
+        if (response?.success) {
           // Refetch data to get updated state
           await fetchNegotiationDetails(state.userId!, inspectionId, userType);
         }
@@ -767,7 +735,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         });
       }
     },
-    [state.currentUserId, state.userId, addActivity, fetchNegotiationDetails],
+    [state.userId, fetchNegotiationDetails],
   );
 
   // Cleanup on unmount
@@ -788,12 +756,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setFormStatus,
       setInspectionStatus,
       setCurrentUser,
-      addActivity,
-      markActivitiesAsRead,
+      refreshData,
+      setExpiredStatus,
+      reopenInspection,
       enableRealTime,
       disableRealTime,
       goToNextPage,
-      toggleActivityFeed,
       toggleInteractiveMode,
       toggleSubmitOfferModal,
       toggleAcceptRejectModal,
@@ -814,12 +782,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setFormStatus,
       setInspectionStatus,
       setCurrentUser,
-      addActivity,
-      markActivitiesAsRead,
+      refreshData,
+      setExpiredStatus,
+      reopenInspection,
       enableRealTime,
       disableRealTime,
       goToNextPage,
-      toggleActivityFeed,
       toggleInteractiveMode,
       toggleSubmitOfferModal,
       toggleAcceptRejectModal,
