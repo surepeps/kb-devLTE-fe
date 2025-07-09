@@ -289,8 +289,7 @@ This summary serves as confirmation of the negotiated terms.
                   Contact Exchange
                 </div>
                 <div className="text-sm text-gray-600">
-                  Contact information will be shared 24 hours before the
-                  inspection.
+                  Both parties will be notified 24 hours before the inspection.
                 </div>
               </div>
             </div>

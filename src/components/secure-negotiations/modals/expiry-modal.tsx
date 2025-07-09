@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiClock, FiRefreshCw } from "react-icons/fi";
 
@@ -13,12 +13,31 @@ const ExpiryModal: React.FC<ExpiryModalProps> = ({
   onReopen,
   isReopening = false,
 }) => {
+  // Prevent background scroll
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflowY: "hidden",
+      }}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-lg shadow-2xl max-w-md w-full border border-[#C7CAD0] overflow-hidden"
+        className="bg-white rounded-xl max-w-md w-full border border-[#C7CAD0] overflow-hidden"
       >
         <div className="p-8 text-center">
           {/* Icon */}

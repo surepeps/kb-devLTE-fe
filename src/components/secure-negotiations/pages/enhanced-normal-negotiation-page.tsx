@@ -25,7 +25,6 @@ const EnhancedNormalNegotiationPage: React.FC<
 > = ({ currentAmount, buyOffer, userType }) => {
   const {
     state,
-    addActivity,
     setOfferPrice,
     setCounterOffer,
     toggleMessageModal,
@@ -58,12 +57,7 @@ const EnhancedNormalNegotiationPage: React.FC<
 
   const handleAcceptOffer = async () => {
     try {
-      addActivity({
-        type: "offer_accepted",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} accepted the offer of ${formatCurrency(buyOffer)}`,
-        userId: currentUserId!,
-        userType,
-      });
+      
 
       // Here you would typically make an API call to accept the offer
       console.log("Accepting offer:", buyOffer);
@@ -74,12 +68,7 @@ const EnhancedNormalNegotiationPage: React.FC<
 
   const handleRejectOffer = async () => {
     try {
-      addActivity({
-        type: "offer_rejected",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} rejected the offer of ${formatCurrency(buyOffer)}`,
-        userId: currentUserId!,
-        userType,
-      });
+      
 
       // Here you would typically make an API call to reject the offer
       console.log("Rejecting offer:", buyOffer);
@@ -98,12 +87,7 @@ const EnhancedNormalNegotiationPage: React.FC<
 
     try {
       setCounterOffer(counterAmount);
-      addActivity({
-        type: "offer_countered",
-        message: `${userType === "seller" ? "Seller" : "Buyer"} made a counter offer of ${formatCurrency(counterAmount)}`,
-        userId: currentUserId!,
-        userType,
-      });
+      
 
       setShowCounterForm(false);
       setLocalCounterOffer("");

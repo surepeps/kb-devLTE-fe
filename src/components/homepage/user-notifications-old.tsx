@@ -137,7 +137,7 @@ const UserNotifications: React.FC<UserNotificationsProps> = ({
         .map((notif) => notif._id);
 
       if (unreadIds.length === 0) {
-        toast.info("No unread notifications");
+        toast("No unread notifications");
         return;
       }
 
