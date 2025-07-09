@@ -147,7 +147,6 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
         setProperties(shuffledData);
         setFilteredProperties(shuffledData);
         setTotalPages(Math.ceil(shuffledData.length / itemsPerPage));
-
       } catch (error) {
         console.error("Fetch error:", error);
         toast.error("Failed to load properties");
@@ -173,9 +172,6 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
       {/* Search Modal */}
       <div className="mb-6 md:mb-8">
         <BuyAPropertySearchModal
-          usageOptions={usageOptions}
-          setUsageOptions={setUsageOptions}
-          selectedBriefs={selectedBriefs.length}
           setSelectedBriefs={setUniqueProperties}
           setAddInspectionModal={setIsAddInspectionModalOpened}
           inspectionType={inspectionType}
@@ -262,7 +258,7 @@ const BuyPropertySearch: React.FC<BuyPropertySearchProps> = ({
                 />
               ))}
             </div>
- 
+
             {/* Pagination */}
             {totalPages > 1 && (
               <Pagination
