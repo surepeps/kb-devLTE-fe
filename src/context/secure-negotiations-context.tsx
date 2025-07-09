@@ -388,7 +388,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     async (userId: string, inspectionId: string): Promise<boolean> => {
       try {
         const response = await GET_REQUEST(
-          `${URLS.VALIDATE_SECURE_ACCESS}/${userId}/${inspectionId}`,
+          `${ URLS.BASE + URLS.validateInspectionAccess}/${userId}/${inspectionId}`,
         );
         const isValid = response?.status === "success";
         dispatch({ type: "VALIDATE_ACCESS", payload: { isValid } });
@@ -427,8 +427,8 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       try {
         const response = await GET_REQUEST(
-          `${URLS.GET_SECURE_NEGOTIATION}/${userId}/${inspectionId}?userType=${userType}`,
-        );
+          `${ URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
+        ); 
 
         if (response?.status === "success") {
           dispatch({ type: "SET_DETAILS", payload: response.data });

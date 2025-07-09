@@ -264,9 +264,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     try {
       const payload = buildInspectionPayload();
 
-      console.log("Submitting inspection request:", payload);
-
-      const response = await fetch(`${URLS.BASE}/buyers/request-inspection`, {
+      const response = await fetch(URLS.BASE + URLS.requestInspection, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

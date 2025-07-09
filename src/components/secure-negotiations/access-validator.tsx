@@ -9,7 +9,7 @@ interface AccessValidatorProps {
   inspectionId: string;
   userType: "seller" | "buyer";
   children: React.ReactNode;
-}
+} 
 
 const AccessValidator: React.FC<AccessValidatorProps> = ({
   userId,
