@@ -20,7 +20,8 @@ const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
   userId,
   inspectionId,
 }) => {
-  const { state, fetchNegotiationDetails } = useSecureNegotiation();
+  const { state, fetchNegotiationDetails, setInspectionStatus, goToNextPage } =
+    useSecureNegotiation();
 
   const { formStatus, details, negotiationType } = state;
 
