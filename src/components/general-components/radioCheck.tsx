@@ -14,6 +14,7 @@ interface RadioCheckProps {
   isChecked?: boolean;
   selectedValue?: string;
   modifyStyle?: React.CSSProperties;
+  onClick?: () => void;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
