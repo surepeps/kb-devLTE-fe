@@ -63,9 +63,9 @@ const NegotiationContent: FC<{ potentialClientID: string }> = ({
         setInspectionStatus("countered");
         goToNextPage("Negotiation");
       } else if (negotiationStatus === "cancelled") {
-        goToNextPage("Cancelled");
+        // Status will be handled by renderContent logic
       } else if (negotiationStatus === "completed") {
-        goToNextPage("Summary");
+        // Status will be handled by renderContent logic
       } else if (negotiationStatus === "awaiting_seller_response") {
         // Buyer is waiting for seller response
         goToNextPage("Negotiation");
