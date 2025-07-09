@@ -127,10 +127,24 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const handleConfirmDateTime = async () => {
     try {
+      // Detect if date or time was changed
+      const isDateChanged = newDate && newDate !== currentDate;
+      const isTimeChanged = newTime && newTime !== currentTime;
+      const dateTimeCountered = isDateChanged || isTimeChanged;
+
+      const finalDate = newDate || currentDate;
+      const finalTime = newTime || currentTime;
+
       if (negotiationAction) {
-        // Submit final negotiation action with inspection date/time
+        // Submit final negotiation action with inspection date/time and change detection
         if (negotiationAction.type === "accept") {
-          await acceptOffer(inspectionId!, userType, currentDate, currentTime);
+          await acceptOffer(
+            inspectionId!,
+            userType,
+            finalDate,
+            finalTime,
+            dateTimeCountered,
+          );
         } else if (
           negotiationAction.type === "counter" &&
           negotiationAction.counterPrice
@@ -139,17 +153,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             inspectionId!,
             negotiationAction.counterPrice,
             userType,
-            currentDate,
-            currentTime,
+            finalDate,
+            finalTime,
+            dateTimeCountered,
           );
         }
       } else {
         // Just update the inspection date/time
         await updateInspectionDateTime(
           inspectionId!,
-          currentDate,
-          currentTime,
+          finalDate,
+          finalTime,
           userType,
+          dateTimeCountered,
         );
       }
     } catch (error) {
@@ -164,10 +180,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     }
 
     try {
+      // Always true when updating since user explicitly changed values
+      const dateTimeCountered = true;
+
       if (negotiationAction) {
         // Submit final negotiation action with new inspection date/time
         if (negotiationAction.type === "accept") {
-          await acceptOffer(inspectionId!, userType, newDate, newTime);
+          await acceptOffer(
+            inspectionId!,
+            userType,
+            newDate,
+            newTime,
+            dateTimeCountered,
+          );
         } else if (
           negotiationAction.type === "counter" &&
           negotiationAction.counterPrice
@@ -178,6 +203,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             userType,
             newDate,
             newTime,
+            dateTimeCountered,
           );
         }
       } else {
@@ -187,6 +213,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           newDate,
           newTime,
           userType,
+          dateTimeCountered,
         );
       }
 
@@ -320,79 +347,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               <FiEdit3 className="w-5 h-5" />
               <span>Update Schedule</span>
             </button>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Contact Information */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Contact Information
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FiUser className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-800">
-                  Contact Person
-                </span>
-              </div>
-              <p className="text-gray-700">
-                {userType === "seller"
-                  ? details?.requestedBy?.fullName || "Buyer Name"
-                  : details?.owner?.firstName +
-                      " " +
-                      details?.owner?.lastName || "Seller Name"}
-              </p>
-            </div>
-
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FiPhone className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-800">Phone</span>
-              </div>
-              <p className="text-gray-700">
-                {userType === "seller"
-                  ? details?.requestedBy?.phoneNumber ||
-                    "Will be shared upon confirmation"
-                  : details?.owner?.phoneNumber ||
-                    "Will be shared upon confirmation"}
-              </p>
-            </div>
-
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FiMail className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-800">Email</span>
-              </div>
-              <p className="text-gray-700">
-                {userType === "seller"
-                  ? details?.requestedBy?.email ||
-                    "Will be shared upon confirmation"
-                  : details?.owner?.email || "Will be shared upon confirmation"}
-              </p>
-            </div>
-          </div>
-
-          {/* Important Notes */}
-          <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <h4 className="font-medium text-yellow-800 mb-2">
-              Important Notes:
-            </h4>
-            <ul className="text-sm text-yellow-700 space-y-1">
-              <li>• Please arrive 10 minutes before the scheduled time</li>
-              <li>• Bring a valid ID for verification</li>
-              <li>• Contact information will be exchanged upon confirmation</li>
-              <li>• Inspection typically takes 30-45 minutes</li>
-              <li>• Property owner or representative will be present</li>
-            </ul>
           </div>
         </div>
       </motion.div>

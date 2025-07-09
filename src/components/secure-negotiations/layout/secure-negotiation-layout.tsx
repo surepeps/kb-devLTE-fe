@@ -70,35 +70,37 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
         />
       )}
 
-      <div className="w-full min-h-screen flex items-center justify-center flex-col gap-[20px] md:gap-[40px] py-[20px] md:py-[50px] px-[20px] bg-[#EEF1F1]">
+      <div className="w-full min-h-screen flex items-start justify-center flex-col gap-4 sm:gap-6 md:gap-8 py-4 sm:py-6 md:py-12 px-4 sm:px-6 bg-[#EEF1F1]">
         {/* Security Banner */}
-        <div className="w-full max-w-[933px] bg-[#09391C] text-white py-3 px-6 rounded-lg">
+        <div className="w-full max-w-4xl bg-[#09391C] text-white py-2 sm:py-3 px-3 sm:px-6 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <FiShield className="w-5 h-5" />
-              <span className="font-medium">Secure Negotiation Portal</span>
+              <FiShield className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-medium text-sm sm:text-base">
+                Secure Negotiation Portal
+              </span>
             </div>
             <button
               onClick={refreshData}
               disabled={loadingStates.loading}
-              className="flex items-center space-x-2 px-3 py-1 bg-white bg-opacity-20 rounded hover:bg-opacity-30 transition-colors duration-200 disabled:opacity-50"
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 bg-white bg-opacity-20 rounded hover:bg-opacity-30 transition-colors duration-200 disabled:opacity-50"
             >
               <FiRefreshCw
-                className={`w-4 h-4 ${loadingStates.loading ? "animate-spin" : ""}`}
+                className={`w-3 h-3 sm:w-4 sm:h-4 ${loadingStates.loading ? "animate-spin" : ""}`}
               />
-              <span className="text-sm">Refresh</span>
+              <span className="text-xs sm:text-sm">Refresh</span>
             </button>
           </div>
         </div>
 
         {/* Header */}
-        <div className="flex gap-[20px] md:gap-[40px] justify-center items-center flex-col">
+        <div className="flex gap-4 sm:gap-6 md:gap-8 justify-center items-center flex-col px-2">
           <motion.h2
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2 }}
-            className="font-display text-3xl md:text-4xl text-center font-semibold text-[#09391C]"
+            className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center font-semibold text-[#09391C]"
           >
             {userType === "seller" ? "Seller Response" : "Buyer Response"}
           </motion.h2>
@@ -108,17 +110,17 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col gap-[1px] items-center justify-center"
+            className="flex flex-col gap-1 items-center justify-center text-center"
           >
-            <p className="text-center text-base md:text-lg text-black">
+            <p className="text-sm sm:text-base md:text-lg text-black">
               Hello, {getFullName()}
             </p>
-            <p className="text-center text-base md:text-lg text-black">
+            <p className="text-sm sm:text-base md:text-lg text-black max-w-2xl">
               {getStatusMessage()}
             </p>
-            <p className="text-center text-base md:text-lg text-black">
+            <p className="text-sm sm:text-base md:text-lg text-black">
               Please reply within{" "}
-              <span className="text-base md:text-lg text-[#FF3D00]">
+              <span className="text-sm sm:text-base md:text-lg text-[#FF3D00]">
                 48 hours
               </span>{" "}
               — the countdown starts now.
@@ -127,16 +129,16 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-[933px] flex flex-col gap-[30px] bg-[#FFFFFF] py-[30px] md:py-[50px] px-[20px] md:px-[50px] border-[1px] border-[#C7CAD0] rounded-lg shadow-sm mx-auto">
+        <div className="w-full max-w-4xl flex flex-col gap-6 sm:gap-8 bg-[#FFFFFF] py-4 sm:py-6 md:py-8 px-3 sm:px-6 md:px-8 border border-[#C7CAD0] rounded-lg mx-auto">
           {/* Timer */}
-          <div className="flex items-center justify-center p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-            <div className="flex items-center space-x-3">
-              <FiClock className="w-6 h-6 text-[#09391C]" />
-              <div className="text-center">
-                <div className="text-sm text-gray-600">
+          <div className="flex items-center justify-center p-3 sm:p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 text-center">
+              <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-[#09391C]" />
+              <div>
+                <div className="text-xs sm:text-sm text-gray-600">
                   Time remaining to respond
                 </div>
-                <div className="text-lg font-semibold text-[#FF3D00]">
+                <div className="text-base sm:text-lg font-semibold text-[#FF3D00]">
                   {details?.updatedAt
                     ? (() => {
                         const updateTime = new Date(
