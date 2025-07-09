@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { URLS } from "@/utils/URLS";
+import { waitForInitialization } from "@/utils/appInit";
 
 interface Testimonial {
   _id: string;
@@ -24,7 +25,18 @@ const ClientTestimonials = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchTestimonials();
+    const initAndFetch = async () => {
+      try {
+        await waitForInitialization();
+        fetchTestimonials();
+      } catch (error) {
+        console.error("Failed to initialize testimonials:", error);
+        setFallbackTestimonials();
+        setLoading(false);
+      }
+    };
+
+    initAndFetch();
   }, []);
 
   const fetchTestimonials = async (retryCount = 0) => {
