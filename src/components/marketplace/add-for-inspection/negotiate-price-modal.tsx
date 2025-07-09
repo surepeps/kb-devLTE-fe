@@ -647,7 +647,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
         }));
 
         setSubmitInspectionPayload((prev) => {
-          let updatedProperties = prev.properties ? [...prev.properties] : [];
+          const updatedProperties = prev.properties ? [...prev.properties] : [];
           const existingPropertyIndex = updatedProperties.findIndex(
             (item) => item.propertyId === selectedProperty.id,
           );
