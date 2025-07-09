@@ -30,7 +30,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
   const handleAcceptLOI = async () => {
     try {
-      console.log("Accepting LOI");
+      console.log("Accepting LOI Message");
     } catch (error) {
       console.error("Failed to accept LOI:", error);
     }
