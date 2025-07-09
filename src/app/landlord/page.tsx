@@ -20,6 +20,27 @@ export default function LandlordPage() {
   const router = useRouter();
   const { setUser, user } = useUserContext();
 
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse: any) => {
+      const url = URLS.BASE + URLS.user + URLS.googleSignup;
+
+      await POST_REQUEST(url, { code: codeResponse.code, userType: 'Landowners' }).then(async (response) => {
+        if ((response as any).id) {
+          Cookies.set('token', (response as any).token);
+          setUser((response as any).user);
+          localStorage.setItem('email', (response as any).user?.email || '');
+          toast.success('Registration successful');
+          router.push('/dashboard');
+        }
+        if (response.error) {
+          toast.error(response.error);
+        }
+      });
+    },
+    onError: (errorResponse: any) => toast.error(errorResponse.message),
+  });
+
   useEffect(() => {
     // If user is logged in, redirect them to appropriate page
     if (user) {
@@ -38,7 +59,7 @@ export default function LandlordPage() {
     return null;
   }
 
-  const googleLogin = useGoogleLogin({
+  const handleGoogleLogin = () => {
     flow: 'auth-code',
     onSuccess: async (codeResponse: any) => {
       const url = URLS.BASE + URLS.user + URLS.googleSignup;
@@ -107,4 +128,4 @@ export default function LandlordPage() {
       </div>
     </section>
   );
-} 
+}
