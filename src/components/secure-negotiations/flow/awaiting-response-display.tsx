@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FiClock, FiUser, FiRefreshCw } from "react-icons/fi";
+import { FiClock, FiRefreshCw } from "react-icons/fi";
 
 interface AwaitingResponseDisplayProps {
   userType: "seller" | "buyer";
