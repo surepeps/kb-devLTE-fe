@@ -9,6 +9,7 @@ import {
   FiXCircle,
   FiAlertTriangle,
 } from "react-icons/fi";
+import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
 interface PriceNegotiationStepProps {
   userType: "seller" | "buyer";
@@ -118,6 +119,25 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Loading Overlay */}
+      <StandardPreloader
+        isVisible={
+          loadingStates.accepting ||
+          loadingStates.countering ||
+          loadingStates.rejecting
+        }
+        message={
+          loadingStates.accepting
+            ? "Accepting offer..."
+            : loadingStates.countering
+              ? "Submitting counter offer..."
+              : loadingStates.rejecting
+                ? "Rejecting offer..."
+                : "Processing..."
+        }
+        overlay={true}
+      />
+
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-[#09391C] mb-2">
           Price Negotiation
