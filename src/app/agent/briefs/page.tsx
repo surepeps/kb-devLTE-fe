@@ -80,6 +80,44 @@ const Form2 = () => {
     setDetailsToCheckForTransactionHistory,
   ] = useState<DataProps>(briefData[0]);
 
+  useEffect(() => {
+    const getTotalBriefs = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch all brief types to show complete agent portfolio
+        const briefTypes = ["Outright Sales", "Rent", "Joint Venture"];
+        const allBriefsPromises = briefTypes.map((briefType) =>
+          GET_REQUEST(
+            URLS.BASE +
+              URLS.fetchBriefs +
+              `?page=1&limit=1000&briefType=${briefType}`,
+          ),
+        );
+
+        const results = await Promise.all(allBriefsPromises);
+        const allBriefs: any[] = [];
+
+        results.forEach((result) => {
+          if (result?.data?.briefs && Array.isArray(result.data.briefs)) {
+            allBriefs.push(...result.data.briefs);
+          }
+        });
+
+        console.log("All agent briefs fetched:", allBriefs);
+        setTotalBriefData(allBriefs);
+      } catch (error) {
+        console.error("Error fetching agent briefs:", error);
+        setTotalBriefData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (canAccessBriefs) {
+      getTotalBriefs();
+    }
+  }, [canAccessBriefs]);
+
   const renderComponent = () => {
     switch (selectedNav) {
       case AgentNavData.OVERVIEW:
