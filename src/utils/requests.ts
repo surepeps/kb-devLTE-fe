@@ -4,7 +4,7 @@ export const GET_REQUEST = async (
   url: string,
   token?: string,
   retryCount = 0,
-) => {
+): Promise<any> => {
   try {
     // Check if URL is valid
     if (!url || url.includes("undefined")) {
