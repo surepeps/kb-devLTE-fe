@@ -312,6 +312,28 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                       className="w-full pl-8 pr-4 py-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent"
                     />
                   </div>
+
+                  {/* Validation feedback */}
+                  {counterPrice &&
+                    (() => {
+                      const amount = parseFloat(
+                        counterPrice.replace(/[^\d.-]/g, ""),
+                      );
+                      const validation = validateCounterPrice(amount);
+                      if (!validation.isValid) {
+                        return (
+                          <p className="text-sm text-red-600 mt-2">
+                            {validation.message}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                  {/* Price reference */}
+                  <p className="text-sm text-gray-500 mt-2">
+                    Original price: {formatCurrency(propertyPrice)}
+                  </p>
                 </div>
 
                 <div className="flex space-x-4">
