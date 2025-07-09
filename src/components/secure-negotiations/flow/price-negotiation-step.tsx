@@ -104,11 +104,32 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     setCounterPrice(formattedValue);
   };
 
+  const validateCounterPrice = (
+    amount: number,
+  ): { isValid: boolean; message: string } => {
+    if (!amount || amount <= 0) {
+      return {
+        isValid: false,
+        message: "Please enter a valid counter offer amount",
+      };
+    }
+
+    if (amount > propertyPrice) {
+      return {
+        isValid: false,
+        message: `Counter offer cannot exceed the original property price of ${formatCurrency(propertyPrice)}`,
+      };
+    }
+
+    return { isValid: true, message: "" };
+  };
+
   const handleCounterSubmit = () => {
     const counterAmount = parseFloat(counterPrice.replace(/[^\d.-]/g, ""));
+    const validation = validateCounterPrice(counterAmount);
 
-    if (!counterAmount || counterAmount <= 0) {
-      alert("Please enter a valid counter offer amount");
+    if (!validation.isValid) {
+      alert(validation.message);
       return;
     }
 
@@ -291,12 +312,40 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                       className="w-full pl-8 pr-4 py-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent"
                     />
                   </div>
+
+                  {/* Validation feedback */}
+                  {counterPrice &&
+                    (() => {
+                      const amount = parseFloat(
+                        counterPrice.replace(/[^\d.-]/g, ""),
+                      );
+                      const validation = validateCounterPrice(amount);
+                      if (!validation.isValid) {
+                        return (
+                          <p className="text-sm text-red-600 mt-2">
+                            {validation.message}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                  {/* Price reference */}
+                  <p className="text-sm text-gray-500 mt-2">
+                    Original price: {formatCurrency(propertyPrice)}
+                  </p>
                 </div>
 
                 <div className="flex space-x-4">
                   <button
                     onClick={handleCounterSubmit}
-                    disabled={!counterPrice.trim()}
+                    disabled={(() => {
+                      if (!counterPrice.trim()) return true;
+                      const amount = parseFloat(
+                        counterPrice.replace(/[^\d.-]/g, ""),
+                      );
+                      return !validateCounterPrice(amount).isValid;
+                    })()}
                     className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
                     Continue to Inspection
