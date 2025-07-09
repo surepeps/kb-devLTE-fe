@@ -84,7 +84,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  }; 
+  };
 
   const uploadImageToServer = async (file: File): Promise<string> => {
     const formData = new FormData();
@@ -578,7 +578,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
           onClick={handleSubmitInspectionRequest}
           value={isSubmitting ? "Submitting..." : "Submit Inspection Request"}
           className="px-6 py-3 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50"
-          disabled={
+          isDisabled={
             !uploadedReceiptUrl ||
             !transactionDetails.fullName.trim() ||
             isSubmitting

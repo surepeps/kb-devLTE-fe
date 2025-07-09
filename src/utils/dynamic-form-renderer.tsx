@@ -42,9 +42,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
             type="text"
             name={field.id}
             value={value || ""}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(e.target.value)
-            }
+            onChange={(e) => handleChange(e.target.value)}
           />
           {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>
@@ -58,11 +56,9 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
             type="number"
             name={field.id}
             value={value || ""}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(parseInt(e.target.value) || 0)
-            }
-            min={field.validation?.min}
-            max={field.validation?.max}
+            onChange={(e) => handleChange(parseInt(e.target.value) || 0)}
+            minNumber={field.validation?.min}
+            maxNumber={field.validation?.max}
           />
           {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>

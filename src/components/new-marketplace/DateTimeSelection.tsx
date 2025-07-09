@@ -359,7 +359,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         <Button
           onClick={handleProceed}
           value="Proceed to Payment"
-          disabled={
+          isDisabled={
             !selectedDate ||
             !selectedTime ||
             !buyerInfo.fullName.trim() ||

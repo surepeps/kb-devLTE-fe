@@ -22,7 +22,7 @@ import {
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
   filters: any;
   onFilterChange: (key: string, value: any) => void;
   onApplyFilters: () => void;

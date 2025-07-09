@@ -10,7 +10,7 @@ import { getBedroomOptions } from "@/data/filter-data";
 interface BedroomFilterProps {
   isOpen: boolean;
   onClose: () => void;
-  tab: "buy" | "jv" | "rent";
+  tab: "buy" | "jv" | "rent" | "shortlet";
   onBedroomSelect: (bedrooms: number | string) => void;
   currentValue?: number | string;
 }

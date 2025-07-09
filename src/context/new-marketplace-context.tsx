@@ -904,7 +904,10 @@ export const NewMarketplaceProvider: React.FC<{
 
           // Show a toast notification about demo mode
           setTimeout(() => {
-            if (typeof window !== "undefined" && window.alert) {
+            if (
+              typeof window !== "undefined" &&
+              typeof window.alert === "function"
+            ) {
               console.log(
                 "Demo Mode: Using sample data due to server connectivity issues",
               );

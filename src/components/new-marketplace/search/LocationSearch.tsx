@@ -27,7 +27,7 @@ interface LocationDetails {
 
 interface LocationSuggestion {
   state: string;
-  lga: string;
+  lga?: string;
   area?: string;
   display: string;
 }
@@ -133,8 +133,8 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
       // Transform results to our suggestion format
       const suggestions: LocationSuggestion[] = results.map((result) => ({
         state: result.state,
-        lga: result.lga,
-        area: result.area,
+        lga: result.lga || "",
+        area: result.area || "",
         display: formatLocationString(result.state, result.lga, result.area),
       }));
 
@@ -213,8 +213,8 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
 
     onChange(suggestion.display, {
       state: suggestion.state,
-      lga: suggestion.lga,
-      area: suggestion.area,
+      lga: suggestion.lga || "",
+      area: suggestion.area || "",
     });
   };
 

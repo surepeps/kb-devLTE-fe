@@ -675,7 +675,7 @@ const PropertyType = () => {
               </h3>
               <div className="flex gap-[20px] mt-2">
                 <RadioCheck
-                  selectedValue={createBrief?.areYouTheOwner}
+                  selectedValue={createBrief?.areYouTheOwner ? "true" : "false"}
                   isChecked={createBrief.areYouTheOwner === true}
                   handleChange={() => {
                     // formik.setFieldValue('areYouTheOwner', true);
@@ -689,7 +689,7 @@ const PropertyType = () => {
                   value="Yes"
                 />
                 <RadioCheck
-                  selectedValue={createBrief?.areYouTheOwner}
+                  selectedValue={createBrief?.areYouTheOwner ? "true" : "false"}
                   isChecked={createBrief.areYouTheOwner === false}
                   handleChange={() => {
                     // formik.setFieldValue('areYouTheOwner', false);
@@ -730,7 +730,7 @@ const PropertyType = () => {
             id='image-upload'
           /> */}
           <AttachFile
-            ref={attachRef}
+            ref={attachRef as any}
             heading="Upload image(optional)"
             id="my-upload"
           />

@@ -1,8 +1,8 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, { FC, MouseEventHandler } from 'react';
-import { motion } from 'framer-motion';
+import React, { FC, MouseEventHandler } from "react";
+import { motion } from "framer-motion";
 
 interface ButtonProps {
   value: string;
@@ -10,10 +10,11 @@ interface ButtonProps {
   isDisabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement> | undefined;
   className?: string;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   green?: boolean;
   red?: boolean;
   onSubmit?: any;
+  children?: React.ReactNode;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -26,6 +27,7 @@ const Button: FC<ButtonProps> = ({
   type,
   green,
   red,
+  children,
 }) => {
   return (
     <motion.button
@@ -37,13 +39,14 @@ const Button: FC<ButtonProps> = ({
       disabled={isDisabled}
       className={`${className} ${
         green &&
-        'bg-[#8DDB90] disabled:bg-[#273a28] disabled:cursor-not-allowed text-white'
+        "bg-[#8DDB90] disabled:bg-[#273a28] disabled:cursor-not-allowed text-white"
       } ${
         red &&
-        'bg-[#FF3D00] disabled:bg-[#562617] disabled:cursor-not-allowed text-white'
+        "bg-[#FF3D00] disabled:bg-[#562617] disabled:cursor-not-allowed text-white"
       } transition-all duration-500`}
-      type={type ? type : 'button'}>
-      {value}
+      type={type ? type : "button"}
+    >
+      {children || value}
     </motion.button>
   );
 };
