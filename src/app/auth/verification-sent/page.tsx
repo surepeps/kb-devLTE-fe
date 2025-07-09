@@ -108,7 +108,9 @@ const VerificationSent = () => {
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md">
-            <h3 className="font-semibold text-blue-800 mb-2">What's Next?</h3>
+            <h3 className="font-semibold text-blue-800 mb-2">
+              What&apos;s Next?
+            </h3>
             <ul className="text-sm text-blue-700 space-y-1 text-left">
               <li>• Check your email inbox (and spam folder)</li>
               <li>• Click the verification link in the email</li>
