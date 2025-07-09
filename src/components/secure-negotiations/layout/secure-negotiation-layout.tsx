@@ -93,14 +93,14 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
           </div>
         </div>
 
-        {/* Header */}
-        <div className="flex gap-4 sm:gap-6 md:gap-8 justify-center items-center flex-col px-2">
+        {/* Header - Centered */}
+        <div className="w-full flex flex-col items-center text-center px-4 sm:px-6">
           <motion.h2
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2 }}
-            className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center font-semibold text-[#09391C]"
+            className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#09391C] mb-4"
           >
             {userType === "seller" ? "Seller Response" : "Buyer Response"}
           </motion.h2>
@@ -110,21 +110,24 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col gap-1 items-center justify-center text-center"
+            className="flex flex-col gap-3 items-center justify-center text-center max-w-3xl"
           >
-            <p className="text-sm sm:text-base md:text-lg text-black">
-              Hello, {getFullName()}
-            </p>
-            <p className="text-sm sm:text-base md:text-lg text-black max-w-2xl">
-              {getStatusMessage()}
-            </p>
-            <p className="text-sm sm:text-base md:text-lg text-black">
-              Please reply within{" "}
-              <span className="text-sm sm:text-base md:text-lg text-[#FF3D00]">
-                48 hours
-              </span>{" "}
-              — the countdown starts now.
-            </p>
+            <div className="bg-white rounded-lg border border-[#C7CAD0] px-6 py-4">
+              <p className="text-lg sm:text-xl font-semibold text-[#09391C] mb-2">
+                Hello, {getFullName()}
+              </p>
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                {getStatusMessage()}
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg px-6 py-3">
+              <p className="text-sm sm:text-base text-gray-800">
+                Please reply within{" "}
+                <span className="font-bold text-[#FF3D00]">48 hours</span> — the
+                countdown starts now.
+              </p>
+            </div>
           </motion.div>
         </div>
 
