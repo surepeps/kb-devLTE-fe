@@ -97,7 +97,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   // Generate available dates (at least 10 weekdays, excluding Sundays)
   const getAvailableDates = (count: number = 10) => {
     const dates = [];
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + 3); // Start from 3 days from now
 
     while (dates.length < count) {
