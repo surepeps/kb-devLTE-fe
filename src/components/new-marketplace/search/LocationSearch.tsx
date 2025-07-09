@@ -133,8 +133,8 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
       // Transform results to our suggestion format
       const suggestions: LocationSuggestion[] = results.map((result) => ({
         state: result.state,
-        lga: result.lga,
-        area: result.area,
+        lga: result.lga || "",
+        area: result.area || "",
         display: formatLocationString(result.state, result.lga, result.area),
       }));
 
