@@ -91,8 +91,8 @@ const VerifyResetRequest = () => {
             </svg>
           </div>
           <p className="text-gray-600 max-w-md">
-            We've sent a password reset link to <strong>{email}</strong>. Click
-            the link in the email to reset your password.
+            We&apos;ve sent a password reset link to <strong>{email}</strong>.
+            Click the link in the email to reset your password.
           </p>
           <p className="text-sm text-gray-500">
             Didn't receive the email? Check your spam folder or try resending.
