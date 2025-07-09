@@ -144,8 +144,9 @@ const VerificationSent = () => {
 
           <div className="text-sm text-gray-500 max-w-md">
             <p>
-              <strong>Didn't receive the email?</strong> Check your spam/junk
-              folder or contact support if you continue to have issues.
+              <strong>Didn&apos;t receive the email?</strong> Check your
+              spam/junk folder or contact support if you continue to have
+              issues.
             </p>
           </div>
         </div>
