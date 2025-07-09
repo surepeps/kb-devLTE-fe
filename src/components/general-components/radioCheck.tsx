@@ -29,6 +29,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
   isChecked,
   selectedValue,
   modifyStyle,
+  onClick,
 }) => {
   const inputId = id ?? `${name}-${value}`;
   const isSelected =
