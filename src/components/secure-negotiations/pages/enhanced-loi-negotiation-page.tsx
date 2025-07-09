@@ -26,7 +26,7 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   userType,
   onNavigateToInspection,
 }) => {
-  const { state, toggleMessageModal } = useSecureNegotiation();
+  const { state, toggleMessageModal, goToNextPage } = useSecureNegotiation();
 
   const { details, loadingStates, currentUserId } = state;
   const [response, setResponse] = useState("");
@@ -37,12 +37,12 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   const handleAcceptLOI = async () => {
     try {
       setShowAcceptConfirm(false);
-      // Navigate to inspection date and time selection
+      // Navigate to inspection date and time selection - same as counter
       if (onNavigateToInspection) {
         onNavigateToInspection();
       } else {
-        // Fallback: trigger context navigation
-        toggleMessageModal(); // This could be replaced with proper navigation
+        // Use context navigation to go to inspection step
+        goToNextPage("Inspection");
       }
       console.log("Accepting LOI - navigating to inspection date/time");
     } catch (error) {
@@ -73,10 +73,15 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
 
       console.log("LOI response submitted:", response);
 
-      // After submitting changes, navigate to inspection page
+      // After submitting changes, navigate to inspection page - same as accept
       if (onNavigateToInspection) {
         setTimeout(() => {
           onNavigateToInspection();
+        }, 500); // Small delay for better UX
+      } else {
+        // Use context navigation to go to inspection step
+        setTimeout(() => {
+          goToNextPage("Inspection");
         }, 500); // Small delay for better UX
       }
     } catch (error) {
