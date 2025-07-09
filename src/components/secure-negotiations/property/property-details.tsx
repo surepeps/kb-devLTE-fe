@@ -51,8 +51,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
     propertyId,
     inspectionDate,
     inspectionTime,
-    requestedBy,
-    owner,
     createdAt,
   } = propertyData;
   const [isExpanded, setIsExpanded] = useState(false);
