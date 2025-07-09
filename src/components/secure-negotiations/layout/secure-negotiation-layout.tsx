@@ -95,14 +95,14 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
           </div>
         </div>
 
-        {/* Header - Centered */}
-        <div className="w-full flex flex-col items-center text-center px-4 sm:px-6">
+        {/* Header - Matching seller negotiation style */}
+        <div className="flex gap-[20px] md:gap-[40px] justify-center items-center flex-col">
           <motion.h2
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2 }}
-            className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#09391C] mb-4"
+            className="font-display text-3xl md:text-4xl text-center font-semibold text-[#09391C]"
           >
             {userType === "seller" ? "Seller Response" : "Buyer Response"}
           </motion.h2>
@@ -112,67 +112,59 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col gap-3 items-center justify-center text-center max-w-3xl"
+            className="flex flex-col gap-[1px] items-center justify-center"
           >
-            <div className="bg-white rounded-lg border border-[#C7CAD0] px-6 py-4">
-              <p className="text-lg sm:text-xl font-semibold text-[#09391C] mb-2">
-                Hello, {getFullName()}
-              </p>
-              <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                {getStatusMessage()}
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg px-6 py-3">
-              <p className="text-sm sm:text-base text-gray-800">
-                Please reply within{" "}
-                <span className="font-bold text-[#FF3D00]">48 hours</span> — the
-                countdown starts now.
-              </p>
-            </div>
+            <p className="text-center text-base md:text-lg text-black">
+              Hi, {getFullName()},
+            </p>
+            <p className="text-center text-base md:text-lg text-black">
+              {getStatusMessage()}
+            </p>
+            <p className="text-center text-base md:text-lg text-black">
+              Please reply within{" "}
+              <span className="text-base md:text-lg text-[#FF3D00]">
+                48 hours
+              </span>{" "}
+              — the countdown starts now.
+            </p>
           </motion.div>
         </div>
 
         {/* Main Content */}
         <div className="w-full max-w-5xl flex flex-col gap-6 sm:gap-8 lg:gap-10 bg-[#FFFFFF] py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-10 border border-[#C7CAD0] rounded-2xl mx-auto min-h-[400px]">
-          {/* Timer */}
-          <div className="flex items-center justify-center p-4 sm:p-5 bg-gradient-to-r from-[#EEF1F1] to-[#F8F9FA] rounded-xl border border-[#C7CAD0]">
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-center">
-              <div className="p-2 bg-white rounded-lg border border-[#C7CAD0]">
-                <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-[#09391C]" />
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm text-gray-600 font-medium">
-                  Time remaining to respond
-                </div>
-                <div className="text-lg sm:text-xl font-bold text-[#FF3D00]">
-                  {details?.updatedAt
-                    ? (() => {
-                        const updateTime = new Date(
-                          details.updatedAt,
-                        ).getTime();
-                        const now = new Date().getTime();
-                        const elapsed = now - updateTime;
-                        const fortyEightHours = 48 * 60 * 60 * 1000;
-                        const remaining = fortyEightHours - elapsed;
+          {/* Timer - Matching seller negotiation style */}
+          <time
+            dateTime=""
+            className="font-semibold text-black font-display text-2xl text-center"
+          >
+            {details?.updatedAt
+              ? (() => {
+                  const updateTime = new Date(details.updatedAt).getTime();
+                  const now = new Date().getTime();
+                  const elapsed = now - updateTime;
+                  const fortyEightHours = 48 * 60 * 60 * 1000;
+                  const remaining = fortyEightHours - elapsed;
 
-                        if (remaining > 0) {
-                          const hours = Math.floor(
-                            remaining / (1000 * 60 * 60),
-                          );
-                          const minutes = Math.floor(
-                            (remaining % (1000 * 60 * 60)) / (1000 * 60),
-                          );
-                          return `${hours}h ${minutes}m`;
-                        } else {
-                          return "Expired";
-                        }
-                      })()
-                    : "Loading..."}
-                </div>
-              </div>
-            </div>
-          </div>
+                  if (remaining > 0) {
+                    const hours = Math.floor(remaining / (1000 * 60 * 60));
+                    const minutes = Math.floor(
+                      (remaining % (1000 * 60 * 60)) / (1000 * 60),
+                    );
+                    const seconds = Math.floor(
+                      (remaining % (1000 * 60)) / 1000,
+                    );
+                    return `${hours.toString().padStart(2, "0")}:${minutes
+                      .toString()
+                      .padStart(
+                        2,
+                        "0",
+                      )}:${seconds.toString().padStart(2, "0")}`;
+                  } else {
+                    return "00:00:00";
+                  }
+                })()
+              : "Loading..."}
+          </time>
 
           {/* Content */}
           <div className="negotiation-content">{children}</div>
