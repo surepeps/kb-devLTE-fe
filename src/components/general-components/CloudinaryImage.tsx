@@ -67,12 +67,12 @@ const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   const isCloudinaryImage =
     typeof src === "string" && src?.includes("cloudinary.com");
 
-  const handleError = useCallback(() => {
+  const handleError = React.useCallback(() => {
     setImageError(true);
     setIsLoading(false);
   }, []);
 
-  const handleLoad = useCallback(() => {
+  const handleLoad = React.useCallback(() => {
     setIsLoading(false);
   }, []);
 
