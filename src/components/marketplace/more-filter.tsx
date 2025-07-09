@@ -23,8 +23,19 @@ type FilterProps = {
 };
 interface MoreFilterProps {
   closeModal: (type: boolean) => void;
-  filters: FilterProps;
-  setFilters: (type: FilterProps) => void;
+  filters:
+    | FilterProps
+    | {
+        bathroom: number | undefined | string;
+        landSize: {
+          type: string;
+          size: undefined | number;
+        };
+        desirer_features: string[];
+        homeCondition: string;
+        tenantCriteria: string[];
+      };
+  setFilters: (type: any) => void;
   style?: React.CSSProperties;
 }
 
