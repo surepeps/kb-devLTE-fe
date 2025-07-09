@@ -11,11 +11,13 @@ const AttachFile = forwardRef<HTMLInputElement, any>((props: any, ref) => {
   const { setCreateBrief, createBrief } = useCreateBriefContext();
 
   // Expose methods to parent
-  useImperativeHandle(ref, () => ({
-    triggerUpload: () => {
-      fileInputRef.current?.click();
-    },
-  }));
+  // useImperativeHandle(ref, () => (
+  //   {
+  //     triggerUpload: () => {
+  //       fileInputRef.current?.click();
+  //     },
+  //   }
+  // ));
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
