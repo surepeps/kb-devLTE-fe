@@ -97,8 +97,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           Price Negotiation
         </h2>
         <p className="text-gray-600">
-          Review the offer and choose your response. You'll select inspection
-          date/time on the next step.
+          Review the offer and choose your response. You&apos;ll select
+          inspection date/time on the next step.
         </p>
       </div>
 
