@@ -78,25 +78,44 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-lg border border-[#C7CAD0] overflow-hidden"
+      className="bg-white rounded-xl border border-[#C7CAD0] overflow-hidden"
     >
-      {/* Collapsible Header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 flex items-center justify-between bg-[#EEF1F1] hover:bg-gray-100 transition-colors duration-200"
-      >
-        <div className="flex items-center space-x-3">
-          <FiHome className="w-5 h-5 text-[#09391C]" />
-          <h3 className="text-lg font-semibold text-[#09391C]">
-            Property Details
-          </h3>
+      {/* Compact Header with Key Info */}
+      <div className="p-3 sm:p-4 bg-gradient-to-r from-[#EEF1F1] to-[#F8F9FA] border-b border-[#C7CAD0]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-1.5 bg-white rounded-lg border border-[#C7CAD0]">
+              <FiHome className="w-4 h-4 text-[#09391C]" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[#09391C]">
+                {propertyId.propertyType} • {propertyId.briefType}
+              </h3>
+              <p className="text-xs text-gray-600">
+                {propertyId.location.area}, {propertyId.location.state}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="text-right">
+              <div className="text-sm font-bold text-[#09391C]">
+                {formatCurrency(propertyId.price)}
+              </div>
+              <div className="text-xs text-gray-600">Property Price</div>
+            </div>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1.5 hover:bg-white hover:border-[#09391C] rounded-lg border border-transparent transition-all duration-200"
+            >
+              {isExpanded ? (
+                <FiChevronUp className="w-4 h-4 text-[#09391C]" />
+              ) : (
+                <FiChevronDown className="w-4 h-4 text-[#09391C]" />
+              )}
+            </button>
+          </div>
         </div>
-        {isExpanded ? (
-          <FiChevronUp className="w-5 h-5 text-[#09391C]" />
-        ) : (
-          <FiChevronDown className="w-5 h-5 text-[#09391C]" />
-        )}
-      </button>
+      </div>
 
       {/* Collapsible Content */}
       <motion.div
@@ -108,54 +127,31 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
         transition={{ duration: 0.3 }}
         className="overflow-hidden"
       >
-        {/* Property Image */}
-        {propertyId.thumbnail && (
-          <div className="h-32 sm:h-48 bg-gray-200 overflow-hidden">
-            <img
-              src={propertyId.thumbnail}
-              alt="Property"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "/assets/noImageAvailable.png";
-              }}
-            />
-          </div>
-        )}
-
-        <div className="p-4 sm:p-6">
-          {/* Property Basic Info */}
-          <div className="mb-4 sm:mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="bg-[#EEF1F1] p-3 sm:p-4 rounded-lg">
-                <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                  Property Type
-                </div>
-                <div className="font-medium text-gray-800 capitalize text-sm sm:text-base">
-                  {propertyId.propertyType}
-                </div>
-              </div>
-
-              <div className="bg-[#EEF1F1] p-3 sm:p-4 rounded-lg">
-                <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                  Brief Type
-                </div>
-                <div className="font-medium text-gray-800 text-sm sm:text-base">
-                  {propertyId.briefType}
-                </div>
-              </div>
+        <div className="p-4">
+          {/* Property Image */}
+          {propertyId.thumbnail && (
+            <div className="h-24 sm:h-32 bg-gray-200 overflow-hidden rounded-lg mb-4">
+              <img
+                src={propertyId.thumbnail}
+                alt="Property"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/assets/noImageAvailable.png";
+                }}
+              />
             </div>
-          </div>
+          )}
 
-          {/* Location */}
-          <div className="mb-4 sm:mb-6">
-            <div className="flex items-center space-x-2 mb-2 sm:mb-3">
-              <FiMapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#09391C]" />
-              <h4 className="font-medium text-gray-800 text-sm sm:text-base">
-                Location
+          {/* Full Location */}
+          <div className="mb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <FiMapPin className="w-4 h-4 text-[#09391C]" />
+              <h4 className="font-medium text-gray-800 text-sm">
+                Full Address
               </h4>
             </div>
-            <div className="bg-[#EEF1F1] p-3 sm:p-4 rounded-lg">
-              <div className="text-gray-700 text-sm sm:text-base">
+            <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
+              <div className="text-gray-700 text-sm">
                 {propertyId.location.area},{" "}
                 {propertyId.location.localGovernment},{" "}
                 {propertyId.location.state}
@@ -163,45 +159,26 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
             </div>
           </div>
 
-          {/* Price */}
-          <div className="mb-4 sm:mb-6">
-            <div className="flex items-center space-x-2 mb-2 sm:mb-3">
-              <FiDollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-[#09391C]" />
-              <h4 className="font-medium text-gray-800 text-sm sm:text-base">
-                Property Price
-              </h4>
-            </div>
-            <div className="bg-[#09391C] text-white p-3 sm:p-4 rounded-lg">
-              <div className="text-lg sm:text-2xl font-bold">
-                {formatCurrency(propertyId.price)}
-              </div>
-            </div>
-          </div>
-
           {/* Inspection Details */}
-          <div className="mb-4 sm:mb-6">
-            <div className="flex items-center space-x-2 mb-2 sm:mb-3">
-              <FiCalendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#09391C]" />
-              <h4 className="font-medium text-gray-800 text-sm sm:text-base">
-                Inspection Schedule
+          <div className="mb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <FiCalendar className="w-4 h-4 text-[#09391C]" />
+              <h4 className="font-medium text-gray-800 text-sm">
+                Current Inspection Schedule
               </h4>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="bg-[#EEF1F1] p-3 sm:p-4 rounded-lg">
-                <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                  Date
-                </div>
-                <div className="font-medium text-gray-800 text-sm sm:text-base">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
+                <div className="text-xs text-gray-600 mb-1">Date</div>
+                <div className="font-medium text-gray-800 text-sm">
                   {formatDate(inspectionDate)}
                 </div>
               </div>
 
-              <div className="bg-[#EEF1F1] p-3 sm:p-4 rounded-lg">
-                <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                  Time
-                </div>
-                <div className="font-medium text-gray-800 text-sm sm:text-base">
+              <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
+                <div className="text-xs text-gray-600 mb-1">Time</div>
+                <div className="font-medium text-gray-800 text-sm">
                   {inspectionTime}
                 </div>
               </div>
@@ -209,19 +186,23 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
           </div>
 
           {/* Request Info */}
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-            <div className="flex items-center space-x-2 mb-2 sm:mb-3">
-              <FiFileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#09391C]" />
-              <h4 className="font-medium text-gray-800 text-sm sm:text-base">
-                Request Information
+          <div className="pt-3 border-t border-gray-200">
+            <div className="flex items-center space-x-2 mb-2">
+              <FiFileText className="w-4 h-4 text-[#09391C]" />
+              <h4 className="font-medium text-gray-800 text-sm">
+                Request Created
               </h4>
             </div>
-            <div className="bg-[#EEF1F1] p-3 sm:p-4 rounded-lg">
-              <div className="text-xs sm:text-sm text-gray-600 mb-1">
-                Request Created
-              </div>
-              <div className="text-gray-700 text-sm sm:text-base">
-                {new Date(createdAt).toLocaleString()}
+            <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
+              <div className="text-gray-700 text-sm">
+                {new Date(createdAt).toLocaleDateString("en-US", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </div>
             </div>
           </div>

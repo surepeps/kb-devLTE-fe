@@ -129,16 +129,18 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-4xl flex flex-col gap-6 sm:gap-8 bg-[#FFFFFF] py-4 sm:py-6 md:py-8 px-3 sm:px-6 md:px-8 border border-[#C7CAD0] rounded-lg mx-auto">
+        <div className="w-full max-w-4xl flex flex-col gap-6 sm:gap-8 bg-[#FFFFFF] py-6 sm:py-8 md:py-10 px-4 sm:px-8 md:px-10 border border-[#C7CAD0] rounded-xl mx-auto">
           {/* Timer */}
-          <div className="flex items-center justify-center p-3 sm:p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 text-center">
-              <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-[#09391C]" />
+          <div className="flex items-center justify-center p-4 sm:p-5 bg-gradient-to-r from-[#EEF1F1] to-[#F8F9FA] rounded-xl border border-[#C7CAD0]">
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-center">
+              <div className="p-2 bg-white rounded-lg border border-[#C7CAD0]">
+                <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-[#09391C]" />
+              </div>
               <div>
-                <div className="text-xs sm:text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600 font-medium">
                   Time remaining to respond
                 </div>
-                <div className="text-base sm:text-lg font-semibold text-[#FF3D00]">
+                <div className="text-lg sm:text-xl font-bold text-[#FF3D00]">
                   {details?.updatedAt
                     ? (() => {
                         const updateTime = new Date(

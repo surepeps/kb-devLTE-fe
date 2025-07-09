@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import { motion } from "framer-motion";
 import {
@@ -31,10 +31,24 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
-  const [newDate, setNewDate] = useState("");
-  const [newTime, setNewTime] = useState("");
+  const [newDate, setNewDate] = useState(details?.inspectionDate || "");
+  const [newTime, setNewTime] = useState(details?.inspectionTime || "");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (showUpdateForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showUpdateForm]);
 
   // Generate available dates (next 15 days excluding Sundays)
   const availableDates = useMemo(() => {
@@ -66,11 +80,10 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return dates;
   }, []);
 
-  // Generate available times (8 AM to 6 PM)
+  // Generate available times (8 AM to 6 PM, hourly only)
   const availableTimes = useMemo(() => {
     const times = [];
     for (let hour = 8; hour <= 18; hour++) {
-      const time24 = `${hour.toString().padStart(2, "0")}:00`;
       const time12 =
         hour <= 12
           ? `${hour}:00 ${hour === 12 ? "PM" : "AM"}`
@@ -80,22 +93,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         value: time12,
         display: time12,
       });
-
-      // Add 30-minute intervals
-      if (hour < 18) {
-        const time24Half = `${hour.toString().padStart(2, "0")}:30`;
-        const time12Half =
-          hour < 12
-            ? `${hour}:30 ${hour === 12 ? "PM" : "AM"}`
-            : hour === 12
-              ? `12:30 PM`
-              : `${hour - 12}:30 PM`;
-
-        times.push({
-          value: time12Half,
-          display: time12Half,
-        });
-      }
     }
     return times;
   }, []);
@@ -255,7 +252,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
+        className="bg-white rounded-xl border border-[#C7CAD0]"
       >
         <div className="p-6">
           <div className="flex items-center space-x-3 mb-6">
@@ -308,7 +305,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200"
+        className="bg-white rounded-xl border border-[#C7CAD0]"
       >
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -353,11 +350,21 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
       {/* Update Schedule Modal */}
       {showUpdateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-hidden"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            overflowY: "hidden",
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#C7CAD0]"
+            className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#C7CAD0]"
           >
             <div className="p-6">
               <h3 className="text-lg font-semibold text-[#09391C] mb-6">
