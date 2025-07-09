@@ -500,33 +500,40 @@ const PostProperty = () => {
                       isDisabled={isSubmitting}
                     />
 
-                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                      {currentStep === 4 && (
+                    {/* Step indicator - centered */}
+                    <div className="flex md:hidden justify-center">
+                      <span className="text-sm text-[#5A5D63] font-medium">
+                        Step {currentStep + 1} of {steps.length}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+                      {/* Desktop step indicator */}
+                      <div className="hidden md:block">
+                        <span className="text-sm text-[#5A5D63] font-medium">
+                          Step {currentStep + 1} of {steps.length}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                        {currentStep === 4 && (
+                          <Button
+                            type="button"
+                            value="Review Property"
+                            onClick={() => setShowPropertySummary(true)}
+                            className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                            isDisabled={!validateCurrentStep() || isSubmitting}
+                          />
+                        )}
                         <Button
                           type="button"
-                          value="Review Property"
-                          onClick={() => setShowPropertySummary(true)}
-                          className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                          isDisabled={!validateCurrentStep() || isSubmitting}
+                          value={currentStep === 4 ? "Complete" : "Next"}
+                          onClick={() => handleNext(validateForm, errors)}
+                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                          isDisabled={isSubmitting}
                         />
-                      )}
-                      <Button
-                        type="button"
-                        value={currentStep === 4 ? "Complete" : "Next"}
-                        onClick={() => handleNext(validateForm, errors)}
-                        className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                        isDisabled={isSubmitting}
-                      />
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Progress Indicator */}
-                {!showPropertySummary && !showCommissionModal && (
-                  <div className="text-center mt-6">
-                    <span className="text-sm text-[#5A5D63]">
-                      Step {currentStep + 1} of {steps.length}
-                    </span>
                   </div>
                 )}
               </Form>
