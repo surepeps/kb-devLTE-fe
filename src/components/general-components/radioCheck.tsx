@@ -48,6 +48,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
         disabled={isDisabled}
         checked={isSelected}
         onChange={handleChange}
+        onClick={onClick}
         style={{
           accentColor: "#8DDB90",
           width: "24px",
