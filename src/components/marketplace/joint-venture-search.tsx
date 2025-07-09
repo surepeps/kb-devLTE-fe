@@ -175,13 +175,10 @@ const JointVentureSearch: React.FC<JointVentureSearchProps> = ({
       <div className="mb-6 md:mb-8">
         <JointVentureModal
           onSearch={handleSearch}
-          selectedBriefs={uniqueProperties.size}
           addForInspectionPayload={addForInspectionPayload}
           setSelectedBriefs={setUniqueProperties}
           setAddInspectionModal={setIsAddInspectionModalOpened}
           inspectionType={inspectionType}
-          usageOptions={jvFilterBy}
-          setUsageOptions={setJvFilterBy}
           setInspectionType={setInspectionType}
         />
       </div>
