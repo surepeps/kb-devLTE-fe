@@ -294,9 +294,13 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                 key={`${property._id}-${currentPage}`}
                 style={isMobile ? { width: "100%" } : { width: "281px" }}
                 images={property?.pictures || []}
-                isAddForInspectionModalOpened={isAddForInspectionModalOpened}
-                setIsAddInspectionModalOpened={setIsAddInspectionModalOpened}
-                setPropertySelected={setPropertySelected}
+                isAddForInspectionModalOpened={
+                  isAddForInspectionModalOpened ?? false
+                }
+                setIsAddInspectionModalOpened={
+                  setIsAddInspectionModalOpened ?? (() => {})
+                }
+                setPropertySelected={setPropertySelected ?? (() => {})}
                 isComingFromPriceNeg={isComingFromPriceNeg ?? false}
                 setIsComingFromPriceNeg={setIsComingFromPriceNeg ?? (() => {})}
                 isPremium={property?.isPremium}
