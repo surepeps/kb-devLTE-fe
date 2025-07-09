@@ -11,7 +11,9 @@ import {
   FiMessageSquare,
   FiClock,
   FiUser,
+  FiAlertTriangle,
 } from "react-icons/fi";
+import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
 interface EnhancedLOINegotiationPageProps {
   letterOfIntention: string;
@@ -27,18 +29,27 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
   const { details, loadingStates, currentUserId } = state;
   const [response, setResponse] = useState("");
   const [showResponseForm, setShowResponseForm] = useState(false);
+  const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
   const handleAcceptLOI = async () => {
     try {
-      console.log("Accepting LOI Message");
+      setShowAcceptConfirm(false);
+      // Navigate to inspection date and time selection
+      // This would typically trigger a navigation or step change
+      console.log("Accepting LOI - navigating to inspection date/time");
+      // Add actual navigation logic here
     } catch (error) {
-      console.error("Failed to accept LOI Message:", error);
+      console.error("Failed to accept LOI:", error);
     }
   };
 
   const handleRejectLOI = async () => {
     try {
-      console.log("Rejecting LOI");
+      setShowRejectConfirm(false);
+      // End the flow - show confirmation and terminate
+      console.log("Rejecting LOI - ending negotiation flow");
+      // Add actual rejection logic here
     } catch (error) {
       console.error("Failed to reject LOI:", error);
     }
