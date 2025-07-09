@@ -115,7 +115,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     };
   }, [showUpdateForm]);
 
-
   const displayedDates = showAllDays
     ? availableDates
     : availableDates.slice(0, 10);
@@ -371,7 +370,12 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
             {/* Update Schedule */}
             <button
-              onClick={() => setShowUpdateForm(true)}
+              onClick={() => {
+                // Auto-select current inspection details when opening modal
+                setNewDate(currentDate || availableDates[0]?.date || "");
+                setNewTime(currentTime || availableTimes[0]?.value || "");
+                setShowUpdateForm(true);
+              }}
               disabled={
                 loadingStates.submitting ||
                 loadingStates.accepting ||
