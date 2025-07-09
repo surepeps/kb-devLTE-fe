@@ -10,9 +10,6 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiEdit3,
-  FiUser,
-  FiPhone,
-  FiMail,
 } from "react-icons/fi";
 
 interface EnhancedInspectionDateConfirmationProps {
@@ -28,11 +25,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
   const [alternativeDate, setAlternativeDate] = useState("");
   const [alternativeTime, setAlternativeTime] = useState("");
   const [showAlternativeForm, setShowAlternativeForm] = useState(false);
-  const [contactInfo, setContactInfo] = useState({
-    name: "",
-    phone: "",
-    email: "",
-  });
 
   const proposedDate = details?.inspectionDate || "";
   const proposedTime = details?.inspectionTime || "";
@@ -41,7 +33,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const handleConfirmInspection = async () => {
     try {
-    
       console.log("Inspection confirmed for:", {
         date: proposedDate,
         time: proposedTime,
@@ -53,8 +44,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const handleRejectInspection = async () => {
     try {
-      
-
       console.log("Inspection rejected");
     } catch (error) {
       console.error("Failed to reject inspection:", error);
@@ -68,8 +57,6 @@ const EnhancedInspectionDateConfirmation: React.FC<
     }
 
     try {
-    
-
       setShowAlternativeForm(false);
       setAlternativeDate("");
       setAlternativeTime("");
