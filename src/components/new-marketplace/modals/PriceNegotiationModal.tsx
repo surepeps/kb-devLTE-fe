@@ -74,7 +74,9 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        const numericPrice = Number(unformatNumber(values.negotiatedPrice));
+        const numericPrice = Number(
+          unformatNumber(String(values.negotiatedPrice)),
+        );
         const askingPrice = property?.price || 0;
 
         if (numericPrice > askingPrice) {
@@ -130,7 +132,8 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
 
   const askingPrice = property?.price || 0;
   const savings = formik.values.negotiatedPrice
-    ? askingPrice - Number(unformatNumber(formik.values.negotiatedPrice))
+    ? askingPrice -
+      Number(unformatNumber(String(formik.values.negotiatedPrice)))
     : 0;
 
   if (!isOpen) return null;
@@ -270,8 +273,9 @@ const PriceNegotiationModal: React.FC<PriceNegotiationModalProps> = ({
                       isSubmitting ||
                       !formik.isValid ||
                       !formik.values.negotiatedPrice ||
-                      Number(unformatNumber(formik.values.negotiatedPrice)) >
-                        askingPrice
+                      Number(
+                        unformatNumber(String(formik.values.negotiatedPrice)),
+                      ) > askingPrice
                     }
                     className="flex-1 py-3 px-4 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#76c77a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />
