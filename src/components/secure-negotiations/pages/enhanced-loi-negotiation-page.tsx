@@ -319,6 +319,91 @@ const EnhancedLOINegotiationPage: React.FC<EnhancedLOINegotiationPageProps> = ({
           </div>
         </motion.div>
       )}
+
+      {/* Accept Confirmation Modal */}
+      {showAcceptConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+          >
+            <div className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <FiCheckCircle className="w-6 h-6 text-green-600" />
+                <h3 className="text-lg font-semibold text-[#09391C]">
+                  Accept Letter of Intention
+                </h3>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                By accepting this LOI, you agree to proceed with the joint
+                venture partnership. You will be taken to schedule an inspection
+                date and time.
+              </p>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleAcceptLOI}
+                  disabled={loadingStates.accepting}
+                  className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+                >
+                  {loadingStates.accepting
+                    ? "Accepting..."
+                    : "Yes, Accept & Continue"}
+                </button>
+                <button
+                  onClick={() => setShowAcceptConfirm(false)}
+                  className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+          >
+            <div className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <FiAlertTriangle className="w-6 h-6 text-red-600" />
+                <h3 className="text-lg font-semibold text-[#09391C]">
+                  Reject Letter of Intention
+                </h3>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to reject this Letter of Intention? This
+                will terminate the joint venture negotiation process.
+              </p>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleRejectLOI}
+                  disabled={loadingStates.rejecting}
+                  className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+                >
+                  {loadingStates.rejecting ? "Rejecting..." : "Yes, Reject"}
+                </button>
+                <button
+                  onClick={() => setShowRejectConfirm(false)}
+                  className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
