@@ -148,14 +148,6 @@ This summary serves as confirmation of the negotiated terms.
             </button>
 
             <button
-              onClick={printSummary}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-            >
-              <FiPrint className="w-4 h-4" />
-              <span>Print</span>
-            </button>
-
-            <button
               onClick={shareSummary}
               className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
             >
