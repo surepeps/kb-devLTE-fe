@@ -258,7 +258,7 @@ const MyListingSearch = ({
     }
 
     // Tenant Criteria
-    if (filters.tenantCriteria.length > 0) {
+    if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
       filters.tenantCriteria = filters.tenantCriteria;
     }
 
