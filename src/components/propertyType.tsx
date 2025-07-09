@@ -730,7 +730,7 @@ const PropertyType = () => {
             id='image-upload'
           /> */}
           <AttachFile
-            ref={attachRef}
+            ref={attachRef as any}
             heading="Upload image(optional)"
             id="my-upload"
           />
