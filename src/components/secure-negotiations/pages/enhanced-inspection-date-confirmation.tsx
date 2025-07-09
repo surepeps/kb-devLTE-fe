@@ -22,7 +22,7 @@ interface EnhancedInspectionDateConfirmationProps {
 const EnhancedInspectionDateConfirmation: React.FC<
   EnhancedInspectionDateConfirmationProps
 > = ({ userType }) => {
-  const { state, addActivity } = useSecureNegotiation();
+  const { state } = useSecureNegotiation();
 
   const { details, loadingStates, currentUserId, inspectionStatus } = state;
   const [alternativeDate, setAlternativeDate] = useState("");
