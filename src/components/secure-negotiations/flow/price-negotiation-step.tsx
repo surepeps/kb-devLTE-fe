@@ -97,8 +97,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           Price Negotiation
         </h2>
         <p className="text-gray-600">
-          Review the offer and choose your response. You'll select inspection
-          date/time on the next step.
+          Review the offer and choose your response. You&apos;ll select
+          inspection date/time on the next step.
         </p>
       </div>
 
@@ -130,7 +130,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             }`}
           >
             <div className="text-sm text-gray-600 mb-1">
-              {userType === "seller" ? "Buyer's Offer" : "Current Offer"}
+              {userType === "seller" ? "Buyer&apos;s Offer" : "Current Offer"}
             </div>
             <div
               className={`text-2xl font-bold ${
