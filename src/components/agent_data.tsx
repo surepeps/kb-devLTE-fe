@@ -338,8 +338,8 @@ const AgentData = () => {
           </div>
           <div className="max-w-2xl mx-auto bg-white rounded-xl p-6 shadow-lg border border-gray-100">
             <p className="text-[#5A5D63] text-[18px] md:text-[20px] leading-[32px] text-center">
-              🎉 <strong>Congratulations!</strong> You're one step away from
-              joining our exclusive agent network.
+              🎉 <strong>Congratulations!</strong> You&apos;re one step away
+              from joining our exclusive agent network.
               <br />
               <span className="text-[#09391C] font-semibold">
                 Please complete your verification
