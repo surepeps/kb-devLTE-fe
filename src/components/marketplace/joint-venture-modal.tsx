@@ -233,6 +233,7 @@ const JointVentureModal = ({
           {isPriceRangeModalOpened && (
             <PriceRange
               setSlectedRadioValue={setPriceRadioValue}
+              selectedRadioValue={priceRadioValue}
               formik={priceFormik}
               closeModal={setIsPriceRangeModalOpened}
               heading="Price Range"
