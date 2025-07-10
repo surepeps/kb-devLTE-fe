@@ -690,225 +690,24 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [state.userId, fetchNegotiationDetails],
   );
 
-  const submitCounterOffer = useCallback(
-    async (
-      inspectionId: string,
-      counterPrice: number,
-      userType: "seller" | "buyer",
-      inspectionDate: string,
-      inspectionTime: string,
-      dateTimeCountered: boolean = false,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "countering", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/counter`,
-          {
-            userType,
-            action: "counter",
-            counterPrice,
-            inspectionDate,
-            inspectionTime,
-            dateTimeCountered,
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to submit counter offer:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "countering", isLoading: false },
-        });
-      }
+  // Helper method to determine if it's the user's turn to respond
+  const isUserTurn = useCallback(
+    (userType: "seller" | "buyer") => {
+      return state.pendingResponseFrom === userType;
     },
-    [state.userId, fetchNegotiationDetails],
+    [state.pendingResponseFrom],
   );
 
-  const updateInspectionDateTime = useCallback(
-    async (
-      inspectionId: string,
-      date: string,
-      time: string,
-      userType: "seller" | "buyer",
-      dateTimeCountered: boolean = false,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "submitting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/schedule`,
-          {
-            userType,
-            inspectionDate: date,
-            inspectionTime: time,
-            dateTimeCountered,
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to update inspection date/time:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "submitting", isLoading: false },
-        });
-      }
+  // Helper method to check if negotiation can proceed
+  const canNegotiate = useCallback(
+    (userType: "seller" | "buyer") => {
+      return (
+        state.stage === "negotiation" &&
+        state.pendingResponseFrom === userType &&
+        !state.isExpired
+      );
     },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  // LOI Methods
-  const acceptLOI = useCallback(
-    async (
-      inspectionId: string,
-      userType: "seller" | "buyer",
-      newLoiFile?: File,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "accepting", isLoading: true },
-      });
-
-      try {
-        let loiUrl = null;
-
-        // If buyer is uploading a new LOI file
-        if (newLoiFile) {
-          // Upload the new LOI file first
-          const formData = new FormData();
-          formData.append("file", newLoiFile);
-
-          const uploadResponse = await POST_REQUEST(
-            `${URLS.BASE + URLS.uploadImg}`,
-            formData,
-            { "Content-Type": "multipart/form-data" },
-          );
-
-          if (uploadResponse?.success) {
-            loiUrl = uploadResponse.data.url;
-          }
-        }
-
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/loi/accept`,
-          {
-            userType,
-            action: "accept",
-            newLoiUrl: loiUrl,
-          },
-        );
-
-        if (response?.success) {
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to accept LOI:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "accepting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const rejectLOI = useCallback(
-    async (inspectionId: string, userType: "seller" | "buyer") => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "rejecting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/loi/reject`,
-          {
-            userType,
-            action: "reject",
-          },
-        );
-
-        if (response?.success) {
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to reject LOI:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "rejecting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const requestLOIChanges = useCallback(
-    async (
-      inspectionId: string,
-      userType: "seller" | "buyer",
-      feedback: string,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "submitting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/loi/requestChanges`,
-          {
-            userType,
-            action: "requestChanges",
-            feedback,
-          },
-        );
-
-        if (response?.success) {
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to request LOI changes:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "submitting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
+    [state.stage, state.pendingResponseFrom, state.isExpired],
   );
 
   // Cleanup on unmount
