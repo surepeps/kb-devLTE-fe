@@ -217,18 +217,6 @@ interface SecureNegotiationContextType {
 
   // Interactive Methods
   setExpiredStatus: (isExpired: boolean) => void;
-  reopenInspection: () => Promise<any>;
-
-  // Navigation Methods
-  goToNextPage: (page: ContentTracker) => void;
-  toggleInteractiveMode: () => void;
-
-  // Modal Methods
-  toggleSubmitOfferModal: () => void;
-  toggleAcceptRejectModal: () => void;
-  toggleMessageModal: () => void;
-  setOfferPrice: (price: number) => void;
-  setCounterOffer: (price: number) => void;
 
   // Loading Methods
   setLoading: (
