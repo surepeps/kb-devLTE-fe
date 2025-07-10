@@ -16,10 +16,15 @@ import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
-  PotentialClientData,
-  NegotiationType,
-  ContentTracker,
-} from "@/types/negotiation";
+  InspectionDetails,
+  InspectionDetailsResponse,
+  AccessValidationResponse,
+  InspectionType,
+  InspectionStage,
+  PendingResponseFrom,
+  NegotiationPayload,
+  UploadResponse,
+} from "@/types/secure-negotiation";
 import { ApiSuccessResponse } from "@/types/api-responses";
 
 // Enhanced Types for Secure Negotiations
@@ -51,8 +56,10 @@ interface SecureNegotiationState {
 
   // Data states
   formStatus: "idle" | "success" | "failed" | "pending";
-  details: any | null;
-  negotiationType: NegotiationType;
+  details: InspectionDetails | null;
+  inspectionType: InspectionType | null;
+  stage: InspectionStage | null;
+  pendingResponseFrom: PendingResponseFrom | null;
   createdAt: string | null;
   inspectionStatus: InspectionStatus | null;
   currentUserId: string | null;
@@ -84,8 +91,10 @@ type SecureNegotiationAction =
       type: "SET_FORM_STATUS";
       payload: "idle" | "success" | "failed" | "pending";
     }
-  | { type: "SET_DETAILS"; payload: any }
-  | { type: "SET_NEGOTIATION_TYPE"; payload: NegotiationType }
+  | { type: "SET_DETAILS"; payload: InspectionDetails }
+  | { type: "SET_INSPECTION_TYPE"; payload: InspectionType }
+  | { type: "SET_STAGE"; payload: InspectionStage }
+  | { type: "SET_PENDING_RESPONSE_FROM"; payload: PendingResponseFrom }
   | { type: "SET_CREATED_AT"; payload: string }
   | { type: "SET_INSPECTION_STATUS"; payload: InspectionStatus }
   | {
@@ -115,7 +124,9 @@ const initialState: SecureNegotiationState = {
   // Data states
   formStatus: "idle",
   details: null,
-  negotiationType: "NORMAL",
+  inspectionType: null,
+  stage: null,
+  pendingResponseFrom: null,
   createdAt: null,
   inspectionStatus: null,
   currentUserId: null,
@@ -159,8 +170,14 @@ function secureNegotiationReducer(
     case "SET_DETAILS":
       return { ...state, details: action.payload };
 
-    case "SET_NEGOTIATION_TYPE":
-      return { ...state, negotiationType: action.payload };
+    case "SET_INSPECTION_TYPE":
+      return { ...state, inspectionType: action.payload };
+
+    case "SET_STAGE":
+      return { ...state, stage: action.payload };
+
+    case "SET_PENDING_RESPONSE_FROM":
+      return { ...state, pendingResponseFrom: action.payload };
 
     case "SET_CREATED_AT":
       return { ...state, createdAt: action.payload };
@@ -213,6 +230,9 @@ interface SecureNegotiationContextType {
   setInspectionStatus: (status: InspectionStatus) => void;
   setCurrentUser: (userId: string, userType: "seller" | "buyer") => void;
   refreshData: () => Promise<void>;
+  setInspectionType: (type: InspectionType) => void;
+  setStage: (stage: InspectionStage) => void;
+  setPendingResponseFrom: (from: PendingResponseFrom) => void;
 
   // Interactive Methods
   setExpiredStatus: (isExpired: boolean) => void;
@@ -223,49 +243,38 @@ interface SecureNegotiationContextType {
     isLoading: boolean,
   ) => void;
 
-  // API Methods
-  acceptOffer: (
+  // New unified API method
+  submitNegotiationAction: (
     inspectionId: string,
     userType: "seller" | "buyer",
-    inspectionDate: string,
-    inspectionTime: string,
-    dateTimeCountered?: boolean,
-  ) => Promise<any>;
-  rejectOffer: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-  ) => Promise<any>;
-  submitCounterOffer: (
-    inspectionId: string,
-    counterPrice: number,
-    userType: "seller" | "buyer",
-    inspectionDate: string,
-    inspectionTime: string,
-    dateTimeCountered?: boolean,
-  ) => Promise<any>;
-  updateInspectionDateTime: (
-    inspectionId: string,
-    date: string,
-    time: string,
-    userType: "seller" | "buyer",
-    dateTimeCountered?: boolean,
+    payload: NegotiationPayload,
   ) => Promise<any>;
 
-  // LOI Methods
-  acceptLOI: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-    newLoiFile?: File,
-  ) => Promise<any>;
-  rejectLOI: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-  ) => Promise<any>;
-  requestLOIChanges: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-    feedback: string,
-  ) => Promise<any>;
+  // Utility methods for creating payloads
+  createAcceptPayload: (
+    inspectionType: InspectionType,
+    inspectionDate?: string,
+    inspectionTime?: string,
+  ) => NegotiationPayload;
+  createRejectPayload: (
+    inspectionType: InspectionType,
+    reason?: string,
+  ) => NegotiationPayload;
+  createCounterPayload: (
+    inspectionType: InspectionType,
+    counterPrice?: number,
+    documentUrl?: string,
+    inspectionDate?: string,
+    inspectionTime?: string,
+  ) => NegotiationPayload;
+  createRequestChangesPayload: (
+    reason: string,
+    inspectionDate?: string,
+    inspectionTime?: string,
+  ) => NegotiationPayload;
+
+  // File upload method
+  uploadFile: (file: File) => Promise<string>;
 }
 
 const SecureNegotiationContext = createContext<
