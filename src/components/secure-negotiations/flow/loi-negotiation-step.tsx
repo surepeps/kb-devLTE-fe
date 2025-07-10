@@ -194,9 +194,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </h2>
         <p className="text-gray-600">
           {userType === "seller"
-            ? isBuyerWithRequestedChanges
-              ? "The buyer is updating the LOI based on your feedback."
-              : "Review the buyer's Letter of Intention for joint venture partnership."
+            ? "Review the buyer's Letter of Intention. You can accept, request changes, or reject."
             : isBuyerWithRequestedChanges
               ? "Please update your LOI based on the seller's feedback and resubmit."
               : "Your Letter of Intention is being reviewed by the seller."}
