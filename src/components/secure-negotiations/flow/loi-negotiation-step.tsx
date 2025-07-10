@@ -57,7 +57,10 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   }, [showRejectModal, showRequestChangesModal]);
 
   // Check if changes were requested and user is buyer
-  const hasRequestedChanges = details?.loiStatus === "changesRequested";
+  // Note: In the new API structure, we would check the stage and other indicators
+  const hasRequestedChanges =
+    details?.stage === "negotiation" &&
+    details?.pendingResponseFrom === "buyer";
   const isBuyerWithRequestedChanges =
     userType === "buyer" && hasRequestedChanges;
 
