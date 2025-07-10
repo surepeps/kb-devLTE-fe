@@ -22,7 +22,7 @@ const EnhancedNegotiationCancelledSummary: React.FC<
   EnhancedNegotiationCancelledSummaryProps
 > = ({ userType }) => {
   const { state } = useSecureNegotiation();
-  const { details, negotiationType, currentUserId } = state;
+  const { details, inspectionType, currentUserId } = state;
   const [feedback, setFeedback] = useState("");
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
@@ -44,7 +44,6 @@ const EnhancedNegotiationCancelledSummary: React.FC<
     setIsSubmittingFeedback(true);
 
     try {
-      
       setShowFeedbackForm(false);
       setFeedback("");
 
@@ -62,10 +61,9 @@ const EnhancedNegotiationCancelledSummary: React.FC<
     window.location.reload();
   };
 
-  const cancellationReason =
-    details?.cancellationReason || "No specific reason provided";
-  const cancelledBy = details?.cancelledBy || "Unknown";
-  const cancelledAt = details?.cancelledAt || new Date().toISOString();
+  const cancellationReason = "Negotiation was cancelled";
+  const cancelledBy = details?.pendingResponseFrom || "Unknown";
+  const cancelledAt = details?.updatedAt || new Date().toISOString();
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -152,7 +150,8 @@ const EnhancedNegotiationCancelledSummary: React.FC<
                 <div>
                   <div className="text-sm text-gray-500">Property</div>
                   <div className="font-medium text-gray-800">
-                    {details?.propertyTitle || "Property Name"}
+                    {details?.propertyId?.propertyType || "Property"} -{" "}
+                    {details?.propertyId?.briefType || "Sale"}
                   </div>
                 </div>
               </div>
@@ -161,13 +160,15 @@ const EnhancedNegotiationCancelledSummary: React.FC<
                 <FiDollarSign className="w-5 h-5 text-green-600" />
                 <div>
                   <div className="text-sm text-gray-500">
-                    {negotiationType === "LOI" ? "Type" : "Last Offer"}
+                    {inspectionType === "LOI" ? "Type" : "Last Offer"}
                   </div>
                   <div className="font-medium text-gray-800">
-                    {negotiationType === "LOI"
+                    {inspectionType === "LOI"
                       ? "Joint Venture"
                       : formatCurrency(
-                          details?.lastOffer || details?.buyOffer || 0,
+                          details?.negotiationPrice ||
+                            details?.propertyId?.price ||
+                            0,
                         )}
                   </div>
                 </div>

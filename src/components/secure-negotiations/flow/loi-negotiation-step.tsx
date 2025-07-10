@@ -26,9 +26,16 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   userType,
   onActionSelected,
 }) => {
-  const { state, acceptLOI, rejectLOI, requestLOIChanges } =
-    useSecureNegotiation();
-  const { details, loadingStates, inspectionId } = state;
+  const {
+    state,
+    submitNegotiationAction,
+    createAcceptPayload,
+    createRejectPayload,
+    createCounterPayload,
+    createRequestChangesPayload,
+    uploadFile,
+  } = useSecureNegotiation();
+  const { details, loadingStates, inspectionId, inspectionType } = state;
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
@@ -50,7 +57,10 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   }, [showRejectModal, showRequestChangesModal]);
 
   // Check if changes were requested and user is buyer
-  const hasRequestedChanges = details?.loiStatus === "changesRequested";
+  // Note: In the new API structure, we would check the stage and other indicators
+  const hasRequestedChanges =
+    details?.stage === "negotiation" &&
+    details?.pendingResponseFrom === "buyer";
   const isBuyerWithRequestedChanges =
     userType === "buyer" && hasRequestedChanges;
 
@@ -62,7 +72,15 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
   const handleAccept = async () => {
     try {
-      await acceptLOI(inspectionId!, userType);
+      // Get current inspection date/time - only include if they were changed
+      const currentDate = details?.inspectionDate
+        ? new Date(details.inspectionDate).toISOString().split("T")[0]
+        : undefined;
+      const currentTime = details?.inspectionTime;
+
+      const payload = createAcceptPayload("LOI", currentDate, currentTime);
+
+      await submitNegotiationAction(inspectionId!, userType, payload);
       onActionSelected("accept");
     } catch (error) {
       console.error("Failed to accept LOI:", error);
@@ -71,7 +89,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
   const handleReject = async () => {
     try {
-      await rejectLOI(inspectionId!, userType);
+      const payload = createRejectPayload("LOI");
+      await submitNegotiationAction(inspectionId!, userType, payload);
       setShowRejectModal(false);
       onActionSelected("reject");
     } catch (error) {
@@ -86,7 +105,19 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     }
 
     try {
-      await requestLOIChanges(inspectionId!, userType, changeRequest);
+      // Get current inspection date/time - only include if they were changed
+      const currentDate = details?.inspectionDate
+        ? new Date(details.inspectionDate).toISOString().split("T")[0]
+        : undefined;
+      const currentTime = details?.inspectionTime;
+
+      const payload = createRequestChangesPayload(
+        changeRequest,
+        currentDate,
+        currentTime,
+      );
+
+      await submitNegotiationAction(inspectionId!, userType, payload);
       setShowRequestChangesModal(false);
       setChangeRequest("");
       onActionSelected("requestChanges");
@@ -117,7 +148,17 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     }
 
     try {
-      await acceptLOI(inspectionId!, userType, newLoiFile);
+      // Upload the file first
+      const documentUrl = await uploadFile(newLoiFile);
+
+      // Create counter payload with the uploaded document URL
+      const payload = createCounterPayload(
+        "LOI",
+        undefined, // counterPrice not needed for LOI
+        documentUrl,
+      );
+
+      await submitNegotiationAction(inspectionId!, userType, payload);
       onActionSelected("accept", newLoiFile);
     } catch (error) {
       console.error("Failed to reupload LOI:", error);

@@ -20,10 +20,11 @@ const SecureSellerResponseIndex: React.FC<SecureSellerResponseIndexProps> = ({
   userId,
   inspectionId,
 }) => {
-  const { state, fetchNegotiationDetails, setInspectionStatus, goToNextPage } =
+  const { state, fetchNegotiationDetails, canNegotiate, isUserTurn } =
     useSecureNegotiation();
 
-  const { formStatus, details, negotiationType } = state;
+  const { formStatus, details, inspectionType, stage, pendingResponseFrom } =
+    state;
 
   useEffect(() => {
     if (userId && inspectionId) {
@@ -32,67 +33,48 @@ const SecureSellerResponseIndex: React.FC<SecureSellerResponseIndexProps> = ({
     }
   }, [userId, inspectionId, fetchNegotiationDetails]);
 
-  useEffect(() => {
-    if (details && formStatus === "success") {
-      const {
-        negotiationStatus,
-        buyOffer,
-        letterOfIntention,
-        inspectionStatus: existingInspectionStatus,
-      } = details;
-
-      if (
-        negotiationStatus === "negotiation_accepted" ||
-        negotiationStatus === "pending_inspection"
-      ) {
-        setInspectionStatus("accept");
-        goToNextPage("Confirm Inspection Date");
-      } else if (negotiationStatus === "offer_rejected") {
-        setInspectionStatus("reject");
-        goToNextPage("Confirm Inspection Date");
-      } else if (negotiationStatus === "negotiation_countered") {
-        setInspectionStatus("countered");
-        goToNextPage("Negotiation");
-      } else if (negotiationStatus === "cancelled") {
-        // Status will be handled by renderContent logic
-      } else if (negotiationStatus === "completed") {
-        // Status will be handled by renderContent logic
-      } else if (letterOfIntention && letterOfIntention !== "") {
-        goToNextPage("Negotiation");
-      } else if (buyOffer > 0) {
-        goToNextPage("Negotiation");
-      } else {
-        goToNextPage("Negotiation");
-      }
-    }
-  }, [details, formStatus, goToNextPage, setInspectionStatus]);
+  // No need for complex useEffect with stage-based rendering
+  // The rendering logic is now based directly on stage and pendingResponseFrom
 
   const renderContent = () => {
     if (!details) return null;
 
-    // Handle different statuses
-    const status = details.status;
+    // Stage-based rendering logic according to new specifications
+    switch (stage) {
+      case "cancelled":
+        return <EnhancedNegotiationCancelledSummary userType="seller" />;
 
-    if (status === "cancelled" || status === "rejected") {
-      return <EnhancedNegotiationCancelledSummary userType="seller" />;
+      case "completed":
+        return <EnhancedNegotiationSummary userType="seller" />;
+
+      case "negotiation":
+      case "inspection":
+        // Check if it's user's turn to respond
+        if (!isUserTurn("seller")) {
+          return (
+            <div className="text-center py-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  Awaiting Response
+                </h3>
+                <p className="text-blue-700">
+                  Waiting for {pendingResponseFrom} to respond...
+                </p>
+              </div>
+            </div>
+          );
+        }
+
+        // User's turn - show appropriate negotiation flow
+        return <TwoStepNegotiationFlow userType="seller" />;
+
+      default:
+        return (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Loading negotiation details...</p>
+          </div>
+        );
     }
-
-    if (status === "completed") {
-      return <EnhancedNegotiationSummary userType="seller" />;
-    }
-
-    // Handle LOI flow
-    // if (negotiationType === "LOI") {
-    //   return (
-    //     <EnhancedLOINegotiationPage
-    //       letterOfIntention={details.letterOfIntention}
-    //       userType="seller"
-    //     />
-    //   );
-    // }
-
-    // Handle two-step negotiation flow for normal properties
-    return <TwoStepNegotiationFlow userType="seller" />;
   };
 
   if (formStatus === "pending") {

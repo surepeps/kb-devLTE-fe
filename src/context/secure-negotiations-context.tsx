@@ -16,10 +16,15 @@ import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
-  PotentialClientData,
-  NegotiationType,
-  ContentTracker,
-} from "@/types/negotiation";
+  InspectionDetails,
+  InspectionDetailsResponse,
+  AccessValidationResponse,
+  InspectionType,
+  InspectionStage,
+  PendingResponseFrom,
+  NegotiationPayload,
+  UploadResponse,
+} from "@/types/secure-negotiation";
 import { ApiSuccessResponse } from "@/types/api-responses";
 
 // Enhanced Types for Secure Negotiations
@@ -51,8 +56,10 @@ interface SecureNegotiationState {
 
   // Data states
   formStatus: "idle" | "success" | "failed" | "pending";
-  details: any | null;
-  negotiationType: NegotiationType;
+  details: InspectionDetails | null;
+  inspectionType: InspectionType | null;
+  stage: InspectionStage | null;
+  pendingResponseFrom: PendingResponseFrom | null;
   createdAt: string | null;
   inspectionStatus: InspectionStatus | null;
   currentUserId: string | null;
@@ -84,8 +91,10 @@ type SecureNegotiationAction =
       type: "SET_FORM_STATUS";
       payload: "idle" | "success" | "failed" | "pending";
     }
-  | { type: "SET_DETAILS"; payload: any }
-  | { type: "SET_NEGOTIATION_TYPE"; payload: NegotiationType }
+  | { type: "SET_DETAILS"; payload: InspectionDetails }
+  | { type: "SET_INSPECTION_TYPE"; payload: InspectionType }
+  | { type: "SET_STAGE"; payload: InspectionStage }
+  | { type: "SET_PENDING_RESPONSE_FROM"; payload: PendingResponseFrom }
   | { type: "SET_CREATED_AT"; payload: string }
   | { type: "SET_INSPECTION_STATUS"; payload: InspectionStatus }
   | {
@@ -115,7 +124,9 @@ const initialState: SecureNegotiationState = {
   // Data states
   formStatus: "idle",
   details: null,
-  negotiationType: "NORMAL",
+  inspectionType: null,
+  stage: null,
+  pendingResponseFrom: null,
   createdAt: null,
   inspectionStatus: null,
   currentUserId: null,
@@ -159,8 +170,14 @@ function secureNegotiationReducer(
     case "SET_DETAILS":
       return { ...state, details: action.payload };
 
-    case "SET_NEGOTIATION_TYPE":
-      return { ...state, negotiationType: action.payload };
+    case "SET_INSPECTION_TYPE":
+      return { ...state, inspectionType: action.payload };
+
+    case "SET_STAGE":
+      return { ...state, stage: action.payload };
+
+    case "SET_PENDING_RESPONSE_FROM":
+      return { ...state, pendingResponseFrom: action.payload };
 
     case "SET_CREATED_AT":
       return { ...state, createdAt: action.payload };
@@ -213,6 +230,9 @@ interface SecureNegotiationContextType {
   setInspectionStatus: (status: InspectionStatus) => void;
   setCurrentUser: (userId: string, userType: "seller" | "buyer") => void;
   refreshData: () => Promise<void>;
+  setInspectionType: (type: InspectionType) => void;
+  setStage: (stage: InspectionStage) => void;
+  setPendingResponseFrom: (from: PendingResponseFrom) => void;
 
   // Interactive Methods
   setExpiredStatus: (isExpired: boolean) => void;
@@ -223,49 +243,38 @@ interface SecureNegotiationContextType {
     isLoading: boolean,
   ) => void;
 
-  // API Methods
-  acceptOffer: (
+  // New unified API method
+  submitNegotiationAction: (
     inspectionId: string,
     userType: "seller" | "buyer",
-    inspectionDate: string,
-    inspectionTime: string,
-    dateTimeCountered?: boolean,
-  ) => Promise<any>;
-  rejectOffer: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-  ) => Promise<any>;
-  submitCounterOffer: (
-    inspectionId: string,
-    counterPrice: number,
-    userType: "seller" | "buyer",
-    inspectionDate: string,
-    inspectionTime: string,
-    dateTimeCountered?: boolean,
-  ) => Promise<any>;
-  updateInspectionDateTime: (
-    inspectionId: string,
-    date: string,
-    time: string,
-    userType: "seller" | "buyer",
-    dateTimeCountered?: boolean,
+    payload: NegotiationPayload,
   ) => Promise<any>;
 
-  // LOI Methods
-  acceptLOI: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-    newLoiFile?: File,
-  ) => Promise<any>;
-  rejectLOI: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-  ) => Promise<any>;
-  requestLOIChanges: (
-    inspectionId: string,
-    userType: "seller" | "buyer",
-    feedback: string,
-  ) => Promise<any>;
+  // Utility methods for creating payloads
+  createAcceptPayload: (
+    inspectionType: InspectionType,
+    inspectionDate?: string,
+    inspectionTime?: string,
+  ) => NegotiationPayload;
+  createRejectPayload: (
+    inspectionType: InspectionType,
+    reason?: string,
+  ) => NegotiationPayload;
+  createCounterPayload: (
+    inspectionType: InspectionType,
+    counterPrice?: number,
+    documentUrl?: string,
+    inspectionDate?: string,
+    inspectionTime?: string,
+  ) => NegotiationPayload;
+  createRequestChangesPayload: (
+    reason: string,
+    inspectionDate?: string,
+    inspectionTime?: string,
+  ) => NegotiationPayload;
+
+  // File upload method
+  uploadFile: (file: File) => Promise<string>;
 }
 
 const SecureNegotiationContext = createContext<
@@ -321,34 +330,37 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: "SET_FORM_STATUS", payload: "pending" });
 
       try {
-        const response = await GET_REQUEST(
+        const response: InspectionDetailsResponse = await GET_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
         );
 
         if (response?.success) {
-          dispatch({ type: "SET_DETAILS", payload: response.data });
+          const details = response.data;
+          dispatch({ type: "SET_DETAILS", payload: details });
           dispatch({ type: "SET_FORM_STATUS", payload: "success" });
 
-          // Set negotiation type based on letterOfIntention
-          const negotiationType = response.data.letterOfIntention
-            ? "LOI"
-            : "Normal";
+          // Set inspection type, stage, and pending response from new API structure
           dispatch({
-            type: "SET_NEGOTIATION_TYPE",
-            payload: negotiationType === "Normal" ? "NORMAL" : negotiationType,
+            type: "SET_INSPECTION_TYPE",
+            payload: details.inspectionType,
+          });
+          dispatch({ type: "SET_STAGE", payload: details.stage });
+          dispatch({
+            type: "SET_PENDING_RESPONSE_FROM",
+            payload: details.pendingResponseFrom,
           });
 
           // Set created date
-          if (response.data.createdAt) {
+          if (details.createdAt) {
             dispatch({
               type: "SET_CREATED_AT",
-              payload: response.data.createdAt,
+              payload: details.createdAt,
             });
           }
 
           // Check if inspection has expired (48 hours)
-          if (response.data.updatedAt) {
-            const updateTime = new Date(response.data.updatedAt).getTime();
+          if (details.updatedAt) {
+            const updateTime = new Date(details.updatedAt).getTime();
             const now = new Date().getTime();
             const elapsed = now - updateTime;
             const fortyEightHours = 48 * 60 * 60 * 1000;
@@ -390,6 +402,18 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
+  const setInspectionType = useCallback((type: InspectionType) => {
+    dispatch({ type: "SET_INSPECTION_TYPE", payload: type });
+  }, []);
+
+  const setStage = useCallback((stage: InspectionStage) => {
+    dispatch({ type: "SET_STAGE", payload: stage });
+  }, []);
+
+  const setPendingResponseFrom = useCallback((from: PendingResponseFrom) => {
+    dispatch({ type: "SET_PENDING_RESPONSE_FROM", payload: from });
+  }, []);
+
   const refreshData = useCallback(async () => {
     if (state.userId && state.inspectionId && state.currentUserType) {
       await fetchNegotiationDetails(
@@ -410,6 +434,206 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "SET_EXPIRED_STATUS", payload: isExpired });
   }, []);
 
+  // Loading Methods
+  const setLoading = useCallback(
+    (
+      type: keyof SecureNegotiationState["loadingStates"],
+      isLoading: boolean,
+    ) => {
+      dispatch({ type: "SET_LOADING", payload: { type, isLoading } });
+    },
+    [],
+  );
+
+  // File upload method
+  const uploadFile = useCallback(async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response: UploadResponse = await POST_REQUEST(
+      `${URLS.BASE + URLS.uploadImg}`,
+      formData,
+      { "Content-Type": "multipart/form-data" },
+    );
+
+    if (response?.success) {
+      return response.data.url;
+    }
+    throw new Error("Failed to upload file");
+  }, []);
+
+  // Payload creation utilities
+  const createAcceptPayload = useCallback(
+    (
+      inspectionType: InspectionType,
+      inspectionDate?: string,
+      inspectionTime?: string,
+    ): NegotiationPayload => {
+      const payload: any = {
+        action: "accept",
+        inspectionType,
+      };
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+
+      return payload;
+    },
+    [],
+  );
+
+  const createRejectPayload = useCallback(
+    (inspectionType: InspectionType, reason?: string): NegotiationPayload => {
+      const payload: any = {
+        action: "reject",
+        inspectionType,
+      };
+
+      if (reason) {
+        if (inspectionType === "LOI") {
+          payload.rejectionReason = reason;
+        } else {
+          payload.reason = reason;
+        }
+      }
+
+      return payload;
+    },
+    [],
+  );
+
+  const createCounterPayload = useCallback(
+    (
+      inspectionType: InspectionType,
+      counterPrice?: number,
+      documentUrl?: string,
+      inspectionDate?: string,
+      inspectionTime?: string,
+    ): NegotiationPayload => {
+      const payload: any = {
+        action: "counter",
+        inspectionType,
+      };
+
+      if (inspectionType === "price" && counterPrice) {
+        payload.counterPrice = counterPrice;
+      }
+
+      if (inspectionType === "LOI" && documentUrl) {
+        payload.documentUrl = documentUrl;
+      }
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+
+      return payload;
+    },
+    [],
+  );
+
+  const createRequestChangesPayload = useCallback(
+    (
+      reason: string,
+      inspectionDate?: string,
+      inspectionTime?: string,
+    ): NegotiationPayload => {
+      const payload: any = {
+        action: "request_changes",
+        inspectionType: "LOI",
+        reason,
+      };
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+
+      return payload;
+    },
+    [],
+  );
+
+  // Main unified negotiation action method
+  const submitNegotiationAction = useCallback(
+    async (
+      inspectionId: string,
+      userType: "seller" | "buyer",
+      payload: NegotiationPayload,
+    ) => {
+      const loadingType =
+        payload.action === "accept"
+          ? "accepting"
+          : payload.action === "reject"
+            ? "rejecting"
+            : payload.action === "counter"
+              ? "countering"
+              : "submitting";
+
+      dispatch({
+        type: "SET_LOADING",
+        payload: { type: loadingType, isLoading: true },
+      });
+
+      try {
+        // Determine the correct endpoint based on action and inspection type
+        let endpoint = `${URLS.BASE + URLS.getOneInspection}/${inspectionId}`;
+
+        if (payload.inspectionType === "price") {
+          endpoint += `/${payload.action}`;
+        } else if (payload.inspectionType === "LOI") {
+          if (payload.action === "request_changes") {
+            endpoint += "/loi/requestChanges";
+          } else {
+            endpoint += `/loi/${payload.action}`;
+          }
+        }
+
+        const response = await PUT_REQUEST(endpoint, {
+          userType,
+          ...payload,
+        });
+
+        if (response?.success) {
+          // Refetch data to get updated state
+          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
+        }
+
+        return response;
+      } catch (error) {
+        console.error(
+          `Failed to ${payload.action} ${payload.inspectionType}:`,
+          error,
+        );
+        throw error;
+      } finally {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { type: loadingType, isLoading: false },
+        });
+      }
+    },
+    [state.userId, fetchNegotiationDetails],
+  );
+
+  // Helper method to determine if it's the user's turn to respond
+  const isUserTurn = useCallback(
+    (userType: "seller" | "buyer") => {
+      return state.pendingResponseFrom === userType;
+    },
+    [state.pendingResponseFrom],
+  );
+
+  // Helper method to check if negotiation can proceed
+  const canNegotiate = useCallback(
+    (userType: "seller" | "buyer") => {
+      return (
+        state.stage === "negotiation" &&
+        state.pendingResponseFrom === userType &&
+        !state.isExpired
+      );
+    },
+    [state.stage, state.pendingResponseFrom, state.isExpired],
+  );
+
+  // Reopen inspection method (keeping for backward compatibility)
   const reopenInspection = useCallback(async () => {
     if (state.userId && state.inspectionId && state.currentUserType) {
       try {
@@ -444,361 +668,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     setExpiredStatus,
   ]);
 
-  const enableRealTime = useCallback(() => {
-    dispatch({ type: "SET_REAL_TIME_STATUS", payload: true });
-    // Removed auto-polling - users will use refresh button instead
-  }, []);
-
-  const disableRealTime = useCallback(() => {
-    dispatch({ type: "SET_REAL_TIME_STATUS", payload: false });
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
-
-  // Navigation Methods
-  const goToNextPage = useCallback((page: ContentTracker) => {
-    dispatch({ type: "SET_CONTENT_TRACKER", payload: page });
-  }, []);
-
-  const toggleInteractiveMode = useCallback(() => {
-    dispatch({ type: "TOGGLE_INTERACTIVE_MODE" });
-  }, []);
-
-  // Modal Methods
-  const toggleSubmitOfferModal = useCallback(() => {
-    dispatch({ type: "TOGGLE_SUBMIT_OFFER_MODAL" });
-  }, []);
-
-  const toggleAcceptRejectModal = useCallback(() => {
-    dispatch({ type: "TOGGLE_ACCEPT_REJECT_MODAL" });
-  }, []);
-
-  const toggleMessageModal = useCallback(() => {
-    dispatch({ type: "TOGGLE_MESSAGE_MODAL" });
-  }, []);
-
-  const setOfferPrice = useCallback((price: number) => {
-    dispatch({ type: "SET_OFFER_PRICE", payload: price });
-  }, []);
-
-  const setCounterOffer = useCallback((price: number) => {
-    dispatch({ type: "SET_COUNTER_OFFER", payload: price });
-  }, []);
-
-  // Loading Methods
-  const setLoading = useCallback(
-    (
-      type: keyof SecureNegotiationState["loadingStates"],
-      isLoading: boolean,
-    ) => {
-      dispatch({ type: "SET_LOADING", payload: { type, isLoading } });
-    },
-    [],
-  );
-
-  // API Action Methods
-  const acceptOffer = useCallback(
-    async (
-      inspectionId: string,
-      userType: "seller" | "buyer",
-      inspectionDate: string,
-      inspectionTime: string,
-      dateTimeCountered: boolean = false,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "accepting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/accept`,
-          {
-            userType,
-            action: "accept",
-            inspectionDate,
-            inspectionTime,
-            dateTimeCountered,
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to accept offer:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "accepting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const rejectOffer = useCallback(
-    async (inspectionId: string, userType: "seller" | "buyer") => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "rejecting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/reject`,
-          {
-            userType,
-            action: "reject",
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to reject offer:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "rejecting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const submitCounterOffer = useCallback(
-    async (
-      inspectionId: string,
-      counterPrice: number,
-      userType: "seller" | "buyer",
-      inspectionDate: string,
-      inspectionTime: string,
-      dateTimeCountered: boolean = false,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "countering", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/counter`,
-          {
-            userType,
-            action: "counter",
-            counterPrice,
-            inspectionDate,
-            inspectionTime,
-            dateTimeCountered,
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to submit counter offer:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "countering", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const updateInspectionDateTime = useCallback(
-    async (
-      inspectionId: string,
-      date: string,
-      time: string,
-      userType: "seller" | "buyer",
-      dateTimeCountered: boolean = false,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "submitting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/schedule`,
-          {
-            userType,
-            inspectionDate: date,
-            inspectionTime: time,
-            dateTimeCountered,
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to update inspection date/time:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "submitting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  // LOI Methods
-  const acceptLOI = useCallback(
-    async (
-      inspectionId: string,
-      userType: "seller" | "buyer",
-      newLoiFile?: File,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "accepting", isLoading: true },
-      });
-
-      try {
-        let loiUrl = null;
-
-        // If buyer is uploading a new LOI file
-        if (newLoiFile) {
-          // Upload the new LOI file first
-          const formData = new FormData();
-          formData.append("file", newLoiFile);
-
-          const uploadResponse = await POST_REQUEST(
-            `${URLS.BASE + URLS.uploadImg}`,
-            formData,
-            { "Content-Type": "multipart/form-data" },
-          );
-
-          if (uploadResponse?.success) {
-            loiUrl = uploadResponse.data.url;
-          }
-        }
-
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/loi/accept`,
-          {
-            userType,
-            action: "accept",
-            newLoiUrl: loiUrl,
-          },
-        );
-
-        if (response?.success) {
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to accept LOI:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "accepting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const rejectLOI = useCallback(
-    async (inspectionId: string, userType: "seller" | "buyer") => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "rejecting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/loi/reject`,
-          {
-            userType,
-            action: "reject",
-          },
-        );
-
-        if (response?.success) {
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to reject LOI:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "rejecting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
-  const requestLOIChanges = useCallback(
-    async (
-      inspectionId: string,
-      userType: "seller" | "buyer",
-      feedback: string,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "submitting", isLoading: true },
-      });
-
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/loi/requestChanges`,
-          {
-            userType,
-            action: "requestChanges",
-            feedback,
-          },
-        );
-
-        if (response?.success) {
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to request LOI changes:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "submitting", isLoading: false },
-        });
-      }
-    },
-    [state.userId, fetchNegotiationDetails],
-  );
-
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -820,15 +689,18 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       refreshData,
       setExpiredStatus,
       reopenInspection,
-      goToNextPage,
       setLoading,
-      acceptOffer,
-      rejectOffer,
-      submitCounterOffer,
-      updateInspectionDateTime,
-      acceptLOI,
-      rejectLOI,
-      requestLOIChanges,
+      setInspectionType,
+      setStage,
+      setPendingResponseFrom,
+      submitNegotiationAction,
+      createAcceptPayload,
+      createRejectPayload,
+      createCounterPayload,
+      createRequestChangesPayload,
+      uploadFile,
+      isUserTurn,
+      canNegotiate,
     }),
     [
       state,
@@ -841,15 +713,18 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       refreshData,
       setExpiredStatus,
       reopenInspection,
-      goToNextPage,
       setLoading,
-      acceptOffer,
-      rejectOffer,
-      submitCounterOffer,
-      updateInspectionDateTime,
-      acceptLOI,
-      rejectLOI,
-      requestLOIChanges,
+      setInspectionType,
+      setStage,
+      setPendingResponseFrom,
+      submitNegotiationAction,
+      createAcceptPayload,
+      createRejectPayload,
+      createCounterPayload,
+      createRequestChangesPayload,
+      uploadFile,
+      isUserTurn,
+      canNegotiate,
     ],
   );
 

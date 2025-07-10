@@ -11,46 +11,15 @@ import {
   FiChevronUp,
 } from "react-icons/fi";
 
+import type { InspectionDetails } from "@/types/secure-negotiation";
+
 interface PropertyDetailsProps {
-  propertyData: {
-    propertyId: {
-      _id: string;
-      propertyType: string;
-      briefType: string;
-      price: number;
-      location: {
-        state: string;
-        localGovernment: string;
-        area: string;
-      };
-      thumbnail?: string;
-    };
-    inspectionDate: string;
-    inspectionTime: string;
-    status: string;
-    requestedBy: {
-      fullName: string;
-      email: string;
-      phoneNumber: string;
-    };
-    owner: {
-      firstName: string;
-      lastName: string;
-      email: string;
-      phoneNumber: string;
-      userType: string;
-    };
-    createdAt: string;
-  };
+  propertyData: InspectionDetails;
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
-  const {
-    propertyId,
-    inspectionDate,
-    inspectionTime,
-    createdAt,
-  } = propertyData;
+  const { propertyId, inspectionDate, inspectionTime, createdAt } =
+    propertyData;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatCurrency = (amount: number) => {
