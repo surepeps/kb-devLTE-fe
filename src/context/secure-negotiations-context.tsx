@@ -118,28 +118,12 @@ const initialState: SecureNegotiationState = {
   details: null,
   negotiationType: "NORMAL",
   createdAt: null,
-  dateTimeObj: { selectedDate: "", selectedTime: "" },
-  counterDateTimeObj: { selectedDate: "", selectedTime: "" },
   inspectionStatus: null,
-  inspectionDateStatus: null,
   currentUserId: null,
   currentUserType: null,
 
   // Interactive Features
-  isRealTimeEnabled: false,
   isExpired: false,
-
-  // UI states
-  contentTracker: "Negotiation",
-  isNegotiated: false,
-  isInteractive: true,
-
-  // Modal states
-  showSubmitOfferModal: false,
-  showAcceptRejectModal: false,
-  showMessageModal: false,
-  offerPrice: undefined,
-  counterOffer: undefined,
 
   // Loading states
   loadingStates: {
@@ -148,7 +132,6 @@ const initialState: SecureNegotiationState = {
     rejecting: false,
     countering: false,
     loading: false,
-    sendingMessage: false,
   },
 };
 
