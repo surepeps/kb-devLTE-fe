@@ -349,6 +349,22 @@ interface SecureNegotiationContextType {
     userType: "seller" | "buyer",
     dateTimeCountered?: boolean,
   ) => Promise<any>;
+
+  // LOI Methods
+  acceptLOI: (
+    inspectionId: string,
+    userType: "seller" | "buyer",
+    newLoiFile?: File,
+  ) => Promise<any>;
+  rejectLOI: (
+    inspectionId: string,
+    userType: "seller" | "buyer",
+  ) => Promise<any>;
+  requestLOIChanges: (
+    inspectionId: string,
+    userType: "seller" | "buyer",
+    feedback: string,
+  ) => Promise<any>;
 }
 
 const SecureNegotiationContext = createContext<
