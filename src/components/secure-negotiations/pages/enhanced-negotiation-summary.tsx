@@ -45,7 +45,7 @@ const EnhancedNegotiationSummary: React.FC<EnhancedNegotiationSummaryProps> = ({
 
   const generateSummaryDocument = () => {
     const summaryData = {
-      negotiationType,
+      negotiationType: inspectionType,
       userType,
       finalPrice: details?.finalPrice || details?.buyOffer,
       propertyTitle: details?.propertyTitle,
