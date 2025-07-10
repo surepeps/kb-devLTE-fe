@@ -628,21 +628,45 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
-  const rejectOffer = useCallback(
-    async (inspectionId: string, userType: "seller" | "buyer") => {
+  // Main unified negotiation action method
+  const submitNegotiationAction = useCallback(
+    async (
+      inspectionId: string,
+      userType: "seller" | "buyer",
+      payload: NegotiationPayload,
+    ) => {
+      const loadingType =
+        payload.action === "accept"
+          ? "accepting"
+          : payload.action === "reject"
+            ? "rejecting"
+            : payload.action === "counter"
+              ? "countering"
+              : "submitting";
+
       dispatch({
         type: "SET_LOADING",
-        payload: { type: "rejecting", isLoading: true },
+        payload: { type: loadingType, isLoading: true },
       });
 
       try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/reject`,
-          {
-            userType,
-            action: "reject",
-          },
-        );
+        // Determine the correct endpoint based on action and inspection type
+        let endpoint = `${URLS.BASE + URLS.getOneInspection}/${inspectionId}`;
+
+        if (payload.inspectionType === "price") {
+          endpoint += `/${payload.action}`;
+        } else if (payload.inspectionType === "LOI") {
+          if (payload.action === "request_changes") {
+            endpoint += "/loi/requestChanges";
+          } else {
+            endpoint += `/loi/${payload.action}`;
+          }
+        }
+
+        const response = await PUT_REQUEST(endpoint, {
+          userType,
+          ...payload,
+        });
 
         if (response?.success) {
           // Refetch data to get updated state
@@ -651,12 +675,15 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
         return response;
       } catch (error) {
-        console.error("Failed to reject offer:", error);
+        console.error(
+          `Failed to ${payload.action} ${payload.inspectionType}:`,
+          error,
+        );
         throw error;
       } finally {
         dispatch({
           type: "SET_LOADING",
-          payload: { type: "rejecting", isLoading: false },
+          payload: { type: loadingType, isLoading: false },
         });
       }
     },
