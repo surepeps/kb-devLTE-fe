@@ -30,7 +30,8 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   const hasLOI = inspectionType === "LOI" && details?.letterOfIntention;
   const hasPriceNegotiation =
     inspectionType === "price" &&
-    (details?.negotiationPrice > 0 || details?.isNegotiating);
+    ((details?.negotiationPrice && details.negotiationPrice > 0) ||
+      details?.isNegotiating);
 
   // Check if user can negotiate (it's their turn and negotiation is active)
   const userCanNegotiate = canNegotiate(userType);
@@ -56,12 +57,14 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     newLoiFile?: File,
   ) => {
     if (action === "reject") {
-      // End the flow for rejection
-      setNegotiationAction({ type: action });
+      // End the flow for rejection - don't set negotiation action for reject
       return;
     }
 
-    setNegotiationAction({ type: action, loiFile: newLoiFile });
+    setNegotiationAction({
+      type: action as "accept" | "requestChanges",
+      loiFile: newLoiFile,
+    });
 
     // Move to price negotiation if available, otherwise inspection
     if (hasPriceNegotiation) {
@@ -84,7 +87,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     return (
       <AwaitingResponseDisplay
         userType={userType}
-        pendingResponseFrom={pendingResponseFrom}
+        pendingResponseFrom={pendingResponseFrom || "admin"}
         timeRemaining=""
       />
     );
@@ -112,13 +115,13 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
 
   const canGoBackToPrice =
     currentStep === "inspection" &&
-    details?.counterOffer &&
-    details.counterOffer > 0;
+    details?.sellerCounterOffer &&
+    details.sellerCounterOffer > 0;
 
   const canGoBackToLOI =
     (currentStep === "price" || currentStep === "inspection") &&
     hasLOI &&
-    details?.loiStatus !== "rejected";
+    details?.stage !== "cancelled";
 
   const handleGoBackToPrice = () => {
     if (canGoBackToPrice) {
@@ -222,7 +225,12 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
           >
             <InspectionDateTimeStep
               userType={userType}
-              negotiationAction={negotiationAction}
+              negotiationAction={
+                negotiationAction as {
+                  type: "accept" | "counter";
+                  counterPrice?: number;
+                }
+              }
             />
           </motion.div>
         )}
