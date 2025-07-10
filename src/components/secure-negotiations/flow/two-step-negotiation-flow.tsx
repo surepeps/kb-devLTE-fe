@@ -15,8 +15,8 @@ interface TwoStepNegotiationFlowProps {
 const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   userType,
 }) => {
-  const { state } = useSecureNegotiation();
-  const { details } = state;
+  const { state, canNegotiate } = useSecureNegotiation();
+  const { details, inspectionType, stage, pendingResponseFrom } = state;
   const [currentStep, setCurrentStep] = useState<
     "loi" | "price" | "inspection"
   >("loi");
@@ -26,25 +26,30 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     loiFile?: File;
   } | null>(null);
 
-  // Determine which steps are needed
-  const hasLOI =
-    details?.letterOfIntention && details.letterOfIntention.trim().length > 0;
+  // Determine which steps are needed based on inspectionType
+  const hasLOI = inspectionType === "LOI" && details?.letterOfIntention;
   const hasPriceNegotiation =
-    details?.negotiationPrice > 0 || details?.isNegotiating;
+    inspectionType === "price" &&
+    (details?.negotiationPrice > 0 || details?.isNegotiating);
 
-  // Determine if user is waiting for response
-  const isAwaitingResponse = details?.pendingResponseFrom !== userType;
+  // Check if user can negotiate (it's their turn and negotiation is active)
+  const userCanNegotiate = canNegotiate(userType);
+  const isAwaitingResponse = pendingResponseFrom !== userType;
 
   useEffect(() => {
-    // Determine starting step based on available data
-    if (hasLOI) {
-      setCurrentStep("loi");
-    } else if (hasPriceNegotiation) {
-      setCurrentStep("price");
-    } else {
+    // Determine starting step based on stage and inspection type
+    if (stage === "negotiation") {
+      if (hasLOI) {
+        setCurrentStep("loi");
+      } else if (hasPriceNegotiation) {
+        setCurrentStep("price");
+      } else {
+        setCurrentStep("inspection");
+      }
+    } else if (stage === "inspection") {
       setCurrentStep("inspection");
     }
-  }, [hasLOI, hasPriceNegotiation]);
+  }, [hasLOI, hasPriceNegotiation, stage]);
 
   const handleLOIComplete = (
     action: "accept" | "reject" | "requestChanges",
@@ -79,9 +84,29 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     return (
       <AwaitingResponseDisplay
         userType={userType}
-        pendingResponseFrom={details?.pendingResponseFrom}
+        pendingResponseFrom={pendingResponseFrom}
         timeRemaining=""
       />
+    );
+  }
+
+  // If user cannot negotiate, show appropriate message
+  if (!userCanNegotiate) {
+    return (
+      <div className="text-center py-8">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Negotiation Not Available
+          </h3>
+          <p className="text-gray-700">
+            {stage === "completed"
+              ? "This negotiation has been completed."
+              : stage === "cancelled"
+                ? "This negotiation has been cancelled."
+                : "Negotiation is not available at this time."}
+          </p>
+        </div>
+      </div>
     );
   }
 
