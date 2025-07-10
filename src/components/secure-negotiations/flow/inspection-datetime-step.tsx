@@ -25,8 +25,12 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   userType,
   negotiationAction,
 }) => {
-  const { state, acceptOffer, submitCounterOffer, updateInspectionDateTime } =
-    useSecureNegotiation();
+  const {
+    state,
+    submitNegotiationAction,
+    createAcceptPayload,
+    createCounterPayload,
+  } = useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
   const [newDate, setNewDate] = useState(details?.inspectionDate || "");
