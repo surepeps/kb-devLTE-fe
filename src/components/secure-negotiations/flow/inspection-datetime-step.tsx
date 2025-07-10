@@ -32,7 +32,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     createCounterPayload,
   } = useSecureNegotiation();
 
-  const { details, loadingStates, inspectionId } = state;
+  const { details, loadingStates, inspectionId, inspectionType } = state;
   const [newDate, setNewDate] = useState(details?.inspectionDate || "");
   const [newTime, setNewTime] = useState(details?.inspectionTime || "");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
@@ -164,37 +164,35 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       const finalTime = newTime || currentTime;
 
       if (negotiationAction) {
-        // Submit final negotiation action with inspection date/time and change detection
+        // Submit final negotiation action with inspection date/time
         if (negotiationAction.type === "accept") {
-          await acceptOffer(
-            inspectionId!,
-            userType,
-            finalDate,
-            finalTime,
-            dateTimeCountered,
+          const payload = createAcceptPayload(
+            inspectionType!,
+            isDateChanged ? finalDate : undefined,
+            isTimeChanged ? finalTime : undefined,
           );
+          await submitNegotiationAction(inspectionId!, userType, payload);
         } else if (
           negotiationAction.type === "counter" &&
           negotiationAction.counterPrice
         ) {
-          await submitCounterOffer(
-            inspectionId!,
+          const payload = createCounterPayload(
+            inspectionType!,
             negotiationAction.counterPrice,
-            userType,
-            finalDate,
-            finalTime,
-            dateTimeCountered,
+            undefined, // documentUrl not needed for price counter
+            isDateChanged ? finalDate : undefined,
+            isTimeChanged ? finalTime : undefined,
           );
+          await submitNegotiationAction(inspectionId!, userType, payload);
         }
       } else {
-        // Just update the inspection date/time
-        await updateInspectionDateTime(
-          inspectionId!,
-          finalDate,
-          finalTime,
-          userType,
-          dateTimeCountered,
+        // Just update the inspection date/time - create an accept payload with only date/time changes
+        const payload = createAcceptPayload(
+          inspectionType!,
+          isDateChanged ? finalDate : undefined,
+          isTimeChanged ? finalTime : undefined,
         );
+        await submitNegotiationAction(inspectionId!, userType, payload);
       }
     } catch (error) {
       console.error("Failed to confirm inspection date/time:", error);
@@ -214,35 +212,29 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       if (negotiationAction) {
         // Submit final negotiation action with new inspection date/time
         if (negotiationAction.type === "accept") {
-          await acceptOffer(
-            inspectionId!,
-            userType,
+          const payload = createAcceptPayload(
+            inspectionType!,
             newDate,
             newTime,
-            dateTimeCountered,
           );
+          await submitNegotiationAction(inspectionId!, userType, payload);
         } else if (
           negotiationAction.type === "counter" &&
           negotiationAction.counterPrice
         ) {
-          await submitCounterOffer(
-            inspectionId!,
+          const payload = createCounterPayload(
+            inspectionType!,
             negotiationAction.counterPrice,
-            userType,
+            undefined, // documentUrl not needed for price counter
             newDate,
             newTime,
-            dateTimeCountered,
           );
+          await submitNegotiationAction(inspectionId!, userType, payload);
         }
       } else {
         // Just update the inspection date/time
-        await updateInspectionDateTime(
-          inspectionId!,
-          newDate,
-          newTime,
-          userType,
-          dateTimeCountered,
-        );
+        const payload = createAcceptPayload(inspectionType!, newDate, newTime);
+        await submitNegotiationAction(inspectionId!, userType, payload);
       }
 
       setShowUpdateForm(false);
