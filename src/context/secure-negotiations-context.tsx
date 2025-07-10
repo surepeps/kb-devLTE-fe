@@ -12,7 +12,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
@@ -472,6 +472,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       const payload: any = {
         action: "accept",
         inspectionType,
+        userType: state.currentUserType,
       };
 
       if (inspectionDate) payload.inspectionDate = inspectionDate;
@@ -479,7 +480,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       return payload;
     },
-    [],
+    [state.currentUserType],
   );
 
   const createRejectPayload = useCallback(
@@ -487,19 +488,16 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       const payload: any = {
         action: "reject",
         inspectionType,
+        userType: state.currentUserType,
       };
 
       if (reason) {
-        if (inspectionType === "LOI") {
-          payload.rejectionReason = reason;
-        } else {
-          payload.reason = reason;
-        }
+        payload.rejectionReason = reason;
       }
 
       return payload;
     },
-    [],
+    [state.currentUserType],
   );
 
   const createCounterPayload = useCallback(
@@ -513,6 +511,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       const payload: any = {
         action: "counter",
         inspectionType,
+        userType: state.currentUserType,
       };
 
       if (inspectionType === "price" && counterPrice) {
@@ -528,7 +527,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       return payload;
     },
-    [],
+    [state.currentUserType],
   );
 
   const createRequestChangesPayload = useCallback(
@@ -540,6 +539,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       const payload: any = {
         action: "request_changes",
         inspectionType: "LOI",
+        userType: state.currentUserType,
         reason,
       };
 
@@ -548,7 +548,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       return payload;
     },
-    [],
+    [state.currentUserType],
   );
 
   // Main unified negotiation action method
@@ -573,23 +573,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       try {
-        // Determine the correct endpoint based on action and inspection type
-        let endpoint = `${URLS.BASE + URLS.getOneInspection}/${inspectionId}`;
+        // Use the new API endpoint format: /inspections/:inspectionId/actions/:userId
+        const endpoint = `${URLS.BASE}/inspections/${inspectionId}/actions/${state.userId}`;
 
-        if (payload.inspectionType === "price") {
-          endpoint += `/${payload.action}`;
-        } else if (payload.inspectionType === "LOI") {
-          if (payload.action === "request_changes") {
-            endpoint += "/loi/requestChanges";
-          } else {
-            endpoint += `/loi/${payload.action}`;
-          }
-        }
-
-        const response = await PUT_REQUEST(endpoint, {
-          userType,
-          ...payload,
-        });
+        const response = await POST_REQUEST(endpoint, payload);
 
         if (response?.success) {
           // Refetch data to get updated state
