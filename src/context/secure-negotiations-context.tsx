@@ -275,6 +275,11 @@ interface SecureNegotiationContextType {
 
   // File upload method
   uploadFile: (file: File) => Promise<string>;
+
+  // Helper methods
+  isUserTurn: (userType: "seller" | "buyer") => boolean;
+  canNegotiate: (userType: "seller" | "buyer") => boolean;
+  reopenInspection: () => Promise<any>;
 }
 
 const SecureNegotiationContext = createContext<
