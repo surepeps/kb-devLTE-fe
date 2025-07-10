@@ -300,12 +300,12 @@ This summary serves as confirmation of the negotiated terms.
               </div>
               <div>
                 <div className="font-medium text-gray-800">
-                  {negotiationType === "LOI"
+                  {inspectionType === "LOI"
                     ? "Legal Documentation"
                     : "Final Agreement"}
                 </div>
                 <div className="text-sm text-gray-600">
-                  {negotiationType === "LOI"
+                  {inspectionType === "LOI"
                     ? "Legal teams will prepare the joint venture agreement based on the LOI terms."
                     : "Proceed with the purchase agreement and legal documentation."}
                 </div>
