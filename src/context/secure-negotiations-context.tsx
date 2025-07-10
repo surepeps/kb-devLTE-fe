@@ -468,49 +468,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     setExpiredStatus,
   ]);
 
-  const enableRealTime = useCallback(() => {
-    dispatch({ type: "SET_REAL_TIME_STATUS", payload: true });
-    // Removed auto-polling - users will use refresh button instead
-  }, []);
-
-  const disableRealTime = useCallback(() => {
-    dispatch({ type: "SET_REAL_TIME_STATUS", payload: false });
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
-
-  // Navigation Methods
-  const goToNextPage = useCallback((page: ContentTracker) => {
-    dispatch({ type: "SET_CONTENT_TRACKER", payload: page });
-  }, []);
-
-  const toggleInteractiveMode = useCallback(() => {
-    dispatch({ type: "TOGGLE_INTERACTIVE_MODE" });
-  }, []);
-
-  // Modal Methods
-  const toggleSubmitOfferModal = useCallback(() => {
-    dispatch({ type: "TOGGLE_SUBMIT_OFFER_MODAL" });
-  }, []);
-
-  const toggleAcceptRejectModal = useCallback(() => {
-    dispatch({ type: "TOGGLE_ACCEPT_REJECT_MODAL" });
-  }, []);
-
-  const toggleMessageModal = useCallback(() => {
-    dispatch({ type: "TOGGLE_MESSAGE_MODAL" });
-  }, []);
-
-  const setOfferPrice = useCallback((price: number) => {
-    dispatch({ type: "SET_OFFER_PRICE", payload: price });
-  }, []);
-
-  const setCounterOffer = useCallback((price: number) => {
-    dispatch({ type: "SET_COUNTER_OFFER", payload: price });
-  }, []);
-
   // Loading Methods
   const setLoading = useCallback(
     (
