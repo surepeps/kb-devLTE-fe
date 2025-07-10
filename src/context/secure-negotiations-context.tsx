@@ -18,7 +18,6 @@ import Cookies from "js-cookie";
 import type {
   PotentialClientData,
   NegotiationType,
-  DateTimeObj,
   ContentTracker,
 } from "@/types/negotiation";
 import { ApiSuccessResponse } from "@/types/api-responses";
