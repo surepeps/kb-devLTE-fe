@@ -28,8 +28,9 @@ const EnhancedInspectionDateConfirmation: React.FC<
 
   const proposedDate = details?.inspectionDate || "";
   const proposedTime = details?.inspectionTime || "";
-  const propertyAddress =
-    details?.propertyAddress || "Property address not specified";
+  const propertyAddress = details?.propertyId?.location
+    ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
+    : "Property address not specified";
 
   const handleConfirmInspection = async () => {
     try {
