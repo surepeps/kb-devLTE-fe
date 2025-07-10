@@ -55,9 +55,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     userType === "buyer" && hasRequestedChanges;
 
   useEffect(() => {
-    if (isBuyerWithRequestedChanges) {
-      setIsReuploadMode(true);
-    }
+    setIsReuploadMode(isBuyerWithRequestedChanges);
   }, [isBuyerWithRequestedChanges]);
 
   const letterOfIntention = details?.letterOfIntention || "";
