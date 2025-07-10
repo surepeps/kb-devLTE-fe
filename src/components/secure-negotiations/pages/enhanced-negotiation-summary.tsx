@@ -190,12 +190,12 @@ This summary serves as confirmation of the negotiated terms.
                   <FiDollarSign className="w-5 h-5 text-green-600" />
                   <div>
                     <div className="text-sm text-gray-500">
-                      {negotiationType === "LOI"
+                      {inspectionType === "LOI"
                         ? "Partnership Type"
                         : "Final Price"}
                     </div>
                     <div className="font-medium text-gray-800">
-                      {negotiationType === "LOI"
+                      {inspectionType === "LOI"
                         ? "Joint Venture"
                         : formatCurrency(
                             details?.finalPrice || details?.buyOffer || 0,
