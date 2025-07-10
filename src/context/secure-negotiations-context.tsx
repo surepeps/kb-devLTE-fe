@@ -629,7 +629,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
   const reopenInspection = useCallback(async () => {
     if (state.userId && state.inspectionId && state.currentUserType) {
       try {
-        const response = await PUT_REQUEST(
+        const response = await POST_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${state.inspectionId}/reopen`,
           {
             userType: state.currentUserType,
