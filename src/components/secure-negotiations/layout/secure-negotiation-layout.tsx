@@ -16,14 +16,12 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
   userType,
 }) => {
   const { state, refreshData, reopenInspection } = useSecureNegotiation();
-  const { details, loadingStates, isExpired } = state;
+  const { details, loadingStates, isExpired, stage, pendingResponseFrom } =
+    state;
   const [isReopening, setIsReopening] = useState(false);
 
   const getStatusMessage = () => {
     if (!details) return "";
-
-    const pendingResponseFrom = details.pendingResponseFrom;
-    const stage = details.stage;
 
     if (pendingResponseFrom !== userType) {
       return `Awaiting response from ${pendingResponseFrom}...`;
@@ -31,11 +29,18 @@ const SecureNegotiationLayout: React.FC<SecureNegotiationLayoutProps> = ({
 
     switch (stage) {
       case "negotiation":
-        return details.negotiationPrice > 0 || details.isNegotiating
-          ? "Please review and respond to the price negotiation"
-          : "Please confirm the inspection date and time";
+        if (details.inspectionType === "LOI") {
+          return "Please review and respond to the Letter of Intention";
+        } else if (details.inspectionType === "price") {
+          return "Please review and respond to the price negotiation";
+        }
+        return "Please review and respond to the negotiation";
       case "inspection":
         return "Please confirm the inspection schedule";
+      case "completed":
+        return "Negotiation completed successfully";
+      case "cancelled":
+        return "Negotiation has been cancelled";
       default:
         return "Please review and respond";
     }
