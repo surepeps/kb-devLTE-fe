@@ -88,30 +88,14 @@ type SecureNegotiationAction =
   | { type: "SET_DETAILS"; payload: any }
   | { type: "SET_NEGOTIATION_TYPE"; payload: NegotiationType }
   | { type: "SET_CREATED_AT"; payload: string }
-  | { type: "SET_DATE_TIME_OBJ"; payload: DateTimeObj }
-  | { type: "SET_COUNTER_DATE_TIME_OBJ"; payload: DateTimeObj }
   | { type: "SET_INSPECTION_STATUS"; payload: InspectionStatus }
-  | { type: "SET_INSPECTION_DATE_STATUS"; payload: InspectionDateStatus }
   | {
       type: "SET_CURRENT_USER";
       payload: { userId: string; userType: "seller" | "buyer" };
     }
 
   // Interactive Actions
-  | { type: "SET_REAL_TIME_STATUS"; payload: boolean }
   | { type: "SET_EXPIRED_STATUS"; payload: boolean }
-
-  // UI Actions
-  | { type: "SET_CONTENT_TRACKER"; payload: ContentTracker }
-  | { type: "SET_IS_NEGOTIATED"; payload: boolean }
-  | { type: "TOGGLE_INTERACTIVE_MODE" }
-
-  // Modal Actions
-  | { type: "TOGGLE_SUBMIT_OFFER_MODAL" }
-  | { type: "TOGGLE_ACCEPT_REJECT_MODAL" }
-  | { type: "TOGGLE_MESSAGE_MODAL" }
-  | { type: "SET_OFFER_PRICE"; payload: number }
-  | { type: "SET_COUNTER_OFFER"; payload: number }
 
   // Loading Actions
   | {
