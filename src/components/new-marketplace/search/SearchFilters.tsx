@@ -519,15 +519,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             />
           </div>
 
-          {/* Buttons Container - Fixed width */}
-          <div className="flex gap-[15px] shrink-0">
-            <div className="relative">
+          {/* Buttons Container - Responsive */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-[15px] shrink-0 w-full sm:w-auto">
+            <div className="relative w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() =>
                   setIsMoreFilterModalOpened(!isMoreFilterModalOpened)
                 }
-                className="w-[120px] h-[50px] border-[1px] border-[#09391C] text-base text-[#09391C] font-medium hover:bg-[#09391C] hover:text-white transition-colors"
+                className="w-full sm:w-[120px] h-[45px] sm:h-[50px] border border-[#09391C] text-sm sm:text-base text-[#09391C] font-medium hover:bg-[#09391C] hover:text-white transition-colors rounded-md"
               >
                 More filter
               </button>
@@ -546,7 +546,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             </div>
             <button
               type="button"
-              className="w-[140px] h-[50px] bg-[#8DDB90] text-base text-white font-bold hover:bg-[#7BC87F] transition-colors"
+              className="w-full sm:w-[140px] h-[45px] sm:h-[50px] bg-[#8DDB90] text-sm sm:text-base text-white font-bold hover:bg-[#7BC87F] transition-colors rounded-md"
               onClick={() => onSearch()}
               disabled={loading}
             >
