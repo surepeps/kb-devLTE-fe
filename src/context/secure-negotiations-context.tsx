@@ -330,34 +330,37 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: "SET_FORM_STATUS", payload: "pending" });
 
       try {
-        const response = await GET_REQUEST(
+        const response: InspectionDetailsResponse = await GET_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
         );
 
         if (response?.success) {
-          dispatch({ type: "SET_DETAILS", payload: response.data });
+          const details = response.data;
+          dispatch({ type: "SET_DETAILS", payload: details });
           dispatch({ type: "SET_FORM_STATUS", payload: "success" });
 
-          // Set negotiation type based on letterOfIntention
-          const negotiationType = response.data.letterOfIntention
-            ? "LOI"
-            : "Normal";
+          // Set inspection type, stage, and pending response from new API structure
           dispatch({
-            type: "SET_NEGOTIATION_TYPE",
-            payload: negotiationType === "Normal" ? "NORMAL" : negotiationType,
+            type: "SET_INSPECTION_TYPE",
+            payload: details.inspectionType,
+          });
+          dispatch({ type: "SET_STAGE", payload: details.stage });
+          dispatch({
+            type: "SET_PENDING_RESPONSE_FROM",
+            payload: details.pendingResponseFrom,
           });
 
           // Set created date
-          if (response.data.createdAt) {
+          if (details.createdAt) {
             dispatch({
               type: "SET_CREATED_AT",
-              payload: response.data.createdAt,
+              payload: details.createdAt,
             });
           }
 
           // Check if inspection has expired (48 hours)
-          if (response.data.updatedAt) {
-            const updateTime = new Date(response.data.updatedAt).getTime();
+          if (details.updatedAt) {
+            const updateTime = new Date(details.updatedAt).getTime();
             const now = new Date().getTime();
             const elapsed = now - updateTime;
             const fortyEightHours = 48 * 60 * 60 * 1000;
@@ -398,6 +401,18 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     },
     [],
   );
+
+  const setInspectionType = useCallback((type: InspectionType) => {
+    dispatch({ type: "SET_INSPECTION_TYPE", payload: type });
+  }, []);
+
+  const setStage = useCallback((stage: InspectionStage) => {
+    dispatch({ type: "SET_STAGE", payload: stage });
+  }, []);
+
+  const setPendingResponseFrom = useCallback((from: PendingResponseFrom) => {
+    dispatch({ type: "SET_PENDING_RESPONSE_FROM", payload: from });
+  }, []);
 
   const refreshData = useCallback(async () => {
     if (state.userId && state.inspectionId && state.currentUserType) {
