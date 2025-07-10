@@ -22,7 +22,7 @@ const EnhancedNegotiationCancelledSummary: React.FC<
   EnhancedNegotiationCancelledSummaryProps
 > = ({ userType }) => {
   const { state } = useSecureNegotiation();
-  const { details, negotiationType, currentUserId } = state;
+  const { details, inspectionType, currentUserId } = state;
   const [feedback, setFeedback] = useState("");
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
@@ -44,7 +44,6 @@ const EnhancedNegotiationCancelledSummary: React.FC<
     setIsSubmittingFeedback(true);
 
     try {
-      
       setShowFeedbackForm(false);
       setFeedback("");
 
@@ -62,10 +61,9 @@ const EnhancedNegotiationCancelledSummary: React.FC<
     window.location.reload();
   };
 
-  const cancellationReason =
-    details?.cancellationReason || "No specific reason provided";
-  const cancelledBy = details?.cancelledBy || "Unknown";
-  const cancelledAt = details?.cancelledAt || new Date().toISOString();
+  const cancellationReason = "Negotiation was cancelled";
+  const cancelledBy = details?.pendingResponseFrom || "Unknown";
+  const cancelledAt = details?.updatedAt || new Date().toISOString();
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
