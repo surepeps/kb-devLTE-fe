@@ -166,17 +166,8 @@ function secureNegotiationReducer(
     case "SET_CREATED_AT":
       return { ...state, createdAt: action.payload };
 
-    case "SET_DATE_TIME_OBJ":
-      return { ...state, dateTimeObj: action.payload };
-
-    case "SET_COUNTER_DATE_TIME_OBJ":
-      return { ...state, counterDateTimeObj: action.payload };
-
     case "SET_INSPECTION_STATUS":
       return { ...state, inspectionStatus: action.payload };
-
-    case "SET_INSPECTION_DATE_STATUS":
-      return { ...state, inspectionDateStatus: action.payload };
 
     case "SET_CURRENT_USER":
       return {
@@ -185,35 +176,8 @@ function secureNegotiationReducer(
         currentUserType: action.payload.userType,
       };
 
-    case "SET_REAL_TIME_STATUS":
-      return { ...state, isRealTimeEnabled: action.payload };
-
     case "SET_EXPIRED_STATUS":
       return { ...state, isExpired: action.payload };
-
-    case "SET_CONTENT_TRACKER":
-      return { ...state, contentTracker: action.payload };
-
-    case "SET_IS_NEGOTIATED":
-      return { ...state, isNegotiated: action.payload };
-
-    case "TOGGLE_INTERACTIVE_MODE":
-      return { ...state, isInteractive: !state.isInteractive };
-
-    case "TOGGLE_SUBMIT_OFFER_MODAL":
-      return { ...state, showSubmitOfferModal: !state.showSubmitOfferModal };
-
-    case "TOGGLE_ACCEPT_REJECT_MODAL":
-      return { ...state, showAcceptRejectModal: !state.showAcceptRejectModal };
-
-    case "TOGGLE_MESSAGE_MODAL":
-      return { ...state, showMessageModal: !state.showMessageModal };
-
-    case "SET_OFFER_PRICE":
-      return { ...state, offerPrice: action.payload };
-
-    case "SET_COUNTER_OFFER":
-      return { ...state, counterOffer: action.payload };
 
     case "SET_LOADING":
       return {
