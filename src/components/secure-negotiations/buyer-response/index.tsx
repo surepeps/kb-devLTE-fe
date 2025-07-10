@@ -5,7 +5,7 @@ import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import Loading from "@/components/loading-component/loading";
 import SecureNegotiationLayout from "../layout/secure-negotiation-layout";
 import TwoStepNegotiationFlow from "../flow/two-step-negotiation-flow";
-import EnhancedLOINegotiationPage from "../pages/enhanced-loi-negotiation-page";
+// import EnhancedLOINegotiationPage from "../pages/enhanced-loi-negotiation-page";
 import EnhancedNegotiationSummary from "../pages/enhanced-negotiation-summary";
 import EnhancedNegotiationCancelledSummary from "../pages/enhanced-negotiation-cancelled-summary";
 import PropertyDetails from "../property/property-details";
@@ -79,14 +79,14 @@ const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
     }
 
     // Handle LOI flow
-    if (negotiationType === "LOI") {
-      return (
-        <EnhancedLOINegotiationPage
-          letterOfIntention={details.letterOfIntention}
-          userType="buyer"
-        />
-      );
-    }
+    // if (negotiationType === "LOI") {
+    //   return (
+    //     <EnhancedLOINegotiationPage
+    //       letterOfIntention={details.letterOfIntention}
+    //       userType="buyer"
+    //     />
+    //   );
+    // }
 
     // Handle two-step negotiation flow for normal properties
     return <TwoStepNegotiationFlow userType="buyer" />;
