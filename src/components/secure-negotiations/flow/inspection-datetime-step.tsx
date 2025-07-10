@@ -32,8 +32,8 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     useSecureNegotiation();
 
   const { details, loadingStates, inspectionId } = state;
-  const [newDate, setNewDate] = useState("");
-  const [newTime, setNewTime] = useState("");
+  const [newDate, setNewDate] = useState(details?.inspectionDate || "");
+  const [newTime, setNewTime] = useState(details?.inspectionTime || "");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
 
@@ -84,21 +84,31 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return dates;
   }, []);
 
-  // Initialize date and time with defaults
+  // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
-    if (!newDate && availableDates.length > 0) {
-      setNewDate(details?.inspectionDate || availableDates[0]?.date || "");
+    // Always set from details if available, otherwise use first available option
+    const currentOrFirstDate =
+      details?.inspectionDate || availableDates[0]?.date || "";
+    const currentOrFirstTime =
+      details?.inspectionTime || availableTimes[0]?.value || "";
+
+    if (
+      availableDates.length > 0 &&
+      (!newDate || newDate !== currentOrFirstDate)
+    ) {
+      setNewDate(currentOrFirstDate);
     }
-    if (!newTime && availableTimes.length > 0) {
-      setNewTime(details?.inspectionTime || availableTimes[0]?.value || "");
+    if (
+      availableTimes.length > 0 &&
+      (!newTime || newTime !== currentOrFirstTime)
+    ) {
+      setNewTime(currentOrFirstTime);
     }
   }, [
     availableDates,
     availableTimes,
     details?.inspectionDate,
     details?.inspectionTime,
-    newDate,
-    newTime,
   ]);
 
   // Prevent background scroll when modal is open
@@ -119,8 +129,10 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     ? availableDates
     : availableDates.slice(0, 10);
 
-  const currentDate = details?.inspectionDate || "";
-  const currentTime = details?.inspectionTime || "";
+  const currentDate =
+    details?.inspectionDate || newDate || availableDates[0]?.date || "";
+  const currentTime =
+    details?.inspectionTime || newTime || availableTimes[0]?.value || "";
   const propertyAddress = details?.propertyId?.location
     ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
     : "Property address not specified";
