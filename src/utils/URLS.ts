@@ -34,13 +34,15 @@ export const URLS = {
   allAvailableSLots: "/all/inspection-slots",
   scheduleInspection: "/property/schedule-inspection",
 
+
   requestInspection: "/inspections/request-inspection",
   validateInspectionAccess: "/inspections/validate-access",
   getOneInspection: "/inspections/inspection-details",
-  negotiationActions: "/inspections",
+
 
   updateInspection: "/buyers/update-inspection",
   getOneNewInspection: "/buyers/new-inspection",
+
 
   getAllRequests: "/requests",
   confirmAvailability: "/confirm-property",

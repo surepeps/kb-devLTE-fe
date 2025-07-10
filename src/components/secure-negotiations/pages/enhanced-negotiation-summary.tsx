@@ -23,7 +23,7 @@ const EnhancedNegotiationSummary: React.FC<EnhancedNegotiationSummaryProps> = ({
   userType,
 }) => {
   const { state } = useSecureNegotiation();
-  const { details, inspectionType, createdAt } = state;
+  const { details, negotiationType, createdAt } = state;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NG", {
@@ -45,7 +45,7 @@ const EnhancedNegotiationSummary: React.FC<EnhancedNegotiationSummaryProps> = ({
 
   const generateSummaryDocument = () => {
     const summaryData = {
-      negotiationType: inspectionType,
+      negotiationType,
       userType,
       finalPrice: details?.finalPrice || details?.buyOffer,
       propertyTitle: details?.propertyTitle,
@@ -190,12 +190,12 @@ This summary serves as confirmation of the negotiated terms.
                   <FiDollarSign className="w-5 h-5 text-green-600" />
                   <div>
                     <div className="text-sm text-gray-500">
-                      {inspectionType === "LOI"
+                      {negotiationType === "LOI"
                         ? "Partnership Type"
                         : "Final Price"}
                     </div>
                     <div className="font-medium text-gray-800">
-                      {inspectionType === "LOI"
+                      {negotiationType === "LOI"
                         ? "Joint Venture"
                         : formatCurrency(
                             details?.finalPrice || details?.buyOffer || 0,
@@ -300,12 +300,12 @@ This summary serves as confirmation of the negotiated terms.
               </div>
               <div>
                 <div className="font-medium text-gray-800">
-                  {inspectionType === "LOI"
+                  {negotiationType === "LOI"
                     ? "Legal Documentation"
                     : "Final Agreement"}
                 </div>
                 <div className="text-sm text-gray-600">
-                  {inspectionType === "LOI"
+                  {negotiationType === "LOI"
                     ? "Legal teams will prepare the joint venture agreement based on the LOI terms."
                     : "Proceed with the purchase agreement and legal documentation."}
                 </div>
