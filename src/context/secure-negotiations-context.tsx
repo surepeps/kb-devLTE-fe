@@ -434,40 +434,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "SET_EXPIRED_STATUS", payload: isExpired });
   }, []);
 
-  const reopenInspection = useCallback(async () => {
-    if (state.userId && state.inspectionId && state.currentUserType) {
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${state.inspectionId}/reopen`,
-          {
-            userType: state.currentUserType,
-          },
-        );
-
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(
-            state.userId,
-            state.inspectionId,
-            state.currentUserType,
-          );
-          setExpiredStatus(false);
-        }
-
-        return response;
-      } catch (error) {
-        console.error("Failed to reopen inspection:", error);
-        throw error;
-      }
-    }
-  }, [
-    state.userId,
-    state.inspectionId,
-    state.currentUserType,
-    fetchNegotiationDetails,
-    setExpiredStatus,
-  ]);
-
   // Loading Methods
   const setLoading = useCallback(
     (
