@@ -47,6 +47,7 @@ interface VerifiedUser {
   userType: string;
 }
 
+
 const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   //Simulating the loading page
   const isLoading = useLoading();
@@ -97,26 +98,56 @@ const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             }
             if (user.userType === "Agent") {
               router.push("/agent/onboard");
-            } else {
-              router.push("/dashboard");
             }
           }
         });
       })();
     }
-  });
+  }, [router, searchParams, setUser]);
 
-  if (isComingSoon) {
-    return <Countdown />;
-  }
+  /**
+   * if else statement to simulate the loading page for 3 secs then return the actual homepage
+   */
+  if (isLoading) return <Loading />;
 
   return (
     <Fragment>
-      <section className="w-full h-full">
-        <main className="w-full h-full">
+      <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
+        <main className="w-full bg-[#EEF1F1]">
+          {/**
+           * Hero Section Component ~ Takes no props
+           */}
           <HeroSection />
-          <div className="w-full bg-[#FEFEFE] relative z-[1]">
-            <div className="w-full py-8 px-4 text-center">
+          {/**Details About website Componet ~ Takes no props */}
+          <Section1 />
+          {/**
+           * Why Khabi-Teq Is Your Trusted Real Estate Partner Component
+           * Takes no props
+           */}
+          <Section2 />
+          <div className="flex justify-center items-center">
+            <div className="container min-h-[135px] flex md:flex-row flex-col gap-[10px] items-start py-[20px] md:items-center justify-between bg-[#093B6D] px-[20px] md:px-[30px]">
+              <div className="flex flex-col gap-[10px]">
+                <motion.h2
+                  initial={{ y: 10, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  viewport={{ once: true }}
+                  className="text-2xl md:text-3xl text-[#FFFFFF] font-bold"
+                >
+                  Find Your Ideal Property, Effortlessly
+                </motion.h2>
+                <motion.h3
+                  initial={{ y: 10, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  viewport={{ once: true }}
+                  className="text-lg md:text-xl font-bold text-[#FFFFFF]"
+                >
+                  Tell us what you need — we&apos;ll show you matching
+                  properties.
+                </motion.h3>
+              </div>
               <Link href={"/preference"}>
                 <motion.button
                   initial={{ y: 10, opacity: 0 }}
