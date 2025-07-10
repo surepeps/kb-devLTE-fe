@@ -522,49 +522,110 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
-  // API Action Methods
-  const acceptOffer = useCallback(
-    async (
-      inspectionId: string,
-      userType: "seller" | "buyer",
-      inspectionDate: string,
-      inspectionTime: string,
-      dateTimeCountered: boolean = false,
-    ) => {
-      dispatch({
-        type: "SET_LOADING",
-        payload: { type: "accepting", isLoading: true },
-      });
+  // File upload method
+  const uploadFile = useCallback(async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
 
-      try {
-        const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${inspectionId}/accept`,
-          {
-            userType,
-            action: "accept",
-            inspectionDate,
-            inspectionTime,
-            dateTimeCountered,
-          },
-        );
+    const response: UploadResponse = await POST_REQUEST(
+      `${URLS.BASE + URLS.uploadImg}`,
+      formData,
+      { "Content-Type": "multipart/form-data" },
+    );
 
-        if (response?.success) {
-          // Refetch data to get updated state
-          await fetchNegotiationDetails(state.userId!, inspectionId, userType);
-        }
+    if (response?.success) {
+      return response.data.url;
+    }
+    throw new Error("Failed to upload file");
+  }, []);
 
-        return response;
-      } catch (error) {
-        console.error("Failed to accept offer:", error);
-        throw error;
-      } finally {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { type: "accepting", isLoading: false },
-        });
-      }
+  // Payload creation utilities
+  const createAcceptPayload = useCallback(
+    (
+      inspectionType: InspectionType,
+      inspectionDate?: string,
+      inspectionTime?: string,
+    ): NegotiationPayload => {
+      const payload: any = {
+        action: "accept",
+        inspectionType,
+      };
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+
+      return payload;
     },
-    [state.userId, fetchNegotiationDetails],
+    [],
+  );
+
+  const createRejectPayload = useCallback(
+    (inspectionType: InspectionType, reason?: string): NegotiationPayload => {
+      const payload: any = {
+        action: "reject",
+        inspectionType,
+      };
+
+      if (reason) {
+        if (inspectionType === "LOI") {
+          payload.rejectionReason = reason;
+        } else {
+          payload.reason = reason;
+        }
+      }
+
+      return payload;
+    },
+    [],
+  );
+
+  const createCounterPayload = useCallback(
+    (
+      inspectionType: InspectionType,
+      counterPrice?: number,
+      documentUrl?: string,
+      inspectionDate?: string,
+      inspectionTime?: string,
+    ): NegotiationPayload => {
+      const payload: any = {
+        action: "counter",
+        inspectionType,
+      };
+
+      if (inspectionType === "price" && counterPrice) {
+        payload.counterPrice = counterPrice;
+      }
+
+      if (inspectionType === "LOI" && documentUrl) {
+        payload.documentUrl = documentUrl;
+      }
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+
+      return payload;
+    },
+    [],
+  );
+
+  const createRequestChangesPayload = useCallback(
+    (
+      reason: string,
+      inspectionDate?: string,
+      inspectionTime?: string,
+    ): NegotiationPayload => {
+      const payload: any = {
+        action: "request_changes",
+        inspectionType: "LOI",
+        reason,
+      };
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+
+      return payload;
+    },
+    [],
   );
 
   const rejectOffer = useCallback(
