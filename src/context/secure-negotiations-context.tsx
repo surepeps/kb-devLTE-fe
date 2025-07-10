@@ -12,7 +12,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
@@ -573,20 +573,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       try {
-        // Determine the correct endpoint based on action and inspection type
-        let endpoint = `${URLS.BASE + URLS.getOneInspection}/${inspectionId}`;
+        // Use the new API endpoint format: /inspections/:inspectionId/actions/:userId
+        const endpoint = `${URLS.BASE}/inspections/${inspectionId}/actions/${state.userId}`;
 
-        if (payload.inspectionType === "price") {
-          endpoint += `/${payload.action}`;
-        } else if (payload.inspectionType === "LOI") {
-          if (payload.action === "request_changes") {
-            endpoint += "/loi/requestChanges";
-          } else {
-            endpoint += `/loi/${payload.action}`;
-          }
-        }
-
-        const response = await PUT_REQUEST(endpoint, {
+        const response = await POST_REQUEST(endpoint, {
           userType,
           ...payload,
         });
