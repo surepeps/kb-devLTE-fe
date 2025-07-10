@@ -26,8 +26,9 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   userType,
   onActionSelected,
 }) => {
-  const { state } = useSecureNegotiation();
-  const { details, loadingStates } = state;
+  const { state, acceptLOI, rejectLOI, requestLOIChanges } =
+    useSecureNegotiation();
+  const { details, loadingStates, inspectionId } = state;
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
@@ -61,23 +62,39 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
   const letterOfIntention = details?.letterOfIntention || "";
 
-  const handleAccept = () => {
-    onActionSelected("accept");
+  const handleAccept = async () => {
+    try {
+      await acceptLOI(inspectionId!, userType);
+      onActionSelected("accept");
+    } catch (error) {
+      console.error("Failed to accept LOI:", error);
+    }
   };
 
-  const handleReject = () => {
-    onActionSelected("reject");
-    setShowRejectModal(false);
+  const handleReject = async () => {
+    try {
+      await rejectLOI(inspectionId!, userType);
+      setShowRejectModal(false);
+      onActionSelected("reject");
+    } catch (error) {
+      console.error("Failed to reject LOI:", error);
+    }
   };
 
-  const handleRequestChanges = () => {
+  const handleRequestChanges = async () => {
     if (!changeRequest.trim()) {
       alert("Please enter your feedback for the changes");
       return;
     }
-    onActionSelected("requestChanges");
-    setShowRequestChangesModal(false);
-    setChangeRequest("");
+
+    try {
+      await requestLOIChanges(inspectionId!, userType, changeRequest);
+      setShowRequestChangesModal(false);
+      setChangeRequest("");
+      onActionSelected("requestChanges");
+    } catch (error) {
+      console.error("Failed to request LOI changes:", error);
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,12 +112,18 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     }
   };
 
-  const handleReuploadSubmit = () => {
+  const handleReuploadSubmit = async () => {
     if (!newLoiFile) {
       alert("Please select a new LOI file to upload");
       return;
     }
-    onActionSelected("accept", newLoiFile);
+
+    try {
+      await acceptLOI(inspectionId!, userType, newLoiFile);
+      onActionSelected("accept", newLoiFile);
+    } catch (error) {
+      console.error("Failed to reupload LOI:", error);
+    }
   };
 
   const downloadLOI = () => {
