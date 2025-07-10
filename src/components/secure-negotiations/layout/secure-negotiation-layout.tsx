@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import { motion } from "framer-motion";
-import { FiShield, FiRefreshCw, FiClock } from "react-icons/fi";
+import { FiShield, FiRefreshCw } from "react-icons/fi";
 import ExpiryModal from "../modals/expiry-modal";
 
 interface SecureNegotiationLayoutProps {

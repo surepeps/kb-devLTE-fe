@@ -33,13 +33,8 @@ const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
 
   useEffect(() => {
     if (details && formStatus === "success") {
-      const {
-        negotiationStatus,
-        buyOffer,
-        letterOfIntention,
-        inspectionDate,
-        counterOffer,
-      } = details;
+      const { negotiationStatus, buyOffer, letterOfIntention, counterOffer } =
+        details;
 
       if (
         negotiationStatus === "negotiation_accepted" ||

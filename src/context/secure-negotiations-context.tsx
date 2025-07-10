@@ -18,7 +18,6 @@ import Cookies from "js-cookie";
 import type {
   PotentialClientData,
   NegotiationType,
-  DateTimeObj,
   ContentTracker,
 } from "@/types/negotiation";
 import { ApiSuccessResponse } from "@/types/api-responses";
@@ -55,28 +54,12 @@ interface SecureNegotiationState {
   details: any | null;
   negotiationType: NegotiationType;
   createdAt: string | null;
-  dateTimeObj: DateTimeObj;
-  counterDateTimeObj: DateTimeObj;
   inspectionStatus: InspectionStatus | null;
-  inspectionDateStatus: InspectionDateStatus | null;
   currentUserId: string | null;
   currentUserType: "seller" | "buyer" | null;
 
   // Interactive Features
-  isRealTimeEnabled: boolean;
   isExpired: boolean;
-
-  // UI states
-  contentTracker: ContentTracker;
-  isNegotiated: boolean;
-  isInteractive: boolean;
-
-  // Modal states
-  showSubmitOfferModal: boolean;
-  showAcceptRejectModal: boolean;
-  showMessageModal: boolean;
-  offerPrice: number | undefined;
-  counterOffer: number | undefined;
 
   // Loading states
   loadingStates: {
@@ -85,7 +68,6 @@ interface SecureNegotiationState {
     rejecting: boolean;
     countering: boolean;
     loading: boolean;
-    sendingMessage: boolean;
   };
 }
 
@@ -105,30 +87,14 @@ type SecureNegotiationAction =
   | { type: "SET_DETAILS"; payload: any }
   | { type: "SET_NEGOTIATION_TYPE"; payload: NegotiationType }
   | { type: "SET_CREATED_AT"; payload: string }
-  | { type: "SET_DATE_TIME_OBJ"; payload: DateTimeObj }
-  | { type: "SET_COUNTER_DATE_TIME_OBJ"; payload: DateTimeObj }
   | { type: "SET_INSPECTION_STATUS"; payload: InspectionStatus }
-  | { type: "SET_INSPECTION_DATE_STATUS"; payload: InspectionDateStatus }
   | {
       type: "SET_CURRENT_USER";
       payload: { userId: string; userType: "seller" | "buyer" };
     }
 
   // Interactive Actions
-  | { type: "SET_REAL_TIME_STATUS"; payload: boolean }
   | { type: "SET_EXPIRED_STATUS"; payload: boolean }
-
-  // UI Actions
-  | { type: "SET_CONTENT_TRACKER"; payload: ContentTracker }
-  | { type: "SET_IS_NEGOTIATED"; payload: boolean }
-  | { type: "TOGGLE_INTERACTIVE_MODE" }
-
-  // Modal Actions
-  | { type: "TOGGLE_SUBMIT_OFFER_MODAL" }
-  | { type: "TOGGLE_ACCEPT_REJECT_MODAL" }
-  | { type: "TOGGLE_MESSAGE_MODAL" }
-  | { type: "SET_OFFER_PRICE"; payload: number }
-  | { type: "SET_COUNTER_OFFER"; payload: number }
 
   // Loading Actions
   | {
@@ -151,28 +117,12 @@ const initialState: SecureNegotiationState = {
   details: null,
   negotiationType: "NORMAL",
   createdAt: null,
-  dateTimeObj: { selectedDate: "", selectedTime: "" },
-  counterDateTimeObj: { selectedDate: "", selectedTime: "" },
   inspectionStatus: null,
-  inspectionDateStatus: null,
   currentUserId: null,
   currentUserType: null,
 
   // Interactive Features
-  isRealTimeEnabled: false,
   isExpired: false,
-
-  // UI states
-  contentTracker: "Negotiation",
-  isNegotiated: false,
-  isInteractive: true,
-
-  // Modal states
-  showSubmitOfferModal: false,
-  showAcceptRejectModal: false,
-  showMessageModal: false,
-  offerPrice: undefined,
-  counterOffer: undefined,
 
   // Loading states
   loadingStates: {
@@ -181,7 +131,6 @@ const initialState: SecureNegotiationState = {
     rejecting: false,
     countering: false,
     loading: false,
-    sendingMessage: false,
   },
 };
 
@@ -216,17 +165,8 @@ function secureNegotiationReducer(
     case "SET_CREATED_AT":
       return { ...state, createdAt: action.payload };
 
-    case "SET_DATE_TIME_OBJ":
-      return { ...state, dateTimeObj: action.payload };
-
-    case "SET_COUNTER_DATE_TIME_OBJ":
-      return { ...state, counterDateTimeObj: action.payload };
-
     case "SET_INSPECTION_STATUS":
       return { ...state, inspectionStatus: action.payload };
-
-    case "SET_INSPECTION_DATE_STATUS":
-      return { ...state, inspectionDateStatus: action.payload };
 
     case "SET_CURRENT_USER":
       return {
@@ -235,35 +175,8 @@ function secureNegotiationReducer(
         currentUserType: action.payload.userType,
       };
 
-    case "SET_REAL_TIME_STATUS":
-      return { ...state, isRealTimeEnabled: action.payload };
-
     case "SET_EXPIRED_STATUS":
       return { ...state, isExpired: action.payload };
-
-    case "SET_CONTENT_TRACKER":
-      return { ...state, contentTracker: action.payload };
-
-    case "SET_IS_NEGOTIATED":
-      return { ...state, isNegotiated: action.payload };
-
-    case "TOGGLE_INTERACTIVE_MODE":
-      return { ...state, isInteractive: !state.isInteractive };
-
-    case "TOGGLE_SUBMIT_OFFER_MODAL":
-      return { ...state, showSubmitOfferModal: !state.showSubmitOfferModal };
-
-    case "TOGGLE_ACCEPT_REJECT_MODAL":
-      return { ...state, showAcceptRejectModal: !state.showAcceptRejectModal };
-
-    case "TOGGLE_MESSAGE_MODAL":
-      return { ...state, showMessageModal: !state.showMessageModal };
-
-    case "SET_OFFER_PRICE":
-      return { ...state, offerPrice: action.payload };
-
-    case "SET_COUNTER_OFFER":
-      return { ...state, counterOffer: action.payload };
 
     case "SET_LOADING":
       return {
@@ -303,18 +216,6 @@ interface SecureNegotiationContextType {
 
   // Interactive Methods
   setExpiredStatus: (isExpired: boolean) => void;
-  reopenInspection: () => Promise<any>;
-
-  // Navigation Methods
-  goToNextPage: (page: ContentTracker) => void;
-  toggleInteractiveMode: () => void;
-
-  // Modal Methods
-  toggleSubmitOfferModal: () => void;
-  toggleAcceptRejectModal: () => void;
-  toggleMessageModal: () => void;
-  setOfferPrice: (price: number) => void;
-  setCounterOffer: (price: number) => void;
 
   // Loading Methods
   setLoading: (
@@ -919,15 +820,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       refreshData,
       setExpiredStatus,
       reopenInspection,
-      enableRealTime,
-      disableRealTime,
       goToNextPage,
-      toggleInteractiveMode,
-      toggleSubmitOfferModal,
-      toggleAcceptRejectModal,
-      toggleMessageModal,
-      setOfferPrice,
-      setCounterOffer,
       setLoading,
       acceptOffer,
       rejectOffer,
@@ -948,15 +841,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       refreshData,
       setExpiredStatus,
       reopenInspection,
-      enableRealTime,
-      disableRealTime,
       goToNextPage,
-      toggleInteractiveMode,
-      toggleSubmitOfferModal,
-      toggleAcceptRejectModal,
-      toggleMessageModal,
-      setOfferPrice,
-      setCounterOffer,
       setLoading,
       acceptOffer,
       rejectOffer,

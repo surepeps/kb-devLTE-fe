@@ -9,9 +9,6 @@ import {
   FiMapPin,
   FiCheckCircle,
   FiEdit3,
-  FiUser,
-  FiPhone,
-  FiMail,
   FiChevronDown,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
@@ -251,9 +248,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       console.error("Failed to update inspection date/time:", error);
     }
   };
-
-  // Get minimum date (today)
-  const minDate = new Date().toISOString().split("T")[0];
 
   return (
     <div className="space-y-6">

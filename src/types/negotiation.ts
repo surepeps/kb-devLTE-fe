@@ -6,23 +6,6 @@ export type ContentTracker =
   | "Cancelled"
   | "Summary";
 
-export interface NegotiationProps {
-  firstName: string;
-  lastName: string;
-  currentAmount: number;
-  buyOffer: number;
-  contentTracker?: ContentTracker;
-  setContentTracker?: (type: ContentTracker) => void;
-  renderDynamicContent: () => { content: any; header: string };
-  createdAt?: string | null;
-  letterOfIntention?: string;
-}
-
-export interface DateTimeObj {
-  selectedDate: string;
-  selectedTime: string;
-}
-
 export interface PotentialClientData {
   _id: string;
   propertyId: {
