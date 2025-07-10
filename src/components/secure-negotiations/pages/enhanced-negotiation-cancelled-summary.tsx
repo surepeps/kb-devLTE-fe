@@ -150,7 +150,8 @@ const EnhancedNegotiationCancelledSummary: React.FC<
                 <div>
                   <div className="text-sm text-gray-500">Property</div>
                   <div className="font-medium text-gray-800">
-                    {details?.propertyTitle || "Property Name"}
+                    {details?.propertyId?.propertyType || "Property"} -{" "}
+                    {details?.propertyId?.briefType || "Sale"}
                   </div>
                 </div>
               </div>
@@ -159,13 +160,15 @@ const EnhancedNegotiationCancelledSummary: React.FC<
                 <FiDollarSign className="w-5 h-5 text-green-600" />
                 <div>
                   <div className="text-sm text-gray-500">
-                    {negotiationType === "LOI" ? "Type" : "Last Offer"}
+                    {inspectionType === "LOI" ? "Type" : "Last Offer"}
                   </div>
                   <div className="font-medium text-gray-800">
-                    {negotiationType === "LOI"
+                    {inspectionType === "LOI"
                       ? "Joint Venture"
                       : formatCurrency(
-                          details?.lastOffer || details?.buyOffer || 0,
+                          details?.negotiationPrice ||
+                            details?.propertyId?.price ||
+                            0,
                         )}
                   </div>
                 </div>
