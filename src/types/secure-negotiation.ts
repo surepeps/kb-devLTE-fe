@@ -90,9 +90,9 @@ export interface AccessValidationResponse {
 export interface BasePayload {
   action: "accept" | "reject" | "counter" | "request_changes";
   inspectionType: InspectionType;
+  userType: "buyer" | "seller";
   inspectionDate?: string;
   inspectionTime?: string;
-  reason?: string;
   rejectionReason?: string;
 }
 
@@ -100,16 +100,19 @@ export interface BasePayload {
 export interface AcceptPricePayload extends BasePayload {
   action: "accept";
   inspectionType: "price";
+  userType: "buyer" | "seller";
 }
 
 export interface RejectPricePayload extends BasePayload {
   action: "reject";
   inspectionType: "price";
+  userType: "buyer" | "seller";
 }
 
 export interface CounterPricePayload extends BasePayload {
   action: "counter";
   inspectionType: "price";
+  userType: "buyer" | "seller";
   counterPrice: number;
 }
 
@@ -117,22 +120,26 @@ export interface CounterPricePayload extends BasePayload {
 export interface AcceptLOIPayload extends BasePayload {
   action: "accept";
   inspectionType: "LOI";
+  userType: "buyer" | "seller";
 }
 
 export interface RejectLOIPayload extends BasePayload {
   action: "reject";
   inspectionType: "LOI";
+  userType: "buyer" | "seller";
 }
 
 export interface RequestChangesLOIPayload extends BasePayload {
   action: "request_changes";
   inspectionType: "LOI";
+  userType: "seller";
   reason: string;
 }
 
 export interface CounterLOIPayload extends BasePayload {
   action: "counter";
   inspectionType: "LOI";
+  userType: "buyer";
   documentUrl: string;
 }
 
