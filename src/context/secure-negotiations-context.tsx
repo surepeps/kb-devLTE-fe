@@ -55,28 +55,12 @@ interface SecureNegotiationState {
   details: any | null;
   negotiationType: NegotiationType;
   createdAt: string | null;
-  dateTimeObj: DateTimeObj;
-  counterDateTimeObj: DateTimeObj;
   inspectionStatus: InspectionStatus | null;
-  inspectionDateStatus: InspectionDateStatus | null;
   currentUserId: string | null;
   currentUserType: "seller" | "buyer" | null;
 
   // Interactive Features
-  isRealTimeEnabled: boolean;
   isExpired: boolean;
-
-  // UI states
-  contentTracker: ContentTracker;
-  isNegotiated: boolean;
-  isInteractive: boolean;
-
-  // Modal states
-  showSubmitOfferModal: boolean;
-  showAcceptRejectModal: boolean;
-  showMessageModal: boolean;
-  offerPrice: number | undefined;
-  counterOffer: number | undefined;
 
   // Loading states
   loadingStates: {
@@ -85,7 +69,6 @@ interface SecureNegotiationState {
     rejecting: boolean;
     countering: boolean;
     loading: boolean;
-    sendingMessage: boolean;
   };
 }
 
