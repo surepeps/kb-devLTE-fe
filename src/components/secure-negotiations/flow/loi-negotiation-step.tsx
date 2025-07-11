@@ -119,22 +119,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       return;
     }
 
-    try {
-      // Upload the file first
-      const documentUrl = await uploadFile(newLoiFile);
-
-      // Create counter payload with the uploaded document URL
-      const payload = createCounterPayload(
-        "LOI",
-        undefined, // counterPrice not needed for LOI
-        documentUrl,
-      );
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("accept", newLoiFile);
-    } catch (error) {
-      console.error("Failed to reupload LOI:", error);
-    }
+    // Don't submit immediately, just pass the file to the next step
+    onActionSelected("accept", newLoiFile);
   };
 
   const downloadLOI = () => {
