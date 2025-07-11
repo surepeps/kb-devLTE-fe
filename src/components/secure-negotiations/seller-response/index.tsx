@@ -2,12 +2,10 @@
 
 import React, { useEffect } from "react";
 import { useSecureNegotiation } from "@/context/secure-negotiations-context";
-import { AnimatePresence, motion } from "framer-motion";
 import Loading from "@/components/loading-component/loading";
 import SecureNegotiationLayout from "../layout/secure-negotiation-layout";
 import TwoStepNegotiationFlow from "../flow/two-step-negotiation-flow";
 import AwaitingResponseDisplay from "../flow/awaiting-response-display";
-// import EnhancedLOINegotiationPage from "../pages/enhanced-loi-negotiation-page";
 import EnhancedNegotiationSummary from "../pages/enhanced-negotiation-summary";
 import EnhancedNegotiationCancelledSummary from "../pages/enhanced-negotiation-cancelled-summary";
 import PropertyDetails from "../property/property-details";
@@ -21,21 +19,18 @@ const SecureSellerResponseIndex: React.FC<SecureSellerResponseIndexProps> = ({
   userId,
   inspectionId,
 }) => {
-  const { state, fetchNegotiationDetails, canNegotiate, isUserTurn } =
+  const { state, fetchNegotiationDetails, isUserTurn } =
     useSecureNegotiation();
 
-  const { formStatus, details, inspectionType, stage, pendingResponseFrom } =
+  const { formStatus, details, stage, pendingResponseFrom } =
     state;
 
   useEffect(() => {
     if (userId && inspectionId) {
       fetchNegotiationDetails(userId, inspectionId, "seller");
-      // Removed auto-loading and real-time updates
     }
   }, [userId, inspectionId, fetchNegotiationDetails]);
 
-  // No need for complex useEffect with stage-based rendering
-  // The rendering logic is now based directly on stage and pendingResponseFrom
 
   const renderContent = () => {
     if (!details) return null;
