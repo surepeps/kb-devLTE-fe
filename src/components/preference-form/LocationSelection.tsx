@@ -138,16 +138,16 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const lgaErrors = getValidationErrorsForField("location.lgas");
   const areaErrors = getValidationErrorsForField("location.areas");
 
-  // Initialize from context data
+  // Initialize from context data ONLY ONCE
   useEffect(() => {
     if (state.formData.location) {
       const location = state.formData.location;
 
-      if (location.state) {
+      if (location.state && !selectedState) {
         setSelectedState({ value: location.state, label: location.state });
       }
 
-      if (location.lgas) {
+      if (location.lgas && selectedLGAs.length === 0) {
         const lgaOptions = location.lgas.map((lga) => ({
           value: lga,
           label: lga,
@@ -155,7 +155,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setSelectedLGAs(lgaOptions);
       }
 
-      if (location.areas) {
+      if (location.areas && selectedAreas.length === 0) {
         const areaOptions = location.areas.map((area) => ({
           value: area,
           label: area,
@@ -163,12 +163,12 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setSelectedAreas(areaOptions);
       }
 
-      if (location.customLocation) {
+      if (location.customLocation && !customLocation) {
         setCustomLocation(location.customLocation);
         setShowCustomLocation(true);
       }
     }
-  }, [state.formData.location]);
+  }, []); // Empty dependency array - only run once on mount
 
   // Memoized options
   const stateOptions = useMemo(
@@ -206,8 +206,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     return allAreas;
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change
-  const updateLocationData = useCallback(() => {
+  // Update context when values change - separated to avoid infinite loop
+  useEffect(() => {
     const locationData: LocationSelectionType = {
       state: selectedState?.value || "",
       lgas: selectedLGAs.map((lga) => lga.value),
@@ -226,10 +226,6 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     showCustomLocation,
     updateFormData,
   ]);
-
-  useEffect(() => {
-    updateLocationData();
-  }, [updateLocationData]);
 
   // Handle state change
   const handleStateChange = useCallback((selected: SingleValue<Option>) => {
