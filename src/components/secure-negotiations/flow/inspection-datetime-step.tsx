@@ -16,8 +16,10 @@ import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 interface InspectionDateTimeStepProps {
   userType: "seller" | "buyer";
   negotiationAction?: {
-    type: "accept" | "counter";
+    type: "accept" | "counter" | "requestChanges";
     counterPrice?: number;
+    loiFile?: File;
+    changeRequest?: string;
   } | null;
 }
 
@@ -30,6 +32,8 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     submitNegotiationAction,
     createAcceptPayload,
     createCounterPayload,
+    createRequestChangesPayload,
+    uploadFile,
   } = useSecureNegotiation();
 
   const { details, loadingStates, inspectionId, inspectionType } = state;
@@ -166,11 +170,27 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       if (negotiationAction) {
         // Submit final negotiation action with inspection date/time
         if (negotiationAction.type === "accept") {
-          const payload = createAcceptPayload(
-            inspectionType!,
-            isDateChanged ? finalDate : undefined,
-            isTimeChanged ? finalTime : undefined,
-          );
+          let documentUrl: string | undefined;
+
+          // Handle LOI file upload if present
+          if (negotiationAction.loiFile && inspectionType === "LOI") {
+            documentUrl = await uploadFile(negotiationAction.loiFile);
+          }
+
+          const payload =
+            inspectionType === "LOI" && documentUrl
+              ? createCounterPayload(
+                  "LOI",
+                  undefined, // counterPrice not needed for LOI
+                  documentUrl,
+                  isDateChanged ? finalDate : undefined,
+                  isTimeChanged ? finalTime : undefined,
+                )
+              : createAcceptPayload(
+                  inspectionType!,
+                  isDateChanged ? finalDate : undefined,
+                  isTimeChanged ? finalTime : undefined,
+                );
           await submitNegotiationAction(inspectionId!, userType, payload);
         } else if (
           negotiationAction.type === "counter" &&
@@ -180,6 +200,16 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             inspectionType!,
             negotiationAction.counterPrice,
             undefined, // documentUrl not needed for price counter
+            isDateChanged ? finalDate : undefined,
+            isTimeChanged ? finalTime : undefined,
+          );
+          await submitNegotiationAction(inspectionId!, userType, payload);
+        } else if (
+          negotiationAction.type === "requestChanges" &&
+          negotiationAction.changeRequest
+        ) {
+          const payload = createRequestChangesPayload(
+            negotiationAction.changeRequest,
             isDateChanged ? finalDate : undefined,
             isTimeChanged ? finalTime : undefined,
           );
@@ -212,11 +242,23 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       if (negotiationAction) {
         // Submit final negotiation action with new inspection date/time
         if (negotiationAction.type === "accept") {
-          const payload = createAcceptPayload(
-            inspectionType!,
-            newDate,
-            newTime,
-          );
+          let documentUrl: string | undefined;
+
+          // Handle LOI file upload if present
+          if (negotiationAction.loiFile && inspectionType === "LOI") {
+            documentUrl = await uploadFile(negotiationAction.loiFile);
+          }
+
+          const payload =
+            inspectionType === "LOI" && documentUrl
+              ? createCounterPayload(
+                  "LOI",
+                  undefined, // counterPrice not needed for LOI
+                  documentUrl,
+                  newDate,
+                  newTime,
+                )
+              : createAcceptPayload(inspectionType!, newDate, newTime);
           await submitNegotiationAction(inspectionId!, userType, payload);
         } else if (
           negotiationAction.type === "counter" &&
@@ -226,6 +268,16 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             inspectionType!,
             negotiationAction.counterPrice,
             undefined, // documentUrl not needed for price counter
+            newDate,
+            newTime,
+          );
+          await submitNegotiationAction(inspectionId!, userType, payload);
+        } else if (
+          negotiationAction.type === "requestChanges" &&
+          negotiationAction.changeRequest
+        ) {
+          const payload = createRequestChangesPayload(
+            negotiationAction.changeRequest,
             newDate,
             newTime,
           );
@@ -285,6 +337,21 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               </p>
             </div>
           )}
+        {negotiationAction?.type === "requestChanges" &&
+          negotiationAction.changeRequest && (
+            <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-orange-800 font-medium">
+                Requested Changes: {negotiationAction.changeRequest}
+              </p>
+            </div>
+          )}
+        {negotiationAction?.loiFile && (
+          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800 font-medium">
+              Updated LOI: {negotiationAction.loiFile.name}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Current Schedule */}
@@ -365,7 +432,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               <FiCheckCircle className="w-5 h-5" />
               <span>
                 {negotiationAction
-                  ? `${negotiationAction.type === "accept" ? "Accept" : "Counter"} & Confirm`
+                  ? `${negotiationAction.type === "accept" ? "Accept" : negotiationAction.type === "counter" ? "Counter" : "Request Changes"} & Confirm`
                   : "Confirm Schedule"}
               </span>
             </button>
@@ -514,7 +581,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     loadingStates.countering
                       ? "Submitting..."
                       : negotiationAction
-                        ? `${negotiationAction.type === "accept" ? "Accept" : "Counter"} & Update`
+                        ? `${negotiationAction.type === "accept" ? "Accept" : negotiationAction.type === "counter" ? "Counter" : "Request Changes"} & Update`
                         : "Update Schedule"}
                   </button>
                   <button
