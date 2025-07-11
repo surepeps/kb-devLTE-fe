@@ -5,6 +5,7 @@ import { useSecureNegotiation } from "@/context/secure-negotiations-context";
 import Loading from "@/components/loading-component/loading";
 import SecureNegotiationLayout from "../layout/secure-negotiation-layout";
 import TwoStepNegotiationFlow from "../flow/two-step-negotiation-flow";
+import AwaitingResponseDisplay from "../flow/awaiting-response-display";
 // import EnhancedLOINegotiationPage from "../pages/enhanced-loi-negotiation-page";
 import EnhancedNegotiationSummary from "../pages/enhanced-negotiation-summary";
 import EnhancedNegotiationCancelledSummary from "../pages/enhanced-negotiation-cancelled-summary";
@@ -13,7 +14,7 @@ import PropertyDetails from "../property/property-details";
 interface SecureBuyerResponseIndexProps {
   userId: string;
   inspectionId: string;
-} 
+}
 
 const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
   userId,
@@ -50,17 +51,35 @@ const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
       case "inspection":
         // Check if it's user's turn to respond
         if (!isUserTurn("buyer")) {
+          const timeRemaining = details?.updatedAt
+            ? (() => {
+                const updateTime = new Date(details.updatedAt).getTime();
+                const now = new Date().getTime();
+                const elapsed = now - updateTime;
+                const fortyEightHours = 48 * 60 * 60 * 1000;
+                const remaining = fortyEightHours - elapsed;
+
+                if (remaining > 0) {
+                  const hours = Math.floor(remaining / (1000 * 60 * 60));
+                  const minutes = Math.floor(
+                    (remaining % (1000 * 60 * 60)) / (1000 * 60),
+                  );
+                  const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                  return `${hours.toString().padStart(2, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+                } else {
+                  return "00:00:00";
+                }
+              })()
+            : "Loading...";
+
           return (
-            <div className="text-center py-8">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                  Awaiting Response
-                </h3>
-                <p className="text-blue-700">
-                  Waiting for {pendingResponseFrom} to respond...
-                </p>
-              </div>
-            </div>
+            <AwaitingResponseDisplay
+              userType="buyer"
+              pendingResponseFrom={pendingResponseFrom!}
+              timeRemaining={timeRemaining}
+            />
           );
         }
 
