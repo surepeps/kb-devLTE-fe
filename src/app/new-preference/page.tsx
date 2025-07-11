@@ -388,7 +388,63 @@ const PreferenceFormContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 relative">
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {state.isSubmitting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-8 shadow-xl max-w-sm mx-4 text-center"
+            >
+              <div className="flex flex-col items-center space-y-4">
+                {/* Animated spinner */}
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-emerald-100"></div>
+                  <div className="absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin"></div>
+                </div>
+
+                {/* Loading text */}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Submitting Your Preference
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Please wait while we process your request...
+                  </p>
+                </div>
+
+                {/* Progress dots */}
+                <div className="flex space-x-1">
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-2 h-2 bg-emerald-500 rounded-full"
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.5, 1, 0.5],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
