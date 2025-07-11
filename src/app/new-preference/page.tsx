@@ -1387,11 +1387,11 @@ const NewPreference = () => {
     </div>
   );
 
-  // Similar structure for other forms...
+  // Render joint venture form with complete implementation
   const renderJointVentureStep1 = () => (
     <div className="space-y-6 sm:space-y-8">
       {renderLocationFields()}
-      {/* Abbreviated for space - similar structure to buy/rent forms */}
+
       <SectionCard title="Development Requirements" icon="🏗">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <ModernInput
@@ -1422,14 +1422,260 @@ const NewPreference = () => {
           />
         </div>
       </SectionCard>
-      {/* Additional sections similar to other forms */}
+
+      <SectionCard title="Property Details" icon="🏢">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <ModernRadioGroup
+              label="Preferred JV Type"
+              name="jvType"
+              options={[
+                "Equity Split",
+                "Lease-to-Build",
+                "Development Partner",
+              ]}
+              value={formik.values.jvType}
+              onChange={(value) => formik.setFieldValue("jvType", value)}
+              required
+              disabled={areInputsDisabled}
+            />
+
+            <ModernRadioGroup
+              label="Property Type"
+              name="propertyType"
+              options={["Land", "Old Building", "Structure to demolish"]}
+              value={formik.values.propertyType}
+              onChange={(value) => formik.setFieldValue("propertyType", value)}
+              required
+              disabled={areInputsDisabled}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <ModernRadioGroup
+              label="Expected Structure Type"
+              name="expectedStructureType"
+              options={["Mini Flats", "Luxury Duplexes"]}
+              value={formik.values.expectedStructureType}
+              onChange={(value) =>
+                formik.setFieldValue("expectedStructureType", value)
+              }
+              required
+              disabled={areInputsDisabled}
+            />
+
+            <ModernRadioGroup
+              label="Timeline"
+              name="timeline"
+              options={["Ready Now", "In 3 Months", "Within 1 Year"]}
+              value={formik.values.timeline}
+              onChange={(value) => formik.setFieldValue("timeline", value)}
+              required
+              disabled={areInputsDisabled}
+            />
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Features" icon="✨">
+        <div className="space-y-4 sm:space-y-6">
+          <ModernCheckboxGroup
+            label="Base Features (Must-Have)"
+            options={FEATURES_DATA.jointVenture.base}
+            value={formik.values.baseFeatures || []}
+            onChange={(value) => formik.setFieldValue("baseFeatures", value)}
+          />
+
+          <ModernCheckboxGroup
+            label="Premium Features (Optional)"
+            options={FEATURES_DATA.jointVenture.premium}
+            value={formik.values.premiumFeatures || []}
+            onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
+          />
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Additional Information" icon="📝">
+        <ModernInput
+          label="Partner Expectations, Restrictions, etc."
+          name="partnerExpectations"
+          type="textarea"
+          value={formik.values.partnerExpectations || ""}
+          onChange={formik.handleChange}
+          placeholder="Partner expectations, restrictions, upload past projects (optional)"
+          disabled={areInputsDisabled}
+        />
+      </SectionCard>
     </div>
   );
 
+  // Render shortlet form with complete implementation
   const renderShortletStep1 = () => (
     <div className="space-y-6 sm:space-y-8">
       {renderLocationFields()}
-      {/* Similar structure with reduced spacing */}
+
+      <SectionCard title="Budget Per Night" icon="💰">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <ModernInput
+            label="Minimum Price (₦)"
+            name="minPricePerNight"
+            value={formik.values.minPricePerNight}
+            onChange={(e) => {
+              const rawValue = e.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "minPricePerNight",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Enter minimum price"
+            required
+            disabled={areInputsDisabled}
+            error={
+              formik.touched.minPricePerNight
+                ? formik.errors.minPricePerNight
+                : undefined
+            }
+          />
+          <ModernInput
+            label="Maximum Price (₦)"
+            name="maxPricePerNight"
+            value={formik.values.maxPricePerNight}
+            onChange={(e) => {
+              const rawValue = e.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "maxPricePerNight",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Enter maximum price"
+            required
+            disabled={areInputsDisabled}
+            error={
+              formik.touched.maxPricePerNight
+                ? formik.errors.maxPricePerNight
+                : undefined
+            }
+          />
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Booking Details" icon="📅">
+        <div className="space-y-4 sm:space-y-6">
+          <ModernRadioGroup
+            label="Property Type"
+            name="propertyType"
+            options={["Studio", "1-Bed Apartment", "2-Bed Flat"]}
+            value={formik.values.propertyType}
+            onChange={(value) => formik.setFieldValue("propertyType", value)}
+            required
+            disabled={areInputsDisabled}
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-800">
+                Minimum Bedrooms <span className="text-red-500">*</span>
+              </label>
+              <Select
+                options={bedroomOptions}
+                value={
+                  bedroomOptions.find(
+                    (option) => option.value === formik.values.minBedrooms,
+                  ) || null
+                }
+                onChange={(selectedOption) => {
+                  formik.setFieldValue(
+                    "minBedrooms",
+                    (selectedOption as Option)?.value || "",
+                  );
+                }}
+                placeholder="Select bedrooms..."
+                isDisabled={areInputsDisabled}
+                styles={customSelectStyles}
+                isSearchable
+              />
+            </div>
+
+            <ModernInput
+              label="Number of Guests"
+              name="numberOfGuests"
+              type="number"
+              value={formik.values.numberOfGuests}
+              onChange={formik.handleChange}
+              placeholder="Number of guests"
+              required
+              disabled={areInputsDisabled}
+              error={
+                formik.touched.numberOfGuests
+                  ? formik.errors.numberOfGuests
+                  : undefined
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <ModernInput
+              label="Check-in Date"
+              name="checkInDate"
+              type="date"
+              value={formik.values.checkInDate}
+              onChange={formik.handleChange}
+              required
+              disabled={areInputsDisabled}
+              error={
+                formik.touched.checkInDate
+                  ? formik.errors.checkInDate
+                  : undefined
+              }
+            />
+
+            <ModernInput
+              label="Check-out Date"
+              name="checkOutDate"
+              type="date"
+              value={formik.values.checkOutDate}
+              onChange={formik.handleChange}
+              required
+              disabled={areInputsDisabled}
+              error={
+                formik.touched.checkOutDate
+                  ? formik.errors.checkOutDate
+                  : undefined
+              }
+            />
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Features" icon="✨">
+        <div className="space-y-4 sm:space-y-6">
+          <ModernCheckboxGroup
+            label="Base Features"
+            options={FEATURES_DATA.shortlet.base}
+            value={formik.values.baseFeatures || []}
+            onChange={(value) => formik.setFieldValue("baseFeatures", value)}
+          />
+
+          <ModernCheckboxGroup
+            label="Premium Features (Optional)"
+            options={FEATURES_DATA.shortlet.premium}
+            value={formik.values.premiumFeatures || []}
+            onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
+          />
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Additional Information" icon="📝">
+        <ModernInput
+          label="Preferences & Notes"
+          name="additionalNotes"
+          type="textarea"
+          value={formik.values.additionalNotes || ""}
+          onChange={formik.handleChange}
+          placeholder="Preferences (e.g., No Smoking, Must allow pets), Notes (e.g., Anniversary getaway)"
+          disabled={areInputsDisabled}
+        />
+      </SectionCard>
     </div>
   );
 
