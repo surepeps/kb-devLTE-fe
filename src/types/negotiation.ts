@@ -6,6 +6,11 @@ export type ContentTracker =
   | "Cancelled"
   | "Summary";
 
+export interface DateTimeObj {
+  date: string;
+  time: string;
+}
+
 export interface PotentialClientData {
   _id: string;
   propertyId: {
