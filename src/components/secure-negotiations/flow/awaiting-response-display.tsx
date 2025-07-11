@@ -67,27 +67,52 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
             <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
               ✓ Your response has been submitted successfully!
               <br />
-              The other party will be notified and has time to respond.
+              {isAwaitingAdmin
+                ? "Your submission is being reviewed by our admin team."
+                : "The other party will be notified and has time to respond."}
             </p>
           </div>
 
-          {/* Timer Display */}
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
-            <div className="flex items-center justify-center space-x-2 mb-3">
-              <div className="p-2 bg-yellow-200 rounded-full">
-                <FiClock className="w-5 h-5 text-yellow-700" />
+          {/* Timer Display - Hidden for admin state */}
+          {!isAwaitingAdmin && (
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <div className="p-2 bg-yellow-200 rounded-full">
+                  <FiClock className="w-5 h-5 text-yellow-700" />
+                </div>
+                <span className="font-semibold text-yellow-800 text-sm sm:text-base">
+                  Response Timer
+                </span>
               </div>
-              <span className="font-semibold text-yellow-800 text-sm sm:text-base">
-                Response Timer
-              </span>
+              <div className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-2">
+                {timeRemaining || "Loading..."}
+              </div>
+              <div className="text-sm sm:text-base text-yellow-700">
+                remaining for {pendingResponseFrom} to respond
+              </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-2">
-              {timeRemaining || "Loading..."}
+          )}
+
+          {/* Admin Review Display */}
+          {isAwaitingAdmin && (
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4 sm:p-6 mb-6">
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <div className="p-2 bg-purple-200 rounded-full">
+                  <FiClock className="w-5 h-5 text-purple-700" />
+                </div>
+                <span className="font-semibold text-purple-800 text-sm sm:text-base">
+                  Under Admin Review
+                </span>
+              </div>
+              <div className="text-lg sm:text-xl font-bold text-purple-600 mb-2">
+                Processing Review
+              </div>
+              <div className="text-sm sm:text-base text-purple-700">
+                Our team is reviewing your submission. You will be notified once
+                the review is complete.
+              </div>
             </div>
-            <div className="text-sm sm:text-base text-yellow-700">
-              remaining for {pendingResponseFrom} to respond
-            </div>
-          </div>
+          )}
 
           {/* Status Indicators */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
