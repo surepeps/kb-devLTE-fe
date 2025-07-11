@@ -182,7 +182,9 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
   const lgaOptions = useMemo(() => {
     if (!selectedState) return [];
+    console.log("Selected state:", selectedState);
     const lgas = getLGAsByState(selectedState.value);
+    console.log("LGAs for state:", selectedState.value, lgas);
     return lgas.map((lga: string) => ({
       value: lga,
       label: lga,
