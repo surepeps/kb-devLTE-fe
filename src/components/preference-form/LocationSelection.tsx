@@ -308,10 +308,30 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           value={selectedState}
           onChange={handleStateChange}
           placeholder="Search and select state..."
-          styles={customSelectStyles}
+          styles={{
+            ...customSelectStyles,
+            control: (provided: any, state: any) => ({
+              ...provided,
+              minHeight: "48px",
+              border:
+                state.hasValue && stateErrors.length === 0
+                  ? "2px solid #10B981"
+                  : stateErrors.length > 0
+                    ? "2px solid #EF4444"
+                    : state.isFocused
+                      ? "2px solid #10B981"
+                      : "1px solid #E5E7EB",
+              borderRadius: "8px",
+              backgroundColor: "#FFFFFF",
+              boxShadow: "none",
+              "&:hover": {
+                borderColor: stateErrors.length > 0 ? "#EF4444" : "#10B981",
+              },
+              transition: "all 0.2s ease",
+            }),
+          }}
           isSearchable
           isClearable
-          hasError={stateErrors.length > 0}
         />
         {stateErrors.length > 0 && (
           <p className="text-sm text-red-500 font-medium">
@@ -332,10 +352,30 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           placeholder="Search and select LGAs..."
           isMulti
           isDisabled={!selectedState}
-          styles={customSelectStyles}
+          styles={{
+            ...customSelectStyles,
+            control: (provided: any, state: any) => ({
+              ...provided,
+              minHeight: "48px",
+              border:
+                state.hasValue && lgaErrors.length === 0
+                  ? "2px solid #10B981"
+                  : lgaErrors.length > 0
+                    ? "2px solid #EF4444"
+                    : state.isFocused
+                      ? "2px solid #10B981"
+                      : "1px solid #E5E7EB",
+              borderRadius: "8px",
+              backgroundColor: "#FFFFFF",
+              boxShadow: "none",
+              "&:hover": {
+                borderColor: lgaErrors.length > 0 ? "#EF4444" : "#10B981",
+              },
+              transition: "all 0.2s ease",
+            }),
+          }}
           isSearchable
           isClearable
-          hasError={lgaErrors.length > 0}
         />
         {lgaErrors.length > 0 && (
           <p className="text-sm text-red-500 font-medium">
@@ -359,10 +399,31 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
                 onChange={handleAreaChange}
                 placeholder="Search and select areas..."
                 isMulti
-                styles={customSelectStyles}
+                styles={{
+                  ...customSelectStyles,
+                  control: (provided: any, state: any) => ({
+                    ...provided,
+                    minHeight: "48px",
+                    border:
+                      state.hasValue && areaErrors.length === 0
+                        ? "2px solid #10B981"
+                        : areaErrors.length > 0
+                          ? "2px solid #EF4444"
+                          : state.isFocused
+                            ? "2px solid #10B981"
+                            : "1px solid #E5E7EB",
+                    borderRadius: "8px",
+                    backgroundColor: "#FFFFFF",
+                    boxShadow: "none",
+                    "&:hover": {
+                      borderColor:
+                        areaErrors.length > 0 ? "#EF4444" : "#10B981",
+                    },
+                    transition: "all 0.2s ease",
+                  }),
+                }}
                 isSearchable
                 isClearable
-                hasError={areaErrors.length > 0}
                 isOptionDisabled={() => selectedAreas.length >= 3}
               />
 
