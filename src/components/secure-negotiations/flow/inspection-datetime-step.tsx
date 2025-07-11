@@ -91,15 +91,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
-    console.log("Initializing date/time with details:", {
-      inspectionDate: details?.inspectionDate,
-      inspectionTime: details?.inspectionTime,
-      availableDatesLength: availableDates.length,
-      availableTimesLength: availableTimes.length,
-      currentNewDate: newDate,
-      currentNewTime: newTime,
-    });
-
     // Only initialize if we have available options
     if (availableDates.length === 0 || availableTimes.length === 0) {
       return;
@@ -111,44 +102,29 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       const inspectionDateFormatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
-      console.log("Formatted inspection date:", inspectionDateFormatted);
 
       // Check if the inspection date exists in our available dates
       const dateExists = availableDates.some(
         (d) => d.date === inspectionDateFormatted,
       );
       if (dateExists && newDate !== inspectionDateFormatted) {
-        console.log("Setting date from details:", inspectionDateFormatted);
         setNewDate(inspectionDateFormatted);
       } else if (!dateExists && !newDate) {
         // If inspection date is not in available dates, use first available
-        console.log(
-          "Inspection date not available, using first available:",
-          availableDates[0]?.date,
-        );
         setNewDate(availableDates[0]?.date || "");
       }
     } else if (!newDate) {
       // No inspection date from details, use first available
-      console.log(
-        "No inspection date, using first available:",
-        availableDates[0]?.date,
-      );
       setNewDate(availableDates[0]?.date || "");
     }
 
     // Set initial time from details or first available
     if (details?.inspectionTime) {
-      console.log("Setting time from details:", details.inspectionTime);
       if (newTime !== details.inspectionTime) {
         setNewTime(details.inspectionTime);
       }
     } else if (!newTime) {
       // No inspection time from details, use first available
-      console.log(
-        "No inspection time, using first available:",
-        availableTimes[0]?.value,
-      );
       setNewTime(availableTimes[0]?.value || "");
     }
   }, [
