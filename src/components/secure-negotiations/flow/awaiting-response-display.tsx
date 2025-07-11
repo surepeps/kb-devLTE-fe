@@ -115,46 +115,53 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
           )}
 
           {/* Status Indicators */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div
-              className={`p-3 rounded-lg border ${
-                userType === pendingResponseFrom
-                  ? "bg-gray-50 border-gray-200"
-                  : "bg-green-50 border-green-200"
-              }`}
-            >
+          <div
+            className={`grid gap-4 mb-6 ${isAwaitingAdmin ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"}`}
+          >
+            <div className="p-3 rounded-lg border bg-green-50 border-green-200">
               <div className="text-sm font-medium text-gray-700 mb-1">You</div>
-              <div
-                className={`text-sm ${
-                  userType === pendingResponseFrom
-                    ? "text-gray-600"
-                    : "text-green-600"
-                }`}
-              >
-                {userType === pendingResponseFrom ? "Pending" : "✓ Responded"}
-              </div>
+              <div className="text-sm text-green-600">✓ Responded</div>
             </div>
 
-            <div
-              className={`p-3 rounded-lg border ${
-                pendingResponseFrom !== userType
-                  ? "bg-gray-50 border-gray-200"
-                  : "bg-yellow-50 border-yellow-200"
-              }`}
-            >
-              <div className="text-sm font-medium text-gray-700 mb-1">
-                {pendingResponseFrom === "seller" ? "Seller" : "Buyer"}
-              </div>
+            {!isAwaitingAdmin && (
               <div
-                className={`text-sm ${
+                className={`p-3 rounded-lg border ${
                   pendingResponseFrom !== userType
-                    ? "text-green-600"
-                    : "text-yellow-600"
+                    ? "bg-gray-50 border-gray-200"
+                    : "bg-yellow-50 border-yellow-200"
                 }`}
               >
-                {pendingResponseFrom !== userType ? "✓ Responded" : "Pending"}
+                <div className="text-sm font-medium text-gray-700 mb-1">
+                  {pendingResponseFrom === "seller" ? "Seller" : "Buyer"}
+                </div>
+                <div
+                  className={`text-sm ${
+                    pendingResponseFrom !== userType
+                      ? "text-green-600"
+                      : "text-yellow-600"
+                  }`}
+                >
+                  {pendingResponseFrom !== userType ? "✓ Responded" : "Pending"}
+                </div>
               </div>
-            </div>
+            )}
+
+            {isAwaitingAdmin && (
+              <>
+                <div className="p-3 rounded-lg border bg-gray-50 border-gray-200">
+                  <div className="text-sm font-medium text-gray-700 mb-1">
+                    {userType === "seller" ? "Buyer" : "Seller"}
+                  </div>
+                  <div className="text-sm text-gray-600">✓ Responded</div>
+                </div>
+                <div className="p-3 rounded-lg border bg-purple-50 border-purple-200">
+                  <div className="text-sm font-medium text-gray-700 mb-1">
+                    Admin
+                  </div>
+                  <div className="text-sm text-purple-600">🔍 Reviewing</div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Refresh Button */}
