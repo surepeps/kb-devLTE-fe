@@ -91,29 +91,49 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
-    // Always set from details if available, otherwise use first available option
-    const currentOrFirstDate =
-      details?.inspectionDate || availableDates[0]?.date || "";
-    const currentOrFirstTime =
-      details?.inspectionTime || availableTimes[0]?.value || "";
-
-    if (
-      availableDates.length > 0 &&
-      (!newDate || newDate !== currentOrFirstDate)
-    ) {
-      setNewDate(currentOrFirstDate);
+    // Only initialize if we have available options
+    if (availableDates.length === 0 || availableTimes.length === 0) {
+      return;
     }
-    if (
-      availableTimes.length > 0 &&
-      (!newTime || newTime !== currentOrFirstTime)
-    ) {
-      setNewTime(currentOrFirstTime);
+
+    // Set initial date from details or first available
+    if (details?.inspectionDate) {
+      // Convert inspection date to match our available dates format
+      const inspectionDateFormatted = new Date(details.inspectionDate)
+        .toISOString()
+        .split("T")[0];
+
+      // Check if the inspection date exists in our available dates
+      const dateExists = availableDates.some(
+        (d) => d.date === inspectionDateFormatted,
+      );
+      if (dateExists && newDate !== inspectionDateFormatted) {
+        setNewDate(inspectionDateFormatted);
+      } else if (!dateExists && !newDate) {
+        // If inspection date is not in available dates, use first available
+        setNewDate(availableDates[0]?.date || "");
+      }
+    } else if (!newDate) {
+      // No inspection date from details, use first available
+      setNewDate(availableDates[0]?.date || "");
+    }
+
+    // Set initial time from details or first available
+    if (details?.inspectionTime) {
+      if (newTime !== details.inspectionTime) {
+        setNewTime(details.inspectionTime);
+      }
+    } else if (!newTime) {
+      // No inspection time from details, use first available
+      setNewTime(availableTimes[0]?.value || "");
     }
   }, [
     availableDates,
     availableTimes,
     details?.inspectionDate,
     details?.inspectionTime,
+    newDate,
+    newTime,
   ]);
 
   // Prevent background scroll when modal is open
@@ -134,10 +154,22 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     ? availableDates
     : availableDates.slice(0, 10);
 
-  const currentDate =
-    details?.inspectionDate || newDate || availableDates[0]?.date || "";
-  const currentTime =
-    details?.inspectionTime || newTime || availableTimes[0]?.value || "";
+  const currentDate = useMemo(() => {
+    if (details?.inspectionDate) {
+      // Convert to our date format
+      const formatted = new Date(details.inspectionDate)
+        .toISOString()
+        .split("T")[0];
+      // Check if it's in our available dates, otherwise use newDate or first available
+      const dateExists = availableDates.some((d) => d.date === formatted);
+      return dateExists ? formatted : newDate || availableDates[0]?.date || "";
+    }
+    return newDate || availableDates[0]?.date || "";
+  }, [details?.inspectionDate, newDate, availableDates]);
+
+  const currentTime = useMemo(() => {
+    return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
+  }, [details?.inspectionTime, newTime, availableTimes]);
   const propertyAddress = details?.propertyId?.location
     ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
     : "Property address not specified";

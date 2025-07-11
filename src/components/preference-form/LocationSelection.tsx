@@ -6,37 +6,17 @@ import Select, { MultiValue, SingleValue } from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePreferenceForm } from "@/context/preference-form-context";
 import { LocationSelection as LocationSelectionType } from "@/types/preference-form";
-import data from "@/data/state-lga";
+import {
+  getStates,
+  getLGAsByState,
+  getAreasByStateLGA,
+} from "@/utils/location-utils";
 
 // Types
 interface Option {
   value: string;
   label: string;
 }
-
-// Sample area data (in a real app, this would come from an API)
-const SAMPLE_AREAS: Record<string, string[]> = {
-  Agege: ["Abule Egba", "Agege Central", "Dopemu", "Fagba", "Mulero"],
-  "Ajeromi-Ifelodun": ["Ajegunle", "Alaba", "Layeni", "Tolu"],
-  Alimosho: ["Egbeda", "Idimu", "Ikotun", "Ipaja", "Iyana-Ipaja"],
-  "Amuwo-Odofin": ["Festac Town", "Mile 2", "Satellite Town", "Trade Fair"],
-  Apapa: ["Apapa Central", "Kirikiri", "Liverpool", "Marine Beach"],
-  Badagry: ["Badagry Central", "Olorunda", "Posukoh", "Seme"],
-  Epe: ["Epe Central", "Ejinrin", "Noforija", "Orimedu"],
-  "Eti-Osa": ["Victoria Island", "Ikoyi", "Lekki", "Ajah", "Eko Atlantic"],
-  "Ibeju-Lekki": ["Bogije", "Eleko", "Ibeju", "Lakowe", "Sangotedo"],
-  "Ifako-Ijaiye": ["Ifako", "Ijaiye", "Ojokoro", "Oke-Odo"],
-  Ikeja: ["Ikeja GRA", "Computer Village", "Allen Avenue", "Oregun", "Ojodu"],
-  Ikorodu: ["Ikorodu Central", "Ebute", "Igbogbo", "Imota"],
-  Kosofe: ["Agboyi", "Ikosi", "Ketu", "Mile 12", "Oworonshoki"],
-  "Lagos Island": ["Lagos Island Central", "Adeniji Adele", "Campos Square"],
-  "Lagos Mainland": ["Ebute Metta", "Oyingbo", "Sabo", "Yaba"],
-  Mushin: ["Mushin Central", "Idi-Oro", "Itire", "Papa Ajao"],
-  Ojo: ["Ojo Central", "Alaba Rago", "Iba", "Igando"],
-  "Oshodi-Isolo": ["Oshodi", "Isolo", "Ejigbo", "Okota", "Shogunle"],
-  Shomolu: ["Bariga", "Fadeyi", "Palmgrove", "Shomolu Central"],
-  Surulere: ["Surulere Central", "Itire", "Lawanson", "Shitta"],
-};
 
 // Custom select styles
 const customSelectStyles = {
@@ -193,7 +173,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   // Memoized options
   const stateOptions = useMemo(
     () =>
-      Object.keys(data).map((state: string) => ({
+      getStates().map((state: string) => ({
         value: state,
         label: state,
       })),
@@ -202,22 +182,19 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
   const lgaOptions = useMemo(() => {
     if (!selectedState) return [];
-    const lgas = data[selectedState.label as keyof typeof data];
-    if (Array.isArray(lgas)) {
-      return lgas.map((lga: string) => ({
-        value: lga,
-        label: lga,
-      }));
-    }
-    return [];
+    const lgas = getLGAsByState(selectedState.value);
+    return lgas.map((lga: string) => ({
+      value: lga,
+      label: lga,
+    }));
   }, [selectedState]);
 
   const areaOptions = useMemo(() => {
-    if (selectedLGAs.length === 0) return [];
+    if (selectedLGAs.length === 0 || !selectedState) return [];
 
     const allAreas: Option[] = [];
     selectedLGAs.forEach((lga) => {
-      const areas = SAMPLE_AREAS[lga.value] || [];
+      const areas = getAreasByStateLGA(selectedState.value, lga.value);
       areas.forEach((area) => {
         allAreas.push({
           value: `${area} - ${lga.label}`,
@@ -227,7 +204,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     });
 
     return allAreas;
-  }, [selectedLGAs]);
+  }, [selectedLGAs, selectedState]);
 
   // Update context when values change
   const updateLocationData = useCallback(() => {
@@ -329,10 +306,30 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           value={selectedState}
           onChange={handleStateChange}
           placeholder="Search and select state..."
-          styles={customSelectStyles}
+          styles={{
+            ...customSelectStyles,
+            control: (provided: any, state: any) => ({
+              ...provided,
+              minHeight: "48px",
+              border:
+                state.hasValue && stateErrors.length === 0
+                  ? "2px solid #10B981"
+                  : stateErrors.length > 0
+                    ? "2px solid #EF4444"
+                    : state.isFocused
+                      ? "2px solid #10B981"
+                      : "1px solid #E5E7EB",
+              borderRadius: "8px",
+              backgroundColor: "#FFFFFF",
+              boxShadow: "none",
+              "&:hover": {
+                borderColor: stateErrors.length > 0 ? "#EF4444" : "#10B981",
+              },
+              transition: "all 0.2s ease",
+            }),
+          }}
           isSearchable
           isClearable
-          hasError={stateErrors.length > 0}
         />
         {stateErrors.length > 0 && (
           <p className="text-sm text-red-500 font-medium">
@@ -353,10 +350,30 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           placeholder="Search and select LGAs..."
           isMulti
           isDisabled={!selectedState}
-          styles={customSelectStyles}
+          styles={{
+            ...customSelectStyles,
+            control: (provided: any, state: any) => ({
+              ...provided,
+              minHeight: "48px",
+              border:
+                state.hasValue && lgaErrors.length === 0
+                  ? "2px solid #10B981"
+                  : lgaErrors.length > 0
+                    ? "2px solid #EF4444"
+                    : state.isFocused
+                      ? "2px solid #10B981"
+                      : "1px solid #E5E7EB",
+              borderRadius: "8px",
+              backgroundColor: "#FFFFFF",
+              boxShadow: "none",
+              "&:hover": {
+                borderColor: lgaErrors.length > 0 ? "#EF4444" : "#10B981",
+              },
+              transition: "all 0.2s ease",
+            }),
+          }}
           isSearchable
           isClearable
-          hasError={lgaErrors.length > 0}
         />
         {lgaErrors.length > 0 && (
           <p className="text-sm text-red-500 font-medium">
@@ -380,10 +397,31 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
                 onChange={handleAreaChange}
                 placeholder="Search and select areas..."
                 isMulti
-                styles={customSelectStyles}
+                styles={{
+                  ...customSelectStyles,
+                  control: (provided: any, state: any) => ({
+                    ...provided,
+                    minHeight: "48px",
+                    border:
+                      state.hasValue && areaErrors.length === 0
+                        ? "2px solid #10B981"
+                        : areaErrors.length > 0
+                          ? "2px solid #EF4444"
+                          : state.isFocused
+                            ? "2px solid #10B981"
+                            : "1px solid #E5E7EB",
+                    borderRadius: "8px",
+                    backgroundColor: "#FFFFFF",
+                    boxShadow: "none",
+                    "&:hover": {
+                      borderColor:
+                        areaErrors.length > 0 ? "#EF4444" : "#10B981",
+                    },
+                    transition: "all 0.2s ease",
+                  }),
+                }}
                 isSearchable
                 isClearable
-                hasError={areaErrors.length > 0}
                 isOptionDisabled={() => selectedAreas.length >= 3}
               />
 
