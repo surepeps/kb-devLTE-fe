@@ -71,20 +71,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   const letterOfIntention = details?.letterOfIntention || "";
 
   const handleAccept = async () => {
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createAcceptPayload("LOI", currentDate, currentTime);
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("accept");
-    } catch (error) {
-      console.error("Failed to accept LOI:", error);
-    }
+    // Don't submit immediately, proceed to next step
+    onActionSelected("accept");
   };
 
   const handleReject = async () => {
@@ -104,26 +92,10 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       return;
     }
 
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createRequestChangesPayload(
-        changeRequest,
-        currentDate,
-        currentTime,
-      );
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      setShowRequestChangesModal(false);
-      setChangeRequest("");
-      onActionSelected("requestChanges");
-    } catch (error) {
-      console.error("Failed to request LOI changes:", error);
-    }
+    // Don't submit immediately, proceed to next step
+    setShowRequestChangesModal(false);
+    setChangeRequest("");
+    onActionSelected("requestChanges");
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
