@@ -320,7 +320,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+        <h2 className="text-2xl font-bold text-[#09391C] mb-2">
           Inspection Schedule
         </h2>
         <p className="text-gray-600">
