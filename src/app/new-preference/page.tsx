@@ -211,12 +211,19 @@ const PreferenceFormContent: React.FC = () => {
 
   // Handle form submission
   const handleSubmit = useCallback(async () => {
+    // Final validation before submission
+    const { isFormValid } = usePreferenceForm();
+    if (!isFormValid()) {
+      toast.error("Please complete all required fields before submitting");
+      return;
+    }
+
     dispatch({ type: "SET_SUBMITTING", payload: true });
 
     try {
       const payload = generatePayload();
 
-      // Log payload for debugging
+      // Log payload for debugging (keeping as requested)
       console.log("Generated Payload:", JSON.stringify(payload, null, 2));
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/buyers/submit-preference`;
@@ -225,6 +232,8 @@ const PreferenceFormContent: React.FC = () => {
         axios.post(url, payload).then((response) => {
           if (response.status === 201) {
             console.log("Preference submitted successfully:", response);
+            // Reset form after successful submission
+            resetForm();
             // Redirect to success page or marketplace
             router.push("/marketplace");
             return "Preference submitted successfully";
@@ -243,7 +252,7 @@ const PreferenceFormContent: React.FC = () => {
     } finally {
       dispatch({ type: "SET_SUBMITTING", payload: false });
     }
-  }, [generatePayload, dispatch, router]);
+  }, [generatePayload, dispatch, router, resetForm]);
 
   // Render preference type selector
   const renderPreferenceTypeSelector = () => (
@@ -296,13 +305,24 @@ const PreferenceFormContent: React.FC = () => {
           {state.steps.map((step, index) => (
             <React.Fragment key={index}>
               <motion.div
-                className={`flex items-center space-x-2 cursor-pointer ${
+                className={`flex items-center space-x-2 ${
+                  index <= state.currentStep
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-50"
+                } ${
                   index === state.currentStep
                     ? "text-emerald-600"
-                    : "text-gray-500"
+                    : index < state.currentStep
+                      ? "text-emerald-500"
+                      : "text-gray-400"
                 }`}
-                onClick={() => goToStep(index)}
-                whileHover={{ scale: 1.05 }}
+                onClick={() => {
+                  // Only allow navigation to current step or completed steps
+                  if (index <= state.currentStep) {
+                    goToStep(index);
+                  }
+                }}
+                whileHover={index <= state.currentStep ? { scale: 1.05 } : {}}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
@@ -310,7 +330,7 @@ const PreferenceFormContent: React.FC = () => {
                       ? "bg-emerald-500 text-white"
                       : index === state.currentStep
                         ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
-                        : "bg-gray-200 text-gray-600"
+                        : "bg-gray-200 text-gray-400"
                   }`}
                 >
                   {index < state.currentStep ? (
