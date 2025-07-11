@@ -31,10 +31,10 @@ const nextConfig: NextConfig = {
     "7e1629ae3bbb45039d02ca943e4cf137-426cc1e95e0949608b0629b62.fly.dev",
     "8c3b9fa43c3c4316bcbd26d40ffcf48f-93031c550c6543c98390c80ea.fly.dev",
   ],
-  // Improve performance and reduce network issues
-  turbopack: {
-    // Turbopack is now stable, moved from experimental
-  },
+  // Disable turbopack for now to fix build issues
+  // turbopack: {
+  //   // Turbopack is now stable, moved from experimental
+  // },
 };
 
 export default nextConfig;
