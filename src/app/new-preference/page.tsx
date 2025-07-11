@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Select, { MultiValue, SingleValue } from "react-select";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import axios from "axios";
@@ -13,69 +14,207 @@ import useClickOutside from "@/hooks/clickOutside";
 import { useLoading } from "@/hooks/useLoading";
 import Loading from "@/components/loading-component/loading";
 
+// Types
 interface Option {
   value: string;
   label: string;
 }
 
-type PreferenceType = "buyer" | "tenant" | "developer" | "shortlet";
+type PreferenceType = "buy" | "rent" | "joint-venture" | "shortlet";
+type PreferenceMode = "buy" | "tenant" | "developer" | "shortlet";
 
-// Custom Button Component
-const CustomButton = ({
-  children,
-  variant = "primary",
-  size = "md",
-  onClick,
-  disabled = false,
-  type = "button",
-  className = "",
-}: {
-  children: React.ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
-  size?: "sm" | "md" | "lg";
-  onClick?: () => void;
-  disabled?: boolean;
-  type?: "button" | "submit";
-  className?: string;
-}) => {
-  const baseStyles =
-    "font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+interface PreferenceConfig {
+  label: string;
+  shortLabel: string;
+  icon: string;
+  description: string;
+  preferenceType: PreferenceType;
+  preferenceMode: PreferenceMode;
+}
 
-  const variants = {
-    primary:
-      "bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-emerald-500",
-    secondary:
-      "bg-gray-100 hover:bg-gray-200 text-gray-800 focus:ring-gray-500",
-    ghost:
-      "bg-transparent hover:bg-gray-50 text-gray-600 border border-gray-300 focus:ring-gray-500",
-  };
-
-  const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg",
-  };
-
-  const disabledStyles = disabled
-    ? "opacity-50 cursor-not-allowed"
-    : "cursor-pointer";
-
-  return (
-    <motion.button
-      type={type}
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${disabledStyles} ${className}`}
-      whileHover={disabled ? {} : { scale: 1.02 }}
-      whileTap={disabled ? {} : { scale: 0.98 }}
-    >
-      {children}
-    </motion.button>
-  );
+// Preference configurations with payload mapping
+const PREFERENCE_CONFIGS: Record<string, PreferenceConfig> = {
+  buy: {
+    label: "Buy a Property",
+    shortLabel: "Buy",
+    icon: "🏠",
+    description: "Find properties to purchase",
+    preferenceType: "buy",
+    preferenceMode: "buy",
+  },
+  rent: {
+    label: "Rent Property",
+    shortLabel: "Rent",
+    icon: "🏡",
+    description: "Find rental properties",
+    preferenceType: "rent",
+    preferenceMode: "tenant",
+  },
+  jointVenture: {
+    label: "Joint Venture",
+    shortLabel: "JV",
+    icon: "🏗",
+    description: "Partner for development",
+    preferenceType: "joint-venture",
+    preferenceMode: "developer",
+  },
+  shortlet: {
+    label: "Shortlet Guest Stay",
+    shortLabel: "Shortlet",
+    icon: "🏘",
+    description: "Book short-term stays",
+    preferenceType: "shortlet",
+    preferenceMode: "shortlet",
+  },
 };
 
-// Custom Input Component
-const CustomInput = ({
+// Features data
+const FEATURES_DATA = {
+  buy: {
+    base: [
+      "Security",
+      "Water Supply",
+      "Parking",
+      "Power Supply",
+      "Title Preference (e.g., C of O)",
+    ],
+    premium: [
+      "Gated Estate",
+      "Smart Home Features",
+      "Infrastructure",
+      "Sea View / Waterfront",
+    ],
+  },
+  rent: {
+    base: [
+      "Parking",
+      "Power Supply",
+      "Clean Water",
+      "Security",
+      "Accessibility to Road",
+    ],
+    premium: [
+      "Gated Estate",
+      "Furnished",
+      "Serviced Apartment",
+      "Backup Generator",
+      "Proximity to School/Work",
+    ],
+  },
+  jointVenture: {
+    base: ["Titled Land", "Dry Land", "Accessible Road", "Within Urban Zone"],
+    premium: [
+      "Existing Drawings",
+      "Fenced Land",
+      "High-Demand Area",
+      "Market Demand for Flats",
+    ],
+  },
+  shortlet: {
+    base: ["Wi-Fi", "Power Supply", "Clean Bathroom", "AC", "Kitchen"],
+    premium: [
+      "Smart TV / Netflix",
+      "Gym",
+      "Swimming Pool",
+      "Housekeeping",
+      "Pet-Friendly",
+      "Breakfast",
+      "Balcony",
+      "Gated Estate",
+    ],
+  },
+};
+
+// Custom searchable select styles
+const customSelectStyles = {
+  control: (provided: any, state: any) => ({
+    ...provided,
+    minHeight: "52px",
+    border: state.isFocused ? "2px solid #059669" : "1px solid #E5E7EB",
+    borderRadius: "16px",
+    backgroundColor: "#FFFFFF",
+    boxShadow: "none",
+    "&:hover": {
+      borderColor: "#059669",
+    },
+    transition: "all 0.2s ease",
+  }),
+  valueContainer: (provided: any) => ({
+    ...provided,
+    padding: "8px 16px",
+    fontSize: "16px",
+  }),
+  input: (provided: any) => ({
+    ...provided,
+    margin: 0,
+    padding: 0,
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "#9CA3AF",
+    fontSize: "16px",
+  }),
+  multiValue: (provided: any) => ({
+    ...provided,
+    backgroundColor: "#D1FAE5",
+    borderRadius: "8px",
+    border: "1px solid #10B981",
+  }),
+  multiValueLabel: (provided: any) => ({
+    ...provided,
+    color: "#047857",
+    fontSize: "14px",
+    fontWeight: "500",
+  }),
+  multiValueRemove: (provided: any) => ({
+    ...provided,
+    color: "#047857",
+    "&:hover": {
+      backgroundColor: "#10B981",
+      color: "white",
+    },
+  }),
+  option: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: state.isSelected
+      ? "#10B981"
+      : state.isFocused
+        ? "#F3F4F6"
+        : "white",
+    color: state.isSelected ? "white" : "#374151",
+    padding: "12px 16px",
+    fontSize: "16px",
+    "&:hover": {
+      backgroundColor: state.isSelected ? "#10B981" : "#F3F4F6",
+    },
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    borderRadius: "16px",
+    border: "1px solid #E5E7EB",
+    boxShadow:
+      "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    zIndex: 50,
+  }),
+  menuList: (provided: any) => ({
+    ...provided,
+    padding: "8px",
+    borderRadius: "16px",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  dropdownIndicator: (provided: any) => ({
+    ...provided,
+    color: "#6B7280",
+    "&:hover": {
+      color: "#059669",
+    },
+  }),
+};
+
+// Modern Input Component
+const ModernInput = ({
   label,
   name,
   type = "text",
@@ -86,6 +225,7 @@ const CustomInput = ({
   required = false,
   disabled = false,
   className = "",
+  rows = 4,
 }: {
   label: string;
   name: string;
@@ -99,10 +239,11 @@ const CustomInput = ({
   required?: boolean;
   disabled?: boolean;
   className?: string;
+  rows?: number;
 }) => {
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-semibold text-gray-800">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -113,8 +254,8 @@ const CustomInput = ({
           onChange={onChange}
           placeholder={placeholder}
           disabled={disabled}
-          rows={4}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500 resize-none"
+          rows={rows}
+          className="w-full px-4 py-3 text-base border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500 resize-none placeholder-gray-400"
         />
       ) : (
         <input
@@ -124,197 +265,142 @@ const CustomInput = ({
           onChange={onChange}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500"
+          className="w-full px-4 py-3 text-base border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500 placeholder-gray-400"
         />
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
     </div>
   );
 };
 
-// Custom Select Component with Tag Support
-const CustomSelect = ({
+// Modern Button Component
+const ModernButton = ({
+  children,
+  variant = "primary",
+  size = "md",
+  onClick,
+  disabled = false,
+  type = "button",
+  className = "",
+  fullWidth = false,
+}: {
+  children: React.ReactNode;
+  variant?: "primary" | "secondary" | "ghost";
+  size?: "sm" | "md" | "lg";
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit";
+  className?: string;
+  fullWidth?: boolean;
+}) => {
+  const baseStyles =
+    "font-semibold rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const variants = {
+    primary:
+      "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 disabled:bg-gray-300",
+    secondary:
+      "bg-gray-100 hover:bg-gray-200 text-gray-800 focus:ring-gray-500",
+    ghost:
+      "bg-transparent hover:bg-gray-50 text-gray-600 border-2 border-gray-200 hover:border-gray-300 focus:ring-gray-500",
+  };
+
+  const sizes = {
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3 text-base",
+    lg: "px-8 py-4 text-lg",
+  };
+
+  const widthClass = fullWidth ? "w-full" : "";
+
+  return (
+    <motion.button
+      type={type}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${widthClass} ${className}`}
+      whileHover={disabled ? {} : { scale: 1.02 }}
+      whileTap={disabled ? {} : { scale: 0.98 }}
+    >
+      {children}
+    </motion.button>
+  );
+};
+
+// Modern Checkbox Group
+const ModernCheckboxGroup = ({
   label,
   options,
   value,
   onChange,
-  placeholder,
-  isMulti = false,
-  required = false,
-  disabled = false,
   className = "",
 }: {
   label: string;
-  options: Option[];
-  value: Option | Option[] | null;
-  onChange: (selected: Option | Option[] | null) => void;
-  placeholder?: string;
-  isMulti?: boolean;
-  required?: boolean;
-  disabled?: boolean;
+  options: string[];
+  value: string[];
+  onChange: (value: string[]) => void;
   className?: string;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const selectRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(selectRef, () => setIsOpen(false));
-
-  const handleOptionClick = (option: Option) => {
-    if (isMulti) {
-      const currentValue = (value as Option[]) || [];
-      const isSelected = currentValue.some(
-        (item) => item.value === option.value,
-      );
-
-      if (isSelected) {
-        const newValue = currentValue.filter(
-          (item) => item.value !== option.value,
-        );
-        onChange(newValue.length > 0 ? newValue : null);
-      } else {
-        onChange([...currentValue, option]);
-      }
+  const handleChange = (option: string, checked: boolean) => {
+    if (checked) {
+      onChange([...value, option]);
     } else {
-      onChange(option);
-      setIsOpen(false);
-    }
-  };
-
-  const removeTag = (optionToRemove: Option) => {
-    if (isMulti) {
-      const currentValue = (value as Option[]) || [];
-      const newValue = currentValue.filter(
-        (item) => item.value !== optionToRemove.value,
-      );
-      onChange(newValue.length > 0 ? newValue : null);
-    }
-  };
-
-  const displayValue = () => {
-    if (isMulti) {
-      const multiValue = (value as Option[]) || [];
-      return multiValue.length > 0
-        ? `${multiValue.length} selected`
-        : placeholder;
-    } else {
-      return (value as Option)?.label || placeholder;
-    }
-  };
-
-  const isOptionSelected = (option: Option) => {
-    if (isMulti) {
-      const multiValue = (value as Option[]) || [];
-      return multiValue.some((item) => item.value === option.value);
-    } else {
-      return (value as Option)?.value === option.value;
+      onChange(value.filter((item) => item !== option));
     }
   };
 
   return (
-    <div className={`space-y-2 ${className}`} ref={selectRef}>
-      <label className="block text-sm font-medium text-gray-700">
+    <div className={`space-y-4 ${className}`}>
+      <label className="block text-sm font-semibold text-gray-800">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
-
-      {/* Selected Tags for Multi-select */}
-      {isMulti && value && (value as Option[]).length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {(value as Option[]).map((option) => (
-            <span
-              key={option.value}
-              className="inline-flex items-center px-3 py-1 rounded-lg text-sm bg-emerald-100 text-emerald-800 border border-emerald-200"
-            >
-              {option.label}
-              <button
-                type="button"
-                onClick={() => removeTag(option)}
-                className="ml-2 text-emerald-600 hover:text-emerald-800"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Select Button */}
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-          disabled={disabled}
-          className="w-full px-4 py-3 text-left border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500 flex items-center justify-between"
-        >
-          <span className="truncate">{displayValue()}</span>
-          <svg
-            className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {options.map((option) => (
+          <label
+            key={option}
+            className="flex items-start space-x-3 cursor-pointer group p-3 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-
-        {/* Dropdown */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl max-h-60 overflow-y-auto"
-            >
-              {options.length === 0 ? (
-                <div className="px-4 py-3 text-sm text-gray-500">
-                  No options available
-                </div>
-              ) : (
-                options.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleOptionClick(option)}
-                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                      isOptionSelected(option)
-                        ? "bg-emerald-50 text-emerald-700"
-                        : ""
-                    }`}
+            <div className="relative mt-0.5">
+              <input
+                type="checkbox"
+                checked={value.includes(option)}
+                onChange={(e) => handleChange(option, e.target.checked)}
+                className="sr-only"
+              />
+              <div
+                className={`w-5 h-5 rounded-lg border-2 transition-all ${
+                  value.includes(option)
+                    ? "border-emerald-500 bg-emerald-500"
+                    : "border-gray-300 group-hover:border-emerald-300"
+                }`}
+              >
+                {value.includes(option) && (
+                  <svg
+                    className="w-3 h-3 text-white absolute top-0.5 left-0.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
                   >
-                    <span>{option.label}</span>
-                    {isOptionSelected(option) && (
-                      <svg
-                        className="w-5 h-5 text-emerald-500"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                ))
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+            </div>
+            <span className="text-sm text-gray-700 group-hover:text-gray-900 leading-relaxed">
+              {option}
+            </span>
+          </label>
+        ))}
       </div>
     </div>
   );
 };
 
-// Custom Radio Group Component
-const CustomRadioGroup = ({
+// Modern Radio Group
+const ModernRadioGroup = ({
   label,
   name,
   options,
@@ -336,13 +422,13 @@ const CustomRadioGroup = ({
   layout?: "vertical" | "horizontal";
 }) => {
   return (
-    <div className={`space-y-3 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">
+    <div className={`space-y-4 ${className}`}>
+      <label className="block text-sm font-semibold text-gray-800">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <div
-        className={`space-y-2 ${layout === "horizontal" ? "sm:flex sm:space-y-0 sm:space-x-4" : ""}`}
+        className={`space-y-3 ${layout === "horizontal" ? "sm:flex sm:space-y-0 sm:space-x-6" : ""}`}
       >
         {options.map((option) => (
           <label
@@ -381,78 +467,8 @@ const CustomRadioGroup = ({
   );
 };
 
-// Custom Checkbox Group Component
-const CustomCheckboxGroup = ({
-  label,
-  options,
-  value,
-  onChange,
-  className = "",
-}: {
-  label: string;
-  options: string[];
-  value: string[];
-  onChange: (value: string[]) => void;
-  className?: string;
-}) => {
-  const handleChange = (option: string, checked: boolean) => {
-    if (checked) {
-      onChange([...value, option]);
-    } else {
-      onChange(value.filter((item) => item !== option));
-    }
-  };
-
-  return (
-    <div className={`space-y-3 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {options.map((option) => (
-          <label
-            key={option}
-            className="flex items-center space-x-3 cursor-pointer group"
-          >
-            <div className="relative">
-              <input
-                type="checkbox"
-                checked={value.includes(option)}
-                onChange={(e) => handleChange(option, e.target.checked)}
-                className="sr-only"
-              />
-              <div
-                className={`w-5 h-5 rounded border-2 transition-all ${
-                  value.includes(option)
-                    ? "border-emerald-500 bg-emerald-500"
-                    : "border-gray-300 group-hover:border-emerald-300"
-                }`}
-              >
-                {value.includes(option) && (
-                  <svg
-                    className="w-3 h-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
-              </div>
-            </div>
-            <span className="text-sm text-gray-700 group-hover:text-gray-900">
-              {option}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Section Container Component
-const SectionContainer = ({
+// Section Card Component
+const SectionCard = ({
   title,
   icon,
   children,
@@ -468,13 +484,13 @@ const SectionContainer = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-gray-50 rounded-2xl p-6 space-y-6 ${className}`}
+      className={`bg-white rounded-3xl p-6 space-y-6 border border-gray-100 ${className}`}
     >
       <div className="flex items-center space-x-3">
-        <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
+        <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-600 text-xl">
           {icon}
         </div>
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
       </div>
       {children}
     </motion.div>
@@ -484,8 +500,8 @@ const SectionContainer = ({
 const NewPreference = () => {
   const isLoading = useLoading();
   const router = useRouter();
-  const [currentPreferenceType, setCurrentPreferenceType] =
-    useState<PreferenceType>("buyer");
+  const [currentPreferenceKey, setCurrentPreferenceKey] =
+    useState<string>("buy");
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
@@ -494,6 +510,9 @@ const NewPreference = () => {
   }>({});
   const [showFinalSubmit, setShowFinalSubmit] = useState(false);
   const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
+
+  // Get current preference config
+  const currentPreference = PREFERENCE_CONFIGS[currentPreferenceKey];
 
   // Memoized options
   const stateOptions = useMemo(
@@ -517,65 +536,40 @@ const NewPreference = () => {
     return [];
   }, [selectedState]);
 
-  // Features data
-  const featuresData = {
-    buyer: {
-      base: [
-        "Security",
-        "Water Supply",
-        "Parking",
-        "Power Supply",
-        "Title Preference (e.g., C of O)",
-      ],
-      premium: [
-        "Gated Estate",
-        "Smart Home Features",
-        "Infrastructure",
-        "Sea View / Waterfront",
-      ],
-    },
-    tenant: {
-      base: [
-        "Parking",
-        "Power Supply",
-        "Clean Water",
-        "Security",
-        "Accessibility to Road",
-      ],
-      premium: [
-        "Gated Estate",
-        "Furnished",
-        "Serviced Apartment",
-        "Backup Generator",
-        "Proximity to School/Work",
-      ],
-    },
-    developer: {
-      base: ["Titled Land", "Dry Land", "Accessible Road", "Within Urban Zone"],
-      premium: [
-        "Existing Drawings",
-        "Fenced Land",
-        "High-Demand Area",
-        "Market Demand for Flats",
-      ],
-    },
-    shortlet: {
-      base: ["Wi-Fi", "Power Supply", "Clean Bathroom", "AC", "Kitchen"],
-      premium: [
-        "Smart TV / Netflix",
-        "Gym",
-        "Swimming Pool",
-        "Housekeeping",
-        "Pet-Friendly",
-        "Breakfast",
-        "Balcony",
-        "Gated Estate",
-      ],
-    },
-  };
+  // Sample area options
+  const getAreaOptions = useCallback((lga: string): Option[] => {
+    const sampleAreas = [
+      "Ikeja",
+      "Victoria Island",
+      "Lekki",
+      "Surulere",
+      "Yaba",
+      "Maryland",
+      "Gbagada",
+      "Ikoyi",
+      "Ajah",
+      "Oshodi",
+      "Alaba",
+      "Egbeda",
+      "Isolo",
+      "Mushin",
+      "Apapa",
+      "Magodo",
+      "Ojodu",
+      "Berger",
+      "Ketu",
+      "Mile 12",
+      "Festac",
+      "Satellite Town",
+    ];
+    return sampleAreas.map((area) => ({
+      value: `${area} - ${lga}`,
+      label: `${area} - ${lga}`,
+    }));
+  }, []);
 
   // Handle state change
-  const handleStateChange = useCallback((selected: Option | null) => {
+  const handleStateChange = useCallback((selected: SingleValue<Option>) => {
     setSelectedState(selected);
     setSelectedLGAs([]);
     setSelectedAreas({});
@@ -586,8 +580,8 @@ const NewPreference = () => {
 
   // Handle LGA change
   const handleLGAChange = useCallback(
-    (selectedOptions: Option[] | null) => {
-      const options = selectedOptions || [];
+    (selectedOptions: MultiValue<Option>) => {
+      const options = Array.from(selectedOptions);
       setSelectedLGAs(options);
       formik.setFieldValue(
         "localGovernmentAreas",
@@ -612,8 +606,8 @@ const NewPreference = () => {
 
   // Handle area change
   const handleAreaChange = useCallback(
-    (lga: string, selectedOptions: Option[] | null) => {
-      const options = selectedOptions || [];
+    (lga: string, selectedOptions: MultiValue<Option>) => {
+      const options = Array.from(selectedOptions);
       const newSelectedAreas = {
         ...selectedAreas,
         [lga]: options,
@@ -633,33 +627,8 @@ const NewPreference = () => {
     [selectedAreas],
   );
 
-  // Sample area options
-  const getAreaOptions = useCallback((lga: string): Option[] => {
-    const sampleAreas = [
-      "Ikeja",
-      "Victoria Island",
-      "Lekki",
-      "Surulere",
-      "Yaba",
-      "Maryland",
-      "Gbagada",
-      "Ikoyi",
-      "Ajah",
-      "Oshodi",
-      "Alaba",
-      "Egbeda",
-      "Isolo",
-      "Mushin",
-      "Apapa",
-    ];
-    return sampleAreas.map((area) => ({
-      value: `${area} - ${lga}`,
-      label: `${area} - ${lga}`,
-    }));
-  }, []);
-
   // Get initial values
-  const getInitialValues = useCallback((preferenceType: PreferenceType) => {
+  const getInitialValues = useCallback((preferenceKey: string) => {
     const baseValues = {
       state: "",
       localGovernmentAreas: [],
@@ -671,8 +640,8 @@ const NewPreference = () => {
       email: "",
     };
 
-    switch (preferenceType) {
-      case "buyer":
+    switch (preferenceKey) {
+      case "buy":
         return {
           ...baseValues,
           nearbyLandmark: "",
@@ -686,7 +655,7 @@ const NewPreference = () => {
           purpose: "For living",
           additionalNotes: "",
         };
-      case "tenant":
+      case "rent":
         return {
           ...baseValues,
           minMonthlyRent: "",
@@ -698,7 +667,7 @@ const NewPreference = () => {
           purpose: "Residential",
           additionalNotes: "",
         };
-      case "developer":
+      case "jointVenture":
         return {
           ...baseValues,
           minLandSize: "",
@@ -724,14 +693,13 @@ const NewPreference = () => {
           checkOutDate: "",
           additionalNotes: "",
         };
+      default:
+        return baseValues;
     }
   }, []);
 
   // Validation schema
-  const getValidationSchema = (
-    preferenceType: PreferenceType,
-    step: number,
-  ) => {
+  const getValidationSchema = (preferenceKey: string, step: number) => {
     const baseStep1Validation = {
       state: Yup.string().required("State is required"),
       localGovernmentAreas: Yup.array().min(1, "At least one LGA is required"),
@@ -748,8 +716,8 @@ const NewPreference = () => {
     };
 
     if (step === 0) {
-      switch (preferenceType) {
-        case "buyer":
+      switch (preferenceKey) {
+        case "buy":
           return Yup.object({
             ...baseStep1Validation,
             minPrice: Yup.string().required("Minimum price is required"),
@@ -765,7 +733,7 @@ const NewPreference = () => {
             ),
             purpose: Yup.string().required("Purpose is required"),
           });
-        case "tenant":
+        case "rent":
           return Yup.object({
             ...baseStep1Validation,
             minMonthlyRent: Yup.string().required(
@@ -782,7 +750,7 @@ const NewPreference = () => {
             ),
             purpose: Yup.string().required("Purpose is required"),
           });
-        case "developer":
+        case "jointVenture":
           return Yup.object({
             ...baseStep1Validation,
             minLandSize: Yup.string().required("Minimum land size is required"),
@@ -812,7 +780,7 @@ const NewPreference = () => {
           });
       }
     } else {
-      if (preferenceType === "developer") {
+      if (preferenceKey === "jointVenture") {
         return Yup.object({
           companyName: Yup.string().required("Company name is required"),
           contactPerson: Yup.string().required("Contact person is required"),
@@ -833,8 +801,8 @@ const NewPreference = () => {
 
   // Initialize formik
   const formik = useFormik({
-    initialValues: getInitialValues(currentPreferenceType),
-    validationSchema: getValidationSchema(currentPreferenceType, currentStep),
+    initialValues: getInitialValues(currentPreferenceKey),
+    validationSchema: getValidationSchema(currentPreferenceKey, currentStep),
     enableReinitialize: false,
     validateOnBlur: true,
     validateOnChange: false,
@@ -844,8 +812,10 @@ const NewPreference = () => {
       try {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/buyers/submit-preference`;
 
+        // Create payload with proper preferenceType and preferenceMode
         const transformedData = {
-          preferenceType: currentPreferenceType,
+          preferenceType: currentPreference.preferenceType,
+          preferenceMode: currentPreference.preferenceMode,
           ...values,
         };
 
@@ -877,14 +847,14 @@ const NewPreference = () => {
 
   // Handle preference type change
   const handlePreferenceTypeChange = useCallback(
-    (type: PreferenceType) => {
-      setCurrentPreferenceType(type);
+    (preferenceKey: string) => {
+      setCurrentPreferenceKey(preferenceKey);
       setCurrentStep(0);
       setSelectedState(null);
       setSelectedLGAs([]);
       setSelectedAreas({});
       formik.resetForm();
-      formik.setValues(getInitialValues(type));
+      formik.setValues(getInitialValues(preferenceKey));
     },
     [getInitialValues],
   );
@@ -895,62 +865,30 @@ const NewPreference = () => {
     return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }, []);
 
-  // Preference type options
-  const preferenceTypeOptions = [
-    {
-      key: "buyer",
-      label: "Buy Property",
-      shortLabel: "Buy",
-      icon: "🏠",
-      description: "Find properties to purchase",
-    },
-    {
-      key: "tenant",
-      label: "Rent Property",
-      shortLabel: "Rent",
-      icon: "🏡",
-      description: "Find rental properties",
-    },
-    {
-      key: "developer",
-      label: "Joint Venture",
-      shortLabel: "JV",
-      icon: "🏗",
-      description: "Partner for development",
-    },
-    {
-      key: "shortlet",
-      label: "Shortlet",
-      shortLabel: "Shortlet",
-      icon: "🏘",
-      description: "Book short-term stays",
-    },
-  ];
-
   // Bedroom options
   const bedroomOptions = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-    { value: "4", label: "4" },
-    { value: "5", label: "5" },
-    { value: "6", label: "6" },
-    { value: "7", label: "7" },
-    { value: "8", label: "8" },
-    { value: "9", label: "9" },
-    { value: "10", label: "10" },
-    { value: "More", label: "More" },
+    { value: "1", label: "1 Bedroom" },
+    { value: "2", label: "2 Bedrooms" },
+    { value: "3", label: "3 Bedrooms" },
+    { value: "4", label: "4 Bedrooms" },
+    { value: "5", label: "5 Bedrooms" },
+    { value: "6", label: "6 Bedrooms" },
+    { value: "7", label: "7 Bedrooms" },
+    { value: "8", label: "8 Bedrooms" },
+    { value: "9", label: "9 Bedrooms" },
+    { value: "10", label: "10 Bedrooms" },
+    { value: "More", label: "More than 10" },
   ];
 
   // Steps
   const steps = [
     {
       label:
-        currentPreferenceType === "buyer"
+        currentPreferenceKey === "buy"
           ? "Property Requirements"
-          : currentPreferenceType === "tenant"
+          : currentPreferenceKey === "rent"
             ? "Rental Requirements"
-            : currentPreferenceType === "developer"
+            : currentPreferenceKey === "jointVenture"
               ? "Development Interest"
               : "Booking Requirements",
       status:
@@ -973,32 +911,35 @@ const NewPreference = () => {
 
   // Render preference type selector
   const renderPreferenceTypeSelector = () => (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        Choose Your Preference
-      </h2>
+    <div className="mb-12">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Choose Your Preference
+        </h2>
+        <p className="text-gray-600">
+          Select the type of property transaction you're interested in
+        </p>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {preferenceTypeOptions.map((item) => (
+        {Object.entries(PREFERENCE_CONFIGS).map(([key, config]) => (
           <motion.button
-            key={item.key}
+            key={key}
             type="button"
-            onClick={() =>
-              handlePreferenceTypeChange(item.key as PreferenceType)
-            }
-            className={`p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
-              item.key === currentPreferenceType
-                ? "border-emerald-500 bg-emerald-50"
+            onClick={() => handlePreferenceTypeChange(key)}
+            className={`p-6 rounded-3xl border-2 transition-all duration-200 text-left ${
+              key === currentPreferenceKey
+                ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100"
                 : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50"
             }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="text-2xl mb-2">{item.icon}</div>
-            <h3 className="font-medium text-gray-900 mb-1">
-              <span className="block sm:hidden">{item.shortLabel}</span>
-              <span className="hidden sm:block">{item.label}</span>
+            <div className="text-3xl mb-3">{config.icon}</div>
+            <h3 className="font-bold text-gray-900 mb-2">
+              <span className="block sm:hidden">{config.shortLabel}</span>
+              <span className="hidden sm:block">{config.label}</span>
             </h3>
-            <p className="text-sm text-gray-600">{item.description}</p>
+            <p className="text-sm text-gray-600">{config.description}</p>
           </motion.button>
         ))}
       </div>
@@ -1007,62 +948,51 @@ const NewPreference = () => {
 
   // Render location fields
   const renderLocationFields = () => (
-    <SectionContainer
-      title="Preferred Location"
-      icon={
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      }
-    >
+    <SectionCard title="Preferred Location" icon="📍">
       <div className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CustomSelect
-            label="State"
-            options={stateOptions}
-            value={selectedState}
-            onChange={handleStateChange}
-            placeholder="Select State"
-            required
-            disabled={areInputsDisabled}
-          />
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-800">
+              State <span className="text-red-500">*</span>
+            </label>
+            <Select
+              options={stateOptions}
+              value={selectedState}
+              onChange={handleStateChange}
+              placeholder="Search and select state..."
+              isDisabled={areInputsDisabled}
+              styles={customSelectStyles}
+              isSearchable
+              isClearable
+            />
+          </div>
 
-          <CustomSelect
-            label="Local Government Areas"
-            options={lgaOptions}
-            value={selectedLGAs}
-            onChange={handleLGAChange}
-            placeholder="Select LGAs"
-            isMulti
-            required
-            disabled={areInputsDisabled || !selectedState}
-          />
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-800">
+              Local Government Areas <span className="text-red-500">*</span>
+            </label>
+            <Select
+              options={lgaOptions}
+              value={selectedLGAs}
+              onChange={handleLGAChange}
+              placeholder="Search and select LGAs..."
+              isMulti
+              isDisabled={areInputsDisabled || !selectedState}
+              styles={customSelectStyles}
+              isSearchable
+              isClearable
+            />
+          </div>
         </div>
 
         {/* Dynamic Area Selection with Responsive Grid */}
         {selectedLGAs.length > 0 && (
           <div className="space-y-4">
-            <h4 className="text-md font-medium text-gray-900">
+            <h4 className="text-lg font-semibold text-gray-900">
               Preferred Areas
             </h4>
             <div
-              className={`grid gap-4 ${
+              className={`grid gap-6 ${
                 selectedLGAs.length === 1
                   ? "grid-cols-1"
                   : selectedLGAs.length === 2
@@ -1079,27 +1009,35 @@ const NewPreference = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-white p-4 rounded-xl border border-gray-200"
+                  className="bg-gray-50 p-4 rounded-2xl border border-gray-100"
                 >
-                  <CustomSelect
-                    label={`Areas in ${lga.label}`}
-                    options={getAreaOptions(lga.value)}
-                    value={selectedAreas[lga.value] || []}
-                    onChange={(selectedOptions) =>
-                      handleAreaChange(lga.value, selectedOptions as Option[])
-                    }
-                    placeholder={`Select areas`}
-                    isMulti
-                    disabled={areInputsDisabled}
-                  />
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-800">
+                      Select preferred areas in{" "}
+                      <span className="text-emerald-600">{lga.label}</span>
+                    </label>
+                    <Select
+                      options={getAreaOptions(lga.value)}
+                      value={selectedAreas[lga.value] || []}
+                      onChange={(selectedOptions) =>
+                        handleAreaChange(lga.value, selectedOptions)
+                      }
+                      placeholder="Search areas..."
+                      isMulti
+                      isDisabled={areInputsDisabled}
+                      styles={customSelectStyles}
+                      isSearchable
+                      isClearable
+                    />
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         )}
 
-        {currentPreferenceType === "buyer" && (
-          <CustomInput
+        {currentPreferenceKey === "buy" && (
+          <ModernInput
             label="Nearby Landmark"
             name="nearbyLandmark"
             value={formik.values.nearbyLandmark || ""}
@@ -1109,34 +1047,17 @@ const NewPreference = () => {
           />
         )}
       </div>
-    </SectionContainer>
+    </SectionCard>
   );
 
-  // Render buyer step 1
-  const renderBuyerStep1 = () => (
+  // Render buy form
+  const renderBuyStep1 = () => (
     <div className="space-y-8">
       {renderLocationFields()}
 
-      <SectionContainer
-        title="Budget Range"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Budget Range" icon="💰">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CustomInput
+          <ModernInput
             label="Minimum Price (₦)"
             name="minPrice"
             value={formik.values.minPrice}
@@ -1150,8 +1071,9 @@ const NewPreference = () => {
             placeholder="Enter minimum price"
             required
             disabled={areInputsDisabled}
+            error={formik.touched.minPrice ? formik.errors.minPrice : undefined}
           />
-          <CustomInput
+          <ModernInput
             label="Maximum Price (₦)"
             name="maxPrice"
             value={formik.values.maxPrice}
@@ -1165,31 +1087,15 @@ const NewPreference = () => {
             placeholder="Enter maximum price"
             required
             disabled={areInputsDisabled}
+            error={formik.touched.maxPrice ? formik.errors.maxPrice : undefined}
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Property Details"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Property Details" icon="🏠">
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Property Type"
               name="propertyType"
               options={["Land", "Residential", "Commercial"]}
@@ -1199,7 +1105,7 @@ const NewPreference = () => {
               disabled={areInputsDisabled}
             />
 
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Building Type"
               name="buildingType"
               options={["Detached", "Semi-Detached", "Block of Flats"]}
@@ -1211,26 +1117,31 @@ const NewPreference = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomSelect
-              label="Minimum Bedrooms"
-              options={bedroomOptions}
-              value={
-                bedroomOptions.find(
-                  (option) => option.value === formik.values.minBedrooms,
-                ) || null
-              }
-              onChange={(selectedOption) => {
-                formik.setFieldValue(
-                  "minBedrooms",
-                  (selectedOption as Option)?.value || "",
-                );
-              }}
-              placeholder="Select bedrooms"
-              required
-              disabled={areInputsDisabled}
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-800">
+                Minimum Bedrooms <span className="text-red-500">*</span>
+              </label>
+              <Select
+                options={bedroomOptions}
+                value={
+                  bedroomOptions.find(
+                    (option) => option.value === formik.values.minBedrooms,
+                  ) || null
+                }
+                onChange={(selectedOption) => {
+                  formik.setFieldValue(
+                    "minBedrooms",
+                    (selectedOption as Option)?.value || "",
+                  );
+                }}
+                placeholder="Select bedrooms..."
+                isDisabled={areInputsDisabled}
+                styles={customSelectStyles}
+                isSearchable
+              />
+            </div>
 
-            <CustomInput
+            <ModernInput
               label="Minimum Bathrooms"
               name="minBathrooms"
               type="number"
@@ -1239,11 +1150,16 @@ const NewPreference = () => {
               placeholder="Enter bathrooms"
               required
               disabled={areInputsDisabled}
+              error={
+                formik.touched.minBathrooms
+                  ? formik.errors.minBathrooms
+                  : undefined
+              }
             />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Property Condition"
               name="propertyCondition"
               options={["New", "Renovated", "Any"]}
@@ -1255,7 +1171,7 @@ const NewPreference = () => {
               disabled={areInputsDisabled}
             />
 
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Purpose"
               name="purpose"
               options={["For living", "Resale", "Development"]}
@@ -1266,62 +1182,28 @@ const NewPreference = () => {
             />
           </div>
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Features"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Features" icon="✨">
         <div className="space-y-6">
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Base Features"
-            options={featuresData.buyer.base}
+            options={FEATURES_DATA.buy.base}
             value={formik.values.baseFeatures || []}
             onChange={(value) => formik.setFieldValue("baseFeatures", value)}
           />
 
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Premium Features (Optional)"
-            options={featuresData.buyer.premium}
+            options={FEATURES_DATA.buy.premium}
             value={formik.values.premiumFeatures || []}
             onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Additional Information"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        }
-      >
-        <CustomInput
+      <SectionCard title="Additional Information" icon="📝">
+        <ModernInput
           label="Notes or Custom Requirements"
           name="additionalNotes"
           type="textarea"
@@ -1330,35 +1212,18 @@ const NewPreference = () => {
           placeholder="Enter any additional requirements or notes..."
           disabled={areInputsDisabled}
         />
-      </SectionContainer>
+      </SectionCard>
     </div>
   );
 
-  // Render tenant step 1
-  const renderTenantStep1 = () => (
+  // Render rent form
+  const renderRentStep1 = () => (
     <div className="space-y-8">
       {renderLocationFields()}
 
-      <SectionContainer
-        title="Rent Budget"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Rent Budget" icon="💰">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CustomInput
+          <ModernInput
             label="Minimum Monthly Rent (₦)"
             name="minMonthlyRent"
             value={formik.values.minMonthlyRent}
@@ -1372,8 +1237,13 @@ const NewPreference = () => {
             placeholder="Enter minimum rent"
             required
             disabled={areInputsDisabled}
+            error={
+              formik.touched.minMonthlyRent
+                ? formik.errors.minMonthlyRent
+                : undefined
+            }
           />
-          <CustomInput
+          <ModernInput
             label="Maximum Monthly Rent (₦)"
             name="maxMonthlyRent"
             value={formik.values.maxMonthlyRent}
@@ -1387,31 +1257,19 @@ const NewPreference = () => {
             placeholder="Enter maximum rent"
             required
             disabled={areInputsDisabled}
+            error={
+              formik.touched.maxMonthlyRent
+                ? formik.errors.maxMonthlyRent
+                : undefined
+            }
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Property Details"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Property Details" icon="🏡">
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Property Type"
               name="propertyType"
               options={["Self-con", "Flat", "Mini Flat", "Bungalow"]}
@@ -1421,28 +1279,33 @@ const NewPreference = () => {
               disabled={areInputsDisabled}
             />
 
-            <CustomSelect
-              label="Minimum Bedrooms"
-              options={bedroomOptions}
-              value={
-                bedroomOptions.find(
-                  (option) => option.value === formik.values.minBedrooms,
-                ) || null
-              }
-              onChange={(selectedOption) => {
-                formik.setFieldValue(
-                  "minBedrooms",
-                  (selectedOption as Option)?.value || "",
-                );
-              }}
-              placeholder="Select bedrooms"
-              required
-              disabled={areInputsDisabled}
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-800">
+                Minimum Bedrooms <span className="text-red-500">*</span>
+              </label>
+              <Select
+                options={bedroomOptions}
+                value={
+                  bedroomOptions.find(
+                    (option) => option.value === formik.values.minBedrooms,
+                  ) || null
+                }
+                onChange={(selectedOption) => {
+                  formik.setFieldValue(
+                    "minBedrooms",
+                    (selectedOption as Option)?.value || "",
+                  );
+                }}
+                placeholder="Select bedrooms..."
+                isDisabled={areInputsDisabled}
+                styles={customSelectStyles}
+                isSearchable
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Lease Term"
               name="leaseTerm"
               options={["6 Months", "1 Year"]}
@@ -1452,7 +1315,7 @@ const NewPreference = () => {
               disabled={areInputsDisabled}
             />
 
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Property Condition"
               name="propertyCondition"
               options={["New", "Renovated"]}
@@ -1465,7 +1328,7 @@ const NewPreference = () => {
             />
           </div>
 
-          <CustomRadioGroup
+          <ModernRadioGroup
             label="Purpose"
             name="purpose"
             options={["Residential", "Office"]}
@@ -1476,62 +1339,28 @@ const NewPreference = () => {
             layout="horizontal"
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Features"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Features" icon="✨">
         <div className="space-y-6">
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Base Features"
-            options={featuresData.tenant.base}
+            options={FEATURES_DATA.rent.base}
             value={formik.values.baseFeatures || []}
             onChange={(value) => formik.setFieldValue("baseFeatures", value)}
           />
 
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Premium Features (Optional)"
-            options={featuresData.tenant.premium}
+            options={FEATURES_DATA.rent.premium}
             value={formik.values.premiumFeatures || []}
             onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Additional Information"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        }
-      >
-        <CustomInput
+      <SectionCard title="Additional Information" icon="📝">
+        <ModernInput
           label="Notes"
           name="additionalNotes"
           type="textarea"
@@ -1540,35 +1369,18 @@ const NewPreference = () => {
           placeholder="Notes (e.g., Must allow pets)"
           disabled={areInputsDisabled}
         />
-      </SectionContainer>
+      </SectionCard>
     </div>
   );
 
-  // Render developer step 1
-  const renderDeveloperStep1 = () => (
+  // Render joint venture form
+  const renderJointVentureStep1 = () => (
     <div className="space-y-8">
       {renderLocationFields()}
 
-      <SectionContainer
-        title="Development Requirements"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Development Requirements" icon="🏗">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CustomInput
+          <ModernInput
             label="Minimum Land Size (sqm or plots)"
             name="minLandSize"
             value={formik.values.minLandSize}
@@ -1576,8 +1388,11 @@ const NewPreference = () => {
             placeholder="Enter land size"
             required
             disabled={areInputsDisabled}
+            error={
+              formik.touched.minLandSize ? formik.errors.minLandSize : undefined
+            }
           />
-          <CustomInput
+          <ModernInput
             label="Budget Range / Investment Capacity"
             name="budgetRange"
             value={formik.values.budgetRange}
@@ -1592,35 +1407,12 @@ const NewPreference = () => {
             disabled={areInputsDisabled}
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Property Details"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 17a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M7 17h4v-2a3 3 0 00-3-3H4a3 3 0 00-3 3v2h3z"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Property Details" icon="🏢">
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Preferred JV Type"
               name="jvType"
               options={[
@@ -1634,7 +1426,7 @@ const NewPreference = () => {
               disabled={areInputsDisabled}
             />
 
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Property Type"
               name="propertyType"
               options={["Land", "Old Building", "Structure to demolish"]}
@@ -1646,7 +1438,7 @@ const NewPreference = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Expected Structure Type"
               name="expectedStructureType"
               options={["Mini Flats", "Luxury Duplexes"]}
@@ -1658,7 +1450,7 @@ const NewPreference = () => {
               disabled={areInputsDisabled}
             />
 
-            <CustomRadioGroup
+            <ModernRadioGroup
               label="Timeline"
               name="timeline"
               options={["Ready Now", "In 3 Months", "Within 1 Year"]}
@@ -1669,62 +1461,28 @@ const NewPreference = () => {
             />
           </div>
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Features"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Features" icon="✨">
         <div className="space-y-6">
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Base Features (Must-Have)"
-            options={featuresData.developer.base}
+            options={FEATURES_DATA.jointVenture.base}
             value={formik.values.baseFeatures || []}
             onChange={(value) => formik.setFieldValue("baseFeatures", value)}
           />
 
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Premium Features (Optional)"
-            options={featuresData.developer.premium}
+            options={FEATURES_DATA.jointVenture.premium}
             value={formik.values.premiumFeatures || []}
             onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Additional Information"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        }
-      >
-        <CustomInput
+      <SectionCard title="Additional Information" icon="📝">
+        <ModernInput
           label="Partner Expectations, Restrictions, etc."
           name="partnerExpectations"
           type="textarea"
@@ -1733,35 +1491,18 @@ const NewPreference = () => {
           placeholder="Partner expectations, restrictions, upload past projects (optional)"
           disabled={areInputsDisabled}
         />
-      </SectionContainer>
+      </SectionCard>
     </div>
   );
 
-  // Render shortlet step 1
+  // Render shortlet form
   const renderShortletStep1 = () => (
     <div className="space-y-8">
       {renderLocationFields()}
 
-      <SectionContainer
-        title="Budget Per Night"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Budget Per Night" icon="💰">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CustomInput
+          <ModernInput
             label="Minimum Price (₦)"
             name="minPricePerNight"
             value={formik.values.minPricePerNight}
@@ -1775,8 +1516,13 @@ const NewPreference = () => {
             placeholder="Enter minimum price"
             required
             disabled={areInputsDisabled}
+            error={
+              formik.touched.minPricePerNight
+                ? formik.errors.minPricePerNight
+                : undefined
+            }
           />
-          <CustomInput
+          <ModernInput
             label="Maximum Price (₦)"
             name="maxPricePerNight"
             value={formik.values.maxPricePerNight}
@@ -1790,30 +1536,18 @@ const NewPreference = () => {
             placeholder="Enter maximum price"
             required
             disabled={areInputsDisabled}
+            error={
+              formik.touched.maxPricePerNight
+                ? formik.errors.maxPricePerNight
+                : undefined
+            }
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Booking Details"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Booking Details" icon="📅">
         <div className="space-y-6">
-          <CustomRadioGroup
+          <ModernRadioGroup
             label="Property Type"
             name="propertyType"
             options={["Studio", "1-Bed Apartment", "2-Bed Flat"]}
@@ -1824,26 +1558,31 @@ const NewPreference = () => {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomSelect
-              label="Minimum Bedrooms"
-              options={bedroomOptions}
-              value={
-                bedroomOptions.find(
-                  (option) => option.value === formik.values.minBedrooms,
-                ) || null
-              }
-              onChange={(selectedOption) => {
-                formik.setFieldValue(
-                  "minBedrooms",
-                  (selectedOption as Option)?.value || "",
-                );
-              }}
-              placeholder="Select bedrooms"
-              required
-              disabled={areInputsDisabled}
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-800">
+                Minimum Bedrooms <span className="text-red-500">*</span>
+              </label>
+              <Select
+                options={bedroomOptions}
+                value={
+                  bedroomOptions.find(
+                    (option) => option.value === formik.values.minBedrooms,
+                  ) || null
+                }
+                onChange={(selectedOption) => {
+                  formik.setFieldValue(
+                    "minBedrooms",
+                    (selectedOption as Option)?.value || "",
+                  );
+                }}
+                placeholder="Select bedrooms..."
+                isDisabled={areInputsDisabled}
+                styles={customSelectStyles}
+                isSearchable
+              />
+            </div>
 
-            <CustomInput
+            <ModernInput
               label="Number of Guests"
               name="numberOfGuests"
               type="number"
@@ -1852,11 +1591,16 @@ const NewPreference = () => {
               placeholder="Number of guests"
               required
               disabled={areInputsDisabled}
+              error={
+                formik.touched.numberOfGuests
+                  ? formik.errors.numberOfGuests
+                  : undefined
+              }
             />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CustomInput
+            <ModernInput
               label="Check-in Date"
               name="checkInDate"
               type="date"
@@ -1864,9 +1608,14 @@ const NewPreference = () => {
               onChange={formik.handleChange}
               required
               disabled={areInputsDisabled}
+              error={
+                formik.touched.checkInDate
+                  ? formik.errors.checkInDate
+                  : undefined
+              }
             />
 
-            <CustomInput
+            <ModernInput
               label="Check-out Date"
               name="checkOutDate"
               type="date"
@@ -1874,65 +1623,36 @@ const NewPreference = () => {
               onChange={formik.handleChange}
               required
               disabled={areInputsDisabled}
+              error={
+                formik.touched.checkOutDate
+                  ? formik.errors.checkOutDate
+                  : undefined
+              }
             />
           </div>
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Features"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        }
-      >
+      <SectionCard title="Features" icon="✨">
         <div className="space-y-6">
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Base Features"
-            options={featuresData.shortlet.base}
+            options={FEATURES_DATA.shortlet.base}
             value={formik.values.baseFeatures || []}
             onChange={(value) => formik.setFieldValue("baseFeatures", value)}
           />
 
-          <CustomCheckboxGroup
+          <ModernCheckboxGroup
             label="Premium Features (Optional)"
-            options={featuresData.shortlet.premium}
+            options={FEATURES_DATA.shortlet.premium}
             value={formik.values.premiumFeatures || []}
             onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
           />
         </div>
-      </SectionContainer>
+      </SectionCard>
 
-      <SectionContainer
-        title="Additional Information"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        }
-      >
-        <CustomInput
+      <SectionCard title="Additional Information" icon="📝">
+        <ModernInput
           label="Preferences & Notes"
           name="additionalNotes"
           type="textarea"
@@ -1941,35 +1661,18 @@ const NewPreference = () => {
           placeholder="Preferences (e.g., No Smoking, Must allow pets), Notes (e.g., Anniversary getaway)"
           disabled={areInputsDisabled}
         />
-      </SectionContainer>
+      </SectionCard>
     </div>
   );
 
   // Render contact step
   const renderContactStep = () => (
     <div className="space-y-8">
-      <SectionContainer
-        title="Contact Information"
-        icon={
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-        }
-      >
-        {currentPreferenceType === "developer" ? (
+      <SectionCard title="Contact Information" icon="👤">
+        {currentPreferenceKey === "jointVenture" ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <CustomInput
+              <ModernInput
                 label="Company / Developer Name"
                 name="companyName"
                 value={formik.values.companyName}
@@ -1977,8 +1680,13 @@ const NewPreference = () => {
                 placeholder="Enter company name"
                 required
                 disabled={areInputsDisabled}
+                error={
+                  formik.touched.companyName
+                    ? formik.errors.companyName
+                    : undefined
+                }
               />
-              <CustomInput
+              <ModernInput
                 label="Contact Person"
                 name="contactPerson"
                 value={formik.values.contactPerson}
@@ -1986,12 +1694,17 @@ const NewPreference = () => {
                 placeholder="Enter contact person"
                 required
                 disabled={areInputsDisabled}
+                error={
+                  formik.touched.contactPerson
+                    ? formik.errors.contactPerson
+                    : undefined
+                }
               />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-semibold text-gray-800">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <PhoneInput
@@ -2002,11 +1715,16 @@ const NewPreference = () => {
                     formik.setFieldValue("phoneNumber", value)
                   }
                   placeholder="Enter phone number"
-                  className="custom-phone-input"
+                  className="modern-phone-input"
                 />
+                {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+                  <p className="text-sm text-red-500 font-medium">
+                    {formik.errors.phoneNumber}
+                  </p>
+                )}
               </div>
 
-              <CustomInput
+              <ModernInput
                 label="Email Address"
                 name="email"
                 type="email"
@@ -2015,10 +1733,11 @@ const NewPreference = () => {
                 placeholder="Enter email"
                 required
                 disabled={areInputsDisabled}
+                error={formik.touched.email ? formik.errors.email : undefined}
               />
             </div>
 
-            <CustomInput
+            <ModernInput
               label="CAC Registration Number"
               name="cacRegistrationNumber"
               value={formik.values.cacRegistrationNumber}
@@ -2029,7 +1748,7 @@ const NewPreference = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            <CustomInput
+            <ModernInput
               label="Full Name"
               name="fullName"
               value={formik.values.fullName}
@@ -2037,11 +1756,14 @@ const NewPreference = () => {
               placeholder="Enter your full name"
               required
               disabled={areInputsDisabled}
+              error={
+                formik.touched.fullName ? formik.errors.fullName : undefined
+              }
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-semibold text-gray-800">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <PhoneInput
@@ -2052,11 +1774,16 @@ const NewPreference = () => {
                     formik.setFieldValue("phoneNumber", value)
                   }
                   placeholder="Enter phone number"
-                  className="custom-phone-input"
+                  className="modern-phone-input"
                 />
+                {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+                  <p className="text-sm text-red-500 font-medium">
+                    {formik.errors.phoneNumber}
+                  </p>
+                )}
               </div>
 
-              <CustomInput
+              <ModernInput
                 label="Email Address"
                 name="email"
                 type="email"
@@ -2065,24 +1792,25 @@ const NewPreference = () => {
                 placeholder="Enter email"
                 required
                 disabled={areInputsDisabled}
+                error={formik.touched.email ? formik.errors.email : undefined}
               />
             </div>
           </div>
         )}
-      </SectionContainer>
+      </SectionCard>
     </div>
   );
 
   // Get step content
   const getStepContent = () => {
     if (currentStep === 0) {
-      switch (currentPreferenceType) {
-        case "buyer":
-          return renderBuyerStep1();
-        case "tenant":
-          return renderTenantStep1();
-        case "developer":
-          return renderDeveloperStep1();
+      switch (currentPreferenceKey) {
+        case "buy":
+          return renderBuyStep1();
+        case "rent":
+          return renderRentStep1();
+        case "jointVenture":
+          return renderJointVentureStep1();
         case "shortlet":
           return renderShortletStep1();
         default:
@@ -2097,25 +1825,26 @@ const NewPreference = () => {
 
   return (
     <Fragment>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
-            <CustomButton
+            <ModernButton
               variant="ghost"
               size="sm"
               onClick={() => router.back()}
               className="mb-6"
             >
               ← Back to Marketplace
-            </CustomButton>
+            </ModernButton>
 
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Submit Your Preference
+              <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                Submit Your Property Preference
               </h1>
-              <p className="text-lg text-gray-600">
-                Tell us what you're looking for and we'll help you find it
+              <p className="text-xl text-gray-600">
+                Tell us what you're looking for and we'll help you find the
+                perfect match
               </p>
             </div>
           </div>
@@ -2124,17 +1853,17 @@ const NewPreference = () => {
           {renderPreferenceTypeSelector()}
 
           {/* Step Progress */}
-          <div className="mb-8">
+          <div className="mb-12">
             <div className="flex items-center justify-center space-x-8">
               {steps.map((step, index) => (
                 <div key={index} className="flex items-center">
                   <div className="flex items-center space-x-4">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                         step.status === "completed"
-                          ? "bg-emerald-500 text-white"
+                          ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
                           : step.status === "active"
-                            ? "bg-emerald-500 text-white"
+                            ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
                             : "bg-gray-200 text-gray-600"
                       }`}
                     >
@@ -2161,7 +1890,7 @@ const NewPreference = () => {
                         Step {index + 1}
                       </p>
                       <p
-                        className={`text-lg font-semibold ${
+                        className={`text-lg font-bold ${
                           step.status === "active"
                             ? "text-emerald-600"
                             : "text-gray-700"
@@ -2172,7 +1901,7 @@ const NewPreference = () => {
                     </div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className="w-20 h-0.5 bg-gray-300 mx-8"></div>
+                    <div className="w-24 h-1 bg-gray-300 mx-8 rounded-full"></div>
                   )}
                 </div>
               ))}
@@ -2183,7 +1912,7 @@ const NewPreference = () => {
           <form onSubmit={formik.handleSubmit}>
             <AnimatePresence mode="wait">
               <motion.div
-                key={`${currentPreferenceType}-${currentStep}`}
+                key={`${currentPreferenceKey}-${currentStep}`}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -2194,8 +1923,8 @@ const NewPreference = () => {
             </AnimatePresence>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
-              <CustomButton
+            <div className="flex justify-between items-center mt-12 pt-8">
+              <ModernButton
                 variant="ghost"
                 onClick={() => {
                   if (currentStep === 0) {
@@ -2204,12 +1933,12 @@ const NewPreference = () => {
                     setCurrentStep((prev) => Math.max(prev - 1, 0));
                   }
                 }}
-                className="min-w-[120px]"
+                className="min-w-[140px]"
               >
-                {currentStep === 0 ? "Cancel" : "← Back"}
-              </CustomButton>
+                {currentStep === 0 ? "Cancel" : "← Previous"}
+              </ModernButton>
 
-              <CustomButton
+              <ModernButton
                 variant="primary"
                 type={currentStep === steps.length - 1 ? "submit" : "button"}
                 onClick={
@@ -2218,10 +1947,12 @@ const NewPreference = () => {
                     : () => setCurrentStep((prev) => prev + 1)
                 }
                 disabled={areInputsDisabled}
-                className="min-w-[120px]"
+                className="min-w-[140px]"
               >
-                {currentStep === steps.length - 1 ? "Submit" : "Next →"}
-              </CustomButton>
+                {currentStep === steps.length - 1
+                  ? "Submit Preference"
+                  : "Next Step →"}
+              </ModernButton>
             </div>
           </form>
         </div>
@@ -2240,18 +1971,26 @@ const NewPreference = () => {
 
       {/* Custom styles for phone input */}
       <style jsx global>{`
-        .custom-phone-input input {
+        .modern-phone-input input {
           width: 100%;
           padding: 12px 16px;
           border: 1px solid #e5e7eb;
-          border-radius: 12px;
-          font-size: 14px;
+          border-radius: 16px;
+          font-size: 16px;
           transition: all 0.2s;
+          background-color: white;
         }
-        .custom-phone-input input:focus {
+        .modern-phone-input input:focus {
           outline: none;
-          border-color: #10b981;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+          border-color: #059669;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+        }
+        .modern-phone-input .PhoneInputCountrySelectArrow {
+          border-color: #6b7280;
+        }
+        .modern-phone-input .PhoneInputCountrySelect {
+          border-radius: 16px 0 0 16px;
+          border-right: 1px solid #e5e7eb;
         }
       `}</style>
     </Fragment>
@@ -2278,11 +2017,11 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center"
+        className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 text-center"
       >
-        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
-            className="w-8 h-8 text-emerald-500"
+            className="w-10 h-10 text-emerald-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -2297,7 +2036,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
         </div>
 
         <h2 className="text-2xl font-bold text-gray-900 mb-3">
-          Successfully Submitted!
+          Preference Submitted Successfully!
         </h2>
 
         <p className="text-gray-600 mb-8">
@@ -2305,9 +2044,9 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
           properties soon.
         </p>
 
-        <CustomButton variant="primary" onClick={onClose} className="w-full">
+        <ModernButton variant="primary" onClick={onClose} fullWidth>
           Back to Home
-        </CustomButton>
+        </ModernButton>
       </motion.div>
     </div>
   );
