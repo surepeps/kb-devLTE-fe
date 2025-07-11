@@ -23,7 +23,7 @@ const EnhancedNegotiationSummary: React.FC<EnhancedNegotiationSummaryProps> = ({
   userType,
 }) => {
   const { state } = useSecureNegotiation();
-  const { details, negotiationType, createdAt } = state;
+  const { details, inspectionType, createdAt } = state;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NG", {
@@ -45,11 +45,16 @@ const EnhancedNegotiationSummary: React.FC<EnhancedNegotiationSummaryProps> = ({
 
   const generateSummaryDocument = () => {
     const summaryData = {
-      negotiationType,
+      inspectionType,
       userType,
-      finalPrice: details?.finalPrice || details?.buyOffer,
-      propertyTitle: details?.propertyTitle,
-      propertyLocation: details?.propertyLocation,
+      finalPrice:
+        details?.finalPrice ||
+        details?.negotiationPrice ||
+        details?.propertyId?.price,
+      propertyTitle: details?.propertyId?.propertyType || "Property",
+      propertyLocation: details?.propertyId?.location
+        ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
+        : "Location not specified",
       inspectionDate: details?.inspectionDate,
       inspectionTime: details?.inspectionTime,
       completedAt: new Date().toISOString(),
@@ -62,10 +67,10 @@ NEGOTIATION SUMMARY
 
 Property: ${summaryData.propertyTitle || "Property Details"}
 Location: ${summaryData.propertyLocation || "Not specified"}
-Type: ${summaryData.negotiationType} Negotiation
+Inspection Type: ${summaryData.inspectionType} Negotiation
 
 Final Agreement:
-${summaryData.negotiationType === "LOI" ? "Joint Venture Partnership" : `Purchase Price: ${formatCurrency(summaryData.finalPrice || 0)}`}
+${summaryData.inspectionType === "LOI" ? "Joint Venture Partnership" : `Purchase Price: ${formatCurrency(summaryData.finalPrice || 0)}`}
 
 Inspection Details:
 Date: ${formatDate(summaryData.inspectionDate || "")}
@@ -118,7 +123,7 @@ This summary serves as confirmation of the negotiated terms.
         >
           <FiCheckCircle className="w-8 h-8 text-green-600" />
         </motion.div>
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+        <h1 className="text-3xl font-bold text-[#09391C] mb-2">
           Negotiation Complete!
         </h1>
         <p className="text-gray-600">
@@ -130,14 +135,14 @@ This summary serves as confirmation of the negotiated terms.
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+        className="bg-white rounded-xl border border-[#C7CAD0] mb-8"
       >
         <div className="p-6">
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-6">
             <button
               onClick={downloadSummary}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              className="flex items-center space-x-2 px-4 py-2 bg-[#09391C] text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
             >
               <FiDownload className="w-4 h-4" />
               <span>Download Summary</span>
@@ -145,7 +150,7 @@ This summary serves as confirmation of the negotiated terms.
 
             <button
               onClick={shareSummary}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
               <FiShare2 className="w-4 h-4" />
               <span>Share</span>
@@ -155,7 +160,7 @@ This summary serves as confirmation of the negotiated terms.
           {/* Property Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Property Details
               </h3>
               <div className="space-y-3">
@@ -164,7 +169,8 @@ This summary serves as confirmation of the negotiated terms.
                   <div>
                     <div className="text-sm text-gray-500">Property</div>
                     <div className="font-medium text-gray-800">
-                      {details?.propertyTitle || "Property Name"}
+                      {details?.propertyId?.propertyType || "Property"} -{" "}
+                      {details?.propertyId?.briefType || "Sale"}
                     </div>
                   </div>
                 </div>
@@ -174,7 +180,9 @@ This summary serves as confirmation of the negotiated terms.
                   <div>
                     <div className="text-sm text-gray-500">Location</div>
                     <div className="font-medium text-gray-800">
-                      {details?.propertyLocation || "Property Location"}
+                      {details?.propertyId?.location
+                        ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
+                        : "Location not specified"}
                     </div>
                   </div>
                 </div>
@@ -182,23 +190,36 @@ This summary serves as confirmation of the negotiated terms.
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Agreement Summary
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
+                  <FiFileText className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <div className="text-sm text-gray-500">Inspection Type</div>
+                    <div className="font-medium text-gray-800 capitalize">
+                      {inspectionType || "Standard"} Negotiation
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
                   <FiDollarSign className="w-5 h-5 text-green-600" />
                   <div>
                     <div className="text-sm text-gray-500">
-                      {negotiationType === "LOI"
+                      {inspectionType === "LOI"
                         ? "Partnership Type"
                         : "Final Price"}
                     </div>
                     <div className="font-medium text-gray-800">
-                      {negotiationType === "LOI"
+                      {inspectionType === "LOI"
                         ? "Joint Venture"
                         : formatCurrency(
-                            details?.finalPrice || details?.buyOffer || 0,
+                            details?.finalPrice ||
+                              details?.negotiationPrice ||
+                              details?.propertyId?.price ||
+                              0,
                           )}
                     </div>
                   </div>
@@ -218,12 +239,12 @@ This summary serves as confirmation of the negotiated terms.
           </div>
 
           {/* Inspection Details */}
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          <div className="border-t border-[#C7CAD0] pt-6">
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Inspection Schedule
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
                 <div className="flex items-center space-x-2 mb-2">
                   <FiCalendar className="w-5 h-5 text-blue-600" />
                   <span className="font-medium text-blue-800">
@@ -235,7 +256,7 @@ This summary serves as confirmation of the negotiated terms.
                 </p>
               </div>
 
-              <div className="p-4 bg-green-50 rounded-lg">
+              <div className="p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
                 <div className="flex items-center space-x-2 mb-2">
                   <FiClock className="w-5 h-5 text-green-600" />
                   <span className="font-medium text-green-800">
@@ -251,85 +272,21 @@ This summary serves as confirmation of the negotiated terms.
         </div>
       </motion.div>
 
-      {/* Next Steps */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Next Steps
-          </h3>
-
-          <div className="space-y-4">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-green-600">1</span>
-              </div>
-              <div>
-                <div className="font-medium text-gray-800">
-                  Prepare for Inspection
-                </div>
-                <div className="text-sm text-gray-600">
-                  {userType === "seller"
-                    ? "Ensure the property is ready for inspection at the scheduled time."
-                    : "Prepare any questions you have about the property and bring identification."}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-blue-600">2</span>
-              </div>
-              <div>
-                <div className="font-medium text-gray-800">
-                  Contact Exchange
-                </div>
-                <div className="text-sm text-gray-600">
-                  Both parties will be notified 24 hours before the inspection.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-purple-600">3</span>
-              </div>
-              <div>
-                <div className="font-medium text-gray-800">
-                  {negotiationType === "LOI"
-                    ? "Legal Documentation"
-                    : "Final Agreement"}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {negotiationType === "LOI"
-                    ? "Legal teams will prepare the joint venture agreement based on the LOI terms."
-                    : "Proceed with the purchase agreement and legal documentation."}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Contact Support */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center"
+        transition={{ delay: 0.2 }}
+        className="bg-[#EEF1F1] rounded-xl border border-[#C7CAD0] p-6 text-center"
       >
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
           Need Support?
         </h3>
         <p className="text-gray-600 mb-4">
           If you have any questions about this negotiation or need assistance,
           our team is here to help.
         </p>
-        <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
+        <button className="px-6 py-2 bg-[#09391C] text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
           Contact Support
         </button>
       </motion.div>

@@ -47,8 +47,9 @@ interface VerifiedUser {
   userType: string;
 }
 
-
-const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
+const Homepage = ({
+  isComingSoon = false,
+}: { isComingSoon?: boolean } = {}) => {
   //Simulating the loading page
   const isLoading = useLoading();
 
@@ -213,9 +214,9 @@ const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   );
 };
 
-const HomepageWrapper = ({ isComingSoon }: { isComingSoon?: boolean }) => (
+const HomepageWrapper = () => (
   <Suspense fallback={<Loading />}>
-    <Homepage isComingSoon={isComingSoon} />
+    <Homepage />
   </Suspense>
 );
 

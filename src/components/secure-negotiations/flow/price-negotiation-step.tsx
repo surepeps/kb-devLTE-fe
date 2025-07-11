@@ -86,20 +86,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const difference = calculateDifference();
 
   const handleAccept = async () => {
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createAcceptPayload("price", currentDate, currentTime);
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("accept");
-    } catch (error) {
-      console.error("Failed to accept offer:", error);
-    }
+    // Don't submit immediately, proceed to next step (inspection)
+    onActionSelected("accept");
   };
 
   const handleReject = async () => {
@@ -153,28 +141,10 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       return;
     }
 
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createCounterPayload(
-        "price",
-        counterAmount,
-        undefined, // documentUrl not needed for price
-        currentDate,
-        currentTime,
-      );
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("counter", counterAmount);
-      setShowCounterModal(false);
-      setCounterPrice("");
-    } catch (error) {
-      console.error("Failed to submit counter offer:", error);
-    }
+    // Don't submit immediately, proceed to next step (inspection)
+    onActionSelected("counter", counterAmount);
+    setShowCounterModal(false);
+    setCounterPrice("");
   };
 
   return (
@@ -199,13 +169,18 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       />
 
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-[#09391C] mb-2">
+        <h2 className="text-2xl font-bold text-[#09391C] mb-2">
           Price Negotiation
         </h2>
         <p className="text-gray-600">
           Review the offer and choose your response. You&apos;ll select
           inspection date/time on the next step.
         </p>
+        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+          <p className="text-sm font-medium text-[#09391C]">
+            Inspection Type: Price Negotiation
+          </p>
+        </div>
       </div>
 
       {/* Price Comparison */}

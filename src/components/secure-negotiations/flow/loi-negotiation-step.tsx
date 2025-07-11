@@ -71,20 +71,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   const letterOfIntention = details?.letterOfIntention || "";
 
   const handleAccept = async () => {
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createAcceptPayload("LOI", currentDate, currentTime);
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("accept");
-    } catch (error) {
-      console.error("Failed to accept LOI:", error);
-    }
+    // Don't submit immediately, proceed to next step
+    onActionSelected("accept");
   };
 
   const handleReject = async () => {
@@ -104,26 +92,10 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       return;
     }
 
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createRequestChangesPayload(
-        changeRequest,
-        currentDate,
-        currentTime,
-      );
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      setShowRequestChangesModal(false);
-      setChangeRequest("");
-      onActionSelected("requestChanges");
-    } catch (error) {
-      console.error("Failed to request LOI changes:", error);
-    }
+    // Don't submit immediately, proceed to next step
+    setShowRequestChangesModal(false);
+    setChangeRequest("");
+    onActionSelected("requestChanges");
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,22 +119,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       return;
     }
 
-    try {
-      // Upload the file first
-      const documentUrl = await uploadFile(newLoiFile);
-
-      // Create counter payload with the uploaded document URL
-      const payload = createCounterPayload(
-        "LOI",
-        undefined, // counterPrice not needed for LOI
-        documentUrl,
-      );
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("accept", newLoiFile);
-    } catch (error) {
-      console.error("Failed to reupload LOI:", error);
-    }
+    // Don't submit immediately, just pass the file to the next step
+    onActionSelected("accept", newLoiFile);
   };
 
   const downloadLOI = () => {
@@ -228,7 +186,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       />
 
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-[#09391C] mb-2">
+        <h2 className="text-2xl font-bold text-[#09391C] mb-2">
           Letter of Intention Review
         </h2>
         <p className="text-gray-600">
@@ -238,13 +196,18 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               ? "Please update your LOI based on the seller's feedback and resubmit."
               : "Your Letter of Intention is being reviewed by the seller."}
         </p>
+        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+          <p className="text-sm font-medium text-[#09391C]">
+            Inspection Type: LOI Negotiation
+          </p>
+        </div>
       </div>
 
       {/* LOI Document Display */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
+        className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
           <div className="flex items-center space-x-3">
@@ -276,7 +239,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </div>
 
         {/* LOI Preview */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 max-h-60 sm:max-h-80 overflow-y-auto border border-gray-200">
+        <div className="bg-[#EEF1F1] rounded-lg p-4 sm:p-6 max-h-60 sm:max-h-80 overflow-y-auto border border-[#C7CAD0]">
           <div className="whitespace-pre-wrap text-xs sm:text-sm text-gray-700 leading-relaxed">
             {letterOfIntention.length > 500
               ? `${letterOfIntention.substring(0, 500)}...`
@@ -301,7 +264,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
+          className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
         >
           <h4 className="font-medium text-[#09391C] mb-4">
             Choose Your Response
@@ -347,7 +310,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
+          className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
         >
           <h4 className="font-medium text-[#09391C] mb-4">
             Update Your Letter of Intention

@@ -6,7 +6,7 @@ import { FiClock, FiRefreshCw } from "react-icons/fi";
 
 interface AwaitingResponseDisplayProps {
   userType: "seller" | "buyer";
-  pendingResponseFrom: string;
+  pendingResponseFrom: "seller" | "buyer" | "admin";
   timeRemaining: string;
 }
 
@@ -26,9 +26,14 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
   }, []);
 
   const getWaitingMessage = () => {
+    if (pendingResponseFrom === "admin") {
+      return `Awaiting admin review${dots}`;
+    }
     const otherParty = pendingResponseFrom === "seller" ? "seller" : "buyer";
     return `Awaiting response from ${otherParty}${dots}`;
   };
+
+  const isAwaitingAdmin = pendingResponseFrom === "admin";
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
@@ -62,69 +67,101 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
             <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
               ✓ Your response has been submitted successfully!
               <br />
-              The other party will be notified and has time to respond.
+              {isAwaitingAdmin
+                ? "Your submission is being reviewed by our admin team."
+                : "The other party will be notified and has time to respond."}
             </p>
           </div>
 
-          {/* Timer Display */}
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
-            <div className="flex items-center justify-center space-x-2 mb-3">
-              <div className="p-2 bg-yellow-200 rounded-full">
-                <FiClock className="w-5 h-5 text-yellow-700" />
+          {/* Timer Display - Hidden for admin state */}
+          {!isAwaitingAdmin && (
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <div className="p-2 bg-yellow-200 rounded-full">
+                  <FiClock className="w-5 h-5 text-yellow-700" />
+                </div>
+                <span className="font-semibold text-yellow-800 text-sm sm:text-base">
+                  Response Timer
+                </span>
               </div>
-              <span className="font-semibold text-yellow-800 text-sm sm:text-base">
-                Response Timer
-              </span>
+              <div className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-2">
+                {timeRemaining || "Loading..."}
+              </div>
+              <div className="text-sm sm:text-base text-yellow-700">
+                remaining for {pendingResponseFrom} to respond
+              </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-2">
-              {timeRemaining || "Loading..."}
+          )}
+
+          {/* Admin Review Display */}
+          {isAwaitingAdmin && (
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4 sm:p-6 mb-6">
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <div className="p-2 bg-purple-200 rounded-full">
+                  <FiClock className="w-5 h-5 text-purple-700" />
+                </div>
+                <span className="font-semibold text-purple-800 text-sm sm:text-base">
+                  Under Admin Review
+                </span>
+              </div>
+              <div className="text-lg sm:text-xl font-bold text-purple-600 mb-2">
+                Processing Review
+              </div>
+              <div className="text-sm sm:text-base text-purple-700">
+                Our team is reviewing your submission. You will be notified once
+                the review is complete.
+              </div>
             </div>
-            <div className="text-sm sm:text-base text-yellow-700">
-              remaining for {pendingResponseFrom} to respond
-            </div>
-          </div>
+          )}
 
           {/* Status Indicators */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div
-              className={`p-3 rounded-lg border ${
-                userType === pendingResponseFrom
-                  ? "bg-gray-50 border-gray-200"
-                  : "bg-green-50 border-green-200"
-              }`}
-            >
+          <div
+            className={`grid gap-4 mb-6 ${isAwaitingAdmin ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"}`}
+          >
+            <div className="p-3 rounded-lg border bg-green-50 border-green-200">
               <div className="text-sm font-medium text-gray-700 mb-1">You</div>
-              <div
-                className={`text-sm ${
-                  userType === pendingResponseFrom
-                    ? "text-gray-600"
-                    : "text-green-600"
-                }`}
-              >
-                {userType === pendingResponseFrom ? "Pending" : "✓ Responded"}
-              </div>
+              <div className="text-sm text-green-600">✓ Responded</div>
             </div>
 
-            <div
-              className={`p-3 rounded-lg border ${
-                pendingResponseFrom !== userType
-                  ? "bg-gray-50 border-gray-200"
-                  : "bg-yellow-50 border-yellow-200"
-              }`}
-            >
-              <div className="text-sm font-medium text-gray-700 mb-1">
-                {pendingResponseFrom === "seller" ? "Seller" : "Buyer"}
-              </div>
+            {!isAwaitingAdmin && (
               <div
-                className={`text-sm ${
+                className={`p-3 rounded-lg border ${
                   pendingResponseFrom !== userType
-                    ? "text-green-600"
-                    : "text-yellow-600"
+                    ? "bg-gray-50 border-gray-200"
+                    : "bg-yellow-50 border-yellow-200"
                 }`}
               >
-                {pendingResponseFrom !== userType ? "✓ Responded" : "Pending"}
+                <div className="text-sm font-medium text-gray-700 mb-1">
+                  {pendingResponseFrom === "seller" ? "Seller" : "Buyer"}
+                </div>
+                <div
+                  className={`text-sm ${
+                    pendingResponseFrom !== userType
+                      ? "text-green-600"
+                      : "text-yellow-600"
+                  }`}
+                >
+                  {pendingResponseFrom !== userType ? "✓ Responded" : "Pending"}
+                </div>
               </div>
-            </div>
+            )}
+
+            {isAwaitingAdmin && (
+              <>
+                <div className="p-3 rounded-lg border bg-gray-50 border-gray-200">
+                  <div className="text-sm font-medium text-gray-700 mb-1">
+                    {userType === "seller" ? "Buyer" : "Seller"}
+                  </div>
+                  <div className="text-sm text-gray-600">✓ Responded</div>
+                </div>
+                <div className="p-3 rounded-lg border bg-purple-50 border-purple-200">
+                  <div className="text-sm font-medium text-gray-700 mb-1">
+                    Admin
+                  </div>
+                  <div className="text-sm text-purple-600">🔍 Reviewing</div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Refresh Button */}
@@ -142,24 +179,51 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
               What happens next?
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <span>
-                  The {pendingResponseFrom} has {timeRemaining} to respond
-                </span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                <span>You&apos;ll receive a notification when they respond</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
-                <span>Negotiation may expire if no response</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                <span>Refresh to check for updates</span>
-              </div>
+              {isAwaitingAdmin ? (
+                <>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Admin team is reviewing your submission</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>
+                      You&apos;ll receive notification when review is complete
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Processing typically takes 24-48 hours</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Refresh to check for updates</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>
+                      The {pendingResponseFrom} has {timeRemaining} to respond
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>
+                      You&apos;ll receive a notification when they respond
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Negotiation may expire if no response</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Refresh to check for updates</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

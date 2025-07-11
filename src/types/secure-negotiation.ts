@@ -70,6 +70,11 @@ export interface InspectionDetails {
   inspectionStatus: string;
   inspectionType: InspectionType;
   isLOI: boolean;
+  finalPrice?: number;
+  buyOffer?: number;
+  propertyTitle?: string;
+  propertyLocation?: string;
+  agreementTerms?: string[];
 }
 
 // API response structure
