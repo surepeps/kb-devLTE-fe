@@ -182,7 +182,7 @@ const MarketPlace = () => {
               Marketplace
             </h1>
             <p className="text-lg md:text-xl text-[#5A5D63] max-w-3xl mx-auto">
-              Whether you're buying, selling, renting, or investing (JV), how
+              Whether you&apos;re buying, selling, renting, or investing (JV), how
               can we assist you?
             </p>
           </div>
@@ -209,7 +209,7 @@ const MarketPlace = () => {
           {/* CTA Section */}
           <div className="text-center mb-8">
             <p className="text-lg text-[#5A5D63] mb-4">
-              Didn't find a match for your search?
+              Didn&apos;t find a match for your search?
             </p>
             <button
               className="bg-transparent border-2 border-[#09391C] text-[#09391C] px-6 py-3 rounded-lg font-semibold hover:bg-[#09391C] hover:text-white transition-colors"

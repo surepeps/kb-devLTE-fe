@@ -113,7 +113,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               <ul className="text-sm text-blue-700 space-y-1">
                 <li>• Your property will be reviewed within 24 hours</li>
                 <li>• Once approved, it will appear in search results</li>
-                <li>• You'll receive notifications for inquiries</li>
+                <li>• You&apos;ll receive notifications for inquiries</li>
                 <li>• Potential buyers can schedule inspections</li>
               </ul>
             </div>

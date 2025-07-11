@@ -20,6 +20,7 @@ import { FaCaretDown } from "react-icons/fa";
 import useClickOutside from "@/hooks/clickOutside";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
+import { useNotifications } from "@/context/notification-context";
 import notificationBellIcon from "@/svgs/bell.svg";
 import userIcon from "@/svgs/user.svg";
 import UserNotifications from "./user-notifications";
@@ -39,6 +40,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const pathName = usePathname();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { user, logout } = useUserContext();
+  const { unreadCount, fetchNotifications } = useNotifications();
   const [isNotificationModalOpened, setIsNotificationModalOpened] =
     useState<boolean>(false);
   const [isUserProfileModalOpened, setIsUserProfileModal] =
@@ -55,6 +57,13 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   useEffect(() => {
     // console.log(isModalOpened);
   }, [isModalOpened]);
+
+  // Fetch notifications when user is available
+  useEffect(() => {
+    if (user?._id && !isComingSoon) {
+      fetchNotifications();
+    }
+  }, [user?._id, fetchNotifications, isComingSoon]);
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -131,6 +140,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
             className="md:w-[169px] md:h-[25px] w-[144px] h-[30px]"
             alt=""
           />
+
           <div className="lg:flex gap-[20px] hidden">
             {navigationState.map((item: NavigationItem, idx: number) => {
               if (item.subItems && item.subItems.length > 0) {
@@ -175,7 +185,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     >
                       <span
                         className={`transition-all duration-300 font-medium text-[18px] leading-[21px] hover:text-[#8DDB90] ${
-                          pathName.includes(item.url) || isOpen
+                          pathName?.includes(item.url) || isOpen
                             ? "text-[#8DDB90]"
                             : "text-[#000000]"
                         }`}
@@ -225,6 +235,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               );
             })}
           </div>
+
           {/**Buttons for desktop screens */}
           <div className="hidden lg:flex items-center gap-6">
             {user?._id ? (
@@ -251,9 +262,13 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       className="w-5 h-5"
                     />
                     {/* Notification Badge */}
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">3</span>
-                    </div>
+                    {unreadCount > 0 && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {unreadCount}
+                        </span>
+                      </div>
+                    )}
                   </button>
                   <AnimatePresence>
                     {isNotificationModalOpened && (

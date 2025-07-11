@@ -137,7 +137,8 @@ const ResetPassword = () => {
             Reset Your Password
           </h2>
           <p className="text-center text-gray-600 max-w-md">
-            Enter your new password below. Make sure it's strong and secure.
+            Enter your new password below. Make sure it&apos;s strong and
+            secure.
           </p>
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
             <Input

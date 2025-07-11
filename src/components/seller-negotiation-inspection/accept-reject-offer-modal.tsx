@@ -24,14 +24,14 @@ const AcceptRejectOfferModal = ({
     isAcceptingOffer,
     isRejectingOffer,
     closeAcceptRejectModal,
-    acceptRejectModal,
+    showAcceptRejectModal,
   } = useNegotiationModals();
 
   const isSubmitting = isAcceptingOffer || isRejectingOffer;
 
   return (
     <ModalWrapper
-      isOpen={acceptRejectModal?.isOpen || false}
+      isOpen={showAcceptRejectModal || false}
       onClose={closeAcceptRejectModal}
       size="lg"
       showCloseButton={true}

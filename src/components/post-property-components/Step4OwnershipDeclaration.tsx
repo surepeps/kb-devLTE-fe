@@ -225,7 +225,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
               • I understand that false information may result in listing
               removal
             </p>
-            <p>• I agree to Khabi-Teq's terms of service and privacy policy</p>
+            <p>• I agree to Khabi-Teq&apos;s terms of service and privacy policy</p>
             <p>
               • I consent to being contacted by potential buyers/tenants through
               this platform

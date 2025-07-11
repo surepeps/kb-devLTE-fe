@@ -522,15 +522,15 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   // Auto-fetch initial data on mount if market type is set
-  useEffect(() => {
-    if (selectedMarketType && formikStatus === "idle") {
-      console.log(
-        "Auto-fetching initial data for:",
-        selectedMarketType.briefType,
-      );
-      fetchInitialData(selectedMarketType.briefType);
-    }
-  }, [selectedMarketType, fetchInitialData, formikStatus]);
+  // useEffect(() => {
+  //   if (selectedMarketType && formikStatus === "idle") {
+  //     console.log(
+  //       "Auto-fetching initial data for:",
+  //       selectedMarketType.briefType,
+  //     );
+  //     fetchInitialData(selectedMarketType.briefType);
+  //   }
+  // }, [selectedMarketType, fetchInitialData, formikStatus]);
 
   // Auto-fetch initial data when component mounts and market type changes
   useEffect(() => {

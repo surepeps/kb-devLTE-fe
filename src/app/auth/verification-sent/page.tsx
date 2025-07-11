@@ -97,18 +97,20 @@ const VerificationSent = () => {
               Congratulations! Your agent registration was successful.
             </p>
             <p className="text-gray-600">
-              We've sent a verification email to <strong>{email}</strong>.
+              We&apos;ve sent a verification email to <strong>{email}</strong>.
               Please check your email and click the verification link to
               activate your account.
             </p>
             <p className="text-sm text-gray-500">
-              Once verified, you'll be able to access all agent features and
-              start connecting with potential clients.
+              Once verified, you&apos;ll be able to access all agent features
+              and start connecting with potential clients.
             </p>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md">
-            <h3 className="font-semibold text-blue-800 mb-2">What's Next?</h3>
+            <h3 className="font-semibold text-blue-800 mb-2">
+              What&apos;s Next?
+            </h3>
             <ul className="text-sm text-blue-700 space-y-1 text-left">
               <li>• Check your email inbox (and spam folder)</li>
               <li>• Click the verification link in the email</li>
@@ -142,8 +144,9 @@ const VerificationSent = () => {
 
           <div className="text-sm text-gray-500 max-w-md">
             <p>
-              <strong>Didn't receive the email?</strong> Check your spam/junk
-              folder or contact support if you continue to have issues.
+              <strong>Didn&apos;t receive the email?</strong> Check your
+              spam/junk folder or contact support if you continue to have
+              issues.
             </p>
           </div>
         </div>

@@ -68,17 +68,18 @@ const timeSlots = [
 
 const getAvailableDates = () => {
   const dates: string[] = [];
-  let date = new Date();
-  date.setDate(date.getDate() + 3); // Start from 3 days from now
+  const dateI = new Date();
+  dateI.setDate(dateI.getDate() + 3); // Start from 3 days from now
 
   // Get dates for the next 30 days
   for (let i = 0; i < 30; i++) {
-    // Exclude Sundays
-    if (date.getDay() !== 0) {
-      dates.push(format(date, "MMM d, yyyy"));
+    // Exclude Sundays (0 = Sunday)
+    if (dateI.getDay() !== 0) {
+      dates.push(format(dateI, "MMM d, yyyy"));
     }
-    date.setDate(date.getDate() + 1);
+    dateI.setDate(dateI.getDate() + 1);
   }
+
   return dates;
 };
 
@@ -536,7 +537,10 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
               ) : (
                 <button
                   type="submit"
-                  onClick={formik.handleSubmit}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    formik.handleSubmit();
+                  }}
                   disabled={!canProceedFromStep(currentStep)}
                   className="px-6 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >

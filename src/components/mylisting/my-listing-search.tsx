@@ -203,82 +203,87 @@ const MyListingSearch = ({
   };
 
   const buildSearchFilters = (): SearchFilters => {
-    const filters: SearchFilters = {};
+    const searchFilters: SearchFilters = {};
 
     // Location
     if (locationValue !== "") {
-      filters.location = locationValue;
+      searchFilters.location = locationValue;
     }
 
     // Price
     const priceQuery = buildPriceQuery(priceRadioValue, priceFormik);
     if (priceQuery) {
-      filters.priceRange = priceQuery;
+      searchFilters.priceRange = priceQuery;
     }
 
     // Property Type
     if (!usageOptions.includes("All") && usageOptions.length > 0) {
-      filters.type = usageOptions.join(",");
+      searchFilters.type = usageOptions.join(",");
     }
 
     // Document Type
     if (documentsSelected.length > 0) {
-      filters.documentType = documentsSelected;
+      searchFilters.documentType = documentsSelected;
     }
 
     // Bedrooms
     if (noOfBedrooms !== undefined) {
-      filters.bedroom = noOfBedrooms;
+      searchFilters.bedroom = noOfBedrooms;
     }
 
     // Bathroom
-    if (filters.bathroom !== undefined && filters.bathroom !== "") {
-      filters.bathroom = Number(filters.bathroom);
+    if (
+      filters.bathroom !== undefined &&
+      String(filters.bathroom) !== "" &&
+      filters.bathroom !== 0
+    ) {
+      searchFilters.bathroom = Number(filters.bathroom);
     }
 
     // Land Size
-    if (filters.landSize && filters.landSize.size) {
-      filters.landSizeType = filters.landSize.type;
-      filters.landSize = filters.landSize.size;
-    }
-
-    // Desired Features
-    if (filters.desirer_features.length > 0) {
-      filters.desireFeature = filters.desirer_features;
+    if (
+      filters.landSize &&
+      typeof filters.landSize === "object" &&
+      "size" in filters.landSize &&
+      filters.landSize.size
+    ) {
+      searchFilters.landSizeType = filters.landSize.type;
+      searchFilters.landSize = filters.landSize.size;
     }
 
     // Home Condition
     if (filters.homeCondition !== "") {
-      filters.homeCondition = filters.homeCondition;
+      searchFilters.homeCondition = filters.homeCondition;
     }
 
     // Tenant Criteria
-    if (filters.tenantCriteria.length > 0) {
-      filters.tenantCriteria = filters.tenantCriteria;
+    if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+      searchFilters.tenantCriteria = filters.tenantCriteria;
     }
 
     // Brief Type
     if (briefTypeFilter !== "All") {
-      filters.briefType = briefTypeFilter;
+      searchFilters.briefType = briefTypeFilter;
     }
 
     // Status
     if (statusFilter !== "all") {
-      filters.status = statusFilter;
+      searchFilters.status = statusFilter;
     }
 
     // Premium
     if (isPremiumFilter !== undefined) {
-      filters.isPremium = isPremiumFilter;
+      searchFilters.isPremium = isPremiumFilter;
     }
 
     // Preference
     if (isPreferenceFilter !== undefined) {
-      filters.isPreference = isPreferenceFilter;
+      searchFilters.isPreference = isPreferenceFilter;
     }
 
-    return filters;
+    return searchFilters;
   };
+
 
   const handleSearch = () => {
     const searchFilters = buildSearchFilters();

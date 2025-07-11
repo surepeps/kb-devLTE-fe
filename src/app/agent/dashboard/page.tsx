@@ -202,7 +202,7 @@ export default function AgentDashboard() {
                 ₦{stats.monthlyCommission.toLocaleString()}
               </div>
               <p className="text-sm sm:text-base text-[#5A5D63]">
-                This Month's Commission
+                This Month&apos;s Commission
               </p>
             </div>
             <div className="text-center">
@@ -398,6 +398,19 @@ export default function AgentDashboard() {
                 <div className="flex-1">
                   <h3 className="font-semibold">Inspection Requests</h3>
                   <p className="text-sm text-[#5A5D63]">Manage inspections</p>
+                </div>
+              </Link>
+
+              <Link
+                href="/notifications"
+                className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
+              >
+                <div className="p-2 bg-purple-500 bg-opacity-10 rounded-lg">
+                  <UsersIcon size={20} className="text-purple-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Notifications</h3>
+                  <p className="text-sm text-[#5A5D63]">View notifications</p>
                 </div>
               </Link>
 

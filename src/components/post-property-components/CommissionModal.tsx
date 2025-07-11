@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/general-components/button";
 import Green from "@/assets/green.png";
 
@@ -9,6 +10,8 @@ interface CommissionModalProps {
   onAccept: () => void;
   commission?: string;
   userName?: string;
+  userType?: "landowner" | "agent";
+  briefType?: string;
 }
 
 const CommissionModal: React.FC<CommissionModalProps> = ({
@@ -16,49 +19,111 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
   onClose,
   onAccept,
   commission = "10%",
-  userName = "Emperor Ade",
+  userName = "User",
+  userType = "landowner",
+  briefType = "",
 }) => {
-  if (!open) return null;
+  const getUserTypeText = () => {
+    return userType === "agent" ? "Agent" : "Property Owner";
+  };
+
+  const getCommissionDescription = () => {
+    if (userType === "agent") {
+      return `As an agent, you earn ${commission} commission on successful transactions.`;
+    }
+    return `As a property owner, ${commission} commission applies when we close the deal.`;
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white shadow-lg p-8 w-[90%] md:w-[50%] relative">
-        <h2 className="text-lg sm:text-3xl font-bold text-center my-3">Commission Details</h2>
-        <p className="text-center text-[#5A5D63] mb-6 text-sm sm:text-lg">
-          Below is your applicable commission rate. This fee will be deducted when we close the deal
-        </p>
-        <div className="flex flex-col mb-6 border-[1px] border-[#A7A9A9] p-4 bg-[#F4FFF4] w-full sm:w-[65%] mx-auto ">
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center self-start">
-            <Image src={Green} alt="icon" width={24} height={24} />
-          </div>
-          <div className="flex flex-col items-center w-full">
-            <div className="w-20 h-20 rounded-full bg-[#FFFFFF] flex items-center justify-center mb-3">
-              <span className="text-xl font-bold text-black">{commission}</span>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-white shadow-xl rounded-lg p-6 md:p-8 w-full max-w-md mx-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-2">
+                Commission Details
+              </h2>
+              <p className="text-[#5A5D63] text-sm md:text-base">
+                {getCommissionDescription()}
+              </p>
             </div>
-            <p className="text-center text-[#1E1E1E] font-medium  text-sm sm:text-base mb-6">
-              I <b>{userName}</b> agree that <b>Khabiteq realty</b> shall earn <b>{commission}</b> of the total value generated from this transaction as commission when the deal is closed.
-            </p>
-          </div>
-        </div>
-        <p className="text-center text-[#5A5D63] mb-6 text-xs sm:text-sm">
-          Please click Yes to accept the commission policy, and let Khabiteq Realty handle the rest for you.
-        </p>
-        <div className="flex justify-between gap-4">
-          <Button
-            value="No"
-            type="button"
-            onClick={onClose}
-            className="border-[1px] border-black lg:w-[30%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed"
-          />
-          <Button
-            value="Yes"
-            type="button"
-            onClick={onAccept}
-            className="bg-[#8DDB90] lg:w-[30%] text-white text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed"
-          />
-        </div>
-      </div>
-    </div>
+
+            {/* Commission Card */}
+            <div className="bg-[#F4FFF4] border border-[#8DDB90] rounded-lg p-6 mb-6">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-[#8DDB90] flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">
+                    {commission}
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-center space-y-3">
+                <div className="bg-white rounded-lg p-3 border border-[#E5E7EB]">
+                  <p className="text-[#09391C] font-medium text-sm">
+                    User Type:{" "}
+                    <span className="font-bold">{getUserTypeText()}</span>
+                  </p>
+                  {briefType && (
+                    <p className="text-[#5A5D63] text-xs mt-1">
+                      Brief Type: {briefType}
+                    </p>
+                  )}
+                </div>
+
+                <p className="text-[#1E1E1E] text-sm leading-relaxed">
+                  I, <span className="font-bold">{userName}</span>, agree that{" "}
+                  <span className="font-bold text-[#8DDB90]">
+                    Khabiteq Realty
+                  </span>{" "}
+                  shall earn <span className="font-bold">{commission}</span> of
+                  the total value generated from this transaction as commission
+                  when the deal is closed.
+                </p>
+              </div>
+            </div>
+
+            {/* Legal Notice */}
+            <div className="bg-[#FFF8E1] border border-[#FFB74D] rounded-lg p-4 mb-6">
+              <p className="text-[#F57F17] text-xs text-center leading-relaxed">
+                <span className="font-medium">Legal Notice:</span> By accepting,
+                you agree to the commission terms. This fee is only charged upon
+                successful completion of the transaction.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                value="Decline"
+                type="button"
+                onClick={onClose}
+                className="flex-1 border-2 border-[#E5E7EB] text-[#5A5D63] hover:bg-[#F9FAFB] text-base font-semibold min-h-[50px] py-3 px-6 rounded-lg transition-colors"
+              />
+              <Button
+                value="Accept & Continue"
+                type="button"
+                onClick={onAccept}
+                className="flex-1 bg-[#8DDB90] hover:bg-[#7BC87F] text-white text-base font-semibold min-h-[50px] py-3 px-6 rounded-lg transition-colors"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

@@ -33,10 +33,17 @@ export const URLS = {
   requestPasswordReset: "/request-password-reset",
   allAvailableSLots: "/all/inspection-slots",
   scheduleInspection: "/property/schedule-inspection",
-  requestInspection: "/buyers/request-inspection",
+
+
+  requestInspection: "/inspections/request-inspection",
+  validateInspectionAccess: "/inspections/validate-access",
+  getOneInspection: "/inspections/inspection-details",
+
+
   updateInspection: "/buyers/update-inspection",
   getOneNewInspection: "/buyers/new-inspection",
-  getOneInspection: "/buyers/inspection",
+
+
   getAllRequests: "/requests",
   confirmAvailability: "/confirm-property",
   agentGetUserPreferences: "/agent/preferences",

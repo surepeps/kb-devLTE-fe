@@ -6,7 +6,7 @@
 // import React, { useCallback, useRef, useState } from 'react';
 // import { motion, useInView } from 'framer-motion';
 // import arrow from '@/svgs/arrowRight.svg';
-// import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
+// import noImage from '@/assets/noImageAvailable.png';
 // import cancelIcon from '@/svgs/cancelIcon.svg';
 // import { usePageContext } from '@/context/page-context';
 // import { StaticImport } from 'next/dist/shared/lib/get-img-props';
@@ -175,7 +175,7 @@ import Image from 'next/image';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import arrow from '@/svgs/arrowRight.svg';
-import noImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
+import noImage from '@/assets/noImageAvailable.png';
 import cancelIcon from '@/svgs/cancelIcon.svg';
 import { usePageContext } from '@/context/page-context';
 import {

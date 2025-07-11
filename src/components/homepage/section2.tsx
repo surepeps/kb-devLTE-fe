@@ -19,6 +19,7 @@ import { shuffleArray } from "@/utils/shuffleArray";
 import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
+import { waitForInitialization } from "@/utils/appInit";
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -161,27 +162,53 @@ const Section2 = () => {
       URLS.fetchBriefs
     }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
-    const fetchData = async () => {
+    const initAndFetch = async () => {
+      try {
+        await waitForInitialization();
+        fetchData();
+      } catch (error) {
+        console.error("Failed to initialize section2:", error);
+        setProperties([]);
+        setCardData([]);
+        setIsLoading(false);
+      }
+    };
+
+    const fetchData = async (retryCount = 0) => {
       setIsLoading(true);
       try {
         // Check if BASE URL is available
-        if (!URLS.BASE || URLS.BASE === "undefined") {
-          console.warn("API URL not configured, using mock data");
+        if (
+          !URLS.BASE ||
+          URLS.BASE === "undefined" ||
+          URLS.BASE.includes("undefined")
+        ) {
+          console.warn("API URL not configured, using empty state");
           setProperties([]);
           setCardData([]);
           return;
         }
 
+        console.log("Fetching properties from:", url);
         const data = await GET_REQUEST(url);
 
         // Handle API error response
         if (data.error) {
           console.warn("API request failed:", data.error);
+
+          // Retry once on network errors
+          if (retryCount === 0 && data.error.includes("Network")) {
+            console.log("Retrying properties fetch...");
+            setTimeout(() => fetchData(1), 2000);
+            return;
+          }
+
           setProperties([]);
           setCardData([]);
           return;
         }
 
+        // Handle successful response
         let approved = Array.isArray(data.data)
           ? data.data.filter((item: any) => item.isApproved === true)
           : [];
@@ -199,10 +226,21 @@ const Section2 = () => {
             pictures: item?.pictures?.map((img: string) => sanitizeUrl(img)),
           }));
 
+        console.log(
+          `Successfully loaded ${sanitizedApproved.length} properties`,
+        );
         setProperties(sanitizedApproved);
         setCardData(approved);
       } catch (err) {
         console.error("Failed to fetch properties:", err);
+
+        // Retry once on unexpected errors
+        if (retryCount === 0) {
+          console.log("Retrying properties fetch due to error...");
+          setTimeout(() => fetchData(1), 2000);
+          return;
+        }
+
         setProperties([]);
         setCardData([]);
       } finally {
@@ -210,7 +248,7 @@ const Section2 = () => {
       }
     };
 
-    fetchData();
+    initAndFetch();
   }, [selectedMarketPlace, setCardData, buttons.button2]);
 
   return (

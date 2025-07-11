@@ -179,22 +179,12 @@ const RentPropertySearch: React.FC<RentPropertySearchProps> = ({
       {/* Search Modal */}
       <div className="mb-6 md:mb-8">
         <RentSearchModal
-          homeCondition={homeCondition}
-          setHomeCondition={setHomeCondition}
-          rentFilterBy={rentFilterBy}
-          setRentFilterBy={setRentFilterBy}
-          selectedBriefs={uniqueProperties.size}
           setSelectedBriefs={setUniqueProperties}
           setAddInspectionModal={setIsAddInspectionModalOpened}
           addForInspectionPayload={addForInspectionPayload}
-          setUsageOptions={setRentFilterBy}
           inspectionType={inspectionType}
           setInspectionType={setInspectionType}
           onSearch={handleSearch}
-          searchStatus={{
-            status: loading ? "pending" : "success",
-            couldNotFindAProperty: false,
-          }}
         />
       </div>
 

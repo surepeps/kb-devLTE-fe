@@ -11,7 +11,7 @@ import {
   StaticImport,
 } from "next/dist/shared/lib/get-img-props";
 import { motion } from "framer-motion";
-import randomImage from "@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png";
+import randomImage from "@/assets/noImageAvailable.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faStarOfDavid } from "@fortawesome/free-solid-svg-icons";
 import markerSVG from "@/svgs/marker.svg";

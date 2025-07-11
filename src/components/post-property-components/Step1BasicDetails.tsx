@@ -76,7 +76,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
       // Clear area if it's not valid for new LGA
       if (propertyData.area && typeof propertyData.area === "object") {
         const isValidArea = areas.some(
-          (area) => area.value === propertyData.area.value,
+          (area) =>
+            area.value ===
+            (typeof propertyData.area === "object"
+              ? propertyData.area.value
+              : propertyData.area),
         );
         if (!isValidArea) {
           updatePropertyData("area", "");

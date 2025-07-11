@@ -1,13 +1,13 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { archivo } from '@/styles/font';
-import { FormikProps, useFormik } from 'formik';
-import * as Yup from 'yup';
-import { SubmitInspectionPayloadProp } from '../types/payload';
-import { format } from 'date-fns';
+"use client";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { archivo } from "@/styles/font";
+import { FormikProps, useFormik } from "formik";
+import * as Yup from "yup";
+import { SubmitInspectionPayloadProp } from "../types/payload";
+import { format } from "date-fns";
 
 type DetailsProps = {
   selectedDate: string;
@@ -30,9 +30,9 @@ const SelectPreferableInspectionDate = ({
 }: {
   closeModal: (type: boolean) => void;
   setIsProvideTransactionDetails: (type: boolean) => void;
-  actionTracker: { lastPage: 'SelectPreferableInspectionDate' | '' }[];
+  actionTracker: { lastPage: "SelectPreferableInspectionDate" | "" }[];
   setActionTracker: React.Dispatch<
-    React.SetStateAction<{ lastPage: 'SelectPreferableInspectionDate' | '' }[]>
+    React.SetStateAction<{ lastPage: "SelectPreferableInspectionDate" | "" }[]>
   >;
   submitInspectionPayload: SubmitInspectionPayloadProp;
   setSubmitInspectionPayload: React.Dispatch<
@@ -41,19 +41,19 @@ const SelectPreferableInspectionDate = ({
 }) => {
   const getAvailableDates = () => {
     const dates: string[] = [];
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + 3);
 
     const nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
     const lastDayOfNextMonth = new Date(
       nextMonth.getFullYear(),
       nextMonth.getMonth() + 1,
-      0
+      0,
     );
 
     while (date <= lastDayOfNextMonth) {
       if (date.getDay() !== 0) {
-        dates.push(format(date, 'MMM d,yyyy')); // Changed format for consistency and common usage
+        dates.push(format(date, "MMM d,yyyy")); // Changed format for consistency and common usage
       }
       date.setDate(date.getDate() + 1);
     }
@@ -64,35 +64,35 @@ const SelectPreferableInspectionDate = ({
 
   const [details, setDetails] = useState<DetailsProps>({
     selectedDate: availableDates[0],
-    selectedTime: '9:00 AM',
+    selectedTime: "9:00 AM",
   });
 
   useEffect(() => {
     setSubmitInspectionPayload({
       ...submitInspectionPayload,
       inspectionDate: availableDates[0],
-      inspectionTime: '9:00 AM',
+      inspectionTime: "9:00 AM",
     });
   }, []);
 
   const validationSchema = Yup.object({
-    fullName: Yup.string().required('Full Name is required'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    email: Yup.string().email('Invalid email format'),
+    fullName: Yup.string().required("Full Name is required"),
+    phoneNumber: Yup.string().required("Phone number is required"),
+    email: Yup.string().email("Invalid email format"),
   });
 
   const formik = useFormik({
     initialValues: {
-      fullName: '',
-      phoneNumber: '',
-      email: '',
+      fullName: "",
+      phoneNumber: "",
+      email: "",
     },
     validationSchema,
     onSubmit: (values: ContactProps) => {
       console.log(values);
       setActionTracker([
         ...actionTracker,
-        { lastPage: 'SelectPreferableInspectionDate' },
+        { lastPage: "SelectPreferableInspectionDate" },
       ]);
       setSubmitInspectionPayload({
         ...submitInspectionPayload,
@@ -130,7 +130,7 @@ const SelectPreferableInspectionDate = ({
               });
             }}
             className={`h-[42px] ${
-              details.selectedDate === date ? 'bg-[#8DDB90] text-white' : ''
+              details.selectedDate === date ? "bg-[#8DDB90] text-white" : ""
             } min-w-[120px] px-[10px] ${
               archivo.className
             } text-sm font-medium text-[#5A5D63] rounded-md flex-shrink-0 snap-center`}
@@ -150,15 +150,15 @@ const SelectPreferableInspectionDate = ({
       {/* Time selection: grid columns adjust based on screen size */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-[14px]">
         {[
-          '9:00 AM',
-          '10:00 AM',
-          '11:00 AM',
-          '12:00 PM',
-          '1:00 PM',
-          '2:00 PM',
-          '3:00 PM',
-          '4:00 PM',
-          '5:00 PM',
+          "9:00 AM",
+          "10:00 AM",
+          "11:00 AM",
+          "12:00 PM",
+          "1:00 PM",
+          "2:00 PM",
+          "3:00 PM",
+          "4:00 PM",
+          "5:00 PM",
         ].map((time, idx: number) => (
           <button
             onClick={() => {
@@ -172,7 +172,7 @@ const SelectPreferableInspectionDate = ({
               });
             }}
             className={`border-[1px] border-[#A8ADB7] h-[57px] ${
-              details.selectedTime === time ? 'bg-[#8DDB90]' : ''
+              details.selectedTime === time ? "bg-[#8DDB90]" : ""
             } text-lg font-medium ${archivo.className} text-black rounded-md`}
             type="button"
             key={idx}
@@ -188,13 +188,19 @@ const SelectPreferableInspectionDate = ({
         >
           Booking details
         </h3>
-        <p className={`text-base sm:text-lg font-medium ${archivo.className} text-black`}>
-          Date:{' '}
-          <time className={`text-base sm:text-lg font-medium ${archivo.className} text-black`}>
+        <p
+          className={`text-base sm:text-lg font-medium ${archivo.className} text-black`}
+        >
+          Date:{" "}
+          <time
+            className={`text-base sm:text-lg font-medium ${archivo.className} text-black`}
+          >
             {details.selectedDate}
-          </time>{' '}
-          Time:{' '}
-          <time className={`text-base sm:text-lg font-medium ${archivo.className} text-black`}>
+          </time>{" "}
+          Time:{" "}
+          <time
+            className={`text-base sm:text-lg font-medium ${archivo.className} text-black`}
+          >
             {details.selectedTime}
           </time>
         </p>
@@ -202,10 +208,12 @@ const SelectPreferableInspectionDate = ({
       {/* Contact information section: adjusted description text size */}
       <div className="p-[20px] bg-[#EEF1F1] flex flex-col gap-[25px] rounded-md">
         <div className="flex flex-col gap-[4px]">
-          <h3 className="text-[#0B0D0C] text-xl font-bold">Contact information</h3>
+          <h3 className="text-[#0B0D0C] text-xl font-bold">
+            Contact information
+          </h3>
           <span className="text-sm text-[#515B6F]">
-            Provide your contact information to schedule an inspection and take the
-            next step toward your dream property
+            Provide your contact information to schedule an inspection and take
+            the next step toward your dream property
           </span>
         </div>
         {/* Input fields: stack on small screens, side-by-side on larger */}
@@ -244,7 +252,9 @@ const SelectPreferableInspectionDate = ({
           className={`w-full sm:w-[277px] h-[57px] bg-[#8DDB90] text-[#FFFFFF] font-bold text-lg ${
             archivo.className
           } ${
-            !(formik.isValid && formik.dirty) ? 'opacity-50 cursor-not-allowed' : ''
+            !(formik.isValid && formik.dirty)
+              ? "opacity-50 cursor-not-allowed"
+              : ""
           } rounded-md`}
           disabled={!(formik.isValid && formik.dirty)}
         >
@@ -273,9 +283,9 @@ const SelectPreferableInspectionDate = ({
 };
 
 type InputProps = {
-  id: 'fullName' | 'email' | 'phoneNumber';
+  id: "fullName" | "email" | "phoneNumber";
   placeholder?: string;
-  type: 'email' | 'number' | 'text';
+  type: "email" | "number" | "text";
   name: string;
   heading: string;
   isDisabled?: boolean;
@@ -294,7 +304,10 @@ const Input: React.FC<InputProps> = ({
   className,
 }) => {
   return (
-    <label htmlFor={id} className={`w-full flex flex-col gap-[4px] ${className}`}>
+    <label
+      htmlFor={id}
+      className={`w-full flex flex-col gap-[4px] ${className}`}
+    >
       <span
         className={`text-base text-[#24272C] ${archivo.className} font-medium`}
       >
@@ -308,7 +321,7 @@ const Input: React.FC<InputProps> = ({
         onBlur={formikType.handleBlur}
         value={formikType.values[id]}
         disabled={isDisabled}
-        placeholder={placeholder ?? 'This is a placeholder'}
+        placeholder={placeholder ?? "This is a placeholder"}
         className={`px-[12px] h-[50px] bg-[#FFFFFF] border-[1px] border-[#E9EBEB] w-full text-base placeholder:text-[#A7A9AD] text-black ${archivo.className} rounded-[5px] outline-none`}
       />
       {(formikType.errors[id] || formikType.touched[id]) && (

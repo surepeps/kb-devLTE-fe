@@ -241,7 +241,7 @@ const NegiotiatePrice = ({
 
       setSubmitInspectionPayload((prev) => {
         // Find the property to update or add it if it doesn't exist
-        let updatedProperties = prev.properties ? [...prev.properties] : [];
+        const updatedProperties = prev.properties ? [...prev.properties] : [];
         const existingPropertyIndex = updatedProperties.findIndex(
           (item) => item.propertyId === selectedProperty.id,
         );
@@ -418,7 +418,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
 
   const getAvailableDates = useCallback(() => {
     const dates: string[] = [];
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + 3); // start from 3 days from now
 
     // Get the last day of the next month
@@ -622,7 +622,11 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
 
   // Callback for handling the "Enter your price" input change
   const handleNegotiationPriceChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (
+      event:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.ChangeEvent<HTMLTextAreaElement>,
+    ) => {
       const rawValue = event.target.value;
       const numericValue = Number(rawValue.replace(/,/g, ""));
       const askingPrice = Number(selectedProperty.askingPrice);
@@ -643,7 +647,7 @@ const NegiotiatePriceWithSellerModal: React.FC<NegotiateWithSellerProps> = ({
         }));
 
         setSubmitInspectionPayload((prev) => {
-          let updatedProperties = prev.properties ? [...prev.properties] : [];
+          const updatedProperties = prev.properties ? [...prev.properties] : [];
           const existingPropertyIndex = updatedProperties.findIndex(
             (item) => item.propertyId === selectedProperty.id,
           );

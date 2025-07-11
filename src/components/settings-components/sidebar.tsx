@@ -3,7 +3,7 @@
 'use client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import randomImage from '@/assets/ChatGPT Image Apr 11, 2025, 12_48_47 PM.png';
+import randomImage from '@/assets/noImageAvailable.png';
 import { product_sans } from '@/styles/font';
 import { usePageContext } from '@/context/page-context';
 import { motion } from 'framer-motion';
