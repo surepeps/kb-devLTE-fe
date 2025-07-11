@@ -207,7 +207,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
+        className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
           <div className="flex items-center space-x-3">
@@ -239,7 +239,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </div>
 
         {/* LOI Preview */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 max-h-60 sm:max-h-80 overflow-y-auto border border-gray-200">
+        <div className="bg-[#EEF1F1] rounded-lg p-4 sm:p-6 max-h-60 sm:max-h-80 overflow-y-auto border border-[#C7CAD0]">
           <div className="whitespace-pre-wrap text-xs sm:text-sm text-gray-700 leading-relaxed">
             {letterOfIntention.length > 500
               ? `${letterOfIntention.substring(0, 500)}...`
@@ -264,7 +264,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
+          className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
         >
           <h4 className="font-medium text-[#09391C] mb-4">
             Choose Your Response
@@ -310,7 +310,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#EEF1F1] rounded-lg p-6 border border-[#C7CAD0]"
+          className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
         >
           <h4 className="font-medium text-[#09391C] mb-4">
             Update Your Letter of Intention
