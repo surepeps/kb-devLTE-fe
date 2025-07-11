@@ -20,7 +20,7 @@ type PayloadProps = {
   initialAmount: number;
   toBeIncreaseBy: number;
 };
-
+ 
 const JointVentureModal = ({
   addForInspectionPayload,
   setAddInspectionModal,
@@ -77,7 +77,7 @@ const JointVentureModal = ({
     useState<boolean>(false);
   const [noOfBedrooms, setNoOfBedrooms] = useState<number | undefined>(
     undefined,
-  );
+  ); 
   const [isMoreFilterModalOpened, setIsMoreFilterModalOpened] =
     useState<boolean>(false);
   const [filters, setFilters] = useState<{

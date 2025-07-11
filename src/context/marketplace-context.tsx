@@ -532,6 +532,18 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   //   }
   // }, [selectedMarketType, fetchInitialData, formikStatus]);
 
+  // Auto-fetch initial data when component mounts and market type changes
+  useEffect(() => {
+    if (selectedMarketType?.briefType) {
+      console.log(
+        "Market type changed, fetching data for:",
+        selectedMarketType.briefType,
+      );
+      setFormikStatus("idle"); // Reset status to trigger data fetch
+      fetchInitialData(selectedMarketType.briefType);
+    }
+  }, [selectedMarketType?.briefType, fetchInitialData]);
+
   // Search filters state
   const [searchLocation, setSearchLocation] = useState<{
     state: string;

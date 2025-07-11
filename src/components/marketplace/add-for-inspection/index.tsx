@@ -801,19 +801,21 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         preventBackgroundScroll={true}
       >
         {currentIndex < allNegotiations.length && (
-          <NegiotiatePrice
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            key={allNegotiations[currentIndex].id}
-            getID={allNegotiations[currentIndex].id}
-            allNegotiation={allNegotiations}
-            setAllNegotiation={setAllNegotiations}
-            setSelectPreferableInspectionDateModalOpened={
-              setSelectPreferableInspectionDateModalOpened
-            }
-            setSubmitInspectionPayload={setSubmitPayload}
-            submitInspectionPayload={submitPayload}
-          />
+          <div className="p-2 sm:p-4 md:p-6">
+            <NegiotiatePrice
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+              key={allNegotiations[currentIndex].id}
+              getID={allNegotiations[currentIndex].id}
+              allNegotiation={allNegotiations}
+              setAllNegotiation={setAllNegotiations}
+              setSelectPreferableInspectionDateModalOpened={
+                setSelectPreferableInspectionDateModalOpened
+              }
+              setSubmitInspectionPayload={setSubmitPayload}
+              submitInspectionPayload={submitPayload}
+            />
+          </div>
         )}
       </ModalWrapper>
 
@@ -826,14 +828,16 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         preventBackgroundScroll={true}
       >
         {isSelectPreferableInspectionDateModalOpened && (
-          <SelectPreferableInspectionDate
-            actionTracker={actionTracker}
-            setActionTracker={setActionTracker}
-            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
-            closeModal={setSelectPreferableInspectionDateModalOpened}
-            setSubmitInspectionPayload={setSubmitPayload}
-            submitInspectionPayload={submitPayload}
-          />
+          <div className="p-2 sm:p-4 md:p-6">
+            <SelectPreferableInspectionDate
+              actionTracker={actionTracker}
+              setActionTracker={setActionTracker}
+              setIsProvideTransactionDetails={setIsProvideTransactionDetails}
+              closeModal={setSelectPreferableInspectionDateModalOpened}
+              setSubmitInspectionPayload={setSubmitPayload}
+              submitInspectionPayload={submitPayload}
+            />
+          </div>
         )}
       </ModalWrapper>
 
@@ -846,23 +850,25 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         preventBackgroundScroll={true}
       >
         {isComingFromPriceNeg && (
-          <NegiotiatePriceWithSellerModal
-            getID={
-              propertiesSelected[0].id ?? propertySelectedForInspection?._id
-            }
-            allNegotiation={
-              propertiesSelected ?? [propertySelectedForInspection]
-            }
-            setSubmitInspectionPayload={setSubmitPayload}
-            submitInspectionPayload={submitPayload}
-            closeModal={comingFromPriceNegotiation}
-            actionTracker={actionTracker}
-            setActionTracker={setActionTracker}
-            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
-            closeSelectPreferableModal={
-              setSelectPreferableInspectionDateModalOpened
-            }
-          />
+          <div className="p-2 sm:p-4 md:p-6">
+            <NegiotiatePriceWithSellerModal
+              getID={
+                propertiesSelected[0].id ?? propertySelectedForInspection?._id
+              }
+              allNegotiation={
+                propertiesSelected ?? [propertySelectedForInspection]
+              }
+              setSubmitInspectionPayload={setSubmitPayload}
+              submitInspectionPayload={submitPayload}
+              closeModal={comingFromPriceNegotiation}
+              actionTracker={actionTracker}
+              setActionTracker={setActionTracker}
+              setIsProvideTransactionDetails={setIsProvideTransactionDetails}
+              closeSelectPreferableModal={
+                setSelectPreferableInspectionDateModalOpened
+              }
+            />
+          </div>
         )}
       </ModalWrapper>
 
@@ -871,19 +877,22 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         isOpen={isLetterOfIntentionModalOpened}
         onClose={() => setIsLetterOfIntentionModalOpened(false)}
         title="Letter of Intention"
-        size="xl"
+        size="lg"
         preventBackgroundScroll={true}
+        className="max-h-[95vh] overflow-y-auto"
       >
         {isLetterOfIntentionModalOpened && (
-          <LetterOfIntention
-            setIsModalClosed={setIsLetterOfIntentionModalOpened}
-            closeSelectPreferableModal={
-              setSelectPreferableInspectionDateModalOpened
-            }
-            propertyId={propertiesSelected[0]?._id}
-            submitInspectionPayload={submitPayload}
-            setSubmitInspectionPayload={setSubmitPayload}
-          />
+          <div className="p-1 sm:p-4 md:p-6">
+            <LetterOfIntention
+              setIsModalClosed={setIsLetterOfIntentionModalOpened}
+              closeSelectPreferableModal={
+                setSelectPreferableInspectionDateModalOpened
+              }
+              propertyId={propertiesSelected[0]?._id}
+              submitInspectionPayload={submitPayload}
+              setSubmitInspectionPayload={setSubmitPayload}
+            />
+          </div>
         )}
       </ModalWrapper>
 
@@ -894,22 +903,25 @@ const AddForInspection: React.FC<AddForInspectionProps> = ({
         title="Upload LOI Document"
         size="lg"
         preventBackgroundScroll={true}
+        className="max-h-[95vh] overflow-y-auto"
       >
         {isComingFromSubmitLol && (
-          <UploadLolDocumentModal
-            getID={propertiesSelected[0].id}
-            propertyId={propertiesSelected[0]?._id}
-            allNegotiation={propertiesSelected}
-            closeModal={setIsComingFromSubmitLol}
-            actionTracker={actionTracker}
-            setActionTracker={setActionTracker}
-            setIsProvideTransactionDetails={setIsProvideTransactionDetails}
-            closeSelectPreferableModal={
-              setSelectPreferableInspectionDateModalOpened
-            }
-            setSubmitInspectionPayload={setSubmitPayload}
-            submitInspectionPayload={submitPayload}
-          />
+          <div className="p-1 sm:p-4 md:p-6">
+            <UploadLolDocumentModal
+              getID={propertiesSelected[0].id}
+              propertyId={propertiesSelected[0]?._id}
+              allNegotiation={propertiesSelected}
+              closeModal={setIsComingFromSubmitLol}
+              actionTracker={actionTracker}
+              setActionTracker={setActionTracker}
+              setIsProvideTransactionDetails={setIsProvideTransactionDetails}
+              closeSelectPreferableModal={
+                setSelectPreferableInspectionDateModalOpened
+              }
+              setSubmitInspectionPayload={setSubmitPayload}
+              submitInspectionPayload={submitPayload}
+            />
+          </div>
         )}
       </ModalWrapper>
     </Fragment>
