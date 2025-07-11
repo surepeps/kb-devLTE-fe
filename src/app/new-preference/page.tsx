@@ -9,7 +9,6 @@ import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { featuresData } from "@/data/landlord";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { useRouter } from "next/navigation";
@@ -25,61 +24,211 @@ interface Option {
   label: string;
 }
 
+// Define preference types
+type PreferenceType = "buyer" | "tenant" | "developer" | "shortlet";
+
+// Define form data structures for each preference type
+interface BuyerFormData {
+  // Step 1: Property Requirements
+  state: string;
+  localGovernmentAreas: string[];
+  selectedAreas: { [lga: string]: string[] };
+  nearbyLandmark?: string;
+  minPrice: string;
+  maxPrice: string;
+  propertyType: "Land" | "Residential" | "Commercial";
+  buildingType: "Detached" | "Semi-Detached" | "Block of Flats";
+  minBedrooms: string;
+  minBathrooms: string;
+  propertyCondition: "New" | "Renovated" | "Any";
+  purpose: "For living" | "Resale" | "Development";
+  baseFeatures: string[];
+  premiumFeatures: string[];
+  additionalNotes?: string;
+
+  // Step 2: Contact Information
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+}
+
+interface TenantFormData {
+  // Step 1: Rental Requirements
+  state: string;
+  localGovernmentAreas: string[];
+  selectedAreas: { [lga: string]: string[] };
+  minMonthlyRent: string;
+  maxMonthlyRent: string;
+  propertyType: "Self-con" | "Flat" | "Mini Flat" | "Bungalow";
+  minBedrooms: string;
+  leaseTerm: "6 Months" | "1 Year";
+  propertyCondition: "New" | "Renovated";
+  purpose: "Residential" | "Office";
+  baseFeatures: string[];
+  premiumFeatures: string[];
+  additionalNotes?: string;
+
+  // Step 2: Contact Information
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+}
+
+interface DeveloperFormData {
+  // Step 1: Development Interest
+  state: string;
+  localGovernmentAreas: string[];
+  selectedAreas: { [lga: string]: string[] };
+  minLandSize: string;
+  budgetRange?: string;
+  jvType: "Equity Split" | "Lease-to-Build" | "Development Partner";
+  propertyType: "Land" | "Old Building" | "Structure to demolish";
+  expectedStructureType: "Mini Flats" | "Luxury Duplexes";
+  timeline: "Ready Now" | "In 3 Months" | "Within 1 Year";
+  baseFeatures: string[];
+  premiumFeatures: string[];
+  partnerExpectations?: string;
+
+  // Step 2: Contact Information
+  companyName: string;
+  contactPerson: string;
+  phoneNumber: string;
+  email: string;
+  cacRegistrationNumber?: string;
+}
+
+interface ShortletFormData {
+  // Step 1: Booking Requirements
+  state: string;
+  localGovernmentAreas: string[];
+  selectedAreas: { [lga: string]: string[] };
+  minPricePerNight: string;
+  maxPricePerNight: string;
+  propertyType: "Studio" | "1-Bed Apartment" | "2-Bed Flat";
+  minBedrooms: string;
+  numberOfGuests: string;
+  checkInDate: string;
+  checkOutDate: string;
+  baseFeatures: string[];
+  premiumFeatures: string[];
+  additionalNotes?: string;
+
+  // Step 2: Contact Information
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+}
+
+// Feature options for each preference type
+const buyerBaseFeatures = [
+  "Security",
+  "Water Supply",
+  "Parking",
+  "Power Supply",
+  "Title Preference (C of O)",
+];
+
+const buyerPremiumFeatures = [
+  "Gated Estate",
+  "Smart Home Features",
+  "Infrastructure",
+  "Sea View / Waterfront",
+];
+
+const tenantBaseFeatures = [
+  "Parking",
+  "Power Supply",
+  "Clean Water",
+  "Security",
+  "Accessibility to Road",
+];
+
+const tenantPremiumFeatures = [
+  "Gated Estate",
+  "Furnished",
+  "Serviced Apartment",
+  "Backup Generator",
+  "Proximity to School/Work",
+];
+
+const developerBaseFeatures = [
+  "Titled Land",
+  "Dry Land",
+  "Accessible Road",
+  "Within Urban Zone",
+];
+
+const developerPremiumFeatures = [
+  "Existing Drawings",
+  "Fenced Land",
+  "High-Demand Area",
+  "Market Demand for Flats",
+];
+
+const shortletBaseFeatures = [
+  "Wi-Fi",
+  "Power Supply",
+  "Clean Bathroom",
+  "AC",
+  "Kitchen",
+];
+
+const shortletPremiumFeatures = [
+  "Smart TV / Netflix",
+  "Gym",
+  "Swimming Pool",
+  "Housekeeping",
+  "Pet-Friendly",
+  "Breakfast",
+  "Balcony",
+  "Gated Estate",
+];
+
 const NewPreference = () => {
   const isLoading = useLoading();
   const router = useRouter();
-  const [area, setArea] = useState<string>("");
-  const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
-  const [selectedState, setSelectedState] = useState<Option | null>(null);
-  const [selectedLGA, setSelectedLGA] = useState<Option | null>(null);
+  const [currentPreferenceType, setCurrentPreferenceType] =
+    useState<PreferenceType>("buyer");
+  const [currentStep, setCurrentStep] = useState(0);
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedProperty, setSelectedProperty] =
-    useState<string>("Buy a property");
-  const [prices, setPrices] = useState({
-    minPrice: "",
-    maxPrice: "",
-  });
-  const [bathroom, setBathroom] = useState<string>("");
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
+  const [selectedAreas, setSelectedAreas] = useState<{
+    [lga: string]: Option[];
+  }>({});
   const [showFinalSubmit, setShowFinalSubmit] = useState(false);
+  const [areInputsDisabled, setAreInputsDisabled] = useState<boolean>(false);
 
-  const steps: { label: string; status: "completed" | "active" | "pending" }[] =
-    [
-      {
-        label: "Submit preference details",
-        status:
-          currentStep > 0
-            ? "completed"
-            : currentStep === 0
-              ? "active"
-              : "pending",
-      },
-      {
-        label: "Contact Details",
-        status:
-          currentStep > 1
-            ? "completed"
-            : currentStep === 1
-              ? "active"
-              : "pending",
-      },
-    ];
+  const steps = [
+    {
+      label:
+        currentPreferenceType === "buyer"
+          ? "Property Requirements"
+          : currentPreferenceType === "tenant"
+            ? "Rental Requirements"
+            : currentPreferenceType === "developer"
+              ? "Development Interest"
+              : "Booking Requirements",
+      status:
+        currentStep > 0
+          ? "completed"
+          : currentStep === 0
+            ? "active"
+            : ("pending" as const),
+    },
+    {
+      label: "Contact Information",
+      status:
+        currentStep > 1
+          ? "completed"
+          : currentStep === 1
+            ? "active"
+            : ("pending" as const),
+    },
+  ];
 
-  function formatNumberWithCommas(value: string) {
-    const cleaned = value.replace(/\D/g, "");
-    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
-  const formatNumber = (val: string) => {
-    const containsLetters = /[A-Za-z]/.test(val);
-    if (containsLetters) {
-      return;
-    }
-    const numericValue = val.replace(/,/g, "");
-    return numericValue ? Number(numericValue).toLocaleString() : "";
-  };
-
+  // Initialize state options
   useEffect(() => {
     setStateOptions(
       Object.keys(data).map((state: string) => ({
@@ -89,671 +238,13 @@ const NewPreference = () => {
     );
   }, []);
 
-  const renderDynamicComponent = () => {
-    switch (selectedProperty) {
-      case "Buy a property":
-        return {
-          propertyConditionComponent: (
-            <div className="min-h-[73px] gap-[15px] flex flex-col w-full">
-              <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                Property condition
-              </h2>
-              <div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
-                <RadioCheck
-                  selectedValue={formik.values?.propertyCondition}
-                  handleChange={() => {
-                    formik.setFieldValue("propertyCondition", "Brand New");
-                  }}
-                  type="radio"
-                  name="propertyCondition"
-                  value="Brand New"
-                />
-                <RadioCheck
-                  selectedValue={formik.values?.propertyCondition}
-                  handleChange={() => {
-                    formik.setFieldValue("propertyCondition", "Good Condition");
-                  }}
-                  type="radio"
-                  name="propertyCondition"
-                  value="Good Condition"
-                />
-              </div>
-            </div>
-          ),
-          priceComponent: (
-            <div className="flex w-full gap-4">
-              <div className="flex flex-col w-1/2">
-                <Input
-                  label="Min Price Range"
-                  name="min_price_range"
-                  type="text"
-                  value={prices.minPrice}
-                  onChange={(event) => {
-                    const rawValue = event.target.value.replace(/,/g, "");
-                    setPrices({
-                      ...prices,
-                      minPrice: formatNumberWithCommas(rawValue),
-                    });
-                  }}
-                />
-              </div>
-              <div className="flex flex-col w-1/2">
-                <Input
-                  label="Max Price Range"
-                  name="max_price_range"
-                  type="text"
-                  value={prices.maxPrice}
-                  onChange={(event) => {
-                    const rawValue = event.target.value.replace(/,/g, "");
-                    setPrices({
-                      ...prices,
-                      maxPrice: formatNumberWithCommas(rawValue),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          ),
-          documentTypeComponent: (
-            <div className="flex flex-col w-full gap-2">
-              <h3 className="">Document Type</h3>
-              <Select
-                name="documentType"
-                options={documentTypeOptions}
-                isMulti
-                value={documentTypeOptions.filter((option) =>
-                  formik.values.documentType.includes(option.value),
-                )}
-                onChange={(selectedOptions) => {
-                  formik.setFieldValue(
-                    "documentType",
-                    selectedOptions
-                      ? selectedOptions.map((option) => option.value)
-                      : [],
-                  );
-                }}
-                onBlur={formik.handleBlur}
-                placeholder="Select Document Type"
-                isDisabled={areInputsDisabled}
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    minHeight: 49,
-                    height: 49,
-                    border: "1px solid #D6DDEB",
-                    backgroundColor: "#FAFAFA",
-                  }),
-                  valueContainer: (provided) => ({
-                    ...provided,
-                    height: 48,
-                    padding: "0 8px",
-                  }),
-                  input: (provided) => ({
-                    ...provided,
-                    margin: 0,
-                    padding: 0,
-                  }),
-                  indicatorsContainer: (provided) => ({
-                    ...provided,
-                    height: 48,
-                  }),
-                }}
-              />
-            </div>
-          ),
-          features: (
-            <div className="flex flex-col gap-[15px]">
-              <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                Features
-              </h2>
-              <div className="grid lg:grid-cols-3 grid-cols-2 gap-x-[30px] gap-y-[10px] w-full">
-                {featuresData.map((item: string, idx: number) => (
-                  <RadioCheck
-                    key={idx}
-                    type="checkbox"
-                    modifyStyle={{}}
-                    value={item}
-                    name="features"
-                    handleChange={() => {
-                      const features = formik.values.features.includes(item)
-                        ? formik.values.features.filter((doc) => doc !== item)
-                        : [...formik.values.features, item];
-                      formik.setFieldValue("features", features);
-                    }}
-                    isDisabled={areInputsDisabled}
-                  />
-                ))}
-              </div>
-            </div>
-          ),
-          bedroomAndBathroomComponent: (
-            <>
-              <div className="flex flex-col w-full gap-2">
-                <h3>Number of Bedroom</h3>
-                <Select
-                  name="noOfBedroom"
-                  options={bedroomOptions}
-                  value={bedroomOptions.find(
-                    (option) => option.value === formik.values.noOfBedroom,
-                  )}
-                  onChange={(selectedOption) => {
-                    formik.setFieldValue(
-                      "noOfBedroom",
-                      selectedOption?.value || "",
-                    );
-                  }}
-                  onBlur={formik.handleBlur}
-                  placeholder="Select number of bedrooms"
-                  isDisabled={areInputsDisabled}
-                  styles={{
-                    control: (provided) => ({
-                      ...provided,
-                      minHeight: 48,
-                      height: 48,
-                      border: "1px solid #D6DDEB",
-                      backgroundColor: "#FAFAFA",
-                    }),
-                    valueContainer: (provided) => ({
-                      ...provided,
-                      height: 48,
-                      padding: "0 8px",
-                    }),
-                    input: (provided) => ({
-                      ...provided,
-                      margin: 0,
-                      padding: 0,
-                    }),
-                    indicatorsContainer: (provided) => ({
-                      ...provided,
-                      height: 48,
-                    }),
-                  }}
-                />
-              </div>
-              <Input
-                label="Number of Bathroom"
-                name="bathroom"
-                type="number"
-                minNumber={1}
-                value={bathroom}
-                onChange={(event) => {
-                  setBathroom(event.target.value);
-                }}
-              />
-            </>
-          ),
-        };
-      case "Find property for joint venture":
-        return {
-          propertyConditionComponent: null,
-          priceComponent: (
-            <div className="flex w-full gap-4">
-              <div className="flex flex-col w-1/2">
-                <Input
-                  label="Min Price Range"
-                  name="min_price_range"
-                  type="text"
-                  value={prices.minPrice}
-                  onChange={(event) => {
-                    const rawValue = event.target.value.replace(/,/g, "");
-                    setPrices({
-                      ...prices,
-                      minPrice: formatNumberWithCommas(rawValue),
-                    });
-                  }}
-                />
-              </div>
-              <div className="flex flex-col w-1/2">
-                <Input
-                  label="Max Price Range"
-                  name="max_price_range"
-                  type="text"
-                  value={prices.maxPrice}
-                  onChange={(event) => {
-                    const rawValue = event.target.value.replace(/,/g, "");
-                    setPrices({
-                      ...prices,
-                      maxPrice: formatNumberWithCommas(rawValue),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          ),
-          features: <></>,
-          bedroomAndBathroomComponent: null,
-          documentTypeComponent: (
-            <div className="flex flex-col w-full gap-2">
-              <h3 className="">Document Type</h3>
-              <Select
-                name="documentType"
-                options={documentTypeOptions}
-                isMulti
-                value={documentTypeOptions.filter((option) =>
-                  formik.values.documentType.includes(option.value),
-                )}
-                onChange={(selectedOptions) => {
-                  formik.setFieldValue(
-                    "documentType",
-                    selectedOptions
-                      ? selectedOptions.map((option) => option.value)
-                      : [],
-                  );
-                }}
-                onBlur={formik.handleBlur}
-                placeholder="Select Document Type"
-                isDisabled={areInputsDisabled}
-                styles={{
-                  control: (provided) => ({
-                    ...provided,
-                    minHeight: 49,
-                    height: 49,
-                    border: "1px solid #D6DDEB",
-                    backgroundColor: "#FAFAFA",
-                  }),
-                  valueContainer: (provided) => ({
-                    ...provided,
-                    height: 48,
-                    padding: "0 8px",
-                  }),
-                  input: (provided) => ({
-                    ...provided,
-                    margin: 0,
-                    padding: 0,
-                  }),
-                  indicatorsContainer: (provided) => ({
-                    ...provided,
-                    height: 48,
-                  }),
-                }}
-              />
-            </div>
-          ),
-        };
-      case "Rent/Lease a property":
-        if (
-          formik.values.propertyType === "Residential" ||
-          formik.values.propertyType === "Commercial"
-        ) {
-          return {
-            propertyConditionComponent: (
-              <div className="min-h-[73px] gap-[15px] flex flex-col w-full">
-                <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                  Property condition
-                </h2>
-                <div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
-                  <RadioCheck
-                    selectedValue={formik.values?.propertyCondition}
-                    handleChange={() => {
-                      formik.setFieldValue("propertyCondition", "Brand New");
-                    }}
-                    type="radio"
-                    name="propertyCondition"
-                    value="Brand New"
-                  />
-                  <RadioCheck
-                    selectedValue={formik.values?.propertyCondition}
-                    handleChange={() => {
-                      formik.setFieldValue(
-                        "propertyCondition",
-                        "Good Condition",
-                      );
-                    }}
-                    type="radio"
-                    name="propertyCondition"
-                    value="Good Condition"
-                  />
-                </div>
-              </div>
-            ),
-            bedroomAndBathroomComponent: (
-              <div className="flex w-full gap-4">
-                <div className="flex flex-col w-1/2 gap-2">
-                  <h3>Number of Bedroom</h3>
-                  <Select
-                    name="noOfBedroom"
-                    options={bedroomOptions}
-                    value={bedroomOptions.find(
-                      (option) => option.value === formik.values.noOfBedroom,
-                    )}
-                    onChange={(selectedOption) => {
-                      formik.setFieldValue(
-                        "noOfBedroom",
-                        selectedOption?.value || "",
-                      );
-                    }}
-                    onBlur={formik.handleBlur}
-                    placeholder="Select number of bedrooms"
-                    isDisabled={areInputsDisabled}
-                    styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        minHeight: 48,
-                        height: 48,
-                        border: "1px solid #D6DDEB",
-                        backgroundColor: "#FAFAFA",
-                      }),
-                      valueContainer: (provided) => ({
-                        ...provided,
-                        height: 48,
-                        padding: "0 8px",
-                      }),
-                      input: (provided) => ({
-                        ...provided,
-                        margin: 0,
-                        padding: 0,
-                      }),
-                      indicatorsContainer: (provided) => ({
-                        ...provided,
-                        height: 48,
-                      }),
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col w-1/2 gap-2">
-                  <Input
-                    label="Number of Bathroom"
-                    name="bathroom"
-                    type="number"
-                    minNumber={1}
-                    value={bathroom}
-                    onChange={(event) => {
-                      setBathroom(event.target.value);
-                    }}
-                  />
-                </div>
-              </div>
-            ),
-            priceComponent: (
-              <div className="flex gap-4 w-full">
-                <Input
-                  label="Min Price Range"
-                  name="min_price_range"
-                  type="text"
-                  placeholder="Min"
-                  value={prices.minPrice}
-                  onChange={(event) => {
-                    const rawValue = event.target.value;
-                    setPrices({
-                      ...prices,
-                      minPrice: formatNumber(rawValue) ?? "",
-                    });
-                  }}
-                />
-                <Input
-                  label="Max Price Range"
-                  name="max_price_range"
-                  type="text"
-                  placeholder="Max"
-                  value={prices.maxPrice}
-                  onChange={(event) => {
-                    const rawValue = event.target.value;
-                    setPrices({
-                      ...prices,
-                      maxPrice: formatNumber(rawValue) ?? "",
-                    });
-                  }}
-                />
-              </div>
-            ),
-            features: (
-              <div className="flex flex-col gap-[15px]">
-                <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                  Features
-                </h2>
-                <div className="grid lg:grid-cols-3 grid-cols-2 gap-x-[30px] gap-y-[10px] w-full">
-                  {featuresData.map((item: string, idx: number) => (
-                    <RadioCheck
-                      key={idx}
-                      type="checkbox"
-                      modifyStyle={{}}
-                      value={item}
-                      name="features"
-                      handleChange={() => {
-                        const features = formik.values.features.includes(item)
-                          ? formik.values.features.filter((doc) => doc !== item)
-                          : [...formik.values.features, item];
-                        formik.setFieldValue("features", features);
-                      }}
-                      isDisabled={areInputsDisabled}
-                    />
-                  ))}
-                </div>
-              </div>
-            ),
-            documentTypeComponent: null,
-          };
-        } else if (formik.values.propertyType === "Land") {
-          return {
-            propertyConditionComponent: (
-              <div className="min-h-[73px] gap-[15px] flex flex-col w-full">
-                <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                  Property condition
-                </h2>
-                <div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
-                  <RadioCheck
-                    selectedValue={formik.values?.propertyCondition}
-                    handleChange={() => {
-                      formik.setFieldValue("propertyCondition", "Brand New");
-                    }}
-                    type="radio"
-                    name="propertyCondition"
-                    value="Brand New"
-                  />
-                  <RadioCheck
-                    selectedValue={formik.values?.propertyCondition}
-                    handleChange={() => {
-                      formik.setFieldValue(
-                        "propertyCondition",
-                        "Good Condition",
-                      );
-                    }}
-                    type="radio"
-                    name="propertyCondition"
-                    value="Good Condition"
-                  />
-                </div>
-              </div>
-            ),
-            priceComponent: (
-              <div className="flex w-full gap-4">
-                <div className="flex flex-col w-1/2">
-                  <Input
-                    label="Min Price Range"
-                    name="min_price_range"
-                    type="number"
-                    value={prices.minPrice}
-                    onChange={(event) => {
-                      setPrices({
-                        ...prices,
-                        minPrice: event.target.value,
-                      });
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col w-1/2">
-                  <Input
-                    label="Max Price Range"
-                    name="max_price_range"
-                    type="number"
-                    value={prices.maxPrice}
-                    onChange={(event) => {
-                      setPrices({
-                        ...prices,
-                        maxPrice: event.target.value,
-                      });
-                    }}
-                  />
-                </div>
-              </div>
-            ),
-            bedroomAndBathroomComponent: null,
-            features: null,
-            documentTypeComponent: null,
-          };
-        }
-        return {};
-      case "Shortlet":
-        return {
-          propertyConditionComponent: (
-            <div className="min-h-[73px] gap-[15px] flex flex-col w-full">
-              <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                Property condition
-              </h2>
-              <div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
-                <RadioCheck
-                  selectedValue={formik.values?.propertyCondition}
-                  handleChange={() => {
-                    formik.setFieldValue("propertyCondition", "Brand New");
-                  }}
-                  type="radio"
-                  name="propertyCondition"
-                  value="Brand New"
-                />
-                <RadioCheck
-                  selectedValue={formik.values?.propertyCondition}
-                  handleChange={() => {
-                    formik.setFieldValue("propertyCondition", "Good Condition");
-                  }}
-                  type="radio"
-                  name="propertyCondition"
-                  value="Good Condition"
-                />
-              </div>
-            </div>
-          ),
-          bedroomAndBathroomComponent: (
-            <>
-              <div className="flex flex-col w-full gap-2">
-                <h3>Number of Bedroom</h3>
-                <Select
-                  name="noOfBedroom"
-                  options={bedroomOptions}
-                  value={bedroomOptions.find(
-                    (option) => option.value === formik.values.noOfBedroom,
-                  )}
-                  onChange={(selectedOption) => {
-                    formik.setFieldValue(
-                      "noOfBedroom",
-                      selectedOption?.value || "",
-                    );
-                  }}
-                  onBlur={formik.handleBlur}
-                  placeholder="Select number of bedrooms"
-                  isDisabled={areInputsDisabled}
-                  styles={{
-                    control: (provided) => ({
-                      ...provided,
-                      minHeight: 48,
-                      height: 48,
-                      border: "1px solid #D6DDEB",
-                      backgroundColor: "#FAFAFA",
-                    }),
-                    valueContainer: (provided) => ({
-                      ...provided,
-                      height: 48,
-                      padding: "0 8px",
-                    }),
-                    input: (provided) => ({
-                      ...provided,
-                      margin: 0,
-                      padding: 0,
-                    }),
-                    indicatorsContainer: (provided) => ({
-                      ...provided,
-                      height: 48,
-                    }),
-                  }}
-                />
-              </div>
-              <Input
-                label="Number of Bathroom"
-                name="bathroom"
-                type="number"
-                minNumber={1}
-                value={bathroom}
-                onChange={(event) => {
-                  setBathroom(event.target.value);
-                }}
-              />
-            </>
-          ),
-          priceComponent: (
-            <div className="flex gap-4 w-full">
-              <Input
-                label="Min Price Range (per night)"
-                name="min_price_range"
-                type="text"
-                placeholder="Min"
-                value={prices.minPrice}
-                onChange={(event) => {
-                  const rawValue = event.target.value;
-                  setPrices({
-                    ...prices,
-                    minPrice: formatNumber(rawValue) ?? "",
-                  });
-                }}
-              />
-              <Input
-                label="Max Price Range (per night)"
-                name="max_price_range"
-                type="text"
-                placeholder="Max"
-                value={prices.maxPrice}
-                onChange={(event) => {
-                  const rawValue = event.target.value;
-                  setPrices({
-                    ...prices,
-                    maxPrice: formatNumber(rawValue) ?? "",
-                  });
-                }}
-              />
-            </div>
-          ),
-          features: (
-            <div className="flex flex-col gap-[15px]">
-              <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                Features
-              </h2>
-              <div className="grid lg:grid-cols-3 grid-cols-2 gap-x-[30px] gap-y-[10px] w-full">
-                {featuresData.map((item: string, idx: number) => (
-                  <RadioCheck
-                    key={idx}
-                    type="checkbox"
-                    modifyStyle={{}}
-                    value={item}
-                    name="features"
-                    handleChange={() => {
-                      const features = formik.values.features.includes(item)
-                        ? formik.values.features.filter((doc) => doc !== item)
-                        : [...formik.values.features, item];
-                      formik.setFieldValue("features", features);
-                    }}
-                    isDisabled={areInputsDisabled}
-                  />
-                ))}
-              </div>
-            </div>
-          ),
-          documentTypeComponent: null,
-        };
-      default:
-        return {};
-    }
-  };
-
-  const handleLGAChange = (selected: Option | null) => {
-    formik.setFieldValue("selectedLGA", selected?.value);
-    setSelectedLGA?.(selected);
-  };
-
+  // Handle state change
   const handleStateChange = (selected: Option | null) => {
-    formik.setFieldValue("selectedState", selected?.value);
-    setSelectedState?.(selected);
+    setSelectedState(selected);
+    formik.setFieldValue("state", selected?.value || "");
 
     if (selected) {
-      const lgas = Object.values(data[selected.label]);
-
+      const lgas = data[selected.label as keyof typeof data];
       if (Array.isArray(lgas)) {
         setLgaOptions(
           lgas.map((lga: string) => ({
@@ -764,157 +255,1336 @@ const NewPreference = () => {
       } else {
         setLgaOptions([]);
       }
-      setSelectedLGA?.(null);
     } else {
       setLgaOptions([]);
-      setSelectedLGA?.(null);
     }
+    setSelectedLGAs([]);
+    setSelectedAreas({});
+    formik.setFieldValue("localGovernmentAreas", []);
+    formik.setFieldValue("selectedAreas", {});
   };
 
-  const formik = useFormik({
-    initialValues: {
-      propertyType: "Residential",
-      propertyCondition: "",
-      area: "",
-      landSize: {
-        measurementType: "",
-        size: "",
+  // Handle multiple LGA selection
+  const handleLGAChange = (selectedOptions: Option[]) => {
+    setSelectedLGAs(selectedOptions);
+    formik.setFieldValue(
+      "localGovernmentAreas",
+      selectedOptions.map((option) => option.value),
+    );
+
+    // Reset areas for deselected LGAs
+    const newSelectedAreas = { ...selectedAreas };
+    const selectedLGAValues = selectedOptions.map((option) => option.value);
+
+    Object.keys(newSelectedAreas).forEach((lga) => {
+      if (!selectedLGAValues.includes(lga)) {
+        delete newSelectedAreas[lga];
+      }
+    });
+
+    setSelectedAreas(newSelectedAreas);
+    formik.setFieldValue("selectedAreas", newSelectedAreas);
+  };
+
+  // Handle area selection for specific LGA
+  const handleAreaChange = (lga: string, selectedOptions: Option[]) => {
+    const newSelectedAreas = {
+      ...selectedAreas,
+      [lga]: selectedOptions,
+    };
+    setSelectedAreas(newSelectedAreas);
+
+    const areasObject = Object.keys(newSelectedAreas).reduce(
+      (acc, lgaKey) => {
+        acc[lgaKey] = newSelectedAreas[lgaKey].map((option) => option.value);
+        return acc;
       },
-      price: "",
-      features: [] as string[],
-      noOfBedroom: "",
-      selectedState: "",
-      selectedLGA: "",
-      ownerFullName: "",
-      ownerPhoneNumber: "",
-      ownerEmail: "",
-      areYouTheOwner: true,
-      documentType: [] as string[],
-      additionalInfo: "",
-    },
-    validationSchema: Yup.object({
-      propertyType: Yup.string().required("Property type is required"),
-      propertyCondition: Yup.string().when([], {
-        is: () => selectedProperty !== "Find property for joint ventures",
-        then: (schema) => schema.required("Property condition is required"),
-        otherwise: (schema) => schema.notRequired(),
-      }),
-      selectedState: Yup.string().required("State is required"),
-      selectedLGA: Yup.string().required("LGA is required"),
-      ownerFullName: Yup.string().required("Owner full name is required"),
-      ownerPhoneNumber: Yup.string()
-        .required("Owner phone number is required")
+      {} as { [lga: string]: string[] },
+    );
+
+    formik.setFieldValue("selectedAreas", areasObject);
+  };
+
+  // Sample area options (in real app, this would come from an API or data source)
+  const getAreaOptions = (lga: string): Option[] => {
+    // This is a simplified example. In practice, you'd have a comprehensive area database
+    const sampleAreas = [
+      "Ikeja",
+      "Victoria Island",
+      "Lekki",
+      "Surulere",
+      "Yaba",
+      "Maryland",
+      "Gbagada",
+      "Ikoyi",
+      "Ajah",
+      "Oshodi",
+      "Alaba",
+      "Egbeda",
+      "Isolo",
+      "Mushin",
+      "Apapa",
+    ];
+
+    return sampleAreas.map((area) => ({
+      value: `${area} - ${lga}`,
+      label: `${area} - ${lga}`,
+    }));
+  };
+
+  // Form validation schemas
+  const getValidationSchema = (
+    preferenceType: PreferenceType,
+    step: number,
+  ) => {
+    const baseStep1Validation = {
+      state: Yup.string().required("State is required"),
+      localGovernmentAreas: Yup.array().min(1, "At least one LGA is required"),
+    };
+
+    const contactValidation = {
+      fullName: Yup.string().required("Full name is required"),
+      phoneNumber: Yup.string()
+        .required("Phone number is required")
         .test("is-valid-phone", "Invalid phone number", (value) =>
           value ? isValidPhoneNumber(value) : false,
         ),
-      ownerEmail: Yup.string()
-        .email("Invalid email")
-        .required("Owner email is required"),
-    }),
+      email: Yup.string().email("Invalid email").required("Email is required"),
+    };
+
+    if (step === 0) {
+      switch (preferenceType) {
+        case "buyer":
+          return Yup.object({
+            ...baseStep1Validation,
+            minPrice: Yup.string().required("Minimum price is required"),
+            maxPrice: Yup.string().required("Maximum price is required"),
+            propertyType: Yup.string().required("Property type is required"),
+            buildingType: Yup.string().required("Building type is required"),
+            minBedrooms: Yup.string().required("Minimum bedrooms is required"),
+            minBathrooms: Yup.string().required(
+              "Minimum bathrooms is required",
+            ),
+            propertyCondition: Yup.string().required(
+              "Property condition is required",
+            ),
+            purpose: Yup.string().required("Purpose is required"),
+          });
+        case "tenant":
+          return Yup.object({
+            ...baseStep1Validation,
+            minMonthlyRent: Yup.string().required(
+              "Minimum monthly rent is required",
+            ),
+            maxMonthlyRent: Yup.string().required(
+              "Maximum monthly rent is required",
+            ),
+            propertyType: Yup.string().required("Property type is required"),
+            minBedrooms: Yup.string().required("Minimum bedrooms is required"),
+            leaseTerm: Yup.string().required("Lease term is required"),
+            propertyCondition: Yup.string().required(
+              "Property condition is required",
+            ),
+            purpose: Yup.string().required("Purpose is required"),
+          });
+        case "developer":
+          return Yup.object({
+            ...baseStep1Validation,
+            minLandSize: Yup.string().required("Minimum land size is required"),
+            jvType: Yup.string().required("JV type is required"),
+            propertyType: Yup.string().required("Property type is required"),
+            expectedStructureType: Yup.string().required(
+              "Expected structure type is required",
+            ),
+            timeline: Yup.string().required("Timeline is required"),
+          });
+        case "shortlet":
+          return Yup.object({
+            ...baseStep1Validation,
+            minPricePerNight: Yup.string().required(
+              "Minimum price per night is required",
+            ),
+            maxPricePerNight: Yup.string().required(
+              "Maximum price per night is required",
+            ),
+            propertyType: Yup.string().required("Property type is required"),
+            minBedrooms: Yup.string().required("Minimum bedrooms is required"),
+            numberOfGuests: Yup.string().required(
+              "Number of guests is required",
+            ),
+            checkInDate: Yup.string().required("Check-in date is required"),
+            checkOutDate: Yup.string().required("Check-out date is required"),
+          });
+      }
+    } else {
+      // Step 1 (Contact Information)
+      if (preferenceType === "developer") {
+        return Yup.object({
+          companyName: Yup.string().required("Company name is required"),
+          contactPerson: Yup.string().required("Contact person is required"),
+          phoneNumber: Yup.string()
+            .required("Phone number is required")
+            .test("is-valid-phone", "Invalid phone number", (value) =>
+              value ? isValidPhoneNumber(value) : false,
+            ),
+          email: Yup.string()
+            .email("Invalid email")
+            .required("Email is required"),
+        });
+      } else {
+        return Yup.object(contactValidation);
+      }
+    }
+  };
+
+  // Get initial form values based on preference type
+  const getInitialValues = (preferenceType: PreferenceType) => {
+    const baseValues = {
+      state: "",
+      localGovernmentAreas: [],
+      selectedAreas: {},
+    };
+
+    switch (preferenceType) {
+      case "buyer":
+        return {
+          ...baseValues,
+          nearbyLandmark: "",
+          minPrice: "",
+          maxPrice: "",
+          propertyType: "Residential" as const,
+          buildingType: "Detached" as const,
+          minBedrooms: "",
+          minBathrooms: "",
+          propertyCondition: "New" as const,
+          purpose: "For living" as const,
+          baseFeatures: [],
+          premiumFeatures: [],
+          additionalNotes: "",
+          fullName: "",
+          phoneNumber: "",
+          email: "",
+        };
+      case "tenant":
+        return {
+          ...baseValues,
+          minMonthlyRent: "",
+          maxMonthlyRent: "",
+          propertyType: "Self-con" as const,
+          minBedrooms: "",
+          leaseTerm: "1 Year" as const,
+          propertyCondition: "New" as const,
+          purpose: "Residential" as const,
+          baseFeatures: [],
+          premiumFeatures: [],
+          additionalNotes: "",
+          fullName: "",
+          phoneNumber: "",
+          email: "",
+        };
+      case "developer":
+        return {
+          ...baseValues,
+          minLandSize: "",
+          budgetRange: "",
+          jvType: "Equity Split" as const,
+          propertyType: "Land" as const,
+          expectedStructureType: "Mini Flats" as const,
+          timeline: "Ready Now" as const,
+          baseFeatures: [],
+          premiumFeatures: [],
+          partnerExpectations: "",
+          companyName: "",
+          contactPerson: "",
+          phoneNumber: "",
+          email: "",
+          cacRegistrationNumber: "",
+        };
+      case "shortlet":
+        return {
+          ...baseValues,
+          minPricePerNight: "",
+          maxPricePerNight: "",
+          propertyType: "Studio" as const,
+          minBedrooms: "",
+          numberOfGuests: "",
+          checkInDate: "",
+          checkOutDate: "",
+          baseFeatures: [],
+          premiumFeatures: [],
+          additionalNotes: "",
+          fullName: "",
+          phoneNumber: "",
+          email: "",
+        };
+    }
+  };
+
+  // Initialize formik
+  const formik = useFormik({
+    initialValues: getInitialValues(currentPreferenceType),
+    validationSchema: getValidationSchema(currentPreferenceType, currentStep),
     validateOnBlur: true,
     validateOnChange: true,
     onSubmit: async (values) => {
       setAreInputsDisabled(true);
+
       try {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/buyers/submit-preference`;
-        const payload = {
-          email: values.ownerEmail,
-          fullName: values.ownerFullName,
-          phoneNumber: values.ownerPhoneNumber,
-          propertyType: values.propertyType,
-          propertyCondition: values.propertyCondition,
-          preferenceType:
-            selectedProperty === "Buy a property"
-              ? "buy"
-              : selectedProperty === "Find property for joint ventures"
-                ? "joint-venture"
-                : selectedProperty === "Shortlet"
-                  ? "shortlet"
-                  : "rent",
-          location: {
-            state: values.selectedState,
-            localGovernment: values.selectedLGA,
-            area: area,
-          },
-          measurementType: values.landSize.measurementType,
-          landSize: Number(values.landSize.size) || 0,
-          budgetMin: Number(prices.minPrice.replace(/,/g, "")) || 0,
-          budgetMax: Number(prices.maxPrice.replace(/,/g, "")) || 0,
-          documents: Array.isArray(values.documentType)
-            ? values.documentType
-            : [],
-          noOfBedrooms: Math.max(
-            0,
-            Math.min(Number(values.noOfBedroom || 0), 20),
-          ),
-          noOfBathrooms: Math.max(0, Math.min(Number(bathroom || 0), 20)),
-          features: Array.isArray(values.features) ? values.features : [],
-          additionalInfo: values.additionalInfo || "",
+
+        // Transform form data based on preference type
+        const transformedData = {
+          preferenceType: currentPreferenceType,
+          ...values,
         };
 
-        console.log("Submitting payload:", payload);
-
-        const requiredFields = [
-          "email",
-          "fullName",
-          "phoneNumber",
-          "propertyType",
-          "preferenceType",
-          "location",
-          "budgetMin",
-          "budgetMax",
-        ] as const;
-
-        for (const field of requiredFields) {
-          const value = (payload as Record<string, any>)[field];
-          if (
-            value === undefined ||
-            value === null ||
-            (typeof value === "string" && value.trim() === "")
-          ) {
-            toast.error(`Missing or empty field: ${field}`);
-            setAreInputsDisabled(false);
-            return;
-          }
-        }
-        if (
-          !payload.location.state ||
-          !payload.location.localGovernment ||
-          !payload.location.area
-        ) {
-          toast.error("Please fill in all location fields.");
-          setAreInputsDisabled(false);
-          return;
-        }
+        console.log("Submitting preference:", transformedData);
 
         await toast.promise(
-          axios.post(url, payload).then((response) => {
-            if ((response as any).status === 201) {
+          axios.post(url, transformedData).then((response) => {
+            if (response.status === 201) {
               console.log("Preference submitted successfully:", response);
-              toast.success("Preference submitted successfully");
               setShowFinalSubmit(true);
-              setAreInputsDisabled(false);
               return "Preference submitted successfully";
             } else {
-              console.error("Submission failed:", response);
-              const errorMessage =
-                (response as any).error || "Submission failed";
-              toast.error(errorMessage);
-              setAreInputsDisabled(false);
-              throw new Error(errorMessage);
+              throw new Error("Submission failed");
             }
           }),
           {
-            loading: "Submitting...",
+            loading: "Submitting preference...",
+            success: "Preference submitted successfully!",
+            error: "Failed to submit preference",
           },
         );
       } catch (error) {
-        setAreInputsDisabled(false);
+        console.error("Submission error:", error);
       } finally {
         setAreInputsDisabled(false);
       }
     },
   });
+
+  // Handle preference type change
+  const handlePreferenceTypeChange = (type: PreferenceType) => {
+    setCurrentPreferenceType(type);
+    setCurrentStep(0);
+    setSelectedState(null);
+    setSelectedLGAs([]);
+    setSelectedAreas({});
+    formik.resetForm();
+    formik.setValues(getInitialValues(type));
+  };
+
+  // Format number with commas
+  const formatNumberWithCommas = (value: string) => {
+    const cleaned = value.replace(/\D/g, "");
+    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  // Render preference type selector
+  const renderPreferenceTypeSelector = () => (
+    <div className="flex items-center justify-center w-full mb-8">
+      <div className="flex flex-wrap gap-[10px] md:gap-[20px]">
+        {[
+          { key: "buyer", label: "Buy a Property", shortLabel: "Buy" },
+          { key: "tenant", label: "Rent/Lease a Property", shortLabel: "Rent" },
+          {
+            key: "developer",
+            label: "Joint Venture Interest",
+            shortLabel: "Joint Venture",
+          },
+          {
+            key: "shortlet",
+            label: "Shortlet Booking",
+            shortLabel: "Shortlet",
+          },
+        ].map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() =>
+              handlePreferenceTypeChange(item.key as PreferenceType)
+            }
+            className={`${
+              item.key === currentPreferenceType
+                ? "bg-[#8DDB90] font-medium text-[#FFFFFF]"
+                : "bg-transparent font-normal text-[#5A5D63] border-[#C7CAD0]"
+            } h-[40px] md:h-[51px] min-w-fit border-[1px] border-[#C7CAD0] text-[12px] md:text-lg px-[10px] md:px-[25px] rounded-none`}
+          >
+            <span className="block md:hidden">{item.shortLabel}</span>
+            <span className="hidden md:block">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render location fields with multiple LGA and area selection
+  const renderLocationFields = () => (
+    <div className="min-h-[127px] w-full flex flex-col gap-[15px]">
+      <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+        Preferred Location
+      </h2>
+
+      {/* State Selection */}
+      <div className="flex flex-col gap-2">
+        <h3>State</h3>
+        <Select
+          options={stateOptions}
+          value={selectedState}
+          onChange={handleStateChange}
+          placeholder="Select State"
+          isDisabled={areInputsDisabled}
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              minHeight: 48,
+              height: 48,
+              border: "1px solid #D6DDEB",
+              backgroundColor: "#FAFAFA",
+            }),
+          }}
+        />
+      </div>
+
+      {/* Multiple LGA Selection */}
+      {selectedState && (
+        <div className="flex flex-col gap-2">
+          <h3>Local Government Areas</h3>
+          <Select
+            options={lgaOptions}
+            value={selectedLGAs}
+            onChange={handleLGAChange}
+            placeholder="Select Local Government Areas"
+            isMulti
+            isDisabled={areInputsDisabled}
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                minHeight: 48,
+                border: "1px solid #D6DDEB",
+                backgroundColor: "#FAFAFA",
+              }),
+            }}
+          />
+        </div>
+      )}
+
+      {/* Dynamic Area Selection for each LGA */}
+      {selectedLGAs.map((lga) => (
+        <div key={lga.value} className="flex flex-col gap-2">
+          <h3>Select preferred areas in {lga.label}</h3>
+          <Select
+            options={getAreaOptions(lga.value)}
+            value={selectedAreas[lga.value] || []}
+            onChange={(selectedOptions) =>
+              handleAreaChange(lga.value, selectedOptions as Option[])
+            }
+            placeholder={`Select areas in ${lga.label}`}
+            isMulti
+            isDisabled={areInputsDisabled}
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                minHeight: 48,
+                border: "1px solid #D6DDEB",
+                backgroundColor: "#FAFAFA",
+              }),
+              multiValue: (provided) => ({
+                ...provided,
+                backgroundColor: "#8DDB90",
+                color: "white",
+              }),
+              multiValueLabel: (provided) => ({
+                ...provided,
+                color: "white",
+              }),
+              multiValueRemove: (provided) => ({
+                ...provided,
+                color: "white",
+                ":hover": {
+                  backgroundColor: "#7BC97F",
+                  color: "white",
+                },
+              }),
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+
+  // Render features section
+  const renderFeatures = (
+    baseFeatures: string[],
+    premiumFeatures: string[],
+    fieldNamePrefix: string,
+  ) => (
+    <div className="flex flex-col gap-[15px]">
+      <div>
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E] mb-3">
+          Base Features
+        </h2>
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-x-[30px] gap-y-[10px] w-full">
+          {baseFeatures.map((feature: string, idx: number) => (
+            <RadioCheck
+              key={idx}
+              type="checkbox"
+              value={feature}
+              name="baseFeatures"
+              handleChange={() => {
+                const currentFeatures = formik.values.baseFeatures || [];
+                const newFeatures = currentFeatures.includes(feature)
+                  ? currentFeatures.filter((f) => f !== feature)
+                  : [...currentFeatures, feature];
+                formik.setFieldValue("baseFeatures", newFeatures);
+              }}
+              isDisabled={areInputsDisabled}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E] mb-3">
+          Premium Features (Optional)
+        </h2>
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-x-[30px] gap-y-[10px] w-full">
+          {premiumFeatures.map((feature: string, idx: number) => (
+            <RadioCheck
+              key={idx}
+              type="checkbox"
+              value={feature}
+              name="premiumFeatures"
+              handleChange={() => {
+                const currentFeatures = formik.values.premiumFeatures || [];
+                const newFeatures = currentFeatures.includes(feature)
+                  ? currentFeatures.filter((f) => f !== feature)
+                  : [...currentFeatures, feature];
+                formik.setFieldValue("premiumFeatures", newFeatures);
+              }}
+              isDisabled={areInputsDisabled}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render buyer preference Step 1
+  const renderBuyerStep1 = () => (
+    <div className="flex flex-col gap-[30px]">
+      {renderLocationFields()}
+
+      {/* Nearby Landmark */}
+      <Input
+        label="Nearby Landmark (Optional)"
+        name="nearbyLandmark"
+        type="text"
+        value={formik.values.nearbyLandmark}
+        onChange={formik.handleChange}
+        placeholder="Enter nearby landmark"
+        isDisabled={areInputsDisabled}
+      />
+
+      {/* Budget Range */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Budget Range (₦)
+        </h2>
+        <div className="flex w-full gap-4">
+          <Input
+            label="Minimum Price"
+            name="minPrice"
+            type="text"
+            value={formik.values.minPrice}
+            onChange={(event) => {
+              const rawValue = event.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "minPrice",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Minimum price"
+            isDisabled={areInputsDisabled}
+          />
+          <Input
+            label="Maximum Price"
+            name="maxPrice"
+            type="text"
+            value={formik.values.maxPrice}
+            onChange={(event) => {
+              const rawValue = event.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "maxPrice",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Maximum price"
+            isDisabled={areInputsDisabled}
+          />
+        </div>
+      </div>
+
+      {/* Property Details */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Property Details
+        </h2>
+
+        {/* Property Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Property Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Land", "Residential", "Commercial"].map((type) => (
+              <RadioCheck
+                key={type}
+                selectedValue={formik.values.propertyType}
+                handleChange={() => formik.setFieldValue("propertyType", type)}
+                type="radio"
+                name="propertyType"
+                value={type}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Building Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Building Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Detached", "Semi-Detached", "Block of Flats"].map((type) => (
+              <RadioCheck
+                key={type}
+                selectedValue={formik.values.buildingType}
+                handleChange={() => formik.setFieldValue("buildingType", type)}
+                type="radio"
+                name="buildingType"
+                value={type}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Bedrooms and Bathrooms */}
+        <div className="flex gap-4">
+          <div className="flex flex-col w-1/2 gap-2">
+            <h3>Minimum Bedrooms</h3>
+            <Select
+              options={bedroomOptions}
+              value={bedroomOptions.find(
+                (option) => option.value === formik.values.minBedrooms,
+              )}
+              onChange={(selectedOption) => {
+                formik.setFieldValue(
+                  "minBedrooms",
+                  selectedOption?.value || "",
+                );
+              }}
+              placeholder="Select minimum bedrooms"
+              isDisabled={areInputsDisabled}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  minHeight: 48,
+                  height: 48,
+                  border: "1px solid #D6DDEB",
+                  backgroundColor: "#FAFAFA",
+                }),
+              }}
+            />
+          </div>
+          <Input
+            label="Minimum Bathrooms"
+            name="minBathrooms"
+            type="number"
+            value={formik.values.minBathrooms}
+            onChange={formik.handleChange}
+            placeholder="Minimum bathrooms"
+            isDisabled={areInputsDisabled}
+            className="w-1/2"
+          />
+        </div>
+
+        {/* Property Condition */}
+        <div className="flex flex-col gap-2">
+          <h3>Property Condition</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["New", "Renovated", "Any"].map((condition) => (
+              <RadioCheck
+                key={condition}
+                selectedValue={formik.values.propertyCondition}
+                handleChange={() =>
+                  formik.setFieldValue("propertyCondition", condition)
+                }
+                type="radio"
+                name="propertyCondition"
+                value={condition}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Purpose */}
+        <div className="flex flex-col gap-2">
+          <h3>Purpose</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["For living", "Resale", "Development"].map((purpose) => (
+              <RadioCheck
+                key={purpose}
+                selectedValue={formik.values.purpose}
+                handleChange={() => formik.setFieldValue("purpose", purpose)}
+                type="radio"
+                name="purpose"
+                value={purpose}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features */}
+      {renderFeatures(buyerBaseFeatures, buyerPremiumFeatures, "buyer")}
+
+      {/* Additional Information */}
+      <Input
+        label="Additional Information"
+        name="additionalNotes"
+        type="textArea"
+        multiline={true}
+        rows={3}
+        value={formik.values.additionalNotes}
+        onChange={formik.handleChange}
+        placeholder="Notes or custom requirements"
+        isDisabled={areInputsDisabled}
+      />
+    </div>
+  );
+
+  // Render tenant preference Step 1
+  const renderTenantStep1 = () => (
+    <div className="flex flex-col gap-[30px]">
+      {renderLocationFields()}
+
+      {/* Rent Budget */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Rent Budget (₦)
+        </h2>
+        <div className="flex w-full gap-4">
+          <Input
+            label="Minimum Monthly Rent"
+            name="minMonthlyRent"
+            type="text"
+            value={formik.values.minMonthlyRent}
+            onChange={(event) => {
+              const rawValue = event.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "minMonthlyRent",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Minimum monthly rent"
+            isDisabled={areInputsDisabled}
+          />
+          <Input
+            label="Maximum Monthly Rent"
+            name="maxMonthlyRent"
+            type="text"
+            value={formik.values.maxMonthlyRent}
+            onChange={(event) => {
+              const rawValue = event.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "maxMonthlyRent",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Maximum monthly rent"
+            isDisabled={areInputsDisabled}
+          />
+        </div>
+      </div>
+
+      {/* Property Details */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Property Details
+        </h2>
+
+        {/* Property Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Property Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Self-con", "Flat", "Mini Flat", "Bungalow"].map((type) => (
+              <RadioCheck
+                key={type}
+                selectedValue={formik.values.propertyType}
+                handleChange={() => formik.setFieldValue("propertyType", type)}
+                type="radio"
+                name="propertyType"
+                value={type}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Minimum Bedrooms */}
+        <div className="flex flex-col gap-2">
+          <h3>Minimum Bedrooms</h3>
+          <Select
+            options={bedroomOptions}
+            value={bedroomOptions.find(
+              (option) => option.value === formik.values.minBedrooms,
+            )}
+            onChange={(selectedOption) => {
+              formik.setFieldValue("minBedrooms", selectedOption?.value || "");
+            }}
+            placeholder="Select minimum bedrooms"
+            isDisabled={areInputsDisabled}
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                minHeight: 48,
+                height: 48,
+                border: "1px solid #D6DDEB",
+                backgroundColor: "#FAFAFA",
+              }),
+            }}
+          />
+        </div>
+
+        {/* Lease Term */}
+        <div className="flex flex-col gap-2">
+          <h3>Lease Term</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["6 Months", "1 Year"].map((term) => (
+              <RadioCheck
+                key={term}
+                selectedValue={formik.values.leaseTerm}
+                handleChange={() => formik.setFieldValue("leaseTerm", term)}
+                type="radio"
+                name="leaseTerm"
+                value={term}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Property Condition */}
+        <div className="flex flex-col gap-2">
+          <h3>Property Condition</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["New", "Renovated"].map((condition) => (
+              <RadioCheck
+                key={condition}
+                selectedValue={formik.values.propertyCondition}
+                handleChange={() =>
+                  formik.setFieldValue("propertyCondition", condition)
+                }
+                type="radio"
+                name="propertyCondition"
+                value={condition}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Purpose */}
+        <div className="flex flex-col gap-2">
+          <h3>Purpose</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Residential", "Office"].map((purpose) => (
+              <RadioCheck
+                key={purpose}
+                selectedValue={formik.values.purpose}
+                handleChange={() => formik.setFieldValue("purpose", purpose)}
+                type="radio"
+                name="purpose"
+                value={purpose}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features */}
+      {renderFeatures(tenantBaseFeatures, tenantPremiumFeatures, "tenant")}
+
+      {/* Additional Information */}
+      <Input
+        label="Additional Information"
+        name="additionalNotes"
+        type="textArea"
+        multiline={true}
+        rows={3}
+        value={formik.values.additionalNotes}
+        onChange={formik.handleChange}
+        placeholder="Notes (e.g., Must allow pets)"
+        isDisabled={areInputsDisabled}
+      />
+    </div>
+  );
+
+  // Render developer preference Step 1
+  const renderDeveloperStep1 = () => (
+    <div className="flex flex-col gap-[30px]">
+      {renderLocationFields()}
+
+      {/* Minimum Land Size */}
+      <Input
+        label="Minimum Land Size (sqm or plots)"
+        name="minLandSize"
+        type="text"
+        value={formik.values.minLandSize}
+        onChange={formik.handleChange}
+        placeholder="Enter minimum land size"
+        isDisabled={areInputsDisabled}
+      />
+
+      {/* Budget Range */}
+      <Input
+        label="Budget Range / Investment Capacity (Optional)"
+        name="budgetRange"
+        type="text"
+        value={formik.values.budgetRange}
+        onChange={(event) => {
+          const rawValue = event.target.value.replace(/,/g, "");
+          formik.setFieldValue("budgetRange", formatNumberWithCommas(rawValue));
+        }}
+        placeholder="Enter budget range"
+        isDisabled={areInputsDisabled}
+      />
+
+      {/* Property Details */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Property Details
+        </h2>
+
+        {/* Preferred JV Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Preferred JV Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Equity Split", "Lease-to-Build", "Development Partner"].map(
+              (type) => (
+                <RadioCheck
+                  key={type}
+                  selectedValue={formik.values.jvType}
+                  handleChange={() => formik.setFieldValue("jvType", type)}
+                  type="radio"
+                  name="jvType"
+                  value={type}
+                  isDisabled={areInputsDisabled}
+                />
+              ),
+            )}
+          </div>
+        </div>
+
+        {/* Property Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Property Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Land", "Old Building", "Structure to demolish"].map((type) => (
+              <RadioCheck
+                key={type}
+                selectedValue={formik.values.propertyType}
+                handleChange={() => formik.setFieldValue("propertyType", type)}
+                type="radio"
+                name="propertyType"
+                value={type}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Expected Structure Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Expected Structure Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Mini Flats", "Luxury Duplexes"].map((type) => (
+              <RadioCheck
+                key={type}
+                selectedValue={formik.values.expectedStructureType}
+                handleChange={() =>
+                  formik.setFieldValue("expectedStructureType", type)
+                }
+                type="radio"
+                name="expectedStructureType"
+                value={type}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Timeline */}
+        <div className="flex flex-col gap-2">
+          <h3>Timeline</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Ready Now", "In 3 Months", "Within 1 Year"].map((timeline) => (
+              <RadioCheck
+                key={timeline}
+                selectedValue={formik.values.timeline}
+                handleChange={() => formik.setFieldValue("timeline", timeline)}
+                type="radio"
+                name="timeline"
+                value={timeline}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features */}
+      {renderFeatures(
+        developerBaseFeatures,
+        developerPremiumFeatures,
+        "developer",
+      )}
+
+      {/* Additional Information */}
+      <Input
+        label="Partner Expectations, Restrictions, etc."
+        name="partnerExpectations"
+        type="textArea"
+        multiline={true}
+        rows={3}
+        value={formik.values.partnerExpectations}
+        onChange={formik.handleChange}
+        placeholder="Partner expectations, restrictions, upload past projects (optional)"
+        isDisabled={areInputsDisabled}
+      />
+    </div>
+  );
+
+  // Render shortlet preference Step 1
+  const renderShortletStep1 = () => (
+    <div className="flex flex-col gap-[30px]">
+      {renderLocationFields()}
+
+      {/* Budget Per Night */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Budget Per Night (₦)
+        </h2>
+        <div className="flex w-full gap-4">
+          <Input
+            label="Minimum Price"
+            name="minPricePerNight"
+            type="text"
+            value={formik.values.minPricePerNight}
+            onChange={(event) => {
+              const rawValue = event.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "minPricePerNight",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Minimum price per night"
+            isDisabled={areInputsDisabled}
+          />
+          <Input
+            label="Maximum Price"
+            name="maxPricePerNight"
+            type="text"
+            value={formik.values.maxPricePerNight}
+            onChange={(event) => {
+              const rawValue = event.target.value.replace(/,/g, "");
+              formik.setFieldValue(
+                "maxPricePerNight",
+                formatNumberWithCommas(rawValue),
+              );
+            }}
+            placeholder="Maximum price per night"
+            isDisabled={areInputsDisabled}
+          />
+        </div>
+      </div>
+
+      {/* Booking Details */}
+      <div className="flex flex-col gap-[15px]">
+        <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
+          Booking Details
+        </h2>
+
+        {/* Property Type */}
+        <div className="flex flex-col gap-2">
+          <h3>Property Type</h3>
+          <div className="flex gap-4 flex-wrap">
+            {["Studio", "1-Bed Apartment", "2-Bed Flat"].map((type) => (
+              <RadioCheck
+                key={type}
+                selectedValue={formik.values.propertyType}
+                handleChange={() => formik.setFieldValue("propertyType", type)}
+                type="radio"
+                name="propertyType"
+                value={type}
+                isDisabled={areInputsDisabled}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Additional Details */}
+        <div className="flex gap-4">
+          <div className="flex flex-col w-1/3 gap-2">
+            <h3>Minimum Bedrooms</h3>
+            <Select
+              options={bedroomOptions}
+              value={bedroomOptions.find(
+                (option) => option.value === formik.values.minBedrooms,
+              )}
+              onChange={(selectedOption) => {
+                formik.setFieldValue(
+                  "minBedrooms",
+                  selectedOption?.value || "",
+                );
+              }}
+              placeholder="Select bedrooms"
+              isDisabled={areInputsDisabled}
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  minHeight: 48,
+                  height: 48,
+                  border: "1px solid #D6DDEB",
+                  backgroundColor: "#FAFAFA",
+                }),
+              }}
+            />
+          </div>
+          <Input
+            label="Number of Guests"
+            name="numberOfGuests"
+            type="number"
+            value={formik.values.numberOfGuests}
+            onChange={formik.handleChange}
+            placeholder="Number of guests"
+            isDisabled={areInputsDisabled}
+            className="w-1/3"
+          />
+        </div>
+
+        {/* Check-in and Check-out Dates */}
+        <div className="flex gap-4">
+          <Input
+            label="Check-in Date"
+            name="checkInDate"
+            type="date"
+            value={formik.values.checkInDate}
+            onChange={formik.handleChange}
+            isDisabled={areInputsDisabled}
+            className="w-1/2"
+          />
+          <Input
+            label="Check-out Date"
+            name="checkOutDate"
+            type="date"
+            value={formik.values.checkOutDate}
+            onChange={formik.handleChange}
+            isDisabled={areInputsDisabled}
+            className="w-1/2"
+          />
+        </div>
+      </div>
+
+      {/* Features */}
+      {renderFeatures(
+        shortletBaseFeatures,
+        shortletPremiumFeatures,
+        "shortlet",
+      )}
+
+      {/* Additional Information */}
+      <Input
+        label="Additional Information"
+        name="additionalNotes"
+        type="textArea"
+        multiline={true}
+        rows={3}
+        value={formik.values.additionalNotes}
+        onChange={formik.handleChange}
+        placeholder="Preferences (e.g., No Smoking, Must allow pets), Notes (e.g., Anniversary getaway)"
+        isDisabled={areInputsDisabled}
+      />
+    </div>
+  );
+
+  // Render contact information step
+  const renderContactStep = () => {
+    if (currentPreferenceType === "developer") {
+      return (
+        <div className="flex flex-col gap-[20px]">
+          <Input
+            label="Company / Developer Name"
+            name="companyName"
+            value={formik.values.companyName}
+            onChange={formik.handleChange}
+            type="text"
+            isDisabled={areInputsDisabled}
+          />
+          <Input
+            label="Contact Person"
+            name="contactPerson"
+            value={formik.values.contactPerson}
+            onChange={formik.handleChange}
+            type="text"
+            isDisabled={areInputsDisabled}
+          />
+          <div className="flex gap-4">
+            <div className="flex flex-col gap-2 w-1/2">
+              <label className="block text-sm font-medium text-black">
+                Phone Number:
+              </label>
+              <PhoneInput
+                international
+                defaultCountry="NG"
+                value={formik.values.phoneNumber}
+                onChange={(value) => formik.setFieldValue("phoneNumber", value)}
+                placeholder="Enter phone number"
+                className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] focus:outline-none focus:ring-0 disabled:bg-[#FAFAFA] disabled:cursor-not-allowed"
+              />
+              {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formik.errors.phoneNumber}
+                </p>
+              )}
+            </div>
+            <Input
+              label="Email"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              type="email"
+              isDisabled={areInputsDisabled}
+              className="w-1/2"
+            />
+          </div>
+          <Input
+            label="CAC Registration Number (Optional)"
+            name="cacRegistrationNumber"
+            value={formik.values.cacRegistrationNumber}
+            onChange={formik.handleChange}
+            type="text"
+            isDisabled={areInputsDisabled}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex flex-col gap-[20px]">
+          <div className="flex gap-4">
+            <Input
+              label="Full Name"
+              name="fullName"
+              value={formik.values.fullName}
+              onChange={formik.handleChange}
+              type="text"
+              isDisabled={areInputsDisabled}
+              className="w-1/2"
+            />
+            <div className="flex flex-col gap-2 w-1/2">
+              <label className="block text-sm font-medium text-black">
+                Phone Number:
+              </label>
+              <PhoneInput
+                international
+                defaultCountry="NG"
+                value={formik.values.phoneNumber}
+                onChange={(value) => formik.setFieldValue("phoneNumber", value)}
+                placeholder="Enter phone number"
+                className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] focus:outline-none focus:ring-0 disabled:bg-[#FAFAFA] disabled:cursor-not-allowed"
+              />
+              {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formik.errors.phoneNumber}
+                </p>
+              )}
+            </div>
+          </div>
+          <Input
+            label="Email Address"
+            name="email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            type="email"
+            isDisabled={areInputsDisabled}
+          />
+        </div>
+      );
+    }
+  };
+
+  // Get step content based on current preference type and step
+  const getStepContent = () => {
+    if (currentStep === 0) {
+      switch (currentPreferenceType) {
+        case "buyer":
+          return renderBuyerStep1();
+        case "tenant":
+          return renderTenantStep1();
+        case "developer":
+          return renderDeveloperStep1();
+        case "shortlet":
+          return renderShortletStep1();
+        default:
+          return null;
+      }
+    } else {
+      return renderContactStep();
+    }
+  };
+
+  // Get step title
+  const getStepTitle = () => {
+    if (currentStep === 0) {
+      switch (currentPreferenceType) {
+        case "buyer":
+          return "Property Requirements";
+        case "tenant":
+          return "Rental Requirements";
+        case "developer":
+          return "Development Interest";
+        case "shortlet":
+          return "Booking Requirements";
+        default:
+          return "Requirements";
+      }
+    } else {
+      return "Contact Information";
+    }
+  };
+
+  // Get step subtitle
+  const getStepSubtitle = () => {
+    if (currentStep === 0) {
+      switch (currentPreferenceType) {
+        case "buyer":
+          return "Please provide details about the property you want to buy";
+        case "tenant":
+          return "Please provide details about the property you want to rent";
+        case "developer":
+          return "Please provide details about your joint venture interest";
+        case "shortlet":
+          return "Please provide details about your shortlet booking requirements";
+        default:
+          return "Please provide your requirements";
+      }
+    } else {
+      return "Please provide your contact details so we can get back to you.";
+    }
+  };
 
   if (isLoading) return <Loading />;
 
@@ -930,6 +1600,9 @@ const NewPreference = () => {
               backText="MarketPlace"
             />
           </div>
+
+          {/* Preference Type Selector */}
+          {renderPreferenceTypeSelector()}
 
           {/* Stepper */}
           <div className="my-7">
@@ -965,12 +1638,10 @@ const NewPreference = () => {
           </div>
 
           <h2 className="text-[#0B0D0C] lg:text-[24px] font-semibold text-center text-[18px]">
-            {currentStep === 1
-              ? "Contact information"
-              : "Enter the property you are looking for"}
+            {getStepTitle()}
           </h2>
           <h2 className="lg:w-[953px] w-full text-base md:text-lg text-[#515B6F] font-normal text-center">
-            Please provide your contact details so we can get back to you.
+            {getStepSubtitle()}
           </h2>
 
           <div className="lg:w-[877px] w-full">
@@ -978,306 +1649,27 @@ const NewPreference = () => {
               onSubmit={formik.handleSubmit}
               className="w-full border-[#8D909680] flex flex-col"
             >
-              {currentStep === 0 ? (
-                <div className="flex items-center justify-center w-full">
-                  <div className="flex flex-wrap gap-[10px] md:gap-[20px]">
-                    {[
-                      "Buy a property",
-                      "Find property for joint ventures",
-                      "Rent/Lease a property",
-                      "Shortlet",
-                    ].map((item: string, idx: number) => (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedProperty(item);
-                          formik.resetForm({
-                            values: {
-                              ...formik.initialValues,
-                              propertyType: "Residential",
-                            },
-                          });
-                          setPrices({ minPrice: "", maxPrice: "" });
-                          setArea("");
-                          setBathroom("");
-                          setSelectedState(null);
-                          setSelectedLGA(null);
-                        }}
-                        className={`${
-                          item === selectedProperty
-                            ? "bg-[#8DDB90] font-medium text-[#FFFFFF]"
-                            : "bg-transparent font-normal text-[#5A5D63] border-[#C7CAD0]"
-                        } h-[40px] md:h-[51px] min-w-fit border-[1px] border-[#C7CAD0] text-[12px] md:text-lg px-[10px] md:px-[25px] rounded-none`}
-                        key={idx}
-                      >
-                        {item === "Rent/Lease a property" ? (
-                          <>
-                            <span className="block md:hidden">
-                              Rent a property
-                            </span>
-                            <span className="hidden md:block">
-                              Rent/Lease a property
-                            </span>
-                          </>
-                        ) : item === "Find property for joint ventures" ? (
-                          <>
-                            <span className="block md:hidden">
-                              Joint ventures
-                            </span>
-                            <span className="hidden md:block">
-                              Find property for joint ventures
-                            </span>
-                          </>
-                        ) : (
-                          item
-                        )}
-                      </button>
-                    ))}
-                  </div>
+              <div className="min-h-[629px] py-[40px] lg:px-[80px] w-full">
+                <div className="w-full flex flex-col gap-[30px]">
+                  {getStepContent()}
                 </div>
-              ) : null}
-
-              {currentStep === 0 && (
-                <div className="min-h-[629px] py-[40px] lg:px-[80px] w-full">
-                  <div className="w-full flex flex-col gap-[30px]">
-                    <div className="min-h-[73px] gap-[15px] flex flex-col w-full">
-                      <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                        Property Type
-                      </h2>
-                      <div className="w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap">
-                        <RadioCheck
-                          selectedValue={formik.values?.propertyType}
-                          handleChange={() => {
-                            formik.setFieldValue("propertyType", "Residential");
-                          }}
-                          type="radio"
-                          value="Residential"
-                          name="propertyType"
-                        />
-                        <RadioCheck
-                          selectedValue={formik.values?.propertyType}
-                          handleChange={() => {
-                            formik.setFieldValue("propertyType", "Commercial");
-                          }}
-                          type="radio"
-                          name="propertyType"
-                          value="Commercial"
-                        />
-                        <RadioCheck
-                          selectedValue={formik.values?.propertyType}
-                          handleChange={() => {
-                            formik.setFieldValue("propertyType", "Land");
-                          }}
-                          type="radio"
-                          name="propertyType"
-                          value="Land"
-                        />
-                      </div>
-                    </div>
-
-                    {selectedProperty &&
-                      renderDynamicComponent()?.propertyConditionComponent}
-
-                    <div className="min-h-[127px] w-full flex flex-col gap-[15px]">
-                      <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                        Location
-                      </h2>
-                      <div className="min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-3 flex-col">
-                        <Input
-                          label="State"
-                          name="selectedState"
-                          forState={true}
-                          forLGA={false}
-                          type="text"
-                          placeholder="Select State"
-                          formik={formik}
-                          selectedState={selectedState}
-                          stateOptions={stateOptions}
-                          setSelectedState={handleStateChange}
-                          isDisabled={areInputsDisabled}
-                        />
-                        <Input
-                          label="Local Government"
-                          name="selectedLGA"
-                          type="text"
-                          formik={formik}
-                          forLGA={true}
-                          forState={false}
-                          selectedLGA={selectedLGA}
-                          lgasOptions={lgaOptions}
-                          setSelectedLGA={handleLGAChange}
-                          isDisabled={areInputsDisabled}
-                        />
-                        <Input
-                          label="Area"
-                          name="area"
-                          type="text"
-                          value={area}
-                          onChange={(event) => {
-                            setArea(event.target.value);
-                          }}
-                          isDisabled={areInputsDisabled}
-                        />
-                      </div>
-
-                      {formik.values.propertyType === "Land" && (
-                        <div className="min-h-[127px] w-full flex flex-col gap-[15px]">
-                          <h2 className="text-[20px] leading-[32px] font-medium text-[#1E1E1E]">
-                            Land Size
-                          </h2>
-                          <div className="min-h-[80px] flex gap-[15px] lg:grid lg:grid-cols-2 flex-col">
-                            <div className="w-full flex flex-col gap-[5px]">
-                              <h3 className="">Measurement Type</h3>
-                              <Select
-                                name="measurementType"
-                                options={measurementOptions}
-                                value={measurementOptions.find(
-                                  (option) =>
-                                    option.value ===
-                                    formik.values.landSize.measurementType,
-                                )}
-                                onChange={(selectedOption) => {
-                                  formik.setFieldValue(
-                                    "landSize.measurementType",
-                                    selectedOption?.value,
-                                  );
-                                }}
-                                onBlur={formik.handleBlur}
-                                placeholder="Select measurement type"
-                                isDisabled={areInputsDisabled}
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    minHeight: 48,
-                                    height: 48,
-                                    border: "1px solid #D6DDEB",
-                                    backgroundColor: "#FAFAFA",
-                                  }),
-                                  valueContainer: (provided) => ({
-                                    ...provided,
-                                    height: 56,
-                                    padding: "0 8px",
-                                  }),
-                                  input: (provided) => ({
-                                    ...provided,
-                                    margin: 0,
-                                    padding: 0,
-                                  }),
-                                  indicatorsContainer: (provided) => ({
-                                    ...provided,
-                                    height: 56,
-                                  }),
-                                }}
-                              />
-                            </div>
-                            <Input
-                              label="Enter Land Size"
-                              name="landSize.size"
-                              type="number"
-                              value={formik.values.landSize.size}
-                              onChange={formik.handleChange}
-                              isDisabled={areInputsDisabled}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedProperty &&
-                        renderDynamicComponent()?.priceComponent}
-                      {selectedProperty &&
-                        formik.values.propertyType !== "Land" &&
-                        renderDynamicComponent()?.bedroomAndBathroomComponent}
-                      {selectedProperty &&
-                        renderDynamicComponent()?.documentTypeComponent}
-                    </div>
-
-                    {selectedProperty &&
-                      formik.values.propertyType !== "Land" &&
-                      renderDynamicComponent()?.features}
-
-                    <div className="min-h-[73px] flex flex-col gap-[15px] mt-2">
-                      <Input
-                        label="Additional information"
-                        name="additionalInfo"
-                        type="textArea"
-                        className="w-full"
-                        multiline={true}
-                        rows={3}
-                        placeholder="Enter any additional information"
-                        value={formik.values.additionalInfo}
-                        onChange={formik.handleChange}
-                        isDisabled={areInputsDisabled}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {currentStep === 1 && (
-                <div className="min-h-[348px] py-[10px] lg:px-[80px] border-[#8D909680] border-b-[1px] w-full">
-                  <div className="w-full min-h-[348px] flex flex-col gap-[20px]">
-                    <div className="w-full flex flex-col gap-[15px] min-h-[270px]">
-                      <div className="flex lg:flex-row flex-col w-full gap-[15px]">
-                        <Input
-                          label="Full name"
-                          name="ownerFullName"
-                          value={formik.values?.ownerFullName}
-                          onChange={formik.handleChange}
-                          className="lg:w-1/2 w-full"
-                          type="text"
-                        />
-                        <div className="flex flex-col gap-2">
-                          <label className="block text-sm font-medium text-black">
-                            Phone Number:
-                          </label>
-                          <PhoneInput
-                            international
-                            defaultCountry="NG"
-                            value={formik.values?.ownerPhoneNumber}
-                            onChange={(value) =>
-                              formik.setFieldValue("ownerPhoneNumber", value)
-                            }
-                            placeholder="Enter phone number"
-                            className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] focus:outline-none focus:ring-0 disabled:bg-[#FAFAFA] disabled:cursor-not-allowed"
-                          />
-                          {(formik.touched.ownerPhoneNumber ||
-                            formik.errors.ownerPhoneNumber) && (
-                            <p className="text-red-500 text-sm mt-1">
-                              {formik.errors.ownerPhoneNumber}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <Input
-                        label="Email"
-                        name="ownerEmail"
-                        className="w-full"
-                        value={formik.values?.ownerEmail}
-                        onChange={formik.handleChange}
-                        type="email"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
 
               <div className="w-full flex items-center mt-8 justify-between">
                 <Button
                   value={currentStep === 0 ? "Cancel" : "Back"}
                   type="button"
-                  onClick={() =>
-                    setCurrentStep((prev) => Math.max(prev - 1, 0))
-                  }
+                  onClick={() => {
+                    if (currentStep === 0) {
+                      router.back();
+                    } else {
+                      setCurrentStep((prev) => Math.max(prev - 1, 0));
+                    }
+                  }}
                   className="border-[1px] border-black lg:w-[25%] text-black text-base leading-[25.6px] font-bold min-h-[50px] py-[12px] px-[24px] disabled:cursor-not-allowed"
                 />
                 <Button
-                  value={
-                    currentStep === steps.length - 1
-                      ? "Submit"
-                      : currentStep === 0
-                        ? "Next"
-                        : "Next"
-                  }
+                  value={currentStep === steps.length - 1 ? "Submit" : "Next"}
                   type={currentStep === steps.length - 1 ? "submit" : "button"}
                   onClick={
                     currentStep === steps.length - 1
@@ -1312,28 +1704,7 @@ const NewPreference = () => {
   );
 };
 
-const measurementOptions = [
-  { value: "Plot", label: "Plot" },
-  { value: "Acres", label: "Acres" },
-  { value: "Square Meter", label: "Square Meter" },
-];
-
-const documentTypeOptions = [
-  { value: "Governor Consent", label: "Governor Consent" },
-  { value: "C of O", label: "C of O" },
-  { value: "Survey Document", label: "Survey Document" },
-  { value: "Deed of Assignment", label: "Deed of Assignment" },
-  { value: "Land Certificate", label: "Land Certificate" },
-  {
-    value: "Registered Deed of Conveyance",
-    label: "Registered Deed of Conveyance",
-  },
-  { value: "Deed of Ownership", label: "Deed of Ownership" },
-  { value: "Contract Of Sale", label: "Contract Of Sale" },
-  { value: "Gazette", label: "Gazette" },
-  { value: "Excision", label: "Excision" },
-];
-
+// Bedroom options
 const bedroomOptions = [
   { value: "1", label: "1" },
   { value: "2", label: "2" },
@@ -1348,6 +1719,7 @@ const bedroomOptions = [
   { value: "More", label: "More" },
 ];
 
+// Success Modal Component
 interface LocalSubmitModalProps {
   open: boolean;
   onClose: () => void;
