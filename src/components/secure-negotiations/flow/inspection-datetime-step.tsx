@@ -441,8 +441,12 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             <button
               onClick={() => {
                 // Auto-select current inspection details when opening modal
-                setNewDate(currentDate || availableDates[0]?.date || "");
-                setNewTime(currentTime || availableTimes[0]?.value || "");
+                const dateToSelect =
+                  currentDate || availableDates[0]?.date || "";
+                const timeToSelect =
+                  currentTime || availableTimes[0]?.value || "";
+                setNewDate(dateToSelect);
+                setNewTime(timeToSelect);
                 setShowUpdateForm(true);
               }}
               disabled={
