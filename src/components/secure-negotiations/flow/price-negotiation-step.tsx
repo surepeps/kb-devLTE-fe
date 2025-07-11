@@ -86,20 +86,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const difference = calculateDifference();
 
   const handleAccept = async () => {
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createAcceptPayload("price", currentDate, currentTime);
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("accept");
-    } catch (error) {
-      console.error("Failed to accept offer:", error);
-    }
+    // Don't submit immediately, proceed to next step (inspection)
+    onActionSelected("accept");
   };
 
   const handleReject = async () => {
@@ -153,28 +141,10 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       return;
     }
 
-    try {
-      // Get current inspection date/time - only include if they were changed
-      const currentDate = details?.inspectionDate
-        ? new Date(details.inspectionDate).toISOString().split("T")[0]
-        : undefined;
-      const currentTime = details?.inspectionTime;
-
-      const payload = createCounterPayload(
-        "price",
-        counterAmount,
-        undefined, // documentUrl not needed for price
-        currentDate,
-        currentTime,
-      );
-
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      onActionSelected("counter", counterAmount);
-      setShowCounterModal(false);
-      setCounterPrice("");
-    } catch (error) {
-      console.error("Failed to submit counter offer:", error);
-    }
+    // Don't submit immediately, proceed to next step (inspection)
+    onActionSelected("counter", counterAmount);
+    setShowCounterModal(false);
+    setCounterPrice("");
   };
 
   return (
