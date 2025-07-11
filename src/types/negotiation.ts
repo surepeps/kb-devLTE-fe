@@ -9,6 +9,8 @@ export type ContentTracker =
 export interface DateTimeObj {
   date: string;
   time: string;
+  selectedDate?: string;
+  selectedTime?: string;
 }
 
 export interface PotentialClientData {
