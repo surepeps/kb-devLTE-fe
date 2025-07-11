@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { toast } from "react-hot-toast";
 import {
   PreferenceFormState,
   PreferenceFormAction,
@@ -178,42 +179,100 @@ const DEFAULT_BUDGET_THRESHOLDS: BudgetThreshold[] = [
   { location: "default", listingType: "shortlet", minAmount: 10000 },
 ];
 
-// Initial state
-const initialState: PreferenceFormState = {
-  currentStep: 0,
-  steps: [
-    { id: "location", title: "Location", isValid: false, isRequired: true },
-    { id: "budget", title: "Budget", isValid: false, isRequired: true },
-    { id: "features", title: "Features", isValid: false, isRequired: false },
-    { id: "contact", title: "Contact", isValid: false, isRequired: true },
-  ],
-  formData: {},
-  isSubmitting: false,
-  validationErrors: [],
-  budgetThresholds: DEFAULT_BUDGET_THRESHOLDS,
-  featureConfigs: FEATURE_CONFIGS,
+// Storage keys
+const STORAGE_KEY = "khabi-teq-preference-form";
+const STORAGE_STEP_KEY = "khabi-teq-preference-step";
+
+// Helper functions for localStorage
+const loadFromStorage = (): Partial<PreferenceFormState> => {
+  if (typeof window === "undefined") return {};
+
+  try {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    const savedStep = localStorage.getItem(STORAGE_STEP_KEY);
+
+    return {
+      formData: savedData ? JSON.parse(savedData) : {},
+      currentStep: savedStep ? parseInt(savedStep, 10) : 0,
+    };
+  } catch (error) {
+    console.warn("Failed to load preference form data from storage:", error);
+    return {};
+  }
 };
+
+const saveToStorage = (formData: any, currentStep: number) => {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    localStorage.setItem(STORAGE_STEP_KEY, currentStep.toString());
+  } catch (error) {
+    console.warn("Failed to save preference form data to storage:", error);
+  }
+};
+
+const clearStorage = () => {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_STEP_KEY);
+  } catch (error) {
+    console.warn("Failed to clear preference form data from storage:", error);
+  }
+};
+
+// Initial state
+const createInitialState = (): PreferenceFormState => {
+  const savedState = loadFromStorage();
+
+  return {
+    currentStep: savedState.currentStep || 0,
+    steps: [
+      { id: "location", title: "Location", isValid: false, isRequired: true },
+      { id: "budget", title: "Budget", isValid: false, isRequired: true },
+      { id: "features", title: "Features", isValid: false, isRequired: false },
+      { id: "contact", title: "Contact", isValid: false, isRequired: true },
+    ],
+    formData: savedState.formData || {},
+    isSubmitting: false,
+    validationErrors: [],
+    budgetThresholds: DEFAULT_BUDGET_THRESHOLDS,
+    featureConfigs: FEATURE_CONFIGS,
+  };
+};
+
+const initialState: PreferenceFormState = createInitialState();
 
 // Reducer function
 function preferenceFormReducer(
   state: PreferenceFormState,
   action: PreferenceFormAction,
 ): PreferenceFormState {
+  let newState: PreferenceFormState;
+
   switch (action.type) {
     case "SET_STEP":
-      return {
+      newState = {
         ...state,
         currentStep: action.payload,
       };
+      // Save step to storage
+      saveToStorage(newState.formData, newState.currentStep);
+      return newState;
 
     case "UPDATE_FORM_DATA":
-      return {
+      newState = {
         ...state,
         formData: {
           ...state.formData,
           ...action.payload,
         },
       };
+      // Save form data to storage
+      saveToStorage(newState.formData, newState.currentStep);
+      return newState;
 
     case "SET_VALIDATION_ERRORS":
       return {
@@ -228,8 +287,12 @@ function preferenceFormReducer(
       };
 
     case "RESET_FORM":
+      // Clear storage when form is reset
+      clearStorage();
       return {
-        ...initialState,
+        ...createInitialState(),
+        formData: {}, // Ensure form data is completely empty
+        currentStep: 0,
       };
 
     case "SET_BUDGET_THRESHOLDS":
@@ -284,7 +347,10 @@ const PreferenceFormContext = createContext<
 export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(preferenceFormReducer, initialState);
+  const [state, dispatch] = useReducer(
+    preferenceFormReducer,
+    createInitialState(),
+  );
 
   // Helper functions
   const goToStep = useCallback(
@@ -512,8 +578,21 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const resetForm = useCallback(() => {
-    dispatch({ type: "RESET_FORM" });
-  }, []);
+    // Show confirmation before clearing form if there's data
+    const hasData = Object.keys(state.formData).length > 0;
+
+    if (hasData) {
+      if (
+        typeof window !== "undefined" &&
+        window.confirm("Are you sure you want to clear all form data?")
+      ) {
+        dispatch({ type: "RESET_FORM" });
+        toast.success("Form data cleared successfully");
+      }
+    } else {
+      dispatch({ type: "RESET_FORM" });
+    }
+  }, [state.formData]);
 
   // Update validation errors when form data changes
   useEffect(() => {
