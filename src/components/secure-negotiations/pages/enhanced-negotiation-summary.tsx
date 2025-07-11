@@ -23,7 +23,7 @@ const EnhancedNegotiationSummary: React.FC<EnhancedNegotiationSummaryProps> = ({
   userType,
 }) => {
   const { state } = useSecureNegotiation();
-  const { details, negotiationType, createdAt } = state;
+  const { details, inspectionType, createdAt } = state;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-NG", {
