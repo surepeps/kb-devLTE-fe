@@ -12,7 +12,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
@@ -64,6 +64,7 @@ interface SecureNegotiationState {
   inspectionStatus: InspectionStatus | null;
   currentUserId: string | null;
   currentUserType: "seller" | "buyer" | null;
+  negotiationType?: "price" | "LOI" | null;
 
   // Interactive Features
   isExpired: boolean;
@@ -131,6 +132,7 @@ const initialState: SecureNegotiationState = {
   inspectionStatus: null,
   currentUserId: null,
   currentUserType: null,
+  negotiationType: null,
 
   // Interactive Features
   isExpired: false,
@@ -233,6 +235,9 @@ interface SecureNegotiationContextType {
   setInspectionType: (type: InspectionType) => void;
   setStage: (stage: InspectionStage) => void;
   setPendingResponseFrom: (from: PendingResponseFrom) => void;
+  reopenInspection: () => Promise<any>;
+  canNegotiate: (userType: "seller" | "buyer") => boolean;
+  isUserTurn: (userType: "seller" | "buyer") => boolean;
 
   // Interactive Methods
   setExpiredStatus: (isExpired: boolean) => void;
@@ -453,7 +458,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     const response: UploadResponse = await POST_REQUEST(
       `${URLS.BASE + URLS.uploadImg}`,
       formData,
-      { "Content-Type": "multipart/form-data" },
     );
 
     if (response?.success) {
