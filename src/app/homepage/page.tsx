@@ -214,11 +214,9 @@ const Homepage = ({
   );
 };
 
-const HomepageWrapper = ({
-  isComingSoon = false,
-}: { isComingSoon?: boolean } = {}) => (
+const HomepageWrapper = () => (
   <Suspense fallback={<Loading />}>
-    <Homepage isComingSoon={isComingSoon} />
+    <Homepage />
   </Suspense>
 );
 
