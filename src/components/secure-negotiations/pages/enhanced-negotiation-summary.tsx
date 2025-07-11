@@ -130,7 +130,7 @@ This summary serves as confirmation of the negotiated terms.
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200 mb-8"
+        className="bg-white rounded-xl border border-[#C7CAD0] mb-8"
       >
         <div className="p-6">
           {/* Action Buttons */}
