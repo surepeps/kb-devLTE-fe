@@ -47,8 +47,9 @@ interface VerifiedUser {
   userType: string;
 }
 
-
-const Homepage = ({ isComingSoon }: { isComingSoon?: boolean }) => {
+const Homepage = ({
+  isComingSoon = false,
+}: { isComingSoon?: boolean } = {}) => {
   //Simulating the loading page
   const isLoading = useLoading();
 
