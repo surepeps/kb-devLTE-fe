@@ -26,9 +26,14 @@ const AwaitingResponseDisplay: React.FC<AwaitingResponseDisplayProps> = ({
   }, []);
 
   const getWaitingMessage = () => {
+    if (pendingResponseFrom === "admin") {
+      return `Awaiting admin review${dots}`;
+    }
     const otherParty = pendingResponseFrom === "seller" ? "seller" : "buyer";
     return `Awaiting response from ${otherParty}${dots}`;
   };
+
+  const isAwaitingAdmin = pendingResponseFrom === "admin";
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
