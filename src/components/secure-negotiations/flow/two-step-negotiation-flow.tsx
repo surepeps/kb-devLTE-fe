@@ -24,6 +24,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     type: "accept" | "counter" | "requestChanges";
     counterPrice?: number;
     loiFile?: File;
+    changeRequest?: string;
   } | null>(null);
 
   // Determine which steps are needed based on inspectionType
@@ -55,6 +56,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   const handleLOIComplete = (
     action: "accept" | "reject" | "requestChanges",
     newLoiFile?: File,
+    changeRequest?: string,
   ) => {
     if (action === "reject") {
       // End the flow for rejection - don't set negotiation action for reject
@@ -64,6 +66,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     setNegotiationAction({
       type: action as "accept" | "requestChanges",
       loiFile: newLoiFile,
+      changeRequest,
     });
 
     // Move to price negotiation if available, otherwise inspection
@@ -140,7 +143,8 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   return (
     <div className="space-y-6">
       {/* Navigation Bar */}
-      {canGoBackToLOI && (currentStep === "price" || currentStep === "inspection") ? (
+      {canGoBackToLOI &&
+      (currentStep === "price" || currentStep === "inspection") ? (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -161,8 +165,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
         </motion.div>
       ) : null}
 
-
-      {(currentStep === "inspection" && canGoBackToPrice) ? (
+      {currentStep === "inspection" && canGoBackToPrice ? (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -182,7 +185,6 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
           </div>
         </motion.div>
       ) : null}
-
 
       {/* Step Content */}
       <AnimatePresence mode="wait">
