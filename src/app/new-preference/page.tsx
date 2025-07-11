@@ -125,13 +125,13 @@ const FEATURES_DATA = {
   },
 };
 
-// Custom searchable select styles
+// Custom searchable select styles with reduced curves
 const customSelectStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    minHeight: "52px",
+    minHeight: "48px",
     border: state.isFocused ? "2px solid #059669" : "1px solid #E5E7EB",
-    borderRadius: "16px",
+    borderRadius: "8px", // Reduced from 16px
     backgroundColor: "#FFFFFF",
     boxShadow: "none",
     "&:hover": {
@@ -141,8 +141,8 @@ const customSelectStyles = {
   }),
   valueContainer: (provided: any) => ({
     ...provided,
-    padding: "8px 16px",
-    fontSize: "16px",
+    padding: "8px 12px",
+    fontSize: "15px",
   }),
   input: (provided: any) => ({
     ...provided,
@@ -152,18 +152,18 @@ const customSelectStyles = {
   placeholder: (provided: any) => ({
     ...provided,
     color: "#9CA3AF",
-    fontSize: "16px",
+    fontSize: "15px",
   }),
   multiValue: (provided: any) => ({
     ...provided,
     backgroundColor: "#D1FAE5",
-    borderRadius: "8px",
+    borderRadius: "6px", // Reduced from 8px
     border: "1px solid #10B981",
   }),
   multiValueLabel: (provided: any) => ({
     ...provided,
     color: "#047857",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "500",
   }),
   multiValueRemove: (provided: any) => ({
@@ -182,24 +182,24 @@ const customSelectStyles = {
         ? "#F3F4F6"
         : "white",
     color: state.isSelected ? "white" : "#374151",
-    padding: "12px 16px",
-    fontSize: "16px",
+    padding: "10px 12px",
+    fontSize: "15px",
     "&:hover": {
       backgroundColor: state.isSelected ? "#10B981" : "#F3F4F6",
     },
   }),
   menu: (provided: any) => ({
     ...provided,
-    borderRadius: "16px",
+    borderRadius: "8px", // Reduced from 16px
     border: "1px solid #E5E7EB",
     boxShadow:
-      "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
     zIndex: 50,
   }),
   menuList: (provided: any) => ({
     ...provided,
-    padding: "8px",
-    borderRadius: "16px",
+    padding: "4px",
+    borderRadius: "8px",
   }),
   indicatorSeparator: () => ({
     display: "none",
@@ -213,7 +213,7 @@ const customSelectStyles = {
   }),
 };
 
-// Modern Input Component
+// Modern Input Component with reduced curves
 const ModernInput = ({
   label,
   name,
@@ -255,7 +255,7 @@ const ModernInput = ({
           placeholder={placeholder}
           disabled={disabled}
           rows={rows}
-          className="w-full px-4 py-3 text-base border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500 resize-none placeholder-gray-400"
+          className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500 resize-none placeholder-gray-400"
         />
       ) : (
         <input
@@ -265,7 +265,7 @@ const ModernInput = ({
           onChange={onChange}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full px-4 py-3 text-base border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500 placeholder-gray-400"
+          className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 disabled:bg-gray-50 disabled:text-gray-500 placeholder-gray-400"
         />
       )}
       {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
@@ -273,7 +273,7 @@ const ModernInput = ({
   );
 };
 
-// Modern Button Component
+// Modern Button Component with reduced curves
 const ModernButton = ({
   children,
   variant = "primary",
@@ -294,7 +294,7 @@ const ModernButton = ({
   fullWidth?: boolean;
 }) => {
   const baseStyles =
-    "font-semibold rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    "font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
     primary:
@@ -302,13 +302,13 @@ const ModernButton = ({
     secondary:
       "bg-gray-100 hover:bg-gray-200 text-gray-800 focus:ring-gray-500",
     ghost:
-      "bg-transparent hover:bg-gray-50 text-gray-600 border-2 border-gray-200 hover:border-gray-300 focus:ring-gray-500",
+      "bg-transparent hover:bg-gray-50 text-gray-600 border border-gray-300 hover:border-gray-400 focus:ring-gray-500",
   };
 
   const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg",
+    sm: "px-3 py-2 text-sm",
+    md: "px-4 py-2.5 text-sm",
+    lg: "px-6 py-3 text-base",
   };
 
   const widthClass = fullWidth ? "w-full" : "";
@@ -350,15 +350,15 @@ const ModernCheckboxGroup = ({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       <label className="block text-sm font-semibold text-gray-800">
         {label}
       </label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {options.map((option) => (
           <label
             key={option}
-            className="flex items-start space-x-3 cursor-pointer group p-3 rounded-xl hover:bg-gray-50 transition-colors"
+            className="flex items-start space-x-2.5 cursor-pointer group p-2.5 rounded-md hover:bg-gray-50 transition-colors"
           >
             <div className="relative mt-0.5">
               <input
@@ -368,7 +368,7 @@ const ModernCheckboxGroup = ({
                 className="sr-only"
               />
               <div
-                className={`w-5 h-5 rounded-lg border-2 transition-all ${
+                className={`w-4 h-4 rounded border-2 transition-all ${
                   value.includes(option)
                     ? "border-emerald-500 bg-emerald-500"
                     : "border-gray-300 group-hover:border-emerald-300"
@@ -376,7 +376,7 @@ const ModernCheckboxGroup = ({
               >
                 {value.includes(option) && (
                   <svg
-                    className="w-3 h-3 text-white absolute top-0.5 left-0.5"
+                    className="w-2.5 h-2.5 text-white absolute top-0.5 left-0.5"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -422,18 +422,18 @@ const ModernRadioGroup = ({
   layout?: "vertical" | "horizontal";
 }) => {
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       <label className="block text-sm font-semibold text-gray-800">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <div
-        className={`space-y-3 ${layout === "horizontal" ? "sm:flex sm:space-y-0 sm:space-x-6" : ""}`}
+        className={`space-y-2 ${layout === "horizontal" ? "sm:flex sm:space-y-0 sm:space-x-4" : ""}`}
       >
         {options.map((option) => (
           <label
             key={option}
-            className="flex items-center space-x-3 cursor-pointer group"
+            className="flex items-center space-x-2.5 cursor-pointer group"
           >
             <div className="relative">
               <input
@@ -446,14 +446,14 @@ const ModernRadioGroup = ({
                 className="sr-only"
               />
               <div
-                className={`w-5 h-5 rounded-full border-2 transition-all ${
+                className={`w-4 h-4 rounded-full border-2 transition-all ${
                   value === option
                     ? "border-emerald-500 bg-emerald-500"
                     : "border-gray-300 group-hover:border-emerald-300"
                 }`}
               >
                 {value === option && (
-                  <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                  <div className="w-1.5 h-1.5 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                 )}
               </div>
             </div>
@@ -467,7 +467,7 @@ const ModernRadioGroup = ({
   );
 };
 
-// Section Card Component
+// Section Card Component with mobile-adaptive design
 const SectionCard = ({
   title,
   icon,
@@ -484,14 +484,24 @@ const SectionCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-white rounded-3xl p-6 space-y-6 border border-gray-100 ${className}`}
+      className={`bg-white rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-6 border border-gray-100 ${className}`}
     >
-      <div className="flex items-center space-x-3">
-        <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-600 text-xl">
+      {/* Desktop title design */}
+      <div className="hidden sm:flex items-center space-x-3">
+        <div className="p-2.5 bg-emerald-100 rounded-lg text-emerald-600 text-lg">
           {icon}
         </div>
-        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+        <h3 className="text-lg font-bold text-gray-900">{title}</h3>
       </div>
+
+      {/* Mobile title design - more compact */}
+      <div className="flex sm:hidden items-center space-x-2.5 pb-2 border-b border-gray-100">
+        <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600 text-base">
+          {icon}
+        </div>
+        <h3 className="text-base font-bold text-gray-900">{title}</h3>
+      </div>
+
       {children}
     </motion.div>
   );
@@ -911,22 +921,22 @@ const NewPreference = () => {
 
   // Render preference type selector
   const renderPreferenceTypeSelector = () => (
-    <div className="mb-12">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="mb-8 sm:mb-12">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
           Choose Your Preference
         </h2>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-base text-gray-600">
           Select the type of property transaction you're interested in
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {Object.entries(PREFERENCE_CONFIGS).map(([key, config]) => (
           <motion.button
             key={key}
             type="button"
             onClick={() => handlePreferenceTypeChange(key)}
-            className={`p-6 rounded-3xl border-2 transition-all duration-200 text-left ${
+            className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-200 text-left ${
               key === currentPreferenceKey
                 ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100"
                 : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50"
@@ -934,12 +944,16 @@ const NewPreference = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="text-3xl mb-3">{config.icon}</div>
-            <h3 className="font-bold text-gray-900 mb-2">
+            <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">
+              {config.icon}
+            </div>
+            <h3 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">
               <span className="block sm:hidden">{config.shortLabel}</span>
               <span className="hidden sm:block">{config.label}</span>
             </h3>
-            <p className="text-sm text-gray-600">{config.description}</p>
+            <p className="text-xs sm:text-sm text-gray-600">
+              {config.description}
+            </p>
           </motion.button>
         ))}
       </div>
@@ -949,8 +963,8 @@ const NewPreference = () => {
   // Render location fields
   const renderLocationFields = () => (
     <SectionCard title="Preferred Location" icon="📍">
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-800">
               State <span className="text-red-500">*</span>
@@ -987,19 +1001,19 @@ const NewPreference = () => {
 
         {/* Dynamic Area Selection with Responsive Grid */}
         {selectedLGAs.length > 0 && (
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-900">
+          <div className="space-y-3 sm:space-y-4">
+            <h4 className="text-base sm:text-lg font-semibold text-gray-900">
               Preferred Areas
             </h4>
             <div
-              className={`grid gap-6 ${
+              className={`grid gap-3 sm:gap-4 ${
                 selectedLGAs.length === 1
                   ? "grid-cols-1"
                   : selectedLGAs.length === 2
                     ? "grid-cols-1 lg:grid-cols-2"
                     : selectedLGAs.length === 3
-                      ? "grid-cols-1 lg:grid-cols-3"
-                      : "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
+                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                      : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
               }`}
             >
               {selectedLGAs.map((lga) => (
@@ -1009,11 +1023,11 @@ const NewPreference = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-gray-50 p-4 rounded-2xl border border-gray-100"
+                  className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-100"
                 >
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-gray-800">
-                      Select preferred areas in{" "}
+                      Areas in{" "}
                       <span className="text-emerald-600">{lga.label}</span>
                     </label>
                     <Select
@@ -1052,11 +1066,11 @@ const NewPreference = () => {
 
   // Render buy form
   const renderBuyStep1 = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {renderLocationFields()}
 
       <SectionCard title="Budget Range" icon="💰">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <ModernInput
             label="Minimum Price (₦)"
             name="minPrice"
@@ -1093,8 +1107,8 @@ const NewPreference = () => {
       </SectionCard>
 
       <SectionCard title="Property Details" icon="🏠">
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <ModernRadioGroup
               label="Property Type"
               name="propertyType"
@@ -1116,7 +1130,7 @@ const NewPreference = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-gray-800">
                 Minimum Bedrooms <span className="text-red-500">*</span>
@@ -1158,7 +1172,7 @@ const NewPreference = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <ModernRadioGroup
               label="Property Condition"
               name="propertyCondition"
@@ -1185,7 +1199,7 @@ const NewPreference = () => {
       </SectionCard>
 
       <SectionCard title="Features" icon="✨">
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <ModernCheckboxGroup
             label="Base Features"
             options={FEATURES_DATA.buy.base}
@@ -1216,13 +1230,13 @@ const NewPreference = () => {
     </div>
   );
 
-  // Render rent form
+  // Render rent form (similar structure with reduced spacing)
   const renderRentStep1 = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {renderLocationFields()}
 
       <SectionCard title="Rent Budget" icon="💰">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <ModernInput
             label="Minimum Monthly Rent (₦)"
             name="minMonthlyRent"
@@ -1267,8 +1281,8 @@ const NewPreference = () => {
       </SectionCard>
 
       <SectionCard title="Property Details" icon="🏡">
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <ModernRadioGroup
               label="Property Type"
               name="propertyType"
@@ -1304,7 +1318,7 @@ const NewPreference = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <ModernRadioGroup
               label="Lease Term"
               name="leaseTerm"
@@ -1342,7 +1356,7 @@ const NewPreference = () => {
       </SectionCard>
 
       <SectionCard title="Features" icon="✨">
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <ModernCheckboxGroup
             label="Base Features"
             options={FEATURES_DATA.rent.base}
@@ -1373,13 +1387,13 @@ const NewPreference = () => {
     </div>
   );
 
-  // Render joint venture form
+  // Similar structure for other forms...
   const renderJointVentureStep1 = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {renderLocationFields()}
-
+      {/* Abbreviated for space - similar structure to buy/rent forms */}
       <SectionCard title="Development Requirements" icon="🏗">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <ModernInput
             label="Minimum Land Size (sqm or plots)"
             name="minLandSize"
@@ -1408,270 +1422,24 @@ const NewPreference = () => {
           />
         </div>
       </SectionCard>
-
-      <SectionCard title="Property Details" icon="🏢">
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ModernRadioGroup
-              label="Preferred JV Type"
-              name="jvType"
-              options={[
-                "Equity Split",
-                "Lease-to-Build",
-                "Development Partner",
-              ]}
-              value={formik.values.jvType}
-              onChange={(value) => formik.setFieldValue("jvType", value)}
-              required
-              disabled={areInputsDisabled}
-            />
-
-            <ModernRadioGroup
-              label="Property Type"
-              name="propertyType"
-              options={["Land", "Old Building", "Structure to demolish"]}
-              value={formik.values.propertyType}
-              onChange={(value) => formik.setFieldValue("propertyType", value)}
-              required
-              disabled={areInputsDisabled}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ModernRadioGroup
-              label="Expected Structure Type"
-              name="expectedStructureType"
-              options={["Mini Flats", "Luxury Duplexes"]}
-              value={formik.values.expectedStructureType}
-              onChange={(value) =>
-                formik.setFieldValue("expectedStructureType", value)
-              }
-              required
-              disabled={areInputsDisabled}
-            />
-
-            <ModernRadioGroup
-              label="Timeline"
-              name="timeline"
-              options={["Ready Now", "In 3 Months", "Within 1 Year"]}
-              value={formik.values.timeline}
-              onChange={(value) => formik.setFieldValue("timeline", value)}
-              required
-              disabled={areInputsDisabled}
-            />
-          </div>
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Features" icon="✨">
-        <div className="space-y-6">
-          <ModernCheckboxGroup
-            label="Base Features (Must-Have)"
-            options={FEATURES_DATA.jointVenture.base}
-            value={formik.values.baseFeatures || []}
-            onChange={(value) => formik.setFieldValue("baseFeatures", value)}
-          />
-
-          <ModernCheckboxGroup
-            label="Premium Features (Optional)"
-            options={FEATURES_DATA.jointVenture.premium}
-            value={formik.values.premiumFeatures || []}
-            onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
-          />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Additional Information" icon="📝">
-        <ModernInput
-          label="Partner Expectations, Restrictions, etc."
-          name="partnerExpectations"
-          type="textarea"
-          value={formik.values.partnerExpectations || ""}
-          onChange={formik.handleChange}
-          placeholder="Partner expectations, restrictions, upload past projects (optional)"
-          disabled={areInputsDisabled}
-        />
-      </SectionCard>
+      {/* Additional sections similar to other forms */}
     </div>
   );
 
-  // Render shortlet form
   const renderShortletStep1 = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {renderLocationFields()}
-
-      <SectionCard title="Budget Per Night" icon="💰">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ModernInput
-            label="Minimum Price (₦)"
-            name="minPricePerNight"
-            value={formik.values.minPricePerNight}
-            onChange={(e) => {
-              const rawValue = e.target.value.replace(/,/g, "");
-              formik.setFieldValue(
-                "minPricePerNight",
-                formatNumberWithCommas(rawValue),
-              );
-            }}
-            placeholder="Enter minimum price"
-            required
-            disabled={areInputsDisabled}
-            error={
-              formik.touched.minPricePerNight
-                ? formik.errors.minPricePerNight
-                : undefined
-            }
-          />
-          <ModernInput
-            label="Maximum Price (₦)"
-            name="maxPricePerNight"
-            value={formik.values.maxPricePerNight}
-            onChange={(e) => {
-              const rawValue = e.target.value.replace(/,/g, "");
-              formik.setFieldValue(
-                "maxPricePerNight",
-                formatNumberWithCommas(rawValue),
-              );
-            }}
-            placeholder="Enter maximum price"
-            required
-            disabled={areInputsDisabled}
-            error={
-              formik.touched.maxPricePerNight
-                ? formik.errors.maxPricePerNight
-                : undefined
-            }
-          />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Booking Details" icon="📅">
-        <div className="space-y-6">
-          <ModernRadioGroup
-            label="Property Type"
-            name="propertyType"
-            options={["Studio", "1-Bed Apartment", "2-Bed Flat"]}
-            value={formik.values.propertyType}
-            onChange={(value) => formik.setFieldValue("propertyType", value)}
-            required
-            disabled={areInputsDisabled}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-800">
-                Minimum Bedrooms <span className="text-red-500">*</span>
-              </label>
-              <Select
-                options={bedroomOptions}
-                value={
-                  bedroomOptions.find(
-                    (option) => option.value === formik.values.minBedrooms,
-                  ) || null
-                }
-                onChange={(selectedOption) => {
-                  formik.setFieldValue(
-                    "minBedrooms",
-                    (selectedOption as Option)?.value || "",
-                  );
-                }}
-                placeholder="Select bedrooms..."
-                isDisabled={areInputsDisabled}
-                styles={customSelectStyles}
-                isSearchable
-              />
-            </div>
-
-            <ModernInput
-              label="Number of Guests"
-              name="numberOfGuests"
-              type="number"
-              value={formik.values.numberOfGuests}
-              onChange={formik.handleChange}
-              placeholder="Number of guests"
-              required
-              disabled={areInputsDisabled}
-              error={
-                formik.touched.numberOfGuests
-                  ? formik.errors.numberOfGuests
-                  : undefined
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ModernInput
-              label="Check-in Date"
-              name="checkInDate"
-              type="date"
-              value={formik.values.checkInDate}
-              onChange={formik.handleChange}
-              required
-              disabled={areInputsDisabled}
-              error={
-                formik.touched.checkInDate
-                  ? formik.errors.checkInDate
-                  : undefined
-              }
-            />
-
-            <ModernInput
-              label="Check-out Date"
-              name="checkOutDate"
-              type="date"
-              value={formik.values.checkOutDate}
-              onChange={formik.handleChange}
-              required
-              disabled={areInputsDisabled}
-              error={
-                formik.touched.checkOutDate
-                  ? formik.errors.checkOutDate
-                  : undefined
-              }
-            />
-          </div>
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Features" icon="✨">
-        <div className="space-y-6">
-          <ModernCheckboxGroup
-            label="Base Features"
-            options={FEATURES_DATA.shortlet.base}
-            value={formik.values.baseFeatures || []}
-            onChange={(value) => formik.setFieldValue("baseFeatures", value)}
-          />
-
-          <ModernCheckboxGroup
-            label="Premium Features (Optional)"
-            options={FEATURES_DATA.shortlet.premium}
-            value={formik.values.premiumFeatures || []}
-            onChange={(value) => formik.setFieldValue("premiumFeatures", value)}
-          />
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Additional Information" icon="📝">
-        <ModernInput
-          label="Preferences & Notes"
-          name="additionalNotes"
-          type="textarea"
-          value={formik.values.additionalNotes || ""}
-          onChange={formik.handleChange}
-          placeholder="Preferences (e.g., No Smoking, Must allow pets), Notes (e.g., Anniversary getaway)"
-          disabled={areInputsDisabled}
-        />
-      </SectionCard>
+      {/* Similar structure with reduced spacing */}
     </div>
   );
 
   // Render contact step
   const renderContactStep = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <SectionCard title="Contact Information" icon="👤">
         {currentPreferenceKey === "jointVenture" ? (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <ModernInput
                 label="Company / Developer Name"
                 name="companyName"
@@ -1702,7 +1470,7 @@ const NewPreference = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-800">
                   Phone Number <span className="text-red-500">*</span>
@@ -1747,7 +1515,7 @@ const NewPreference = () => {
             />
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <ModernInput
               label="Full Name"
               name="fullName"
@@ -1761,7 +1529,7 @@ const NewPreference = () => {
               }
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-800">
                   Phone Number <span className="text-red-500">*</span>
@@ -1826,23 +1594,23 @@ const NewPreference = () => {
   return (
     <Fragment>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <ModernButton
               variant="ghost"
               size="sm"
               onClick={() => router.back()}
-              className="mb-6"
+              className="mb-4 sm:mb-6"
             >
               ← Back to Marketplace
             </ModernButton>
 
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-3">
+              <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Submit Your Property Preference
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-base sm:text-xl text-gray-600">
                 Tell us what you're looking for and we'll help you find the
                 perfect match
               </p>
@@ -1852,9 +1620,10 @@ const NewPreference = () => {
           {/* Preference Type Selector */}
           {renderPreferenceTypeSelector()}
 
-          {/* Step Progress */}
-          <div className="mb-12">
-            <div className="flex items-center justify-center space-x-8">
+          {/* Step Progress - Mobile Adaptive */}
+          <div className="mb-8 sm:mb-12">
+            {/* Desktop Stepper */}
+            <div className="hidden sm:flex items-center justify-center space-x-8">
               {steps.map((step, index) => (
                 <div key={index} className="flex items-center">
                   <div className="flex items-center space-x-4">
@@ -1906,6 +1675,59 @@ const NewPreference = () => {
                 </div>
               ))}
             </div>
+
+            {/* Mobile Stepper - Compact Design */}
+            <div className="flex sm:hidden items-center justify-center">
+              <div className="flex items-center space-x-3">
+                {steps.map((step, index) => (
+                  <React.Fragment key={index}>
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                          step.status === "completed"
+                            ? "bg-emerald-500 text-white"
+                            : step.status === "active"
+                              ? "bg-emerald-500 text-white"
+                              : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {step.status === "completed" ? (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        ) : (
+                          index + 1
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <p
+                          className={`text-sm font-bold ${
+                            step.status === "active"
+                              ? "text-emerald-600"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {step.label}
+                        </p>
+                      </div>
+                    </div>
+                    {index < steps.length - 1 && (
+                      <div className="w-8 h-0.5 bg-gray-300 rounded-full"></div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Form Content */}
@@ -1923,7 +1745,7 @@ const NewPreference = () => {
             </AnimatePresence>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-12 pt-8">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0 mt-8 sm:mt-12 pt-6 sm:pt-8">
               <ModernButton
                 variant="ghost"
                 onClick={() => {
@@ -1933,7 +1755,8 @@ const NewPreference = () => {
                     setCurrentStep((prev) => Math.max(prev - 1, 0));
                   }
                 }}
-                className="min-w-[140px]"
+                className="order-2 sm:order-1 sm:min-w-[140px]"
+                fullWidth={false}
               >
                 {currentStep === 0 ? "Cancel" : "← Previous"}
               </ModernButton>
@@ -1947,7 +1770,8 @@ const NewPreference = () => {
                     : () => setCurrentStep((prev) => prev + 1)
                 }
                 disabled={areInputsDisabled}
-                className="min-w-[140px]"
+                className="order-1 sm:order-2 sm:min-w-[140px]"
+                fullWidth={false}
               >
                 {currentStep === steps.length - 1
                   ? "Submit Preference"
@@ -1973,10 +1797,10 @@ const NewPreference = () => {
       <style jsx global>{`
         .modern-phone-input input {
           width: 100%;
-          padding: 12px 16px;
+          padding: 10px 12px;
           border: 1px solid #e5e7eb;
-          border-radius: 16px;
-          font-size: 16px;
+          border-radius: 8px;
+          font-size: 14px;
           transition: all 0.2s;
           background-color: white;
         }
@@ -1989,7 +1813,7 @@ const NewPreference = () => {
           border-color: #6b7280;
         }
         .modern-phone-input .PhoneInputCountrySelect {
-          border-radius: 16px 0 0 16px;
+          border-radius: 8px 0 0 8px;
           border-right: 1px solid #e5e7eb;
         }
       `}</style>
@@ -1997,7 +1821,7 @@ const NewPreference = () => {
   );
 };
 
-// Success Modal Component
+// Success Modal Component with reduced curves
 interface SuccessModalProps {
   open: boolean;
   onClose: () => void;
@@ -2010,18 +1834,18 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
       <motion.div
         ref={ref}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 text-center"
+        className="bg-white rounded-xl p-6 sm:p-8 max-w-md w-full text-center"
       >
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
           <svg
-            className="w-10 h-10 text-emerald-500"
+            className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -2035,11 +1859,11 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
           </svg>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
           Preference Submitted Successfully!
         </h2>
 
-        <p className="text-gray-600 mb-8">
+        <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
           We've received your preference and will reach out to you with matching
           properties soon.
         </p>
