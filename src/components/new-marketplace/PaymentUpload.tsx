@@ -125,6 +125,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     // Base payload
     const payload: any = {
       briefType,
+      inspectionType: briefType == 'jv' ? 'LOI' : 'price',
       inspectionDate: inspectionDetails.date,
       inspectionTime: inspectionDetails.time,
       requestedBy: inspectionDetails.buyerInfo,

@@ -13,7 +13,7 @@ import PropertyDetails from "../property/property-details";
 interface SecureBuyerResponseIndexProps {
   userId: string;
   inspectionId: string;
-}
+} 
 
 const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
   userId,

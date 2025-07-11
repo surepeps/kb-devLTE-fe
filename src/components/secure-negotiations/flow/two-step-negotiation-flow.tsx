@@ -140,29 +140,29 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   return (
     <div className="space-y-6">
       {/* Navigation Bar */}
-      {canGoBackToLOI &&
-        (currentStep === "price" || currentStep === "inspection") && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
-          >
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-yellow-700">
-                <span className="font-medium">LOI Review in progress.</span> You
-                can go back to review the Letter of Intention.
-              </div>
-              <button
-                onClick={handleGoBackToLOI}
-                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 text-sm"
-              >
-                ← Back to LOI Review
-              </button>
+      {canGoBackToLOI && (currentStep === "price" || currentStep === "inspection") ? (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+        >
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-yellow-700">
+              <span className="font-medium">LOI Review in progress.</span> You
+              can go back to review the Letter of Intention.
             </div>
-          </motion.div>
-        )}
+            <button
+              onClick={handleGoBackToLOI}
+              className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 text-sm"
+            >
+              ← Back to LOI Review
+            </button>
+          </div>
+        </motion.div>
+      ) : null}
 
-      {currentStep === "inspection" && canGoBackToPrice && (
+
+      {(currentStep === "inspection" && canGoBackToPrice) ? (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,7 +181,8 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
             </button>
           </div>
         </motion.div>
-      )}
+      ) : null}
+
 
       {/* Step Content */}
       <AnimatePresence mode="wait">
