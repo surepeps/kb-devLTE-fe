@@ -186,7 +186,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       />
 
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-[#09391C] mb-2">
+        <h2 className="text-2xl font-bold text-[#09391C] mb-2">
           Letter of Intention Review
         </h2>
         <p className="text-gray-600">
@@ -196,6 +196,11 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               ? "Please update your LOI based on the seller's feedback and resubmit."
               : "Your Letter of Intention is being reviewed by the seller."}
         </p>
+        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+          <p className="text-sm font-medium text-[#09391C]">
+            Inspection Type: LOI Negotiation
+          </p>
+        </div>
       </div>
 
       {/* LOI Document Display */}
