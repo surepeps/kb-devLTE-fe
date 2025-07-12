@@ -142,6 +142,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const [customLGAs, setCustomLGAs] = useState<string>("");
   const [showCustomLGAs, setShowCustomLGAs] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get validation errors
   const stateErrors = getValidationErrorsForField("location.state");
