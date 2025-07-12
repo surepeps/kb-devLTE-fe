@@ -86,9 +86,16 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return inspectionDate < now;
   }, [details?.inspectionDate, details?.inspectionTime]);
 
+  // Define time object interface
+  interface TimeObj {
+    value: string;
+    display: string;
+    isPassed?: boolean;
+  }
+
   // Generate available times (8 AM to 6 PM, hourly only)
   const availableTimes = useMemo(() => {
-    const times = [];
+    const times: TimeObj[] = [];
     for (let hour = 8; hour <= 18; hour++) {
       const time12 =
         hour <= 12
