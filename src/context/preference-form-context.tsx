@@ -570,6 +570,14 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
 
   // Manual validation - removed automatic validation to prevent infinite loops
   // Validation will be triggered on step changes and form submission
+  const triggerValidation = useCallback(
+    (step?: number) => {
+      const targetStep = step !== undefined ? step : state.currentStep;
+      const currentErrors = validateStep(targetStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+    },
+    [state.currentStep, validateStep],
+  );
 
   const contextValue: PreferenceFormContextType = {
     state,
