@@ -282,6 +282,7 @@ interface PreferenceFormContextType {
   isFormValid: () => boolean;
   getValidationErrorsForField: (fieldName: string) => ValidationError[];
   resetForm: () => void;
+  triggerValidation: (step?: number) => void;
 }
 
 // Create context
