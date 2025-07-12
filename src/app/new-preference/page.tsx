@@ -69,6 +69,7 @@ const PreferenceFormContent: React.FC = () => {
 
   const [selectedPreferenceType, setSelectedPreferenceType] =
     useState<keyof typeof PREFERENCE_CONFIGS>("buy");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Handle preference type change
   const handlePreferenceTypeChange = useCallback(
@@ -84,9 +85,8 @@ const PreferenceFormContent: React.FC = () => {
 
   // Generate API payload
   const generatePayload = useCallback((): PreferencePayload => {
-    
     const { formData } = state;
-    console.log(formData, "my filled form.....")
+    console.log(formData, "my filled form.....");
     const config = PREFERENCE_CONFIGS[selectedPreferenceType];
 
     const basePayload = {
@@ -213,7 +213,6 @@ const PreferenceFormContent: React.FC = () => {
 
   // Handle form submission
   const handleSubmit = useCallback(async () => {
-    
     if (!isFormValid()) {
       toast.error("Please complete all required fields before submitting");
       return;
@@ -474,8 +473,8 @@ const PreferenceFormContent: React.FC = () => {
               Submit Your Property Preference
             </h1>
             <p className="text-base sm:text-xl text-gray-600">
-              Tell us what you&apos;re looking for and we&apos;ll help you find the
-              perfect match
+              Tell us what you&apos;re looking for and we&apos;ll help you find
+              the perfect match
             </p>
           </div>
         </div>
