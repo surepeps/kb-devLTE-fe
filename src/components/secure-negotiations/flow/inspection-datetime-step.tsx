@@ -243,6 +243,11 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     };
   }, [availableTimes]);
 
+  // Filter out passed dates and display logic: show 10 by default, 5 more (total 15) with "view more"
+  const validDates = useMemo(() => {
+    return availableDates.filter((dateObj) => !dateObj.isPassed);
+  }, [availableDates]);
+
   // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
     // Only initialize if we have available options
@@ -303,11 +308,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       document.body.style.overflow = "unset";
     };
   }, [showUpdateForm]);
-
-  // Filter out passed dates and display logic: show 10 by default, 5 more (total 15) with "view more"
-  const validDates = useMemo(() => {
-    return availableDates.filter((dateObj) => !dateObj.isPassed);
-  }, [availableDates]);
 
   const displayedDates = useMemo(() => {
     return showAllDays ? validDates.slice(0, 15) : validDates.slice(0, 10);
