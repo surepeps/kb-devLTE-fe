@@ -207,7 +207,7 @@ const ShortletPropertySearch = () => {
     if (activeTab === "shortlet" && shortletTab.formikStatus === "idle") {
       handleSearch();
     }
-  }, [activeTab]);
+  }, [activeTab, handleSearch, shortletTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
