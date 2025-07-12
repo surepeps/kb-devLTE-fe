@@ -319,12 +319,12 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       const formatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
-      // Check if it's in our available dates, otherwise use newDate or first available
-      const dateExists = availableDates.some((d) => d.date === formatted);
-      return dateExists ? formatted : newDate || availableDates[0]?.date || "";
+      // Check if it's in our valid dates (non-passed), otherwise use newDate or first valid available
+      const dateExists = validDates.some((d) => d.date === formatted);
+      return dateExists ? formatted : newDate || validDates[0]?.date || "";
     }
-    return newDate || availableDates[0]?.date || "";
-  }, [details?.inspectionDate, newDate, availableDates, inspectionDatePassed]);
+    return newDate || validDates[0]?.date || "";
+  }, [details?.inspectionDate, newDate, validDates, inspectionDatePassed]);
 
   const currentTime = useMemo(() => {
     return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
