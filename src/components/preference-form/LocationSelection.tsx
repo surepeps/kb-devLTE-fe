@@ -229,8 +229,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change - immediate update for better validation
-  const updateLocationData = useCallback(() => {
+  // Simplified update function that gets called immediately when data changes
+  useEffect(() => {
     if (!isInitialized) return;
 
     let lgaValues: string[] = [];
@@ -252,19 +252,23 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       customLocation: showCustomLocation ? customLocation : undefined,
     };
 
-    // Update form data
+    console.log("LocationSelection - Updating form data with:", locationData);
+
+    // Update form data immediately
     updateFormData({
       location: locationData,
     });
 
-    // Trigger validation after updating data
-    setTimeout(() => {
-      triggerValidation(0); // Validate location step (step 0)
-    }, 100);
+    // Trigger validation after a short delay
+    const timeoutId = setTimeout(() => {
+      triggerValidation(0);
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
   }, [
     selectedState?.value,
-    selectedLGAs,
-    selectedAreas,
+    selectedLGAs.map((lga) => lga.value).join(","), // Convert to string to avoid dep array issues
+    selectedAreas.map((area) => area.value).join(","), // Convert to string to avoid dep array issues
     customLocation,
     showCustomLocation,
     customLGAs,
@@ -274,13 +278,9 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     triggerValidation,
   ]);
 
-  // Call updateLocationData when values change
-  useEffect(() => {
-    updateLocationData();
-  }, [updateLocationData]);
-
   // Handle state change
   const handleStateChange = useCallback((selected: SingleValue<Option>) => {
+    console.log("State changed to:", selected);
     setSelectedState(selected);
     setSelectedLGAs([]);
     setSelectedAreas([]);
@@ -295,6 +295,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const handleLGAChange = useCallback(
     (selectedOptions: MultiValue<Option>) => {
       const options = Array.from(selectedOptions);
+      console.log("LGAs changed to:", options);
       setSelectedLGAs(options);
 
       // Reset areas that are not in the selected LGAs
@@ -321,6 +322,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const handleAreaChangeForLGA = useCallback(
     (lgaValue: string, selectedOptions: MultiValue<Option>) => {
       const options = Array.from(selectedOptions);
+      console.log("Areas changed for LGA", lgaValue, ":", options);
 
       // Remove existing areas for this LGA and add new ones
       const otherLGAAreas = selectedAreas.filter(
@@ -376,6 +378,24 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
+      {/* Debug info */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs">
+          <p>
+            <strong>Debug:</strong> State: {selectedState?.value || "none"}
+          </p>
+          <p>
+            LGAs: {selectedLGAs.map((lga) => lga.value).join(", ") || "none"}
+          </p>
+          <p>
+            Areas:{" "}
+            {selectedAreas.map((area) => area.value).join(", ") || "none"}
+          </p>
+          <p>Custom Location: {customLocation || "none"}</p>
+          <p>Form Data: {JSON.stringify(state.formData.location || {})}</p>
+        </div>
+      )}
+
       {/* State Selection */}
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-800">
