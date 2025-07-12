@@ -60,7 +60,7 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
   }, [state.formData.contactInfo, preferenceType]);
 
   // Update context when values change
-  const updateContactData = useCallback(() => {
+  useEffect(() => {
     if (preferenceType === "joint-venture") {
       const contactData = {
         companyName,
@@ -94,10 +94,6 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
     cacRegistrationNumber,
     updateFormData,
   ]);
-
-  useEffect(() => {
-    updateContactData();
-  }, [updateContactData]);
 
   // Validate email
   const isValidEmail = useCallback((email: string): boolean => {
