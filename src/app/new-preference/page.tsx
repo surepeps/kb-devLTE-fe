@@ -240,10 +240,18 @@ const PreferenceFormContent: React.FC = () => {
       }
     } catch (error) {
       console.error("Submission error:", error);
+      toast.error("Failed to submit preference. Please try again.");
     } finally {
       dispatch({ type: "SET_SUBMITTING", payload: false });
     }
-  }, [generatePayload, dispatch, router, resetForm]);
+  }, [generatePayload, dispatch, isFormValid]);
+
+  // Handle success modal home button click
+  const handleGoHome = useCallback(() => {
+    setShowSuccessModal(false);
+    resetForm();
+    router.push("/homepage");
+  }, [resetForm, router]);
 
   // Render preference type selector
   const renderPreferenceTypeSelector = () => (
