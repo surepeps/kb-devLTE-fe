@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useFormik } from "formik";
 import {
   useNewMarketplace,
@@ -23,7 +23,7 @@ const RentPropertySearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
-  const handleSearch = async (page = 1) => {
+    const handleSearch = useCallback(async (page = 1) => {
     const searchParams: SearchParams = {
       briefType: "rent",
       page,
