@@ -556,11 +556,15 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.formData]);
 
-  // Update validation errors when form data changes
+  // Update validation errors when form data changes (debounced to prevent infinite loops)
   useEffect(() => {
-    const currentErrors = validateStep(state.currentStep);
-    dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-  }, [state.formData, state.currentStep, validateStep]);
+    const timeoutId = setTimeout(() => {
+      const currentErrors = validateStep(state.currentStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [state.formData, state.currentStep]);
 
   const contextValue: PreferenceFormContextType = {
     state,
