@@ -118,7 +118,8 @@ const SelectPreferableInspectionDate = ({
   const availableTimes = getAvailableTimesForDate(formattedSelectedDate);
 
   const handleDateSelect = (date: string) => {
-    const isSameDate = date === formatSelectedDate(dateTimeObj.selectedDate);
+    const isSameDate =
+      date === formatSelectedDate(dateTimeObj.selectedDate || "");
     const isSameTime =
       counterDateTimeObj.selectedTime === dateTimeObj.selectedTime;
 
