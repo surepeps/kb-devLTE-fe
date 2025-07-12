@@ -331,17 +331,9 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.currentStep, validateStep]);
 
-  const updateFormData = useCallback(
-    (data: Partial<PreferenceForm>) => {
-      dispatch({ type: "UPDATE_FORM_DATA", payload: data });
-      // Trigger validation after a brief delay to allow state updates to complete
-      setTimeout(() => {
-        const currentErrors = validateStep(state.currentStep);
-        dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-      }, 50);
-    },
-    [state.currentStep, validateStep],
-  );
+  const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
+    dispatch({ type: "UPDATE_FORM_DATA", payload: data });
+  }, []);
 
   const getMinBudgetForLocation = useCallback(
     (location: string, listingType: string): number => {
