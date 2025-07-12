@@ -57,6 +57,8 @@ export const useNegotiationData = (potentialClientID: string) => {
           setCreatedAt(data.createdAt || null);
 
           setDateTimeObj({
+            date: data.inspectionDate || "",
+            time: data.inspectionTime || "",
             selectedDate: data.inspectionDate
               ? new Date(data.inspectionDate).toLocaleDateString()
               : "N/A",
