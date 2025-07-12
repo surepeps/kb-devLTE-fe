@@ -262,7 +262,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </div>
       </motion.div>
 
-      {/* Action Buttons for Seller */}
+      {/* Action Buttons for Seller - Only 3 buttons as per requirements */}
       {userType === "seller" && !isReuploadMode && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -350,11 +350,11 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
       {/* Reject Confirmation Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+            className="bg-white rounded-lg shadow-xl max-w-md w-full border border-[#C7CAD0]"
           >
             <div className="p-6">
               <div className="flex items-center space-x-3 mb-4">
@@ -391,11 +391,11 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
       {/* Request Changes Modal */}
       {showRequestChangesModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+            className="bg-white rounded-lg shadow-xl max-w-md w-full border border-[#C7CAD0]"
           >
             <div className="p-6">
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">

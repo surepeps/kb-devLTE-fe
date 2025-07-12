@@ -14,9 +14,8 @@ import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 interface PriceNegotiationStepProps {
   userType: "seller" | "buyer";
   onActionSelected: (
-    action: "accept" | "counter" | "requestChanges",
+    action: "accept" | "counter" | "reject",
     counterPrice?: number,
-    changeRequest?: string,
   ) => void;
 }
 
@@ -36,12 +35,10 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const [counterPrice, setCounterPrice] = useState<string>("");
   const [showCounterModal, setShowCounterModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
-  const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
-  const [changeRequest, setChangeRequest] = useState("");
 
   // Prevent background scroll when modals are open
   useEffect(() => {
-    if (showCounterModal || showRejectModal || showRequestChangesModal) {
+    if (showCounterModal || showRejectModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -51,7 +48,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [showCounterModal, showRejectModal, showRequestChangesModal]);
+  }, [showCounterModal, showRejectModal]);
 
   const propertyPrice = details?.propertyId?.price || 0;
   const negotiationPrice = details?.negotiationPrice || 0;
@@ -98,6 +95,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       const payload = createRejectPayload("price");
       await submitNegotiationAction(inspectionId!, userType, payload);
       setShowRejectModal(false);
+      onActionSelected("reject");
     } catch (error) {
       console.error("Failed to reject offer:", error);
     }
@@ -148,18 +146,6 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     onActionSelected("counter", counterAmount);
     setShowCounterModal(false);
     setCounterPrice("");
-  };
-
-  const handleRequestChanges = async () => {
-    if (!changeRequest.trim()) {
-      alert("Please enter your feedback for the changes");
-      return;
-    }
-
-    // Don't submit immediately, proceed to next step (inspection)
-    onActionSelected("requestChanges", undefined, changeRequest);
-    setShowRequestChangesModal(false);
-    setChangeRequest("");
   };
 
   return (
@@ -257,7 +243,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
         </div>
       </motion.div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons - Only 3 buttons as per requirements */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -268,7 +254,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           Choose Your Response
         </h4>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Accept Button */}
           <button
             onClick={handleAccept}
@@ -287,15 +273,6 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             <span>Counter Offer</span>
           </button>
 
-          {/* Request Changes Button */}
-          <button
-            onClick={() => setShowRequestChangesModal(true)}
-            className="flex items-center justify-center space-x-2 p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-          >
-            <FiAlertTriangle className="w-5 h-5" />
-            <span>Request Changes</span>
-          </button>
-
           {/* Reject Button */}
           <button
             onClick={() => setShowRejectModal(true)}
@@ -310,23 +287,11 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
       {/* Counter Offer Modal */}
       {showCounterModal && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            overflowY: "hidden",
-          }}
-          onWheel={(e) => e.preventDefault()}
-          onTouchMove={(e) => e.preventDefault()}
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+            className="bg-white rounded-lg shadow-xl max-w-md w-full border border-[#C7CAD0]"
           >
             <div className="p-6">
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
@@ -404,76 +369,13 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
         </div>
       )}
 
-      {/* Request Changes Modal */}
-      {showRequestChangesModal && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            overflowY: "hidden",
-          }}
-          onWheel={(e) => e.preventDefault()}
-          onTouchMove={(e) => e.preventDefault()}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
-          >
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Request Changes to Price Offer
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    What changes would you like to see?
-                  </label>
-                  <textarea
-                    value={changeRequest}
-                    onChange={(e) => setChangeRequest(e.target.value)}
-                    placeholder="Describe the changes you'd like to see in the price offer..."
-                    rows={4}
-                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent resize-none"
-                  />
-                </div>
-
-                <div className="flex space-x-4">
-                  <button
-                    onClick={handleRequestChanges}
-                    disabled={!changeRequest.trim()}
-                    className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
-                  >
-                    Continue to Inspection
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowRequestChangesModal(false);
-                      setChangeRequest("");
-                    }}
-                    className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
       {/* Reject Confirmation Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 border border-[#C7CAD0]"
+            className="bg-white rounded-lg shadow-xl max-w-md w-full border border-[#C7CAD0]"
           >
             <div className="p-6">
               <div className="flex items-center space-x-3 mb-4">
