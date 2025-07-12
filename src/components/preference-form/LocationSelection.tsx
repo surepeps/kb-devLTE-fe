@@ -131,8 +131,12 @@ interface LocationSelectionProps {
 const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   className = "",
 }) => {
-  const { state, updateFormData, getValidationErrorsForField } =
-    usePreferenceForm();
+  const {
+    state,
+    updateFormData,
+    getValidationErrorsForField,
+    triggerValidation,
+  } = usePreferenceForm();
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<Option[]>([]);
@@ -142,7 +146,6 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const [customLGAs, setCustomLGAs] = useState<string>("");
   const [showCustomLGAs, setShowCustomLGAs] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get validation errors
   const stateErrors = getValidationErrorsForField("location.state");
@@ -226,8 +229,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change - optimized to prevent infinite loops
-  useEffect(() => {
+  // Update context when values change - immediate update for better validation
+  const updateLocationData = useCallback(() => {
     if (!isInitialized) return;
 
     let lgaValues: string[] = [];
@@ -249,33 +252,32 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       customLocation: showCustomLocation ? customLocation : undefined,
     };
 
-    // Clear any existing timeout
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current);
-    }
+    // Update form data
+    updateFormData({
+      location: locationData,
+    });
 
-    // Use a timeout to debounce updates and prevent rapid firing
-    updateTimeoutRef.current = setTimeout(() => {
-      updateFormData({
-        location: locationData,
-      });
-    }, 200);
-
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
-    };
+    // Trigger validation after updating data
+    setTimeout(() => {
+      triggerValidation(0); // Validate location step (step 0)
+    }, 100);
   }, [
     selectedState?.value,
-    JSON.stringify(selectedLGAs.map((lga) => lga.value)),
-    JSON.stringify(selectedAreas.map((area) => area.value)),
+    selectedLGAs,
+    selectedAreas,
     customLocation,
     showCustomLocation,
     customLGAs,
     showCustomLGAs,
     isInitialized,
+    updateFormData,
+    triggerValidation,
   ]);
+
+  // Call updateLocationData when values change
+  useEffect(() => {
+    updateLocationData();
+  }, [updateLocationData]);
 
   // Handle state change
   const handleStateChange = useCallback((selected: SingleValue<Option>) => {
@@ -498,8 +500,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           ) : (
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-700 mb-2">
-                📍 This state doesn&apos;t have predefined LGAs in our system. Please
-                enter your local government areas below:
+                📍 This state doesn&apos;t have predefined LGAs in our system.
+                Please enter your local government areas below:
               </p>
               <input
                 type="text"
