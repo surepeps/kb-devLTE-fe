@@ -17,10 +17,7 @@ import { SelectedBriefsProvider } from "@/context/selected-briefs-context";
 import { MarketplaceProvider } from "@/context/marketplace-context";
 import { NotificationProvider } from "@/context/notification-context";
 import Homepage from "@/app/homepage/page";
-import Countdown from "./coming-soon-modal/page";
 // import { GoogleAnalytics } from '@next/third-parties/google';
-
-const SHOW_COMING_SOON = false;
 
 export const metadata: Metadata = {
   title: "Khabiteq",
