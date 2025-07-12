@@ -489,14 +489,14 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const openUpdateModal = () => {
     // Auto-select current inspection details when opening modal
-    // If inspection date is valid and exists in available dates, use it; otherwise use first available
-    let dateToSelect = availableDates[0]?.date || "";
+    // If inspection date is valid and exists in valid dates, use it; otherwise use first valid available
+    let dateToSelect = validDates[0]?.date || "";
 
     if (details?.inspectionDate && !inspectionDatePassed) {
       const inspectionDateFormatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
-      const dateExists = availableDates.some(
+      const dateExists = validDates.some(
         (d) => d.date === inspectionDateFormatted,
       );
       if (dateExists) {
