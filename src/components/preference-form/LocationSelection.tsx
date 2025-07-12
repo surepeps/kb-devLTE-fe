@@ -125,13 +125,16 @@ interface LocationSelectionProps {
 const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   className = "",
 }) => {
-  const { state, updateFormData, getValidationErrorsForField } =
+  const { state, updateFormData, getValidationErrorsForField, goToNextStep } =
     usePreferenceForm();
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<Option[]>([]);
   const [customLocation, setCustomLocation] = useState<string>("");
   const [showCustomLocation, setShowCustomLocation] = useState<boolean>(false);
+  const [lgaAreaMap, setLgaAreaMap] = useState<{ [lga: string]: Option[] }>({});
+  const [customLGAs, setCustomLGAs] = useState<string>("");
+  const [showCustomLGAs, setShowCustomLGAs] = useState<boolean>(false);
 
   // Get validation errors
   const stateErrors = getValidationErrorsForField("location.state");
@@ -168,7 +171,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setShowCustomLocation(true);
       }
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, []);
 
   // Memoized options
   const stateOptions = useMemo(
@@ -189,28 +192,47 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     }));
   }, [selectedState]);
 
-  const areaOptions = useMemo(() => {
-    if (selectedLGAs.length === 0 || !selectedState) return [];
+  // Check if state has LGAs
+  const stateHasLGAs = useMemo(() => {
+    if (!selectedState) return false;
+    return lgaOptions.length > 0;
+  }, [selectedState, lgaOptions]);
 
-    const allAreas: Option[] = [];
+  // Build area options for each selected LGA separately
+  useEffect(() => {
+    if (!selectedState || selectedLGAs.length === 0) {
+      setLgaAreaMap({});
+      return;
+    }
+
+    const newLgaAreaMap: { [lga: string]: Option[] } = {};
     selectedLGAs.forEach((lga) => {
       const areas = getAreasByStateLGA(selectedState.value, lga.value);
-      areas.forEach((area) => {
-        allAreas.push({
-          value: `${area} - ${lga.label}`,
-          label: `${area} - ${lga.label}`,
-        });
-      });
+      newLgaAreaMap[lga.value] = areas.map((area) => ({
+        value: `${area} - ${lga.label}`,
+        label: area,
+      }));
     });
-
-    return allAreas;
+    setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change - separated to avoid infinite loop
+  // Update context when values change
   useEffect(() => {
+    let lgaValues: string[] = [];
+
+    if (showCustomLGAs && customLGAs.trim()) {
+      // Parse custom LGAs (comma-separated)
+      lgaValues = customLGAs
+        .split(",")
+        .map((lga) => lga.trim())
+        .filter(Boolean);
+    } else {
+      lgaValues = selectedLGAs.map((lga) => lga.value);
+    }
+
     const locationData: LocationSelectionType = {
       state: selectedState?.value || "",
-      lgas: selectedLGAs.map((lga) => lga.value),
+      lgas: lgaValues,
       areas: selectedAreas.map((area) => area.value),
       customLocation: showCustomLocation ? customLocation : undefined,
     };
@@ -218,13 +240,31 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     updateFormData({
       location: locationData,
     });
+
+    // Auto-proceed if state is selected and either:
+    // 1. State has no LGAs, OR
+    // 2. Custom LGAs are entered and not empty, OR
+    // 3. At least one LGA is selected from dropdown
+    if (selectedState && (!stateHasLGAs || lgaValues.length > 0)) {
+      // Small delay to ensure form validation is updated
+      setTimeout(() => {
+        if (state.currentStep === 0) {
+          goToNextStep();
+        }
+      }, 100);
+    }
   }, [
     selectedState,
     selectedLGAs,
     selectedAreas,
     customLocation,
     showCustomLocation,
+    customLGAs,
+    showCustomLGAs,
+    stateHasLGAs,
     updateFormData,
+    goToNextStep,
+    state.currentStep,
   ]);
 
   // Handle state change
@@ -234,6 +274,9 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setSelectedAreas([]);
     setShowCustomLocation(false);
     setCustomLocation("");
+    setCustomLGAs("");
+    setShowCustomLGAs(false);
+    setLgaAreaMap({});
   }, []);
 
   // Handle LGA change
@@ -251,18 +294,36 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     [selectedAreas],
   );
 
-  // Handle area change with max 3 limit
-  const handleAreaChange = useCallback(
-    (selectedOptions: MultiValue<Option>) => {
+  // Handle custom LGAs toggle
+  const handleCustomLGAsToggle = useCallback(() => {
+    setShowCustomLGAs(!showCustomLGAs);
+    if (!showCustomLGAs) {
+      setSelectedLGAs([]);
+      setSelectedAreas([]);
+    } else {
+      setCustomLGAs("");
+    }
+  }, [showCustomLGAs]);
+
+  // Handle area change for specific LGA
+  const handleAreaChangeForLGA = useCallback(
+    (lgaValue: string, selectedOptions: MultiValue<Option>) => {
       const options = Array.from(selectedOptions);
 
-      if (options.length <= 3) {
-        setSelectedAreas(options);
+      // Remove existing areas for this LGA and add new ones
+      const otherLGAAreas = selectedAreas.filter(
+        (area) => !area.value.includes(lgaValue),
+      );
+
+      const newAreas = [...otherLGAAreas, ...options];
+
+      if (newAreas.length <= 3) {
+        setSelectedAreas(newAreas);
         setShowCustomLocation(false);
         setCustomLocation("");
       }
     },
-    [],
+    [selectedAreas],
   );
 
   // Handle custom location toggle
@@ -334,92 +395,151 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         )}
       </div>
 
-      {/* LGA Selection */}
-      <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-800">
-          Local Government Areas <span className="text-red-500">*</span>
-        </label>
-        <Select
-          options={lgaOptions}
-          value={selectedLGAs}
-          onChange={handleLGAChange}
-          placeholder="Search and select LGAs..."
-          isMulti
-          isDisabled={!selectedState}
-          styles={{
-            ...customSelectStyles,
-            control: (provided: any, state: any) => ({
-              ...provided,
-              minHeight: "48px",
-              border:
-                state.hasValue && lgaErrors.length === 0
-                  ? "2px solid #10B981"
-                  : lgaErrors.length > 0
-                    ? "2px solid #EF4444"
-                    : state.isFocused
-                      ? "2px solid #10B981"
-                      : "1px solid #E5E7EB",
-              borderRadius: "8px",
-              backgroundColor: "#FFFFFF",
-              boxShadow: "none",
-              "&:hover": {
-                borderColor: lgaErrors.length > 0 ? "#EF4444" : "#10B981",
-              },
-              transition: "all 0.2s ease",
-            }),
-          }}
-          isSearchable
-          isClearable
-        />
-        {lgaErrors.length > 0 && (
-          <p className="text-sm text-red-500 font-medium">
-            {lgaErrors[0].message}
-          </p>
-        )}
-      </div>
-
-      {/* Area Selection */}
-      {selectedLGAs.length > 0 && (
+      {/* LGA Selection - Only show if state is selected */}
+      {selectedState && (
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-800">
-            Preferred Areas <span className="text-gray-500">(Max 3)</span>
+            Local Government Areas <span className="text-red-500">*</span>
+          </label>
+
+          {stateHasLGAs ? (
+            <>
+              {!showCustomLGAs && (
+                <Select
+                  options={lgaOptions}
+                  value={selectedLGAs}
+                  onChange={handleLGAChange}
+                  placeholder="Search and select LGAs..."
+                  isMulti
+                  styles={{
+                    ...customSelectStyles,
+                    control: (provided: any, state: any) => ({
+                      ...provided,
+                      minHeight: "48px",
+                      border:
+                        state.hasValue && lgaErrors.length === 0
+                          ? "2px solid #10B981"
+                          : lgaErrors.length > 0
+                            ? "2px solid #EF4444"
+                            : state.isFocused
+                              ? "2px solid #10B981"
+                              : "1px solid #E5E7EB",
+                      borderRadius: "8px",
+                      backgroundColor: "#FFFFFF",
+                      boxShadow: "none",
+                      "&:hover": {
+                        borderColor:
+                          lgaErrors.length > 0 ? "#EF4444" : "#10B981",
+                      },
+                      transition: "all 0.2s ease",
+                    }),
+                  }}
+                  isSearchable
+                  isClearable
+                />
+              )}
+
+              {/* Custom LGA Toggle */}
+              <button
+                type="button"
+                onClick={handleCustomLGAsToggle}
+                className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+              >
+                {showCustomLGAs
+                  ? "Select from LGAs above"
+                  : "Can't find your LGA?"}
+              </button>
+
+              {/* Custom LGA Input */}
+              <AnimatePresence>
+                {showCustomLGAs && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-2"
+                  >
+                    <label className="block text-sm font-medium text-gray-700">
+                      Enter LGAs (separate multiple with commas)
+                    </label>
+                    <input
+                      type="text"
+                      value={customLGAs}
+                      onChange={(e) => setCustomLGAs(e.target.value)}
+                      placeholder="e.g., Alimosho, Ikeja, Victoria Island"
+                      className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          ) : (
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-700">
+                📍 This state doesn't have predefined LGAs in our system. Please
+                enter your local government areas below:
+              </p>
+              <input
+                type="text"
+                value={customLGAs}
+                onChange={(e) => setCustomLGAs(e.target.value)}
+                placeholder="Enter your LGAs (separate multiple with commas)"
+                className="mt-2 w-full px-3 py-2.5 text-sm border border-blue-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400"
+              />
+            </div>
+          )}
+
+          {lgaErrors.length > 0 && (
+            <p className="text-sm text-red-500 font-medium">
+              {lgaErrors[0].message}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Area Selection - Show separate selectors for each LGA */}
+      {(selectedLGAs.length > 0 || (showCustomLGAs && customLGAs.trim())) && (
+        <div className="space-y-4">
+          <label className="block text-sm font-semibold text-gray-800">
+            Preferred Areas <span className="text-gray-500">(Max 3 total)</span>
           </label>
 
           {!showCustomLocation && (
             <>
-              <Select
-                options={areaOptions}
-                value={selectedAreas}
-                onChange={handleAreaChange}
-                placeholder="Search and select areas..."
-                isMulti
-                styles={{
-                  ...customSelectStyles,
-                  control: (provided: any, state: any) => ({
-                    ...provided,
-                    minHeight: "48px",
-                    border:
-                      state.hasValue && areaErrors.length === 0
-                        ? "2px solid #10B981"
-                        : areaErrors.length > 0
-                          ? "2px solid #EF4444"
-                          : state.isFocused
-                            ? "2px solid #10B981"
-                            : "1px solid #E5E7EB",
-                    borderRadius: "8px",
-                    backgroundColor: "#FFFFFF",
-                    boxShadow: "none",
-                    "&:hover": {
-                      borderColor:
-                        areaErrors.length > 0 ? "#EF4444" : "#10B981",
-                    },
-                    transition: "all 0.2s ease",
-                  }),
-                }}
-                isSearchable
-                isClearable
-                isOptionDisabled={() => selectedAreas.length >= 3}
-              />
+              {/* Show area selectors for each LGA */}
+              {selectedLGAs.map((lga) => (
+                <div key={lga.value} className="space-y-2">
+                  <label className="block text-xs font-medium text-gray-600">
+                    Areas in {lga.label}
+                  </label>
+                  <Select
+                    options={lgaAreaMap[lga.value] || []}
+                    value={selectedAreas.filter((area) =>
+                      area.value.includes(lga.label),
+                    )}
+                    onChange={(selectedOptions) =>
+                      handleAreaChangeForLGA(lga.value, selectedOptions)
+                    }
+                    placeholder={`Select areas in ${lga.label}...`}
+                    isMulti
+                    styles={{
+                      ...customSelectStyles,
+                      control: (provided: any, state: any) => ({
+                        ...provided,
+                        minHeight: "40px",
+                        border: state.isFocused
+                          ? "2px solid #10B981"
+                          : "1px solid #E5E7EB",
+                        borderRadius: "6px",
+                      }),
+                    }}
+                    isSearchable
+                    isClearable
+                    isOptionDisabled={() => selectedAreas.length >= 3}
+                  />
+                </div>
+              ))}
 
               {/* Selected areas display */}
               {selectedAreas.length > 0 && (
@@ -480,7 +600,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       )}
 
       {/* Location Summary */}
-      {(selectedAreas.length > 0 || customLocation) && (
+      {(selectedAreas.length > 0 || customLocation || customLGAs) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -495,22 +615,40 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
             </p>
             <p>
               <span className="font-medium">LGAs:</span>{" "}
-              {selectedLGAs.map((lga) => lga.label).join(", ")}
+              {showCustomLGAs || !stateHasLGAs
+                ? customLGAs || "Not specified"
+                : selectedLGAs.map((lga) => lga.label).join(", ")}
             </p>
             {customLocation ? (
               <p>
                 <span className="font-medium">Custom Location:</span>{" "}
                 {customLocation}
               </p>
-            ) : (
+            ) : selectedAreas.length > 0 ? (
               <p>
                 <span className="font-medium">Areas:</span>{" "}
                 {getAreaDisplayText()}
               </p>
-            )}
+            ) : null}
           </div>
         </motion.div>
       )}
+
+      {/* Auto-proceed info */}
+      {selectedState &&
+        (!stateHasLGAs ||
+          selectedLGAs.length > 0 ||
+          (showCustomLGAs && customLGAs.trim())) && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-3 bg-green-50 rounded-lg border border-green-200"
+          >
+            <p className="text-sm text-green-700">
+              ✅ Location selected! Proceeding to the next step...
+            </p>
+          </motion.div>
+        )}
     </div>
   );
 };
