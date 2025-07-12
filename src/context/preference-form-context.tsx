@@ -556,15 +556,8 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.formData]);
 
-  // Update validation errors when form data changes (debounced to prevent infinite loops)
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const currentErrors = validateStep(state.currentStep);
-      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-    }, 100);
-
-    return () => clearTimeout(timeoutId);
-  }, [state.formData, state.currentStep]);
+  // Manual validation - removed automatic validation to prevent infinite loops
+  // Validation will be triggered on step changes and form submission
 
   const contextValue: PreferenceFormContextType = {
     state,
