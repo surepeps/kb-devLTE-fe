@@ -855,10 +855,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     <div className="text-sm text-gray-700">
                       <div>
                         Date:{" "}
-                        {
-                          availableDates.find((d) => d.date === newDate)
-                            ?.fullDate
-                        }
+                        {validDates.find((d) => d.date === newDate)?.fullDate}
                       </div>
                       <div>Time: {newTime}</div>
                     </div>
