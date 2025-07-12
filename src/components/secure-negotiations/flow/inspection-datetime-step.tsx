@@ -11,6 +11,7 @@ import {
   FiEdit3,
   FiChevronDown,
   FiAlertTriangle,
+  FiX,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
@@ -110,28 +111,20 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return times;
   }, []);
 
-  // Helper function to get valid dates (excluding Sundays)
-  const getValidDatesFromDate = (
-    startDate: Date,
-    count: number,
-    direction: "forward" | "backward" = "forward",
-  ) => {
+  // Generate valid dates starting from tomorrow (excluding passed dates and Sundays)
+  const generateValidDates = useMemo(() => {
     const dates = [];
-    const currentDate = new Date(startDate);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
 
-    if (direction === "backward") {
-      currentDate.setDate(currentDate.getDate() - 1);
-    }
+    let currentDate = new Date(startDate);
+    let count = 0;
+    const maxDates = 20; // Generate more dates to have enough after filtering
 
-    while (dates.length < count) {
+    while (count < maxDates) {
       // Skip Sundays (0 = Sunday)
       if (currentDate.getDay() !== 0) {
         const dateStr = currentDate.toISOString().split("T")[0];
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const currentDateCopy = new Date(currentDate);
-        currentDateCopy.setHours(0, 0, 0, 0);
-        const isPassed = currentDateCopy < today;
 
         dates.push({
           date: dateStr,
@@ -146,66 +139,49 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             month: "long",
             day: "numeric",
           }),
-          isPassed,
+          isPassed: false, // All generated dates are future dates
+        });
+        count++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Add current inspection date if it's valid and not passed
+    if (details?.inspectionDate && !inspectionDatePassed) {
+      const inspectionDateFormatted = new Date(details.inspectionDate)
+        .toISOString()
+        .split("T")[0];
+
+      // Check if inspection date is already in the list
+      const existsInList = dates.some(
+        (d) => d.date === inspectionDateFormatted,
+      );
+
+      if (!existsInList) {
+        const inspectionDate = new Date(details.inspectionDate);
+        // Insert at the beginning if it's a valid future date
+        dates.unshift({
+          date: inspectionDateFormatted,
+          displayDate: inspectionDate.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          }),
+          fullDate: inspectionDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          isPassed: false,
         });
       }
-
-      if (direction === "backward") {
-        currentDate.setDate(currentDate.getDate() - 1);
-      } else {
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
     }
 
-    return direction === "backward" ? dates.reverse() : dates;
-  };
-
-  // Generate available dates with the specified logic - always generate 15 total dates
-  const availableDates = useMemo(() => {
-    const today = new Date();
-
-    if (!details?.inspectionDate) {
-      // No inspection date, start from today and show next 15 days
-      return getValidDatesFromDate(today, 15, "forward");
-    }
-
-    const inspectionDate = new Date(details.inspectionDate);
-
-    if (inspectionDateIsToday) {
-      // Case 1: Inspection date is today (not expired)
-      // Start the list from today, and show 15 days total
-      return getValidDatesFromDate(today, 15, "forward");
-    } else if (!inspectionDatePassed) {
-      // Case 2: Inspection date is not today, but still valid (not expired)
-      // Show up to 14 valid days before the inspection date, ending with the inspection date
-      const datesBeforeInspection = getValidDatesFromDate(
-        inspectionDate,
-        14,
-        "backward",
-      );
-      const inspectionDateObj = {
-        date: inspectionDate.toISOString().split("T")[0],
-        displayDate: inspectionDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        }),
-        fullDate: inspectionDate.toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-        isPassed: false,
-      };
-
-      return [...datesBeforeInspection, inspectionDateObj];
-    } else {
-      // Case 3: Inspection date is already expired
-      // Do not include it. Start from today and list the next 15 valid upcoming days
-      return getValidDatesFromDate(today, 15, "forward");
-    }
-  }, [details?.inspectionDate, inspectionDatePassed, inspectionDateIsToday]);
+    return dates.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+  }, [details?.inspectionDate, inspectionDatePassed]);
 
   // Filter times based on selected date and current time
   const getAvailableTimesForDate = useMemo(() => {
@@ -232,7 +208,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
             return {
               ...timeObj,
-              isPassed: hours <= currentHour,
+              isPassed: hours <= currentHour + 1, // Add 1 hour buffer
             };
           }
           return timeObj;
@@ -243,59 +219,66 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     };
   }, [availableTimes]);
 
-  // Filter out passed dates and display logic: show 10 by default, 5 more (total 15) with "view more"
-  const validDates = useMemo(() => {
-    return availableDates.filter((dateObj) => !dateObj.isPassed);
-  }, [availableDates]);
+  // Show first 10 dates by default, then show more on demand
+  const displayedDates = useMemo(() => {
+    const validDates = generateValidDates;
 
-  // Initialize date and time with defaults - ensure auto-population on mount and navigation
-  useEffect(() => {
-    // Only initialize if we have available options
-    if (validDates.length === 0 || availableTimes.length === 0) {
-      return;
-    }
-
-    // Set initial date - prioritize inspection date if valid, otherwise first available
+    // If current inspection date exists, ensure it's in the first 10
     if (details?.inspectionDate && !inspectionDatePassed) {
       const inspectionDateFormatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
 
-      // Check if the inspection date exists in our valid dates (non-passed)
-      const dateExists = validDates.some(
+      const inspectionDateIndex = validDates.findIndex(
         (d) => d.date === inspectionDateFormatted,
       );
-      if (dateExists && newDate !== inspectionDateFormatted) {
-        setNewDate(inspectionDateFormatted);
-      } else if (!dateExists && !newDate) {
-        // If inspection date is not in valid dates, use first valid available
-        setNewDate(validDates[0]?.date || "");
+
+      if (inspectionDateIndex >= 10 && !showAllDays) {
+        // Move inspection date to the beginning if it's not in first 10
+        const inspectionDateObj = validDates[inspectionDateIndex];
+        const otherDates = validDates.filter(
+          (_, index) => index !== inspectionDateIndex,
+        );
+        const firstTen = [inspectionDateObj, ...otherDates.slice(0, 9)];
+        return firstTen;
       }
-    } else if (!newDate) {
-      // No valid inspection date from details, use first valid available
-      setNewDate(validDates[0]?.date || "");
     }
 
-    // Set initial time from details or first available
-    if (details?.inspectionTime) {
-      if (newTime !== details.inspectionTime) {
-        setNewTime(details.inspectionTime);
-      }
-    } else if (!newTime) {
-      // No inspection time from details, use first available
-      setNewTime(availableTimes[0]?.value || "");
-    }
+    return showAllDays ? validDates.slice(0, 15) : validDates.slice(0, 10);
   }, [
-    validDates,
-    availableTimes,
+    generateValidDates,
+    showAllDays,
     details?.inspectionDate,
-    details?.inspectionTime,
-    newDate,
-    newTime,
     inspectionDatePassed,
   ]);
 
-  // Prevent background scroll when modal is open
+  // Auto-populate date and time when modal opens
+  const openUpdateModal = () => {
+    // Auto-select current inspection date if valid, otherwise use first available
+    let dateToSelect = displayedDates[0]?.date || "";
+
+    if (details?.inspectionDate && !inspectionDatePassed) {
+      const inspectionDateFormatted = new Date(details.inspectionDate)
+        .toISOString()
+        .split("T")[0];
+      const dateExists = displayedDates.some(
+        (d) => d.date === inspectionDateFormatted,
+      );
+      if (dateExists) {
+        dateToSelect = inspectionDateFormatted;
+      }
+    }
+
+    const timeToSelect =
+      details?.inspectionTime || availableTimes[0]?.value || "";
+
+    // Set the modal state to appropriate values
+    setNewDate(dateToSelect);
+    setNewTime(timeToSelect);
+    setShowUpdateForm(true);
+  };
+
+  // Prevent body scroll when modal is open
   useEffect(() => {
     if (showUpdateForm) {
       document.body.style.overflow = "hidden";
@@ -303,32 +286,22 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       document.body.style.overflow = "unset";
     }
 
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [showUpdateForm]);
 
-  const displayedDates = useMemo(() => {
-    return showAllDays ? validDates.slice(0, 15) : validDates.slice(0, 10);
-  }, [validDates, showAllDays]);
-
   const currentDate = useMemo(() => {
     if (details?.inspectionDate && !inspectionDatePassed) {
-      // Convert to our date format
-      const formatted = new Date(details.inspectionDate)
-        .toISOString()
-        .split("T")[0];
-      // Check if it's in our valid dates (non-passed), otherwise use newDate or first valid available
-      const dateExists = validDates.some((d) => d.date === formatted);
-      return dateExists ? formatted : newDate || validDates[0]?.date || "";
+      return new Date(details.inspectionDate).toISOString().split("T")[0];
     }
-    return newDate || validDates[0]?.date || "";
-  }, [details?.inspectionDate, newDate, validDates, inspectionDatePassed]);
+    return newDate || displayedDates[0]?.date || "";
+  }, [details?.inspectionDate, newDate, displayedDates, inspectionDatePassed]);
 
   const currentTime = useMemo(() => {
     return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
   }, [details?.inspectionTime, newTime, availableTimes]);
+
   const propertyAddress = details?.propertyId?.location
     ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
     : "Property address not specified";
@@ -349,72 +322,51 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   };
 
   const handleConfirmDateTime = async () => {
-    try {
-      // Detect if date or time was changed
-      const isDateChanged = newDate && newDate !== currentDate;
-      const isTimeChanged = newTime && newTime !== currentTime;
-      const dateTimeCountered: boolean = !!(isDateChanged || isTimeChanged);
+    if (!currentDate || !currentTime) {
+      console.error("Date or time not selected");
+      return;
+    }
 
-      const finalDate = newDate || currentDate;
-      const finalTime = newTime || currentTime;
+    try {
+      let payload: any;
 
       if (negotiationAction) {
-        // Submit final negotiation action with inspection date/time
-        if (negotiationAction.type === "accept") {
-          let documentUrl: string | undefined;
-
-          // Handle LOI file upload if present
-          if (negotiationAction.loiFile && inspectionType === "LOI") {
-            documentUrl = await uploadFile(negotiationAction.loiFile);
-          }
-
-          const payload =
-            inspectionType === "LOI" && documentUrl
-              ? createCounterPayload(
-                  "LOI",
-                  undefined, // counterPrice not needed for LOI
-                  documentUrl,
-                  isDateChanged ? finalDate : undefined,
-                  isTimeChanged ? finalTime : undefined,
-                )
-              : createAcceptPayload(
-                  inspectionType!,
-                  isDateChanged ? finalDate : undefined,
-                  isTimeChanged ? finalTime : undefined,
-                );
-          await submitNegotiationAction(inspectionId!, userType, payload);
-        } else if (
-          negotiationAction.type === "counter" &&
-          negotiationAction.counterPrice
-        ) {
-          const payload = createCounterPayload(
-            inspectionType!,
-            negotiationAction.counterPrice,
-            undefined, // documentUrl not needed for price counter
-            isDateChanged ? finalDate : undefined,
-            isTimeChanged ? finalTime : undefined,
-          );
-          await submitNegotiationAction(inspectionId!, userType, payload);
-        } else if (
-          negotiationAction.type === "requestChanges" &&
-          negotiationAction.changeRequest
-        ) {
-          const payload = createRequestChangesPayload(
-            negotiationAction.changeRequest,
-            isDateChanged ? finalDate : undefined,
-            isTimeChanged ? finalTime : undefined,
-          );
-          await submitNegotiationAction(inspectionId!, userType, payload);
+        // We're coming from a negotiation action, include that in the payload
+        switch (negotiationAction.type) {
+          case "accept":
+            payload = createAcceptPayload(
+              inspectionType!,
+              currentDate,
+              currentTime,
+            );
+            break;
+          case "counter":
+            payload = createCounterPayload(
+              inspectionType!,
+              currentDate,
+              currentTime,
+              negotiationAction.counterPrice,
+            );
+            break;
+          case "requestChanges":
+            payload = createRequestChangesPayload(
+              inspectionType!,
+              currentDate,
+              currentTime,
+              negotiationAction.changeRequest || "",
+            );
+            break;
         }
       } else {
-        // Just update the inspection date/time - create an accept payload with only date/time changes
-        const payload = createAcceptPayload(
+        // Just confirming current schedule
+        payload = createAcceptPayload(
           inspectionType!,
-          isDateChanged ? finalDate : undefined,
-          isTimeChanged ? finalTime : undefined,
+          currentDate,
+          currentTime,
         );
-        await submitNegotiationAction(inspectionId!, userType, payload);
       }
+
+      await submitNegotiationAction(inspectionId!, userType, payload);
     } catch (error) {
       console.error("Failed to confirm inspection date/time:", error);
     }
@@ -422,94 +374,47 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const handleUpdateDateTime = async () => {
     if (!newDate || !newTime) {
-      alert("Please select both date and time");
+      console.error("New date or time not selected");
       return;
     }
 
     try {
-      // Always true when updating since user explicitly changed values
-      const dateTimeCountered = true;
+      let payload: any;
 
       if (negotiationAction) {
-        // Submit final negotiation action with new inspection date/time
-        if (negotiationAction.type === "accept") {
-          let documentUrl: string | undefined;
-
-          // Handle LOI file upload if present
-          if (negotiationAction.loiFile && inspectionType === "LOI") {
-            documentUrl = await uploadFile(negotiationAction.loiFile);
-          }
-
-          const payload =
-            inspectionType === "LOI" && documentUrl
-              ? createCounterPayload(
-                  "LOI",
-                  undefined, // counterPrice not needed for LOI
-                  documentUrl,
-                  newDate,
-                  newTime,
-                )
-              : createAcceptPayload(inspectionType!, newDate, newTime);
-          await submitNegotiationAction(inspectionId!, userType, payload);
-        } else if (
-          negotiationAction.type === "counter" &&
-          negotiationAction.counterPrice
-        ) {
-          const payload = createCounterPayload(
-            inspectionType!,
-            negotiationAction.counterPrice,
-            undefined, // documentUrl not needed for price counter
-            newDate,
-            newTime,
-          );
-          await submitNegotiationAction(inspectionId!, userType, payload);
-        } else if (
-          negotiationAction.type === "requestChanges" &&
-          negotiationAction.changeRequest
-        ) {
-          const payload = createRequestChangesPayload(
-            negotiationAction.changeRequest,
-            newDate,
-            newTime,
-          );
-          await submitNegotiationAction(inspectionId!, userType, payload);
+        // We're coming from a negotiation action, include that in the payload
+        switch (negotiationAction.type) {
+          case "accept":
+            payload = createAcceptPayload(inspectionType!, newDate, newTime);
+            break;
+          case "counter":
+            payload = createCounterPayload(
+              inspectionType!,
+              newDate,
+              newTime,
+              negotiationAction.counterPrice,
+            );
+            break;
+          case "requestChanges":
+            payload = createRequestChangesPayload(
+              inspectionType!,
+              newDate,
+              newTime,
+              negotiationAction.changeRequest || "",
+            );
+            break;
         }
       } else {
-        // Just update the inspection date/time
-        const payload = createAcceptPayload(inspectionType!, newDate, newTime);
-        await submitNegotiationAction(inspectionId!, userType, payload);
+        // Just updating schedule
+        payload = createCounterPayload(inspectionType!, newDate, newTime);
       }
 
+      await submitNegotiationAction(inspectionId!, userType, payload);
+
       setShowUpdateForm(false);
-      // Don't reset date and time - keep them for next time modal is opened
     } catch (error) {
       console.error("Failed to update inspection date/time:", error);
     }
-  };
-
-  const openUpdateModal = () => {
-    // Auto-select current inspection details when opening modal
-    // If inspection date is valid and exists in valid dates, use it; otherwise use first valid available
-    let dateToSelect = validDates[0]?.date || "";
-
-    if (details?.inspectionDate && !inspectionDatePassed) {
-      const inspectionDateFormatted = new Date(details.inspectionDate)
-        .toISOString()
-        .split("T")[0];
-      const dateExists = validDates.some(
-        (d) => d.date === inspectionDateFormatted,
-      );
-      if (dateExists) {
-        dateToSelect = inspectionDateFormatted;
-      }
-    }
-
-    const timeToSelect = currentTime || availableTimes[0]?.value || "";
-
-    // Set the modal state to appropriate values
-    setNewDate(dateToSelect);
-    setNewTime(timeToSelect);
-    setShowUpdateForm(true);
   };
 
   return (
@@ -533,127 +438,76 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         overlay={true}
       />
 
-      {/* Header */}
-      <div className="text-center">
+      <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-[#09391C] mb-2">
           Inspection Schedule
         </h2>
         <p className="text-gray-600">
           {negotiationAction
-            ? `You've chosen to ${negotiationAction.type} the offer. Now confirm the inspection date and time.`
-            : "Review and confirm the inspection date and time"}
+            ? "Confirm or update the inspection date and time for your response."
+            : "Review and confirm the inspection schedule."}
         </p>
-        {negotiationAction?.type === "counter" &&
-          negotiationAction.counterPrice && (
-            <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-yellow-800 font-medium">
-                Counter Offer: ₦
-                {negotiationAction.counterPrice.toLocaleString()}
-              </p>
-            </div>
-          )}
-        {negotiationAction?.type === "requestChanges" &&
-          negotiationAction.changeRequest && (
-            <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <p className="text-orange-800 font-medium">
-                Requested Changes: {negotiationAction.changeRequest}
-              </p>
-            </div>
-          )}
-        {negotiationAction?.loiFile && (
-          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800 font-medium">
-              Updated LOI: {negotiationAction.loiFile.name}
-            </p>
-          </div>
-        )}
       </div>
 
-      {/* Date/Time Status Warning */}
-      {(inspectionDatePassed || inspectionDateTimePassed) && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-red-50 border border-red-200 rounded-lg"
-        >
-          <div className="flex items-center space-x-2">
-            <FiAlertTriangle className="w-5 h-5 text-red-600" />
-            <div>
-              <p className="text-red-800 font-medium">
-                {inspectionDateTimePassed
-                  ? "Inspection Date & Time Has Expired"
-                  : "Inspection Date Has Passed"}
-              </p>
-              <p className="text-red-700 text-sm">
-                {inspectionDateTimePassed
-                  ? "The scheduled inspection date and time has already passed. Please select a new date and time."
-                  : "The scheduled inspection date has passed. Please update the schedule."}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Current Schedule */}
+      {/* Current Schedule Display */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl border border-[#C7CAD0]"
+        className="bg-[#EEF1F1] rounded-xl border border-[#C7CAD0]"
       >
         <div className="p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <FiCalendar className="w-6 h-6 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-800">
-              Current Inspection Details
-            </h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Current Inspection Details
+          </h3>
+
+          {/* Status badges */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {inspectionDateTimePassed && (
+              <span className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">
+                Expired
+              </span>
+            )}
+            {inspectionDateIsToday && !inspectionDateTimePassed && (
+              <span className="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-medium rounded-full">
+                Today
+              </span>
+            )}
+            {!inspectionDatePassed && !inspectionDateIsToday && (
+              <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                Scheduled
+              </span>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Date & Time */}
-            <div className="space-y-4">
-              <div
-                className={`p-4 rounded-lg ${inspectionDatePassed ? "bg-red-50" : "bg-blue-50"}`}
-              >
-                <div className="flex items-center space-x-2 mb-2">
-                  <FiCalendar
-                    className={`w-5 h-5 ${inspectionDatePassed ? "text-red-600" : "text-blue-600"}`}
-                  />
-                  <span
-                    className={`font-medium ${inspectionDatePassed ? "text-red-800" : "text-blue-800"}`}
-                  >
-                    Date
-                  </span>
-                </div>
-                <p
-                  className={`text-lg ${inspectionDatePassed ? "text-red-700" : "text-blue-700"}`}
-                >
-                  {formatDate(currentDate)}
-                </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Date */}
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <FiCalendar className="w-5 h-5 text-blue-600" />
+                <span className="font-medium text-blue-800">
+                  Inspection Date
+                </span>
               </div>
+              <p className="text-blue-700 font-semibold">
+                {formatDate(currentDate)}
+              </p>
+            </div>
 
-              <div
-                className={`p-4 rounded-lg ${inspectionDateTimePassed ? "bg-red-50" : "bg-green-50"}`}
-              >
-                <div className="flex items-center space-x-2 mb-2">
-                  <FiClock
-                    className={`w-5 h-5 ${inspectionDateTimePassed ? "text-red-600" : "text-green-600"}`}
-                  />
-                  <span
-                    className={`font-medium ${inspectionDateTimePassed ? "text-red-800" : "text-green-800"}`}
-                  >
-                    Time
-                  </span>
-                </div>
-                <p
-                  className={`text-lg ${inspectionDateTimePassed ? "text-red-700" : "text-green-700"}`}
-                >
-                  {formatTime(currentTime)}
-                </p>
+            {/* Time */}
+            <div className="p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <FiClock className="w-5 h-5 text-green-600" />
+                <span className="font-medium text-green-800">
+                  Inspection Time
+                </span>
               </div>
+              <p className="text-green-700 font-semibold">
+                {formatTime(currentTime)}
+              </p>
             </div>
 
             {/* Location */}
-            <div className="p-4 bg-purple-50 rounded-lg">
+            <div className="p-4 bg-purple-50 rounded-lg md:col-span-2">
               <div className="flex items-center space-x-2 mb-2">
                 <FiMapPin className="w-5 h-5 text-purple-600" />
                 <span className="font-medium text-purple-800">
@@ -715,28 +569,31 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         </div>
       </motion.div>
 
-      {/* Update Schedule Modal */}
+      {/* Update Schedule Modal - FIXED: Full backdrop overlay */}
       {showUpdateForm && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-hidden"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            overflowY: "hidden",
-          }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowUpdateForm(false)}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#C7CAD0]"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-[#09391C] mb-6">
-                Update Inspection Schedule
-              </h3>
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-[#09391C]">
+                  Update Inspection Schedule
+                </h3>
+                <button
+                  onClick={() => setShowUpdateForm(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <FiX className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
 
               {/* Status warning in modal */}
               {(inspectionDatePassed || inspectionDateTimePassed) && (
@@ -758,18 +615,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Select New Date
                   </label>
-                  {/* Show message if initial date has passed */}
-                  {inspectionDatePassed && (
-                    <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <FiAlertTriangle className="w-4 h-4 text-orange-600" />
-                        <p className="text-orange-800 text-sm font-medium">
-                          Initial inspection date has passed/expired. Please
-                          select a new date from the available options below.
-                        </p>
-                      </div>
-                    </div>
-                  )}
 
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
                     {displayedDates.map((dateObj) => (
@@ -790,22 +635,22 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     ))}
                   </div>
 
-                  {/* View More Button - Show 5 more dates */}
-                  {!showAllDays && validDates.length > 10 && (
+                  {/* View More Button */}
+                  {!showAllDays && generateValidDates.length > 10 && (
                     <button
                       onClick={() => setShowAllDays(true)}
                       className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
                     >
                       <span className="text-sm font-medium">
-                        View More Dates ({Math.min(5, validDates.length - 10)}{" "}
-                        more)
+                        View More Dates (
+                        {Math.min(5, generateValidDates.length - 10)} more)
                       </span>
                       <FiChevronDown className="w-4 h-4" />
                     </button>
                   )}
 
                   {/* Show Less Button */}
-                  {showAllDays && validDates.length > 10 && (
+                  {showAllDays && generateValidDates.length > 10 && (
                     <button
                       onClick={() => setShowAllDays(false)}
                       className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
@@ -848,21 +693,27 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
                 {/* Selected Summary */}
                 {newDate && newTime && (
-                  <div className="p-4 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-                    <h4 className="font-medium text-[#09391C] mb-2">
-                      Selected Schedule:
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 className="font-medium text-blue-800 mb-2">
+                      New Schedule Summary
                     </h4>
-                    <div className="text-sm text-gray-700">
-                      <div>
-                        Date:{" "}
-                        {validDates.find((d) => d.date === newDate)?.fullDate}
-                      </div>
-                      <div>Time: {newTime}</div>
-                    </div>
+                    <p className="text-blue-700">
+                      <strong>Date:</strong> {formatDate(newDate)}
+                    </p>
+                    <p className="text-blue-700">
+                      <strong>Time:</strong> {formatTime(newTime)}
+                    </p>
                   </div>
                 )}
 
+                {/* Action Buttons */}
                 <div className="flex space-x-4">
+                  <button
+                    onClick={() => setShowUpdateForm(false)}
+                    className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
                   <button
                     onClick={handleUpdateDateTime}
                     disabled={
@@ -872,24 +723,11 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                       loadingStates.accepting ||
                       loadingStates.countering
                     }
-                    className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+                    className="flex-1 py-3 px-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
-                    {loadingStates.submitting ||
-                    loadingStates.accepting ||
-                    loadingStates.countering
-                      ? "Submitting..."
-                      : negotiationAction
-                        ? `${negotiationAction.type === "accept" ? "Accept" : negotiationAction.type === "counter" ? "Counter" : "Request Changes"} & Update`
-                        : "Update Schedule"}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowUpdateForm(false);
-                      setShowAllDays(false);
-                    }}
-                    className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-                  >
-                    Cancel
+                    {negotiationAction
+                      ? `Update & ${negotiationAction.type === "accept" ? "Accept" : negotiationAction.type === "counter" ? "Counter" : "Submit"}`
+                      : "Update Schedule"}
                   </button>
                 </div>
               </div>
