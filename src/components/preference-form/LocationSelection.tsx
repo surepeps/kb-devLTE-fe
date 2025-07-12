@@ -252,8 +252,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     return () => clearTimeout(timeoutId);
   }, [
     selectedState?.value,
-    selectedLGAs,
-    selectedAreas,
+    JSON.stringify(selectedLGAs.map((lga) => lga.value)),
+    JSON.stringify(selectedAreas.map((area) => area.value)),
     customLocation,
     showCustomLocation,
     customLGAs,
