@@ -181,8 +181,13 @@ const initialState: NegotiationState = {
   details: null,
   negotiationType: "NORMAL",
   createdAt: null,
-  dateTimeObj: { selectedDate: "", selectedTime: "" },
-  counterDateTimeObj: { selectedDate: "", selectedTime: "" },
+  dateTimeObj: { date: "", time: "", selectedDate: "", selectedTime: "" },
+  counterDateTimeObj: {
+    date: "",
+    time: "",
+    selectedDate: "",
+    selectedTime: "",
+  },
   inspectionStatus: null,
   inspectionDateStatus: null,
   currentUserId: null, // Initial state
@@ -678,7 +683,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
             pendingResponseFrom:
               responseData.inspectionData.pendingResponseFrom,
           });
- 
+
           return true;
         }
 
@@ -863,12 +868,16 @@ export const useNegotiationDataWithContext = (
             negotiationType,
             createdAt: data.createdAt || null,
             dateTimeObj: {
+              date: data.inspectionDate || "",
+              time: data.inspectionTime || "",
               selectedDate: data.inspectionDate
                 ? new Date(data.inspectionDate).toISOString().split("T")[0]
                 : "",
               selectedTime: data.inspectionTime || "N/A",
             },
             counterDateTimeObj: {
+              date: "",
+              time: "",
               selectedDate: data.inspectionDate
                 ? new Date(data.inspectionDate).toISOString().split("T")[0]
                 : "",

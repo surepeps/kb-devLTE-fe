@@ -61,7 +61,8 @@ export interface RentPreferenceForm extends BasePreferenceForm {
 }
 
 // Joint venture preference specific fields
-export interface JointVenturePreferenceForm extends BasePreferenceForm {
+export interface JointVenturePreferenceForm
+  extends Omit<BasePreferenceForm, "contactInfo"> {
   preferenceType: "joint-venture";
   developmentDetails: {
     minLandSize: string;
@@ -252,11 +253,26 @@ export interface FormStep {
   isRequired: boolean;
 }
 
+// Flexible form data interface that can handle all preference types
+export interface FlexibleFormData {
+  location?: LocationSelection;
+  budget?: BudgetRange;
+  features?: FeatureSelection;
+  preferenceType?: "buy" | "rent" | "joint-venture" | "shortlet";
+  contactInfo?: any; // Can be either regular or joint-venture contact info
+  additionalNotes?: string;
+  propertyDetails?: any; // Can be any of the property detail types
+  developmentDetails?: any; // For joint-venture
+  bookingDetails?: any; // For shortlet
+  nearbyLandmark?: string;
+  partnerExpectations?: string;
+}
+
 // Form context state
 export interface PreferenceFormState {
   currentStep: number;
   steps: FormStep[];
-  formData: Partial<PreferenceForm>;
+  formData: FlexibleFormData;
   isSubmitting: boolean;
   validationErrors: ValidationError[];
   budgetThresholds: BudgetThreshold[];
@@ -266,7 +282,7 @@ export interface PreferenceFormState {
 // Context actions
 export type PreferenceFormAction =
   | { type: "SET_STEP"; payload: number }
-  | { type: "UPDATE_FORM_DATA"; payload: Partial<PreferenceForm> }
+  | { type: "UPDATE_FORM_DATA"; payload: Partial<FlexibleFormData> }
   | { type: "SET_VALIDATION_ERRORS"; payload: ValidationError[] }
   | { type: "SET_SUBMITTING"; payload: boolean }
   | { type: "RESET_FORM" }
