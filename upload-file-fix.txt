@@ -1,0 +1,16 @@
+// File upload method - Fixed to use /upload-file endpoint
+  const uploadFile = useCallback(async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response: UploadResponse = await POST_REQUEST(
+      `${URLS.BASE + URLS.uploadFile}`, // Changed from uploadImg to uploadFile
+      formData,
+    );
+
+    if (response?.success) {
+      // Handle different response formats for better compatibility
+      return response.data?.url || response.url || response.imageUrl || response.data;
+    }
+    throw new Error(response?.message || "Failed to upload file");
+  }, []);
