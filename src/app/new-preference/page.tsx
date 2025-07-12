@@ -516,6 +516,88 @@ const PreferenceFormContent: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 text-center"
+            >
+              {/* Success Icon */}
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-10 h-10 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Preference Submitted Successfully!
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Thank you for submitting your property preference. We'll start
+                  matching you with suitable properties right away.
+                </p>
+              </div>
+
+              {/* Success Details */}
+              <div className="bg-emerald-50 rounded-lg p-4 mb-6">
+                <h4 className="text-sm font-semibold text-emerald-800 mb-2">
+                  What happens next?
+                </h4>
+                <div className="text-sm text-emerald-700 space-y-1 text-left">
+                  <p>• We'll review your preferences within 24 hours</p>
+                  <p>• You'll receive property matches via email</p>
+                  <p>
+                    • Our agents will contact you for personalized assistance
+                  </p>
+                </div>
+              </div>
+
+              {/* Home Button - Only way to close modal */}
+              <button
+                onClick={handleGoHome}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                  <span>Go to Home</span>
+                </div>
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
