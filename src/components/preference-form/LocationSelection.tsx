@@ -1,13 +1,7 @@
 /** @format */
 
 "use client";
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePreferenceForm } from "@/context/preference-form-context";
@@ -131,12 +125,8 @@ interface LocationSelectionProps {
 const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   className = "",
 }) => {
-  const {
-    state,
-    updateFormData,
-    getValidationErrorsForField,
-    triggerValidation,
-  } = usePreferenceForm();
+  const { state, updateFormData, getValidationErrorsForField } =
+    usePreferenceForm();
   const [selectedState, setSelectedState] = useState<Option | null>(null);
   const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<Option[]>([]);
@@ -145,7 +135,6 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const [lgaAreaMap, setLgaAreaMap] = useState<{ [lga: string]: Option[] }>({});
   const [customLGAs, setCustomLGAs] = useState<string>("");
   const [showCustomLGAs, setShowCustomLGAs] = useState<boolean>(false);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   // Get validation errors
   const stateErrors = getValidationErrorsForField("location.state");
@@ -154,14 +143,14 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
   // Initialize from context data ONLY ONCE
   useEffect(() => {
-    if (!isInitialized && state.formData.location) {
+    if (state.formData.location) {
       const location = state.formData.location;
 
-      if (location.state) {
+      if (location.state && !selectedState) {
         setSelectedState({ value: location.state, label: location.state });
       }
 
-      if (location.lgas && location.lgas.length > 0) {
+      if (location.lgas && selectedLGAs.length === 0) {
         const lgaOptions = location.lgas.map((lga) => ({
           value: lga,
           label: lga,
@@ -169,7 +158,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setSelectedLGAs(lgaOptions);
       }
 
-      if (location.areas && location.areas.length > 0) {
+      if (location.areas && selectedAreas.length === 0) {
         const areaOptions = location.areas.map((area) => ({
           value: area,
           label: area,
@@ -177,14 +166,12 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setSelectedAreas(areaOptions);
       }
 
-      if (location.customLocation) {
+      if (location.customLocation && !customLocation) {
         setCustomLocation(location.customLocation);
         setShowCustomLocation(true);
       }
-
-      setIsInitialized(true);
     }
-  }, [state.formData.location, isInitialized]);
+  }, []);
 
   // Memoized options
   const stateOptions = useMemo(
@@ -229,10 +216,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update form data whenever location data changes
-  const updateLocationData = useCallback(() => {
-    if (!isInitialized) return;
-
+  // Update context when values change - NO AUTO-PROGRESSION
+  useEffect(() => {
     let lgaValues: string[] = [];
 
     if (showCustomLGAs && customLGAs.trim()) {
@@ -252,18 +237,9 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       customLocation: showCustomLocation ? customLocation : undefined,
     };
 
-    console.log("LocationSelection - Updating form data with:", locationData);
-    console.log("LocationSelection - Current state.formData:", state.formData);
-
-    // Update form data immediately
     updateFormData({
       location: locationData,
     });
-
-    // Trigger validation
-    setTimeout(() => {
-      triggerValidation(0);
-    }, 100);
   }, [
     selectedState,
     selectedLGAs,
@@ -272,29 +248,11 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     showCustomLocation,
     customLGAs,
     showCustomLGAs,
-    isInitialized,
     updateFormData,
-    triggerValidation,
-    state.formData,
-  ]);
-
-  // Call updateLocationData when any relevant data changes
-  useEffect(() => {
-    updateLocationData();
-  }, [
-    selectedState?.value,
-    selectedLGAs.map((lga) => lga.value).join(","),
-    selectedAreas.map((area) => area.value).join(","),
-    customLocation,
-    showCustomLocation,
-    customLGAs,
-    showCustomLGAs,
-    isInitialized,
   ]);
 
   // Handle state change
   const handleStateChange = useCallback((selected: SingleValue<Option>) => {
-    console.log("State changed to:", selected);
     setSelectedState(selected);
     setSelectedLGAs([]);
     setSelectedAreas([]);
@@ -309,7 +267,6 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const handleLGAChange = useCallback(
     (selectedOptions: MultiValue<Option>) => {
       const options = Array.from(selectedOptions);
-      console.log("LGAs changed to:", options);
       setSelectedLGAs(options);
 
       // Reset areas that are not in the selected LGAs
@@ -336,7 +293,6 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const handleAreaChangeForLGA = useCallback(
     (lgaValue: string, selectedOptions: MultiValue<Option>) => {
       const options = Array.from(selectedOptions);
-      console.log("Areas changed for LGA", lgaValue, ":", options);
 
       // Remove existing areas for this LGA and add new ones
       const otherLGAAreas = selectedAreas.filter(
@@ -392,24 +348,6 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Debug info */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs">
-          <p>
-            <strong>Debug:</strong> State: {selectedState?.value || "none"}
-          </p>
-          <p>
-            LGAs: {selectedLGAs.map((lga) => lga.value).join(", ") || "none"}
-          </p>
-          <p>
-            Areas:{" "}
-            {selectedAreas.map((area) => area.value).join(", ") || "none"}
-          </p>
-          <p>Custom Location: {customLocation || "none"}</p>
-          <p>Form Data: {JSON.stringify(state.formData.location || {})}</p>
-        </div>
-      )}
-
       {/* State Selection */}
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-800">
@@ -534,8 +472,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           ) : (
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-700 mb-2">
-                📍 This state doesn&apos;t have predefined LGAs in our system.
-                Please enter your local government areas below:
+                📍 This state doesnt have predefined LGAs in our system. Please
+                enter your local government areas below:
               </p>
               <input
                 type="text"

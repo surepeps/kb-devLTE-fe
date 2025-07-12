@@ -318,7 +318,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     },
     [state.budgetThresholds],
   );
-
+ 
   const validateStep = useCallback(
     (step: number): ValidationError[] => {
       const errors: ValidationError[] = [];

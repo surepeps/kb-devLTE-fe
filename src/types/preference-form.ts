@@ -1,5 +1,5 @@
 /** @format */
-
+ 
 // Core form interfaces
 export interface LocationSelection {
   state: string;
@@ -105,7 +105,7 @@ export type PreferenceForm =
 export interface LocationPayload {
   state: string;
   localGovernmentAreas: string[];
-  selectedAreas: string[];
+  selectedAreas?: string[];
   customLocation?: string;
 }
 

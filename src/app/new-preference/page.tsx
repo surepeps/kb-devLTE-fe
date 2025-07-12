@@ -84,7 +84,9 @@ const PreferenceFormContent: React.FC = () => {
 
   // Generate API payload
   const generatePayload = useCallback((): PreferencePayload => {
+    
     const { formData } = state;
+    console.log(formData, "my filled form.....")
     const config = PREFERENCE_CONFIGS[selectedPreferenceType];
 
     const basePayload = {
