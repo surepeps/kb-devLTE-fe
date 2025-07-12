@@ -219,7 +219,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change - debounced update
+  // Update context when values change - memoized and debounced
   const updateLocationData = useCallback(() => {
     if (!isInitialized) return;
 
@@ -246,14 +246,15 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       location: locationData,
     });
   }, [
-    selectedState,
-    selectedLGAs,
-    selectedAreas,
+    selectedState?.value,
+    selectedLGAs.map((lga) => lga.value).join(","),
+    selectedAreas.map((area) => area.value).join(","),
     customLocation,
     showCustomLocation,
     customLGAs,
     showCustomLGAs,
     isInitialized,
+    updateFormData,
   ]);
 
   // Use a separate effect for updating the form data to avoid infinite loops
