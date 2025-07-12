@@ -322,11 +322,21 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       }
 
       setShowUpdateForm(false);
-      setNewDate("");
-      setNewTime("");
+      // Don't reset date and time - keep them for next time modal is opened
     } catch (error) {
       console.error("Failed to update inspection date/time:", error);
     }
+  };
+
+  const openUpdateModal = () => {
+    // Auto-select current inspection details when opening modal
+    const dateToSelect = currentDate || availableDates[0]?.date || "";
+    const timeToSelect = currentTime || availableTimes[0]?.value || "";
+
+    // Set the modal state to current values
+    setNewDate(dateToSelect);
+    setNewTime(timeToSelect);
+    setShowUpdateForm(true);
   };
 
   return (
@@ -471,16 +481,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
             {/* Update Schedule */}
             <button
-              onClick={() => {
-                // Auto-select current inspection details when opening modal
-                const dateToSelect =
-                  currentDate || availableDates[0]?.date || "";
-                const timeToSelect =
-                  currentTime || availableTimes[0]?.value || "";
-                setNewDate(dateToSelect);
-                setNewTime(timeToSelect);
-                setShowUpdateForm(true);
-              }}
+              onClick={openUpdateModal}
               disabled={
                 loadingStates.submitting ||
                 loadingStates.accepting ||
@@ -623,8 +624,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                   <button
                     onClick={() => {
                       setShowUpdateForm(false);
-                      setNewDate("");
-                      setNewTime("");
                       setShowAllDays(false);
                     }}
                     className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
