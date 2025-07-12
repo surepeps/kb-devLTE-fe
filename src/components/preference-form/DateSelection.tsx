@@ -48,7 +48,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({ className = "" }) => {
   }, [checkInDate, checkOutDate]);
 
   // Update context when values change
-  const updateDateData = useCallback(() => {
+  useEffect(() => {
     const currentBookingDetails = (state.formData as any).bookingDetails || {};
 
     updateFormData({
@@ -58,11 +58,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({ className = "" }) => {
         checkOutDate,
       },
     });
-  }, [checkInDate, checkOutDate, state.formData, updateFormData]);
-
-  useEffect(() => {
-    updateDateData();
-  }, [updateDateData]);
+  }, [checkInDate, checkOutDate, updateFormData]);
 
   // Get minimum date (today)
   const getMinDate = useCallback(() => {
