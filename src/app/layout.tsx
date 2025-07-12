@@ -48,7 +48,7 @@ export default function RootLayout({
                     <body
                       className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                     >
-                      {" "}
+                      {" "} 
                       {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
                       <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
                         <Homepage isComingSoon={SHOW_COMING_SOON} />
