@@ -50,7 +50,7 @@ export default function RootLayout({
                     >
                       {" "}
                       {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                      <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
+                      <HeaderFooterWrapper>
                         <Homepage />
                         <Countdown />
                       </HeaderFooterWrapper>
