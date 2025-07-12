@@ -28,7 +28,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
           </h2>
           <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
             <RadioCheck
-              selectedValue={formik.values?.ownershipType}
+              isChecked={formik.values?.ownershipType === 'Owner'}
               handleChange={() => {
                 formik.setFieldValue('ownershipType', 'Owner');
               }}
@@ -38,7 +38,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
               isDisabled={areInputsDisabled}
             />
             <RadioCheck
-              selectedValue={formik.values?.ownershipType}
+              isChecked={formik.values?.ownershipType === 'Agent/Broker'}
               handleChange={() => {
                 formik.setFieldValue('ownershipType', 'Agent/Broker');
               }}
@@ -48,7 +48,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
               isDisabled={areInputsDisabled}
             />
             <RadioCheck
-              selectedValue={formik.values?.ownershipType}
+              isChecked={formik.values?.ownershipType === 'Property Manager'}
               handleChange={() => {
                 formik.setFieldValue('ownershipType', 'Property Manager');
               }}
@@ -142,7 +142,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
           </h2>
           <div className='w-full gap-[20px] lg:gap-[30px] flex flex-row flex-wrap'>
             <RadioCheck
-              selectedValue={formik.values?.bestTimeToContact}
+              isChecked={formik.values?.bestTimeToContact === 'Morning (9AM - 12PM)'}
               handleChange={() => {
                 formik.setFieldValue('bestTimeToContact', 'Morning (9AM - 12PM)');
               }}
@@ -152,7 +152,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
               isDisabled={areInputsDisabled}
             />
             <RadioCheck
-              selectedValue={formik.values?.bestTimeToContact}
+              isChecked={formik.values?.bestTimeToContact === 'Afternoon (12PM - 5PM)'}
               handleChange={() => {
                 formik.setFieldValue('bestTimeToContact', 'Afternoon (12PM - 5PM)');
               }}
@@ -162,7 +162,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
               isDisabled={areInputsDisabled}
             />
             <RadioCheck
-              selectedValue={formik.values?.bestTimeToContact}
+              isChecked={formik.values?.bestTimeToContact === 'Evening (5PM - 8PM)'}
               handleChange={() => {
                 formik.setFieldValue('bestTimeToContact', 'Evening (5PM - 8PM)');
               }}
@@ -172,7 +172,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
               isDisabled={areInputsDisabled}
             />
             <RadioCheck
-              selectedValue={formik.values?.bestTimeToContact}
+              isChecked={formik.values?.bestTimeToContact === 'Anytime'}
               handleChange={() => {
                 formik.setFieldValue('bestTimeToContact', 'Anytime');
               }}
@@ -192,7 +192,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
           <div className='bg-[#F8F9FA] rounded-lg p-6 space-y-4'>
             <div className='flex items-start gap-3'>
               <RadioCheck
-                selectedValue={formik.values?.agreeToTerms}
+                isChecked={formik.values?.agreeToTerms}
                 handleChange={() => {
                   formik.setFieldValue('agreeToTerms', !formik.values?.agreeToTerms);
                 }}
@@ -208,7 +208,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
             
             <div className='flex items-start gap-3'>
               <RadioCheck
-                selectedValue={formik.values?.agreeToMarketing}
+                isChecked={formik.values?.agreeToMarketing}
                 handleChange={() => {
                   formik.setFieldValue('agreeToMarketing', !formik.values?.agreeToMarketing);
                 }}
@@ -224,7 +224,7 @@ const Step4OwnershipDeclaration: React.FC<Step4Props> = ({
 
             <div className='flex items-start gap-3'>
               <RadioCheck
-                selectedValue={formik.values?.agreeToDataUsage}
+                isChecked={formik.values?.agreeToDataUsage}
                 handleChange={() => {
                   formik.setFieldValue('agreeToDataUsage', !formik.values?.agreeToDataUsage);
                 }}

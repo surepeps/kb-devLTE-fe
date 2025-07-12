@@ -305,6 +305,7 @@ const RentSearchModal = ({
             />
             {isPriceRangeModalOpened && (
               <PriceRange
+                selectedRadioValue={priceRadioValue}
                 setSlectedRadioValue={setPriceRadioValue}
                 formik={priceFormik}
                 closeModal={setIsPriceRangeModalOpened}

@@ -219,7 +219,7 @@ const handleUsageOptionChange = (item: string) => {
             onClick={() => setIsPriceRangeModalOpened(true)}
           />
           {isPriceRangeModalOpened && (
-            <PriceRange
+            <PriceRange selectedRadioValue={priceRadioValue}
               setSlectedRadioValue={setPriceRadioValue}
               formik={priceFormik}
               closeModal={setIsPriceRangeModalOpened}

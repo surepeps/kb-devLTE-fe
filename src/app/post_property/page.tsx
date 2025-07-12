@@ -549,7 +549,7 @@ const Sell = () => {
                               </h2>
                               <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                                 <RadioCheck
-                                  selectedValue={formik.values?.rentalType}
+                                  isChecked={formik.values?.rentalType === 'Rent'}
                                   handleChange={() => {
                                     formik.setFieldValue('rentalType', 'Rent');
                                   }}
@@ -558,7 +558,7 @@ const Sell = () => {
                                   name='rentalType'
                                 />
                                 <RadioCheck
-                                  selectedValue={formik.values?.rentalType}
+                                  isChecked={formik.values?.rentalType === 'Lease'}
                                   handleChange={() => {
                                     formik.setFieldValue('rentalType', 'Lease');
                                   }}
@@ -581,7 +581,7 @@ const Sell = () => {
                             </h2>
                             <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                               <RadioCheck
-                                selectedValue={formik.values?.propertyCondition}
+                                isChecked={formik.values?.propertyCondition === 'Brand New'}
                                 handleChange={() => {
                                   formik.setFieldValue('propertyCondition', 'Brand New');
                                 }}
@@ -590,7 +590,7 @@ const Sell = () => {
                                 name='propertyCondition'
                               />
                               <RadioCheck
-                                selectedValue={formik.values?.propertyCondition}
+                                isChecked={formik.values?.propertyCondition === 'Good Condition'}
                                 handleChange={() => {
                                   formik.setFieldValue('propertyCondition', 'Good Condition');
                                 }}
@@ -599,7 +599,7 @@ const Sell = () => {
                                 value='Good Condition'
                               />
                               <RadioCheck
-                                selectedValue={formik.values?.propertyCondition}
+                                isChecked={formik.values?.propertyCondition === 'Needs Renovation'}
                                 handleChange={() => {
                                   formik.setFieldValue('propertyCondition', 'Needs Renovation');
                                 }}
@@ -950,33 +950,33 @@ const Sell = () => {
                         </h2>
                         <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                           <RadioCheck
-                            type='radio'
-                            value='Yes'
-                            name='isTenanted'
+                            isChecked={formik.values?.isTenanted === 'Yes'}
                             handleChange={() => {
                               formik.setFieldValue('isTenanted', 'Yes');
                             }}
-                            selectedValue={formik.values?.isTenanted}
+                            type='radio'
+                            value='Yes'
+                            name='isTenanted'
                             isDisabled={areInputsDisabled}
                           />
                           <RadioCheck
-                            type='radio'
-                            value='No'
-                            name='isTenanted'
+                            isChecked={formik.values?.isTenanted === 'No'}
                             handleChange={() => {
                               formik.setFieldValue('isTenanted', 'No');
                             }}
-                            selectedValue={formik.values?.isTenanted}
+                            type='radio'
+                            value='No'
+                            name='isTenanted'
                             isDisabled={areInputsDisabled}
                           />
                           <RadioCheck
-                            type='radio'
-                            value='I live in it'
-                            name='isTenanted'
+                            isChecked={formik.values?.isTenanted === 'I live in it'}
                             handleChange={() => {
                               formik.setFieldValue('isTenanted', 'I live in it');
                             }}
-                            selectedValue={formik.values?.isTenanted}
+                            type='radio'
+                            value='I live in it'
+                            name='isTenanted'
                             isDisabled={areInputsDisabled}
                           />
                         </div>
@@ -1224,21 +1224,21 @@ const Sell = () => {
                       <div className='w-full flex flex-col gap-[15px] min-h-[270px] '>
                         {commission['userType'] === 'agent' ? (
                           <RadioCheck
-                            name='confirm'
-                            type='checkbox'
                             isChecked={isAuthorized}
                             handleChange={() => setIsAuthorized(!isAuthorized)}
-                            isDisabled={areInputsDisabled}
+                            type='checkbox'
                             value='I confirm that I am a mandate to the property'
+                            isDisabled={areInputsDisabled}
+                            name='ownershipDeclaration'
                           />
                         ) : (
                           <RadioCheck
-                            name='confirm'
-                            type='checkbox'
                             isChecked={isLegalOwner}
                             handleChange={() => setIsLegalOwner(!isLegalOwner)}
-                            isDisabled={areInputsDisabled}
+                            type='checkbox'
                             value='I confirm that I am the legal owner of this property or authorized to submit this brief'
+                            isDisabled={areInputsDisabled}
+                            name='ownershipDeclaration'
                           />
                         )}
                         <div className='flex lg:flex-row flex-col w-full gap-[15px]'>

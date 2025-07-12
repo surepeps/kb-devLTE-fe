@@ -326,7 +326,6 @@ const PropertyType = () => {
 						<div className="min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]">
 							<RadioCheck
 								isChecked={createBrief.propertyType === "Residential"}
-								selectedValue={createBrief?.propertyType}
 								handleChange={() => {
 									// formik.setFieldValue('propertyType', 'Residential');
 									setCreateBrief({
@@ -339,7 +338,7 @@ const PropertyType = () => {
 								value="Residential"
 							/>
 							<RadioCheck
-								selectedValue={createBrief?.propertyType}
+								isChecked={createBrief.propertyType === "Commercial"}
 								handleChange={() => {
 									// formik.setFieldValue('propertyType', 'Commercial');
 									setCreateBrief({
@@ -350,10 +349,9 @@ const PropertyType = () => {
 								type="radio"
 								name="propertyType"
 								value="Commercial"
-								isChecked={createBrief.propertyType === "Commercial"}
 							/>
 							<RadioCheck
-								selectedValue={createBrief?.propertyType}
+								isChecked={createBrief.propertyType === "Land"}
 								handleChange={() => {
 									// formik.setFieldValue('propertyType', 'Land');
 									setCreateBrief({
@@ -364,7 +362,6 @@ const PropertyType = () => {
 								type="radio"
 								name="propertyType"
 								value="Land"
-								isChecked={createBrief.propertyType === "Land"}
 							/>
 						</div>
 						{/* {formik.touched.propertyType && formik.errors.propertyType && (
@@ -382,7 +379,6 @@ const PropertyType = () => {
 						<div className="min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]">
 							<RadioCheck
 								isChecked={createBrief.rentalType === "Rent"}
-								selectedValue={createBrief?.rentalType}
 								handleChange={() => {
 									setCreateBrief({
 										...createBrief,
@@ -394,7 +390,7 @@ const PropertyType = () => {
 								value="Rent"
 							/>
 							<RadioCheck
-								selectedValue={createBrief?.rentalType}
+								isChecked={createBrief.rentalType === "Lease"}
 								handleChange={() => {
 									setCreateBrief({
 										...createBrief,
@@ -404,7 +400,6 @@ const PropertyType = () => {
 								type="radio"
 								name="rentalType"
 								value="Lease"
-								isChecked={createBrief.rentalType === "Lease"}
 							/>
 						</div>
 					</div>
@@ -417,7 +412,6 @@ const PropertyType = () => {
 						<div className="min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]">
 							<RadioCheck
 								isChecked={createBrief.propertyCondition === "Brand New"}
-								selectedValue={createBrief?.propertyCondition}
 								handleChange={() => {
 									setCreateBrief({
 										...createBrief,
@@ -429,7 +423,7 @@ const PropertyType = () => {
 								value="Brand New"
 							/>
 							<RadioCheck
-								selectedValue={createBrief?.propertyCondition}
+								isChecked={createBrief.propertyCondition === "Good Condition"}
 								handleChange={() => {
 									setCreateBrief({
 										...createBrief,
@@ -439,7 +433,6 @@ const PropertyType = () => {
 								type="radio"
 								name="propertyCondition"
 								value="Good Condition"
-								isChecked={createBrief.propertyCondition === "Good Condition"}
 							/>
 						</div>
 					</div>
@@ -670,7 +663,6 @@ const PropertyType = () => {
 							</h3>
 							<div className="flex gap-[20px] mt-2">
 								<RadioCheck
-									selectedValue={createBrief?.areYouTheOwner}
 									isChecked={createBrief.areYouTheOwner === true}
 									handleChange={() => {
 										// formik.setFieldValue('areYouTheOwner', true);
@@ -684,7 +676,6 @@ const PropertyType = () => {
 									value="Yes"
 								/>
 								<RadioCheck
-									selectedValue={createBrief?.areYouTheOwner}
 									isChecked={createBrief.areYouTheOwner === false}
 									handleChange={() => {
 										// formik.setFieldValue('areYouTheOwner', false);

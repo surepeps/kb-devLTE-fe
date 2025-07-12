@@ -236,13 +236,14 @@ const Register = () => {
           <div className='flex justify-center items-center w-full lg:px-[60px]'>
             <RadioCheck
               isDisabled={isDisabled}
-              onClick={() => {
+              handleChange={() => {
                 setAgreed(!agreed);
               }}
               type='checkbox'
               name='agree'
               className='w-full'
-              value={`By clicking here, I agree to the Khabi-Teq realty <br/> <a href='/policies_page'><span style='color: #0B423D; font-weight: bold'>Policy</span> and <span style='color: #0B423D; font-weight: bold'>Rules</span></a>`}
+              isChecked={agreed}
+              value={agreed ? 'true' : 'false'}
             />
           </div>
           {/**Button */}
