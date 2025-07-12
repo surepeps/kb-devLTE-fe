@@ -69,11 +69,16 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
       changeRequest,
     });
 
-    // Move to price negotiation if available, otherwise inspection
-    if (hasPriceNegotiation) {
-      setCurrentStep("price");
-    } else {
+    // For requestChanges, proceed directly to inspection step
+    if (action === "requestChanges") {
       setCurrentStep("inspection");
+    } else {
+      // Move to price negotiation if available, otherwise inspection
+      if (hasPriceNegotiation) {
+        setCurrentStep("price");
+      } else {
+        setCurrentStep("inspection");
+      }
     }
   };
 
@@ -229,12 +234,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
           >
             <InspectionDateTimeStep
               userType={userType}
-              negotiationAction={
-                negotiationAction as {
-                  type: "accept" | "counter";
-                  counterPrice?: number;
-                }
-              }
+              negotiationAction={negotiationAction}
             />
           </motion.div>
         )}
