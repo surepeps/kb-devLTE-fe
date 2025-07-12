@@ -299,43 +299,6 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     createInitialState(),
   );
 
-  // Helper functions
-  const goToStep = useCallback(
-    (step: number) => {
-      if (step >= 0 && step < state.steps.length) {
-        dispatch({ type: "SET_STEP", payload: step });
-        // Trigger validation for the new step
-        const currentErrors = validateStep(step);
-        dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-      }
-    },
-    [state.steps.length, validateStep],
-  );
-
-  const goToNextStep = useCallback(() => {
-    if (state.currentStep < state.steps.length - 1) {
-      const nextStep = state.currentStep + 1;
-      dispatch({ type: "SET_STEP", payload: nextStep });
-      // Trigger validation for the new step
-      const currentErrors = validateStep(nextStep);
-      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-    }
-  }, [state.currentStep, state.steps.length, validateStep]);
-
-  const goToPreviousStep = useCallback(() => {
-    if (state.currentStep > 0) {
-      const prevStep = state.currentStep - 1;
-      dispatch({ type: "SET_STEP", payload: prevStep });
-      // Trigger validation for the new step
-      const currentErrors = validateStep(prevStep);
-      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-    }
-  }, [state.currentStep, validateStep]);
-
-  const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
-    dispatch({ type: "UPDATE_FORM_DATA", payload: data });
-  }, []);
-
   const getMinBudgetForLocation = useCallback(
     (location: string, listingType: string): number => {
       const threshold = state.budgetThresholds.find(
@@ -354,31 +317,6 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       return defaultThreshold?.minAmount || 0;
     },
     [state.budgetThresholds],
-  );
-
-  const getAvailableFeatures = useCallback(
-    (preferenceType: string, budget?: number) => {
-      const config = state.featureConfigs[preferenceType];
-      if (!config) {
-        return { basic: [], premium: [] };
-      }
-
-      if (!budget) {
-        return config;
-      }
-
-      // Filter premium features based on budget
-      const availablePremium = config.premium.filter(
-        (feature) =>
-          !feature.minBudgetRequired || budget >= feature.minBudgetRequired,
-      );
-
-      return {
-        basic: config.basic,
-        premium: availablePremium,
-      };
-    },
-    [state.featureConfigs],
   );
 
   const validateStep = useCallback(
@@ -519,6 +457,68 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       return errors;
     },
     [state.formData, getMinBudgetForLocation],
+  );
+
+  // Helper functions
+  const goToStep = useCallback(
+    (step: number) => {
+      if (step >= 0 && step < state.steps.length) {
+        dispatch({ type: "SET_STEP", payload: step });
+        // Trigger validation for the new step
+        const currentErrors = validateStep(step);
+        dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+      }
+    },
+    [state.steps.length, validateStep],
+  );
+
+  const goToNextStep = useCallback(() => {
+    if (state.currentStep < state.steps.length - 1) {
+      const nextStep = state.currentStep + 1;
+      dispatch({ type: "SET_STEP", payload: nextStep });
+      // Trigger validation for the new step
+      const currentErrors = validateStep(nextStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+    }
+  }, [state.currentStep, state.steps.length, validateStep]);
+
+  const goToPreviousStep = useCallback(() => {
+    if (state.currentStep > 0) {
+      const prevStep = state.currentStep - 1;
+      dispatch({ type: "SET_STEP", payload: prevStep });
+      // Trigger validation for the new step
+      const currentErrors = validateStep(prevStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+    }
+  }, [state.currentStep, validateStep]);
+
+  const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
+    dispatch({ type: "UPDATE_FORM_DATA", payload: data });
+  }, []);
+
+  const getAvailableFeatures = useCallback(
+    (preferenceType: string, budget?: number) => {
+      const config = state.featureConfigs[preferenceType];
+      if (!config) {
+        return { basic: [], premium: [] };
+      }
+
+      if (!budget) {
+        return config;
+      }
+
+      // Filter premium features based on budget
+      const availablePremium = config.premium.filter(
+        (feature) =>
+          !feature.minBudgetRequired || budget >= feature.minBudgetRequired,
+      );
+
+      return {
+        basic: config.basic,
+        premium: availablePremium,
+      };
+    },
+    [state.featureConfigs],
   );
 
   const isStepValid = useCallback(
