@@ -13,6 +13,7 @@ import {
   FiUpload,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
+import DocumentUpload from "../DocumentUpload";
 
 interface LOINegotiationStepProps {
   userType: "seller" | "buyer";
@@ -42,6 +43,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
   const [changeRequest, setChangeRequest] = useState("");
   const [newLoiFile, setNewLoiFile] = useState<File | null>(null);
+  const [uploadedDocumentUrl, setUploadedDocumentUrl] = useState<string>("");
   const [isReuploadMode, setIsReuploadMode] = useState(false);
 
   // Prevent background scroll when modals are open
@@ -99,28 +101,29 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     setChangeRequest("");
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type !== "application/pdf") {
-        alert("Please upload a PDF file");
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        alert("File size must be less than 10MB");
-        return;
-      }
-      setNewLoiFile(file);
-    }
+  const handleFileUpload = async (file: File): Promise<string> => {
+    setNewLoiFile(file);
+    // Upload the file using the context method
+    const url = await uploadFile(file);
+    return url;
+  };
+
+  const handleUploadComplete = (url: string) => {
+    setUploadedDocumentUrl(url);
+  };
+
+  const handleUploadError = (error: string) => {
+    console.error("Upload error:", error);
+    alert(error);
   };
 
   const handleReuploadSubmit = async () => {
-    if (!newLoiFile) {
-      alert("Please select a new LOI file to upload");
+    if (!newLoiFile || !uploadedDocumentUrl) {
+      alert("Please upload a new LOI file");
       return;
     }
 
-    // Don't submit immediately, just pass the file to the next step
+    // Pass the file and URL to the next step
     onActionSelected("accept", newLoiFile);
   };
 
@@ -317,29 +320,21 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
             Update Your Letter of Intention
           </h4>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Updated LOI (PDF only)
-              </label>
-              <div className="flex items-center space-x-4">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  className="flex-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-                {newLoiFile && (
-                  <span className="text-sm text-green-600">
-                    ✓ {newLoiFile.name}
-                  </span>
-                )}
-              </div>
-            </div>
+          <div className="space-y-6">
+            <DocumentUpload
+              onFileUpload={handleFileUpload}
+              onUploadComplete={handleUploadComplete}
+              onError={handleUploadError}
+              acceptedTypes={[".docx", ".doc", ".pdf"]}
+              maxSizeInMB={10}
+              label="Upload Updated LOI Document"
+              description="Drag and drop your updated LOI document here, or click to browse"
+              required={true}
+            />
 
             <button
               onClick={handleReuploadSubmit}
-              disabled={!newLoiFile || loadingStates.accepting}
+              disabled={!uploadedDocumentUrl || loadingStates.accepting}
               className="w-full flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
             >
               <FiUpload className="w-5 h-5" />
