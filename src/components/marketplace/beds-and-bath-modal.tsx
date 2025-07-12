@@ -86,7 +86,7 @@ const BedsAndBathModal: React.FC<BedsAndBathModalProps> = ({
             name='bathroom'
             type='radio'
             isChecked={bedAndBath.bath === 'any'}
-            onClick={() => {
+            handleChange={() => {
               setBedAndBath({
                 ...bedAndBath,
                 bath: 'any',
@@ -100,7 +100,7 @@ const BedsAndBathModal: React.FC<BedsAndBathModalProps> = ({
               value={Number(idx + 1).toLocaleString()}
               key={idx}
               isChecked={bedAndBath.bath === Number(idx + 1).toLocaleString()}
-              onClick={() => {
+              handleChange={() => {
                 setBedAndBath({
                   ...bedAndBath,
                   bath: Number(idx + 1).toLocaleString(),
