@@ -389,7 +389,6 @@ const RentalBrief = ({
         <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
           <RadioCheck
             isChecked={editBrief.propertyType === 'Residential'}
-            selectedValue={editBrief?.propertyType}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Residential');
               setEditBrief({
@@ -402,7 +401,7 @@ const RentalBrief = ({
             value='Residential'
           />
           <RadioCheck
-            selectedValue={editBrief?.propertyType}
+            isChecked={editBrief.propertyType === 'Commercial'}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Commercial');
               setEditBrief({
@@ -413,10 +412,9 @@ const RentalBrief = ({
             type='radio'
             name='propertyType'
             value='Commercial'
-            isChecked={editBrief.propertyType === 'Commercial'}
           />
           <RadioCheck
-            selectedValue={editBrief?.propertyType}
+            isChecked={editBrief.propertyType === 'Land'}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Land');
               setEditBrief({
@@ -427,7 +425,6 @@ const RentalBrief = ({
             type='radio'
             name='propertyType'
             value='Land'
-            isChecked={editBrief.propertyType === 'Land'}
           />
         </div>
       </div>
@@ -440,8 +437,7 @@ const RentalBrief = ({
         {/**options */}
         <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-x-[30px]'>
           <RadioCheck
-            //isChecked={editBrief.propertyCondition === 'Residential'}
-            selectedValue={editBrief?.propertyCondition}
+            isChecked={editBrief.propertyCondition === 'Brand New'}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Residential');
               setEditBrief({
@@ -454,7 +450,7 @@ const RentalBrief = ({
             value='Brand New'
           />
           <RadioCheck
-            selectedValue={editBrief?.propertyCondition}
+            isChecked={editBrief.propertyCondition === 'Good Condition'}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Commercial');
               setEditBrief({
@@ -465,10 +461,9 @@ const RentalBrief = ({
             type='radio'
             name='propertyCondition'
             value='Good Condition'
-            //isChecked={editBrief.propertyType === 'Commercial'}
           />
           <RadioCheck
-            selectedValue={editBrief?.propertyCondition}
+            isChecked={editBrief.propertyCondition === 'Fairly Used'}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Land');
               setEditBrief({
@@ -479,10 +474,9 @@ const RentalBrief = ({
             type='radio'
             name='propertyCondition'
             value='Fairly Used'
-            //isChecked={editBrief.propertyType === 'Land'}
           />
           <RadioCheck
-            selectedValue={editBrief?.propertyCondition}
+            isChecked={editBrief.propertyCondition === 'Needs Renovation'}
             handleChange={() => {
               // formik.setFieldValue('propertyType', 'Land');
               setEditBrief({
@@ -493,7 +487,6 @@ const RentalBrief = ({
             type='radio'
             name='propertyCondition'
             value='Needs Renovation'
-            //isChecked={editBrief.propertyType === 'Land'}
           />
         </div>
       </div>
@@ -577,8 +570,7 @@ const RentalBrief = ({
             'Swimming Pool',
           ].map((item: string, idx: number) => (
             <RadioCheck
-              selectedValue={item}
-              key={idx}
+              isChecked={editBrief.features.includes(item)}
               handleChange={() => {
                 setEditBrief({
                   ...editBrief,
@@ -588,7 +580,6 @@ const RentalBrief = ({
               type='checkbox'
               name='propertyCondition'
               value={item}
-              //isChecked={editBrief.propertyType === 'Land'}
             />
           ))}
         </div>
@@ -612,8 +603,7 @@ const RentalBrief = ({
             'Must Provide Credit Report',
           ].map((item: string, idx: number) => (
             <RadioCheck
-              selectedValue={item}
-              key={idx}
+              isChecked={(editBrief.tenantCriteria ?? []).includes(item)}
               handleChange={() => {
                 setEditBrief({
                   ...editBrief,
@@ -625,7 +615,6 @@ const RentalBrief = ({
               type='checkbox'
               name='propertyCondition'
               value={item}
-              //isChecked={editBrief.propertyType === 'Land'}
             />
           ))}
         </div>

@@ -716,7 +716,7 @@ const handleSuccessNo = () => {
                               </h2>
                               <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                                 <RadioCheck
-                                  selectedValue={formik.values?.rentalType}
+                                  isChecked={formik.values?.rentalType === 'Rent'}
                                   handleChange={() => {
                                     formik.setFieldValue('rentalType', 'Rent');
                                   }}
@@ -725,7 +725,7 @@ const handleSuccessNo = () => {
                                   name='rentalType'
                                 />
                                 <RadioCheck
-                                  selectedValue={formik.values?.rentalType}
+                                  isChecked={formik.values?.rentalType === 'Lease'}
                                   handleChange={() => {
                                     formik.setFieldValue('rentalType', 'Lease');
                                   }}
@@ -1084,7 +1084,7 @@ const handleSuccessNo = () => {
                               handleChange={() => {
                                 formik.setFieldValue('isTenanted', 'Yes');
                               }}
-                              selectedValue={formik.values?.isTenanted}
+                              isChecked={formik.values?.isTenanted === 'Yes'}
                               isDisabled={areInputsDisabled}
                             />
                             <RadioCheck
@@ -1094,7 +1094,7 @@ const handleSuccessNo = () => {
                               handleChange={() => {
                                 formik.setFieldValue('isTenanted', 'No');
                               }}
-                              selectedValue={formik.values?.isTenanted}
+                              isChecked={formik.values?.isTenanted === 'No'}
                               isDisabled={areInputsDisabled}
                             />
                           </div>

@@ -131,7 +131,7 @@ const Landlord = () => {
 							</h2>
 							<div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
 								<RadioCheck
-									selectedValue={formik.values?.propertyCondition}
+									isChecked={formik.values?.propertyCondition === "Brand New"}
 									handleChange={() => {
 										formik.setFieldValue("propertyCondition", "Brand New");
 									}}
@@ -140,7 +140,7 @@ const Landlord = () => {
 									value="Brand New"
 								/>
 								<RadioCheck
-									selectedValue={formik.values?.propertyCondition}
+									isChecked={formik.values?.propertyCondition === "Good Condition"}
 									handleChange={() => {
 										formik.setFieldValue("propertyCondition", "Good Condition");
 									}}
@@ -404,7 +404,7 @@ const Landlord = () => {
 								</h2>
 								<div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
 									<RadioCheck
-										selectedValue={formik.values?.propertyCondition}
+										isChecked={formik.values?.propertyCondition === "Brand New"}
 										handleChange={() => {
 											formik.setFieldValue("propertyCondition", "Brand New");
 										}}
@@ -413,7 +413,7 @@ const Landlord = () => {
 										value="Brand New"
 									/>
 									<RadioCheck
-										selectedValue={formik.values?.propertyCondition}
+										isChecked={formik.values?.propertyCondition === "Good Condition"}
 										handleChange={() => {
 											formik.setFieldValue("propertyCondition", "Good Condition");
 										}}
@@ -545,7 +545,7 @@ const Landlord = () => {
 								</h2>
 								<div className="w-full gap-[20px] lg:gap-[20px] flex flex-row flex-wrap">
 									<RadioCheck
-										selectedValue={formik.values?.propertyCondition}
+										isChecked={formik.values?.propertyCondition === "Brand New"}
 										handleChange={() => {
 											formik.setFieldValue("propertyCondition", "Brand New");
 										}}
@@ -554,7 +554,7 @@ const Landlord = () => {
 										value="Brand New"
 									/>
 									<RadioCheck
-										selectedValue={formik.values?.propertyCondition}
+										isChecked={formik.values?.propertyCondition === "Good Condition"}
 										handleChange={() => {
 											formik.setFieldValue("propertyCondition", "Good Condition");
 										}}
@@ -882,7 +882,7 @@ const Landlord = () => {
 											</h2>
 											<div className="w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap">
 												<RadioCheck
-													selectedValue={formik.values?.propertyType}
+													isChecked={formik.values?.propertyType === "Residential"}
 													handleChange={() => {
 														formik.setFieldValue("propertyType", "Residential");
 													}}
@@ -891,7 +891,7 @@ const Landlord = () => {
 													name="propertyType"
 												/>
 												<RadioCheck
-													selectedValue={formik.values?.propertyType}
+													isChecked={formik.values?.propertyType === "Commercial"}
 													handleChange={() => {
 														formik.setFieldValue("propertyType", "Commercial");
 													}}
@@ -900,7 +900,7 @@ const Landlord = () => {
 													value="Commercial"
 												/>
 												<RadioCheck
-													selectedValue={formik.values?.propertyType}
+													isChecked={formik.values?.propertyType === "Land"}
 													handleChange={() => {
 														formik.setFieldValue("propertyType", "Land");
 													}}

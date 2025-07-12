@@ -629,9 +629,9 @@ export default function BriefManagement() {
                                     </h2>
                                     <div className='w-full gap-[20px] lg:gap-[50px] flex flex-row flex-wrap'>
                                       <RadioCheck
-                                        // isDisabled={formik.values?.propertyType ? true : false}
-                                        selectedValue={
-                                          formik.values?.propertyCondition
+                                        isChecked={
+                                          formik.values?.propertyCondition ===
+                                          'Brand New'
                                         }
                                         handleChange={() => {
                                           formik.setFieldValue(
@@ -644,9 +644,9 @@ export default function BriefManagement() {
                                         name='propertyCondition'
                                       />
                                       <RadioCheck
-                                        // isDisabled={formik.values?.propertyType ? true : false}
-                                        selectedValue={
-                                          formik.values?.propertyCondition
+                                        isChecked={
+                                          formik.values?.propertyCondition ===
+                                          'Good Condition'
                                         }
                                         handleChange={() => {
                                           formik.setFieldValue(
@@ -659,9 +659,9 @@ export default function BriefManagement() {
                                         value='Good Condition'
                                       />
                                       <RadioCheck
-                                        // isDisabled={formik.values?.propertyType ? true : false}
-                                        selectedValue={
-                                          formik.values?.propertyCondition
+                                        isChecked={
+                                          formik.values?.propertyCondition ===
+                                          'Needs Renovation'
                                         }
                                         handleChange={() => {
                                           formik.setFieldValue(

@@ -355,7 +355,6 @@ const EditBrief = ({
                 <div className='min-h-[26px] w-full flex flex-wrap gap-[20px] lg:gap-[50px]'>
                   <RadioCheck
                     isChecked={editBrief.propertyType === 'Residential'}
-                    selectedValue={editBrief?.propertyType}
                     handleChange={() => {
                       // formik.setFieldValue('propertyType', 'Residential');
                       setEditBrief({
@@ -368,7 +367,6 @@ const EditBrief = ({
                     value='Residential'
                   />
                   <RadioCheck
-                    selectedValue={editBrief?.propertyType}
                     handleChange={() => {
                       // formik.setFieldValue('propertyType', 'Commercial');
                       setEditBrief({
@@ -382,7 +380,6 @@ const EditBrief = ({
                     isChecked={editBrief.propertyType === 'Commercial'}
                   />
                   <RadioCheck
-                    selectedValue={editBrief?.propertyType}
                     handleChange={() => {
                       // formik.setFieldValue('propertyType', 'Land');
                       setEditBrief({
@@ -647,7 +644,6 @@ const EditBrief = ({
                   </h3>
                   <div className='flex gap-[20px] mt-2'>
                     <RadioCheck
-                      selectedValue={editBrief?.areYouTheOwner}
                       isChecked={editBrief.areYouTheOwner === true}
                       handleChange={() => {
                         // formik.setFieldValue('areYouTheOwner', true);
@@ -661,7 +657,6 @@ const EditBrief = ({
                       value='Yes'
                     />
                     <RadioCheck
-                      selectedValue={editBrief?.areYouTheOwner}
                       isChecked={editBrief.areYouTheOwner === false}
                       handleChange={() => {
                         // formik.setFieldValue('areYouTheOwner', false);
