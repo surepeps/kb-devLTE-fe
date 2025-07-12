@@ -683,6 +683,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       itemsPerPage,
       setItemsPerPage,
       clearAllFilters,
+      resetMarketplaceState,
     ],
   );
 
