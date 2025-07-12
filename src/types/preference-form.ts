@@ -61,7 +61,8 @@ export interface RentPreferenceForm extends BasePreferenceForm {
 }
 
 // Joint venture preference specific fields
-export interface JointVenturePreferenceForm extends BasePreferenceForm {
+export interface JointVenturePreferenceForm
+  extends Omit<BasePreferenceForm, "contactInfo"> {
   preferenceType: "joint-venture";
   developmentDetails: {
     minLandSize: string;
