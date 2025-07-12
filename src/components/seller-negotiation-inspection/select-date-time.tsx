@@ -65,7 +65,7 @@ const SelectPreferableInspectionDate = ({
   };
 
   const formattedSelectedDate = formatSelectedDate(
-    counterDateTimeObj.selectedDate || dateTimeObj.selectedDate,
+    counterDateTimeObj.selectedDate || dateTimeObj.selectedDate || "",
   );
   const selectedTime =
     counterDateTimeObj.selectedTime || dateTimeObj.selectedTime;
