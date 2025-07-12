@@ -9,6 +9,7 @@ export const URLS = {
   userLogin: "/user/login",
   login: "/login",
   uploadImg: "/upload-image",
+  uploadFile: "/upload-file",
   agentOnboarding: "/agent/onboard",
   agentProfile: "/agent/profile",
   googleSignup: "/signup/google",
@@ -34,15 +35,12 @@ export const URLS = {
   allAvailableSLots: "/all/inspection-slots",
   scheduleInspection: "/property/schedule-inspection",
 
-
   requestInspection: "/inspections/request-inspection",
   validateInspectionAccess: "/inspections/validate-access",
   getOneInspection: "/inspections/inspection-details",
 
-
   updateInspection: "/buyers/update-inspection",
   getOneNewInspection: "/buyers/new-inspection",
-
 
   getAllRequests: "/requests",
   confirmAvailability: "/confirm-property",
