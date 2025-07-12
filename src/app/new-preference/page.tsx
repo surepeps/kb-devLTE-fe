@@ -228,25 +228,16 @@ const PreferenceFormContent: React.FC = () => {
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/buyers/submit-preference`;
 
-      await toast.promise(
-        axios.post(url, payload).then((response) => {
-          if (response.status === 201) {
-            console.log("Preference submitted successfully:", response);
-            // Reset form after successful submission
-            resetForm();
-            // Redirect to success page or marketplace
-            router.push("/marketplace");
-            return "Preference submitted successfully";
-          } else {
-            throw new Error("Submission failed");
-          }
-        }),
-        {
-          loading: "Submitting preference...",
-          success: "Preference submitted successfully!",
-          error: "Failed to submit preference",
-        },
-      );
+      const response = await axios.post(url, payload);
+
+      if (response.status === 201 || response.status === 200) {
+        console.log("Preference submitted successfully:", response);
+        toast.success("Preference submitted successfully!");
+        // Show success modal instead of redirecting immediately
+        setShowSuccessModal(true);
+      } else {
+        throw new Error("Submission failed");
+      }
     } catch (error) {
       console.error("Submission error:", error);
     } finally {
