@@ -1,7 +1,13 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePreferenceForm } from "@/context/preference-form-context";
@@ -135,6 +141,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   const [lgaAreaMap, setLgaAreaMap] = useState<{ [lga: string]: Option[] }>({});
   const [customLGAs, setCustomLGAs] = useState<string>("");
   const [showCustomLGAs, setShowCustomLGAs] = useState<boolean>(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get validation errors
   const stateErrors = getValidationErrorsForField("location.state");
@@ -143,14 +151,14 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
   // Initialize from context data ONLY ONCE
   useEffect(() => {
-    if (state.formData.location) {
+    if (!isInitialized && state.formData.location) {
       const location = state.formData.location;
 
-      if (location.state && !selectedState) {
+      if (location.state) {
         setSelectedState({ value: location.state, label: location.state });
       }
 
-      if (location.lgas && selectedLGAs.length === 0) {
+      if (location.lgas && location.lgas.length > 0) {
         const lgaOptions = location.lgas.map((lga) => ({
           value: lga,
           label: lga,
@@ -158,7 +166,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setSelectedLGAs(lgaOptions);
       }
 
-      if (location.areas && selectedAreas.length === 0) {
+      if (location.areas && location.areas.length > 0) {
         const areaOptions = location.areas.map((area) => ({
           value: area,
           label: area,
@@ -166,12 +174,14 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         setSelectedAreas(areaOptions);
       }
 
-      if (location.customLocation && !customLocation) {
+      if (location.customLocation) {
         setCustomLocation(location.customLocation);
         setShowCustomLocation(true);
       }
+
+      setIsInitialized(true);
     }
-  }, []);
+  }, [state.formData.location, isInitialized]);
 
   // Memoized options
   const stateOptions = useMemo(
@@ -216,8 +226,10 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change - NO AUTO-PROGRESSION
+  // Update context when values change - optimized to prevent infinite loops
   useEffect(() => {
+    if (!isInitialized) return;
+
     let lgaValues: string[] = [];
 
     if (showCustomLGAs && customLGAs.trim()) {
@@ -237,18 +249,32 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       customLocation: showCustomLocation ? customLocation : undefined,
     };
 
-    updateFormData({
-      location: locationData,
-    });
+    // Clear any existing timeout
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+
+    // Use a timeout to debounce updates and prevent rapid firing
+    updateTimeoutRef.current = setTimeout(() => {
+      updateFormData({
+        location: locationData,
+      });
+    }, 200);
+
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
   }, [
-    selectedState,
-    selectedLGAs,
-    selectedAreas,
+    selectedState?.value,
+    JSON.stringify(selectedLGAs.map((lga) => lga.value)),
+    JSON.stringify(selectedAreas.map((area) => area.value)),
     customLocation,
     showCustomLocation,
     customLGAs,
     showCustomLGAs,
-    updateFormData,
+    isInitialized,
   ]);
 
   // Handle state change

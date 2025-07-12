@@ -246,7 +246,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
     // Only initialize if we have available options
-    if (availableDates.length === 0 || availableTimes.length === 0) {
+    if (validDates.length === 0 || availableTimes.length === 0) {
       return;
     }
 
@@ -256,19 +256,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         .toISOString()
         .split("T")[0];
 
-      // Check if the inspection date exists in our available dates
-      const dateExists = availableDates.some(
+      // Check if the inspection date exists in our valid dates (non-passed)
+      const dateExists = validDates.some(
         (d) => d.date === inspectionDateFormatted,
       );
       if (dateExists && newDate !== inspectionDateFormatted) {
         setNewDate(inspectionDateFormatted);
       } else if (!dateExists && !newDate) {
-        // If inspection date is not in available dates, use first available
-        setNewDate(availableDates[0]?.date || "");
+        // If inspection date is not in valid dates, use first valid available
+        setNewDate(validDates[0]?.date || "");
       }
     } else if (!newDate) {
-      // No valid inspection date from details, use first available
-      setNewDate(availableDates[0]?.date || "");
+      // No valid inspection date from details, use first valid available
+      setNewDate(validDates[0]?.date || "");
     }
 
     // Set initial time from details or first available
@@ -281,7 +281,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       setNewTime(availableTimes[0]?.value || "");
     }
   }, [
-    availableDates,
+    validDates,
     availableTimes,
     details?.inspectionDate,
     details?.inspectionTime,
@@ -304,10 +304,14 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     };
   }, [showUpdateForm]);
 
-  // Display logic: show 10 by default, 15 with "view more"
+  // Filter out passed dates and display logic: show 10 by default, 5 more (total 15) with "view more"
+  const validDates = useMemo(() => {
+    return availableDates.filter((dateObj) => !dateObj.isPassed);
+  }, [availableDates]);
+
   const displayedDates = useMemo(() => {
-    return showAllDays ? availableDates : availableDates.slice(0, 10);
-  }, [availableDates, showAllDays]);
+    return showAllDays ? validDates.slice(0, 15) : validDates.slice(0, 10);
+  }, [validDates, showAllDays]);
 
   const currentDate = useMemo(() => {
     if (details?.inspectionDate && !inspectionDatePassed) {
@@ -315,12 +319,12 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       const formatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
-      // Check if it's in our available dates, otherwise use newDate or first available
-      const dateExists = availableDates.some((d) => d.date === formatted);
-      return dateExists ? formatted : newDate || availableDates[0]?.date || "";
+      // Check if it's in our valid dates (non-passed), otherwise use newDate or first valid available
+      const dateExists = validDates.some((d) => d.date === formatted);
+      return dateExists ? formatted : newDate || validDates[0]?.date || "";
     }
-    return newDate || availableDates[0]?.date || "";
-  }, [details?.inspectionDate, newDate, availableDates, inspectionDatePassed]);
+    return newDate || validDates[0]?.date || "";
+  }, [details?.inspectionDate, newDate, validDates, inspectionDatePassed]);
 
   const currentTime = useMemo(() => {
     return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
@@ -485,14 +489,14 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const openUpdateModal = () => {
     // Auto-select current inspection details when opening modal
-    // If inspection date is valid and exists in available dates, use it; otherwise use first available
-    let dateToSelect = availableDates[0]?.date || "";
+    // If inspection date is valid and exists in valid dates, use it; otherwise use first valid available
+    let dateToSelect = validDates[0]?.date || "";
 
     if (details?.inspectionDate && !inspectionDatePassed) {
       const inspectionDateFormatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
-      const dateExists = availableDates.some(
+      const dateExists = validDates.some(
         (d) => d.date === inspectionDateFormatted,
       );
       if (dateExists) {
@@ -754,48 +758,54 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Select New Date
                   </label>
+                  {/* Show message if initial date has passed */}
+                  {inspectionDatePassed && (
+                    <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <FiAlertTriangle className="w-4 h-4 text-orange-600" />
+                        <p className="text-orange-800 text-sm font-medium">
+                          Initial inspection date has passed/expired. Please
+                          select a new date from the available options below.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
                     {displayedDates.map((dateObj) => (
                       <button
                         key={dateObj.date}
                         onClick={() => setNewDate(dateObj.date)}
-                        disabled={dateObj.isPassed}
                         className={`p-3 text-left rounded-lg border transition-colors duration-200 ${
-                          dateObj.isPassed
-                            ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : newDate === dateObj.date
-                              ? "border-[#09391C] bg-green-50 text-[#09391C]"
-                              : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
+                          newDate === dateObj.date
+                            ? "border-[#09391C] bg-green-50 text-[#09391C]"
+                            : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
                         }`}
                       >
                         <div className="font-medium">{dateObj.displayDate}</div>
                         <div className="text-xs text-gray-500 mt-1">
                           {dateObj.fullDate}
                         </div>
-                        {dateObj.isPassed && (
-                          <div className="text-xs text-red-500 mt-1">
-                            Passed
-                          </div>
-                        )}
                       </button>
                     ))}
                   </div>
 
-                  {/* View More Button */}
-                  {!showAllDays && availableDates.length > 10 && (
+                  {/* View More Button - Show 5 more dates */}
+                  {!showAllDays && validDates.length > 10 && (
                     <button
                       onClick={() => setShowAllDays(true)}
                       className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
                     >
                       <span className="text-sm font-medium">
-                        View More Dates ({availableDates.length - 10} more)
+                        View More Dates ({Math.min(5, validDates.length - 10)}{" "}
+                        more)
                       </span>
                       <FiChevronDown className="w-4 h-4" />
                     </button>
                   )}
 
                   {/* Show Less Button */}
-                  {showAllDays && availableDates.length > 10 && (
+                  {showAllDays && validDates.length > 10 && (
                     <button
                       onClick={() => setShowAllDays(false)}
                       className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
@@ -845,10 +855,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     <div className="text-sm text-gray-700">
                       <div>
                         Date:{" "}
-                        {
-                          availableDates.find((d) => d.date === newDate)
-                            ?.fullDate
-                        }
+                        {validDates.find((d) => d.date === newDate)?.fullDate}
                       </div>
                       <div>Time: {newTime}</div>
                     </div>

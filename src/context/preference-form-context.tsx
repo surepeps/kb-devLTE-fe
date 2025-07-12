@@ -282,6 +282,7 @@ interface PreferenceFormContextType {
   isFormValid: () => boolean;
   getValidationErrorsForField: (fieldName: string) => ValidationError[];
   resetForm: () => void;
+  triggerValidation: (step?: number) => void;
 }
 
 // Create context
@@ -303,22 +304,33 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     (step: number) => {
       if (step >= 0 && step < state.steps.length) {
         dispatch({ type: "SET_STEP", payload: step });
+        // Trigger validation for the new step
+        const currentErrors = validateStep(step);
+        dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
       }
     },
-    [state.steps.length],
+    [state.steps.length, validateStep],
   );
 
   const goToNextStep = useCallback(() => {
     if (state.currentStep < state.steps.length - 1) {
-      dispatch({ type: "SET_STEP", payload: state.currentStep + 1 });
+      const nextStep = state.currentStep + 1;
+      dispatch({ type: "SET_STEP", payload: nextStep });
+      // Trigger validation for the new step
+      const currentErrors = validateStep(nextStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
     }
-  }, [state.currentStep, state.steps.length]);
+  }, [state.currentStep, state.steps.length, validateStep]);
 
   const goToPreviousStep = useCallback(() => {
     if (state.currentStep > 0) {
-      dispatch({ type: "SET_STEP", payload: state.currentStep - 1 });
+      const prevStep = state.currentStep - 1;
+      dispatch({ type: "SET_STEP", payload: prevStep });
+      // Trigger validation for the new step
+      const currentErrors = validateStep(prevStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
     }
-  }, [state.currentStep]);
+  }, [state.currentStep, validateStep]);
 
   const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
     dispatch({ type: "UPDATE_FORM_DATA", payload: data });
@@ -556,11 +568,16 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.formData]);
 
-  // Update validation errors when form data changes
-  useEffect(() => {
-    const currentErrors = validateStep(state.currentStep);
-    dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
-  }, [state.formData, state.currentStep, validateStep]);
+  // Manual validation - removed automatic validation to prevent infinite loops
+  // Validation will be triggered on step changes and form submission
+  const triggerValidation = useCallback(
+    (step?: number) => {
+      const targetStep = step !== undefined ? step : state.currentStep;
+      const currentErrors = validateStep(targetStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+    },
+    [state.currentStep, validateStep],
+  );
 
   const contextValue: PreferenceFormContextType = {
     state,
@@ -577,6 +594,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     isFormValid,
     getValidationErrorsForField,
     resetForm,
+    triggerValidation,
   };
 
   return (
