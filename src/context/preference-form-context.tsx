@@ -303,9 +303,12 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     (step: number) => {
       if (step >= 0 && step < state.steps.length) {
         dispatch({ type: "SET_STEP", payload: step });
+        // Trigger validation for the new step
+        const currentErrors = validateStep(step);
+        dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
       }
     },
-    [state.steps.length],
+    [state.steps.length, validateStep],
   );
 
   const goToNextStep = useCallback(() => {
