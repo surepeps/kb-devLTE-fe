@@ -1,7 +1,13 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePreferenceForm } from "@/context/preference-form-context";
