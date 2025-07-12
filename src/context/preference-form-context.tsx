@@ -323,9 +323,13 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
 
   const goToPreviousStep = useCallback(() => {
     if (state.currentStep > 0) {
-      dispatch({ type: "SET_STEP", payload: state.currentStep - 1 });
+      const prevStep = state.currentStep - 1;
+      dispatch({ type: "SET_STEP", payload: prevStep });
+      // Trigger validation for the new step
+      const currentErrors = validateStep(prevStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
     }
-  }, [state.currentStep]);
+  }, [state.currentStep, validateStep]);
 
   const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
     dispatch({ type: "UPDATE_FORM_DATA", payload: data });
