@@ -311,7 +311,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
   }, [state.formData, preferenceType]);
 
   // Update context when values change
-  const updatePropertyData = useCallback(() => {
+  useEffect(() => {
     const baseData = {
       propertyType: propertyType?.value || "",
       minBedrooms: minBedrooms?.value || "",
@@ -436,10 +436,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
     nearbyLandmark,
     updateFormData,
   ]);
-
-  useEffect(() => {
-    updatePropertyData();
-  }, [updatePropertyData]);
 
   // Format number with commas
   const formatNumberWithCommas = useCallback((value: string): string => {
