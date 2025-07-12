@@ -153,27 +153,27 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return direction === "backward" ? dates.reverse() : dates;
   };
 
-  // Generate available dates with the specified logic
+  // Generate available dates with the specified logic - always generate 15 total dates
   const availableDates = useMemo(() => {
     const today = new Date();
 
     if (!details?.inspectionDate) {
-      // No inspection date, start from today and show next 5 days
-      return getValidDatesFromDate(today, 5, "forward");
+      // No inspection date, start from today and show next 15 days
+      return getValidDatesFromDate(today, 15, "forward");
     }
 
     const inspectionDate = new Date(details.inspectionDate);
 
     if (inspectionDateIsToday) {
       // Case 1: Inspection date is today (not expired)
-      // Start the list from today, and pre-select the inspection date
-      return getValidDatesFromDate(today, 5, "forward");
+      // Start the list from today, and show 15 days total
+      return getValidDatesFromDate(today, 15, "forward");
     } else if (!inspectionDatePassed) {
       // Case 2: Inspection date is not today, but still valid (not expired)
-      // Show up to five valid days before the inspection date, ending with the inspection date pre-selected
+      // Show up to 14 valid days before the inspection date, ending with the inspection date
       const datesBeforeInspection = getValidDatesFromDate(
         inspectionDate,
-        4,
+        14,
         "backward",
       );
       const inspectionDateObj = {
@@ -195,8 +195,8 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       return [...datesBeforeInspection, inspectionDateObj];
     } else {
       // Case 3: Inspection date is already expired
-      // Do not include it. Start from today and list the next 5 valid upcoming days (today + 4)
-      return getValidDatesFromDate(today, 5, "forward");
+      // Do not include it. Start from today and list the next 15 valid upcoming days
+      return getValidDatesFromDate(today, 15, "forward");
     }
   }, [details?.inspectionDate, inspectionDatePassed, inspectionDateIsToday]);
 
@@ -297,9 +297,10 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     };
   }, [showUpdateForm]);
 
-  const displayedDates = showAllDays
-    ? availableDates
-    : availableDates.slice(0, 10);
+  // Display logic: show 10 by default, 15 with "view more"
+  const displayedDates = useMemo(() => {
+    return showAllDays ? availableDates : availableDates.slice(0, 10);
+  }, [availableDates, showAllDays]);
 
   const currentDate = useMemo(() => {
     if (details?.inspectionDate && !inspectionDatePassed) {
@@ -780,9 +781,20 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                       className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
                     >
                       <span className="text-sm font-medium">
-                        View More Dates
+                        View More Dates ({availableDates.length - 10} more)
                       </span>
                       <FiChevronDown className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Show Less Button */}
+                  {showAllDays && availableDates.length > 10 && (
+                    <button
+                      onClick={() => setShowAllDays(false)}
+                      className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
+                    >
+                      <span className="text-sm font-medium">Show Less</span>
+                      <FiChevronDown className="w-4 h-4 transform rotate-180" />
                     </button>
                   )}
                 </div>
