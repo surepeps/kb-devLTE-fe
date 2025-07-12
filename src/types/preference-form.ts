@@ -253,11 +253,26 @@ export interface FormStep {
   isRequired: boolean;
 }
 
+// Flexible form data interface that can handle all preference types
+export interface FlexibleFormData {
+  location?: LocationSelection;
+  budget?: BudgetRange;
+  features?: FeatureSelection;
+  preferenceType?: "buy" | "rent" | "joint-venture" | "shortlet";
+  contactInfo?: any; // Can be either regular or joint-venture contact info
+  additionalNotes?: string;
+  propertyDetails?: any; // Can be any of the property detail types
+  developmentDetails?: any; // For joint-venture
+  bookingDetails?: any; // For shortlet
+  nearbyLandmark?: string;
+  partnerExpectations?: string;
+}
+
 // Form context state
 export interface PreferenceFormState {
   currentStep: number;
   steps: FormStep[];
-  formData: Partial<PreferenceForm>;
+  formData: FlexibleFormData;
   isSubmitting: boolean;
   validationErrors: ValidationError[];
   budgetThresholds: BudgetThreshold[];
