@@ -594,6 +594,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     isFormValid,
     getValidationErrorsForField,
     resetForm,
+    triggerValidation,
   };
 
   return (
