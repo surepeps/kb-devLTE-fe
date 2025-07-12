@@ -249,14 +249,23 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       customLocation: showCustomLocation ? customLocation : undefined,
     };
 
+    // Clear any existing timeout
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+
     // Use a timeout to debounce updates and prevent rapid firing
-    const timeoutId = setTimeout(() => {
+    updateTimeoutRef.current = setTimeout(() => {
       updateFormData({
         location: locationData,
       });
-    }, 150);
+    }, 200);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
   }, [
     selectedState?.value,
     JSON.stringify(selectedLGAs.map((lga) => lga.value)),
