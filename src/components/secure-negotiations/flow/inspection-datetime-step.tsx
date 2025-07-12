@@ -246,7 +246,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
     // Only initialize if we have available options
-    if (availableDates.length === 0 || availableTimes.length === 0) {
+    if (validDates.length === 0 || availableTimes.length === 0) {
       return;
     }
 
@@ -256,19 +256,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         .toISOString()
         .split("T")[0];
 
-      // Check if the inspection date exists in our available dates
-      const dateExists = availableDates.some(
+      // Check if the inspection date exists in our valid dates (non-passed)
+      const dateExists = validDates.some(
         (d) => d.date === inspectionDateFormatted,
       );
       if (dateExists && newDate !== inspectionDateFormatted) {
         setNewDate(inspectionDateFormatted);
       } else if (!dateExists && !newDate) {
-        // If inspection date is not in available dates, use first available
-        setNewDate(availableDates[0]?.date || "");
+        // If inspection date is not in valid dates, use first valid available
+        setNewDate(validDates[0]?.date || "");
       }
     } else if (!newDate) {
-      // No valid inspection date from details, use first available
-      setNewDate(availableDates[0]?.date || "");
+      // No valid inspection date from details, use first valid available
+      setNewDate(validDates[0]?.date || "");
     }
 
     // Set initial time from details or first available
@@ -281,7 +281,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       setNewTime(availableTimes[0]?.value || "");
     }
   }, [
-    availableDates,
+    validDates,
     availableTimes,
     details?.inspectionDate,
     details?.inspectionTime,
