@@ -282,7 +282,7 @@ export interface PreferenceFormState {
 // Context actions
 export type PreferenceFormAction =
   | { type: "SET_STEP"; payload: number }
-  | { type: "UPDATE_FORM_DATA"; payload: Partial<PreferenceForm> }
+  | { type: "UPDATE_FORM_DATA"; payload: Partial<FlexibleFormData> }
   | { type: "SET_VALIDATION_ERRORS"; payload: ValidationError[] }
   | { type: "SET_SUBMITTING"; payload: boolean }
   | { type: "RESET_FORM" }
