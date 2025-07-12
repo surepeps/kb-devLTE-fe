@@ -202,7 +202,7 @@ const BuyPropertySearch = () => {
     if (activeTab === "buy" && buyTab.formikStatus === "idle") {
       handleSearch();
     }
-  }, [activeTab]);
+  }, [activeTab, handleSearch, buyTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
