@@ -313,9 +313,13 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
 
   const goToNextStep = useCallback(() => {
     if (state.currentStep < state.steps.length - 1) {
-      dispatch({ type: "SET_STEP", payload: state.currentStep + 1 });
+      const nextStep = state.currentStep + 1;
+      dispatch({ type: "SET_STEP", payload: nextStep });
+      // Trigger validation for the new step
+      const currentErrors = validateStep(nextStep);
+      dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
     }
-  }, [state.currentStep, state.steps.length]);
+  }, [state.currentStep, state.steps.length, validateStep]);
 
   const goToPreviousStep = useCallback(() => {
     if (state.currentStep > 0) {
