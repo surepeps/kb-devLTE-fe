@@ -49,7 +49,6 @@ export default function RootLayout({
                       {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
                       <HeaderFooterWrapper>
                         <Homepage />
-                        <Countdown />
                       </HeaderFooterWrapper>
                       <Toaster />
                     </body>
