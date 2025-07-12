@@ -214,10 +214,10 @@ const Homepage = ({
   );
 };
 
-const HomepageWrapper = () => (
+const HomepageWrapper = ({ isComingSoon }: { isComingSoon?: boolean }) => (
   <Suspense fallback={<Loading />}>
-    <Homepage />
+    <Homepage isComingSoon={isComingSoon} />
   </Suspense>
 );
-
+ 
 export default HomepageWrapper;
