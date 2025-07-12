@@ -10,6 +10,7 @@ import {
   FiCheckCircle,
   FiEdit3,
   FiChevronDown,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
 
@@ -42,6 +43,49 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
 
+  // Check if inspection date has passed
+  const inspectionDatePassed = useMemo(() => {
+    if (!details?.inspectionDate) return false;
+    const inspectionDate = new Date(details.inspectionDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    inspectionDate.setHours(0, 0, 0, 0);
+    return inspectionDate < today;
+  }, [details?.inspectionDate]);
+
+  // Check if inspection date is today
+  const inspectionDateIsToday = useMemo(() => {
+    if (!details?.inspectionDate) return false;
+    const inspectionDate = new Date(details.inspectionDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    inspectionDate.setHours(0, 0, 0, 0);
+    return inspectionDate.getTime() === today.getTime();
+  }, [details?.inspectionDate]);
+
+  // Check if inspection date and time has completely passed
+  const inspectionDateTimePassed = useMemo(() => {
+    if (!details?.inspectionDate || !details?.inspectionTime) return false;
+
+    const inspectionDate = new Date(details.inspectionDate);
+    const now = new Date();
+
+    // Parse time and set it on the inspection date
+    const timeParts = details.inspectionTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeParts) {
+      let hours = parseInt(timeParts[1]);
+      const minutes = parseInt(timeParts[2]);
+      const ampm = timeParts[3].toUpperCase();
+
+      if (ampm === "PM" && hours !== 12) hours += 12;
+      if (ampm === "AM" && hours === 12) hours = 0;
+
+      inspectionDate.setHours(hours, minutes, 0, 0);
+    }
+
+    return inspectionDate < now;
+  }, [details?.inspectionDate, details?.inspectionTime]);
+
   // Generate available times (8 AM to 6 PM, hourly only)
   const availableTimes = useMemo(() => {
     const times = [];
@@ -59,18 +103,31 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return times;
   }, []);
 
-  // Generate available dates (next 15 days excluding Sundays)
-  const availableDates = useMemo(() => {
+  // Helper function to get valid dates (excluding Sundays)
+  const getValidDatesFromDate = (
+    startDate: Date,
+    count: number,
+    direction: "forward" | "backward" = "forward",
+  ) => {
     const dates = [];
-    const today = new Date();
-    const currentDate = new Date(today);
-    currentDate.setDate(today.getDate() + 1); // Start from tomorrow
+    const currentDate = new Date(startDate);
 
-    while (dates.length < 15) {
+    if (direction === "backward") {
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    while (dates.length < count) {
       // Skip Sundays (0 = Sunday)
       if (currentDate.getDay() !== 0) {
+        const dateStr = currentDate.toISOString().split("T")[0];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const currentDateCopy = new Date(currentDate);
+        currentDateCopy.setHours(0, 0, 0, 0);
+        const isPassed = currentDateCopy < today;
+
         dates.push({
-          date: currentDate.toISOString().split("T")[0],
+          date: dateStr,
           displayDate: currentDate.toLocaleDateString("en-US", {
             weekday: "short",
             month: "short",
@@ -82,12 +139,102 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
             month: "long",
             day: "numeric",
           }),
+          isPassed,
         });
       }
-      currentDate.setDate(currentDate.getDate() + 1);
+
+      if (direction === "backward") {
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
     }
-    return dates;
-  }, []);
+
+    return direction === "backward" ? dates.reverse() : dates;
+  };
+
+  // Generate available dates with the specified logic - always generate 15 total dates
+  const availableDates = useMemo(() => {
+    const today = new Date();
+
+    if (!details?.inspectionDate) {
+      // No inspection date, start from today and show next 15 days
+      return getValidDatesFromDate(today, 15, "forward");
+    }
+
+    const inspectionDate = new Date(details.inspectionDate);
+
+    if (inspectionDateIsToday) {
+      // Case 1: Inspection date is today (not expired)
+      // Start the list from today, and show 15 days total
+      return getValidDatesFromDate(today, 15, "forward");
+    } else if (!inspectionDatePassed) {
+      // Case 2: Inspection date is not today, but still valid (not expired)
+      // Show up to 14 valid days before the inspection date, ending with the inspection date
+      const datesBeforeInspection = getValidDatesFromDate(
+        inspectionDate,
+        14,
+        "backward",
+      );
+      const inspectionDateObj = {
+        date: inspectionDate.toISOString().split("T")[0],
+        displayDate: inspectionDate.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        }),
+        fullDate: inspectionDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        isPassed: false,
+      };
+
+      return [...datesBeforeInspection, inspectionDateObj];
+    } else {
+      // Case 3: Inspection date is already expired
+      // Do not include it. Start from today and list the next 15 valid upcoming days
+      return getValidDatesFromDate(today, 15, "forward");
+    }
+  }, [details?.inspectionDate, inspectionDatePassed, inspectionDateIsToday]);
+
+  // Filter times based on selected date and current time
+  const getAvailableTimesForDate = useMemo(() => {
+    return (selectedDate: string) => {
+      if (!selectedDate) return availableTimes;
+
+      const selected = new Date(selectedDate);
+      const now = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      selected.setHours(0, 0, 0, 0);
+
+      // If selected date is today, filter out passed times
+      if (selected.getTime() === today.getTime()) {
+        const currentHour = now.getHours();
+        return availableTimes.map((timeObj) => {
+          const timeParts = timeObj.value.match(/(\d+):(\d+)\s*(AM|PM)/i);
+          if (timeParts) {
+            let hours = parseInt(timeParts[1]);
+            const ampm = timeParts[3].toUpperCase();
+
+            if (ampm === "PM" && hours !== 12) hours += 12;
+            if (ampm === "AM" && hours === 12) hours = 0;
+
+            return {
+              ...timeObj,
+              isPassed: hours <= currentHour,
+            };
+          }
+          return timeObj;
+        });
+      }
+
+      return availableTimes.map((timeObj) => ({ ...timeObj, isPassed: false }));
+    };
+  }, [availableTimes]);
 
   // Initialize date and time with defaults - ensure auto-population on mount and navigation
   useEffect(() => {
@@ -96,9 +243,8 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       return;
     }
 
-    // Set initial date from details or first available
-    if (details?.inspectionDate) {
-      // Convert inspection date to match our available dates format
+    // Set initial date - prioritize inspection date if valid, otherwise first available
+    if (details?.inspectionDate && !inspectionDatePassed) {
       const inspectionDateFormatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
@@ -114,7 +260,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         setNewDate(availableDates[0]?.date || "");
       }
     } else if (!newDate) {
-      // No inspection date from details, use first available
+      // No valid inspection date from details, use first available
       setNewDate(availableDates[0]?.date || "");
     }
 
@@ -134,6 +280,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     details?.inspectionTime,
     newDate,
     newTime,
+    inspectionDatePassed,
   ]);
 
   // Prevent background scroll when modal is open
@@ -150,12 +297,13 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     };
   }, [showUpdateForm]);
 
-  const displayedDates = showAllDays
-    ? availableDates
-    : availableDates.slice(0, 10);
+  // Display logic: show 10 by default, 15 with "view more"
+  const displayedDates = useMemo(() => {
+    return showAllDays ? availableDates : availableDates.slice(0, 10);
+  }, [availableDates, showAllDays]);
 
   const currentDate = useMemo(() => {
-    if (details?.inspectionDate) {
+    if (details?.inspectionDate && !inspectionDatePassed) {
       // Convert to our date format
       const formatted = new Date(details.inspectionDate)
         .toISOString()
@@ -165,7 +313,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       return dateExists ? formatted : newDate || availableDates[0]?.date || "";
     }
     return newDate || availableDates[0]?.date || "";
-  }, [details?.inspectionDate, newDate, availableDates]);
+  }, [details?.inspectionDate, newDate, availableDates, inspectionDatePassed]);
 
   const currentTime = useMemo(() => {
     return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
@@ -322,11 +470,35 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       }
 
       setShowUpdateForm(false);
-      setNewDate("");
-      setNewTime("");
+      // Don't reset date and time - keep them for next time modal is opened
     } catch (error) {
       console.error("Failed to update inspection date/time:", error);
     }
+  };
+
+  const openUpdateModal = () => {
+    // Auto-select current inspection details when opening modal
+    // If inspection date is valid and exists in available dates, use it; otherwise use first available
+    let dateToSelect = availableDates[0]?.date || "";
+
+    if (details?.inspectionDate && !inspectionDatePassed) {
+      const inspectionDateFormatted = new Date(details.inspectionDate)
+        .toISOString()
+        .split("T")[0];
+      const dateExists = availableDates.some(
+        (d) => d.date === inspectionDateFormatted,
+      );
+      if (dateExists) {
+        dateToSelect = inspectionDateFormatted;
+      }
+    }
+
+    const timeToSelect = currentTime || availableTimes[0]?.value || "";
+
+    // Set the modal state to appropriate values
+    setNewDate(dateToSelect);
+    setNewTime(timeToSelect);
+    setShowUpdateForm(true);
   };
 
   return (
@@ -386,6 +558,31 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         )}
       </div>
 
+      {/* Date/Time Status Warning */}
+      {(inspectionDatePassed || inspectionDateTimePassed) && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-red-50 border border-red-200 rounded-lg"
+        >
+          <div className="flex items-center space-x-2">
+            <FiAlertTriangle className="w-5 h-5 text-red-600" />
+            <div>
+              <p className="text-red-800 font-medium">
+                {inspectionDateTimePassed
+                  ? "Inspection Date & Time Has Expired"
+                  : "Inspection Date Has Passed"}
+              </p>
+              <p className="text-red-700 text-sm">
+                {inspectionDateTimePassed
+                  ? "The scheduled inspection date and time has already passed. Please select a new date and time."
+                  : "The scheduled inspection date has passed. Please update the schedule."}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Current Schedule */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -403,22 +600,42 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Date & Time */}
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div
+                className={`p-4 rounded-lg ${inspectionDatePassed ? "bg-red-50" : "bg-blue-50"}`}
+              >
                 <div className="flex items-center space-x-2 mb-2">
-                  <FiCalendar className="w-5 h-5 text-blue-600" />
-                  <span className="font-medium text-blue-800">Date</span>
+                  <FiCalendar
+                    className={`w-5 h-5 ${inspectionDatePassed ? "text-red-600" : "text-blue-600"}`}
+                  />
+                  <span
+                    className={`font-medium ${inspectionDatePassed ? "text-red-800" : "text-blue-800"}`}
+                  >
+                    Date
+                  </span>
                 </div>
-                <p className="text-blue-700 text-lg">
+                <p
+                  className={`text-lg ${inspectionDatePassed ? "text-red-700" : "text-blue-700"}`}
+                >
                   {formatDate(currentDate)}
                 </p>
               </div>
 
-              <div className="p-4 bg-green-50 rounded-lg">
+              <div
+                className={`p-4 rounded-lg ${inspectionDateTimePassed ? "bg-red-50" : "bg-green-50"}`}
+              >
                 <div className="flex items-center space-x-2 mb-2">
-                  <FiClock className="w-5 h-5 text-green-600" />
-                  <span className="font-medium text-green-800">Time</span>
+                  <FiClock
+                    className={`w-5 h-5 ${inspectionDateTimePassed ? "text-red-600" : "text-green-600"}`}
+                  />
+                  <span
+                    className={`font-medium ${inspectionDateTimePassed ? "text-red-800" : "text-green-800"}`}
+                  >
+                    Time
+                  </span>
                 </div>
-                <p className="text-green-700 text-lg">
+                <p
+                  className={`text-lg ${inspectionDateTimePassed ? "text-red-700" : "text-green-700"}`}
+                >
                   {formatTime(currentTime)}
                 </p>
               </div>
@@ -457,7 +674,8 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               disabled={
                 loadingStates.submitting ||
                 loadingStates.accepting ||
-                loadingStates.countering
+                loadingStates.countering ||
+                inspectionDateTimePassed
               }
               className="flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
             >
@@ -471,16 +689,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
             {/* Update Schedule */}
             <button
-              onClick={() => {
-                // Auto-select current inspection details when opening modal
-                const dateToSelect =
-                  currentDate || availableDates[0]?.date || "";
-                const timeToSelect =
-                  currentTime || availableTimes[0]?.value || "";
-                setNewDate(dateToSelect);
-                setNewTime(timeToSelect);
-                setShowUpdateForm(true);
-              }}
+              onClick={openUpdateModal}
               disabled={
                 loadingStates.submitting ||
                 loadingStates.accepting ||
@@ -518,6 +727,20 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                 Update Inspection Schedule
               </h3>
 
+              {/* Status warning in modal */}
+              {(inspectionDatePassed || inspectionDateTimePassed) && (
+                <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <FiAlertTriangle className="w-4 h-4 text-red-600" />
+                    <p className="text-red-800 text-sm font-medium">
+                      {inspectionDateTimePassed
+                        ? "Current inspection date and time has expired"
+                        : "Current inspection date has passed"}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-6">
                 {/* Date Selection */}
                 <div>
@@ -529,16 +752,24 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                       <button
                         key={dateObj.date}
                         onClick={() => setNewDate(dateObj.date)}
+                        disabled={dateObj.isPassed}
                         className={`p-3 text-left rounded-lg border transition-colors duration-200 ${
-                          newDate === dateObj.date
-                            ? "border-[#09391C] bg-green-50 text-[#09391C]"
-                            : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
+                          dateObj.isPassed
+                            ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : newDate === dateObj.date
+                              ? "border-[#09391C] bg-green-50 text-[#09391C]"
+                              : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
                         }`}
                       >
                         <div className="font-medium">{dateObj.displayDate}</div>
                         <div className="text-xs text-gray-500 mt-1">
                           {dateObj.fullDate}
                         </div>
+                        {dateObj.isPassed && (
+                          <div className="text-xs text-red-500 mt-1">
+                            Passed
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -550,9 +781,20 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                       className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
                     >
                       <span className="text-sm font-medium">
-                        View More Dates
+                        View More Dates ({availableDates.length - 10} more)
                       </span>
                       <FiChevronDown className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Show Less Button */}
+                  {showAllDays && availableDates.length > 10 && (
+                    <button
+                      onClick={() => setShowAllDays(false)}
+                      className="mt-3 flex items-center space-x-2 text-[#09391C] hover:text-green-700 transition-colors duration-200"
+                    >
+                      <span className="text-sm font-medium">Show Less</span>
+                      <FiChevronDown className="w-4 h-4 transform rotate-180" />
                     </button>
                   )}
                 </div>
@@ -563,19 +805,25 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     Select New Time
                   </label>
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto">
-                    {availableTimes.map((timeObj) => (
+                    {getAvailableTimesForDate(newDate).map((timeObj) => (
                       <button
                         key={timeObj.value}
                         onClick={() => setNewTime(timeObj.value)}
+                        disabled={timeObj.isPassed}
                         className={`p-2 text-center rounded-lg border transition-colors duration-200 ${
-                          newTime === timeObj.value
-                            ? "border-[#09391C] bg-green-50 text-[#09391C]"
-                            : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
+                          timeObj.isPassed
+                            ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : newTime === timeObj.value
+                              ? "border-[#09391C] bg-green-50 text-[#09391C]"
+                              : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
                         }`}
                       >
                         <div className="text-sm font-medium">
                           {timeObj.display}
                         </div>
+                        {timeObj.isPassed && (
+                          <div className="text-xs text-red-500">Passed</div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -623,8 +871,6 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                   <button
                     onClick={() => {
                       setShowUpdateForm(false);
-                      setNewDate("");
-                      setNewTime("");
                       setShowAllDays(false);
                     }}
                     className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"

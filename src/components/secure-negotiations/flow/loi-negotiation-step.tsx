@@ -19,6 +19,7 @@ interface LOINegotiationStepProps {
   onActionSelected: (
     action: "accept" | "reject" | "requestChanges",
     newLoiFile?: File,
+    changeRequest?: string,
   ) => void;
 }
 
@@ -92,10 +93,10 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       return;
     }
 
-    // Don't submit immediately, proceed to next step
+    // Pass the change request to proceed to next step
     setShowRequestChangesModal(false);
+    onActionSelected("requestChanges", undefined, changeRequest);
     setChangeRequest("");
-    onActionSelected("requestChanges");
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -428,7 +429,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
                   >
                     {loadingStates.submitting
                       ? "Submitting..."
-                      : "Submit Request"}
+                      : "Continue to Inspection"}
                   </button>
                   <button
                     onClick={() => {

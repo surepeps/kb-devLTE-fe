@@ -179,63 +179,19 @@ const DEFAULT_BUDGET_THRESHOLDS: BudgetThreshold[] = [
   { location: "default", listingType: "shortlet", minAmount: 10000 },
 ];
 
-// Storage keys
-const STORAGE_KEY = "khabi-teq-preference-form";
-const STORAGE_STEP_KEY = "khabi-teq-preference-step";
-
-// Helper functions for localStorage
-const loadFromStorage = (): Partial<PreferenceFormState> => {
-  if (typeof window === "undefined") return {};
-
-  try {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    const savedStep = localStorage.getItem(STORAGE_STEP_KEY);
-
-    return {
-      formData: savedData ? JSON.parse(savedData) : {},
-      currentStep: savedStep ? parseInt(savedStep, 10) : 0,
-    };
-  } catch (error) {
-    console.warn("Failed to load preference form data from storage:", error);
-    return {};
-  }
-};
-
-const saveToStorage = (formData: any, currentStep: number) => {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-    localStorage.setItem(STORAGE_STEP_KEY, currentStep.toString());
-  } catch (error) {
-    console.warn("Failed to save preference form data to storage:", error);
-  }
-};
-
-const clearStorage = () => {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STORAGE_STEP_KEY);
-  } catch (error) {
-    console.warn("Failed to clear preference form data from storage:", error);
-  }
-};
+// No localStorage usage - data is only kept in context state
 
 // Initial state
 const createInitialState = (): PreferenceFormState => {
-  const savedState = loadFromStorage();
-
   return {
-    currentStep: savedState.currentStep || 0,
+    currentStep: 0,
     steps: [
       { id: "location", title: "Location", isValid: false, isRequired: true },
       { id: "budget", title: "Budget", isValid: false, isRequired: true },
       { id: "features", title: "Features", isValid: false, isRequired: false },
       { id: "contact", title: "Contact", isValid: false, isRequired: true },
     ],
-    formData: savedState.formData || {},
+    formData: {},
     isSubmitting: false,
     validationErrors: [],
     budgetThresholds: DEFAULT_BUDGET_THRESHOLDS,
@@ -250,29 +206,21 @@ function preferenceFormReducer(
   state: PreferenceFormState,
   action: PreferenceFormAction,
 ): PreferenceFormState {
-  let newState: PreferenceFormState;
-
   switch (action.type) {
     case "SET_STEP":
-      newState = {
+      return {
         ...state,
         currentStep: action.payload,
       };
-      // Save step to storage
-      saveToStorage(newState.formData, newState.currentStep);
-      return newState;
 
     case "UPDATE_FORM_DATA":
-      newState = {
+      return {
         ...state,
         formData: {
           ...state.formData,
           ...action.payload,
         },
       };
-      // Save form data to storage
-      saveToStorage(newState.formData, newState.currentStep);
-      return newState;
 
     case "SET_VALIDATION_ERRORS":
       return {
@@ -287,8 +235,6 @@ function preferenceFormReducer(
       };
 
     case "RESET_FORM":
-      // Clear storage when form is reset
-      clearStorage();
       return {
         ...createInitialState(),
         formData: {}, // Ensure form data is completely empty
