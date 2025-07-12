@@ -229,8 +229,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Simplified update function that gets called immediately when data changes
-  useEffect(() => {
+  // Update form data whenever location data changes
+  const updateLocationData = useCallback(() => {
     if (!isInitialized) return;
 
     let lgaValues: string[] = [];
@@ -253,22 +253,21 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     };
 
     console.log("LocationSelection - Updating form data with:", locationData);
+    console.log("LocationSelection - Current state.formData:", state.formData);
 
     // Update form data immediately
     updateFormData({
       location: locationData,
     });
 
-    // Trigger validation after a short delay
-    const timeoutId = setTimeout(() => {
+    // Trigger validation
+    setTimeout(() => {
       triggerValidation(0);
-    }, 50);
-
-    return () => clearTimeout(timeoutId);
+    }, 100);
   }, [
-    selectedState?.value,
-    selectedLGAs.map((lga) => lga.value).join(","), // Convert to string to avoid dep array issues
-    selectedAreas.map((area) => area.value).join(","), // Convert to string to avoid dep array issues
+    selectedState,
+    selectedLGAs,
+    selectedAreas,
     customLocation,
     showCustomLocation,
     customLGAs,
@@ -276,6 +275,21 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     isInitialized,
     updateFormData,
     triggerValidation,
+    state.formData,
+  ]);
+
+  // Call updateLocationData when any relevant data changes
+  useEffect(() => {
+    updateLocationData();
+  }, [
+    selectedState?.value,
+    selectedLGAs.map((lga) => lga.value).join(","),
+    selectedAreas.map((area) => area.value).join(","),
+    customLocation,
+    showCustomLocation,
+    customLGAs,
+    showCustomLGAs,
+    isInitialized,
   ]);
 
   // Handle state change
