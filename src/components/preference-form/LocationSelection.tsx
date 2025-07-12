@@ -219,8 +219,8 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     setLgaAreaMap(newLgaAreaMap);
   }, [selectedLGAs, selectedState]);
 
-  // Update context when values change - memoized and debounced
-  const updateLocationData = useCallback(() => {
+  // Update context when values change - optimized to prevent infinite loops
+  useEffect(() => {
     if (!isInitialized) return;
 
     let lgaValues: string[] = [];
@@ -242,26 +242,24 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
       customLocation: showCustomLocation ? customLocation : undefined,
     };
 
-    updateFormData({
-      location: locationData,
-    });
+    // Use a timeout to debounce updates and prevent rapid firing
+    const timeoutId = setTimeout(() => {
+      updateFormData({
+        location: locationData,
+      });
+    }, 150);
+
+    return () => clearTimeout(timeoutId);
   }, [
     selectedState?.value,
-    selectedLGAs.map((lga) => lga.value).join(","),
-    selectedAreas.map((area) => area.value).join(","),
+    selectedLGAs,
+    selectedAreas,
     customLocation,
     showCustomLocation,
     customLGAs,
     showCustomLGAs,
     isInitialized,
-    updateFormData,
   ]);
-
-  // Use a separate effect for updating the form data to avoid infinite loops
-  useEffect(() => {
-    const timeoutId = setTimeout(updateLocationData, 100);
-    return () => clearTimeout(timeoutId);
-  }, [updateLocationData]);
 
   // Handle state change
   const handleStateChange = useCallback((selected: SingleValue<Option>) => {
