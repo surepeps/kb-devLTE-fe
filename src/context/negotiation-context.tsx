@@ -868,12 +868,16 @@ export const useNegotiationDataWithContext = (
             negotiationType,
             createdAt: data.createdAt || null,
             dateTimeObj: {
+              date: data.inspectionDate || "",
+              time: data.inspectionTime || "",
               selectedDate: data.inspectionDate
                 ? new Date(data.inspectionDate).toISOString().split("T")[0]
                 : "",
               selectedTime: data.inspectionTime || "N/A",
             },
             counterDateTimeObj: {
+              date: "",
+              time: "",
               selectedDate: data.inspectionDate
                 ? new Date(data.inspectionDate).toISOString().split("T")[0]
                 : "",
