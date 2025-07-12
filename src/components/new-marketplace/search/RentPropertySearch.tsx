@@ -188,7 +188,7 @@ const RentPropertySearch = () => {
     if (activeTab === "rent" && rentTab.formikStatus === "idle") {
       handleSearch();
     }
-  }, [activeTab]);
+  }, [activeTab, handleSearch, rentTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
