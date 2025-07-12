@@ -319,54 +319,102 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
       purpose: purpose?.value || "",
     };
 
-    let propertyDetails = {};
-
     switch (preferenceType) {
       case "buy":
-        propertyDetails = {
-          ...baseData,
-          buildingType: buildingType?.value || "",
+        const buyPropertyDetails = {
+          propertyType: (propertyType?.value || "") as
+            | "Land"
+            | "Residential"
+            | "Commercial",
+          buildingType: (buildingType?.value || "") as
+            | "Detached"
+            | "Semi-Detached"
+            | "Block of Flats",
+          minBedrooms:
+            minBedrooms?.value === "More"
+              ? ("More" as const)
+              : parseInt(minBedrooms?.value || "0") || 0,
           minBathrooms: parseInt(minBathrooms) || 0,
+          propertyCondition: (propertyCondition?.value || "") as
+            | "New"
+            | "Renovated"
+            | "Any",
+          purpose: (purpose?.value || "") as
+            | "For living"
+            | "Resale"
+            | "Development",
         };
         updateFormData({
-          propertyDetails,
+          propertyDetails: buyPropertyDetails,
           nearbyLandmark,
         });
         break;
 
       case "rent":
-        propertyDetails = {
-          ...baseData,
-          leaseTerm: leaseTerm?.value || "",
+        const rentPropertyDetails = {
+          propertyType: (propertyType?.value || "") as
+            | "Self-con"
+            | "Flat"
+            | "Mini Flat"
+            | "Bungalow",
+          minBedrooms:
+            minBedrooms?.value === "More"
+              ? ("More" as const)
+              : parseInt(minBedrooms?.value || "0") || 0,
+          leaseTerm: (leaseTerm?.value || "") as "6 Months" | "1 Year",
+          propertyCondition: (propertyCondition?.value || "") as
+            | "New"
+            | "Renovated",
+          purpose: (purpose?.value || "") as "Residential" | "Office",
         };
         updateFormData({
-          propertyDetails,
+          propertyDetails: rentPropertyDetails,
         });
         break;
 
       case "joint-venture":
-        propertyDetails = {
-          propertyType: propertyType?.value || "",
-          jvType: jvType?.value || "",
-          expectedStructureType: expectedStructureType?.value || "",
-          timeline: timeline?.value || "",
-          minLandSize,
+        const developmentDetails = {
+          minLandSize: minLandSize || "",
+          jvType: (jvType?.value || "") as
+            | "Equity Split"
+            | "Lease-to-Build"
+            | "Development Partner",
+          propertyType: (propertyType?.value || "") as
+            | "Land"
+            | "Old Building"
+            | "Structure to demolish",
+          expectedStructureType: (expectedStructureType?.value || "") as
+            | "Mini Flats"
+            | "Luxury Duplexes",
+          timeline: (timeline?.value || "") as
+            | "Ready Now"
+            | "In 3 Months"
+            | "Within 1 Year",
           budgetRange: budgetRange
             ? parseFloat(budgetRange.replace(/,/g, ""))
             : undefined,
         };
         updateFormData({
-          developmentDetails: propertyDetails,
+          developmentDetails,
         });
         break;
 
       case "shortlet":
-        propertyDetails = {
-          ...baseData,
+        const bookingDetails = {
+          propertyType: (propertyType?.value || "") as
+            | "Studio"
+            | "1-Bed Apartment"
+            | "2-Bed Flat",
+          minBedrooms:
+            minBedrooms?.value === "More"
+              ? ("More" as const)
+              : parseInt(minBedrooms?.value || "0") || 0,
           numberOfGuests: parseInt(numberOfGuests) || 0,
+          checkInDate: "", // These need to be set elsewhere in the form
+          checkOutDate: "", // These need to be set elsewhere in the form
         };
         updateFormData({
-          bookingDetails: propertyDetails,
+          bookingDetails,
         });
         break;
     }
