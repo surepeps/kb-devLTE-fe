@@ -53,6 +53,16 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return inspectionDate < today;
   }, [details?.inspectionDate]);
 
+  // Check if inspection date is today
+  const inspectionDateIsToday = useMemo(() => {
+    if (!details?.inspectionDate) return false;
+    const inspectionDate = new Date(details.inspectionDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    inspectionDate.setHours(0, 0, 0, 0);
+    return inspectionDate.getTime() === today.getTime();
+  }, [details?.inspectionDate]);
+
   // Check if inspection date and time has completely passed
   const inspectionDateTimePassed = useMemo(() => {
     if (!details?.inspectionDate || !details?.inspectionTime) return false;
@@ -93,28 +103,28 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return times;
   }, []);
 
-  // Generate available dates with proper handling for passed dates
-  const availableDates = useMemo(() => {
+  // Helper function to get valid dates (excluding Sundays)
+  const getValidDatesFromDate = (
+    startDate: Date,
+    count: number,
+    direction: "forward" | "backward" = "forward",
+  ) => {
     const dates = [];
-    const today = new Date();
-    let startDate = new Date(today);
-
-    // If inspection date has passed, start from inspection date
-    if (inspectionDatePassed && details?.inspectionDate) {
-      const inspectionDate = new Date(details.inspectionDate);
-      startDate = new Date(Math.max(inspectionDate.getTime(), today.getTime()));
-    } else {
-      // Normal case: start from tomorrow
-      startDate.setDate(today.getDate() + 1);
-    }
-
     const currentDate = new Date(startDate);
 
-    while (dates.length < 15) {
+    if (direction === "backward") {
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    while (dates.length < count) {
       // Skip Sundays (0 = Sunday)
       if (currentDate.getDay() !== 0) {
         const dateStr = currentDate.toISOString().split("T")[0];
-        const isPassed = currentDate < today;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const currentDateCopy = new Date(currentDate);
+        currentDateCopy.setHours(0, 0, 0, 0);
+        const isPassed = currentDateCopy < today;
 
         dates.push({
           date: dateStr,
@@ -132,10 +142,63 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           isPassed,
         });
       }
-      currentDate.setDate(currentDate.getDate() + 1);
+
+      if (direction === "backward") {
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
     }
-    return dates;
-  }, [inspectionDatePassed, details?.inspectionDate]);
+
+    return direction === "backward" ? dates.reverse() : dates;
+  };
+
+  // Generate available dates with the specified logic
+  const availableDates = useMemo(() => {
+    const today = new Date();
+
+    if (!details?.inspectionDate) {
+      // No inspection date, start from today and show next 5 days
+      return getValidDatesFromDate(today, 5, "forward");
+    }
+
+    const inspectionDate = new Date(details.inspectionDate);
+
+    if (inspectionDateIsToday) {
+      // Case 1: Inspection date is today (not expired)
+      // Start the list from today, and pre-select the inspection date
+      return getValidDatesFromDate(today, 5, "forward");
+    } else if (!inspectionDatePassed) {
+      // Case 2: Inspection date is not today, but still valid (not expired)
+      // Show up to five valid days before the inspection date, ending with the inspection date pre-selected
+      const datesBeforeInspection = getValidDatesFromDate(
+        inspectionDate,
+        4,
+        "backward",
+      );
+      const inspectionDateObj = {
+        date: inspectionDate.toISOString().split("T")[0],
+        displayDate: inspectionDate.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        }),
+        fullDate: inspectionDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        isPassed: false,
+      };
+
+      return [...datesBeforeInspection, inspectionDateObj];
+    } else {
+      // Case 3: Inspection date is already expired
+      // Do not include it. Start from today and list the next 5 valid upcoming days (today + 4)
+      return getValidDatesFromDate(today, 5, "forward");
+    }
+  }, [details?.inspectionDate, inspectionDatePassed, inspectionDateIsToday]);
 
   // Filter times based on selected date and current time
   const getAvailableTimesForDate = useMemo(() => {
@@ -180,9 +243,8 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       return;
     }
 
-    // Set initial date from details or first available
-    if (details?.inspectionDate) {
-      // Convert inspection date to match our available dates format
+    // Set initial date - prioritize inspection date if valid, otherwise first available
+    if (details?.inspectionDate && !inspectionDatePassed) {
       const inspectionDateFormatted = new Date(details.inspectionDate)
         .toISOString()
         .split("T")[0];
@@ -198,7 +260,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         setNewDate(availableDates[0]?.date || "");
       }
     } else if (!newDate) {
-      // No inspection date from details, use first available
+      // No valid inspection date from details, use first available
       setNewDate(availableDates[0]?.date || "");
     }
 
@@ -218,6 +280,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     details?.inspectionTime,
     newDate,
     newTime,
+    inspectionDatePassed,
   ]);
 
   // Prevent background scroll when modal is open
@@ -239,7 +302,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     : availableDates.slice(0, 10);
 
   const currentDate = useMemo(() => {
-    if (details?.inspectionDate) {
+    if (details?.inspectionDate && !inspectionDatePassed) {
       // Convert to our date format
       const formatted = new Date(details.inspectionDate)
         .toISOString()
@@ -249,7 +312,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       return dateExists ? formatted : newDate || availableDates[0]?.date || "";
     }
     return newDate || availableDates[0]?.date || "";
-  }, [details?.inspectionDate, newDate, availableDates]);
+  }, [details?.inspectionDate, newDate, availableDates, inspectionDatePassed]);
 
   const currentTime = useMemo(() => {
     return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
@@ -414,10 +477,24 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const openUpdateModal = () => {
     // Auto-select current inspection details when opening modal
-    const dateToSelect = currentDate || availableDates[0]?.date || "";
+    // If inspection date is valid and exists in available dates, use it; otherwise use first available
+    let dateToSelect = availableDates[0]?.date || "";
+
+    if (details?.inspectionDate && !inspectionDatePassed) {
+      const inspectionDateFormatted = new Date(details.inspectionDate)
+        .toISOString()
+        .split("T")[0];
+      const dateExists = availableDates.some(
+        (d) => d.date === inspectionDateFormatted,
+      );
+      if (dateExists) {
+        dateToSelect = inspectionDateFormatted;
+      }
+    }
+
     const timeToSelect = currentTime || availableTimes[0]?.value || "";
 
-    // Set the modal state to current values
+    // Set the modal state to appropriate values
     setNewDate(dateToSelect);
     setNewTime(timeToSelect);
     setShowUpdateForm(true);
