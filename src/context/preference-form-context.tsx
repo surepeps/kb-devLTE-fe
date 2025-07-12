@@ -447,14 +447,30 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
           break;
 
         case 3: // Contact step
-          if (
-            !formData.contactInfo?.fullName &&
-            formData.preferenceType !== "joint-venture"
-          ) {
-            errors.push({
-              field: "contactInfo.fullName",
-              message: "Full name is required",
-            });
+          if (formData.preferenceType === "joint-venture") {
+            // Check for joint-venture specific contact fields
+            const jvContactInfo = formData.contactInfo as any;
+            if (!jvContactInfo?.companyName) {
+              errors.push({
+                field: "contactInfo.companyName",
+                message: "Company name is required",
+              });
+            }
+            if (!jvContactInfo?.contactPerson) {
+              errors.push({
+                field: "contactInfo.contactPerson",
+                message: "Contact person is required",
+              });
+            }
+          } else {
+            // Check for regular contact fields
+            const regularContactInfo = formData.contactInfo as any;
+            if (!regularContactInfo?.fullName) {
+              errors.push({
+                field: "contactInfo.fullName",
+                message: "Full name is required",
+              });
+            }
           }
           if (!formData.contactInfo?.email) {
             errors.push({
