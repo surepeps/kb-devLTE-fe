@@ -64,7 +64,7 @@ const PREFERENCE_CONFIGS = {
 // Form content component
 const PreferenceFormContent: React.FC = () => {
   const router = useRouter();
-  const { state, updateFormData, resetForm, goToStep, dispatch } =
+  const { state, updateFormData, resetForm, goToStep, dispatch, isFormValid } =
     usePreferenceForm();
 
   const [selectedPreferenceType, setSelectedPreferenceType] =
@@ -211,8 +211,7 @@ const PreferenceFormContent: React.FC = () => {
 
   // Handle form submission
   const handleSubmit = useCallback(async () => {
-    // Final validation before submission
-    const { isFormValid } = usePreferenceForm();
+    
     if (!isFormValid()) {
       toast.error("Please complete all required fields before submitting");
       return;
@@ -262,7 +261,7 @@ const PreferenceFormContent: React.FC = () => {
           Choose Your Preference
         </h2>
         <p className="text-sm sm:text-base text-gray-600">
-          Select the type of property transaction you're interested in
+          Select the type of property transaction you&apos;re interested in
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -473,7 +472,7 @@ const PreferenceFormContent: React.FC = () => {
               Submit Your Property Preference
             </h1>
             <p className="text-base sm:text-xl text-gray-600">
-              Tell us what you're looking for and we'll help you find the
+              Tell us what you&apos;re looking for and we&apos;ll help you find the
               perfect match
             </p>
           </div>

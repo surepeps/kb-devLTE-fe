@@ -498,7 +498,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
           ) : (
             <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-700 mb-2">
-                📍 This state doesn't have predefined LGAs in our system. Please
+                📍 This state doesn&apos;t have predefined LGAs in our system. Please
                 enter your local government areas below:
               </p>
               <input

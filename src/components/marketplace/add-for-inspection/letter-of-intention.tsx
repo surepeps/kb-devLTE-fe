@@ -17,7 +17,7 @@ type LetterOfIntentionProps = {
   submitInspectionPayload: any;
   setSubmitInspectionPayload: (payload: any) => void;
 };
-
+ 
 const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
   setIsModalClosed,
   closeSelectPreferableModal,
@@ -140,7 +140,7 @@ const LetterOfIntention: React.FC<LetterOfIntentionProps> = ({
             </p>
             <p>Profit sharing: [Percentage/Terms]</p>
             <p className="mt-1 sm:mt-2">Contact: [Your details]</p>
-            <p className="mt-1 sm:mt-2">Sincerely, [Your Name & Signature]"</p>
+            <p className="mt-1 sm:mt-2">Sincerely, [Your Name & Signature]</p>
           </div>
         </div>
 
