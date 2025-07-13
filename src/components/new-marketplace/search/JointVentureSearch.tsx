@@ -21,6 +21,26 @@ const JointVentureSearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
+  // Filter states specific to JV
+  const [filters, setFilters] = useState({
+    selectedState: "",
+    selectedLGA: "",
+    selectedArea: "",
+    locationDisplay: "",
+    priceRange: { min: 0, max: 0 }, // Investment amount range
+    usageOptions: [] as string[],
+    bedrooms: undefined as number | undefined,
+    bathrooms: undefined as number | undefined,
+    landSize: {
+      type: "plot",
+      size: undefined as number | undefined,
+    },
+    desiredFeatures: [] as string[],
+    investmentType: "",
+    expectedROI: "",
+    projectDuration: "",
+  });
+
   const handleSearch = useCallback(
     async (page = 1) => {
       const searchParams: SearchParams = {
