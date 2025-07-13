@@ -336,9 +336,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                       const validation = validateCounterPrice(amount);
                       if (!validation.isValid) {
                         return (
-                          <p className="text-sm text-red-600 mt-2">
-                            {validation.message}
-                          </p>
+                          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                            <p className="text-sm text-red-600 font-medium">
+                              {validation.message}
+                            </p>
+                          </div>
+                        );
+                      } else if (amount > 0) {
+                        // Show success message for valid offers
+                        return (
+                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <p className="text-sm text-green-600 font-medium">
+                              ✅ Valid offer amount
+                            </p>
+                          </div>
                         );
                       }
                       return null;
