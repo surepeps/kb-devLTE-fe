@@ -130,6 +130,17 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       };
     }
 
+    // 80% minimum rule for buyers only
+    if (userType === "buyer") {
+      const minimumOffer = propertyPrice * 0.8;
+      if (amount < minimumOffer) {
+        return {
+          isValid: false,
+          message: `You can't offer less than 80% of the seller's price. Minimum offer: ${formatCurrency(minimumOffer)}`,
+        };
+      }
+    }
+
     return { isValid: true, message: "" };
   };
 
