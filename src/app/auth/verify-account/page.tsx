@@ -48,7 +48,7 @@ const VerifyAccountPage: React.FC = () => {
 
   const verifyAccount = async (token: string) => {
     try {
-      const url = `${URLS.BASE}${URLS.auth}/verifyAccount?token=${token}`;
+      const url = `${URLS.BASE}${URLS.authVeryAccount}?token=${token}`;
       const response: VerificationResponse = await GET_REQUEST(url);
 
       if (response.success) {
