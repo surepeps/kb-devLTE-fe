@@ -1,15 +1,16 @@
+/** @format */
+
 "use client";
-
-import MarketPlace from "@/components/marketplace";
-import { MarketplaceProvider } from "@/context/marketplace-context";
 import React from "react";
+import { NewMarketplaceProvider } from "@/context/new-marketplace-context";
+import NewMarketPlace from "@/components/new-marketplace";
 
-const MarketplacePage = () => {
+const NewMarketplacePage = () => {
   return (
-    <MarketplaceProvider>
-      <MarketPlace />
-    </MarketplaceProvider>
+    <NewMarketplaceProvider>
+      <NewMarketPlace />
+    </NewMarketplaceProvider>
   );
 };
-
-export default MarketplacePage;
+ 
+export default NewMarketplacePage;

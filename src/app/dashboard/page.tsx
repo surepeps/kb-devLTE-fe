@@ -541,41 +541,6 @@ export default function LandlordDashboard() {
                 })}
               </div>
             </div>
-
-            {/* Performance Summary */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Performance
-                </h2>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">This Month</span>
-                  <span className="text-sm font-medium text-green-600">
-                    +12%
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Average Views</span>
-                  <span className="text-sm font-medium text-gray-900">847</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Conversion Rate</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    4.2%
-                  </span>
-                </div>
-                <div className="pt-2">
-                  <Link
-                    href="/analytics"
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                  >
-                    View detailed analytics →
-                  </Link>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

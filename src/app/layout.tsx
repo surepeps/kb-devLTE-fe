@@ -14,7 +14,7 @@ import { UserProvider } from "@/context/user-context";
 import { ModalProvider } from "@/context/modalContext";
 import { CreateBriefProvider } from "@/context/create-brief-context";
 import { SelectedBriefsProvider } from "@/context/selected-briefs-context";
-import { MarketplaceProvider } from "@/context/marketplace-context";
+import { NewMarketplaceProvider } from "@/context/new-marketplace-context";
 import { NotificationProvider } from "@/context/notification-context";
 // import { GoogleAnalytics } from '@next/third-parties/google';
 
@@ -42,7 +42,7 @@ export default function RootLayout({
             <PageContextProvider>
               <CreateBriefProvider>
                 <SelectedBriefsProvider>
-                  <MarketplaceProvider>
+                  <NewMarketplaceProvider>
                     <html lang="en">
                       <body
                         className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
@@ -56,7 +56,7 @@ export default function RootLayout({
                       </body>
                       {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
                     </html>
-                  </MarketplaceProvider>
+                  </NewMarketplaceProvider>
                 </SelectedBriefsProvider>
               </CreateBriefProvider>
             </PageContextProvider>
