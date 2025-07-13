@@ -22,7 +22,6 @@ import "swiper/css";
 import "swiper/css/pagination"; // if using pagination
 import "swiper/css/navigation"; // if using navigation arrows
 import { isValid } from "date-fns";
-import { useMarketplace } from "@/context/marketplace-context";
 import { X } from "lucide-react";
 
 interface CardDataProps {
@@ -63,25 +62,21 @@ const Card = ({
   const [count, setCount] = useState<number>(4);
   const [text, setText] = useState<string>("View more");
   const { setViewImage, setImageData } = usePageContext();
-  const {
-    getNegotiatedPrice,
-    removeNegotiatedPrice,
-    isSelectedForInspection,
-    toggleInspectionSelection,
-  } = useMarketplace();
+ 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   // Check if this property has a negotiated price
   const negotiatedPriceData = useMemo(
-    () => getNegotiatedPrice(property?._id),
-    [getNegotiatedPrice, property?._id],
+    () => property?._id,
+    [property?._id],
   );
+
   const hasNegotiatedPrice = negotiatedPriceData !== null;
 
   // Check if this property is selected for inspection
   const isSelectedForInspectionCheck = useMemo(
-    () => isSelectedForInspection(property?._id),
-    [isSelectedForInspection, property?._id],
+    () => property?._id,
+    [property?._id],
   );
 
   useEffect(() => {
@@ -151,7 +146,6 @@ const Card = ({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                removeNegotiatedPrice(property._id);
                               }}
                               className="p-1 hover:bg-gray-100 rounded-full transition-colors"
                               title="Clear negotiated price"
@@ -273,7 +267,6 @@ const Card = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  removeNegotiatedPrice(property._id);
                 }}
                 className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
                 title="Clear negotiated price"
@@ -288,7 +281,7 @@ const Card = ({
               onClick={() => {
                 // Auto-add to selected briefs when negotiating price
                 if (!isSelectedForInspectionCheck) {
-                  toggleInspectionSelection(property);
+                  
                 }
                 setIsAddInspectionModalOpened?.(true);
                 setPropertySelected?.([property]);
