@@ -81,7 +81,7 @@ const BudgetSelection: React.FC<BudgetSelectionProps> = ({
         budget: budgetData,
       });
     }
-  }, [minPriceRaw, maxPriceRaw]);
+  }, [minPriceRaw, maxPriceRaw, updateFormData]);
 
   // Handle min price change
   const handleMinPriceChange = useCallback(
