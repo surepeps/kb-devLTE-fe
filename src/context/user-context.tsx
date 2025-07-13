@@ -101,24 +101,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = async (callback?: () => void) => {
-    try {
-      Cookies.remove("token");
-      sessionStorage.removeItem("user");
-      localStorage.removeItem("email");
-      localStorage.removeItem("fullname");
-      localStorage.removeItem("phoneNumber");
-      localStorage.removeItem("token");
-      setUserState(null);
-      toast.success("Logged out successfully");
-      await router.push("/auth/login");
-      if (callback) await callback();
-    } catch (error) {
-      console.error("Error during logout:", error);
-      toast.error("Error during logout");
-      throw error;
-    }
-  };
+  const logout = useCallback(
+    async (callback?: () => void) => {
+      try {
+        Cookies.remove("token");
+        sessionStorage.removeItem("user");
+        localStorage.removeItem("email");
+        localStorage.removeItem("fullname");
+        localStorage.removeItem("phoneNumber");
+        localStorage.removeItem("token");
+        setUserState(null);
+        toast.success("Logged out successfully");
+        await router.push("/auth/login");
+        if (callback) await callback();
+      } catch (error) {
+        console.error("Error during logout:", error);
+        toast.error("Error during logout");
+        throw error;
+      }
+    },
+    [router],
+  );
 
   useEffect(() => {
     const token = Cookies.get("token");
