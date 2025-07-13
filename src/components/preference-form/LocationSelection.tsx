@@ -495,7 +495,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
 
       {/* Dynamic Area Selection - Adaptive layout based on number of LGAs */}
       {combinedLGAs.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <label className="block text-sm font-semibold text-gray-800">
             Preferred Areas <span className="text-gray-500">(Max 3 total)</span>
           </label>
