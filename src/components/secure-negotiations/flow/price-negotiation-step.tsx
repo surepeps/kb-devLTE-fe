@@ -345,9 +345,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                     })()}
 
                   {/* Price reference */}
-                  <p className="text-sm text-gray-500 mt-2">
-                    Original price: {formatCurrency(propertyPrice)}
-                  </p>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-gray-500">
+                      Original price: {formatCurrency(propertyPrice)}
+                    </p>
+                    {userType === "buyer" && (
+                      <div className="p-2 bg-yellow-50 border border-yellow-200 rounded">
+                        <p className="text-xs text-yellow-700">
+                          <span className="font-medium">Note:</span> Minimum
+                          offer allowed is 80% of seller's price:{" "}
+                          {formatCurrency(propertyPrice * 0.8)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex space-x-4">
