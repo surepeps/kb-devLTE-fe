@@ -117,7 +117,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     const startDate = new Date();
     startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
 
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
     let count = 0;
     const maxDates = 20; // Generate more dates to have enough after filtering
 
