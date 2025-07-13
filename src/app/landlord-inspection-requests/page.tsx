@@ -22,6 +22,9 @@ import {
   CheckCircle as CheckCircleIcon,
   XCircle as XCircleIcon,
   AlertCircle as AlertCircleIcon,
+  Activity as ActivityIcon,
+  Archive as ArchiveIcon,
+  FileText as FileTextIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
@@ -54,7 +57,7 @@ interface InspectionRequest {
   updatedAt: string;
 }
 
-export default function InspectionRequestsPage() {
+export default function LandlordInspectionRequestsPage() {
   const router = useRouter();
   const { user } = useUserContext();
   const [inspectionRequests, setInspectionRequests] = useState<
@@ -66,7 +69,7 @@ export default function InspectionRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "new" | "active" | "completed" | "cancelled"
+    "active" | "completed" | "new" | "cancelled"
   >("active");
 
   useEffect(() => {
@@ -75,13 +78,8 @@ export default function InspectionRequestsPage() {
       return;
     }
 
-    if (user.userType !== "Agent") {
+    if (user.userType !== "Landowners") {
       router.push("/");
-      return;
-    }
-
-    if (!user.accountApproved) {
-      router.push("/agent/under-review");
       return;
     }
 
@@ -181,6 +179,33 @@ export default function InspectionRequestsPage() {
           createdAt: "2024-01-05T16:00:00.000Z",
           updatedAt: "2024-01-08T12:00:00.000Z",
         },
+        {
+          _id: "4",
+          property: {
+            _id: "prop4",
+            propertyType: "1 Bedroom Studio",
+            title: "Modern Studio in Ikoyi",
+            location: {
+              state: "Lagos",
+              localGovernment: "Lagos Island",
+              area: "Ikoyi",
+            },
+            price: 15000000,
+            pictures: ["/api/placeholder/400/300"],
+          },
+          client: {
+            _id: "client4",
+            firstName: "Grace",
+            lastName: "Adeyemi",
+            email: "grace.adeyemi@email.com",
+            phoneNumber: "+234 805 123 4567",
+          },
+          requestedDate: "2024-01-05",
+          requestedTime: "3:00 PM",
+          status: "cancelled",
+          createdAt: "2024-01-03T10:00:00.000Z",
+          updatedAt: "2024-01-04T15:30:00.000Z",
+        },
       ];
 
       setInspectionRequests(mockData);
@@ -239,9 +264,6 @@ export default function InspectionRequestsPage() {
       );
 
       // Here you would make the actual API call
-      // await POST_REQUEST(`${URLS.BASE}/agent/inspection-requests/${requestId}/status`,
-      //   { status: newStatus }, Cookies.get("agentToken") || Cookies.get("token"));
-
       toast.success(`Inspection request ${newStatus} successfully`);
     } catch (error) {
       console.error("Failed to update status:", error);
@@ -251,18 +273,18 @@ export default function InspectionRequestsPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
+  const getTabIcon = (tab: string) => {
+    switch (tab) {
       case "new":
-        return <AlertCircleIcon size={16} className="text-blue-500" />;
+        return <FileTextIcon size={16} />;
       case "active":
-        return <CheckCircleIcon size={16} className="text-green-500" />;
-      case "cancelled":
-        return <XCircleIcon size={16} className="text-red-500" />;
+        return <ActivityIcon size={16} />;
       case "completed":
-        return <CheckCircleIcon size={16} className="text-purple-500" />;
+        return <CheckCircleIcon size={16} />;
+      case "cancelled":
+        return <ArchiveIcon size={16} />;
       default:
-        return <AlertCircleIcon size={16} className="text-gray-500" />;
+        return <AlertCircleIcon size={16} />;
     }
   };
 
@@ -272,27 +294,12 @@ export default function InspectionRequestsPage() {
         return "bg-blue-100 text-blue-800";
       case "active":
         return "bg-green-100 text-green-800";
-      case "cancelled":
-        return "bg-red-100 text-red-800";
       case "completed":
         return "bg-purple-100 text-purple-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getTabIcon = (tab: string) => {
-    switch (tab) {
-      case "new":
-        return <AlertCircleIcon size={16} />;
-      case "active":
-        return <CheckCircleIcon size={16} />;
-      case "completed":
-        return <CheckCircleIcon size={16} />;
-      case "cancelled":
-        return <XCircleIcon size={16} />;
-      default:
-        return <AlertCircleIcon size={16} />;
     }
   };
 
@@ -315,7 +322,7 @@ export default function InspectionRequestsPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
             <Link
-              href="/agent/dashboard"
+              href="/dashboard"
               className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#7BC87F] font-medium"
             >
               <ArrowLeftIcon size={20} />
@@ -329,11 +336,12 @@ export default function InspectionRequestsPage() {
                 Inspection Requests
               </h1>
               <p className="text-[#5A5D63] mt-2">
-                Manage property inspection requests from potential clients
+                Manage property inspection requests from potential buyers
               </p>
             </div>
             <div className="text-sm text-[#5A5D63] bg-white px-4 py-2 rounded-lg">
-              {filteredRequests.length} of {inspectionRequests.length} requests
+              {filteredRequests.length} of {inspectionRequests.length} total
+              requests
             </div>
           </div>
         </div>
@@ -445,7 +453,6 @@ export default function InspectionRequestsPage() {
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          {getStatusIcon(request.status)}
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}
                           >
