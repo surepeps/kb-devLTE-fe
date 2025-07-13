@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo, memo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -25,7 +25,7 @@ import {
   ShortletPreferencePayload,
 } from "@/types/preference-form";
 
-// Preference type configurations
+// Preference type configurations - memoized to prevent recreation
 const PREFERENCE_CONFIGS = {
   buy: {
     label: "Buy a Property",
@@ -59,7 +59,275 @@ const PREFERENCE_CONFIGS = {
     preferenceType: "shortlet" as const,
     preferenceMode: "shortlet" as const,
   },
-};
+} as const;
+
+// Loading Overlay Component - Memoized to prevent unnecessary re-renders
+const LoadingOverlay = memo(({ isSubmitting }: { isSubmitting: boolean }) => (
+  <AnimatePresence>
+    {isSubmitting && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-2xl p-8 shadow-xl max-w-sm mx-4 text-center"
+        >
+          <div className="flex flex-col items-center space-y-4">
+            {/* Animated spinner */}
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full border-4 border-emerald-100"></div>
+              <div className="absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin"></div>
+            </div>
+
+            {/* Loading text */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Submitting Your Preference
+              </h3>
+              <p className="text-sm text-gray-600">
+                Please wait while we process your request...
+              </p>
+            </div>
+
+            {/* Progress dots */}
+            <div className="flex space-x-1">
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 bg-emerald-500 rounded-full"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+));
+
+LoadingOverlay.displayName = "LoadingOverlay";
+
+// Success Modal Component - Memoized to prevent unnecessary re-renders
+const SuccessModal = memo(
+  ({
+    showSuccessModal,
+    onGoHome,
+  }: {
+    showSuccessModal: boolean;
+    onGoHome: () => void;
+  }) => (
+    <AnimatePresence>
+      {showSuccessModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 text-center"
+          >
+            {/* Success Icon */}
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-10 h-10 text-emerald-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Preference Submitted Successfully!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Thank you for submitting your property preference. We'll start
+                matching you with suitable properties right away.
+              </p>
+            </div>
+
+            {/* Success Details */}
+            <div className="bg-emerald-50 rounded-lg p-4 mb-6">
+              <h4 className="text-sm font-semibold text-emerald-800 mb-2">
+                What happens next?
+              </h4>
+              <div className="text-sm text-emerald-700 space-y-1 text-left">
+                <p>• We'll review your preferences within 24 hours</p>
+                <p>• You'll receive property matches via email</p>
+                <p>• Our agents will contact you for personalized assistance</p>
+              </div>
+            </div>
+
+            {/* Home Button - Only way to close modal */}
+            <button
+              onClick={onGoHome}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span>Go to Home</span>
+              </div>
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  ),
+);
+
+SuccessModal.displayName = "SuccessModal";
+
+// Preference Type Button Component - Memoized to prevent unnecessary re-renders
+const PreferenceTypeButton = memo(
+  ({
+    preferenceKey,
+    config,
+    isSelected,
+    onClick,
+  }: {
+    preferenceKey: string;
+    config: (typeof PREFERENCE_CONFIGS)[keyof typeof PREFERENCE_CONFIGS];
+    isSelected: boolean;
+    onClick: (key: keyof typeof PREFERENCE_CONFIGS) => void;
+  }) => (
+    <motion.button
+      type="button"
+      onClick={() => onClick(preferenceKey as keyof typeof PREFERENCE_CONFIGS)}
+      className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-200 text-left ${
+        isSelected
+          ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100"
+          : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50"
+      }`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">{config.icon}</div>
+      <h3 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">
+        <span className="block sm:hidden">{config.shortLabel}</span>
+        <span className="hidden sm:block">{config.label}</span>
+      </h3>
+      <p className="text-xs sm:text-sm text-gray-600">{config.description}</p>
+    </motion.button>
+  ),
+);
+
+PreferenceTypeButton.displayName = "PreferenceTypeButton";
+
+// Step Progress Indicator Component - Memoized to prevent unnecessary re-renders
+const StepProgressIndicator = memo(
+  ({
+    steps,
+    currentStep,
+    onStepClick,
+  }: {
+    steps: any[];
+    currentStep: number;
+    onStepClick: (index: number) => void;
+  }) => (
+    <div className="mb-8 sm:mb-12">
+      <div className="flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          {steps.map((step, index) => (
+            <React.Fragment key={index}>
+              <motion.div
+                className={`flex items-center space-x-2 ${
+                  index <= currentStep
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-50"
+                } ${
+                  index === currentStep
+                    ? "text-emerald-600"
+                    : index < currentStep
+                      ? "text-emerald-500"
+                      : "text-gray-400"
+                }`}
+                onClick={() => {
+                  // Only allow navigation to current step or completed steps
+                  if (index <= currentStep) {
+                    onStepClick(index);
+                  }
+                }}
+                whileHover={index <= currentStep ? { scale: 1.05 } : {}}
+              >
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    index < currentStep
+                      ? "bg-emerald-500 text-white"
+                      : index === currentStep
+                        ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
+                        : "bg-gray-200 text-gray-400"
+                  }`}
+                >
+                  {index < currentStep ? (
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    index + 1
+                  )}
+                </div>
+                <span className="text-sm font-medium hidden sm:block">
+                  {step.title}
+                </span>
+              </motion.div>
+              {index < steps.length - 1 && (
+                <div className="w-8 h-0.5 bg-gray-300 rounded-full"></div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
+);
+
+StepProgressIndicator.displayName = "StepProgressIndicator";
 
 // Form content component
 const PreferenceFormContent: React.FC = () => {
@@ -71,7 +339,7 @@ const PreferenceFormContent: React.FC = () => {
     useState<keyof typeof PREFERENCE_CONFIGS>("buy");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Handle preference type change
+  // Handle preference type change - memoized to prevent recreation
   const handlePreferenceTypeChange = useCallback(
     (preferenceKey: keyof typeof PREFERENCE_CONFIGS) => {
       setSelectedPreferenceType(preferenceKey);
@@ -83,10 +351,15 @@ const PreferenceFormContent: React.FC = () => {
     [resetForm, updateFormData],
   );
 
-  // Generate API payload
+  // Generate API payload - memoized to prevent recreation
   const generatePayload = useCallback((): PreferencePayload => {
     const { formData } = state;
-    console.log(formData, "my filled form.....");
+
+    // Only log in development mode to prevent console spam
+    if (process.env.NODE_ENV === "development") {
+      console.log(formData, "my filled form.....");
+    }
+
     const config = PREFERENCE_CONFIGS[selectedPreferenceType];
 
     const basePayload = {
@@ -211,7 +484,7 @@ const PreferenceFormContent: React.FC = () => {
     }
   }, [state, selectedPreferenceType]);
 
-  // Handle form submission
+  // Handle form submission - memoized to prevent recreation
   const handleSubmit = useCallback(async () => {
     if (!isFormValid()) {
       toast.error("Please complete all required fields before submitting");
@@ -223,8 +496,10 @@ const PreferenceFormContent: React.FC = () => {
     try {
       const payload = generatePayload();
 
-      // Log payload for debugging (keeping as requested)
-      console.log("Generated Payload:", JSON.stringify(payload, null, 2));
+      // Log payload for debugging (keeping as requested in development only)
+      if (process.env.NODE_ENV === "development") {
+        console.log("Generated Payload:", JSON.stringify(payload, null, 2));
+      }
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/buyers/submit-preference`;
 
@@ -246,126 +521,43 @@ const PreferenceFormContent: React.FC = () => {
     }
   }, [generatePayload, dispatch, isFormValid]);
 
-  // Handle success modal home button click
+  // Handle success modal home button click - memoized to prevent recreation
   const handleGoHome = useCallback(() => {
     setShowSuccessModal(false);
     resetForm();
     router.push("/homepage");
   }, [resetForm, router]);
 
-  // Render preference type selector
-  const renderPreferenceTypeSelector = () => (
-    <div className="mb-8 sm:mb-12">
-      <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-          Choose Your Preference
-        </h2>
-        <p className="text-sm sm:text-base text-gray-600">
-          Select the type of property transaction you&apos;re interested in
-        </p>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {Object.entries(PREFERENCE_CONFIGS).map(([key, config]) => (
-          <motion.button
-            key={key}
-            type="button"
-            onClick={() =>
-              handlePreferenceTypeChange(key as keyof typeof PREFERENCE_CONFIGS)
-            }
-            className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-200 text-left ${
-              key === selectedPreferenceType
-                ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100"
-                : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50"
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">
-              {config.icon}
-            </div>
-            <h3 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">
-              <span className="block sm:hidden">{config.shortLabel}</span>
-              <span className="hidden sm:block">{config.label}</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-600">
-              {config.description}
-            </p>
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-
-  // Render step progress
-  const renderStepProgress = () => (
-    <div className="mb-8 sm:mb-12">
-      <div className="flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          {state.steps.map((step, index) => (
-            <React.Fragment key={index}>
-              <motion.div
-                className={`flex items-center space-x-2 ${
-                  index <= state.currentStep
-                    ? "cursor-pointer"
-                    : "cursor-not-allowed opacity-50"
-                } ${
-                  index === state.currentStep
-                    ? "text-emerald-600"
-                    : index < state.currentStep
-                      ? "text-emerald-500"
-                      : "text-gray-400"
-                }`}
-                onClick={() => {
-                  // Only allow navigation to current step or completed steps
-                  if (index <= state.currentStep) {
-                    goToStep(index);
-                  }
-                }}
-                whileHover={index <= state.currentStep ? { scale: 1.05 } : {}}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                    index < state.currentStep
-                      ? "bg-emerald-500 text-white"
-                      : index === state.currentStep
-                        ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
-                        : "bg-gray-200 text-gray-400"
-                  }`}
-                >
-                  {index < state.currentStep ? (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  ) : (
-                    index + 1
-                  )}
-                </div>
-                <span className="text-sm font-medium hidden sm:block">
-                  {step.title}
-                </span>
-              </motion.div>
-              {index < state.steps.length - 1 && (
-                <div className="w-8 h-0.5 bg-gray-300 rounded-full"></div>
-              )}
-            </React.Fragment>
+  // Render preference type selector - memoized to prevent recreation
+  const renderPreferenceTypeSelector = useMemo(
+    () => (
+      <div className="mb-8 sm:mb-12">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+            Choose Your Preference
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600">
+            Select the type of property transaction you&apos;re interested in
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {Object.entries(PREFERENCE_CONFIGS).map(([key, config]) => (
+            <PreferenceTypeButton
+              key={key}
+              preferenceKey={key}
+              config={config}
+              isSelected={key === selectedPreferenceType}
+              onClick={handlePreferenceTypeChange}
+            />
           ))}
         </div>
       </div>
-    </div>
+    ),
+    [selectedPreferenceType, handlePreferenceTypeChange],
   );
 
-  // Get step content
-  const getStepContent = () => {
+  // Get step content - memoized to prevent recreation
+  const getStepContent = useMemo(() => {
     switch (state.currentStep) {
       case 0: // Location
         return <LocationSelection />;
@@ -384,71 +576,45 @@ const PreferenceFormContent: React.FC = () => {
       default:
         return null;
     }
-  };
+  }, [state.currentStep, selectedPreferenceType]);
+
+  // Debug panel - only show in development
+  const debugPanel = useMemo(() => {
+    if (process.env.NODE_ENV !== "development") return null;
+
+    return (
+      <div className="mt-8 p-4 bg-gray-900 text-green-400 rounded-lg overflow-auto">
+        <h4 className="text-sm font-semibold mb-2">Current Payload (Debug):</h4>
+        <pre className="text-xs whitespace-pre-wrap">
+          {JSON.stringify(generatePayload(), null, 2)}
+        </pre>
+      </div>
+    );
+  }, [generatePayload]);
+
+  // Handle step navigation - memoized to prevent recreation
+  const handleStepClick = useCallback(
+    (index: number) => {
+      goToStep(index);
+    },
+    [goToStep],
+  );
+
+  // Handle back navigation - memoized to prevent recreation
+  const handleBackClick = useCallback(() => {
+    router.back();
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 relative">
       {/* Loading Overlay */}
-      <AnimatePresence>
-        {state.isSubmitting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl p-8 shadow-xl max-w-sm mx-4 text-center"
-            >
-              <div className="flex flex-col items-center space-y-4">
-                {/* Animated spinner */}
-                <div className="relative">
-                  <div className="w-16 h-16 rounded-full border-4 border-emerald-100"></div>
-                  <div className="absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin"></div>
-                </div>
-
-                {/* Loading text */}
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Submitting Your Preference
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Please wait while we process your request...
-                  </p>
-                </div>
-
-                {/* Progress dots */}
-                <div className="flex space-x-1">
-                  {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="w-2 h-2 bg-emerald-500 rounded-full"
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.5, 1, 0.5],
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <LoadingOverlay isSubmitting={state.isSubmitting} />
 
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <button
-            onClick={() => router.back()}
+            onClick={handleBackClick}
             className="mb-4 sm:mb-6 flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
           >
             <svg
@@ -479,10 +645,14 @@ const PreferenceFormContent: React.FC = () => {
         </div>
 
         {/* Preference Type Selector */}
-        {renderPreferenceTypeSelector()}
+        {renderPreferenceTypeSelector}
 
         {/* Step Progress */}
-        {renderStepProgress()}
+        <StepProgressIndicator
+          steps={state.steps}
+          currentStep={state.currentStep}
+          onStepClick={handleStepClick}
+        />
 
         {/* Form Content */}
         <div className="bg-white rounded-xl p-6 shadow-lg border">
@@ -494,7 +664,13 @@ const PreferenceFormContent: React.FC = () => {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {getStepContent()}
+              <Suspense
+                fallback={
+                  <div className="flex justify-center p-8">Loading...</div>
+                }
+              >
+                {getStepContent}
+              </Suspense>
             </motion.div>
           </AnimatePresence>
 
@@ -504,100 +680,15 @@ const PreferenceFormContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Debug Panel - Show current payload */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="mt-8 p-4 bg-gray-900 text-green-400 rounded-lg overflow-auto">
-            <h4 className="text-sm font-semibold mb-2">
-              Current Payload (Debug):
-            </h4>
-            <pre className="text-xs whitespace-pre-wrap">
-              {JSON.stringify(generatePayload(), null, 2)}
-            </pre>
-          </div>
-        )}
+        {/* Debug Panel - Show current payload in development only */}
+        {debugPanel}
       </div>
 
       {/* Success Modal */}
-      <AnimatePresence>
-        {showSuccessModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 text-center"
-            >
-              {/* Success Icon */}
-              <div className="mb-6">
-                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg
-                    className="w-10 h-10 text-emerald-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Preference Submitted Successfully!
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Thank you for submitting your property preference. We'll start
-                  matching you with suitable properties right away.
-                </p>
-              </div>
-
-              {/* Success Details */}
-              <div className="bg-emerald-50 rounded-lg p-4 mb-6">
-                <h4 className="text-sm font-semibold text-emerald-800 mb-2">
-                  What happens next?
-                </h4>
-                <div className="text-sm text-emerald-700 space-y-1 text-left">
-                  <p>• We'll review your preferences within 24 hours</p>
-                  <p>• You'll receive property matches via email</p>
-                  <p>
-                    • Our agents will contact you for personalized assistance
-                  </p>
-                </div>
-              </div>
-
-              {/* Home Button - Only way to close modal */}
-              <button
-                onClick={handleGoHome}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-                  <span>Go to Home</span>
-                </div>
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SuccessModal
+        showSuccessModal={showSuccessModal}
+        onGoHome={handleGoHome}
+      />
     </div>
   );
 };
@@ -611,4 +702,4 @@ const NewPreferencePage: React.FC = () => {
   );
 };
 
-export default NewPreferencePage;
+export default memo(NewPreferencePage);
