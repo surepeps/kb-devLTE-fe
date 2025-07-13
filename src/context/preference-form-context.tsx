@@ -6,8 +6,8 @@ import React, {
   useContext,
   useReducer,
   ReactNode,
-  useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -18,10 +18,9 @@ import {
   BudgetThreshold,
   FeatureConfig,
   FeatureDefinition,
-  FormStep,
 } from "@/types/preference-form";
 
-// Feature configurations with budget requirements
+// Feature configurations with budget requirements - Memoized static data
 const FEATURE_CONFIGS: Record<string, FeatureConfig> = {
   buy: {
     basic: [
@@ -158,7 +157,7 @@ const FEATURE_CONFIGS: Record<string, FeatureConfig> = {
   },
 };
 
-// Budget thresholds by location and listing type
+// Budget thresholds by location and listing type - Memoized static data
 const DEFAULT_BUDGET_THRESHOLDS: BudgetThreshold[] = [
   // Lagos thresholds
   { location: "Lagos", listingType: "buy", minAmount: 5000000 },
@@ -179,67 +178,76 @@ const DEFAULT_BUDGET_THRESHOLDS: BudgetThreshold[] = [
   { location: "default", listingType: "shortlet", minAmount: 10000 },
 ];
 
-// No localStorage usage - data is only kept in context state
+// Initial state factory - prevents object recreation
+const createInitialState = (): PreferenceFormState => ({
+  currentStep: 0,
+  steps: [
+    { id: "location", title: "Location", isValid: false, isRequired: true },
+    { id: "budget", title: "Budget", isValid: false, isRequired: true },
+    { id: "features", title: "Features", isValid: false, isRequired: false },
+    { id: "contact", title: "Contact", isValid: false, isRequired: true },
+  ],
+  formData: {},
+  isSubmitting: false,
+  validationErrors: [],
+  budgetThresholds: DEFAULT_BUDGET_THRESHOLDS,
+  featureConfigs: FEATURE_CONFIGS,
+});
 
-// Initial state
-const createInitialState = (): PreferenceFormState => {
-  return {
-    currentStep: 0,
-    steps: [
-      { id: "location", title: "Location", isValid: false, isRequired: true },
-      { id: "budget", title: "Budget", isValid: false, isRequired: true },
-      { id: "features", title: "Features", isValid: false, isRequired: false },
-      { id: "contact", title: "Contact", isValid: false, isRequired: true },
-    ],
-    formData: {},
-    isSubmitting: false,
-    validationErrors: [],
-    budgetThresholds: DEFAULT_BUDGET_THRESHOLDS,
-    featureConfigs: FEATURE_CONFIGS,
-  };
-};
-
-const initialState: PreferenceFormState = createInitialState();
-
-// Reducer function
+// Reducer function - Optimized for performance
 function preferenceFormReducer(
   state: PreferenceFormState,
   action: PreferenceFormAction,
 ): PreferenceFormState {
   switch (action.type) {
     case "SET_STEP":
+      // Only update if step actually changes
+      if (state.currentStep === action.payload) return state;
       return {
         ...state,
         currentStep: action.payload,
       };
 
     case "UPDATE_FORM_DATA":
+      // Shallow comparison to prevent unnecessary updates
+      const newFormData = {
+        ...state.formData,
+        ...action.payload,
+      };
+
+      // Check if data actually changed
+      if (JSON.stringify(state.formData) === JSON.stringify(newFormData)) {
+        return state;
+      }
+
       return {
         ...state,
-        formData: {
-          ...state.formData,
-          ...action.payload,
-        },
+        formData: newFormData,
       };
 
     case "SET_VALIDATION_ERRORS":
+      // Only update if errors actually changed
+      if (
+        JSON.stringify(state.validationErrors) ===
+        JSON.stringify(action.payload)
+      ) {
+        return state;
+      }
       return {
         ...state,
         validationErrors: action.payload,
       };
 
     case "SET_SUBMITTING":
+      // Only update if submitting state actually changes
+      if (state.isSubmitting === action.payload) return state;
       return {
         ...state,
         isSubmitting: action.payload,
       };
 
     case "RESET_FORM":
-      return {
-        ...createInitialState(),
-        formData: {}, // Ensure form data is completely empty
-        currentStep: 0,
-      };
+      return createInitialState();
 
     case "SET_BUDGET_THRESHOLDS":
       return {
@@ -296,9 +304,11 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(
     preferenceFormReducer,
-    createInitialState(),
+    undefined,
+    createInitialState, // Lazy initial state
   );
 
+  // Memoized helper functions to prevent unnecessary re-renders
   const getMinBudgetForLocation = useCallback(
     (location: string, listingType: string): number => {
       const threshold = state.budgetThresholds.find(
@@ -318,7 +328,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     },
     [state.budgetThresholds],
   );
- 
+
   const validateStep = useCallback(
     (step: number): ValidationError[] => {
       const errors: ValidationError[] = [];
@@ -459,17 +469,21 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     [state.formData, getMinBudgetForLocation],
   );
 
-  // Helper functions
+  // Helper functions with memoization
   const goToStep = useCallback(
     (step: number) => {
-      if (step >= 0 && step < state.steps.length) {
+      if (
+        step >= 0 &&
+        step < state.steps.length &&
+        step !== state.currentStep
+      ) {
         dispatch({ type: "SET_STEP", payload: step });
         // Trigger validation for the new step
         const currentErrors = validateStep(step);
         dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
       }
     },
-    [state.steps.length, validateStep],
+    [state.steps.length, state.currentStep, validateStep],
   );
 
   const goToNextStep = useCallback(() => {
@@ -492,6 +506,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.currentStep, validateStep]);
 
+  // Memoized updateFormData with empty dependencies to prevent recreation
   const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
     dispatch({ type: "UPDATE_FORM_DATA", payload: data });
   }, []);
@@ -579,23 +594,43 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     [state.currentStep, validateStep],
   );
 
-  const contextValue: PreferenceFormContextType = {
-    state,
-    dispatch,
-    goToStep,
-    goToNextStep,
-    goToPreviousStep,
-    updateFormData,
-    validateStep,
-    isStepValid,
-    canProceedToNextStep,
-    getMinBudgetForLocation,
-    getAvailableFeatures,
-    isFormValid,
-    getValidationErrorsForField,
-    resetForm,
-    triggerValidation,
-  };
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue: PreferenceFormContextType = useMemo(
+    () => ({
+      state,
+      dispatch,
+      goToStep,
+      goToNextStep,
+      goToPreviousStep,
+      updateFormData,
+      validateStep,
+      isStepValid,
+      canProceedToNextStep,
+      getMinBudgetForLocation,
+      getAvailableFeatures,
+      isFormValid,
+      getValidationErrorsForField,
+      resetForm,
+      triggerValidation,
+    }),
+    [
+      state,
+      dispatch,
+      goToStep,
+      goToNextStep,
+      goToPreviousStep,
+      updateFormData,
+      validateStep,
+      isStepValid,
+      canProceedToNextStep,
+      getMinBudgetForLocation,
+      getAvailableFeatures,
+      isFormValid,
+      getValidationErrorsForField,
+      resetForm,
+      triggerValidation,
+    ],
+  );
 
   return (
     <PreferenceFormContext.Provider value={contextValue}>
