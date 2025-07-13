@@ -23,6 +23,7 @@ import {
   Eye as EyeIcon,
   EyeOff as EyeOffIcon,
   AlertTriangle as AlertTriangleIcon,
+  X,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import { useFormik } from "formik";
@@ -66,6 +67,10 @@ export default function ProfileSettingsPage() {
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
     null,
   );
+  const [isEmailChangeRequested, setIsEmailChangeRequested] = useState(false);
+  const [newEmailRequest, setNewEmailRequest] = useState<string>("");
+  const [isRequestingEmailChange, setIsRequestingEmailChange] = useState(false);
+  const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -248,6 +253,50 @@ export default function ProfileSettingsPage() {
     }
   };
 
+  const handleRequestEmailChange = async () => {
+    if (!newEmailRequest || !newEmailRequest.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (newEmailRequest === userProfile?.email) {
+      toast.error("New email cannot be the same as current email");
+      return;
+    }
+
+    setIsRequestingEmailChange(true);
+    try {
+      // Mock API call - replace with actual endpoint
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setIsEmailChangeRequested(true);
+      setShowEmailChangeModal(false);
+      setNewEmailRequest("");
+
+      toast.success(
+        `Email change request submitted. Please check ${newEmailRequest} for verification instructions.`,
+      );
+    } catch (error) {
+      console.error("Failed to request email change:", error);
+      toast.error("Failed to request email change");
+    } finally {
+      setIsRequestingEmailChange(false);
+    }
+  };
+
+  const handleCancelEmailChange = async () => {
+    try {
+      // Mock API call - replace with actual endpoint
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      setIsEmailChangeRequested(false);
+      toast.success("Email change request cancelled");
+    } catch (error) {
+      console.error("Failed to cancel email change:", error);
+      toast.error("Failed to cancel email change");
+    }
+  };
+
   if (isLoading) {
     return <Loading />;
   }
@@ -412,9 +461,20 @@ export default function ProfileSettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[#09391C] mb-2">
-                      Email Address
-                    </label>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-sm font-medium text-[#09391C]">
+                        Email Address
+                      </label>
+                      {!isEmailChangeRequested && (
+                        <button
+                          type="button"
+                          onClick={() => setShowEmailChangeModal(true)}
+                          className="text-[#8DDB90] hover:text-[#7BC87F] text-sm font-medium"
+                        >
+                          Request Change
+                        </button>
+                      )}
+                    </div>
                     <div className="relative">
                       <MailIcon
                         size={20}
@@ -426,9 +486,31 @@ export default function ProfileSettingsPage() {
                         value={profileFormik.values.email}
                         onChange={profileFormik.handleChange}
                         onBlur={profileFormik.handleBlur}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                        disabled
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
                       />
                     </div>
+                    {isEmailChangeRequested && (
+                      <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-sm text-blue-800 font-medium mb-1">
+                              Email change request pending
+                            </p>
+                            <p className="text-xs text-blue-700">
+                              Please check your new email for verification
+                              instructions.
+                            </p>
+                          </div>
+                          <button
+                            onClick={handleCancelEmailChange}
+                            className="text-blue-600 hover:text-blue-800 text-xs underline"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     {profileFormik.touched.email &&
                       profileFormik.errors.email && (
                         <p className="text-red-500 text-sm mt-1">
@@ -736,6 +818,88 @@ export default function ProfileSettingsPage() {
             )}
           </div>
         </div>
+
+        {/* Email Change Modal */}
+        {showEmailChangeModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-[#09391C]">
+                  Change Email Address
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowEmailChangeModal(false);
+                    setNewEmailRequest("");
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-[#5A5D63] mb-3">
+                    Enter your new email address. You will receive a
+                    verification email to confirm the change.
+                  </p>
+                  <p className="text-xs text-blue-600 mb-4">
+                    Current email: {userProfile?.email}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#09391C] mb-2">
+                    New Email Address
+                  </label>
+                  <div className="relative">
+                    <MailIcon
+                      size={20}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      type="email"
+                      value={newEmailRequest}
+                      onChange={(e) => setNewEmailRequest(e.target.value)}
+                      placeholder="Enter new email address"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Important:</strong> After submitting this request,
+                    you will need to verify both your current and new email
+                    addresses. Your login email will remain unchanged until
+                    verification is complete.
+                  </p>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => {
+                      setShowEmailChangeModal(false);
+                      setNewEmailRequest("");
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleRequestEmailChange}
+                    disabled={isRequestingEmailChange || !newEmailRequest}
+                    className="flex-1 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <MailIcon size={16} />
+                    {isRequestingEmailChange ? "Sending..." : "Send Request"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
