@@ -493,7 +493,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         </div>
       )}
 
-            {/* Dynamic Area Selection - Adaptive layout based on number of LGAs */}
+      {/* Dynamic Area Selection - Adaptive layout based on number of LGAs */}
       {combinedLGAs.length > 0 && (
         <div className="space-y-3">
           <label className="block text-sm font-semibold text-gray-800">
@@ -647,7 +647,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
             </>
           )}
 
-                    {/* Custom Location Toggle */}
+          {/* Custom Location Toggle */}
           <div className="space-y-2">
             <button
               type="button"
@@ -669,29 +669,30 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
                   transition={{ duration: 0.3 }}
                   className="space-y-2"
                 >
-                <label className="block text-sm font-medium text-gray-700">
-                  Enter your location
-                </label>
-                <input
-                  type="text"
-                  value={customLocation}
-                  onChange={(e) => setCustomLocation(e.target.value)}
-                  placeholder="Enter your specific location or landmark"
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Enter your location
+                  </label>
+                  <input
+                    type="text"
+                    value={customLocation}
+                    onChange={(e) => setCustomLocation(e.target.value)}
+                    placeholder="Enter your specific location or landmark"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          {areaErrors.length > 0 && (
-            <p className="text-sm text-red-500 font-medium">
-              {areaErrors[0].message}
-            </p>
-          )}
+            {areaErrors.length > 0 && (
+              <p className="text-sm text-red-500 font-medium">
+                {areaErrors[0].message}
+              </p>
+            )}
+          </div>
         </div>
       )}
 
-            {/* Location Summary */}
+      {/* Location Summary */}
       {(selectedAreas.length > 0 || customLocation || customLGAs) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
