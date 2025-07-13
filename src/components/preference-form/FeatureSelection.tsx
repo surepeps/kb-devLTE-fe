@@ -60,12 +60,7 @@ const FeatureSelection: React.FC<FeatureSelectionProps> = ({
     updateFormData({
       features: featureData,
     });
-  }, [
-    selectedBasicFeatures,
-    selectedPremiumFeatures,
-    autoAdjustToBudget,
-    updateFormData,
-  ]);
+  }, [selectedBasicFeatures, selectedPremiumFeatures, autoAdjustToBudget]);
 
   // Auto-adjust features when budget changes
   useEffect(() => {
