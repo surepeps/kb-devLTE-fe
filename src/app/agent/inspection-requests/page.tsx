@@ -195,6 +195,9 @@ export default function InspectionRequestsPage() {
   const filterRequests = () => {
     let filtered = [...inspectionRequests];
 
+    // Filter by status tab
+    filtered = filtered.filter((request) => request.status === activeTab);
+
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
@@ -214,17 +217,12 @@ export default function InspectionRequestsPage() {
       );
     }
 
-    // Filter by status
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((request) => request.status === statusFilter);
-    }
-
     setFilteredRequests(filtered);
   };
 
   const handleStatusUpdate = async (
     requestId: string,
-    newStatus: "approved" | "rejected",
+    newStatus: "active" | "completed" | "cancelled",
   ) => {
     try {
       // Update local state immediately for better UX
