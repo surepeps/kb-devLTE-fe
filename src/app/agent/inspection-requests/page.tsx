@@ -338,39 +338,43 @@ export default function InspectionRequestsPage() {
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Status Tabs */}
         <div className="bg-white rounded-lg p-4 sm:p-6 mb-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <SearchIcon
-                size={20}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Search by property, client name, or location..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <div className="flex items-center gap-2">
-              <FilterIcon size={20} className="text-gray-400" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {["new", "active", "completed", "cancelled"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`p-4 rounded-lg text-left transition-colors ${
+                  activeTab === tab
+                    ? "bg-[#8DDB90] text-white"
+                    : "bg-gray-50 hover:bg-gray-100 text-[#5A5D63]"
+                }`}
               >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
+                <div className="flex items-center gap-3 mb-2">
+                  {getTabIcon(tab)}
+                  <h3 className="font-medium capitalize">{tab} Requests</h3>
+                </div>
+                <p className="text-2xl font-bold">{getRequestCount(tab)}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search Filter */}
+        <div className="bg-white rounded-lg p-4 sm:p-6 mb-6 shadow-sm">
+          <div className="relative">
+            <SearchIcon
+              size={20}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              placeholder="Search by property, client name, or location..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+            />
           </div>
         </div>
 
