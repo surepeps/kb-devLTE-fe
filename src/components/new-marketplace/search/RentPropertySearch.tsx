@@ -23,6 +23,26 @@ const RentPropertySearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
+  // Filter states
+  const [filters, setFilters] = useState({
+    selectedState: "",
+    selectedLGA: "",
+    selectedArea: "",
+    locationDisplay: "",
+    priceRange: { min: 0, max: 0 },
+    documentTypes: [] as string[],
+    usageOptions: [] as string[],
+    bedrooms: undefined as number | undefined,
+    bathrooms: undefined as number | undefined,
+    landSize: {
+      type: "plot",
+      size: undefined as number | undefined,
+    },
+    desiredFeatures: [] as string[],
+    homeCondition: "",
+    tenantCriteria: [] as string[],
+  });
+
   const handleSearch = useCallback(
     async (page = 1) => {
       const searchParams: SearchParams = {
