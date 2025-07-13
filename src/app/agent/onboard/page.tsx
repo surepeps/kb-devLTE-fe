@@ -1,10 +1,10 @@
 /** @format */
 
-import AgentData from '@/components/agent_data';
-import React from 'react';
+import AgentOnboard from "@/components/agent-onboard/AgentOnboard";
+import React from "react";
 
-const Form = () => {
-  return <AgentData />;
+const OnboardPage = () => {
+  return <AgentOnboard />;
 };
 
-export default Form;
+export default OnboardPage;
