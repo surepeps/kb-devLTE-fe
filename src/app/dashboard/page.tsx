@@ -19,6 +19,7 @@ import {
   Users as UserGroupIcon,
   Briefcase as BriefcaseIcon,
   MapPin as MapPinIcon,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
@@ -407,12 +408,31 @@ export default function LandlordDashboard() {
             </Link>
 
             <Link
-              href="/notifications"
+              href="/landlord-inspection-requests"
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-purple-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
-                  <UserGroupIcon size={24} className="text-purple-500" />
+                  <CalendarIcon size={24} className="text-purple-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#09391C]">
+                    Inspection Requests
+                  </h3>
+                  <p className="text-sm text-[#5A5D63]">
+                    Manage property inspections
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/notifications"
+              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg group-hover:bg-opacity-20 transition-colors">
+                  <UserGroupIcon size={24} className="text-orange-500" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#09391C]">
