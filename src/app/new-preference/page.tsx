@@ -584,13 +584,15 @@ const PreferenceFormContent: React.FC = () => {
 
     return (
       <div className="mt-8 p-4 bg-gray-900 text-green-400 rounded-lg overflow-auto">
-        <h4 className="text-sm font-semibold mb-2">Current Payload (Debug):</h4>
+        <h4 className="text-sm font-semibold mb-2">
+          Current Form Data (Debug):
+        </h4>
         <pre className="text-xs whitespace-pre-wrap">
-          {JSON.stringify(generatePayload(), null, 2)}
+          {JSON.stringify(state.formData, null, 2)}
         </pre>
       </div>
     );
-  }, [generatePayload]);
+  }, [state.formData]);
 
   // Handle step navigation - memoized to prevent recreation
   const handleStepClick = useCallback(
