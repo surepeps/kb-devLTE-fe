@@ -58,7 +58,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({ className = "" }) => {
         checkOutDate,
       },
     });
-  }, [checkInDate, checkOutDate]);
+  }, [checkInDate, checkOutDate, updateFormData]);
 
   // Get minimum date (today)
   const getMinDate = useCallback(() => {
