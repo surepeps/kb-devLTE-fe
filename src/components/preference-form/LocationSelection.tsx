@@ -695,7 +695,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-gray-50 rounded-lg border"
+          className="p-3 bg-gray-50 rounded-lg border"
         >
           <h4 className="text-sm font-semibold text-gray-800 mb-2">
             Location Summary
