@@ -120,13 +120,7 @@ export default function LandlordDashboard() {
       color: "bg-gray-500",
       textColor: "text-gray-600",
     },
-    {
-      title: "Properties Sold",
-      value: dashboardData?.propertySold || 0,
-      icon: CurrencyDollarIcon,
-      color: "bg-yellow-500",
-      textColor: "text-yellow-600",
-    },
+
     {
       title: "Total Views",
       value: dashboardData?.totalViews || 0,
