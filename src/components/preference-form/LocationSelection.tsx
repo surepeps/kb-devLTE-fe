@@ -248,6 +248,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     showCustomLocation,
     customLGAs,
     showCustomLGAs,
+    updateFormData,
   ]);
 
   // Handle state change
