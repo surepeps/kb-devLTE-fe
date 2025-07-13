@@ -5,7 +5,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
- 
+
 "use client";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
@@ -48,18 +48,18 @@ const ForgotPassword = () => {
               // Store email for verification step
               localStorage.setItem("resetEmail", values.email);
               router.push("/auth/forgot-password/verify");
-              return "Password reset link sent to your email";
+              return "6-digit reset code sent to your email";
             } else {
               throw new Error((response as any).error || "An error occurred");
             }
           }),
           {
-            loading: "Sending reset link...",
-            success: "Password reset link sent to your email",
+            loading: "Sending reset code...",
+            success: "6-digit reset code sent to your email",
             error: (error: { message: any }) => {
               console.log("error", error);
               return (
-                error.message || "An error occurred while sending reset link"
+                error.message || "An error occurred while sending reset code"
               );
             },
           },
@@ -89,8 +89,8 @@ const ForgotPassword = () => {
             Forgot Password
           </h2>
           <p className="text-center text-gray-600 max-w-md">
-            Enter your email address and we&apos;ll send you a link to reset
-            your password.
+            Enter your email address and we&apos;ll send you a 6-digit code to
+            reset your password.
           </p>
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
             <Input
@@ -105,7 +105,7 @@ const ForgotPassword = () => {
           </div>
           {/**Button */}
           <Button
-            value={isSubmitting ? "Sending..." : "Send Reset Link"}
+            value={isSubmitting ? "Sending..." : "Send Reset Code"}
             className="min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
             type="submit"
             isDisabled={isSubmitting || !formik.values.email}

@@ -657,11 +657,15 @@ export default function LandlordInspectionRequestsPage() {
                       {/* Actions */}
                       <div className="flex items-center justify-between">
                         <button
-                          onClick={() => openDetailModal(request)}
+                          onClick={() =>
+                            router.push(
+                              `/secure-seller-response/${request.requestedBy._id}/${request._id}`,
+                            )
+                          }
                           className="text-[#8DDB90] hover:text-[#7BC87F] font-medium text-sm flex items-center gap-2"
                         >
                           <EyeIcon size={16} />
-                          View Full Details
+                          View Details & Respond
                         </button>
 
                         {request.inspectionStatus === "new" &&
@@ -669,19 +673,14 @@ export default function LandlordInspectionRequestsPage() {
                             <div className="flex flex-col sm:flex-row gap-3">
                               <button
                                 onClick={() =>
-                                  handleStatusUpdate(request._id, "accept")
+                                  router.push(
+                                    `/secure-seller-response/${request.requestedBy._id}/${request._id}`,
+                                  )
                                 }
                                 className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
                               >
-                                <CheckCircleIcon size={16} />
-                                Accept Request
-                              </button>
-                              <button
-                                onClick={() => openResponseModal(request)}
-                                className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
-                              >
-                                <EditIcon size={16} />
-                                Respond
+                                <MessageSquareIcon size={16} />
+                                Respond to Request
                               </button>
                             </div>
                           )}
