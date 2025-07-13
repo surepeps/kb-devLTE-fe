@@ -34,6 +34,7 @@ const getValidImageUrl = (url: any): string => {
   return randomImage.src;
 };
 
+
 const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
   const swiperRef = React.useRef<any>(null);
   const { setViewImage, setImageData } = usePageContext();
@@ -80,7 +81,7 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
                 }}
                 key={i}
               >
-                <CloudinaryImage
+                {/* <CloudinaryImage
                   width={1000}
                   height={1000}
                   src={validImageUrl}
@@ -89,6 +90,21 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
                   fallbackSrc={randomImage.src}
                   priority={i === 0} // Only first image is priority
                   timeout={8000} // 8 second timeout
+                /> */}
+
+                <Image
+                  width={1000}
+                  height={1000}
+                  src={validImageUrl}
+                  alt={`Slide ${i + 1}`}
+                  className="w-full h-full object-cover cursor-pointer"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = randomImage.src;
+                  }}
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 />
               </SwiperSlide>
             );
