@@ -434,7 +434,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
     budgetRange,
     numberOfGuests,
     nearbyLandmark,
-    updateFormData,
   ]);
 
   // Format number with commas
