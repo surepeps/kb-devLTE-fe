@@ -165,26 +165,6 @@ const BuyPropertySearch = () => {
     },
   });
 
-  // Filter states with better initialization
-  const [filters, setFilters] = useState({
-    selectedState: "",
-    selectedLGA: "",
-    selectedArea: "",
-    locationDisplay: "",
-    priceRange: { min: 0, max: 0 },
-    documentTypes: [] as string[],
-    usageOptions: [] as string[],
-    bedrooms: undefined as number | undefined,
-    bathrooms: undefined as number | undefined,
-    landSize: {
-      type: "plot",
-      size: undefined as number | undefined,
-    },
-    desiredFeatures: [] as string[],
-    tenantCriteria: [] as string[],
-    homeCondition: "",
-  });
-
   const handleClearFilters = () => {
     const clearedFilters = {
       selectedState: "",
