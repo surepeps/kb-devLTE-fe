@@ -439,6 +439,21 @@ export default function AgentDashboard() {
                   <p className="text-sm text-[#5A5D63]">Manage properties</p>
                 </div>
               </Link>
+
+              <Link
+                href="/profile-settings"
+                className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
+              >
+                <div className="p-2 bg-gray-500 bg-opacity-10 rounded-lg">
+                  <UsersIcon size={20} className="text-gray-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Profile Settings</h3>
+                  <p className="text-sm text-[#5A5D63]">
+                    Manage account settings
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
-import { GET_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -13,48 +13,67 @@ import {
   Calendar as CalendarIcon,
   Clock as ClockIcon,
   MapPin as MapPinIcon,
-  Phone as PhoneIcon,
-  Mail as MailIcon,
-  User as UserIcon,
   ArrowLeft as ArrowLeftIcon,
-  Filter as FilterIcon,
   Search as SearchIcon,
   CheckCircle as CheckCircleIcon,
   XCircle as XCircleIcon,
   AlertCircle as AlertCircleIcon,
+  FileText as FileTextIcon,
+  DollarSign as DollarSignIcon,
+  User as UserIcon,
+  Download as DownloadIcon,
+  Filter as FilterIcon,
+  Eye as EyeIcon,
+  MessageSquare as MessageSquareIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
 interface InspectionRequest {
   _id: string;
-  property: {
-    _id: string;
-    propertyType: string;
-    title: string;
+  propertyId: {
     location: {
       state: string;
       localGovernment: string;
       area: string;
     };
-    price: number;
-    pictures: string[];
-  };
-  client: {
     _id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
+    propertyType: string;
+    briefType: string;
+    price: number;
+    owner: string;
+    pictures: string[];
+    thumbnail: string | null;
   };
-  requestedDate: string;
-  requestedTime: string;
-  message?: string;
-  status: "new" | "active" | "completed" | "cancelled";
+  inspectionDate: string;
+  inspectionTime: string;
+  status: "active_negotiation" | "completed" | "cancelled" | "pending";
+  requestedBy: {
+    _id: string;
+    fullName: string;
+  };
+  transaction: string;
+  isNegotiating: boolean;
+  negotiationPrice: number;
+  letterOfIntention: string;
+  owner: {
+    _id: string;
+    lastName: string;
+    firstName: string;
+    userType: string;
+    id: string;
+  };
+  sellerCounterOffer: number;
+  pendingResponseFrom: "seller" | "buyer";
+  stage: "inspection" | "negotiation" | "completed" | "cancelled";
   createdAt: string;
   updatedAt: string;
+  inspectionStatus: "new" | "accept" | "reject" | "counter" | "request_changes";
+  inspectionType: "price" | "LOI";
+  isLOI: boolean;
+  reason?: string;
 }
 
-export default function InspectionRequestsPage() {
+export default function AgentInspectionRequestsPage() {
   const router = useRouter();
   const { user } = useUserContext();
   const [inspectionRequests, setInspectionRequests] = useState<
@@ -66,8 +85,11 @@ export default function InspectionRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "new" | "active" | "completed" | "cancelled"
-  >("active");
+    "new" | "active_negotiation" | "completed" | "cancelled"
+  >("new");
+  const [selectedRequest, setSelectedRequest] =
+    useState<InspectionRequest | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -96,90 +118,95 @@ export default function InspectionRequestsPage() {
     try {
       setIsLoading(true);
 
-      // Mock data for demonstration - replace with actual API call
+      // Mock data based on the payload structure provided
       const mockData: InspectionRequest[] = [
         {
-          _id: "1",
-          property: {
-            _id: "prop1",
-            propertyType: "3 Bedroom Apartment",
-            title: "Luxury Apartment in Victoria Island",
+          _id: "686d86db9705e4892949e703",
+          propertyId: {
             location: {
               state: "Lagos",
-              localGovernment: "Lagos Island",
-              area: "Victoria Island",
+              localGovernment: "Agege",
+              area: "Ogba",
             },
+            _id: "686929af479bb6092b23b20e",
+            propertyType: "residential",
+            briefType: "Joint Venture",
+            price: 4999990,
+            owner: "683cd1d3fd1239006afe1648",
+            pictures: ["/api/placeholder/400/300"],
+            thumbnail: null,
+          },
+          inspectionDate: "2025-07-14T00:00:00.000Z",
+          inspectionTime: "8:00 AM",
+          status: "active_negotiation",
+          requestedBy: {
+            _id: "686d86d99705e4892949e6f9",
+            fullName: "Hassan Taiwo",
+          },
+          transaction: "686d86db9705e4892949e701",
+          isNegotiating: true,
+          negotiationPrice: 0,
+          letterOfIntention:
+            "https://res.cloudinary.com/dkqjneask/image/upload/v1752008313/property-images/1752008310576-property-image.jpg",
+          owner: {
+            _id: "683cd1d3fd1239006afe1648",
+            lastName: "AYOWOLE",
+            firstName: "AJAYI",
+            userType: "Agent",
+            id: "683cd1d3fd1239006afe1648",
+          },
+          sellerCounterOffer: 0,
+          pendingResponseFrom: "seller",
+          stage: "negotiation",
+          createdAt: "2025-07-08T21:00:11.477Z",
+          updatedAt: "2025-07-12T07:18:04.601Z",
+          inspectionStatus: "new",
+          inspectionType: "LOI",
+          isLOI: true,
+          reason: "Kindly re-upload the LOI doc",
+        },
+        {
+          _id: "686d86db9705e4892949e704",
+          propertyId: {
+            location: {
+              state: "Lagos",
+              localGovernment: "Lekki",
+              area: "Phase 1",
+            },
+            _id: "686929af479bb6092b23b20f",
+            propertyType: "commercial",
+            briefType: "Sale",
             price: 25000000,
+            owner: "683cd1d3fd1239006afe1649",
             pictures: ["/api/placeholder/400/300"],
+            thumbnail: null,
           },
-          client: {
-            _id: "client1",
-            firstName: "John",
-            lastName: "Doe",
-            email: "john.doe@email.com",
-            phoneNumber: "+234 803 123 4567",
+          inspectionDate: "2025-07-16T00:00:00.000Z",
+          inspectionTime: "10:00 AM",
+          status: "pending",
+          requestedBy: {
+            _id: "686d86d99705e4892949e6fa",
+            fullName: "Sarah Johnson",
           },
-          requestedDate: "2024-01-15",
-          requestedTime: "10:00 AM",
-          message:
-            "I'm interested in viewing this property this weekend. Please confirm availability.",
-          status: "active",
-          createdAt: "2024-01-10T10:00:00.000Z",
-          updatedAt: "2024-01-10T10:00:00.000Z",
-        },
-        {
-          _id: "2",
-          property: {
-            _id: "prop2",
-            propertyType: "4 Bedroom Duplex",
-            title: "Modern Duplex in Lekki",
-            location: {
-              state: "Lagos",
-              localGovernment: "Eti-Osa",
-              area: "Lekki Phase 1",
-            },
-            price: 45000000,
-            pictures: ["/api/placeholder/400/300"],
+          transaction: "686d86db9705e4892949e702",
+          isNegotiating: false,
+          negotiationPrice: 23000000,
+          letterOfIntention: "",
+          owner: {
+            _id: "683cd1d3fd1239006afe1649",
+            lastName: "ADEBAYO",
+            firstName: "KEMI",
+            userType: "Landowner",
+            id: "683cd1d3fd1239006afe1649",
           },
-          client: {
-            _id: "client2",
-            firstName: "Sarah",
-            lastName: "Johnson",
-            email: "sarah.johnson@email.com",
-            phoneNumber: "+234 801 987 6543",
-          },
-          requestedDate: "2024-01-12",
-          requestedTime: "2:00 PM",
-          status: "new",
-          createdAt: "2024-01-08T14:00:00.000Z",
-          updatedAt: "2024-01-09T09:30:00.000Z",
-        },
-        {
-          _id: "3",
-          property: {
-            _id: "prop3",
-            propertyType: "2 Bedroom Flat",
-            title: "Cozy Flat in Ikeja",
-            location: {
-              state: "Lagos",
-              localGovernment: "Ikeja",
-              area: "Allen Avenue",
-            },
-            price: 18000000,
-            pictures: ["/api/placeholder/400/300"],
-          },
-          client: {
-            _id: "client3",
-            firstName: "Michael",
-            lastName: "Brown",
-            email: "michael.brown@email.com",
-            phoneNumber: "+234 802 456 7890",
-          },
-          requestedDate: "2024-01-08",
-          requestedTime: "11:00 AM",
-          status: "completed",
-          createdAt: "2024-01-05T16:00:00.000Z",
-          updatedAt: "2024-01-08T12:00:00.000Z",
+          sellerCounterOffer: 0,
+          pendingResponseFrom: "buyer",
+          stage: "inspection",
+          createdAt: "2025-07-09T14:30:00.000Z",
+          updatedAt: "2025-07-12T09:45:00.000Z",
+          inspectionStatus: "accept",
+          inspectionType: "price",
+          isLOI: false,
         },
       ];
 
@@ -195,23 +222,27 @@ export default function InspectionRequestsPage() {
   const filterRequests = () => {
     let filtered = [...inspectionRequests];
 
-    // Filter by status tab
-    filtered = filtered.filter((request) => request.status === activeTab);
+    // Filter by status tab - map tabs to actual statuses
+    if (activeTab === "new") {
+      filtered = filtered.filter(
+        (request) =>
+          request.inspectionStatus === "new" || request.status === "pending",
+      );
+    } else {
+      filtered = filtered.filter((request) => request.status === activeTab);
+    }
 
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
         (request) =>
-          request.property.title
+          request.propertyId.propertyType
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          request.client.firstName
+          request.requestedBy.fullName
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          request.client.lastName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          request.property.location.area
+          request.propertyId.location.area
             .toLowerCase()
             .includes(searchTerm.toLowerCase()),
       );
@@ -222,7 +253,8 @@ export default function InspectionRequestsPage() {
 
   const handleStatusUpdate = async (
     requestId: string,
-    newStatus: "active" | "completed" | "cancelled",
+    newStatus: "accept" | "reject" | "counter",
+    reason?: string,
   ) => {
     try {
       // Update local state immediately for better UX
@@ -231,22 +263,19 @@ export default function InspectionRequestsPage() {
           request._id === requestId
             ? {
                 ...request,
-                status: newStatus,
+                inspectionStatus: newStatus,
                 updatedAt: new Date().toISOString(),
+                reason: reason || request.reason,
               }
             : request,
         ),
       );
 
       // Here you would make the actual API call
-      // await POST_REQUEST(`${URLS.BASE}/agent/inspection-requests/${requestId}/status`,
-      //   { status: newStatus }, Cookies.get("agentToken") || Cookies.get("token"));
-
-      toast.success(`Inspection request ${newStatus} successfully`);
+      toast.success(`Inspection request ${newStatus}ed successfully`);
     } catch (error) {
       console.error("Failed to update status:", error);
       toast.error("Failed to update status");
-      // Revert local state on error
       fetchInspectionRequests();
     }
   };
@@ -254,13 +283,14 @@ export default function InspectionRequestsPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "new":
+      case "pending":
         return <AlertCircleIcon size={16} className="text-blue-500" />;
-      case "active":
+      case "active_negotiation":
+        return <MessageSquareIcon size={16} className="text-orange-500" />;
+      case "completed":
         return <CheckCircleIcon size={16} className="text-green-500" />;
       case "cancelled":
         return <XCircleIcon size={16} className="text-red-500" />;
-      case "completed":
-        return <CheckCircleIcon size={16} className="text-purple-500" />;
       default:
         return <AlertCircleIcon size={16} className="text-gray-500" />;
     }
@@ -269,35 +299,38 @@ export default function InspectionRequestsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "new":
+      case "pending":
         return "bg-blue-100 text-blue-800";
-      case "active":
+      case "active_negotiation":
+        return "bg-orange-100 text-orange-800";
+      case "completed":
         return "bg-green-100 text-green-800";
       case "cancelled":
         return "bg-red-100 text-red-800";
-      case "completed":
-        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getTabIcon = (tab: string) => {
-    switch (tab) {
-      case "new":
-        return <AlertCircleIcon size={16} />;
-      case "active":
-        return <CheckCircleIcon size={16} />;
-      case "completed":
-        return <CheckCircleIcon size={16} />;
-      case "cancelled":
-        return <XCircleIcon size={16} />;
-      default:
-        return <AlertCircleIcon size={16} />;
+  const getRequestCount = (status: string) => {
+    if (status === "new") {
+      return inspectionRequests.filter(
+        (req) => req.inspectionStatus === "new" || req.status === "pending",
+      ).length;
     }
+    return inspectionRequests.filter((req) => req.status === status).length;
   };
 
-  const getRequestCount = (status: string) => {
-    return inspectionRequests.filter((req) => req.status === status).length;
+  const shouldShowBuyerDetails = (request: InspectionRequest) => {
+    return !(
+      request.pendingResponseFrom === "seller" &&
+      request.inspectionStatus === "new"
+    );
+  };
+
+  const openDetailModal = (request: InspectionRequest) => {
+    setSelectedRequest(request);
+    setShowDetailModal(true);
   };
 
   if (isLoading) {
@@ -329,7 +362,7 @@ export default function InspectionRequestsPage() {
                 Inspection Requests
               </h1>
               <p className="text-[#5A5D63] mt-2">
-                Manage property inspection requests from potential clients
+                Manage property inspection requests and negotiations
               </p>
             </div>
             <div className="text-sm text-[#5A5D63] bg-white px-4 py-2 rounded-lg">
@@ -341,23 +374,37 @@ export default function InspectionRequestsPage() {
         {/* Status Tabs */}
         <div className="bg-white rounded-lg p-4 sm:p-6 mb-6 shadow-sm">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {["new", "active", "completed", "cancelled"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab as any)}
-                className={`p-4 rounded-lg text-left transition-colors ${
-                  activeTab === tab
-                    ? "bg-[#8DDB90] text-white"
-                    : "bg-gray-50 hover:bg-gray-100 text-[#5A5D63]"
-                }`}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  {getTabIcon(tab)}
-                  <h3 className="font-medium capitalize">{tab} Requests</h3>
-                </div>
-                <p className="text-2xl font-bold">{getRequestCount(tab)}</p>
-              </button>
-            ))}
+            {[
+              { key: "new", label: "New Requests", icon: AlertCircleIcon },
+              {
+                key: "active_negotiation",
+                label: "Active Negotiations",
+                icon: MessageSquareIcon,
+              },
+              { key: "completed", label: "Completed", icon: CheckCircleIcon },
+              { key: "cancelled", label: "Cancelled", icon: XCircleIcon },
+            ].map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as any)}
+                  className={`p-4 rounded-lg text-left transition-colors ${
+                    activeTab === tab.key
+                      ? "bg-[#8DDB90] text-white"
+                      : "bg-gray-50 hover:bg-gray-100 text-[#5A5D63]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <IconComponent size={16} />
+                    <h3 className="font-medium text-sm">{tab.label}</h3>
+                  </div>
+                  <p className="text-2xl font-bold">
+                    {getRequestCount(tab.key)}
+                  </p>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -370,7 +417,7 @@ export default function InspectionRequestsPage() {
             />
             <input
               type="text"
-              placeholder="Search by property, client name, or location..."
+              placeholder="Search by property, buyer name, or location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
@@ -385,12 +432,12 @@ export default function InspectionRequestsPage() {
             <h3 className="text-lg font-medium text-gray-600 mb-2">
               {searchTerm
                 ? "No matching requests found"
-                : `No ${activeTab} inspection requests yet`}
+                : `No ${activeTab === "new" ? "new" : activeTab} inspection requests yet`}
             </h3>
             <p className="text-gray-500 mb-6">
               {searchTerm
                 ? "Try adjusting your search criteria"
-                : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} inspection requests will appear here`}
+                : `${activeTab === "new" ? "New" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} inspection requests will appear here`}
             </p>
             {searchTerm && (
               <button
@@ -409,16 +456,16 @@ export default function InspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg shadow-sm overflow-hidden"
+                className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100"
               >
                 <div className="p-4 sm:p-6">
                   <div className="flex flex-col lg:flex-row lg:items-start gap-6">
                     {/* Property Image */}
                     <div className="lg:w-48 lg:h-32 w-full h-48 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                      {request.property.pictures?.[0] ? (
+                      {request.propertyId.pictures?.[0] ? (
                         <img
-                          src={request.property.pictures[0]}
-                          alt={request.property.title}
+                          src={request.propertyId.pictures[0]}
+                          alt={request.propertyId.propertyType}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -432,16 +479,25 @@ export default function InspectionRequestsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
                         <div>
-                          <h3 className="text-lg font-semibold text-[#09391C] mb-1">
-                            {request.property.title}
-                          </h3>
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-semibold text-[#09391C]">
+                              {request.propertyId.propertyType} -{" "}
+                              {request.propertyId.briefType}
+                            </h3>
+                            {request.isLOI && (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                LOI
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-[#5A5D63] flex items-center gap-1 mb-2">
                             <MapPinIcon size={14} />
-                            {request.property.location.area},{" "}
-                            {request.property.location.localGovernment}
+                            {request.propertyId.location.area},{" "}
+                            {request.propertyId.location.localGovernment},{" "}
+                            {request.propertyId.location.state}
                           </p>
                           <p className="text-base font-medium text-[#8DDB90]">
-                            ₦{request.property.price.toLocaleString()}
+                            ₦{request.propertyId.price.toLocaleString()}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -449,126 +505,137 @@ export default function InspectionRequestsPage() {
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}
                           >
-                            {request.status.charAt(0).toUpperCase() +
-                              request.status.slice(1)}
+                            {request.status === "active_negotiation"
+                              ? "Negotiating"
+                              : request.status.charAt(0).toUpperCase() +
+                                request.status.slice(1)}
                           </span>
                         </div>
                       </div>
 
-                      {/* Client Info */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
-                            <UserIcon size={16} />
-                            Client Details
-                          </h4>
-                          <p className="text-sm text-[#5A5D63] mb-1">
-                            {request.client.firstName} {request.client.lastName}
-                          </p>
-                          <p className="text-sm text-[#5A5D63] flex items-center gap-1 mb-1">
-                            <MailIcon size={12} />
-                            {request.client.email}
-                          </p>
-                          <p className="text-sm text-[#5A5D63] flex items-center gap-1">
-                            <PhoneIcon size={12} />
-                            {request.client.phoneNumber}
-                          </p>
-                        </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                        {/* Buyer Info - Only show if conditions are met */}
+                        {shouldShowBuyerDetails(request) && (
+                          <div>
+                            <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
+                              <UserIcon size={16} />
+                              Buyer Details
+                            </h4>
+                            <p className="text-sm text-[#5A5D63] mb-1">
+                              {request.requestedBy.fullName}
+                            </p>
+                          </div>
+                        )}
 
+                        {/* Inspection Schedule */}
                         <div>
                           <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
                             <CalendarIcon size={16} />
-                            Requested Schedule
+                            Inspection Schedule
                           </h4>
                           <p className="text-sm text-[#5A5D63] flex items-center gap-1 mb-1">
                             <CalendarIcon size={12} />
                             {new Date(
-                              request.requestedDate,
+                              request.inspectionDate,
                             ).toLocaleDateString()}
                           </p>
                           <p className="text-sm text-[#5A5D63] flex items-center gap-1">
                             <ClockIcon size={12} />
-                            {request.requestedTime}
+                            {request.inspectionTime}
                           </p>
                         </div>
+
+                        {/* Negotiation Info */}
+                        {request.isNegotiating &&
+                          request.negotiationPrice > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
+                                <DollarSignIcon size={16} />
+                                Negotiation
+                              </h4>
+                              <p className="text-sm text-[#5A5D63] mb-1">
+                                Offered: ₦
+                                {request.negotiationPrice.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Pending response from{" "}
+                                {request.pendingResponseFrom}
+                              </p>
+                            </div>
+                          )}
                       </div>
 
-                      {/* Message */}
-                      {request.message && (
+                      {/* LOI Document */}
+                      {request.isLOI && request.letterOfIntention && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
+                            <FileTextIcon size={16} />
+                            Letter of Intention
+                          </h4>
+                          <div className="flex items-center gap-3">
+                            <a
+                              href={request.letterOfIntention}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm"
+                            >
+                              <DownloadIcon size={14} />
+                              View LOI Document
+                            </a>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Reason (if rejected or needs changes) */}
+                      {request.reason && (
                         <div className="mb-4">
                           <h4 className="text-sm font-medium text-[#09391C] mb-2">
-                            Message
+                            Reason
                           </h4>
-                          <p className="text-sm text-[#5A5D63] bg-gray-50 p-3 rounded-lg">
-                            {request.message}
+                          <p className="text-sm text-[#5A5D63] bg-red-50 p-3 rounded-lg border border-red-200">
+                            {request.reason}
                           </p>
                         </div>
                       )}
 
                       {/* Actions */}
-                      {request.status === "new" && (
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <button
-                            onClick={() =>
-                              handleStatusUpdate(request._id, "active")
-                            }
-                            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                          >
-                            <CheckCircleIcon size={16} />
-                            Accept Request
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleStatusUpdate(request._id, "cancelled")
-                            }
-                            className="bg-white hover:bg-gray-50 text-red-600 border border-red-300 px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                          >
-                            <XCircleIcon size={16} />
-                            Decline Request
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => openDetailModal(request)}
+                          className="text-[#8DDB90] hover:text-[#7BC87F] font-medium text-sm flex items-center gap-2"
+                        >
+                          <EyeIcon size={16} />
+                          View Details
+                        </button>
 
-                      {request.status === "active" && (
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <button
-                            onClick={() =>
-                              handleStatusUpdate(request._id, "completed")
-                            }
-                            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                          >
-                            <CheckCircleIcon size={16} />
-                            Mark as Completed
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleStatusUpdate(request._id, "cancelled")
-                            }
-                            className="bg-white hover:bg-gray-50 text-red-600 border border-red-300 px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                          >
-                            <XCircleIcon size={16} />
-                            Cancel Request
-                          </button>
-                        </div>
-                      )}
-
-                      {request.status === "completed" && (
-                        <div className="bg-purple-50 border border-purple-200 p-3 rounded-lg">
-                          <p className="text-sm text-purple-800">
-                            <strong>Inspection completed!</strong> This request
-                            has been successfully processed.
-                          </p>
-                        </div>
-                      )}
-
-                      {request.status === "cancelled" && (
-                        <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
-                          <p className="text-sm text-red-800">
-                            <strong>Request cancelled.</strong> This inspection
-                            request was cancelled.
-                          </p>
-                        </div>
-                      )}
+                        {request.inspectionStatus === "new" &&
+                          request.pendingResponseFrom === "seller" && (
+                            <div className="flex flex-col sm:flex-row gap-3">
+                              <button
+                                onClick={() =>
+                                  handleStatusUpdate(request._id, "accept")
+                                }
+                                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
+                              >
+                                <CheckCircleIcon size={16} />
+                                Accept
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleStatusUpdate(
+                                    request._id,
+                                    "reject",
+                                    "Please provide a reason",
+                                  )
+                                }
+                                className="bg-white hover:bg-gray-50 text-red-600 border border-red-300 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
+                              >
+                                <XCircleIcon size={16} />
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -577,6 +644,126 @@ export default function InspectionRequestsPage() {
           </div>
         )}
       </div>
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-[#09391C]">
+                  Inspection Request Details
+                </h2>
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircleIcon size={24} />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Property Details */}
+              <div>
+                <h3 className="font-semibold text-[#09391C] mb-3">
+                  Property Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-600">Type:</span>
+                    <p>{selectedRequest.propertyId.propertyType}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Brief Type:
+                    </span>
+                    <p>{selectedRequest.propertyId.briefType}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Price:</span>
+                    <p>₦{selectedRequest.propertyId.price.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Location:</span>
+                    <p>
+                      {selectedRequest.propertyId.location.area},{" "}
+                      {selectedRequest.propertyId.location.localGovernment}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Request Details */}
+              <div>
+                <h3 className="font-semibold text-[#09391C] mb-3">
+                  Request Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-600">Stage:</span>
+                    <p className="capitalize">{selectedRequest.stage}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Status:</span>
+                    <p className="capitalize">
+                      {selectedRequest.inspectionStatus}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Type:</span>
+                    <p>{selectedRequest.inspectionType}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Pending Response:
+                    </span>
+                    <p className="capitalize">
+                      {selectedRequest.pendingResponseFrom}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Buyer Details (conditionally shown) */}
+              {shouldShowBuyerDetails(selectedRequest) && (
+                <div>
+                  <h3 className="font-semibold text-[#09391C] mb-3">
+                    Buyer Information
+                  </h3>
+                  <div className="text-sm">
+                    <p>
+                      <span className="font-medium text-gray-600">Name:</span>{" "}
+                      {selectedRequest.requestedBy.fullName}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Timestamps */}
+              <div>
+                <h3 className="font-semibold text-[#09391C] mb-3">Timeline</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-600">Created:</span>
+                    <p>
+                      {new Date(selectedRequest.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Last Updated:
+                    </span>
+                    <p>
+                      {new Date(selectedRequest.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
