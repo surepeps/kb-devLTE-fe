@@ -23,6 +23,23 @@ const ShortletPropertySearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
+  // Filter states with better initialization
+  const [filters, setFilters] = useState({
+    selectedState: "",
+    selectedLGA: "",
+    selectedArea: "",
+    locationDisplay: "",
+    priceRange: { min: 0, max: 0 },
+    usageOptions: [] as string[],
+    bedrooms: undefined as number | undefined,
+    bathrooms: undefined as number | undefined,
+    numberOfGuests: undefined as number | undefined,
+    checkInDate: "",
+    checkOutDate: "",
+    amenities: [] as string[],
+    bookingDuration: "",
+  });
+
   const handleSearch = useCallback(
     async (page = 1) => {
       const searchParams: SearchParams = {
