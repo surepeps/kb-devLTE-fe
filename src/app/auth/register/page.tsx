@@ -1,24 +1,16 @@
 /**
- * eslint-disable react-hooks/exhaustive-deps
- *
  * @format
  */
-
-/** @format */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */ // Consider removing or narrowing this as you refine types
 "use client";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
-import Image from "next/image";
-import React, { FC, Suspense, useEffect, useState } from "react";
+import React, { FC, Suspense, useEffect, useState, useCallback } from "react";
 import mailIcon from "@/svgs/envelope.svg";
 import phoneIcon from "@/svgs/phone.svg";
-import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Button from "@/components/general-components/button";
-import RadioCheck from "@/components/general-components/radioCheck";
 import { RegisterWith } from "@/components/general-components/registerWith";
 import googleIcon from "@/svgs/googleIcon.svg";
 import facebookIcon from "@/svgs/facebookIcon.svg";
@@ -33,8 +25,8 @@ import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
 import CustomToast from "@/components/general-components/CustomToast";
 import OverlayPreloader from "@/components/general-components/OverlayPreloader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+// The InputField component from common/ should be used, not a local one
+import InputField from "@/components/common/InputField"; // Ensure this import path is correct
 
 declare global {
   interface Window {
@@ -45,7 +37,7 @@ declare global {
 
 const Register = () => {
   const isLoading = useLoading();
-  const { setUser, user } = useUserContext();
+  const { setUser } = useUserContext(); // Removed 'user' as it's not directly used here
   const { isContactUsClicked } = usePageContext();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -56,6 +48,16 @@ const Register = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
 
+  // Memoized callback for password toggle (for InputField)
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
+
+  // Memoized callback for confirm password toggle (for InputField)
+  const toggleConfirmPasswordVisibility = useCallback(() => {
+    setShowConfirmPassword((prev) => !prev);
+  }, []);
+
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Enter email"),
     password: Yup.string()
@@ -63,19 +65,18 @@ const Register = () => {
       .matches(/[a-z]/, "Password must contain at least one lowercase letter")
       .matches(
         /^(?=(?:.*[\W_]){2,}).*$/,
-        "Password must contain at least two special character",
+        "Password must contain at least two special characters",
       )
       .required("Password is required"),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), undefined],
-      "Passwords must match",
-    ),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), undefined], "Passwords must match")
+      .required("Confirm password is required"), // Added required to confirmPassword
     firstName: Yup.string()
       .matches(/^[a-zA-Z]+$/, "First name must only contain letters")
-      .required("Firstname is required"),
+      .required("First name is required"),
     lastName: Yup.string()
       .matches(/^[a-zA-Z]+$/, "Last name must only contain letters")
-      .required("Lastname is required"),
+      .required("Last name is required"),
     phone: Yup.string()
       .matches(/^[0-9]+$/, "Phone number must only contain digits")
       .min(10, "Phone number must be at least 10 digits")
@@ -98,8 +99,8 @@ const Register = () => {
     onSubmit: async (values) => {
       setIsDisabled(true);
       try {
-        const url = URLS.BASE + URLS.userSignup;
-        const { phone, confirmPassword, ...payload } = values;
+        const url = URLS.BASE + URLS.authRegister;
+        const { phone, confirmPassword, ...payload } = values; // Destructure confirmPassword
         await toast.promise(
           POST_REQUEST(url, {
             ...payload,
@@ -107,45 +108,28 @@ const Register = () => {
             userType: values.userType,
           }).then((response) => {
             if ((response as any).success) {
+
               localStorage.setItem(
                 "fullname",
                 `${formik.values.firstName} ${formik.values.lastName}`,
               );
               localStorage.setItem("email", `${formik.values.email}`);
-              localStorage.setItem(
-                "phoneNumber",
-                `${String(formik.values.phone)}`,
-              );
-              localStorage.setItem("token", (response as any).token);
-
+              
               setIsSuccess(true);
               formik.resetForm();
               setAgreed(false);
 
-              if (values.userType === "Agent") {
-                // For agents, show verification email success page
-                setOverlayVisible(true);
-                setTimeout(() => {
-                  setOverlayVisible(false);
-                  toast.custom(
-                    <CustomToast
-                      title="Registration successful"
-                      subtitle="A Verification has been sent to your email. Please verify your email to continue"
-                    />,
-                  );
-                  router.push("/auth/verification-sent");
-                }, 2000);
-              } else {
-                // For landlords, auto login them and show overlay
-                toast.success("Registration successful");
-                Cookies.set("token", (response as any).token);
-                setUser((response as any).user);
-                setOverlayVisible(true);
-                setTimeout(() => {
-                  setOverlayVisible(false);
-                  router.push("/dashboard");
-                }, 1500);
-              }
+              setOverlayVisible(true);
+              setTimeout(() => {
+                setOverlayVisible(false);
+                toast.custom(
+                  <CustomToast
+                    title="Registration successful"
+                    subtitle="A verification email has been sent to your email. Please verify your email to continue."
+                  />,
+                );
+                router.push("/auth/verification-sent");
+              }, 2000);
 
               return "Registration successful";
             } else {
@@ -162,7 +146,7 @@ const Register = () => {
           },
         );
       } catch (error) {
-        console.log(error);
+        console.error("Registration error:", error); // Use console.error for errors
         setIsDisabled(false);
         setIsSuccess(false);
       }
@@ -173,36 +157,43 @@ const Register = () => {
     flow: "auth-code",
     onSuccess: async (codeResponse: any) => {
       if (!formik.values.userType) {
-        toast.error("Please select account type first");
+        toast.error("Please select account type first.");
         return;
       }
 
-      const url = URLS.BASE + URLS.user + URLS.googleSignup;
+      try {
+        const url = URLS.BASE + URLS.user + URLS.googleSignup;
+        const response = await POST_REQUEST(url, {
+          code: codeResponse.code,
+          userType: formik.values.userType,
+        });
 
-      await POST_REQUEST(url, {
-        code: codeResponse.code,
-        userType: formik.values.userType,
-      }).then(async (response) => {
-        if ((response as any).id) {
-          Cookies.set("token", (response as any).token);
-          setUser((response as any).user);
+        if (response?.user?.id) { // Check for user.id for success
+          Cookies.set("token", response.token);
+          setUser(response.user);
 
-          localStorage.setItem("email", (response as any).user?.email || "");
+          localStorage.setItem("email", response.user?.email || ""); // Consistent access
 
-          toast.success("Registration successful");
+          toast.success("Registration successful via Google!");
 
-          if ((response as any).user?.userType === "Agent") {
+          if (response.user?.userType === "Agent") {
+            // Agents go to onboard
             router.push("/agent/onboard");
           } else {
+            // Landlords go to dashboard
             router.push("/dashboard");
           }
-        }
-        if (response.error) {
+        } else if (response.error) {
           toast.error(response.error);
+        } else {
+            toast.error("Google registration failed. Please try again.");
         }
-      });
+      } catch (error: any) {
+        console.error("Google signup error:", error);
+        toast.error(error.message || "Google registration failed!");
+      }
     },
-    onError: (errorResponse: any) => toast.error(errorResponse.message),
+    onError: (errorResponse: any) => toast.error(errorResponse.message || "Google sign-up was cancelled or failed."),
   });
 
   // Initialize Facebook SDK
@@ -216,7 +207,7 @@ const Register = () => {
 
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "123456789",
+        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID", // Use a default for dev if env is not set
         cookie: true,
         xfbml: true,
         version: "v21.0",
@@ -230,7 +221,7 @@ const Register = () => {
 
   const handleFacebookSignup = () => {
     if (!formik.values.userType) {
-      toast.error("Please select account type first");
+      toast.error("Please select account type first.");
       return;
     }
 
@@ -246,7 +237,7 @@ const Register = () => {
                   const url = URLS.BASE + URLS.user + URLS.facebookSignup;
                   const payload = {
                     accessToken: response.authResponse.accessToken,
-                    userID: response.authResponse.userID,
+                    userID: response.authResponse.userID, // Note: Backend expects userID, ensure consistency
                     email: userInfo.email,
                     firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
@@ -254,8 +245,8 @@ const Register = () => {
                   };
 
                   const result = await POST_REQUEST(url, payload);
-                  if (result.user?.id) {
-                    toast.success("Registration successful");
+                  if (result.user?.id) { // Check for user.id for success
+                    toast.success("Registration successful via Facebook!");
                     Cookies.set("token", result.token);
                     setUser(result.user);
                     localStorage.setItem("email", result.user.email || "");
@@ -266,24 +257,22 @@ const Register = () => {
                       router.push("/dashboard");
                     }
                   } else {
-                    toast.error(result.error || "Facebook registration failed");
+                    toast.error(result.error || "Facebook registration failed.");
                   }
-                } catch (error) {
+                } catch (error: any) {
                   console.error("Facebook signup error:", error);
-                  toast.error(
-                    "Facebook registration failed, please try again!",
-                  );
+                  toast.error(error.message || "Facebook registration failed, please try again!");
                 }
               },
             );
           } else {
-            toast.error("Facebook login was cancelled");
+            toast.error("Facebook login was cancelled.");
           }
         },
         { scope: "email,public_profile" },
       );
     } else {
-      toast.error("Facebook SDK not loaded");
+      toast.error("Facebook SDK not loaded. Please try again in a moment.");
     }
   };
 
@@ -310,22 +299,21 @@ const Register = () => {
               Are you a Landlord or Agent?
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Landlord Radio Button */}
               <label className="relative cursor-pointer group">
                 <input
                   type="radio"
                   name="userType"
-                  value="Landlord"
-                  checked={formik.values.userType === "Landlord"}
+                  value="Landowners"
+                  checked={formik.values.userType === "Landowners"}
                   onChange={formik.handleChange}
                   disabled={isDisabled}
                   className="sr-only peer"
                 />
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed group-hover:shadow-lg">
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
                   <div className="flex items-center justify-between">
-                    
                     <div className="flex flex-col">
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        
                         <div className="flex gap-2 items-center">
                           <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
                             <svg
@@ -340,24 +328,22 @@ const Register = () => {
                             Landlord
                           </span>
                         </div>
-                        
                         <div className="relative">
                           <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
                             <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
                           </div>
                           <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
                         </div>
-
                       </div>
                       <span className="text-sm text-[#5A5D63] leading-relaxed">
                         Property owner looking to sell or rent
                       </span>
                     </div>
-                    
                   </div>
                 </div>
               </label>
 
+              {/* Agent Radio Button */}
               <label className="relative cursor-pointer group">
                 <input
                   type="radio"
@@ -368,11 +354,10 @@ const Register = () => {
                   disabled={isDisabled}
                   className="sr-only peer"
                 />
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed group-hover:shadow-lg">
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        
                         <div className="flex gap-2 items-center">
                           <div className="w-8 h-8 bg-[#8DDB90]/20 rounded-lg flex items-center justify-center">
                             <svg
@@ -387,14 +372,12 @@ const Register = () => {
                             Agent
                           </span>
                         </div>
-                        
                         <div className="relative">
                           <div className="w-6 h-6 rounded-full border-2 border-gray-300 transition-all duration-300 flex items-center justify-center peer-checked:border-[#8DDB90] peer-checked:bg-[#8DDB90] peer-checked:shadow-sm">
                             <div className="w-3 h-3 rounded-full bg-white opacity-0 transition-all duration-300 peer-checked:opacity-100 scale-0 peer-checked:scale-100"></div>
                           </div>
                           <div className="absolute inset-0 w-6 h-6 rounded-full bg-[#8DDB90] opacity-0 transition-all duration-300 peer-checked:opacity-20 animate-pulse"></div>
                         </div>
-
                       </div>
                       <span className="text-sm text-[#5A5D63] leading-relaxed">
                         Professional helping clients buy/sell properties
@@ -411,99 +394,96 @@ const Register = () => {
             )}
           </div>
 
-          {/* Google | Facebook - Show only when userType is selected */}
+          {/* Social Login Section - Show only when userType is selected */}
           {formik.values.userType && (
-            <div className="w-full lg:px-[60px]">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 h-px bg-gray-200"></div>
-                  <span className="text-sm text-[#5A5D63] font-medium">
+            <div className="w-full lg:px-[60px] mt-4"> {/* Added mt-4 for spacing */}
+              <div className="relative w-full mb-4"> {/* Added mb-4 for spacing */}
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-[#EEF1F1] px-2 text-gray-500">
                     or continue with
                   </span>
-                  <div className="flex-1 h-px bg-gray-200"></div>
                 </div>
-                <div className="flex justify-between lg:flex-row flex-col gap-[15px] w-full">
-                  <RegisterWith
-                    icon={googleIcon}
-                    text="Continue with Google"
-                    onClick={googleLogin}
-                    isDisabled={isDisabled}
-                  />
-                  <RegisterWith
-                    icon={facebookIcon}
-                    text="Continue with Facebook"
-                    onClick={handleFacebookSignup}
-                    isDisabled={isDisabled}
-                  />
-                </div>
+              </div>
+
+              <div className="flex justify-center gap-[15px]">
+                <RegisterWith
+                  icon={googleIcon}
+                  text="Continue with Google"
+                  onClick={googleLogin}
+                  isDisabled={isDisabled}
+                />
+                <RegisterWith
+                  icon={facebookIcon}
+                  text="Continue with Facebook"
+                  onClick={handleFacebookSignup}
+                  isDisabled={isDisabled}
+                />
               </div>
             </div>
           )}
 
+          {/* Form Inputs (using InputField component) */}
           <div className="w-full min-h-[460px] flex flex-col gap-[15px] lg:px-[60px]">
             <div className="flex flex-col lg:flex-row gap-[15px] w-full">
-              <Input
+              <InputField
                 formik={formik}
-                title="First name"
-                isDisabled={isDisabled}
-                id="firstName"
-                icon={""}
+                label="First name"
+                name="firstName"
                 type="text"
                 placeholder="Enter your first name"
                 className="w-full"
               />
-              <Input
+              <InputField
                 formik={formik}
-                title="Last name"
-                isDisabled={isDisabled}
-                id="lastName"
-                icon={""}
+                label="Last name"
+                name="lastName"
                 type="text"
                 placeholder="Enter your last name"
                 className="w-full"
               />
             </div>
-            <Input
+            <InputField
               formik={formik}
-              title="Phone"
-              id="phone"
+              label="Phone"
+              name="phone"
               icon={phoneIcon}
               type="number"
               placeholder="Enter your phone number"
-              isDisabled={isDisabled}
             />
-            <Input
+            <InputField
               formik={formik}
-              title="Email"
-              isDisabled={isDisabled}
-              id="email"
+              label="Email"
+              name="email"
               icon={mailIcon}
               type="email"
               placeholder="Enter your email"
             />
-            <Input
+            <InputField
               formik={formik}
-              title="Password"
-              isDisabled={isDisabled}
-              seePassword={setShowPassword}
-              isSeePassword={showPassword}
-              id="password"
-              icon={""}
-              type="password"
+              label="Password"
+              name="password"
+              type="password" // Always pass 'password' type to InputField for internal handling
               placeholder="Enter your password"
+              showPasswordToggle={true}
+              isPasswordVisible={showPassword}
+              togglePasswordVisibility={togglePasswordVisibility}
             />
-            <Input
+            <InputField
               formik={formik}
-              title="Confirm Password"
-              isDisabled={isDisabled}
-              seePassword={setShowConfirmPassword}
-              isSeePassword={showConfirmPassword}
-              id="confirmPassword"
-              icon={""}
-              type="password"
+              label="Confirm Password"
+              name="confirmPassword"
+              type="password" // Always pass 'password' type to InputField for internal handling
               placeholder="Confirm your password"
+              showPasswordToggle={true}
+              isPasswordVisible={showConfirmPassword}
+              togglePasswordVisibility={toggleConfirmPasswordVisibility}
             />
           </div>
+
+          {/* Terms and Conditions Checkbox */}
           <div className="flex justify-center items-center w-full lg:px-[60px]">
             <div className="flex items-start gap-3 w-full">
               <label className="relative flex items-center cursor-pointer">
@@ -552,12 +532,16 @@ const Register = () => {
               isDisabled ||
               isSuccess ||
               !agreed ||
+              // Ensure all required fields from initialValues are checked for form validity
               !formik.values.email ||
               !formik.values.password ||
+              !formik.values.confirmPassword || // Check confirmPassword
               !formik.values.firstName ||
               !formik.values.lastName ||
               !formik.values.phone ||
-              !formik.values.userType
+              !formik.values.userType ||
+              // Also consider if formik.isValid should be part of this check
+              (formik.submitCount > 0 && !formik.isValid) // Prevent submission if form is invalid after first attempt
             }
             className="min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold"
             type="submit"
@@ -586,82 +570,7 @@ const Register = () => {
   );
 };
 
-interface InputProps {
-  title: string;
-  placeholder?: string;
-  type: string;
-  className?: string;
-  id: string;
-  icon: StaticImport | string;
-  formik: any;
-  isDisabled?: boolean;
-  seePassword?: (type: boolean) => void;
-  isSeePassword?: boolean;
-}
-
-const Input: FC<InputProps> = ({
-  className,
-  id,
-  title,
-  type,
-  placeholder,
-  icon,
-  formik,
-  isDisabled,
-  seePassword,
-  isSeePassword,
-}) => {
-  const fieldError = formik.errors[id];
-  const fieldTouched = formik.touched[id];
-  return (
-    <label
-      htmlFor={id}
-      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}
-    >
-      <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
-        {title}
-      </span>
-      <div className="flex items-center relative">
-        <input
-          name={id}
-          type={
-            type === "password" ? (isSeePassword ? "text" : "password") : type
-          }
-          value={formik.values[id]}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          disabled={isDisabled}
-          placeholder={placeholder ?? "This is placeholder"}
-          className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar disabled:bg-gray-200"
-        />
-        {type === "password" && (
-          <FontAwesomeIcon
-            title={isSeePassword ? "Hide password" : "See password"}
-            className="cursor-pointer transition absolute top-5 right-3 duration-500"
-            icon={isSeePassword ? faEye : faEyeSlash}
-            size="sm"
-            color="black"
-            onClick={() => {
-              seePassword?.(!isSeePassword);
-            }}
-          />
-        )}
-        {icon && type !== "password" ? (
-          <Image
-            src={icon}
-            alt=""
-            width={20}
-            height={20}
-            className="w-[20px] h-[20px] absolute top-4 right-3 z-20"
-          />
-        ) : null}
-      </div>
-      {fieldError && fieldTouched && (
-        <span className="text-red-600 text-sm">{fieldError}</span>
-      )}
-    </label>
-  );
-};
+// Removed the local 'Input' component entirely, as 'InputField' from common is now used.
 
 export default function RegisterPage() {
   return (

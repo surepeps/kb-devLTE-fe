@@ -60,10 +60,10 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 
   // Fetch notifications when user is available
   useEffect(() => {
-    if (user?._id && !isComingSoon) {
+    if ((user?._id || user?.id) && !isComingSoon) {
       fetchNotifications();
     }
-  }, [user?._id, fetchNotifications, isComingSoon]);
+  }, [(user?._id || user?.id), fetchNotifications, isComingSoon]);
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -238,7 +238,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 
           {/**Buttons for desktop screens */}
           <div className="hidden lg:flex items-center gap-6">
-            {user?._id ? (
+            {(user?._id || user?.id) ? (
               <>
                 {/* Notifications */}
                 <div className="relative notification-dropdown">
@@ -341,7 +341,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 
           {/**Mobile controls */}
           <div className="flex items-center gap-3 lg:hidden">
-            {user?._id ? (
+            {(user?._id || user?.id) ? (
               <>
                 {/* Mobile Notifications */}
                 <div className="notification-dropdown">

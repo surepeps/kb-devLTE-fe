@@ -37,7 +37,7 @@ const VerificationSent = () => {
   const handleResendVerification = async () => {
     setIsResending(true);
     try {
-      const url = URLS.BASE + URLS.user + URLS.resendVerification; // Adjust URL as needed
+      const url = URLS.BASE + URLS.authResendVerficationToken; // Adjust URL as needed
 
       await toast.promise(
         POST_REQUEST(url, { email }).then((response) => {

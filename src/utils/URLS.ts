@@ -56,4 +56,13 @@ export const URLS = {
   getAllBuyersPreference: "/agent/all-preferences",
   submitBuyerPreference: "/buyers/submit-preference",
   postProperty: "/properties/new",
+
+  authLogin: "/auth/login",
+  authRegister: "/auth/register",
+  authGoogle: "/auth/googleAuth",
+  authFacebook: "/auth/facebookAuth",
+  authRequestResetPassword: "/auth/resetPasswordRequest",
+  authResendVerficationToken: "/auth/resendVerificationToken",
+  authResetPassword: "/auth/resetPassword",
+  authVeryAccount: "/auth/verifyAccount",
 };

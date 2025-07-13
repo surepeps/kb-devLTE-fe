@@ -48,7 +48,7 @@ export interface User {
     companyName: string;
     companyRegNumber: string;
   };
-}
+} 
 
 interface UserContextType {
   user: User | null;

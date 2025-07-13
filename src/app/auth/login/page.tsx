@@ -1,39 +1,36 @@
 /**
- * eslint-disable react-hooks/exhaustive-deps
- *
  * @format
  */
-
-/** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import Loading from "@/components/loading-component/loading";
-import { useLoading } from "@/hooks/useLoading";
-import Image from "next/image";
-import React, { FC, useEffect, useState } from "react";
-import mailIcon from "@/svgs/envelope.svg";
-import phoneIcon from "@/svgs/phone.svg";
-import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import React, { FC, useEffect, useState, useCallback } from "react"; // Added useCallback
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import Button from "@/components/general-components/button";
-import RadioCheck from "@/components/general-components/radioCheck";
-import { RegisterWith } from "@/components/general-components/registerWith";
-import googleIcon from "@/svgs/googleIcon.svg";
-import facebookIcon from "@/svgs/facebookIcon.svg";
-import Link from "next/link";
-import { usePageContext } from "@/context/page-context";
-import { useUserContext } from "@/context/user-context";
-import { POST_REQUEST } from "@/utils/requests";
-import { URLS } from "@/utils/URLS";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
+import toast from "react-hot-toast";
+
+// Components
+import Loading from "@/components/loading-component/loading";
 import OverlayPreloader from "@/components/general-components/OverlayPreloader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import Button from "@/components/general-components/button";
+import { RegisterWith } from "@/components/general-components/registerWith";
+import InputField from "@/components/common/InputField";
+
+// Hooks & Context
+import { useLoading } from "@/hooks/useLoading";
+import { usePageContext } from "@/context/page-context";
+import { useUserContext } from "@/context/user-context";
+
+// Utilities & Assets
+import { POST_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
+import mailIcon from "@/svgs/envelope.svg";
+import googleIcon from "@/svgs/googleIcon.svg";
+import facebookIcon from "@/svgs/facebookIcon.svg";
+import Link from "next/link";
+
 
 declare global {
   interface Window {
@@ -42,20 +39,50 @@ declare global {
   }
 }
 
-const Login = () => {
+const Login: FC = () => {
   const isLoading = useLoading();
   const { isContactUsClicked } = usePageContext();
-  const { setUser, user } = useUserContext();
+  const { setUser } = useUserContext();
   const router = useRouter();
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
+
+  // Memoized callback for password toggle
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Enter email"),
     password: Yup.string().required("Password is required"),
   });
+
+  const handleAuthSuccess = useCallback((response: any) => {   
+    const userPayload = response.user;
+
+    sessionStorage.setItem("user", JSON.stringify(userPayload));
+    Cookies.set("token", response.token);
+    setUser(userPayload);
+
+    setOverlayVisible(true);
+
+    setTimeout(() => {
+      if (userPayload.userType === "Agent") {
+        if (!userPayload.agentData?.agentType) {
+          router.push("/agent/onboard");
+        } else if (userPayload.accountApproved === false) {
+          router.push("/agent/under-review");
+        } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
+          router.push("/agent/dashboard");
+        }
+      } else {
+        router.push("/dashboard");
+      }
+      setOverlayVisible(false);
+    }, 1500);
+  }, [router, setUser]);
 
   const formik = useFormik({
     initialValues: {
@@ -66,71 +93,31 @@ const Login = () => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        const url = URLS.BASE + URLS.user + URLS.login;
-        const payload = { ...values };
+        const url = URLS.BASE + URLS.authLogin;
 
-        await toast.promise(
-          POST_REQUEST(url, payload).then((response) => {
-            const user = {
-              firstName: response?.user?.firstName,
-              lastName: response?.user?.lastName,
-              phoneNumber: response?.user?.phoneNumber,
-              email: response?.user?.email,
-              id: response?.user?.id,
-              userType: response?.user?.userType,
-              agentData: response?.user?.agentData,
-              accountApproved: response?.user?.accountApproved,
-            };
-            sessionStorage.setItem("user", JSON.stringify(user));
-
-            if ((response as any)?.user?.id) {
-              setIsSuccess(true);
-              toast.success("Sign in successful");
-              Cookies.set("token", (response as any).token);
-              setUser((response as any).user);
-
-              // Show overlay preloader during navigation
-              setOverlayVisible(true);
-
-              setTimeout(() => {
-                if (response.user.userType === "Agent") {
-                  if (!response.user.agentData?.agentType) {
-                    router.push("/agent/onboard");
-                  } else if (response.user.accountApproved === false) {
-                    router.push("/agent/under-review");
-                  } else if (
-                    response.user.phoneNumber &&
-                    response.user.agentData.agentType
-                  ) {
-                    router.push("/agent/dashboard");
-                  }
-                } else {
-                  router.push("/dashboard");
-                }
-                setOverlayVisible(false);
-              }, 1500);
-
-              return "Sign in successful";
-            } else {
-              setIsSubmitting(false);
-              throw new Error((response as any).error || "Sign In failed");
+        const response = await toast.promise(
+          (async () => {
+            const res = await POST_REQUEST(url, values);
+            if (!res || res?.error || !res?.user?.id) {
+              throw new Error(res?.message || res?.error || "Sign In failed");
             }
-          }),
+            return res;
+          })(),
           {
             loading: "Logging in...",
-            success: "Welcome Back!",
-            error: (error: { message: any }) => {
-              console.log("error", error);
-              setIsSubmitting(false);
-              setIsSuccess(false);
+            success: "Login successful!",
+            error: (error: any) => {
+              console.log(error, "Login Error");
               return error.message || "Sign In failed, please try again!";
             },
-          },
+          }
         );
+
+        handleAuthSuccess(response);
       } catch (error) {
-        console.log("Unexpected error:", error);
+        console.error("Login error:", error);
+      } finally {
         setIsSubmitting(false);
-        setIsSuccess(false);
       }
     },
   });
@@ -138,55 +125,24 @@ const Login = () => {
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
-      const url = URLS.BASE + URLS.user + URLS.googleLogin;
+      try {
+        const url = URLS.BASE + URLS.user + URLS.googleLogin;
+        const response = await POST_REQUEST(url, { code: codeResponse.code });
 
-      await POST_REQUEST(url, { code: codeResponse.code }).then(
-        async (response) => {
-          if (response.id) {
-            toast.success("Sign in successful");
-            Cookies.set(
-              "token",
-              (response as unknown as { token: string }).token,
-            );
-
-            const user = {
-              firstName: response?.user?.firstName,
-              lastName: response?.user?.lastName,
-              phoneNumber: response?.user?.phoneNumber,
-              email: response?.user?.email,
-              id: response?.user?.id,
-              userType: response?.user?.userType,
-              agentData: response?.user?.agentData,
-              accountApproved: response?.user?.accountApproved,
-            };
-
-            setUser(user);
-            sessionStorage.setItem("user", JSON.stringify(user));
-
-            if (user.userType === "Agent") {
-              if (!user.agentData?.agentType) {
-                router.push("/agent/onboard");
-              } else if (user.accountApproved === false) {
-                router.push("/agent/under-review");
-              } else if (user.phoneNumber && user.agentData.agentType) {
-                router.push("/agent/dashboard");
-              }
-            } else {
-              router.push("/dashboard");
-            }
-          }
-          console.log("response", response);
-          if (response.error) {
-            toast.error(response.error);
-          }
-        },
-      );
+        if (response.user?.id) {
+          toast.success("Sign in successful");
+          handleAuthSuccess(response);
+        } else {
+          toast.error(response.error || "Google sign-in failed.");
+        }
+      } catch (error) {
+        console.error("Google login error:", error);
+        toast.error("Google sign-in failed, please try again!");
+      }
     },
-    onError: (errorResponse) =>
-      toast.error("Sign In failed, please try again!"),
+    onError: () => toast.error("Google sign-in was cancelled or failed."),
   });
 
-  // Initialize Facebook SDK
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://connect.facebook.net/en_US/sdk.js";
@@ -197,7 +153,7 @@ const Login = () => {
 
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "123456789",
+        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID", // Replace with your actual APP ID
         cookie: true,
         xfbml: true,
         version: "v21.0",
@@ -231,38 +187,12 @@ const Login = () => {
                   const result = await POST_REQUEST(url, payload);
                   if (result.user?.id) {
                     toast.success("Sign in successful");
-                    Cookies.set("token", result.token);
-
-                    const user = {
-                      firstName: result?.user?.firstName,
-                      lastName: result?.user?.lastName,
-                      phoneNumber: result?.user?.phoneNumber,
-                      email: result?.user?.email,
-                      id: result?.user?.id,
-                      userType: result?.user?.userType,
-                      agentData: result?.user?.agentData,
-                      accountApproved: result?.user?.accountApproved,
-                    };
-
-                    setUser(user);
-                    sessionStorage.setItem("user", JSON.stringify(user));
-
-                    if (user.userType === "Agent") {
-                      if (!user.agentData?.agentType) {
-                        router.push("/agent/onboard");
-                      } else if (user.accountApproved === false) {
-                        router.push("/agent/under-review");
-                      } else if (user.phoneNumber && user.agentData.agentType) {
-                        router.push("/agent/dashboard");
-                      }
-                    } else {
-                      router.push("/dashboard");
-                    }
+                    handleAuthSuccess(result);
                   } else {
                     toast.error(result.error || "Facebook login failed");
                   }
                 } catch (error) {
-                  console.error("Facebook login error:", error);
+                  console.error("Facebook login API error:", error);
                   toast.error("Facebook login failed, please try again!");
                 }
               },
@@ -274,7 +204,7 @@ const Login = () => {
         { scope: "email,public_profile" },
       );
     } else {
-      toast.error("Facebook SDK not loaded");
+      toast.error("Facebook SDK not loaded. Please try again in a moment.");
     }
   };
 
@@ -295,42 +225,38 @@ const Login = () => {
             Welcome Back
           </h2>
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
-            <Input
+            <InputField
               formik={formik}
-              title="Email"
-              id="email"
+              label="Email" // Changed title to label
+              name="email" // Use 'name' prop instead of 'id' for Formik
               icon={mailIcon}
               type="email"
               placeholder="Enter your email"
             />
-            <Input
+            <InputField
               formik={formik}
-              title="Password"
-              id="password"
-              seePassword={setShowPassword}
-              isSeePassword={showPassword}
-              icon={""}
+              label="Password" // Changed title to label
+              name="password" // Use 'name' prop
               type="password"
               placeholder="Enter your password"
+              showPasswordToggle={true} // Enable password toggle
+              isPasswordVisible={showPassword}
+              togglePasswordVisibility={togglePasswordVisibility}
+            />
+
+            {/* Button */}
+            <Button
+              value={isSubmitting ? "Signing In..." : "Sign In"}
+              className="w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] rounded-md transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+              type="submit"
+              isDisabled={isSubmitting}
+              onSubmit={formik.handleSubmit}
+              green={true}
             />
           </div>
-          {/**Button */}
-          <Button
-            value={
-              isSubmitting
-                ? "Signing In..."
-                : isSuccess
-                  ? "Login Successful!"
-                  : "Sign In"
-            }
-            className="w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
-            type="submit"
-            isDisabled={isSubmitting || isSuccess}
-            onSubmit={formik.handleSubmit}
-            green={true}
-          />
+          
 
-          {/**Already have an account */}
+          {/* Account Links */}
           <p className="text-base leading-[25.6px] font-normal">
             Don&apos;t have an account?{" "}
             <Link
@@ -340,7 +266,6 @@ const Login = () => {
               Sign Up
             </Link>
           </p>
-
           <p className="text-base leading-[25.6px] font-normal">
             Forgot your password?{" "}
             <Link
@@ -351,8 +276,8 @@ const Login = () => {
             </Link>
           </p>
 
-          {/**Google | Facebook */}
-          <div className="flex justify-between w-full lg:flex-row flex-col gap-[15px]">
+          {/* Social Logins */}
+          <div className="flex w-full justify-center lg:flex-row flex-col gap-[15px]">
             <RegisterWith
               icon={googleIcon}
               text="Continue with Google"
@@ -364,88 +289,16 @@ const Login = () => {
               onClick={handleFacebookLogin}
             />
           </div>
+          
         </form>
       </div>
+
       <OverlayPreloader
         isVisible={overlayVisible}
         message="Loading your dashboard..."
       />
+
     </section>
-  );
-};
-
-interface InputProps {
-  title: string;
-  placeholder?: string;
-  type: string;
-  className?: string;
-  id?: string;
-  icon: StaticImport | string;
-  formik: any;
-  seePassword?: (type: boolean) => void;
-  isSeePassword?: boolean;
-}
-
-const Input: FC<InputProps> = ({
-  className,
-  id,
-  title,
-  type,
-  placeholder,
-  icon,
-  formik,
-  seePassword,
-  isSeePassword,
-}) => {
-  return (
-    <label
-      htmlFor={id}
-      className={`min-h-[80px] ${className} flex flex-col gap-[4px]`}
-    >
-      <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
-        {title}
-      </span>
-      <div className="flex items-center relative">
-        <input
-          name={id}
-          type={
-            type === "password" ? (isSeePassword ? "text" : "password") : type
-          }
-          value={formik.values[id || title]}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          placeholder={placeholder ?? "This is placeholder"}
-          className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] text-black text-base leading-[25.6px] hide-scrollbar`}
-        />
-
-        {type === "password" && (
-          <FontAwesomeIcon
-            title={isSeePassword ? "Hide password" : "See password"}
-            className="cursor-pointer transition absolute top-5 right-3 duration-500"
-            icon={isSeePassword ? faEye : faEyeSlash}
-            size="sm"
-            color="black"
-            onClick={() => {
-              seePassword?.(!isSeePassword);
-            }}
-          />
-        )}
-        {icon && type !== "password" ? (
-          <Image
-            src={icon}
-            alt=""
-            width={20}
-            height={20}
-            className="w-[20px] h-[20px] absolute top-4 right-3 z-20"
-          />
-        ) : null}
-      </div>
-      {formik.touched[id || title] && formik.errors[id || title] && (
-        <span className="text-red-600 text-sm">
-          {formik.errors[id || title]}
-        </span>
-      )}
-    </label>
   );
 };
 

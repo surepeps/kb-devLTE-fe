@@ -93,18 +93,24 @@ export const POST_REQUEST = async (
   token?: string,
 ) => {
   try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const request = await fetch(url, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(data),
     });
+
     const response = await request.json();
     return response;
   } catch (error: unknown) {
-    console.log(error);
+    console.error("POST_REQUEST error:", error);
     return {
       error: (error as Error).message || "Unknown error",
       success: false,
@@ -112,6 +118,7 @@ export const POST_REQUEST = async (
     };
   }
 };
+
 
 export const POST_REQUEST_FILE_UPLOAD = async (
   url: string,

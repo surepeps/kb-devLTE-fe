@@ -21,7 +21,7 @@ export const RegisterWith: FC<RegisterWithProps> = ({
       onClick={isDisabled ? undefined : onClick}
       type="button"
       disabled={isDisabled}
-      className={`flex gap-[12px] items-center justify-center min-h-[60px] border-[1px] py-[16px] px-[24px] w-full bg-[#FFFFFF] border-[#D6DDEB] rounded-lg transition-all duration-300 hover:border-[#8DDB90] hover:shadow-md hover:bg-[#8DDB90]/5 ${
+      className={`flex gap-[12px] w-full items-center justify-center min-h-[60px] border-[1px] py-[16px] px-[18px] bg-[#FFFFFF] border-[#D6DDEB] rounded-lg transition-all duration-300 hover:border-[#8DDB90] hover:shadow-md hover:bg-[#8DDB90]/5 ${
         isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
       }`}
     >
