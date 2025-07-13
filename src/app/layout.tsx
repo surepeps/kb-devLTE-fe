@@ -33,35 +33,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (SHOW_COMING_SOON) {
-    return (
-      <UserProvider>
-        <NotificationProvider>
-          <PageContextProvider>
-            <CreateBriefProvider>
-              <SelectedBriefsProvider>
-                <MarketplaceProvider>
-                  <html lang="en">
-                    <body
-                      className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                    >
-                      {" "}
-                      {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                      <HeaderFooterWrapper>
-                        <Homepage />
-                      </HeaderFooterWrapper>
-                      <Toaster />
-                    </body>
-                    {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
-                  </html>
-                </MarketplaceProvider>
-              </SelectedBriefsProvider>
-            </CreateBriefProvider>
-          </PageContextProvider>
-        </NotificationProvider>
-      </UserProvider>
-    );
-  }
   return (
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
