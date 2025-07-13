@@ -347,7 +347,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
   }, [selectedLGAs, customLGAs, showCustomLGAs]);
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-4 ${className}`}>
       {/* State Selection */}
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-800">
