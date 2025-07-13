@@ -16,7 +16,6 @@ import { CreateBriefProvider } from "@/context/create-brief-context";
 import { SelectedBriefsProvider } from "@/context/selected-briefs-context";
 import { MarketplaceProvider } from "@/context/marketplace-context";
 import { NotificationProvider } from "@/context/notification-context";
-import Homepage from "@/app/homepage/page";
 // import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
