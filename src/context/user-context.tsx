@@ -109,7 +109,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("fullname");
       localStorage.removeItem("phoneNumber");
       localStorage.removeItem("token");
-      setUser(null);
+      setUserState(null);
       toast.success("Logged out successfully");
       await router.push("/auth/login");
       if (callback) await callback();
