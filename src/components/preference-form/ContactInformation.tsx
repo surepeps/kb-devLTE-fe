@@ -92,7 +92,6 @@ const ContactInformation: React.FC<ContactInformationProps> = ({
     email,
     phoneNumber,
     cacRegistrationNumber,
-    updateFormData,
   ]);
 
   // Validate email
