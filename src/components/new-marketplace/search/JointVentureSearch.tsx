@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useFormik } from "formik";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import { SearchParams } from "@/context/new-marketplace-context";
@@ -21,62 +21,89 @@ const JointVentureSearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
-  const handleSearch = async (page = 1) => {
-    const searchParams: SearchParams = {
-      briefType: "jv",
-      page,
-      limit: 12,
-    };
+  // Filter states specific to JV
+  const [filters, setFilters] = useState({
+    selectedState: "",
+    selectedLGA: "",
+    selectedArea: "",
+    locationDisplay: "",
+    priceRange: { min: 0, max: 0 }, // Investment amount range
+    usageOptions: [] as string[],
+    bedrooms: undefined as number | undefined,
+    bathrooms: undefined as number | undefined,
+    landSize: {
+      type: "plot",
+      size: undefined as number | undefined,
+    },
+    desiredFeatures: [] as string[],
+    investmentType: "",
+    expectedROI: "",
+    projectDuration: "",
+  });
 
-    // Add location filter
-    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
-      const locationParts = [
-        filters.selectedArea,
-        filters.selectedLGA,
-        filters.selectedState,
-      ].filter(Boolean);
-      searchParams.location = locationParts.join(", ");
-    }
-
-    // Add investment amount range (price range for JV)
-    if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
-      searchParams.priceRange = {
-        min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
-        max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
+  const handleSearch = useCallback(
+    async (page = 1) => {
+      const searchParams: SearchParams = {
+        briefType: "jv",
+        page,
+        limit: 12,
       };
-    }
 
-    // Add usage options filter (property type)
-    if (filters.usageOptions && filters.usageOptions.length > 0) {
-      const validUsageOptions = filters.usageOptions.filter(
-        (option) => option && option !== "All",
-      );
-      if (validUsageOptions.length > 0) {
-        searchParams.propertyType = validUsageOptions;
+      // Add location filter
+      if (
+        filters.selectedState ||
+        filters.selectedLGA ||
+        filters.selectedArea
+      ) {
+        const locationParts = [
+          filters.selectedArea,
+          filters.selectedLGA,
+          filters.selectedState,
+        ].filter(Boolean);
+        searchParams.location = locationParts.join(", ");
       }
-    }
 
-    // Add other JV-specific filters
-    if (filters.bedrooms) {
-      searchParams.bedroom = filters.bedrooms;
-    }
+      // Add investment amount range (price range for JV)
+      if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
+        searchParams.priceRange = {
+          min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
+          max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
+        };
+      }
 
-    if (filters.bathrooms) {
-      searchParams.bathroom = filters.bathrooms;
-    }
+      // Add usage options filter (property type)
+      if (filters.usageOptions && filters.usageOptions.length > 0) {
+        const validUsageOptions = filters.usageOptions.filter(
+          (option) => option && option !== "All",
+        );
+        if (validUsageOptions.length > 0) {
+          searchParams.propertyType = validUsageOptions;
+        }
+      }
 
-    if (filters.landSize.size) {
-      searchParams.landSize = filters.landSize.size;
-      searchParams.landSizeType = filters.landSize.type;
-    }
+      // Add other JV-specific filters
+      if (filters.bedrooms) {
+        searchParams.bedroom = filters.bedrooms;
+      }
 
-    if (filters.desiredFeatures.length > 0) {
-      searchParams.desireFeature = filters.desiredFeatures;
-    }
+      if (filters.bathrooms) {
+        searchParams.bathroom = filters.bathrooms;
+      }
 
-    // Perform search
-    await searchTabProperties("jv", searchParams);
-  };
+      if (filters.landSize.size) {
+        searchParams.landSize = filters.landSize.size;
+        searchParams.landSizeType = filters.landSize.type;
+      }
+
+      if (filters.desiredFeatures.length > 0) {
+        searchParams.desireFeature = filters.desiredFeatures;
+      }
+
+      // Perform search
+      await searchTabProperties("jv", searchParams);
+    },
+    [filters, searchTabProperties],
+  );
 
   // Listen for pagination events
   useEffect(() => {
@@ -114,26 +141,6 @@ const JointVentureSearch = () => {
     },
   });
 
-  // Filter states specific to JV
-  const [filters, setFilters] = useState({
-    selectedState: "",
-    selectedLGA: "",
-    selectedArea: "",
-    locationDisplay: "",
-    priceRange: { min: 0, max: 0 }, // Investment amount range
-    usageOptions: [] as string[],
-    bedrooms: undefined as number | undefined,
-    bathrooms: undefined as number | undefined,
-    landSize: {
-      type: "plot",
-      size: undefined as number | undefined,
-    },
-    desiredFeatures: [] as string[],
-    investmentType: "",
-    expectedROI: "",
-    projectDuration: "",
-  });
-
   const handleClearFilters = () => {
     setFilters({
       selectedState: "",
@@ -167,7 +174,7 @@ const JointVentureSearch = () => {
     if (activeTab === "jv" && jvTab.formikStatus === "idle") {
       handleSearch();
     }
-  }, [activeTab]);
+  }, [activeTab, handleSearch, jvTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">

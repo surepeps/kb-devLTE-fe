@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useFormik } from "formik";
 import {
   useNewMarketplace,
@@ -23,89 +23,121 @@ const ShortletPropertySearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
-  const handleSearch = async (page = 1) => {
-    const searchParams: SearchParams = {
-      briefType: "shortlet",
-      page,
-      limit: 12,
-    };
+  // Filter states with better initialization
+  const [filters, setFilters] = useState({
+    selectedState: "",
+    selectedLGA: "",
+    selectedArea: "",
+    locationDisplay: "",
+    priceRange: { min: 0, max: 0 },
+    documentTypes: [] as string[],
+    usageOptions: [] as string[],
+    bedrooms: undefined as number | undefined,
+    bathrooms: undefined as number | undefined,
+    landSize: {
+      type: "plot",
+      size: undefined as number | undefined,
+    },
+    desiredFeatures: [] as string[],
+    tenantCriteria: [] as string[],
+    homeCondition: "",
+    numberOfGuests: undefined as number | undefined,
+    checkInDate: "",
+    checkOutDate: "",
+    amenities: [] as string[],
+    bookingDuration: "",
+  });
 
-    // Add location filter - ensure proper values
-    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
-      const locationParts = [
-        filters.selectedArea?.trim(),
-        filters.selectedLGA?.trim(),
-        filters.selectedState?.trim(),
-      ].filter(Boolean);
-      if (locationParts.length > 0) {
-        searchParams.location = locationParts.join(", ");
+  const handleSearch = useCallback(
+    async (page = 1) => {
+      const searchParams: SearchParams = {
+        briefType: "shortlet",
+        page,
+        limit: 12,
+      };
+
+      // Add location filter - ensure proper values
+      if (
+        filters.selectedState ||
+        filters.selectedLGA ||
+        filters.selectedArea
+      ) {
+        const locationParts = [
+          filters.selectedArea?.trim(),
+          filters.selectedLGA?.trim(),
+          filters.selectedState?.trim(),
+        ].filter(Boolean);
+        if (locationParts.length > 0) {
+          searchParams.location = locationParts.join(", ");
+        }
       }
-    }
 
-    // Add price range - ensure valid numbers
-    if (filters.priceRange?.min > 0 || filters.priceRange?.max > 0) {
-      searchParams.priceRange = {};
-      if (filters.priceRange.min > 0 && !isNaN(filters.priceRange.min)) {
-        searchParams.priceRange.min = filters.priceRange.min;
+      // Add price range - ensure valid numbers
+      if (filters.priceRange?.min > 0 || filters.priceRange?.max > 0) {
+        searchParams.priceRange = {};
+        if (filters.priceRange.min > 0 && !isNaN(filters.priceRange.min)) {
+          searchParams.priceRange.min = filters.priceRange.min;
+        }
+        if (filters.priceRange.max > 0 && !isNaN(filters.priceRange.max)) {
+          searchParams.priceRange.max = filters.priceRange.max;
+        }
       }
-      if (filters.priceRange.max > 0 && !isNaN(filters.priceRange.max)) {
-        searchParams.priceRange.max = filters.priceRange.max;
+
+      // Add usage options filter
+      if (filters.usageOptions && filters.usageOptions.length > 0) {
+        const validUsageOptions = filters.usageOptions.filter(
+          (option) => option && option !== "All",
+        );
+        if (validUsageOptions.length > 0) {
+          searchParams.propertyType = validUsageOptions;
+        }
       }
-    }
 
-    // Add usage options filter
-    if (filters.usageOptions && filters.usageOptions.length > 0) {
-      const validUsageOptions = filters.usageOptions.filter(
-        (option) => option && option !== "All",
-      );
-      if (validUsageOptions.length > 0) {
-        searchParams.propertyType = validUsageOptions;
+      // Add document types filter
+      if (filters.documentTypes && filters.documentTypes.length > 0) {
+        searchParams.documentType = filters.documentTypes;
       }
-    }
 
-    // Add document types filter
-    if (filters.documentTypes && filters.documentTypes.length > 0) {
-      searchParams.documentType = filters.documentTypes;
-    }
-
-    // Add bedrooms filter
-    if (filters.bedrooms && !isNaN(Number(filters.bedrooms))) {
-      searchParams.bedroom = Number(filters.bedrooms);
-    }
-
-    // Add bathrooms filter
-    if (filters.bathrooms && !isNaN(Number(filters.bathrooms))) {
-      searchParams.bathroom = Number(filters.bathrooms);
-    }
-
-    // Add land size filter
-    if (filters.landSize?.size && !isNaN(Number(filters.landSize.size))) {
-      searchParams.landSize = Number(filters.landSize.size);
-      if (filters.landSize.type) {
-        searchParams.landSizeType = filters.landSize.type;
+      // Add bedrooms filter
+      if (filters.bedrooms && !isNaN(Number(filters.bedrooms))) {
+        searchParams.bedroom = Number(filters.bedrooms);
       }
-    }
 
-    // Add desired features filter
-    if (filters.desiredFeatures && filters.desiredFeatures.length > 0) {
-      searchParams.desireFeature = filters.desiredFeatures;
-    }
+      // Add bathrooms filter
+      if (filters.bathrooms && !isNaN(Number(filters.bathrooms))) {
+        searchParams.bathroom = Number(filters.bathrooms);
+      }
 
-    // Add home condition filter
-    if (filters.homeCondition && filters.homeCondition.trim()) {
-      searchParams.homeCondition = filters.homeCondition.trim();
-    }
+      // Add land size filter
+      if (filters.landSize?.size && !isNaN(Number(filters.landSize.size))) {
+        searchParams.landSize = Number(filters.landSize.size);
+        if (filters.landSize.type) {
+          searchParams.landSizeType = filters.landSize.type;
+        }
+      }
 
-    // Add tenant criteria filter (for shortlet)
-    if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
-      searchParams.tenantCriteria = filters.tenantCriteria;
-    }
+      // Add desired features filter
+      if (filters.desiredFeatures && filters.desiredFeatures.length > 0) {
+        searchParams.desireFeature = filters.desiredFeatures;
+      }
 
-    console.log("Shortlet search params:", searchParams); // Debug log
+      // Add home condition filter
+      if (filters.homeCondition && filters.homeCondition.trim()) {
+        searchParams.homeCondition = filters.homeCondition.trim();
+      }
 
-    // Perform search
-    await searchTabProperties("shortlet", searchParams);
-  };
+      // Add tenant criteria filter (for shortlet)
+      if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+        searchParams.tenantCriteria = filters.tenantCriteria;
+      }
+
+      console.log("Shortlet search params:", searchParams); // Debug log
+
+      // Perform search
+      await searchTabProperties("shortlet", searchParams);
+    },
+    [filters, searchTabProperties],
+  );
 
   // Listen for pagination events
   useEffect(() => {
@@ -143,26 +175,6 @@ const ShortletPropertySearch = () => {
     },
   });
 
-  // Filter states with better initialization
-  const [filters, setFilters] = useState({
-    selectedState: "",
-    selectedLGA: "",
-    selectedArea: "",
-    locationDisplay: "",
-    priceRange: { min: 0, max: 0 },
-    documentTypes: [] as string[],
-    usageOptions: [] as string[],
-    bedrooms: undefined as number | undefined,
-    bathrooms: undefined as number | undefined,
-    landSize: {
-      type: "plot",
-      size: undefined as number | undefined,
-    },
-    desiredFeatures: [] as string[],
-    tenantCriteria: [] as string[],
-    homeCondition: "",
-  });
-
   const handleClearFilters = () => {
     const clearedFilters = {
       selectedState: "",
@@ -170,17 +182,22 @@ const ShortletPropertySearch = () => {
       selectedArea: "",
       locationDisplay: "",
       priceRange: { min: 0, max: 0 },
-      documentTypes: [],
-      usageOptions: [],
-      bedrooms: undefined,
-      bathrooms: undefined,
+      documentTypes: [] as string[],
+      usageOptions: [] as string[],
+      bedrooms: undefined as number | undefined,
+      bathrooms: undefined as number | undefined,
       landSize: {
         type: "plot",
-        size: undefined,
+        size: undefined as number | undefined,
       },
-      desiredFeatures: [],
-      tenantCriteria: [],
+      desiredFeatures: [] as string[],
+      tenantCriteria: [] as string[],
       homeCondition: "",
+      numberOfGuests: undefined as number | undefined,
+      checkInDate: "",
+      checkOutDate: "",
+      amenities: [] as string[],
+      bookingDuration: "",
     };
 
     setFilters(clearedFilters);
@@ -200,7 +217,7 @@ const ShortletPropertySearch = () => {
     if (activeTab === "shortlet" && shortletTab.formikStatus === "idle") {
       handleSearch();
     }
-  }, [activeTab]);
+  }, [activeTab, handleSearch, shortletTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">

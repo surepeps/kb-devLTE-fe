@@ -16,11 +16,7 @@ import { CreateBriefProvider } from "@/context/create-brief-context";
 import { SelectedBriefsProvider } from "@/context/selected-briefs-context";
 import { MarketplaceProvider } from "@/context/marketplace-context";
 import { NotificationProvider } from "@/context/notification-context";
-import Homepage from "@/app/homepage/page";
-import Countdown from "./coming-soon-modal/page";
 // import { GoogleAnalytics } from '@next/third-parties/google';
-
-const SHOW_COMING_SOON = false;
 
 export const metadata: Metadata = {
   title: "Khabiteq",
@@ -36,36 +32,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (SHOW_COMING_SOON) {
-    return (
-      <UserProvider>
-        <NotificationProvider>
-          <PageContextProvider>
-            <CreateBriefProvider>
-              <SelectedBriefsProvider>
-                <MarketplaceProvider>
-                  <html lang="en">
-                    <body
-                      className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                    >
-                      {" "} 
-                      {/*This was refactored to accomodate Admin routes without the Header and Footer  ||Gb */}
-                      <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
-                        <Homepage isComingSoon={SHOW_COMING_SOON} />
-                        <Countdown />
-                      </HeaderFooterWrapper>
-                      <Toaster />
-                    </body>
-                    {/* <GoogleAnalytics gaId="G-9Y0M3GTLDT" /> */}
-                  </html>
-                </MarketplaceProvider>
-              </SelectedBriefsProvider>
-            </CreateBriefProvider>
-          </PageContextProvider>
-        </NotificationProvider>
-      </UserProvider>
-    );
-  }
   return (
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}

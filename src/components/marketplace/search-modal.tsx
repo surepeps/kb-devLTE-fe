@@ -399,14 +399,15 @@ const SearchModal = ({
     }
 
     // Use the new search function for initial data loading
-    searchProperties({
+    const searchParams = {
       briefType,
       page: 1,
       limit: itemsPerPage,
-    });
+    };
 
+    searchProperties(searchParams);
     initialLoadRef.current = true;
-  }, [userSelectedMarketPlace]); // Removed searchProperties and itemsPerPage to prevent infinite loop
+  }, [userSelectedMarketPlace, itemsPerPage]); // Keep itemsPerPage as dependency but not searchProperties to prevent loop
 
   // Reset initial load flag when marketplace type changes
   useEffect(() => {

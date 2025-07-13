@@ -69,7 +69,7 @@ const BudgetSelection: React.FC<BudgetSelectionProps> = ({
   }, [state.formData.location?.state, preferenceType, getMinBudgetForLocation]);
 
   // Update context when values change
-  const updateBudgetData = useCallback(() => {
+  useEffect(() => {
     if (minPriceRaw > 0 || maxPriceRaw > 0) {
       const budgetData: BudgetRange = {
         minPrice: minPriceRaw,
@@ -82,10 +82,6 @@ const BudgetSelection: React.FC<BudgetSelectionProps> = ({
       });
     }
   }, [minPriceRaw, maxPriceRaw, updateFormData]);
-
-  useEffect(() => {
-    updateBudgetData();
-  }, [updateBudgetData]);
 
   // Handle min price change
   const handleMinPriceChange = useCallback(

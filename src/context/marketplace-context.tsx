@@ -502,7 +502,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     },
-    [isMountedRef],
+    [isMountedRef, currentPage, itemsPerPage], // Add stable dependencies
   );
 
   // Simple data fetching for initial load (backward compatibility)
@@ -518,7 +518,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       };
       await searchProperties(searchParams);
     },
-    [searchProperties, itemsPerPage],
+    [], // Remove dependencies to prevent infinite loop
   );
 
   // Auto-fetch initial data on mount if market type is set
@@ -542,7 +542,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       setFormikStatus("idle"); // Reset status to trigger data fetch
       fetchInitialData(selectedMarketType.briefType);
     }
-  }, [selectedMarketType?.briefType, fetchInitialData]);
+  }, [selectedMarketType?.briefType]); // Remove fetchInitialData dependency to prevent infinite loop
 
   // Search filters state
   const [searchLocation, setSearchLocation] = useState<{
@@ -683,6 +683,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
       itemsPerPage,
       setItemsPerPage,
       clearAllFilters,
+      resetMarketplaceState,
     ],
   );
 

@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useFormik } from "formik";
 import {
   useNewMarketplace,
@@ -23,74 +23,101 @@ const RentPropertySearch = () => {
   const isMobile = IsMobile();
   const [showFilters, setShowFilters] = useState(false);
 
-  const handleSearch = async (page = 1) => {
-    const searchParams: SearchParams = {
-      briefType: "rent",
-      page,
-      limit: 12,
-    };
+  // Filter states
+  const [filters, setFilters] = useState({
+    selectedState: "",
+    selectedLGA: "",
+    selectedArea: "",
+    locationDisplay: "",
+    priceRange: { min: 0, max: 0 },
+    documentTypes: [] as string[],
+    usageOptions: [] as string[],
+    bedrooms: undefined as number | undefined,
+    bathrooms: undefined as number | undefined,
+    landSize: {
+      type: "plot",
+      size: undefined as number | undefined,
+    },
+    desiredFeatures: [] as string[],
+    homeCondition: "",
+    tenantCriteria: [] as string[],
+  });
 
-    // Add location filter
-    if (filters.selectedState || filters.selectedLGA || filters.selectedArea) {
-      const locationParts = [
-        filters.selectedArea,
-        filters.selectedLGA,
-        filters.selectedState,
-      ].filter(Boolean);
-      searchParams.location = locationParts.join(", ");
-    }
-
-    // Add price range
-    if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
-      searchParams.priceRange = {
-        min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
-        max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
+  const handleSearch = useCallback(
+    async (page = 1) => {
+      const searchParams: SearchParams = {
+        briefType: "rent",
+        page,
+        limit: 12,
       };
-    }
 
-    // Add usage options filter (property type)
-    if (filters.usageOptions && filters.usageOptions.length > 0) {
-      const validUsageOptions = filters.usageOptions.filter(
-        (option) => option && option !== "All",
-      );
-      if (validUsageOptions.length > 0) {
-        searchParams.propertyType = validUsageOptions;
+      // Add location filter
+      if (
+        filters.selectedState ||
+        filters.selectedLGA ||
+        filters.selectedArea
+      ) {
+        const locationParts = [
+          filters.selectedArea,
+          filters.selectedLGA,
+          filters.selectedState,
+        ].filter(Boolean);
+        searchParams.location = locationParts.join(", ");
       }
-    }
 
-    // Add other filters
-    if (filters.documentTypes.length > 0) {
-      searchParams.documentType = filters.documentTypes;
-    }
+      // Add price range
+      if (filters.priceRange.min > 0 || filters.priceRange.max > 0) {
+        searchParams.priceRange = {
+          min: filters.priceRange.min > 0 ? filters.priceRange.min : undefined,
+          max: filters.priceRange.max > 0 ? filters.priceRange.max : undefined,
+        };
+      }
 
-    if (filters.bedrooms) {
-      searchParams.bedroom = filters.bedrooms;
-    }
+      // Add usage options filter (property type)
+      if (filters.usageOptions && filters.usageOptions.length > 0) {
+        const validUsageOptions = filters.usageOptions.filter(
+          (option) => option && option !== "All",
+        );
+        if (validUsageOptions.length > 0) {
+          searchParams.propertyType = validUsageOptions;
+        }
+      }
 
-    if (filters.bathrooms) {
-      searchParams.bathroom = filters.bathrooms;
-    }
+      // Add other filters
+      if (filters.documentTypes.length > 0) {
+        searchParams.documentType = filters.documentTypes;
+      }
 
-    if (filters.landSize.size) {
-      searchParams.landSize = filters.landSize.size;
-      searchParams.landSizeType = filters.landSize.type;
-    }
+      if (filters.bedrooms) {
+        searchParams.bedroom = filters.bedrooms;
+      }
 
-    if (filters.desiredFeatures.length > 0) {
-      searchParams.desireFeature = filters.desiredFeatures;
-    }
+      if (filters.bathrooms) {
+        searchParams.bathroom = filters.bathrooms;
+      }
 
-    if (filters.homeCondition) {
-      searchParams.homeCondition = filters.homeCondition;
-    }
+      if (filters.landSize.size) {
+        searchParams.landSize = filters.landSize.size;
+        searchParams.landSizeType = filters.landSize.type;
+      }
 
-    if (filters.tenantCriteria.length > 0) {
-      searchParams.tenantCriteria = filters.tenantCriteria;
-    }
+      if (filters.desiredFeatures.length > 0) {
+        searchParams.desireFeature = filters.desiredFeatures;
+      }
 
-    // Perform search
-    await searchTabProperties("rent", searchParams);
-  };
+      if (filters.homeCondition) {
+        searchParams.homeCondition = filters.homeCondition;
+      }
+
+      if (filters.tenantCriteria.length > 0) {
+        searchParams.tenantCriteria = filters.tenantCriteria;
+      }
+
+      // Perform search
+      await searchTabProperties("rent", searchParams);
+    },
+    [filters, searchTabProperties],
+  );
 
   // Listen for pagination events
   useEffect(() => {
@@ -128,26 +155,6 @@ const RentPropertySearch = () => {
     },
   });
 
-  // Filter states
-  const [filters, setFilters] = useState({
-    selectedState: "",
-    selectedLGA: "",
-    selectedArea: "",
-    locationDisplay: "",
-    priceRange: { min: 0, max: 0 },
-    documentTypes: [] as string[],
-    usageOptions: [] as string[],
-    bedrooms: undefined as number | undefined,
-    bathrooms: undefined as number | undefined,
-    landSize: {
-      type: "plot",
-      size: undefined as number | undefined,
-    },
-    desiredFeatures: [] as string[],
-    homeCondition: "",
-    tenantCriteria: [] as string[],
-  });
-
   const handleClearFilters = () => {
     setFilters({
       selectedState: "",
@@ -181,7 +188,7 @@ const RentPropertySearch = () => {
     if (activeTab === "rent" && rentTab.formikStatus === "idle") {
       handleSearch();
     }
-  }, [activeTab]);
+  }, [activeTab, handleSearch, rentTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
