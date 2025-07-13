@@ -5,7 +5,7 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
- 
+
 "use client";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
@@ -34,18 +34,22 @@ const ResetPassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!params) {
-      toast.error("Invalid request");
-      router.push("/auth/login");
+    // Check if we have the reset code and email from verification step
+    const resetCode = localStorage.getItem("resetCode");
+    const resetEmail = localStorage.getItem("resetEmail");
+
+    if (!resetCode || !resetEmail) {
+      toast.error("Invalid or expired reset session");
+      router.push("/auth/forgot-password");
       return;
     }
 
-    const token = params.get("token") ?? "";
-    if (!token || token.length < 100) {
-      toast.error("Invalid or expired reset link");
-      router.push("/auth/forgot-password");
+    if (resetCode.length !== 6) {
+      toast.error("Invalid verification code");
+      router.push("/auth/forgot-password/verify");
+      return;
     }
-  }, [params, router]);
+  }, [router]);
 
   const validationSchema = Yup.object({
     password: Yup.string()
@@ -80,20 +84,27 @@ const ResetPassword = () => {
           return;
         }
 
-        const token = params?.get("token");
-        if (!token) {
-          toast.error("Invalid token");
+        const resetCode = localStorage.getItem("resetCode");
+        const resetEmail = localStorage.getItem("resetEmail");
+
+        if (!resetCode || !resetEmail) {
+          toast.error("Invalid reset session");
           return;
         }
 
         const url = URLS.BASE + URLS.user + URLS.resetPassword;
-        const payload = { token, password: values.password };
+        const payload = {
+          code: resetCode,
+          email: resetEmail,
+          newPassword: values.password,
+        };
 
         await toast.promise(
           POST_REQUEST(url, payload).then((response) => {
             if (response.success) {
-              // Clear any stored reset email
+              // Clear stored reset data
               localStorage.removeItem("resetEmail");
+              localStorage.removeItem("resetCode");
               router.push("/auth/login");
               return "Password reset successful";
             } else {
