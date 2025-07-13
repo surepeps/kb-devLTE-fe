@@ -253,14 +253,14 @@ export default function InspectionRequestsPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "pending":
-        return <AlertCircleIcon size={16} className="text-yellow-500" />;
-      case "approved":
+      case "new":
+        return <AlertCircleIcon size={16} className="text-blue-500" />;
+      case "active":
         return <CheckCircleIcon size={16} className="text-green-500" />;
-      case "rejected":
+      case "cancelled":
         return <XCircleIcon size={16} className="text-red-500" />;
       case "completed":
-        return <CheckCircleIcon size={16} className="text-blue-500" />;
+        return <CheckCircleIcon size={16} className="text-purple-500" />;
       default:
         return <AlertCircleIcon size={16} className="text-gray-500" />;
     }
@@ -268,17 +268,36 @@ export default function InspectionRequestsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "approved":
+      case "new":
+        return "bg-blue-100 text-blue-800";
+      case "active":
         return "bg-green-100 text-green-800";
-      case "rejected":
+      case "cancelled":
         return "bg-red-100 text-red-800";
       case "completed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const getTabIcon = (tab: string) => {
+    switch (tab) {
+      case "new":
+        return <AlertCircleIcon size={16} />;
+      case "active":
+        return <CheckCircleIcon size={16} />;
+      case "completed":
+        return <CheckCircleIcon size={16} />;
+      case "cancelled":
+        return <XCircleIcon size={16} />;
+      default:
+        return <AlertCircleIcon size={16} />;
+    }
+  };
+
+  const getRequestCount = (status: string) => {
+    return inspectionRequests.filter((req) => req.status === status).length;
   };
 
   if (isLoading) {
