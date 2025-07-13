@@ -129,9 +129,9 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       <div className="bg-gradient-to-r from-[#8DDB90] to-[#09391C] p-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-            {userDetails?.profilePicture ? (
+            {userDetails?.profile_picture ? (
               <Image
-                src={userDetails?.profilePicture}
+                src={userDetails?.profile_picture}
                 width={40}
                 height={40}
                 alt="Profile"
