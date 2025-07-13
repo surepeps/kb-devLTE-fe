@@ -182,198 +182,184 @@ export default function LandlordDashboard() {
           })}
         </div>
 
-        {/* Briefs and Pending Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Briefs */}
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-[#09391C]">
-                  Recent Briefs
-                </h2>
+        {/* Unified Briefs Section */}
+        <div className="bg-white rounded-lg shadow-sm mb-8">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-[#09391C]">
+                My Briefs
+              </h2>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-[#5A5D63]">
+                  {dashboardData?.newPendingBriefs?.length || 0} pending
+                  approval
+                </span>
                 <Link
-                  href="/agent_marketplace"
+                  href="/my-listings"
                   className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
                 >
                   View All
                 </Link>
               </div>
             </div>
-
-            {!dashboardData?.recentBriefs ||
-            dashboardData.recentBriefs.length === 0 ? (
-              <div className="p-12 text-center">
-                <BriefcaseIcon
-                  size={48}
-                  className="mx-auto text-gray-400 mb-4"
-                />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">
-                  No Recent Briefs
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Create your first brief to start finding properties
-                </p>
-                <Link
-                  href="/agent_marketplace"
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
-                >
-                  <PlusIcon size={20} />
-                  Create Brief
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200">
-                {dashboardData.recentBriefs.slice(0, 5).map((brief, index) => (
-                  <motion.div
-                    key={brief._id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="p-6 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          {brief.pictures?.[0] ? (
-                            <img
-                              src={brief.pictures[0]}
-                              alt={brief.propertyType}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            <BriefcaseIcon
-                              size={24}
-                              className="text-gray-400"
-                            />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-[#09391C] capitalize">
-                            {brief.propertyType}
-                          </h3>
-                          <p className="text-sm text-[#5A5D63]">
-                            {brief.location?.area},{" "}
-                            {brief.location?.localGovernment}
-                          </p>
-                          <p className="text-sm text-[#8DDB90] font-medium">
-                            {brief.price
-                              ? `₦${brief.price.toLocaleString()}`
-                              : "Price not set"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                            brief.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : brief.status === "assigned"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {brief.status || "pending"}
-                        </span>
-                        <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
-                          <ClockIcon size={12} />
-                          {brief.createdAt
-                            ? new Date(brief.createdAt).toLocaleDateString()
-                            : "Recently"}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Pending Briefs */}
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-[#09391C]">
-                  Pending Briefs
-                </h2>
-                <span className="text-sm text-[#5A5D63]">
-                  {dashboardData?.newPendingBriefs?.length || 0} pending
-                  approval
-                </span>
-              </div>
+          {(!dashboardData?.recentBriefs ||
+            dashboardData.recentBriefs.length === 0) &&
+          (!dashboardData?.newPendingBriefs ||
+            dashboardData.newPendingBriefs.length === 0) ? (
+            <div className="p-12 text-center">
+              <BriefcaseIcon size={48} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-600 mb-2">
+                No Briefs Yet
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Create your first brief to start listing properties
+              </p>
+              <Link
+                href="/post_property"
+                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-colors"
+              >
+                <PlusIcon size={20} />
+                Create Brief
+              </Link>
             </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {/* Pending Briefs Section */}
+              {dashboardData?.newPendingBriefs &&
+                dashboardData.newPendingBriefs.length > 0 && (
+                  <>
+                    <div className="p-4 bg-yellow-50">
+                      <h3 className="text-sm font-medium text-yellow-800 mb-2">
+                        Pending Approval (
+                        {dashboardData.newPendingBriefs.length})
+                      </h3>
+                    </div>
+                    {dashboardData.newPendingBriefs
+                      .slice(0, 3)
+                      .map((brief, index) => (
+                        <motion.div
+                          key={`pending-${brief._id}`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="p-4 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                {brief.pictures?.[0] ? (
+                                  <img
+                                    src={brief.pictures[0]}
+                                    alt={brief.propertyType}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <BriefcaseIcon
+                                    size={18}
+                                    className="text-gray-400"
+                                  />
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-[#09391C] capitalize">
+                                  {brief.propertyType}
+                                </h4>
+                                <p className="text-xs text-[#5A5D63]">
+                                  {brief.pictures?.length || 0} images uploaded
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                Pending
+                              </span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                  </>
+                )}
 
-            {!dashboardData?.newPendingBriefs ||
-            dashboardData.newPendingBriefs.length === 0 ? (
-              <div className="p-8 text-center">
-                <ClockIcon size={32} className="mx-auto text-gray-400 mb-3" />
-                <h3 className="text-base font-medium text-gray-600 mb-2">
-                  No Pending Briefs
-                </h3>
-                <p className="text-sm text-gray-500 mb-4">
-                  All your briefs have been processed
-                </p>
-                <Link
-                  href="/agent_marketplace"
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
-                >
-                  <PlusIcon size={16} />
-                  Create New Brief
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-                {dashboardData.newPendingBriefs
-                  .slice(0, 5)
-                  .map((brief, index) => (
-                    <motion.div
-                      key={brief._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                            {brief.pictures?.[0] ? (
-                              <img
-                                src={brief.pictures[0]}
-                                alt={brief.propertyType}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <BriefcaseIcon
-                                size={16}
-                                className="text-gray-400"
-                              />
-                            )}
+              {/* Recent Briefs Section */}
+              {dashboardData?.recentBriefs &&
+                dashboardData.recentBriefs.length > 0 && (
+                  <>
+                    <div className="p-4 bg-green-50">
+                      <h3 className="text-sm font-medium text-green-800 mb-2">
+                        Recent Briefs ({dashboardData.recentBriefs.length})
+                      </h3>
+                    </div>
+                    {dashboardData.recentBriefs
+                      .slice(0, 4)
+                      .map((brief, index) => (
+                        <motion.div
+                          key={`recent-${brief._id}`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="p-4 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                {brief.pictures?.[0] ? (
+                                  <img
+                                    src={brief.pictures[0]}
+                                    alt={brief.propertyType}
+                                    className="w-full h-full object-cover rounded-lg"
+                                  />
+                                ) : (
+                                  <BriefcaseIcon
+                                    size={18}
+                                    className="text-gray-400"
+                                  />
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-[#09391C] capitalize">
+                                  {brief.propertyType}
+                                </h4>
+                                <p className="text-xs text-[#5A5D63]">
+                                  {brief.location?.area},{" "}
+                                  {brief.location?.localGovernment}
+                                </p>
+                                <p className="text-xs text-[#8DDB90] font-medium">
+                                  {brief.price
+                                    ? `₦${brief.price.toLocaleString()}`
+                                    : "Price not set"}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span
+                                className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                  brief.status === "active"
+                                    ? "bg-green-100 text-green-800"
+                                    : brief.status === "assigned"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {brief.status || "pending"}
+                              </span>
+                              <p className="text-xs text-[#5A5D63] mt-1 flex items-center gap-1">
+                                <ClockIcon size={10} />
+                                {brief.createdAt
+                                  ? new Date(
+                                      brief.createdAt,
+                                    ).toLocaleDateString()
+                                  : "Recently"}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-medium text-[#09391C] capitalize text-sm">
-                              {brief.propertyType}
-                            </h3>
-                            <p className="text-xs text-[#5A5D63]">
-                              {brief.pictures?.length || 0} images uploaded
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <span
-                            className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                              brief.isApproved
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {brief.isApproved ? "Approved" : "Pending"}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-              </div>
-            )}
-          </div>
+                        </motion.div>
+                      ))}
+                  </>
+                )}
+            </div>
+          )}
         </div>
 
         {/* Quick Actions */}
