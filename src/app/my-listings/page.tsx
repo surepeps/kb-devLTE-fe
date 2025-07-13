@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Plus, Home } from "lucide-react";
 import Link from "next/link";
-import MyListingFilters from "@/components/mylisting/filters/MyListingFilters";
+import SimplifiedMyListingFilters from "@/components/mylisting/filters/SimplifiedMyListingFilters";
 import BriefCard from "@/components/mylisting/brief-card";
 import Pagination from "@/components/mylisting/Pagination";
 import NoBriefsPlaceholder from "@/components/mylisting/NoBriefsPlaceholder";
@@ -60,20 +60,9 @@ interface Brief {
 
 interface SearchFilters {
   location?: string;
-  priceRange?: { min?: number; max?: number };
-  documentType?: string[];
-  bedroom?: number;
-  bathroom?: number;
-  landSizeType?: string;
-  landSize?: number;
-  desireFeature?: string[];
-  homeCondition?: string;
-  tenantCriteria?: string[];
   type?: string[];
   briefType?: string[];
-  isPremium?: boolean;
-  isPreference?: boolean[];
-  status?: "approved" | "pending" | "all";
+  status?: "approved" | "pending" | "rejected" | "all";
 }
 
 const MyListingPage = () => {
@@ -84,20 +73,23 @@ const MyListingPage = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalBriefs, setTotalBriefs] = useState(0);
   const [selectedBrief, setSelectedBrief] = useState<Brief | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [hasActiveFilters, setHasActiveFilters] = useState(false);
   const router = useRouter();
 
   const itemsPerPage = 12;
+  const [serverFilters, setServerFilters] = useState<SearchFilters>({});
 
   useEffect(() => {
     fetchBriefs();
   }, [user, router]);
 
-  const fetchBriefs = async (filters?: SearchFilters) => {
+  const fetchBriefs = async (filters?: SearchFilters, page: number = 1) => {
     if (filters) {
       setSearchLoading(true);
+      setServerFilters(filters);
     } else {
       setLoading(true);
     }
@@ -106,102 +98,55 @@ const MyListingPage = () => {
       const queryParams = new URLSearchParams();
       let filtersApplied = false;
 
-      if (filters) {
-        if (filters.location) {
-          queryParams.append("location", filters.location);
+      // Add pagination
+      queryParams.append("page", page.toString());
+      queryParams.append("limit", itemsPerPage.toString());
+
+      const activeFilters = filters || serverFilters;
+      if (activeFilters) {
+        if (activeFilters.location?.trim()) {
+          queryParams.append("location", activeFilters.location.trim());
           filtersApplied = true;
         }
-        if (filters.priceRange?.min) {
-          queryParams.append("priceMin", filters.priceRange.min.toString());
+        if (activeFilters.type?.length) {
+          queryParams.append("type", activeFilters.type.join(","));
           filtersApplied = true;
         }
-        if (filters.priceRange?.max) {
-          queryParams.append("priceMax", filters.priceRange.max.toString());
+        if (activeFilters.briefType?.length) {
+          queryParams.append("briefType", activeFilters.briefType.join(","));
           filtersApplied = true;
         }
-        if (filters.documentType?.length) {
-          filters.documentType.forEach((doc) =>
-            queryParams.append("documentType", doc),
-          );
-          filtersApplied = true;
-        }
-        if (filters.bedroom) {
-          queryParams.append("bedroom", filters.bedroom.toString());
-          filtersApplied = true;
-        }
-        if (filters.bathroom) {
-          queryParams.append("bathroom", filters.bathroom.toString());
-          filtersApplied = true;
-        }
-        if (filters.landSizeType) {
-          queryParams.append("landSizeType", filters.landSizeType);
-          filtersApplied = true;
-        }
-        if (filters.landSize) {
-          queryParams.append("landSize", filters.landSize.toString());
-          filtersApplied = true;
-        }
-        if (filters.desireFeature?.length) {
-          filters.desireFeature.forEach((feature) =>
-            queryParams.append("desireFeature", feature),
-          );
-          filtersApplied = true;
-        }
-        if (filters.homeCondition) {
-          queryParams.append("homeCondition", filters.homeCondition);
-          filtersApplied = true;
-        }
-        if (filters.tenantCriteria?.length) {
-          filters.tenantCriteria.forEach((criteria) =>
-            queryParams.append("tenantCriteria", criteria),
-          );
-          filtersApplied = true;
-        }
-        if (filters.type) {
-          queryParams.append(
-            "type",
-            Array.isArray(filters.type) ? filters.type.join(",") : filters.type,
-          );
-          filtersApplied = true;
-        }
-        if (filters.briefType) {
-          queryParams.append(
-            "briefType",
-            Array.isArray(filters.briefType)
-              ? filters.briefType.join(",")
-              : filters.briefType,
-          );
-          filtersApplied = true;
-        }
-        if (filters.isPremium !== undefined) {
-          queryParams.append("isPremium", filters.isPremium.toString());
-          filtersApplied = true;
-        }
-        if (filters.isPreference !== undefined) {
-          queryParams.append("isPreference", filters.isPreference.toString());
-          filtersApplied = true;
-        }
-        if (filters.status && filters.status !== "all") {
-          queryParams.append("status", filters.status);
+        if (activeFilters.status && activeFilters.status !== "all") {
+          queryParams.append("status", activeFilters.status);
           filtersApplied = true;
         }
       }
 
       setHasActiveFilters(filtersApplied);
 
-      const url = `${URLS.BASE}/user/briefs${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
+      const url = `${URLS.BASE}/user/briefs?${queryParams.toString()}`;
       const response = await GET_REQUEST(url, Cookies.get("token"));
 
-      if (response?.success && response?.data) {
-        const briefsData = response.data;
+      if (response?.success) {
+        const briefsData = response.data?.briefs || response.data || [];
+        const pagination = response.data?.pagination;
+
         setBriefs(briefsData);
         setFilteredBriefs(briefsData);
-        setTotalPages(Math.ceil(briefsData.length / itemsPerPage));
-        setCurrentPage(1);
+        setTotalBriefs(pagination?.total || briefsData.length);
+        setTotalPages(
+          pagination?.totalPages || Math.ceil(briefsData.length / itemsPerPage),
+        );
+
+        if (filters) {
+          setCurrentPage(1);
+        } else {
+          setCurrentPage(page);
+        }
 
         if (filters && filtersApplied) {
           toast.success(
-            `Found ${briefsData.length} brief${briefsData.length !== 1 ? "s" : ""}`,
+            `Found ${pagination?.total || briefsData.length} brief${(pagination?.total || briefsData.length) !== 1 ? "s" : ""}`,
           );
         }
       } else {
@@ -209,6 +154,7 @@ const MyListingPage = () => {
         setBriefs([]);
         setFilteredBriefs([]);
         setTotalPages(1);
+        setTotalBriefs(0);
         if (filters && filtersApplied) {
           toast.error("No briefs found matching your criteria");
         } else {
@@ -220,6 +166,7 @@ const MyListingPage = () => {
       setBriefs([]);
       setFilteredBriefs([]);
       setTotalPages(1);
+      setTotalBriefs(0);
       toast.error("Failed to fetch briefs");
     } finally {
       setLoading(false);
@@ -228,7 +175,12 @@ const MyListingPage = () => {
   };
 
   const handleSearch = (filters: SearchFilters) => {
-    fetchBriefs(filters);
+    fetchBriefs(filters, 1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchBriefs(undefined, page);
   };
 
   const handleClearFilters = () => {
@@ -276,10 +228,9 @@ const MyListingPage = () => {
     }
   };
 
+  // Remove client-side pagination since we're using server-side
   const getCurrentPageBriefs = () => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredBriefs.slice(startIndex, endIndex);
+    return filteredBriefs;
   };
 
   const getApprovalStats = () => {
@@ -335,7 +286,10 @@ const MyListingPage = () => {
 
         {/* Filter Component */}
         <div className="mb-8">
-          <MyListingFilters onSearch={handleSearch} loading={searchLoading} />
+          <SimplifiedMyListingFilters
+            onSearch={handleSearch}
+            loading={searchLoading}
+          />
         </div>
 
         {/* Content */}
@@ -350,7 +304,7 @@ const MyListingPage = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
               <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
                 <div className="text-xl sm:text-2xl font-bold text-[#09391C] mb-1">
-                  {filteredBriefs.length}
+                  {totalBriefs}
                 </div>
                 <div className="text-xs sm:text-sm text-[#5A5D63]">
                   {hasActiveFilters ? "Filtered" : "Total"} Briefs
@@ -389,8 +343,9 @@ const MyListingPage = () => {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                     <span className="text-xs sm:text-sm text-blue-700 font-medium">
-                      Showing {filteredBriefs.length} result
-                      {filteredBriefs.length !== 1 ? "s" : ""} from your search
+                      Showing {filteredBriefs.length} of {totalBriefs} result
+                      {totalBriefs !== 1 ? "s" : ""} (Page {currentPage} of{" "}
+                      {totalPages})
                     </span>
                   </div>
                   <button
@@ -423,7 +378,7 @@ const MyListingPage = () => {
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
-                  onPageChange={setCurrentPage}
+                  onPageChange={handlePageChange}
                   disabled={searchLoading}
                 />
               </div>
