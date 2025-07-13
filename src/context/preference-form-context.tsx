@@ -8,6 +8,7 @@ import React, {
   ReactNode,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -209,14 +210,16 @@ function preferenceFormReducer(
       };
 
     case "UPDATE_FORM_DATA":
-      // Shallow comparison to prevent unnecessary updates
+      // Deep comparison for form data to prevent unnecessary updates
       const newFormData = {
         ...state.formData,
         ...action.payload,
       };
 
-      // Check if data actually changed
-      if (JSON.stringify(state.formData) === JSON.stringify(newFormData)) {
+      // Check if data actually changed using deep comparison
+      const formDataChanged =
+        JSON.stringify(state.formData) !== JSON.stringify(newFormData);
+      if (!formDataChanged) {
         return state;
       }
 
@@ -307,6 +310,9 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     undefined,
     createInitialState, // Lazy initial state
   );
+
+  // Use ref to track if we're already updating to prevent loops
+  const isUpdatingRef = useRef(false);
 
   // Memoized helper functions to prevent unnecessary re-renders
   const getMinBudgetForLocation = useCallback(
@@ -506,10 +512,21 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.currentStep, validateStep]);
 
-  // Memoized updateFormData with empty dependencies to prevent recreation
+  // STABLE updateFormData function that never changes
   const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
-    dispatch({ type: "UPDATE_FORM_DATA", payload: data });
-  }, []);
+    // Prevent infinite loops with update guard
+    if (isUpdatingRef.current) {
+      return;
+    }
+
+    isUpdatingRef.current = true;
+
+    // Use setTimeout to batch updates and prevent loops
+    setTimeout(() => {
+      dispatch({ type: "UPDATE_FORM_DATA", payload: data });
+      isUpdatingRef.current = false;
+    }, 0);
+  }, []); // Empty dependencies - this function never changes
 
   const getAvailableFeatures = useCallback(
     (preferenceType: string, budget?: number) => {
@@ -619,7 +636,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       goToStep,
       goToNextStep,
       goToPreviousStep,
-      updateFormData,
+      updateFormData, // This is now stable
       validateStep,
       isStepValid,
       canProceedToNextStep,

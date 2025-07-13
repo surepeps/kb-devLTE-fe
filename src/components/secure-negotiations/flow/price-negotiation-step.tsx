@@ -130,6 +130,17 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
       };
     }
 
+    // 80% minimum rule for buyers only
+    if (userType === "buyer") {
+      const minimumOffer = propertyPrice * 0.8;
+      if (amount < minimumOffer) {
+        return {
+          isValid: false,
+          message: `You can't offer less than 80% of the seller's price. Minimum offer: ${formatCurrency(minimumOffer)}`,
+        };
+      }
+    }
+
     return { isValid: true, message: "" };
   };
 
@@ -270,7 +281,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200"
           >
             <FiDollarSign className="w-5 h-5" />
-            <span>Counter Offer</span>
+            <span>{userType === "buyer" ? "Negotiate" : "Counter Offer"}</span>
           </button>
 
           {/* Reject Button */}
@@ -325,18 +336,40 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                       const validation = validateCounterPrice(amount);
                       if (!validation.isValid) {
                         return (
-                          <p className="text-sm text-red-600 mt-2">
-                            {validation.message}
-                          </p>
+                          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                            <p className="text-sm text-red-600 font-medium">
+                              {validation.message}
+                            </p>
+                          </div>
+                        );
+                      } else if (amount > 0) {
+                        // Show success message for valid offers
+                        return (
+                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <p className="text-sm text-green-600 font-medium">
+                              ✅ Valid offer amount
+                            </p>
+                          </div>
                         );
                       }
                       return null;
                     })()}
 
                   {/* Price reference */}
-                  <p className="text-sm text-gray-500 mt-2">
-                    Original price: {formatCurrency(propertyPrice)}
-                  </p>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-gray-500">
+                      Original price: {formatCurrency(propertyPrice)}
+                    </p>
+                    {userType === "buyer" && (
+                      <div className="p-2 bg-yellow-50 border border-yellow-200 rounded">
+                        <p className="text-xs text-yellow-700">
+                          <span className="font-medium">Note:</span> Minimum
+                          offer allowed is 80% of seller's price:{" "}
+                          {formatCurrency(propertyPrice * 0.8)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex space-x-4">

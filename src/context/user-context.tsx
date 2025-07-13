@@ -9,6 +9,8 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useMemo,
+  useCallback,
 } from "react";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -57,10 +59,15 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
 
   const pathName = usePathname();
   const router = useRouter();
+
+  // Memoize setUser to prevent unnecessary re-renders
+  const setUser = useCallback((newUser: User | null) => {
+    setUserState(newUser);
+  }, []);
 
   const getUser = async () => {
     const url = URLS.BASE + URLS.user + URLS.userProfile;
@@ -76,7 +83,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await GET_REQUEST(url, token);
       if (response?._id) {
-        setUser(response);
+        setUserState(response);
       } else if (
         typeof response?.message === "string" &&
         (response.message.toLowerCase().includes("unauthorized") ||
@@ -94,24 +101,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = async (callback?: () => void) => {
-    try {
-      Cookies.remove("token");
-      sessionStorage.removeItem("user");
-      localStorage.removeItem("email");
-      localStorage.removeItem("fullname");
-      localStorage.removeItem("phoneNumber");
-      localStorage.removeItem("token");
-      setUser(null);
-      toast.success("Logged out successfully");
-      await router.push("/auth/login");
-      if (callback) await callback();
-    } catch (error) {
-      console.error("Error during logout:", error);
-      toast.error("Error during logout");
-      throw error;
-    }
-  };
+  const logout = useCallback(
+    async (callback?: () => void) => {
+      try {
+        Cookies.remove("token");
+        sessionStorage.removeItem("user");
+        localStorage.removeItem("email");
+        localStorage.removeItem("fullname");
+        localStorage.removeItem("phoneNumber");
+        localStorage.removeItem("token");
+        setUserState(null);
+        toast.success("Logged out successfully");
+        await router.push("/auth/login");
+        if (callback) await callback();
+      } catch (error) {
+        console.error("Error during logout:", error);
+        toast.error("Error during logout");
+        throw error;
+      }
+    },
+    [router],
+  );
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -125,10 +135,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      user,
+      setUser,
+      logout,
+    }),
+    [user, setUser, logout],
+  );
+
   return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 };
 

@@ -17,6 +17,7 @@ import PropertyDetails from "@/components/preference-form/PropertyDetails";
 import DateSelection from "@/components/preference-form/DateSelection";
 import ContactInformation from "@/components/preference-form/ContactInformation";
 import SubmitButton from "@/components/preference-form/SubmitButton";
+import StepWrapper from "@/components/preference-form/StepWrapper";
 import {
   PreferencePayload,
   BuyPreferencePayload,
@@ -551,28 +552,6 @@ const PreferenceFormContent: React.FC = () => {
     [selectedPreferenceType, handlePreferenceTypeChange],
   );
 
-  // Get step content - memoized to prevent recreation
-  const getStepContent = useMemo(() => {
-    switch (state.currentStep) {
-      case 0: // Location
-        return <LocationSelection />;
-      case 1: // Budget
-        return <BudgetSelection preferenceType={selectedPreferenceType} />;
-      case 2: // Features + Property Details + Dates (combined)
-        return (
-          <div className="space-y-8">
-            <FeatureSelection preferenceType={selectedPreferenceType} />
-            <PropertyDetails preferenceType={selectedPreferenceType} />
-            {selectedPreferenceType === "shortlet" && <DateSelection />}
-          </div>
-        );
-      case 3: // Contact
-        return <ContactInformation preferenceType={selectedPreferenceType} />;
-      default:
-        return null;
-    }
-  }, [state.currentStep, selectedPreferenceType]);
-
   // Debug panel - only show in development
   const debugPanel = useMemo(() => {
     if (process.env.NODE_ENV !== "development") return null;
@@ -651,25 +630,49 @@ const PreferenceFormContent: React.FC = () => {
           onStepClick={handleStepClick}
         />
 
-        {/* Form Content */}
+        {/* Form Content with Step Wrapper to preserve state */}
         <div className="bg-white rounded-xl p-6 shadow-lg border">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${selectedPreferenceType}-${state.currentStep}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
+          <div className="min-h-[400px]">
+            {/* Step 0: Location */}
+            <StepWrapper
+              stepId="location"
+              currentStep={state.currentStep}
+              targetStep={0}
             >
-              <Suspense
-                fallback={
-                  <div className="flex justify-center p-8">Loading...</div>
-                }
-              >
-                {getStepContent}
-              </Suspense>
-            </motion.div>
-          </AnimatePresence>
+              <LocationSelection />
+            </StepWrapper>
+
+            {/* Step 1: Budget */}
+            <StepWrapper
+              stepId="budget"
+              currentStep={state.currentStep}
+              targetStep={1}
+            >
+              <BudgetSelection preferenceType={selectedPreferenceType} />
+            </StepWrapper>
+
+            {/* Step 2: Features + Property Details + Dates */}
+            <StepWrapper
+              stepId="features"
+              currentStep={state.currentStep}
+              targetStep={2}
+            >
+              <div className="space-y-8">
+                <FeatureSelection preferenceType={selectedPreferenceType} />
+                <PropertyDetails preferenceType={selectedPreferenceType} />
+                {selectedPreferenceType === "shortlet" && <DateSelection />}
+              </div>
+            </StepWrapper>
+
+            {/* Step 3: Contact */}
+            <StepWrapper
+              stepId="contact"
+              currentStep={state.currentStep}
+              targetStep={3}
+            >
+              <ContactInformation preferenceType={selectedPreferenceType} />
+            </StepWrapper>
+          </div>
 
           {/* Submit Button */}
           <div className="mt-8 pt-6 border-t border-gray-200">
@@ -677,7 +680,7 @@ const PreferenceFormContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Debug Panel - Show current payload in development only */}
+        {/* Debug Panel - Show current form data in development only */}
         {debugPanel}
       </div>
 
