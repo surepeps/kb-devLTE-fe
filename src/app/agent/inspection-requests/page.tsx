@@ -383,24 +383,21 @@ export default function InspectionRequestsPage() {
           <div className="bg-white rounded-lg p-8 sm:p-12 text-center shadow-sm">
             <CalendarIcon size={48} className="mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-600 mb-2">
-              {searchTerm || statusFilter !== "all"
+              {searchTerm
                 ? "No matching requests found"
-                : "No inspection requests yet"}
+                : `No ${activeTab} inspection requests yet`}
             </h3>
             <p className="text-gray-500 mb-6">
-              {searchTerm || statusFilter !== "all"
-                ? "Try adjusting your search or filter criteria"
-                : "Inspection requests from clients will appear here"}
+              {searchTerm
+                ? "Try adjusting your search criteria"
+                : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} inspection requests will appear here`}
             </p>
-            {(searchTerm || statusFilter !== "all") && (
+            {searchTerm && (
               <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setStatusFilter("all");
-                }}
+                onClick={() => setSearchTerm("")}
                 className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Clear Filters
+                Clear Search
               </button>
             )}
           </div>
