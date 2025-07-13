@@ -281,7 +281,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200"
           >
             <FiDollarSign className="w-5 h-5" />
-            <span>Counter Offer</span>
+            <span>{userType === "buyer" ? "Negotiate" : "Counter Offer"}</span>
           </button>
 
           {/* Reject Button */}
