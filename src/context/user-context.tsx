@@ -59,10 +59,15 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
 
   const pathName = usePathname();
   const router = useRouter();
+
+  // Memoize setUser to prevent unnecessary re-renders
+  const setUser = useCallback((newUser: User | null) => {
+    setUserState(newUser);
+  }, []);
 
   const getUser = async () => {
     const url = URLS.BASE + URLS.user + URLS.userProfile;
