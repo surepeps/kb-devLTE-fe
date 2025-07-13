@@ -506,34 +506,66 @@ export default function InspectionRequestsPage() {
                       )}
 
                       {/* Actions */}
-                      {request.status === "pending" && (
+                      {request.status === "new" && (
                         <div className="flex flex-col sm:flex-row gap-3">
                           <button
                             onClick={() =>
-                              handleStatusUpdate(request._id, "approved")
+                              handleStatusUpdate(request._id, "active")
                             }
                             className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                           >
                             <CheckCircleIcon size={16} />
-                            Approve Request
+                            Accept Request
                           </button>
                           <button
                             onClick={() =>
-                              handleStatusUpdate(request._id, "rejected")
+                              handleStatusUpdate(request._id, "cancelled")
                             }
                             className="bg-white hover:bg-gray-50 text-red-600 border border-red-300 px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                           >
                             <XCircleIcon size={16} />
-                            Reject Request
+                            Decline Request
                           </button>
                         </div>
                       )}
 
-                      {request.status === "approved" && (
-                        <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
-                          <p className="text-sm text-green-800">
-                            <strong>Inspection approved!</strong> Contact the
-                            client to confirm final details.
+                      {request.status === "active" && (
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(request._id, "completed")
+                            }
+                            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                          >
+                            <CheckCircleIcon size={16} />
+                            Mark as Completed
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(request._id, "cancelled")
+                            }
+                            className="bg-white hover:bg-gray-50 text-red-600 border border-red-300 px-6 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                          >
+                            <XCircleIcon size={16} />
+                            Cancel Request
+                          </button>
+                        </div>
+                      )}
+
+                      {request.status === "completed" && (
+                        <div className="bg-purple-50 border border-purple-200 p-3 rounded-lg">
+                          <p className="text-sm text-purple-800">
+                            <strong>Inspection completed!</strong> This request
+                            has been successfully processed.
+                          </p>
+                        </div>
+                      )}
+
+                      {request.status === "cancelled" && (
+                        <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+                          <p className="text-sm text-red-800">
+                            <strong>Request cancelled.</strong> This inspection
+                            request was cancelled.
                           </p>
                         </div>
                       )}
