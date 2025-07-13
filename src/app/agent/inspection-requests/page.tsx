@@ -49,7 +49,7 @@ interface InspectionRequest {
   requestedDate: string;
   requestedTime: string;
   message?: string;
-  status: "pending" | "approved" | "rejected" | "completed";
+  status: "new" | "active" | "completed" | "cancelled";
   createdAt: string;
   updatedAt: string;
 }
@@ -65,7 +65,9 @@ export default function InspectionRequestsPage() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<
+    "new" | "active" | "completed" | "cancelled"
+  >("active");
 
   useEffect(() => {
     if (!user) {
@@ -88,7 +90,7 @@ export default function InspectionRequestsPage() {
 
   useEffect(() => {
     filterRequests();
-  }, [inspectionRequests, searchTerm, statusFilter]);
+  }, [inspectionRequests, searchTerm, activeTab]);
 
   const fetchInspectionRequests = async () => {
     try {
@@ -121,7 +123,7 @@ export default function InspectionRequestsPage() {
           requestedTime: "10:00 AM",
           message:
             "I'm interested in viewing this property this weekend. Please confirm availability.",
-          status: "pending",
+          status: "active",
           createdAt: "2024-01-10T10:00:00.000Z",
           updatedAt: "2024-01-10T10:00:00.000Z",
         },
@@ -148,7 +150,7 @@ export default function InspectionRequestsPage() {
           },
           requestedDate: "2024-01-12",
           requestedTime: "2:00 PM",
-          status: "approved",
+          status: "new",
           createdAt: "2024-01-08T14:00:00.000Z",
           updatedAt: "2024-01-09T09:30:00.000Z",
         },
