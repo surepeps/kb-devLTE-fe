@@ -493,7 +493,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         </div>
       )}
 
-      {/* Dynamic Area Selection - Adaptive layout based on number of LGAs */}
+            {/* Dynamic Area Selection - Adaptive layout based on number of LGAs */}
       {combinedLGAs.length > 0 && (
         <div className="space-y-3">
           <label className="block text-sm font-semibold text-gray-800">
@@ -647,27 +647,28 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
             </>
           )}
 
-          {/* Custom Location Toggle */}
-          <button
-            type="button"
-            onClick={handleCustomLocationToggle}
-            className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
-          >
-            {showCustomLocation
-              ? "Select from areas above"
-              : "Can't find your location? Enter custom location"}
-          </button>
+                    {/* Custom Location Toggle */}
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={handleCustomLocationToggle}
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+            >
+              {showCustomLocation
+                ? "Select from areas above"
+                : "Can't find your location? Enter custom location"}
+            </button>
 
-          {/* Custom Location Input */}
-          <AnimatePresence>
-            {showCustomLocation && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-2"
-              >
+            {/* Custom Location Input */}
+            <AnimatePresence>
+              {showCustomLocation && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-2"
+                >
                 <label className="block text-sm font-medium text-gray-700">
                   Enter your location
                 </label>
@@ -690,7 +691,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
         </div>
       )}
 
-      {/* Location Summary */}
+            {/* Location Summary */}
       {(selectedAreas.length > 0 || customLocation || customLGAs) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
