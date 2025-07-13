@@ -39,7 +39,6 @@ import "swiper/css/pagination";
 import copy from "@/utils/copyItem";
 import Card from "@/components/general-components/card";
 import { IsMobile } from "@/hooks/isMobile";
-import MobileSelectedBottomBar from "@/components/marketplace/MobileSelectedBottomBar";
 import BreadcrumbNav from "@/components/general-components/BreadcrumbNav";
 import Link from "next/link";
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
@@ -857,16 +856,17 @@ const ProductDetailsPage = () => {
               </div>
             </div>
             {selectedBriefs && selectedBriefs.length > 0 && (
-              <MobileSelectedBottomBar
-                selectedBriefs={selectedBriefs.length}
-                selectedBriefsList={selectedBriefs}
-                onRemoveAllBriefs={() => {
-                  console.log("View Briefs", selectedBriefs);
-                }}
-                onSubmitForInspection={() => {
-                  console.log("Submit for inspection", selectedBriefs);
-                }}
-              />
+              <></>
+              // <MobileSelectedBottomBar
+              //   selectedBriefs={selectedBriefs.length}
+              //   selectedBriefsList={selectedBriefs}
+              //   onRemoveAllBriefs={() => {
+              //     console.log("View Briefs", selectedBriefs);
+              //   }}
+              //   onSubmitForInspection={() => {
+              //     console.log("Submit for inspection", selectedBriefs);
+              //   }}
+              // />
             )}
           </div>
         </section>

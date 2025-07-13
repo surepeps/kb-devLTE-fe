@@ -2,16 +2,10 @@
 
 "use client";
 import { useFormik } from "formik";
-import { Fragment, useEffect, useState } from "react";
-import SelectStateLGA from "../marketplace/select-state-lga";
+import { Fragment, useState } from "react";
 import Input from "../general-components/Input";
-import PriceRange from "../marketplace/price-range";
-import BedroomComponent from "../marketplace/bedroom";
-import MoreFilter from "../marketplace/more-filter";
-import DocumentTypeComponent from "../marketplace/document-type";
 import React from "react";
 import RadioCheck from "../general-components/radioCheck";
-import toast from "react-hot-toast";
 import { Search, Filter, X } from "lucide-react";
 
 interface SearchFilters {
@@ -428,10 +422,10 @@ const MyListingSearch = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Location */}
           <div>
-            <SelectStateLGA
+            {/* <SelectStateLGA
               placeholder="Enter state, lga, city...."
               formik={formik}
-            />
+            /> */}
           </div>
 
           {/* Price Range */}
@@ -449,13 +443,14 @@ const MyListingSearch = ({
               onClick={() => setIsPriceRangeModalOpened(true)}
             />
             {isPriceRangeModalOpened && (
-              <PriceRange
-                heading="Price Range"
-                formik={priceFormik}
-                closeModal={setIsPriceRangeModalOpened}
-                setSlectedRadioValue={setPriceRadioValue}
-                selectedRadioValue={priceRadioValue}
-              />
+              // <PriceRange
+              //   heading="Price Range"
+              //   formik={priceFormik}
+              //   closeModal={setIsPriceRangeModalOpened}
+              //   setSlectedRadioValue={setPriceRadioValue}
+              //   selectedRadioValue={priceRadioValue}
+              // />
+              <></>
             )}
           </div>
 
@@ -474,11 +469,12 @@ const MyListingSearch = ({
               onClick={() => setIsDocumentModalOpened(true)}
             />
             {isDocumentModalOpened && (
-              <DocumentTypeComponent
-                docsSelected={documentsSelected}
-                setDocsSelected={setDocumentsSelected}
-                closeModal={setIsDocumentModalOpened}
-              />
+              // <DocumentTypeComponent
+              //   docsSelected={documentsSelected}
+              //   setDocsSelected={setDocumentsSelected}
+              //   closeModal={setIsDocumentModalOpened}
+              // />
+              <></>
             )}
           </div>
 
@@ -497,11 +493,12 @@ const MyListingSearch = ({
               onClick={() => setIsBedroomModalOpened(true)}
             />
             {isBedroomModalOpened && (
-              <BedroomComponent
-                noOfBedrooms={noOfBedrooms}
-                closeModal={setIsBedroomModalOpened}
-                setNumberOfBedrooms={setNoOfBedrooms}
-              />
+              // <BedroomComponent
+              //   noOfBedrooms={noOfBedrooms}
+              //   closeModal={setIsBedroomModalOpened}
+              //   setNumberOfBedrooms={setNoOfBedrooms}
+              // />
+              <></>
             )}
           </div>
         </div>
@@ -517,11 +514,12 @@ const MyListingSearch = ({
               More Filters
             </button>
             {isMoreFilterModalOpened && (
-              <MoreFilter
-                filters={filters}
-                setFilters={setFilters}
-                closeModal={setIsMoreFilterModalOpened}
-              />
+              // <MoreFilter
+              //   filters={filters}
+              //   setFilters={setFilters}
+              //   closeModal={setIsMoreFilterModalOpened}
+              // />
+              <></>
             )}
           </div>
 

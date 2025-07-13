@@ -6,12 +6,9 @@ import { FormikProps, useFormik } from 'formik';
 import React, { Fragment, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import banks from '@/data/nigeria-banks.json';
-import { Option } from '@/components/marketplace/types/option';
 import Select, { SingleValue } from 'react-select';
 import customStyles from '@/styles/inputStyle';
 import AttachFile from '@/components/general-components/attach_file';
-import axios from 'axios';
-import { URLS } from '@/utils/URLS';
 import { motion } from 'framer-motion';
 import SubmitPopUp from '@/components/submit';
 import { usePageContext } from '@/context/page-context';
@@ -20,6 +17,12 @@ type ProvideTransactionDetailsProps = {
   amountToPay: number;
   payload?: any;
 };
+
+interface Option {
+  label: string;
+  value: string;
+}
+
 
 const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   amountToPay = 10000,

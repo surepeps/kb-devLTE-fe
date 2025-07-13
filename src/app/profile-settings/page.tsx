@@ -89,7 +89,7 @@ export default function ProfileSettingsPage() {
   const fetchUserProfile = async () => {
     try {
       setIsLoading(true);
-
+ 
       // Mock data - replace with actual API call
       const mockProfile: UserProfile = {
         _id: user?._id || "1",
@@ -98,7 +98,7 @@ export default function ProfileSettingsPage() {
         email: user?.email || "john.doe@email.com",
         phoneNumber: user?.phoneNumber || "+234 803 123 4567",
         address: "123 Victoria Island, Lagos State",
-        profileImage: user?.profileImage || null,
+        profileImage: user?.profile_picture,
         userType: user?.userType || "Agent",
         accountApproved: user?.accountApproved || true,
         createdAt: "2024-01-01T00:00:00.000Z",

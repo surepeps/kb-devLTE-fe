@@ -6,7 +6,6 @@ import { FormikProps, useFormik } from 'formik';
 import React, { Fragment, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import banks from '@/data/nigeria-banks.json';
-import { Option } from '@/components/marketplace/types/option';
 import Select, { SingleValue } from 'react-select';
 import customStyles from '@/styles/inputStyle';
 import AttachFile from '@/components/general-components/attach_file';
@@ -18,6 +17,11 @@ import SubmitPopUp from '@/components/submit';
 type ProvideTransactionDetailsProps = {
   amountToPay: number;
 };
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 const ProvideTransactionDetails: React.FC<ProvideTransactionDetailsProps> = ({
   amountToPay,

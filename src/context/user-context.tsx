@@ -25,9 +25,9 @@ export interface User {
   lastName?: string;
   phoneNumber?: string;
   selectedRegion?: string[];
-  userType?: string;
+  userType?: "Agent" | "Landowners";
   accountId?: string;
-  profilePicture?: string;
+  profile_picture?: string;
   address?: {
     localGovtArea: string;
     city: string;

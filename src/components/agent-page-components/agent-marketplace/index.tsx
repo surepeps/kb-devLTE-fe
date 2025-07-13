@@ -1,15 +1,12 @@
 /** @format */
 'use client';
 import Select from 'react-select';
-import SelectStateLGA from '@/components/marketplace/select-state-lga';
-import { epilogue, ubuntu } from '@/styles/font';
+import { epilogue } from '@/styles/font';
 import { useFormik, FormikProps } from 'formik';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { FaArrowLeft, FaDotCircle } from 'react-icons/fa';
 import customStyles from '@/styles/inputStyle';
 import Input from '@/components/general-components/Input';
-import DocumentTypeComponent from '@/components/marketplace/document-type';
-import MoreFilter from '@/components/marketplace/more-filter';
 import Card from './card';
 import { PropertySelectedProps } from './types';
 import { AnimatePresence } from 'framer-motion';
@@ -17,9 +14,7 @@ import UnlockAllFeaturesModal from './unlock-all-features';
 import Subscription from './subscription';
 import Preference from './prefrence';
 import ProvideTransactionDetails from './make-payment';
-import { IsMobile } from '@/hooks/isMobile';
 import { useMobile } from '@/hooks/useMobile';
-import Filter from '@/components/marketplace/filter-for-mobile';
 
 const AgentMarketPlace = () => {
   const divRef = useRef<HTMLDivElement | null>(null);
@@ -247,18 +242,12 @@ const Index = ({
         {/**Search form */}
         <form className='w-full py-[25px] bg-[#FFFFFF] px-[15px] flex items-center justify-center'>
           <div className='w-full flex items-end gap-[15px] flex-wrap md:flex-nowrap'>
-            <SelectStateLGA
+            {/* <SelectStateLGA
               placeholder='Enter state, lga, city....'
               formik={formik}
               heading=''
-            />
-            {/* <Select
-              styles={customStyles}
-              onChange={() => setAllUnlockAllFeaturesModalOpened(true)}
-              options={[{ label: 'Nil', value: 'Nil' }]}
-              className='w-[220px] cursor-pointer'
-              placeholder='Developer preference'
             /> */}
+            
             <Input
               className='md:w-[220px] w-full text-sm'
               placeholder='Developer preference'
@@ -286,11 +275,12 @@ const Index = ({
                 onClick={() => setIsDocumentModalOpened(true)}
               />
               {isDocumentModalOpened && (
-                <DocumentTypeComponent
-                  docsSelected={documentsSelected}
-                  setDocsSelected={setDocumentsSelected}
-                  closeModal={setIsDocumentModalOpened}
-                />
+                <></>
+                // <DocumentTypeComponent
+                //   docsSelected={documentsSelected}
+                //   setDocsSelected={setDocumentsSelected}
+                //   closeModal={setIsDocumentModalOpened}
+                // />
               )}
             </div>
             <Select
@@ -310,23 +300,25 @@ const Index = ({
                 </button>
                 {isMoreFilterModalOpened &&
                   (is_mobile ? (
-                    <Filter
-                      payloadFromFilter={payloadFromFilter}
-                      setPayloadFromFilter={setPayloadFromFilter}
-                      closeModal={setIsMoreFilterModalOpened}
-                      selectedType={''}
-                    />
+                    <></>
+                    // <Filter
+                    //   payloadFromFilter={payloadFromFilter}
+                    //   setPayloadFromFilter={setPayloadFromFilter}
+                    //   closeModal={setIsMoreFilterModalOpened}
+                    //   selectedType={''}
+                    // />
                   ) : (
-                    <MoreFilter
-                      style={
-                        is_mobile
-                          ? { marginLeft: '0px' }
-                          : { marginLeft: '-100px' }
-                      }
-                      filters={filters}
-                      setFilters={setFilters}
-                      closeModal={setIsMoreFilterModalOpened}
-                    />
+                    <></>
+                    // <MoreFilter
+                    //   style={
+                    //     is_mobile
+                    //       ? { marginLeft: '0px' }
+                    //       : { marginLeft: '-100px' }
+                    //   }
+                    //   filters={filters}
+                    //   setFilters={setFilters}
+                    //   closeModal={setIsMoreFilterModalOpened}
+                    // />
                   ))}
               </div>
               <button

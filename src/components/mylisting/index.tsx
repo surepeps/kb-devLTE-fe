@@ -3,8 +3,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { usePageContext } from '@/context/page-context';
-import RadioCheck from '../general-components/radioCheck';
-import JointVentureModalCard from '../marketplace/joint-venture-card';
 import Card from '../general-components/card';
 import sampleImage from '@/assets/Agentpic.png';
 import Select from 'react-select';
@@ -71,24 +69,25 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
 
     if (brief.briefType === 'Joint Venture') {
       return (
-        <JointVentureModalCard
-          key={idx}
-          onClick={() => {}}
-          isAddInspectionalModalOpened={isAddForInspectionModalOpened}
-          isDisabled={false}
-          cardData={cardData}
-          images={images}
-          property={brief}
-          properties={briefs}
-          setPropertySelected={() => {}}
-          isComingFromSubmitLol={false}
-          setIsComingFromSubmitLol={() => {}}
-          setIsAddInspectionModalOpened={() => {}}
-          onCardPageClick={() => {
-          // Use the correct route for your property
-          router.push(`/property/${brief?.briefType || 'type'}/${brief?._id}`);
-        }}
-        />
+        <></>
+        // <JointVentureModalCard
+        //   key={idx}
+        //   onClick={() => {}}
+        //   isAddInspectionalModalOpened={isAddForInspectionModalOpened}
+        //   isDisabled={false}
+        //   cardData={cardData}
+        //   images={images}
+        //   property={brief}
+        //   properties={briefs}
+        //   setPropertySelected={() => {}}
+        //   isComingFromSubmitLol={false}
+        //   setIsComingFromSubmitLol={() => {}}
+        //   setIsAddInspectionModalOpened={() => {}}
+        //   onCardPageClick={() => {
+        //   // Use the correct route for your property
+        //   router.push(`/property/${brief?.briefType || 'type'}/${brief?._id}`);
+        // }}
+        // />
       );
     }
     // Default card for Buy/Sell/Rent

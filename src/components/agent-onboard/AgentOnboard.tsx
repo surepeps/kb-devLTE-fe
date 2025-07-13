@@ -39,6 +39,23 @@ interface StepIndicatorProps {
   totalSteps: number;
 }
 
+interface FormValues {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  email: string;
+  houseNumber: string;
+  street: string;
+  state: string;
+  localGovtArea: string;
+  selectedRegion: string[]; // important for correct typing in multiselect
+  typeOfID: string;
+  idNumber: string;
+  companyName: string;
+  cacNumber: string;
+}
+
+
 const StepIndicator: React.FC<StepIndicatorProps> = ({
   currentStep,
   totalSteps,
@@ -109,7 +126,7 @@ const AgentOnboard: React.FC = () => {
     }),
   });
 
-  const formik = useFormik({
+  const formik = useFormik<FormValues>({
     initialValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",

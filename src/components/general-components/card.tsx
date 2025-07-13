@@ -21,7 +21,7 @@ import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import "swiper/css";
 import "swiper/css/pagination"; // if using pagination
 import "swiper/css/navigation"; // if using navigation arrows
-import { isValid } from "date-fns";
+import { isValid } from "date-fns"; 
 import { X } from "lucide-react";
 
 interface CardDataProps {
