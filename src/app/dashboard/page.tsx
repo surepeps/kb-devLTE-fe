@@ -440,7 +440,7 @@ export default function LandlordDashboard() {
             </Link>
 
             <Link
-              href="/preference"
+              href="/profile-settings"
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow group"
             >
               <div className="flex items-center gap-4">
@@ -448,9 +448,11 @@ export default function LandlordDashboard() {
                   <UserGroupIcon size={24} className="text-blue-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#09391C]">Settings</h3>
+                  <h3 className="font-semibold text-[#09391C]">
+                    Profile Settings
+                  </h3>
                   <p className="text-sm text-[#5A5D63]">
-                    Update your preferences
+                    Manage your profile and account
                   </p>
                 </div>
               </div>
