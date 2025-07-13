@@ -155,26 +155,6 @@ const RentPropertySearch = () => {
     },
   });
 
-  // Filter states
-  const [filters, setFilters] = useState({
-    selectedState: "",
-    selectedLGA: "",
-    selectedArea: "",
-    locationDisplay: "",
-    priceRange: { min: 0, max: 0 },
-    documentTypes: [] as string[],
-    usageOptions: [] as string[],
-    bedrooms: undefined as number | undefined,
-    bathrooms: undefined as number | undefined,
-    landSize: {
-      type: "plot",
-      size: undefined as number | undefined,
-    },
-    desiredFeatures: [] as string[],
-    homeCondition: "",
-    tenantCriteria: [] as string[],
-  });
-
   const handleClearFilters = () => {
     setFilters({
       selectedState: "",
