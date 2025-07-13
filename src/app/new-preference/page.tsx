@@ -355,11 +355,6 @@ const PreferenceFormContent: React.FC = () => {
   const generatePayload = useCallback((): PreferencePayload => {
     const { formData } = state;
 
-    // Only log in development mode to prevent console spam
-    if (process.env.NODE_ENV === "development") {
-      console.log(formData, "my filled form.....");
-    }
-
     const config = PREFERENCE_CONFIGS[selectedPreferenceType];
 
     const basePayload = {
