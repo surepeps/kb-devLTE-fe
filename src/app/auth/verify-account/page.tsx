@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, Loader2, Mail } from "lucide-react";
@@ -15,9 +15,10 @@ interface VerificationResponse {
   data?: any;
 }
 
-const VerifyAccountPage: React.FC = () => {
+// This is the core logic component that uses useSearchParams
+const VerifyAccountComponent: React.FC = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams(); // This hook requires Suspense
   const [status, setStatus] = useState<VerificationStatus>("loading");
   const [message, setMessage] = useState<string>("");
   const [countdown, setCountdown] = useState<number>(5);
@@ -32,7 +33,7 @@ const VerifyAccountPage: React.FC = () => {
     }
 
     verifyAccount(token);
-  }, [searchParams]);
+  }, [searchParams]); // Depend on searchParams to re-run if it changes (e.g., during hydration)
 
   useEffect(() => {
     if (status === "success" && countdown > 0) {
@@ -48,7 +49,7 @@ const VerifyAccountPage: React.FC = () => {
 
   const verifyAccount = async (token: string) => {
     try {
-      const url = `${URLS.BASE}${URLS.authVeryAccount}?token=${token}`;
+      const url = `${URLS.BASE}${URLS.authVerifyAccount}?token=${token}`;
       const response: VerificationResponse = await GET_REQUEST(url);
 
       if (response.success) {
@@ -224,6 +225,22 @@ const VerifyAccountPage: React.FC = () => {
         </motion.div>
       </motion.div>
     </div>
+  );
+};
+
+// This is the page component that wraps VerifyAccountComponent in Suspense
+const VerifyAccountPage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <Loader2 className="w-16 h-16 text-[#8DDB90] animate-spin" />
+          <p className="text-gray-600 ml-4 text-lg">Loading verification...</p>
+        </div>
+      }
+    >
+      <VerifyAccountComponent />
+    </Suspense>
   );
 };
 

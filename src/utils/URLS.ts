@@ -66,5 +66,5 @@ export const URLS = {
   authRequestResetPassword: "/auth/resetPasswordRequest",
   authResendVerficationToken: "/auth/resendVerificationToken",
   authResetPassword: "/auth/resetPassword",
-  authVeryAccount: "/auth/verifyAccount",
+  authVerifyAccount: "/auth/verifyAccount",
 };
