@@ -71,38 +71,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
       if (response?.success && response?.data) {
         setNotifications(response.data);
-      } else {
-        // Fallback notifications for demo
-        setNotifications([
-          {
-            _id: "1",
-            title: "Property View Alert",
-            message:
-              "A user viewed your 3-bedroom apartment listing in Victoria Island.",
-            type: "info",
-            isRead: false,
-            createdAt: new Date(Date.now() - 300000).toISOString(),
-          },
-          {
-            _id: "2",
-            title: "Brief Approved",
-            message:
-              "Your commercial property brief has been approved and is now live.",
-            type: "success",
-            isRead: false,
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-          },
-          {
-            _id: "3",
-            title: "New Inquiry Received",
-            message:
-              "Someone is interested in your joint venture opportunity in Abuja.",
-            type: "info",
-            isRead: true,
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-          },
-        ]);
-      }
+      } 
     } catch (error) {
       console.error("Error fetching notifications:", error);
       // Set empty array on error

@@ -135,6 +135,30 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const restrictedAgentRoutes = [
+      "/post_property",
+      "/profile",
+      "/my-listings",
+      "/agent/briefs",
+    ];
+
+    const isAgent = user?.userType === "Agent";
+    const isOnRestrictedRoute = restrictedAgentRoutes.some((route) =>
+      pathName?.startsWith(route)
+    );
+
+    if (isAgent && !user?.agentData && isOnRestrictedRoute) {
+      router.push("/agent/onboard");
+    }
+
+    if (isAgent && user?.agentData && pathName === "/agent/onboard") {
+      router.push("/dashboard");
+    }
+  }, [user, pathName]);
+
   const contextValue = useMemo(
     () => ({
       user,

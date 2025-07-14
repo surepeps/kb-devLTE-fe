@@ -18,4 +18,4 @@ export default function LandlordPage() {
   }, [user, router]);
 
   return null;
-}
+}x

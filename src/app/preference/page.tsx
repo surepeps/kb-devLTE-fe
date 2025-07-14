@@ -166,7 +166,7 @@ const SuccessModal = memo(
                 Preference Submitted Successfully!
               </h3>
               <p className="text-gray-600 mb-6">
-                Thank you for submitting your property preference. We'll start
+                Thank you for submitting your property preference. We&apos;ll start
                 matching you with suitable properties right away.
               </p>
             </div>
@@ -177,8 +177,8 @@ const SuccessModal = memo(
                 What happens next?
               </h4>
               <div className="text-sm text-emerald-700 space-y-1 text-left">
-                <p>• We'll review your preferences within 24 hours</p>
-                <p>• You'll receive property matches via email</p>
+                <p>• We&apos;ll review your preferences within 24 hours</p>
+                <p>• You&apos;ll receive property matches via email</p>
                 <p>• Our agents will contact you for personalized assistance</p>
               </div>
             </div>

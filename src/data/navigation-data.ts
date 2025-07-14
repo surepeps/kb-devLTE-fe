@@ -5,7 +5,7 @@ export interface NavigationItem {
   url: string;
   isClicked: boolean;
   subItems?: NavigationItem[];
-}
+} 
 
 export const mainNavigationData: NavigationItem[] = [
   {
@@ -56,7 +56,7 @@ export const mainNavigationData: NavigationItem[] = [
     isClicked: false,
     subItems: [
       {
-        name: "Market Place",
+        name: "Agent Market Place",
         url: "/agent_marketplace",
         isClicked: false,
       },
@@ -126,6 +126,13 @@ export const agentNavigationData: NavigationItem[] = [
     name: "Agent",
     url: "/agent/dashboard",
     isClicked: false,
+    subItems: [
+      {
+        name: "Agent Market Place",
+        url: "/agent_marketplace",
+        isClicked: false,
+      },
+    ],
   },
   {
     name: "Policies",

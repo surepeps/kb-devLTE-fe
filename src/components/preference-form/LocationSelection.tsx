@@ -334,7 +334,7 @@ const LocationSelectionComponent: React.FC<LocationSelectionProps> = ({
     const remaining = selectedAreas.length - 3;
     return `${first3.join(", ")} +${remaining} more`;
   }, [selectedAreas]);
-
+ 
   // Get combined LGAs for dynamic area rendering
   const combinedLGAs = useMemo(() => {
     if (showCustomLGAs && customLGAs.trim()) {
