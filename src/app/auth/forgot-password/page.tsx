@@ -40,7 +40,7 @@ const ForgotPassword = () => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        const url = URLS.BASE + URLS.user + URLS.requestPasswordReset;
+        const url = URLS.BASE + URLS.authRequestResetPassword;
 
         await toast.promise(
           POST_REQUEST(url, { email: values.email }).then((response) => {

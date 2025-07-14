@@ -61,7 +61,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
   };
 
   return (
-    <div className="relative z-50" ref={dropdownRef}>
+    <div className="relative  z-50" ref={dropdownRef}>
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -88,7 +88,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full mt-1 w-44 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-2xl z-[101] overflow-hidden"
+              className="absolute right-0 -top-40 mt-1 w-44 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-2xl z-[101] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {actionItems.map((item, index) => {

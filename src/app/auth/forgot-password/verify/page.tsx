@@ -64,25 +64,38 @@ const VerifyResetRequest = () => {
 
     setIsVerifying(true);
     try {
-      // Store the code and email for the reset password page
-      localStorage.setItem("resetCode", verificationCode);
-      localStorage.setItem("resetEmail", email);
+      const url = URLS.BASE + URLS.authVerifyPasswordResetCode;
+      await toast.promise(
+        POST_REQUEST(url, { email, token: verificationCode }).then((response) => {
+          if (response.success) {
+            // Save code & email if needed later
+            localStorage.setItem("resetCode", verificationCode);
+            localStorage.setItem("resetEmail", email);
 
-      // Navigate to reset password page
-      router.push("/auth/forgot-password/reset");
-      toast.success("Code verified! Please set your new password.");
+            router.push("/auth/forgot-password/reset");
+            return "Code verified! Please set your new password.";
+          } else {
+            throw new Error((response as any).error || "Invalid verification code");
+          }
+        }),
+        {
+          loading: "Verifying code...",
+          success: "Code verified! Please set your new password.",
+          error: (error: any) => error.message || "Failed to verify code",
+        }
+      );
     } catch (error) {
-      console.log("Unexpected error:", error);
-      toast.error("An error occurred");
+      console.log("Verification Error:", error);
     } finally {
       setIsVerifying(false);
     }
   };
 
+
   const handleResendEmail = async () => {
     setIsResending(true);
     try {
-      const url = URLS.BASE + URLS.user + URLS.requestPasswordReset;
+      const url = URLS.BASE + URLS.authResendResetPasswordToken;
 
       await toast.promise(
         POST_REQUEST(url, { email }).then((response) => {

@@ -8,8 +8,7 @@ import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading-component/loading";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion";
-import { Plus, Home } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import SimplifiedMyListingFilters from "@/components/mylisting/filters/SimplifiedMyListingFilters";
 import BriefCard from "@/components/mylisting/brief-card";
@@ -397,7 +396,7 @@ const MyListingPage = () => {
             onConfirm={() => {
               setShowDeleteModal(false);
               setSelectedBrief(null);
-              fetchBriefs(); // Refresh the list
+              fetchBriefs();
               toast.success("Brief deleted successfully!");
             }}
           />

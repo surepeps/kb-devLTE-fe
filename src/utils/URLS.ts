@@ -61,6 +61,8 @@ export const URLS = {
   authRegister: "/auth/register",
   authGoogle: "/auth/googleAuth",
   authFacebook: "/auth/facebookAuth",
+  authVerifyPasswordResetCode: "/auth/verifyPasswordResetCode",
+  authResendResetPasswordToken: "/auth/resendPasswordCode",
   authRequestResetPassword: "/auth/resetPasswordRequest",
   authResendVerficationToken: "/auth/resendVerificationToken",
   authResetPassword: "/auth/resetPassword",

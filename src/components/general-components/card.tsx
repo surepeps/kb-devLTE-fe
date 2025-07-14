@@ -1,10 +1,8 @@
 /** @format */
 "use client";
 import React, { Fragment, useEffect, useRef, useState, useMemo } from "react";
-import arrowDown from "@/svgs/arrowDown.svg";
 import Image from "next/image";
 import Button from "./button";
-//import ViewImage from './viewImage';
 import { usePageContext } from "@/context/page-context";
 import {
   StaticImageData,
@@ -13,7 +11,7 @@ import {
 import { motion } from "framer-motion";
 import randomImage from "@/assets/noImageAvailable.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faStarOfDavid } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import markerSVG from "@/svgs/marker.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
@@ -21,7 +19,6 @@ import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import "swiper/css";
 import "swiper/css/pagination"; // if using pagination
 import "swiper/css/navigation"; // if using navigation arrows
-import { isValid } from "date-fns"; 
 import { X } from "lucide-react";
 
 interface CardDataProps {
@@ -139,9 +136,9 @@ const Card = ({
                           <div className="flex items-center gap-2">
                             <h2 className="text-md font-semibold text-[#8DDB90]">
                               ₦
-                              {Number(
+                              {/* {Number(
                                 negotiatedPriceData!.negotiatedPrice,
-                              ).toLocaleString()}
+                              ).toLocaleString()} */}
                             </h2>
                             <button
                               onClick={(e) => {
@@ -262,7 +259,7 @@ const Card = ({
             <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between">
               <span className="text-xs">
                 New Offer: ₦
-                {Number(negotiatedPriceData!.negotiatedPrice).toLocaleString()}
+                {/* {Number(negotiatedPriceData!.negotiatedPrice).toLocaleString()} */}
               </span>
               <button
                 onClick={(e) => {

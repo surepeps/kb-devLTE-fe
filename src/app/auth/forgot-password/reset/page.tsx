@@ -92,9 +92,9 @@ const ResetPassword = () => {
           return;
         }
 
-        const url = URLS.BASE + URLS.user + URLS.resetPassword;
+        const url = URLS.BASE + URLS.authResetPassword;
         const payload = {
-          code: resetCode,
+          token: resetCode,
           email: resetEmail,
           newPassword: values.password,
         };
