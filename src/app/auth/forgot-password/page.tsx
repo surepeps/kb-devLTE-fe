@@ -21,6 +21,7 @@ import { POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import InputField from "@/components/common/InputField";
 
 const ForgotPassword = () => {
   const isLoading = useLoading();
@@ -93,24 +94,26 @@ const ForgotPassword = () => {
             reset your password.
           </p>
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
-            <Input
+            <InputField
               formik={formik}
-              title="Email linked to your account"
-              id="email"
+              label="Email"
+              name="email"
               icon={mailIcon}
               type="email"
               placeholder="Enter your email"
-              isDisabled={isSubmitting}
             />
           </div>
           {/**Button */}
-          <Button
-            value={isSubmitting ? "Sending..." : "Send Reset Code"}
-            className="min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
-            type="submit"
-            isDisabled={isSubmitting || !formik.values.email}
-            green={true}
-          />
+          <div className="dd w-full lg:px-[60px]">
+            <Button
+              value={isSubmitting ? "Sending..." : "Send Reset Code"}
+              className="min-h-[65px] w-full py-[12px] px-[24px] rounded-md bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+              type="submit"
+              isDisabled={isSubmitting || !formik.values.email}
+              green={true}
+            />
+          </div>
+          
           {/**Back to login */}
           <p className="text-base leading-[25.6px] font-normal">
             Remembered your password?{" "}

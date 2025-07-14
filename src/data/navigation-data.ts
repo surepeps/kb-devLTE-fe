@@ -38,6 +38,11 @@ export const mainNavigationData: NavigationItem[] = [
         url: "/market-place",
         isClicked: false,
       },
+      {
+        name: "Verify Documents",
+        url: "/document_verification",
+        isClicked: false,
+      },
     ],
   },
   {
@@ -52,7 +57,7 @@ export const mainNavigationData: NavigationItem[] = [
     subItems: [
       {
         name: "Market Place",
-        url: "/agent/market-place",
+        url: "/agent_marketplace",
         isClicked: false,
       },
     ],
@@ -103,6 +108,11 @@ export const agentNavigationData: NavigationItem[] = [
       {
         name: "Joint Venture",
         url: "/market-place",
+        isClicked: false,
+      },
+      {
+        name: "Verify Documents",
+        url: "/document_verification",
         isClicked: false,
       },
     ],
@@ -159,6 +169,11 @@ export const marketplaceDropdownData: NavigationItem[] = [
   {
     name: "Joint Venture",
     url: "/new-marketplace",
+    isClicked: false,
+  },
+  {
+    name: "Verify Documents",
+    url: "/document_verification",
     isClicked: false,
   },
 ];
