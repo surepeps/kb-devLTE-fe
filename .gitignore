@@ -33,6 +33,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+push-to-live.sh
+fix-upload-endpoint.sh
+
 # env files (can opt-in for committing if needed)
 .env*
 
