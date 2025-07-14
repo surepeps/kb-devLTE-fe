@@ -19,17 +19,18 @@ const SelectPreferableInspectionDate = ({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { 
-    details, 
-    setInspectionDateStatus, 
-    inspectionDateStatus, 
+  const {
+    details,
+    setInspectionDateStatus,
+    inspectionDateStatus,
     inspectionStatus,
     dateTimeObj,
     counterDateTimeObj,
     setCounterDateTimeObj,
-   } = useNegotiationData();
+  } = useNegotiationData();
 
   const formatSelectedDate = (dateString: string) => {
+    // Added a check for empty string as a result of the fix, though your function already handles it.
     if (!dateString) return '';
     if (dateString.match(/^[A-Za-z]{3} \d{1,2}, \d{4}$/)) return dateString;
     if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
@@ -47,31 +48,33 @@ const SelectPreferableInspectionDate = ({
 
   const revertFormattedDate = (formatted: string): string => {
     if (!formatted) return '';
-  
+
     // Try to parse formatted "MMM d, yyyy"
     try {
       const date = new Date(formatted);
       if (isNaN(date.getTime())) return formatted;
-  
+
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
-  
+
+      // Returning in 'YYYY-MM-DD' format, which seems consistent with your `selectedDate` storage
       return `${year}-${month}-${day}`;
     } catch {
       return formatted;
     }
   };
 
-  const formattedSelectedDate = formatSelectedDate(counterDateTimeObj.selectedDate || dateTimeObj.selectedDate);
+  // FIX FOR LINE 66: Provide an empty string fallback
+  const formattedSelectedDate = formatSelectedDate(counterDateTimeObj.selectedDate || dateTimeObj.selectedDate || '');
   const selectedTime = counterDateTimeObj.selectedTime || dateTimeObj.selectedTime;
 
   const getAvailableDates = () => {
     const dates: string[] = [];
-    let date = new Date();
+    const date = new Date();
     date.setDate(date.getDate() + 1);
     while (dates.length < 14) {
-      if (date.getDay() !== 0) {
+      if (date.getDay() !== 0) { // Exclude Sundays
         dates.push(format(date, 'MMM d, yyyy'));
       }
       date.setDate(date.getDate() + 1);
@@ -80,9 +83,17 @@ const SelectPreferableInspectionDate = ({
   };
 
   const getAvailableTimesForDate = (selectedDate: string) => {
-    if (!selectedDate) return [];
+    if (!selectedDate) return []; // If no date is selected, no times are available
     const today = new Date();
+    // Parse selectedDate carefully, ensure it's a valid date string for `new Date()`
     const selected = new Date(selectedDate);
+
+    // If selected date is invalid, return empty array
+    if (isNaN(selected.getTime())) {
+        console.warn("Invalid date string passed to getAvailableTimesForDate:", selectedDate);
+        return [];
+    }
+
     const isToday = selected.toDateString() === today.toDateString();
     const currentHour = today.getHours();
     const allTimes = [
@@ -92,37 +103,54 @@ const SelectPreferableInspectionDate = ({
     ];
     if (isToday) {
       return allTimes.filter(time => {
-        const hour = parseInt(time.split(':')[0]);
-        const isPM = time.includes('PM');
-        const hour24 = isPM && hour !== 12 ? hour + 12 : (!isPM && hour === 12 ? 0 : hour);
-        return hour24 > currentHour + 2;
+        const [timePart, ampm] = time.split(' ');
+        const [hourStr, minuteStr] = timePart.split(':');
+        let hour = parseInt(hourStr);
+        const minute = parseInt(minuteStr || '0'); // Handle cases like "8:00" or "8"
+
+        if (ampm === 'PM' && hour !== 12) {
+          hour += 12;
+        } else if (ampm === 'AM' && hour === 12) {
+          hour = 0; // Midnight case
+        }
+        // Consider the current time with a buffer (e.g., 2 hours ahead)
+        // Convert current time to minutes for easier comparison
+        const currentTimeInMinutes = currentHour * 60 + today.getMinutes();
+        const availableTimeInMinutes = hour * 60 + minute;
+
+        // Ensure the available time is at least 2 hours from the current time
+        return availableTimeInMinutes > (currentTimeInMinutes + 120); // 120 minutes = 2 hours
       });
     }
     return allTimes;
   };
 
+
   const availableDates = getAvailableDates();
   const availableTimes = getAvailableTimesForDate(formattedSelectedDate);
 
   const handleDateSelect = (date: string) => {
-    const isSameDate = date === formatSelectedDate(dateTimeObj.selectedDate);
+    // FIX FOR LINE 108 (partially - the comparison needs to be consistent)
+    // Ensure dateTimeObj.selectedDate is also formatted for comparison, or fallback to empty string
+    const isSameDate = date === formatSelectedDate(dateTimeObj.selectedDate || '');
     const isSameTime = counterDateTimeObj.selectedTime === dateTimeObj.selectedTime;
-  
+
     setCounterDateTimeObj({ ...counterDateTimeObj, selectedDate: revertFormattedDate(date) });
-  
+
     if (isSameDate && isSameTime) {
       setInspectionDateStatus('none');
     } else {
       setInspectionDateStatus('countered');
     }
   };
-  
+
   const handleTimeSelect = (time: string) => {
+    // Ensure selectedDate for comparison is a string
     const isSameTime = time === dateTimeObj.selectedTime;
-    const isSameDate = counterDateTimeObj.selectedDate === dateTimeObj.selectedDate;
-  
+    const isSameDate = (counterDateTimeObj.selectedDate || '') === (dateTimeObj.selectedDate || ''); // Ensure both are strings
+
     setCounterDateTimeObj({ ...counterDateTimeObj, selectedTime: time });
-  
+
     if (isSameDate && isSameTime) {
       setInspectionDateStatus('none');
     } else {
@@ -133,7 +161,7 @@ const SelectPreferableInspectionDate = ({
   const submitAction = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      console.log(inspectionDateStatus, inspectionStatus,  "dddd");
+      console.log(inspectionDateStatus, inspectionStatus, "dddd");
       await submitBasedOnStatus(details.negotiationID);
       closeModal(false);
     } catch (error: unknown) {
@@ -143,7 +171,7 @@ const SelectPreferableInspectionDate = ({
       setIsLoading(false);
     }
   };
-  
+
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 px-[10px]'>
