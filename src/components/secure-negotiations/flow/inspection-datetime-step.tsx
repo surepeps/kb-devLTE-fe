@@ -343,17 +343,17 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           case "counter":
             payload = createCounterPayload(
               inspectionType!,
+              negotiationAction.counterPrice,
+              undefined,
               currentDate,
               currentTime,
-              negotiationAction.counterPrice,
             );
             break;
           case "requestChanges":
             payload = createRequestChangesPayload(
-              inspectionType!,
+              negotiationAction.changeRequest || "",
               currentDate,
               currentTime,
-              negotiationAction.changeRequest || "",
             );
             break;
         }
@@ -390,23 +390,29 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           case "counter":
             payload = createCounterPayload(
               inspectionType!,
+              negotiationAction.counterPrice,
+              undefined,
               newDate,
               newTime,
-              negotiationAction.counterPrice,
             );
             break;
           case "requestChanges":
             payload = createRequestChangesPayload(
-              inspectionType!,
+              negotiationAction.changeRequest || "",
               newDate,
               newTime,
-              negotiationAction.changeRequest || "",
             );
             break;
         }
       } else {
         // Just updating schedule
-        payload = createCounterPayload(inspectionType!, newDate, newTime);
+        payload = createCounterPayload(
+          inspectionType!,
+          undefined,
+          undefined,
+          newDate,
+          newTime,
+        );
       }
 
       await submitNegotiationAction(inspectionId!, userType, payload);

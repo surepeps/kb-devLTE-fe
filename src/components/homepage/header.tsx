@@ -63,7 +63,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     if ((user?._id || user?.id) && !isComingSoon) {
       fetchNotifications();
     }
-  }, [(user?._id || user?.id), fetchNotifications, isComingSoon]);
+  }, [user?._id || user?.id, fetchNotifications, isComingSoon]);
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -238,7 +238,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 
           {/**Buttons for desktop screens */}
           <div className="hidden lg:flex items-center gap-6">
-            {(user?._id || user?.id) ? (
+            {user?._id || user?.id ? (
               <>
                 {/* Notifications */}
                 <div className="relative notification-dropdown">
@@ -293,9 +293,9 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     }}
                     className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
-                    {user?.profilePicture ? (
+                    {user?.profile_picture ? (
                       <Image
-                        src={user?.profilePicture}
+                        src={user?.profile_picture}
                         width={40}
                         height={40}
                         alt="Profile"
@@ -341,7 +341,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 
           {/**Mobile controls */}
           <div className="flex items-center gap-3 lg:hidden">
-            {(user?._id || user?.id) ? (
+            {user?._id || user?.id ? (
               <>
                 {/* Mobile Notifications */}
                 <div className="notification-dropdown">
@@ -385,9 +385,9 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                     }}
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-[#8DDB90] to-[#09391C] shadow-sm"
                   >
-                    {user?.profilePicture ? (
+                    {user?.profile_picture ? (
                       <Image
-                        src={user?.profilePicture}
+                        src={user?.profile_picture}
                         width={32}
                         height={32}
                         alt="Profile"

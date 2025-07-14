@@ -83,11 +83,13 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   };
 
   const handlePriceNegotiationComplete = (
-    action: "accept" | "counter" | "requestChanges",
+    action: "accept" | "counter" | "reject",
     counterPrice?: number,
-    changeRequest?: string,
   ) => {
-    setNegotiationAction({ type: action, counterPrice, changeRequest });
+    setNegotiationAction({
+      type: action === "reject" ? "requestChanges" : action,
+      counterPrice,
+    });
     setCurrentStep("inspection");
   };
 

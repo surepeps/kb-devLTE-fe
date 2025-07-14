@@ -90,7 +90,7 @@ const Homepage = ({
               firstName: string;
               phoneNumber: string;
               accountApproved: boolean;
-              userType: string;
+              userType: "Agent" | "Landowners";
             };
 
             setUser(user);
