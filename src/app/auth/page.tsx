@@ -11,7 +11,7 @@ export default function AuthPage() {
 
   useEffect(() => {
     // Redirect to register page as the default auth action
-    router.replace("/auth/register");
+    router.replace("/auth/login");
   }, [router]);
 
   return null;
