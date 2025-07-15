@@ -70,6 +70,7 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): string => {
+    if (selectedDocuments.length === 0) return '₦20,000';
     return selectedDocuments.length === 1 ? '₦20,000' : '₦40,000';
   };
 
