@@ -348,11 +348,12 @@ const PreferenceFormContent: React.FC = () => {
   const handlePreferenceTypeChange = useCallback(
     (preferenceKey: keyof typeof PREFERENCE_CONFIGS) => {
       // Only proceed if actually changing preference type
+      // If user clicks the same tab, do nothing (don't clear form)
       if (preferenceKey === selectedPreferenceType) return;
 
       setSelectedPreferenceType(preferenceKey);
 
-      // Reset form data immediately without confirmation
+      // Reset form data immediately without confirmation only when switching tabs
       dispatch({ type: "RESET_FORM" });
 
       // Use a small delay to ensure reset completes before setting new data
