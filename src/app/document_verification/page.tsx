@@ -31,7 +31,7 @@ const initialDocumentNumbers: DocumentNumbers = {
 
 const DocumentVerificationPage: React.FC = () => {
   const [showGuideline, setShowGuideline] = useState<boolean>(false);
-  const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>(['Certificate of Occupancy']);
+  const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
   const [documentNumbers, setDocumentNumbers] = useState<DocumentNumbers>(initialDocumentNumbers);
   const [selectedFiles, setSelectedFiles] = useState<{ [key in DocumentType]?: File | null }>({});
   const [filePreviews, setFilePreviews] = useState<{ [key in DocumentType]?: string }>({});
