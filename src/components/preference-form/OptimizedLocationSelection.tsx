@@ -177,9 +177,20 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
       [lgasWithAreas],
     );
 
-    // Initialize local state from context
+    // Initialize local state from context and reset when context resets
     useEffect(() => {
       const locationData = state.formData.location;
+
+      // Reset local state if no location data (form was reset)
+      if (!locationData || Object.keys(state.formData).length === 0) {
+        setSelectedState(null);
+        setSelectedLGAs([]);
+        setLgasWithAreas([]);
+        setCustomLocation("");
+        setShowCustomLocation(false);
+        return;
+      }
+
       if (locationData) {
         if (locationData.state) {
           setSelectedState({
@@ -222,7 +233,7 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
           setShowCustomLocation(true);
         }
       }
-    }, []); // Only run once on mount
+    }, [state.formData]); // Watch for changes in form data
 
     // Debounced update function
     const debouncedUpdateFormData = useCallback(
