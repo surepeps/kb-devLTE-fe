@@ -3,14 +3,24 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import {
-  featuresData,
-  JvConditionData,
-  DocOnPropertyData,
-} from "@/data/buy_data";
-import { tenantCriteriaData } from "@/data/landlord";
 import RadioCheck from "@/components/general-components/radioCheck";
-import Input from "@/components/general-components/Input";
+import {
+  briefTypeConfig,
+  documentOptions,
+  getFeaturesByCategory,
+  landFeatures,
+  residentialFeatures,
+  commercialFeatures,
+  rentalConditions,
+  employmentTypes,
+  tenantGenderPreferences,
+  jvConditions,
+  tenancyStatusOptions,
+  shortletOptions,
+  shouldShowField,
+  BRIEF_TYPES,
+  PROPERTY_CATEGORIES,
+} from "@/data/comprehensive-post-property-config";
 
 interface StepProps {
   errors?: any;
@@ -20,269 +30,649 @@ interface StepProps {
 const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
-  const handleFeatureToggle = (feature: string) => {
-    const currentFeatures = propertyData.features;
-    const updatedFeatures = currentFeatures.includes(feature)
-      ? currentFeatures.filter((f) => f !== feature)
-      : [...currentFeatures, feature];
-    updatePropertyData("features", updatedFeatures);
+  const handleMultiSelectChange = (field: string, value: string) => {
+    const currentValues = (propertyData as any)[field] || [];
+    const newValues = currentValues.includes(value)
+      ? currentValues.filter((item: string) => item !== value)
+      : [...currentValues, value];
+    updatePropertyData(field as any, newValues);
   };
 
-  const handleTenantCriteriaToggle = (criteria: string) => {
-    const currentCriteria = propertyData.tenantCriteria;
-    const updatedCriteria = currentCriteria.includes(criteria)
-      ? currentCriteria.filter((c) => c !== criteria)
-      : [...currentCriteria, criteria];
-    updatePropertyData("tenantCriteria", updatedCriteria);
-  };
+  const renderMultiSelectOptions = (
+    options: Array<{ value: string; label: string }>,
+    field: string,
+    title: string,
+  ) => (
+    <div className="mb-6">
+      <h3 className="text-lg font-semibold text-[#09391C] mb-4">{title}</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {options.map((option) => (
+          <label
+            key={option.value}
+            className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <input
+              type="checkbox"
+              checked={((propertyData as any)[field] || []).includes(
+                option.value,
+              )}
+              onChange={() => handleMultiSelectChange(field, option.value)}
+              className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+            />
+            <span className="text-sm text-[#5A5D63]">{option.label}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
 
-  const handleJvConditionToggle = (condition: string) => {
-    const currentConditions = propertyData.jvConditions;
-    const updatedConditions = currentConditions.includes(condition)
-      ? currentConditions.filter((c) => c !== condition)
-      : [...currentConditions, condition];
-    updatePropertyData("jvConditions", updatedConditions);
-  };
+  const renderCommercialFeatures = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+          🧱 Structure & Layout
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {commercialFeatures.structure.map((option) => (
+            <label
+              key={option.value}
+              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={(propertyData.features || []).includes(option.value)}
+                onChange={() =>
+                  handleMultiSelectChange("features", option.value)
+                }
+                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+              />
+              <span className="text-sm text-[#5A5D63]">{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+          🔌 Utilities & Power
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {commercialFeatures.utilities.map((option) => (
+            <label
+              key={option.value}
+              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={(propertyData.features || []).includes(option.value)}
+                onChange={() =>
+                  handleMultiSelectChange("features", option.value)
+                }
+                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+              />
+              <span className="text-sm text-[#5A5D63]">{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+          🛡 Security & Access
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {commercialFeatures.security.map((option) => (
+            <label
+              key={option.value}
+              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={(propertyData.features || []).includes(option.value)}
+                onChange={() =>
+                  handleMultiSelectChange("features", option.value)
+                }
+                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+              />
+              <span className="text-sm text-[#5A5D63]">{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+          🚗 Parking & Visibility
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {commercialFeatures.parking.map((option) => (
+            <label
+              key={option.value}
+              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={(propertyData.features || []).includes(option.value)}
+                onChange={() =>
+                  handleMultiSelectChange("features", option.value)
+                }
+                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+              />
+              <span className="text-sm text-[#5A5D63]">{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-4xl mx-auto"
+      className="w-full max-w-6xl mx-auto"
     >
       <div className="mb-8">
         <h2 className="text-[24px] leading-[38.4px] font-semibold font-display text-[#09391C] mb-2">
           Features & Conditions
         </h2>
         <p className="text-[16px] text-[#5A5D63]">
-          Select features and set conditions for your property
+          Specify property features, documents, and conditions
         </p>
       </div>
 
       <div className="space-y-8">
-        {/* Documents (for sell and jv) */}
-        {propertyData.propertyType !== "rent" && (
-          <div className="border border-[#E5E7EB] rounded-lg p-6">
+        {/* Property Documents for Sell and JV */}
+        {shouldShowField(
+          "documents",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
+          <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Document on the property
+              Property Documents / Title *
             </h3>
-            <p className="text-[#5A5D63] mb-6">
-              Select all documents available for this property
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {DocOnPropertyData.map((document, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    const currentDocuments = propertyData.documents;
-                    const updatedDocuments = currentDocuments.includes(document)
-                      ? currentDocuments.filter((doc) => doc !== document)
-                      : [...currentDocuments, document];
-                    updatePropertyData("documents", updatedDocuments);
-                  }}
-                  className={`p-3 rounded-md border text-left transition-all text-sm ${
-                    propertyData.documents.includes(document)
-                      ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-medium"
-                      : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63] hover:bg-gray-50"
-                  }`}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {documentOptions.map((option) => (
+                <label
+                  key={option.value}
+                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
                 >
-                  <span>{document}</span>
-                  {propertyData.documents.includes(document) && (
-                    <div className="mt-1">
-                      <span className="inline-block w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></span>
-                    </div>
-                  )}
-                </motion.button>
+                  <input
+                    type="checkbox"
+                    checked={(propertyData.documents || []).includes(
+                      option.value,
+                    )}
+                    onChange={() =>
+                      handleMultiSelectChange("documents", option.value)
+                    }
+                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                  />
+                  <span className="text-sm text-[#5A5D63]">{option.label}</span>
+                </label>
               ))}
             </div>
+            {errors?.documents && touched?.documents && (
+              <p className="text-red-500 text-sm mt-2">{errors.documents}</p>
+            )}
           </div>
         )}
 
-        {/* Property Features */}
-        <div className="border border-[#E5E7EB] rounded-lg p-6">
+        {/* Features & Amenities */}
+        <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Features
+            Features & Amenities
           </h3>
-          <p className="text-[#5A5D63] mb-6">
-            Select all features that apply to your property
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {featuresData.map((feature, index) => (
-              <motion.button
-                key={index}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleFeatureToggle(feature)}
-                className={`p-3 rounded-md border text-left transition-all text-sm ${
-                  propertyData.features.includes(feature)
-                    ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-medium"
-                    : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63] hover:bg-gray-50"
-                }`}
-              >
-                <span>{feature}</span>
-                {propertyData.features.includes(feature) && (
-                  <div className="mt-1">
-                    <span className="inline-block w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></span>
-                  </div>
-                )}
-              </motion.button>
-            ))}
-          </div>
+
+          {/* Residential Features */}
+          {propertyData.propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL &&
+            propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
+            renderMultiSelectOptions(residentialFeatures, "features", "")}
+
+          {/* Shortlet Amenities */}
+          {propertyData.propertyType === BRIEF_TYPES.SHORTLET &&
+            renderMultiSelectOptions(shortletOptions.amenities, "features", "")}
+
+          {/* Land Features */}
+          {propertyData.propertyCategory === PROPERTY_CATEGORIES.LAND &&
+            renderMultiSelectOptions(landFeatures, "features", "")}
+
+          {/* Commercial Features */}
+          {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL &&
+            propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
+            renderCommercialFeatures()}
         </div>
 
-        {/* Tenant Criteria (for rent) */}
-        {propertyData.propertyType === "rent" && (
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#09391C] mb-4">
-              Tenant Requirements
+        {/* Rental Conditions for Rent properties */}
+        {propertyData.propertyType === BRIEF_TYPES.RENT &&
+          propertyData.propertyCategory !== PROPERTY_CATEGORIES.LAND && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                Rental Conditions
+              </h3>
+
+              {/* Rental Conditions Checkboxes */}
+              <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {rentalConditions.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={(propertyData.rentalConditions || []).includes(
+                          option.value,
+                        )}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            "rentalConditions",
+                            option.value,
+                          )
+                        }
+                        className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                      />
+                      <span className="text-sm text-[#5A5D63]">
+                        {option.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Employment Type */}
+              <div>
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Employment Type
+                </h4>
+                <div className="flex flex-wrap gap-4">
+                  {employmentTypes.map((option) => (
+                    <RadioCheck
+                      key={option.value}
+                      selectedValue={propertyData.employmentType}
+                      handleChange={() =>
+                        updatePropertyData("employmentType", option.value)
+                      }
+                      type="radio"
+                      value={option.value}
+                      name="employmentType"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Tenant Gender Preference */}
+              <div>
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Tenant Gender Preference
+                </h4>
+                <div className="flex flex-wrap gap-4">
+                  {tenantGenderPreferences.map((option) => (
+                    <RadioCheck
+                      key={option.value}
+                      selectedValue={propertyData.tenantGenderPreference}
+                      handleChange={() =>
+                        updatePropertyData(
+                          "tenantGenderPreference",
+                          option.value,
+                        )
+                      }
+                      type="radio"
+                      value={option.value}
+                      name="tenantGenderPreference"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+        {/* JV Conditions for Joint Venture */}
+        {shouldShowField(
+          "jvConditions",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              JV Conditions *
             </h3>
-            <p className="text-[#5A5D63] mb-6">
-              Set criteria for potential tenants
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {tenantCriteriaData.map((criteria, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleTenantCriteriaToggle(criteria)}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
-                    propertyData.tenantCriteria.includes(criteria)
-                      ? "border-blue-500 bg-blue-50 text-blue-900"
-                      : "border-gray-200 hover:border-blue-500 text-gray-700"
-                  }`}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {jvConditions.map((option) => (
+                <label
+                  key={option.value}
+                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
                 >
-                  <span className="text-sm font-medium">{criteria}</span>
-                  {propertyData.tenantCriteria.includes(criteria) && (
-                    <div className="mt-2">
-                      <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
-                    </div>
-                  )}
-                </motion.button>
+                  <input
+                    type="checkbox"
+                    checked={(propertyData.jvConditions || []).includes(
+                      option.value,
+                    )}
+                    onChange={() =>
+                      handleMultiSelectChange("jvConditions", option.value)
+                    }
+                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                  />
+                  <span className="text-sm text-[#5A5D63]">{option.label}</span>
+                </label>
               ))}
             </div>
+            {errors?.jvConditions && touched?.jvConditions && (
+              <p className="text-red-500 text-sm mt-2">{errors.jvConditions}</p>
+            )}
           </div>
         )}
 
-        {/* Joint Venture Conditions */}
-        {propertyData.propertyType === "jv" && (
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#09391C] mb-4">
-              Joint Venture Terms
+        {/* Shortlet Specific Fields */}
+        {propertyData.propertyType === BRIEF_TYPES.SHORTLET && (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Shortlet Details
             </h3>
-            <p className="text-[#5A5D63] mb-6">
-              Select applicable conditions for the joint venture
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {JvConditionData.map((condition, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleJvConditionToggle(condition)}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
-                    propertyData.jvConditions.includes(condition)
-                      ? "border-purple-500 bg-purple-50 text-purple-900"
-                      : "border-gray-200 hover:border-purple-500 text-gray-700"
-                  }`}
-                >
-                  <span className="text-sm font-medium">{condition}</span>
-                  {propertyData.jvConditions.includes(condition) && (
-                    <div className="mt-2">
-                      <span className="inline-block w-2 h-2 bg-purple-500 rounded-full"></span>
-                    </div>
-                  )}
-                </motion.button>
-              ))}
+
+            {/* Availability */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Minimum Stay (nights) *
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={propertyData.availability?.minStay || 1}
+                  onChange={(e) =>
+                    updatePropertyData("availability", {
+                      ...propertyData.availability,
+                      minStay: parseInt(e.target.value) || 1,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Maximum Stay (nights)
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={propertyData.availability?.maxStay || ""}
+                  onChange={(e) =>
+                    updatePropertyData("availability", {
+                      ...propertyData.availability,
+                      maxStay: parseInt(e.target.value) || undefined,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+            </div>
+
+            {/* Pricing */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Nightly Rate (₦) *
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={propertyData.pricing?.nightly || ""}
+                  onChange={(e) =>
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      nightly: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Weekly Discount (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={propertyData.pricing?.weeklyDiscount || ""}
+                  onChange={(e) =>
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      weeklyDiscount: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Monthly Discount (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={propertyData.pricing?.monthlyDiscount || ""}
+                  onChange={(e) =>
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      monthlyDiscount: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Cleaning Fee (₦)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={propertyData.pricing?.cleaningFee || ""}
+                  onChange={(e) =>
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      cleaningFee: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Security Deposit (₦)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={propertyData.pricing?.securityDeposit || ""}
+                  onChange={(e) =>
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      securityDeposit: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+            </div>
+
+            {/* Cancellation Policy */}
+            <div>
+              <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                Cancellation Policy
+              </h4>
+              <div className="space-y-2">
+                {shortletOptions.cancellationPolicies.map((option) => (
+                  <RadioCheck
+                    key={option.value}
+                    selectedValue={propertyData.pricing?.cancellationPolicy}
+                    handleChange={() =>
+                      updatePropertyData("pricing", {
+                        ...propertyData.pricing,
+                        cancellationPolicy: option.value,
+                      })
+                    }
+                    type="radio"
+                    value={option.value}
+                    name="cancellationPolicy"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* House Rules */}
+            <div className="space-y-4">
+              <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                House Rules
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Check-in Time
+                  </label>
+                  <input
+                    type="time"
+                    value={propertyData.houseRules?.checkIn || "15:00"}
+                    onChange={(e) =>
+                      updatePropertyData("houseRules", {
+                        ...propertyData.houseRules,
+                        checkIn: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Check-out Time
+                  </label>
+                  <input
+                    type="time"
+                    value={propertyData.houseRules?.checkOut || "11:00"}
+                    onChange={(e) =>
+                      updatePropertyData("houseRules", {
+                        ...propertyData.houseRules,
+                        checkOut: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.houseRules?.smoking || false}
+                    onChange={(e) =>
+                      updatePropertyData("houseRules", {
+                        ...propertyData.houseRules,
+                        smoking: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                  />
+                  <span className="text-sm text-[#5A5D63]">
+                    Smoking Allowed
+                  </span>
+                </label>
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.houseRules?.pets || false}
+                    onChange={(e) =>
+                      updatePropertyData("houseRules", {
+                        ...propertyData.houseRules,
+                        pets: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                  />
+                  <span className="text-sm text-[#5A5D63]">Pets Allowed</span>
+                </label>
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.houseRules?.parties || false}
+                    onChange={(e) =>
+                      updatePropertyData("houseRules", {
+                        ...propertyData.houseRules,
+                        parties: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
+                  />
+                  <span className="text-sm text-[#5A5D63]">
+                    Parties Allowed
+                  </span>
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Other Rules (Optional)
+                </label>
+                <textarea
+                  value={propertyData.houseRules?.otherRules || ""}
+                  onChange={(e) =>
+                    updatePropertyData("houseRules", {
+                      ...propertyData.houseRules,
+                      otherRules: e.target.value,
+                    })
+                  }
+                  rows={3}
+                  placeholder="Specify any additional house rules..."
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] resize-none"
+                />
+              </div>
             </div>
           </div>
         )}
 
         {/* Property Tenancy Status */}
-        <div className="border border-[#E5E7EB] rounded-lg p-6">
+        <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Is your property currently tenanted?
+            Is the property currently tenanted? *
           </h3>
-          <div className="flex flex-wrap gap-6">
-            <RadioCheck
-              type="radio"
-              value="Yes"
-              name="isTenanted"
-              handleChange={() => updatePropertyData("isTenanted", "Yes")}
-              selectedValue={propertyData.isTenanted}
-            />
-            <RadioCheck
-              type="radio"
-              value="No"
-              name="isTenanted"
-              handleChange={() => updatePropertyData("isTenanted", "No")}
-              selectedValue={propertyData.isTenanted}
-            />
-            <RadioCheck
-              type="radio"
-              value="I live in it"
-              name="isTenanted"
-              handleChange={() =>
-                updatePropertyData("isTenanted", "I live in it")
-              }
-              selectedValue={propertyData.isTenanted}
-            />
+          <div className="flex flex-col sm:flex-row gap-4">
+            {tenancyStatusOptions.map((option) => (
+              <RadioCheck
+                key={option.value}
+                selectedValue={propertyData.isTenanted}
+                handleChange={() =>
+                  updatePropertyData("isTenanted", option.value)
+                }
+                type="radio"
+                value={option.value}
+                name="isTenanted"
+              />
+            ))}
           </div>
+          {errors?.isTenanted && touched?.isTenanted && (
+            <p className="text-red-500 text-sm mt-2">{errors.isTenanted}</p>
+          )}
         </div>
 
         {/* Additional Information */}
-        <div className="border border-[#E5E7EB] rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Additional Information
-          </h3>
-          <Input
-            name="additionalInfo"
-            label=""
-            type="textArea"
-            placeholder="Enter any additional information about your property"
+        <div>
+          <label className="block text-sm font-medium text-[#707281] mb-2">
+            Additional Information (Optional)
+          </label>
+          <textarea
+            placeholder="Provide any additional details about the property..."
             value={propertyData.additionalInfo}
             onChange={(e) =>
               updatePropertyData("additionalInfo", e.target.value)
             }
-            multiline={true}
             rows={4}
+            className="w-full p-[12px] border border-[#C7CAD0] rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] resize-none text-[14px] leading-[22.4px]"
           />
-        </div>
-
-        {/* Summary */}
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h4 className="font-semibold text-[#09391C] mb-3">Summary</h4>
-          <div className="space-y-2 text-sm text-[#5A5D63]">
-            {propertyData.propertyType !== "rent" && (
-              <p>
-                <span className="font-medium">Documents selected:</span>{" "}
-                {propertyData.documents.length}
-              </p>
-            )}
-            <p>
-              <span className="font-medium">Features selected:</span>{" "}
-              {propertyData.features.length}
-            </p>
-            {propertyData.propertyType === "rent" && (
-              <p>
-                <span className="font-medium">Tenant criteria:</span>{" "}
-                {propertyData.tenantCriteria.length}
-              </p>
-            )}
-            {propertyData.propertyType === "jv" && (
-              <p>
-                <span className="font-medium">JV conditions:</span>{" "}
-                {propertyData.jvConditions.length}
-              </p>
-            )}
-            <p>
-              <span className="font-medium">Tenancy status:</span>{" "}
-              {propertyData.isTenanted || "Not specified"}
-            </p>
-          </div>
         </div>
       </div>
     </motion.div>
