@@ -127,7 +127,7 @@ interface LocationSelectionProps {
 const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
   ({ className = "" }) => {
     const { state, updateFormData } = usePreferenceForm();
-    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Remove local debouncing - now handled by context
 
     // Enhanced local state for LGA-area mapping
     const [selectedState, setSelectedState] = useState<Option | null>(null);
@@ -233,18 +233,12 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
           setShowCustomLocation(true);
         }
       }
-    }, [state.formData]); // Watch for changes in form data
+    }, [state.formData, state.currentStep]); // Watch for changes in form data and step
 
-    // Debounced update function
+    // Use context's built-in debouncing
     const debouncedUpdateFormData = useCallback(
       (data: any) => {
-        if (debounceTimeoutRef.current) {
-          clearTimeout(debounceTimeoutRef.current);
-        }
-
-        debounceTimeoutRef.current = setTimeout(() => {
-          updateFormData(data);
-        }, 300);
+        updateFormData(data); // Context handles debouncing
       },
       [updateFormData],
     );
@@ -276,7 +270,7 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
       lgasWithAreas,
       customLocation,
       showCustomLocation,
-      debouncedUpdateFormData,
+      updateFormData, // Changed from debouncedUpdateFormData to direct updateFormData
     ]);
 
     // Handler functions
