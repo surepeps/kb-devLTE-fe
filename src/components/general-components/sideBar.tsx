@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
 import userIcon from "@/svgs/user.svg";
+import { mainNavigationData } from "@/data/navigation-data";
 
 const SideBar = ({
   isModalOpened,
@@ -123,8 +124,8 @@ const SideBar = ({
               </button>
             </div>
             <div className="w-full mt-10 flex flex-col gap-[20px]">
-              {navData.map((item, idx: number) => {
-                if (item?.additionalLinks !== undefined) {
+              {mainNavigationData.map((item, idx: number) => {
+                if (item?.subItems !== undefined) {
                   const isMenuOpen = openedMenus[item.name] || false;
 
                   return (
@@ -175,7 +176,7 @@ const SideBar = ({
                             className="overflow-hidden"
                           >
                             <div className="flex flex-col gap-[10px] pl-[20px] py-[10px]">
-                              {item.additionalLinks?.map(
+                              {item.subItems?.map(
                                 (content, contentIDX: number) => (
                                   <Link
                                     onClick={(e) => {
@@ -224,35 +225,7 @@ const SideBar = ({
               })}
             </div>
           </div>
-          {user && (
-            <div className="flex flex-col gap-[5px]">
-              {pathName !== "/agent/under-review" && (
-                <>
-                  <button
-                    type="button"
-                    className="w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md"
-                    onClick={() => handleItemClick("/agent/briefs")}
-                  >
-                    List a property
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md"
-                    onClick={() => handleItemClick("/agent/dashboard")}
-                  >
-                    Dashboard
-                  </button>
-                </>
-              )}
-              <button
-                type="button"
-                className="w-full text-left px-4 py-2 bg-[#FAFAFA] rounded-md text-[#FF3D00]"
-                onClick={() => logout(() => setIsModalOpened(false))}
-              >
-                Log out
-              </button>
-            </div>
-          )}
+          
         </nav>
       )}
     </section>

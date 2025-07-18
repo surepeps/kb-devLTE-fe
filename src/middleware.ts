@@ -47,7 +47,6 @@ const userProtectedRoutes = [
   "/dashboard",
   "/profile",
   "/my-listings",
-  "/preference",
   "/post_property",
   "/payment-details",
 ];

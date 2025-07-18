@@ -102,6 +102,17 @@ const cardData: CardProps[] = [
     buttonText: 'Contact us',
     link: '/contact-us',
   },
+  {
+    heading: 'Verify Your Document',
+    image: bookIcon,
+    paragraphs: [
+      "Need to verify a document? Upload it and we'll handle the verification for you--fast, secure and independent.",
+    ],
+    color: '#6A1B9A',
+    secondaryColor: '#F3E5F5',
+    buttonText: 'Verify',
+    link: '/document_verification',
+  },
 ];
 
 export default Section2;

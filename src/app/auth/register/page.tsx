@@ -70,7 +70,7 @@ const Register = () => {
       .required("Password is required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), undefined], "Passwords must match")
-      .required("Confirm password is required"), // Added required to confirmPassword
+      .required("Confirm password is required"),
     firstName: Yup.string()
       .matches(/^[a-zA-Z]+$/, "First name must only contain letters")
       .required("First name is required"),
@@ -162,9 +162,9 @@ const Register = () => {
       }
 
       try {
-        const url = URLS.BASE + URLS.user + URLS.googleSignup;
+        const url = URLS.BASE + URLS.authGoogle;
         const response = await POST_REQUEST(url, {
-          code: codeResponse.code,
+          idToken: codeResponse.code,
           userType: formik.values.userType,
         });
 
@@ -298,9 +298,10 @@ const Register = () => {
             <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
               Are you a Landlord or Agent?
             </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
               {/* Landlord Radio Button */}
-              <label className="relative cursor-pointer group">
+              <label className="relative cursor-pointer group h-full">
                 <input
                   type="radio"
                   name="userType"
@@ -310,7 +311,7 @@ const Register = () => {
                   disabled={isDisabled}
                   className="sr-only peer"
                 />
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                <div className="bg-white h-full border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       <div className="flex items-center justify-between gap-2 mb-1">
@@ -344,7 +345,7 @@ const Register = () => {
               </label>
 
               {/* Agent Radio Button */}
-              <label className="relative cursor-pointer group">
+              <label className="relative cursor-pointer group h-full">
                 <input
                   type="radio"
                   name="userType"
@@ -354,7 +355,7 @@ const Register = () => {
                   disabled={isDisabled}
                   className="sr-only peer"
                 />
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
+                <div className="bg-white h-full border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 hover:border-[#8DDB90] hover:shadow-lg hover:transform hover:scale-[1.02] peer-checked:border-[#8DDB90] peer-checked:bg-gradient-to-br peer-checked:from-[#8DDB90]/10 peer-checked:to-[#8DDB90]/5 peer-checked:shadow-lg peer-checked:transform peer-checked:scale-[1.02] peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       <div className="flex items-center justify-between gap-2 mb-1">
@@ -380,13 +381,14 @@ const Register = () => {
                         </div>
                       </div>
                       <span className="text-sm text-[#5A5D63] leading-relaxed">
-                        Professional helping clients buy/sell properties
+                        Assisting clients with property buying and selling.
                       </span>
                     </div>
                   </div>
                 </div>
               </label>
             </div>
+
             {formik.touched.userType && formik.errors.userType && (
               <span className="text-red-600 text-sm">
                 {formik.errors.userType}
@@ -402,7 +404,7 @@ const Register = () => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-[#EEF1F1] px-2 text-gray-500">
+                  <span className="bg-[#EEF1F1] font-bold px-2 text-gray-500">
                     or continue with
                   </span>
                 </div>
@@ -422,6 +424,11 @@ const Register = () => {
                   isDisabled={isDisabled}
                 />
               </div>
+
+              <div className="mt-6 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+
             </div>
           )}
 
@@ -519,41 +526,44 @@ const Register = () => {
               </div>
             </div>
           </div>
-          {/**Button */}
-          <Button
-            value={`${
-              isDisabled
-                ? "Registering..."
-                : isSuccess
-                  ? "Registration Successful!"
-                  : "Register"
-            }`}
-            isDisabled={
-              isDisabled ||
-              isSuccess ||
-              !agreed ||
-              // Ensure all required fields from initialValues are checked for form validity
-              !formik.values.email ||
-              !formik.values.password ||
-              !formik.values.confirmPassword || // Check confirmPassword
-              !formik.values.firstName ||
-              !formik.values.lastName ||
-              !formik.values.phone ||
-              !formik.values.userType ||
-              // Also consider if formik.isValid should be part of this check
-              (formik.submitCount > 0 && !formik.isValid) // Prevent submission if form is invalid after first attempt
-            }
-            className="min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold"
-            type="submit"
-            green={true}
-          />
-          {/**Already have an account */}
-          <span className="text-base leading-[25.6px] font-normal">
-            Already have an account?{" "}
-            <Link className="font-semibold text-[#09391C]" href={"/auth/login"}>
-              Sign In
-            </Link>
-          </span>
+            {/**Button */}
+            <div className="lg:px-[60px] w-full">
+              <Button
+                value={`${
+                  isDisabled
+                    ? "Registering..."
+                    : isSuccess
+                      ? "Registration Successful!"
+                      : "Register"
+                }`}
+                isDisabled={
+                  isDisabled ||
+                  isSuccess ||
+                  !agreed ||
+                  // Ensure all required fields from initialValues are checked for form validity
+                  !formik.values.email ||
+                  !formik.values.password ||
+                  !formik.values.confirmPassword || // Check confirmPassword
+                  !formik.values.firstName ||
+                  !formik.values.lastName ||
+                  !formik.values.phone ||
+                  !formik.values.userType ||
+                  // Also consider if formik.isValid should be part of this check
+                  (formik.submitCount > 0 && !formik.isValid) // Prevent submission if form is invalid after first attempt
+                }
+                className="min-h-[60px] w-full rounded-md py-[12px] duration-300 transition ease-in-out px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+                type="submit"
+                green={true}
+              />
+            </div>
+            {/**Already have an account */}
+            <span className="text-base leading-[25.6px] font-normal">
+              Already have an account?{" "}
+              <Link className="font-semibold text-[#09391C]" href={"/auth/login"}>
+                Sign In
+              </Link>
+            </span>
+
         </form>
       </div>
       <OverlayPreloader

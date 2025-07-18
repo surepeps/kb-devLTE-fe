@@ -185,7 +185,7 @@ const VerifyResetRequest = () => {
           <div className="flex flex-col gap-4 w-full lg:px-[60px] mt-6">
             <Button
               value={isVerifying ? "Verifying..." : "Verify Code"}
-              className="min-h-[50px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold"
+              className="min-h-[50px] w-full rounded-md py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold"
               onClick={handleVerifyCode}
               isDisabled={isVerifying || code.join("").length !== 6}
               green={true}
@@ -193,17 +193,12 @@ const VerifyResetRequest = () => {
 
             <Button
               value={isResending ? "Resending..." : "Resend Code"}
-              className="min-h-[50px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold"
+              className="min-h-[60px] w-full rounded-md py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold"
               onClick={handleResendEmail}
               isDisabled={isResending}
               green={true}
             />
 
-            <Button
-              value="Back to Login"
-              className="min-h-[50px] w-full py-[12px] px-[24px] bg-gray-500 text-[#FAFAFA] text-base leading-[25.6px] font-bold"
-              onClick={() => router.push("/auth/login")}
-            />
           </div>
 
           <p className="text-base leading-[25.6px] font-normal">

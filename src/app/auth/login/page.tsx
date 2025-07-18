@@ -126,8 +126,8 @@ const Login: FC = () => {
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
       try {
-        const url = URLS.BASE + URLS.user + URLS.googleLogin;
-        const response = await POST_REQUEST(url, { code: codeResponse.code });
+        const url = URLS.BASE + URLS.authGoogle;
+        const response = await POST_REQUEST(url, { idToken: codeResponse.code });
 
         if (response.user?.id) {
           toast.success("Sign in successful");
@@ -247,7 +247,7 @@ const Login: FC = () => {
             {/* Button */}
             <Button
               value={isSubmitting ? "Signing In..." : "Sign In"}
-              className="w-full py-[12px] px-[24px] bg-[#8DDB90] hover:bg-[#2f4d30] rounded-md transition-all duration-300 text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+              className="min-h-[60px] w-full rounded-md py-[12px] duration-300 transition ease-in-out px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
               type="submit"
               isDisabled={isSubmitting}
               onSubmit={formik.handleSubmit}

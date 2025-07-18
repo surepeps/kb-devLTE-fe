@@ -5,7 +5,11 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+<<<<<<< HEAD
 /* eslint-disable react-hooks/exhaustive-deps */
+=======
+ 
+>>>>>>> 6c743197c1a0144ab03ccf538536de611b98cfbf
 "use client";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";

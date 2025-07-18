@@ -5,7 +5,7 @@ export interface NavigationItem {
   url: string;
   isClicked: boolean;
   subItems?: NavigationItem[];
-}
+} 
 
 export const mainNavigationData: NavigationItem[] = [
   {
@@ -38,6 +38,11 @@ export const mainNavigationData: NavigationItem[] = [
         url: "/market-place",
         isClicked: false,
       },
+      {
+        name: "Verify Documents",
+        url: "/document_verification",
+        isClicked: false,
+      },
     ],
   },
   {
@@ -51,8 +56,8 @@ export const mainNavigationData: NavigationItem[] = [
     isClicked: false,
     subItems: [
       {
-        name: "Market Place",
-        url: "/agent/market-place",
+        name: "Agent Market Place",
+        url: "/agent_marketplace",
         isClicked: false,
       },
     ],
@@ -105,6 +110,11 @@ export const agentNavigationData: NavigationItem[] = [
         url: "/market-place",
         isClicked: false,
       },
+      {
+        name: "Verify Documents",
+        url: "/document_verification",
+        isClicked: false,
+      },
     ],
   },
   {
@@ -116,6 +126,13 @@ export const agentNavigationData: NavigationItem[] = [
     name: "Agent",
     url: "/agent/dashboard",
     isClicked: false,
+    subItems: [
+      {
+        name: "Agent Market Place",
+        url: "/agent_marketplace",
+        isClicked: false,
+      },
+    ],
   },
   {
     name: "Policies",
@@ -159,6 +176,11 @@ export const marketplaceDropdownData: NavigationItem[] = [
   {
     name: "Joint Venture",
     url: "/new-marketplace",
+    isClicked: false,
+  },
+  {
+    name: "Verify Documents",
+    url: "/document_verification",
     isClicked: false,
   },
 ];
