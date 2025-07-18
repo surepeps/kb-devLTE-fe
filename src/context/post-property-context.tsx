@@ -159,6 +159,7 @@ const initialPropertyData: PropertyData = {
   isLegalOwner: false,
   ownershipDocuments: [],
   isTenanted: "",
+  description: "",
   additionalInfo: "",
   availability: {
     minStay: 1,
