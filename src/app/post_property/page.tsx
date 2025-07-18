@@ -31,7 +31,7 @@ import Step2FeaturesConditions from "@/components/post-property-components/Step2
 import Step4OwnershipDeclaration from "@/components/post-property-components/Step4OwnershipDeclaration";
 
 // Import configuration helpers
-import { getBriefTypeConfig } from "@/data/post-property-form-config";
+import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 // Validation schemas for each step
 const getValidationSchema = (currentStep: number, propertyData: any) => {
@@ -539,7 +539,11 @@ const PostProperty = () => {
               "User"
             }
             userType={user?.userType === "Agent" ? "agent" : "landowner"}
-            briefType={getBriefTypeConfig(propertyData.propertyType)?.label}
+            briefType={
+              briefTypeConfig[
+                propertyData.propertyType as keyof typeof briefTypeConfig
+              ]?.label
+            }
           />
         </div>
       </div>

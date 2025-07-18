@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import { briefTypesConfig } from "@/data/post-property-form-config";
+import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 interface StepProps {
   errors?: any;
@@ -18,10 +18,18 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updatePropertyData(
-      "propertyType",
-      e.target.value as "sell" | "rent" | "jv" | "shortlet",
-    );
+    const newBriefType = e.target.value as "sell" | "rent" | "jv" | "shortlet";
+
+    // Reset form when brief type changes
+    if (
+      propertyData.propertyType &&
+      propertyData.propertyType !== newBriefType
+    ) {
+      // Reset all form fields except the new property type
+      updatePropertyData("resetFormExcept", ["propertyType"]);
+    }
+
+    updatePropertyData("propertyType", newBriefType);
   };
 
   return (
@@ -41,30 +49,37 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
       </div>
 
       <div className="space-y-4">
-        {briefTypesConfig.map((type) => (
+        {Object.entries(briefTypeConfig).map(([key, type]) => (
           <motion.div
-            key={type.value}
+            key={key}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
             className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-              propertyData.propertyType === type.value
+              propertyData.propertyType === key
                 ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10"
                 : "border-[#E5E7EB] hover:border-[#8DDB90] hover:bg-gray-50"
             }`}
-            onClick={() =>
-              updatePropertyData(
-                "propertyType",
-                type.value as "sell" | "rent" | "jv" | "shortlet",
-              )
-            }
+            onClick={() => {
+              const newBriefType = key as "sell" | "rent" | "jv" | "shortlet";
+
+              // Reset form when brief type changes
+              if (
+                propertyData.propertyType &&
+                propertyData.propertyType !== newBriefType
+              ) {
+                updatePropertyData("resetFormExcept", ["propertyType"]);
+              }
+
+              updatePropertyData("propertyType", newBriefType);
+            }}
           >
             <div className="flex items-start gap-4">
               <RadioCheck
                 name="propertyType"
-                value={type.value}
+                value={key}
                 type="radio"
-                isChecked={propertyData.propertyType === type.value}
+                isChecked={propertyData.propertyType === key}
                 handleChange={handlePropertyTypeChange}
                 className="mt-1"
               />
@@ -94,16 +109,16 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-lg">
               {
-                briefTypesConfig.find(
-                  (t) => t.value === propertyData.propertyType,
-                )?.icon
+                briefTypeConfig[
+                  propertyData.propertyType as keyof typeof briefTypeConfig
+                ]?.icon
               }
             </span>
             <span className="text-[#09391C] font-medium">
               {
-                briefTypesConfig.find(
-                  (t) => t.value === propertyData.propertyType,
-                )?.label
+                briefTypeConfig[
+                  propertyData.propertyType as keyof typeof briefTypeConfig
+                ]?.label
               }{" "}
               selected
             </span>

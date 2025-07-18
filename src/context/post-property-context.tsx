@@ -50,6 +50,9 @@ interface PropertyData {
 
   // Step 7: Rental/Sale Specific Fields
   tenantCriteria: string[];
+  rentalConditions: string[];
+  employmentType: string;
+  tenantGenderPreference: string;
   jvConditions: string[];
 
   // Step 8: Ownership Declaration
@@ -106,7 +109,10 @@ interface PostPropertyContextType {
   setImages: (images: PropertyImage[]) => void;
   propertyData: PropertyData;
   setPropertyData: (data: PropertyData) => void;
-  updatePropertyData: (field: keyof PropertyData, value: any) => void;
+  updatePropertyData: (
+    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory",
+    value: any,
+  ) => void;
   isSubmitting: boolean;
   setIsSubmitting: (loading: boolean) => void;
   validateCurrentStep: () => boolean;
@@ -148,6 +154,9 @@ const initialPropertyData: PropertyData = {
   maxGuests: 0,
   features: [],
   tenantCriteria: [],
+  rentalConditions: [],
+  employmentType: "",
+  tenantGenderPreference: "",
   jvConditions: [],
   documents: [],
   contactInfo: {
@@ -197,11 +206,40 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   const [showCommissionModal, setShowCommissionModal] = useState(false);
   const [showPropertySummary, setShowPropertySummary] = useState(false);
 
-  const updatePropertyData = (field: keyof PropertyData, value: any) => {
-    setPropertyData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const updatePropertyData = (
+    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory",
+    value: any,
+  ) => {
+    if (field === "resetFormExcept") {
+      // Reset all fields except the ones specified in value array
+      const fieldsToPreserve = value as string[];
+      const newData = { ...initialPropertyData };
+
+      fieldsToPreserve.forEach((fieldName) => {
+        if (fieldName in propertyData) {
+          (newData as any)[fieldName] = (propertyData as any)[fieldName];
+        }
+      });
+
+      setPropertyData(newData);
+    } else if (field === "resetFieldsAfterCategory") {
+      // Reset specific fields after property category change
+      const fieldsToReset = value as string[];
+      const newData = { ...propertyData };
+
+      fieldsToReset.forEach((fieldName) => {
+        if (fieldName in initialPropertyData) {
+          (newData as any)[fieldName] = (initialPropertyData as any)[fieldName];
+        }
+      });
+
+      setPropertyData(newData);
+    } else {
+      setPropertyData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
   };
 
   const getMinimumRequiredImages = () => 4;
