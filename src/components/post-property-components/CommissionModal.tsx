@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/general-components/button";
+import { getCommissionText } from "@/data/comprehensive-post-property-config";
 import Green from "@/assets/green.png";
 
 interface CommissionModalProps {
@@ -85,13 +86,7 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
                 </div>
 
                 <p className="text-[#1E1E1E] text-sm leading-relaxed">
-                  I, <span className="font-bold">{userName}</span>, agree that{" "}
-                  <span className="font-bold text-[#8DDB90]">
-                    Khabiteq Realty
-                  </span>{" "}
-                  shall earn <span className="font-bold">{commission}</span> of
-                  the total value generated from this transaction as commission
-                  when the deal is closed.
+                  {getCommissionText(briefType || "", userType, userName)}
                 </p>
               </div>
             </div>
