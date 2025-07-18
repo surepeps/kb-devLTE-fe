@@ -185,10 +185,8 @@ const PropertyPreview: React.FC<StepProps> = ({ errors, touched }) => {
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPinIcon size={18} className="mr-2" />
                   <span className="text-lg">
-                    {typeof propertyData.area === "string"
-                      ? propertyData.area
-                      : propertyData.area?.label}
-                    , {propertyData.lga?.label}, {propertyData.state?.label}
+                    {propertyData.area}, {propertyData.lga?.label},{" "}
+                    {propertyData.state?.label}
                   </span>
                 </div>
               </div>
