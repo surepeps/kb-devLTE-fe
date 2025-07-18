@@ -326,21 +326,31 @@ function preferenceFormReducer(
         ...action.payload,
       };
 
-      // Enhanced comparison for nested objects
+      // Enhanced comparison for nested objects with shallow check first
       let formDataChanged = false;
-      for (const key in action.payload) {
+      const payloadKeys = Object.keys(action.payload);
+
+      // Quick shallow check first
+      for (const key of payloadKeys) {
         const currentValue = state.formData[key as keyof PreferenceForm];
         const newValue = action.payload[key as keyof PreferenceForm];
 
-        // Deep comparison for objects and arrays
-        if (typeof newValue === "object" && newValue !== null) {
+        if (currentValue !== newValue) {
+          // For primitives, this is enough
+          if (
+            typeof newValue !== "object" ||
+            newValue === null ||
+            currentValue === null ||
+            currentValue === undefined
+          ) {
+            formDataChanged = true;
+            break;
+          }
+          // For objects/arrays, do deep comparison only when necessary
           if (JSON.stringify(currentValue) !== JSON.stringify(newValue)) {
             formDataChanged = true;
             break;
           }
-        } else if (currentValue !== newValue) {
-          formDataChanged = true;
-          break;
         }
       }
 
@@ -403,7 +413,7 @@ interface PreferenceFormContextType {
   goToStep: (step: number) => void;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
-  updateFormData: (data: Partial<PreferenceForm>) => void;
+  updateFormData: (data: Partial<PreferenceForm>, immediate?: boolean) => void;
   validateStep: (step: number) => ValidationError[];
   isStepValid: (step: number) => boolean;
   canProceedToNextStep: () => boolean;
@@ -438,6 +448,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
 
   // Use ref to track if we're already updating to prevent loops
   const isUpdatingRef = useRef(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Memoized helper functions to prevent unnecessary re-renders
   const getMinBudgetForLocation = useCallback(
@@ -690,21 +701,36 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [state.currentStep, validateStep]);
 
-  // STABLE updateFormData function that never changes
-  const updateFormData = useCallback((data: Partial<PreferenceForm>) => {
-    // Prevent infinite loops with update guard
-    if (isUpdatingRef.current) {
-      return;
-    }
+  // STABLE updateFormData function with centralized debouncing
+  const updateFormData = useCallback(
+    (data: Partial<PreferenceForm>, immediate = false) => {
+      // Prevent infinite loops with update guard
+      if (isUpdatingRef.current) {
+        return;
+      }
 
-    isUpdatingRef.current = true;
+      if (immediate) {
+        // For immediate updates (like step changes)
+        isUpdatingRef.current = true;
+        dispatch({ type: "UPDATE_FORM_DATA", payload: data });
+        isUpdatingRef.current = false;
+      } else {
+        // Debounced updates for form field changes
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
 
-    // Use requestAnimationFrame to batch updates more efficiently
-    requestAnimationFrame(() => {
-      dispatch({ type: "UPDATE_FORM_DATA", payload: data });
-      isUpdatingRef.current = false;
-    });
-  }, []); // Empty dependencies - this function never changes
+        debounceTimeoutRef.current = setTimeout(() => {
+          if (!isUpdatingRef.current) {
+            isUpdatingRef.current = true;
+            dispatch({ type: "UPDATE_FORM_DATA", payload: data });
+            isUpdatingRef.current = false;
+          }
+        }, 150); // Reduced debounce time for better UX
+      }
+    },
+    [],
+  ); // Empty dependencies - this function never changes
 
   const getAvailableFeatures = useCallback(
     (preferenceType: string, budget?: number) => {
@@ -792,7 +818,7 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     [state.currentStep, validateStep],
   );
 
-  // Memoize context value to prevent unnecessary re-renders
+  // Memoize context value to prevent unnecessary re-renders - optimize dependencies
   const contextValue: PreferenceFormContextType = useMemo(
     () => ({
       state,
@@ -812,12 +838,13 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       triggerValidation,
     }),
     [
-      state,
-      dispatch,
-      goToStep,
-      goToNextStep,
-      goToPreviousStep,
-      updateFormData, // This is now stable
+      // Only include state properties that actually change
+      state.currentStep,
+      state.formData,
+      state.isSubmitting,
+      state.validationErrors,
+      // Functions are stable now
+      updateFormData,
       validateStep,
       isStepValid,
       canProceedToNextStep,
@@ -827,6 +854,9 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       getValidationErrorsForField,
       resetForm,
       triggerValidation,
+      goToStep,
+      goToNextStep,
+      goToPreviousStep,
     ],
   );
 
