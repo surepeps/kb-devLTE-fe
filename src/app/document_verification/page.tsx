@@ -31,7 +31,7 @@ const initialDocumentNumbers: DocumentNumbers = {
 
 const DocumentVerificationPage: React.FC = () => {
   const [showGuideline, setShowGuideline] = useState<boolean>(false);
-  const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>(['Certificate of Occupancy']);
+  const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
   const [documentNumbers, setDocumentNumbers] = useState<DocumentNumbers>(initialDocumentNumbers);
   const [selectedFiles, setSelectedFiles] = useState<{ [key in DocumentType]?: File | null }>({});
   const [filePreviews, setFilePreviews] = useState<{ [key in DocumentType]?: string }>({});
@@ -70,6 +70,7 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): string => {
+    if (selectedDocuments.length === 0) return '₦20,000';
     return selectedDocuments.length === 1 ? '₦20,000' : '₦40,000';
   };
 
@@ -128,7 +129,7 @@ const DocumentVerificationPage: React.FC = () => {
           </p>
           
           <div className="mb-4">
-            <span className="font-semibold text-gray-800">Verification Report:</span>{' '}
+            <span className="font-semibold text-gray-800">Verification Report:</span>
             <span className="text-gray-600">You will receive a verification report with a certified true copy (CTC)</span>
           </div>
 
