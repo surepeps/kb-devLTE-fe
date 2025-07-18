@@ -54,6 +54,7 @@ interface PropertyData {
 
   // Step 8: Ownership Declaration
   isLegalOwner: boolean;
+  ownershipDocuments: string[];
   isTenanted: string;
 
   // Additional Fields
