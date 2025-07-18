@@ -42,7 +42,7 @@ const BUDGET_PRESETS = {
   ],
   shortlet: [
     { label: "₦10K - ₦25K", min: 10000, max: 25000 },
-    { label: "₦25K - ₦50K", min: 25000, max: 50000 },
+    { label: "₦25K - ���50K", min: 25000, max: 50000 },
     { label: "₦50K - ₦100K", min: 50000, max: 100000 },
     { label: "₦100K - ₦200K", min: 100000, max: 200000 },
     { label: "₦200K+", min: 200000, max: 1000000 },
@@ -61,7 +61,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
   ({ preferenceType, className = "" }) => {
     const { state, updateFormData, getMinBudgetForLocation } =
       usePreferenceForm();
-    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Remove local debouncing - now handled by context
 
     // Local state to prevent excessive re-renders
     const [minPrice, setMinPrice] = useState<number>(0);
@@ -126,7 +126,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
           setSelectedPreset("");
         }
       }
-    }, [state.formData, budgetPresets]); // Watch for changes in form data
+    }, [state.formData, budgetPresets, state.currentStep]); // Watch for changes in form data and step
 
     // Format number with commas
     const formatNumberWithCommas = useCallback((value: number): string => {
@@ -139,22 +139,16 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
       return parseInt(cleaned) || 0;
     }, []);
 
-    // Debounced update function
+    // Use context's built-in debouncing
     const debouncedUpdateFormData = useCallback(
       (min: number, max: number) => {
-        if (debounceTimeoutRef.current) {
-          clearTimeout(debounceTimeoutRef.current);
-        }
-
-        debounceTimeoutRef.current = setTimeout(() => {
-          updateFormData({
-            budget: {
-              minPrice: min,
-              maxPrice: max,
-              currency: "NGN",
-            },
-          });
-        }, 300);
+        updateFormData({
+          budget: {
+            minPrice: min,
+            maxPrice: max,
+            currency: "NGN",
+          },
+        }); // Context handles debouncing
       },
       [updateFormData],
     );
