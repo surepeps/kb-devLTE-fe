@@ -94,9 +94,19 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
       getMinBudgetForLocation,
     ]);
 
-    // Initialize local state from context
+    // Initialize local state from context and reset when context resets
     useEffect(() => {
       const budgetData = state.formData.budget;
+
+      // Reset local state if no budget data (form was reset)
+      if (!budgetData || Object.keys(state.formData).length === 0) {
+        setMinPrice(0);
+        setMaxPrice(0);
+        setSelectedPreset("");
+        setIsCustomBudget(false);
+        return;
+      }
+
       if (budgetData) {
         setMinPrice(budgetData.minPrice || 0);
         setMaxPrice(budgetData.maxPrice || 0);
@@ -116,7 +126,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
           setSelectedPreset("");
         }
       }
-    }, []); // Only run once on mount
+    }, [state.formData, budgetPresets]); // Watch for changes in form data
 
     // Format number with commas
     const formatNumberWithCommas = useCallback((value: number): string => {
