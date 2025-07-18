@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from "react";
 import Select from "react-select";
 import { usePreferenceForm } from "@/context/preference-form-context";
 
@@ -209,11 +209,21 @@ const customSelectStyles = {
   }),
 };
 
-const PropertyDetails: React.FC<PropertyDetailsProps> = ({
+const PropertyDetails: React.FC<PropertyDetailsProps> = memo(({
   preferenceType,
   className = "",
 }) => {
   const { state, updateFormData } = usePreferenceForm();
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Memoized options to prevent recreation
+  const propertySubtypeOptions = useMemo(() => PROPERTY_SUBTYPES, []);
+  const measurementUnitOptions = useMemo(() => MEASUREMENT_UNITS, []);
+  const documentTypeOptions = useMemo(() => DOCUMENT_TYPES, []);
+  const landConditionOptions = useMemo(() => LAND_CONDITIONS, []);
+  const bedroomOptions = useMemo(() => BEDROOM_OPTIONS, []);
+  const shortletPropertyTypeOptions = useMemo(() => SHORTLET_PROPERTY_TYPES, []);
+  const travelTypeOptions = useMemo(() => TRAVEL_TYPES, []);
 
   // Form state
   const [propertySubtype, setPropertySubtype] = useState<Option | null>(null);
@@ -251,7 +261,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
       setTravelType(null);
       setNearbyLandmark("");
     }
-  }, [state.formData]);
+    }, [state.formData, state.currentStep]);
 
   // Update context when values change
   useEffect(() => {
@@ -264,7 +274,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
         travelType: travelType?.value || "",
         nearbyLandmark,
       };
-      updateFormData({ propertyDetails: shortletData } as any);
+            updateFormData({ propertyDetails: shortletData } as any);
     } else {
       const propertyData = {
         propertySubtype: propertySubtype?.value || "",
