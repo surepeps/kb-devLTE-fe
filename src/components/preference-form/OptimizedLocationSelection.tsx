@@ -270,7 +270,7 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
       lgasWithAreas,
       customLocation,
       showCustomLocation,
-      updateFormData, // Changed from debouncedUpdateFormData to direct updateFormData
+      debouncedUpdateFormData,
     ]);
 
     // Handler functions
