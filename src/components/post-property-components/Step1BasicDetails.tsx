@@ -478,55 +478,46 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <label className="block text-sm font-medium text-[#707281] mb-2">
                 Area/Neighborhood
               </label>
-              {areaOptions.length > 0 ? (
-                <ReactSelect
-                  options={areaOptions}
-                  value={
-                    propertyData.area
-                      ? { value: propertyData.area, label: propertyData.area }
-                      : null
-                  }
-                  onChange={(option) =>
-                    updatePropertyData("area", option?.value || "")
-                  }
-                  placeholder={
-                    propertyData.lga
-                      ? "Search and select area"
-                      : "Select LGA first"
-                  }
-                  styles={{
-                    ...customStyles,
-                    control: (provided, state) => ({
-                      ...customStyles.control?.(provided, state),
-                      borderColor:
-                        errors?.area && touched?.area
-                          ? "#ef4444"
-                          : provided.borderColor || "#C7CAD0",
-                      minHeight: "44px",
-                    }),
-                  }}
-                  isSearchable
-                  isDisabled={!propertyData.lga}
-                  isClearable
-                  filterOption={(option, searchText) =>
-                    option.label
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
-                  }
-                />
-              ) : (
-                <Input
-                  name="area"
-                  label=""
-                  type="text"
-                  placeholder="Enter area/neighborhood"
-                  value={propertyData.area || ""}
-                  onChange={(e) => updatePropertyData("area", e.target.value)}
-                  className={
-                    errors?.area && touched?.area ? "border-red-500" : ""
-                  }
-                />
-              )}
+              <CreatableSelect
+                options={areaOptions}
+                value={
+                  propertyData.area
+                    ? { value: propertyData.area, label: propertyData.area }
+                    : null
+                }
+                onChange={(option) =>
+                  updatePropertyData("area", option?.value || "")
+                }
+                onCreateOption={(inputValue) => {
+                  updatePropertyData("area", inputValue);
+                }}
+                placeholder={
+                  propertyData.lga
+                    ? areaOptions.length > 0
+                      ? "Search or type area"
+                      : "Type area name"
+                    : "Select LGA first"
+                }
+                styles={{
+                  ...customStyles,
+                  control: (provided, state) => ({
+                    ...customStyles.control?.(provided, state),
+                    borderColor:
+                      errors?.area && touched?.area
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
+                    minHeight: "44px",
+                  }),
+                }}
+                isSearchable
+                isDisabled={!propertyData.lga}
+                isClearable
+                formatCreateLabel={(inputValue) => `Add "${inputValue}"`}
+                noOptionsMessage={() => "Type to add area"}
+                filterOption={(option, searchText) =>
+                  option.label.toLowerCase().includes(searchText.toLowerCase())
+                }
+              />
               {errors?.area && touched?.area && (
                 <p className="text-red-500 text-sm mt-1">{errors.area}</p>
               )}
