@@ -397,7 +397,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 options={lgaOptions}
                 value={propertyData.lga}
                 onChange={(option) => updatePropertyData("lga", option)}
-                placeholder="Select LGA"
+                placeholder={
+                  propertyData.state
+                    ? "Search and select LGA"
+                    : "Select state first"
+                }
                 styles={{
                   ...customStyles,
                   control: (provided, state) => ({
@@ -406,10 +410,15 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       errors?.lga && touched?.lga
                         ? "#ef4444"
                         : provided.borderColor || "#C7CAD0",
+                    minHeight: "44px",
                   }),
                 }}
                 isSearchable
+                isClearable
                 isDisabled={!propertyData.state}
+                filterOption={(option, searchText) =>
+                  option.label.toLowerCase().includes(searchText.toLowerCase())
+                }
               />
               {errors?.lga && touched?.lga && (
                 <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
