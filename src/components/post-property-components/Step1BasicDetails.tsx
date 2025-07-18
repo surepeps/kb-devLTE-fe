@@ -548,14 +548,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   label=""
                   type="text"
                   placeholder="Enter area/neighborhood"
-                  value={
-                    typeof propertyData.area === "string"
-                      ? propertyData.area
-                      : typeof propertyData.area === "object" &&
-                          propertyData.area?.value
-                        ? propertyData.area.value
-                        : ""
-                  }
+                  value={propertyData.area || ""}
                   onChange={(e) => updatePropertyData("area", e.target.value)}
                   className={
                     errors?.area && touched?.area ? "border-red-500" : ""
