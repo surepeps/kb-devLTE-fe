@@ -14,6 +14,14 @@ import {
   getAreasByStateLGA,
 } from "@/utils/location-utils";
 import { propertyReferenceData } from "@/data/buy_page_data";
+import {
+  briefTypeConfig,
+  propertyConditionOptions,
+  buildingTypeOptions,
+  numberOptions,
+  shouldShowField,
+  getFieldsToClearOnCategoryChange,
+} from "@/data/comprehensive-post-property-config";
 
 interface Option {
   value: string;
@@ -143,14 +151,28 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             Property Category
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {(propertyData.propertyType === "jv"
-              ? ["Residential", "Commercial", "Mixed Development"]
-              : ["Residential", "Commercial", "Land"]
-            ).map((category) => (
+            {briefTypeConfig[
+              propertyData.propertyType as keyof typeof briefTypeConfig
+            ]?.propertyCategories.map((category) => (
               <button
                 key={category}
                 type="button"
-                onClick={() => updatePropertyData("propertyCategory", category)}
+                onClick={() => {
+                  // Clear subsequent fields if category changes
+                  if (
+                    propertyData.propertyCategory &&
+                    propertyData.propertyCategory !== category
+                  ) {
+                    const fieldsToClear = getFieldsToClearOnCategoryChange(
+                      propertyData.propertyType,
+                    );
+                    updatePropertyData(
+                      "resetFieldsAfterCategory",
+                      fieldsToClear,
+                    );
+                  }
+                  updatePropertyData("propertyCategory", category);
+                }}
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
@@ -161,7 +183,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               >
                 {category}
               </button>
-            ))}
+            )) || []}
           </div>
           {errors?.propertyCategory && touched?.propertyCategory && (
             <p className="text-red-500 text-sm mt-2">
@@ -171,122 +193,115 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
 
         {/* Rental Type (for rent only) */}
-        {propertyData.propertyType === "rent" &&
-          propertyData.propertyCategory !== "Land" && (
-            <div>
-              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Select your rental type *
-              </h3>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                <RadioCheck
-                  selectedValue={propertyData.rentalType}
-                  handleChange={() => updatePropertyData("rentalType", "Rent")}
-                  type="radio"
-                  value="Rent"
-                  name="rentalType"
-                />
-                <RadioCheck
-                  selectedValue={propertyData.rentalType}
-                  handleChange={() => updatePropertyData("rentalType", "Lease")}
-                  type="radio"
-                  name="rentalType"
-                  value="Lease"
-                />
-              </div>
-              {errors?.rentalType && touched?.rentalType && (
-                <p className="text-red-500 text-sm mt-2">{errors.rentalType}</p>
-              )}
+        {shouldShowField(
+          "rentalType",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Select your rental type *
+            </h3>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+              <RadioCheck
+                selectedValue={propertyData.rentalType}
+                handleChange={() => updatePropertyData("rentalType", "Rent")}
+                type="radio"
+                value="Rent"
+                name="rentalType"
+              />
+              <RadioCheck
+                selectedValue={propertyData.rentalType}
+                handleChange={() => updatePropertyData("rentalType", "Lease")}
+                type="radio"
+                name="rentalType"
+                value="Lease"
+              />
             </div>
-          )}
+            {errors?.rentalType && touched?.rentalType && (
+              <p className="text-red-500 text-sm mt-2">{errors.rentalType}</p>
+            )}
+          </div>
+        )}
 
         {/* Shortlet Duration (for shortlet only) */}
-        {propertyData.propertyType === "shortlet" &&
-          propertyData.propertyCategory !== "Land" && (
-            <div>
-              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Shortlet Duration *
-              </h3>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
-                <RadioCheck
-                  selectedValue={propertyData.shortletDuration}
-                  handleChange={() =>
-                    updatePropertyData("shortletDuration", "Daily")
-                  }
-                  type="radio"
-                  value="Daily"
-                  name="shortletDuration"
-                />
-                <RadioCheck
-                  selectedValue={propertyData.shortletDuration}
-                  handleChange={() =>
-                    updatePropertyData("shortletDuration", "Weekly")
-                  }
-                  type="radio"
-                  name="shortletDuration"
-                  value="Weekly"
-                />
-                <RadioCheck
-                  selectedValue={propertyData.shortletDuration}
-                  handleChange={() =>
-                    updatePropertyData("shortletDuration", "Monthly")
-                  }
-                  type="radio"
-                  name="shortletDuration"
-                  value="Monthly"
-                />
-              </div>
-              {errors?.shortletDuration && touched?.shortletDuration && (
-                <p className="text-red-500 text-sm mt-2">
-                  {errors.shortletDuration}
-                </p>
-              )}
+        {shouldShowField(
+          "shortletDuration",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Shortlet Duration *
+            </h3>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+              <RadioCheck
+                selectedValue={propertyData.shortletDuration}
+                handleChange={() =>
+                  updatePropertyData("shortletDuration", "Daily")
+                }
+                type="radio"
+                value="Daily"
+                name="shortletDuration"
+              />
+              <RadioCheck
+                selectedValue={propertyData.shortletDuration}
+                handleChange={() =>
+                  updatePropertyData("shortletDuration", "Weekly")
+                }
+                type="radio"
+                name="shortletDuration"
+                value="Weekly"
+              />
+              <RadioCheck
+                selectedValue={propertyData.shortletDuration}
+                handleChange={() =>
+                  updatePropertyData("shortletDuration", "Monthly")
+                }
+                type="radio"
+                name="shortletDuration"
+                value="Monthly"
+              />
             </div>
-          )}
+            {errors?.shortletDuration && touched?.shortletDuration && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.shortletDuration}
+              </p>
+            )}
+          </div>
+        )}
 
-        {/* Property Condition (for rent and shortlet) */}
-        {(propertyData.propertyType === "rent" ||
-          propertyData.propertyType === "shortlet") &&
-          propertyData.propertyCategory !== "Land" && (
-            <div>
-              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Property Condition *
-              </h3>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+        {/* Property Condition (for sell, rent and shortlet) */}
+        {shouldShowField(
+          "propertyCondition",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Property Condition *
+            </h3>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+              {propertyConditionOptions.map((option) => (
                 <RadioCheck
+                  key={option.value}
                   selectedValue={propertyData.propertyCondition}
                   handleChange={() =>
-                    updatePropertyData("propertyCondition", "Brand New")
+                    updatePropertyData("propertyCondition", option.value)
                   }
                   type="radio"
-                  value="Brand New"
+                  value={option.value}
                   name="propertyCondition"
                 />
-                <RadioCheck
-                  selectedValue={propertyData.propertyCondition}
-                  handleChange={() =>
-                    updatePropertyData("propertyCondition", "Good Condition")
-                  }
-                  type="radio"
-                  name="propertyCondition"
-                  value="Good Condition"
-                />
-                <RadioCheck
-                  selectedValue={propertyData.propertyCondition}
-                  handleChange={() =>
-                    updatePropertyData("propertyCondition", "Needs Renovation")
-                  }
-                  type="radio"
-                  name="propertyCondition"
-                  value="Needs Renovation"
-                />
-              </div>
-              {errors?.propertyCondition && touched?.propertyCondition && (
-                <p className="text-red-500 text-sm mt-2">
-                  {errors.propertyCondition}
-                </p>
-              )}
+              ))}
             </div>
-          )}
+            {errors?.propertyCondition && touched?.propertyCondition && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.propertyCondition}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Price */}
         <div>
@@ -317,14 +332,19 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               )}
             </div>
 
-            {/* Lease Hold for Rent (non-agents) */}
-            {propertyData.propertyType === "rent" && (
+            {/* Lease Hold for Rent (when Lease is selected) */}
+            {shouldShowField(
+              "leaseHold",
+              propertyData.propertyType,
+              propertyData.propertyCategory,
+              { rentalType: propertyData.rentalType },
+            ) && (
               <div>
                 <Input
                   name="leaseHold"
-                  label="Lease Hold"
+                  label="Lease Hold Duration (Years)"
                   type="text"
-                  placeholder="Enter lease hold amount"
+                  placeholder="Enter lease hold duration"
                   value={formatedLeaseHold}
                   onChange={(e) => handleLeaseHoldChange(e.target.value)}
                 />
@@ -348,9 +368,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
 
         {/* Land Size (for Land, Sell, JV) */}
-        {(propertyData.propertyCategory === "Land" ||
-          propertyData.propertyType === "sell" ||
-          propertyData.propertyType === "jv") && (
+        {shouldShowField(
+          "landSize",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Land Size
@@ -526,7 +548,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
 
         {/* Property Details (for non-Land properties) */}
-        {propertyData.propertyCategory !== "Land" && (
+        {shouldShowField(
+          "typeOfBuilding",
+          propertyData.propertyType,
+          propertyData.propertyCategory,
+        ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Property Details
@@ -534,20 +560,14 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Type of Building *
+                  Building Type *
                 </label>
                 <ReactSelect
                   options={
                     propertyData.propertyCategory === "Residential"
-                      ? propertyReferenceData[0].options.map((option) => ({
-                          value: option,
-                          label: option,
-                        }))
+                      ? buildingTypeOptions.residential
                       : propertyData.propertyCategory === "Commercial"
-                        ? propertyReferenceData[1].options.map((option) => ({
-                            value: option,
-                            label: option,
-                          }))
+                        ? buildingTypeOptions.commercial
                         : []
                   }
                   value={
@@ -579,131 +599,135 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   </p>
                 )}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Number of Bedrooms *
-                </label>
-                <ReactSelect
-                  options={propertyReferenceData[
-                    propertyReferenceData.length - 2
-                  ].options.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
-                  value={
-                    propertyData.bedrooms
-                      ? {
-                          value: propertyData.bedrooms,
-                          label: propertyData.bedrooms,
-                        }
-                      : null
-                  }
-                  onChange={(option) =>
-                    updatePropertyData(
-                      "bedrooms",
-                      parseInt(option?.value?.toString() || "0") || 0,
-                    )
-                  }
-                  placeholder="Select bedrooms"
-                  styles={{
-                    ...customStyles,
-                    control: (provided, state) => ({
-                      ...customStyles.control?.(provided, state),
-                      borderColor:
-                        errors?.bedrooms && touched?.bedrooms
-                          ? "#ef4444"
-                          : provided.borderColor || "#C7CAD0",
-                    }),
-                  }}
-                />
-                {errors?.bedrooms && touched?.bedrooms && (
-                  <p className="text-red-500 text-sm mt-1">{errors.bedrooms}</p>
-                )}
-              </div>
+
+              {/* Room Details */}
+              {shouldShowField(
+                "bedrooms",
+                propertyData.propertyType,
+                propertyData.propertyCategory,
+              ) && (
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Bedrooms *
+                  </label>
+                  <ReactSelect
+                    options={numberOptions}
+                    value={
+                      propertyData.bedrooms
+                        ? {
+                            value: propertyData.bedrooms.toString(),
+                            label: propertyData.bedrooms.toString(),
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "bedrooms",
+                        parseInt(option?.value || "0") || 0,
+                      )
+                    }
+                    placeholder="Select bedrooms"
+                    styles={{
+                      ...customStyles,
+                      control: (provided, state) => ({
+                        ...customStyles.control?.(provided, state),
+                        borderColor:
+                          errors?.bedrooms && touched?.bedrooms
+                            ? "#ef4444"
+                            : provided.borderColor || "#C7CAD0",
+                      }),
+                    }}
+                  />
+                  {errors?.bedrooms && touched?.bedrooms && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.bedrooms}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Number of Bathrooms
-                </label>
-                <ReactSelect
-                  options={propertyReferenceData[
-                    propertyReferenceData.length - 2
-                  ].options.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
-                  value={
-                    propertyData.bathrooms
-                      ? {
-                          value: propertyData.bathrooms,
-                          label: propertyData.bathrooms,
-                        }
-                      : null
-                  }
-                  onChange={(option) =>
-                    updatePropertyData(
-                      "bathrooms",
-                      parseInt(option?.value?.toString() || "0") || 0,
-                    )
-                  }
-                  placeholder="Select bathrooms"
-                  styles={customStyles}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Number of Toilets
-                </label>
-                <ReactSelect
-                  options={propertyReferenceData[
-                    propertyReferenceData.length - 2
-                  ].options.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
-                  value={
-                    propertyData.toilets
-                      ? {
-                          value: propertyData.toilets,
-                          label: propertyData.toilets,
-                        }
-                      : null
-                  }
-                  onChange={(option) =>
-                    updatePropertyData(
-                      "toilets",
-                      parseInt(option?.value?.toString() || "0") || 0,
-                    )
-                  }
-                  placeholder="Select toilets"
-                  styles={customStyles}
-                />
-              </div>
+              {shouldShowField(
+                "bathrooms",
+                propertyData.propertyType,
+                propertyData.propertyCategory,
+              ) && (
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Bathrooms
+                  </label>
+                  <ReactSelect
+                    options={numberOptions}
+                    value={
+                      propertyData.bathrooms
+                        ? {
+                            value: propertyData.bathrooms.toString(),
+                            label: propertyData.bathrooms.toString(),
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "bathrooms",
+                        parseInt(option?.value || "0") || 0,
+                      )
+                    }
+                    placeholder="Select bathrooms"
+                    styles={customStyles}
+                  />
+                </div>
+              )}
+
+              {shouldShowField(
+                "toilets",
+                propertyData.propertyType,
+                propertyData.propertyCategory,
+              ) && (
+                <div>
+                  <label className="block text-sm font-medium text-[#707281] mb-2">
+                    Number of Toilets
+                  </label>
+                  <ReactSelect
+                    options={numberOptions}
+                    value={
+                      propertyData.toilets
+                        ? {
+                            value: propertyData.toilets.toString(),
+                            label: propertyData.toilets.toString(),
+                          }
+                        : null
+                    }
+                    onChange={(option) =>
+                      updatePropertyData(
+                        "toilets",
+                        parseInt(option?.value || "0") || 0,
+                      )
+                    }
+                    placeholder="Select toilets"
+                    styles={customStyles}
+                  />
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
                   Number of Car Parks
                 </label>
                 <ReactSelect
-                  options={propertyReferenceData[
-                    propertyReferenceData.length - 2
-                  ].options.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
+                  options={numberOptions}
                   value={
                     propertyData.parkingSpaces
                       ? {
-                          value: propertyData.parkingSpaces,
-                          label: propertyData.parkingSpaces,
+                          value: propertyData.parkingSpaces.toString(),
+                          label: propertyData.parkingSpaces.toString(),
                         }
                       : null
                   }
                   onChange={(option) =>
                     updatePropertyData(
                       "parkingSpaces",
-                      parseInt(option?.value?.toString() || "0") || 0,
+                      parseInt(option?.value || "0") || 0,
                     )
                   }
                   placeholder="Select car parks"
