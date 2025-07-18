@@ -438,33 +438,66 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <label className="block text-sm font-medium text-[#707281] mb-2">
                 Local Government *
               </label>
-              <ReactSelect
-                options={lgaOptions}
-                value={propertyData.lga}
-                onChange={(option) => updatePropertyData("lga", option)}
-                placeholder={
-                  propertyData.state
-                    ? "Search and select LGA"
-                    : "Select state first"
-                }
-                styles={{
-                  ...customStyles,
-                  control: (provided, state) => ({
-                    ...customStyles.control?.(provided, state),
-                    borderColor:
-                      errors?.lga && touched?.lga
-                        ? "#ef4444"
-                        : provided.borderColor || "#C7CAD0",
-                    minHeight: "44px",
-                  }),
-                }}
-                isSearchable
-                isClearable
-                isDisabled={!propertyData.state}
-                filterOption={(option, searchText) =>
-                  option.label.toLowerCase().includes(searchText.toLowerCase())
-                }
-              />
+              {lgaOptions.length > 0 ? (
+                <ReactSelect
+                  options={lgaOptions}
+                  value={propertyData.lga}
+                  onChange={(option) => updatePropertyData("lga", option)}
+                  placeholder={
+                    propertyData.state
+                      ? "Search and select LGA"
+                      : "Select state first"
+                  }
+                  styles={{
+                    ...customStyles,
+                    control: (provided, state) => ({
+                      ...customStyles.control?.(provided, state),
+                      borderColor:
+                        errors?.lga && touched?.lga
+                          ? "#ef4444"
+                          : provided.borderColor || "#C7CAD0",
+                      minHeight: "44px",
+                    }),
+                  }}
+                  isSearchable
+                  isClearable
+                  isDisabled={!propertyData.state}
+                  filterOption={(option, searchText) =>
+                    option.label
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  }
+                />
+              ) : (
+                <Input
+                  name="lga"
+                  label=""
+                  type="text"
+                  placeholder={
+                    propertyData.state
+                      ? "Enter LGA manually"
+                      : "Select state first"
+                  }
+                  value={
+                    typeof propertyData.lga === "string"
+                      ? propertyData.lga
+                      : typeof propertyData.lga === "object" &&
+                          propertyData.lga?.value
+                        ? propertyData.lga.value
+                        : ""
+                  }
+                  onChange={(e) =>
+                    updatePropertyData("lga", {
+                      value: e.target.value,
+                      label: e.target.value,
+                    })
+                  }
+                  className={
+                    errors?.lga && touched?.lga ? "border-red-500" : ""
+                  }
+                  disabled={!propertyData.state}
+                />
+              )}
               {errors?.lga && touched?.lga && (
                 <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
               )}
@@ -484,7 +517,9 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                         ? { value: propertyData.area, label: propertyData.area }
                         : null
                   }
-                  onChange={(option) => updatePropertyData("area", option)}
+                  onChange={(option) =>
+                    updatePropertyData("area", option?.value || "")
+                  }
                   placeholder={
                     propertyData.lga
                       ? "Search and select area"
