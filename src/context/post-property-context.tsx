@@ -9,7 +9,10 @@ interface PropertyImage {
 }
 
 interface PropertyData {
+  // Step 1: Brief Type Selection
   propertyType: "sell" | "rent" | "jv" | "shortlet" | "";
+
+  // Step 2: Property Category and Basic Info
   propertyCategory:
     | "Residential"
     | "Commercial"
@@ -18,35 +21,80 @@ interface PropertyData {
     | "";
   propertyCondition: string;
   typeOfBuilding: string;
-  rentalType: string;
-  price: string;
+  rentalType: string; // For rent: "Rent" | "Lease"
   leaseHold: string;
   holdDuration?: string;
   shortletDuration?: string;
-  description: string;
+
+  // Step 3: Location
   state: { value: string; label: string } | null;
   lga: { value: string; label: string } | null;
   area: string | { value: string; label: string };
+  streetAddress?: string; // For shortlet
+
+  // Step 4: Size and Pricing
   landSize: string;
   measurementType: string;
+  price: string;
+
+  // Step 5: Room Details (for Residential/Commercial)
   bedrooms: number;
   bathrooms: number;
   toilets: number;
   parkingSpaces: number;
+  maxGuests?: number; // For shortlet
+
+  // Step 6: Documents and Features
+  documents: string[];
   features: string[];
+
+  // Step 7: Rental/Sale Specific Fields
   tenantCriteria: string[];
   jvConditions: string[];
-  documents: string[];
-  ownershipDocuments: string[];
+
+  // Step 8: Ownership Declaration
+  isLegalOwner: boolean;
+  isTenanted: string;
+
+  // Additional Fields
+  additionalInfo: string;
+
+  // Shortlet specific fields
+  availability?: {
+    minStay: number;
+    maxStay?: number;
+    calendar?: string;
+  };
+  pricing?: {
+    nightly?: number;
+    weeklyDiscount?: number;
+    monthlyDiscount?: number;
+    cleaningFee?: number;
+    securityDeposit?: number;
+    cancellationPolicy?: string;
+  };
+  houseRules?: {
+    checkIn: string;
+    checkOut: string;
+    smoking: boolean;
+    pets: boolean;
+    parties: boolean;
+    otherRules?: string;
+  };
+
+  // Contact info
   contactInfo: {
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
   };
-  isLegalOwner: boolean;
-  isTenanted: string;
-  additionalInfo: string;
+
+  // Media
+  video?: {
+    file?: File;
+    url?: string;
+  };
 }
 
 interface PostPropertyContextType {
@@ -85,21 +133,21 @@ const initialPropertyData: PropertyData = {
   leaseHold: "",
   holdDuration: "",
   shortletDuration: "",
-  description: "",
   state: null,
   lga: null,
   area: "",
+  streetAddress: "",
   landSize: "",
   measurementType: "",
   bedrooms: 0,
   bathrooms: 0,
   toilets: 0,
   parkingSpaces: 0,
+  maxGuests: 0,
   features: [],
   tenantCriteria: [],
   jvConditions: [],
   documents: [],
-  ownershipDocuments: [],
   contactInfo: {
     firstName: "",
     lastName: "",
@@ -109,6 +157,31 @@ const initialPropertyData: PropertyData = {
   isLegalOwner: false,
   isTenanted: "",
   additionalInfo: "",
+  availability: {
+    minStay: 1,
+    maxStay: undefined,
+    calendar: "",
+  },
+  pricing: {
+    nightly: 0,
+    weeklyDiscount: 0,
+    monthlyDiscount: 0,
+    cleaningFee: 0,
+    securityDeposit: 0,
+    cancellationPolicy: "flexible",
+  },
+  houseRules: {
+    checkIn: "15:00",
+    checkOut: "11:00",
+    smoking: false,
+    pets: false,
+    parties: false,
+    otherRules: "",
+  },
+  video: {
+    file: undefined,
+    url: "",
+  },
 };
 
 export function PostPropertyProvider({ children }: { children: ReactNode }) {
