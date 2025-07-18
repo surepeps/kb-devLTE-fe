@@ -358,7 +358,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
             Property Location
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
                 State *
