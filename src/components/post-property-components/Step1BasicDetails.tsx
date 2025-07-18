@@ -246,8 +246,9 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             </div>
           )}
 
-        {/* Property Condition (for rent only) */}
-        {propertyData.propertyType === "rent" &&
+        {/* Property Condition (for rent and shortlet) */}
+        {(propertyData.propertyType === "rent" ||
+          propertyData.propertyType === "shortlet") &&
           propertyData.propertyCategory !== "Land" && (
             <div>
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
