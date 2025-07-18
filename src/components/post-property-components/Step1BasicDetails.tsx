@@ -180,7 +180,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Select your rental type *
               </h3>
-              <div className="flex gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <RadioCheck
                   selectedValue={propertyData.rentalType}
                   handleChange={() => updatePropertyData("rentalType", "Rent")}
