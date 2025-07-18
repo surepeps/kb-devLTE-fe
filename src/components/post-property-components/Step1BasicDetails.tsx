@@ -510,12 +510,9 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <ReactSelect
                   options={areaOptions}
                   value={
-                    propertyData.area && typeof propertyData.area === "object"
-                      ? propertyData.area
-                      : propertyData.area &&
-                          typeof propertyData.area === "string"
-                        ? { value: propertyData.area, label: propertyData.area }
-                        : null
+                    propertyData.area
+                      ? { value: propertyData.area, label: propertyData.area }
+                      : null
                   }
                   onChange={(option) =>
                     updatePropertyData("area", option?.value || "")
