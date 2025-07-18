@@ -367,7 +367,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 options={stateOptions}
                 value={propertyData.state}
                 onChange={(option) => updatePropertyData("state", option)}
-                placeholder="Select state"
+                placeholder="Search and select state"
                 styles={{
                   ...customStyles,
                   control: (provided, state) => ({
@@ -376,9 +376,14 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       errors?.state && touched?.state
                         ? "#ef4444"
                         : provided.borderColor || "#C7CAD0",
+                    minHeight: "44px",
                   }),
                 }}
                 isSearchable
+                isClearable
+                filterOption={(option, searchText) =>
+                  option.label.toLowerCase().includes(searchText.toLowerCase())
+                }
               />
               {errors?.state && touched?.state && (
                 <p className="text-red-500 text-sm mt-1">{errors.state}</p>
