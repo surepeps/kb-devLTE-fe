@@ -80,16 +80,24 @@ export default function PaymentPage() {
     <div className="min-h-screen bg-gray-50 px-4 py-8">
       <div className="max-w-6xl mx-auto">
         {/* Back Navigation */}
+<<<<<<< HEAD
         <button
           type="button"
           className="flex items-center mb-8 focus:outline-none"
           onClick={() => router.back()}
         >
+=======
+        <div className="flex items-center mb-8">
+>>>>>>> a13f5617fdc3658e0a00dd9f91af77c44aeacd6b
           <ArrowLeft className="w-5 h-5 text-gray-600 mr-2" />
           <span className="text-gray-600">document verification</span>
           <span className="text-gray-400 mx-2">•</span>
           <span className="text-gray-800 font-medium">Back</span>
+<<<<<<< HEAD
         </button>
+=======
+        </div>
+>>>>>>> a13f5617fdc3658e0a00dd9f91af77c44aeacd6b
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -132,7 +140,10 @@ export default function PaymentPage() {
                   Amount Paid
                 </label>
                 <input
+<<<<<<< HEAD
                   disabled={true}
+=======
+>>>>>>> a13f5617fdc3658e0a00dd9f91af77c44aeacd6b
                   type="number"
                   value={amountPaid || ''}
                   onChange={handleAmountChange}
