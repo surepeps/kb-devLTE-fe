@@ -58,6 +58,7 @@ interface PropertyData {
   isTenanted: string;
 
   // Additional Fields
+  description: string;
   additionalInfo: string;
 
   // Shortlet specific fields
