@@ -435,66 +435,41 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <label className="block text-sm font-medium text-[#707281] mb-2">
                 Local Government *
               </label>
-              {lgaOptions.length > 0 ? (
-                <ReactSelect
-                  options={lgaOptions}
-                  value={propertyData.lga}
-                  onChange={(option) => updatePropertyData("lga", option)}
-                  placeholder={
-                    propertyData.state
-                      ? "Search and select LGA"
-                      : "Select state first"
-                  }
-                  styles={{
-                    ...customStyles,
-                    control: (provided, state) => ({
-                      ...customStyles.control?.(provided, state),
-                      borderColor:
-                        errors?.lga && touched?.lga
-                          ? "#ef4444"
-                          : provided.borderColor || "#C7CAD0",
-                      minHeight: "44px",
-                    }),
-                  }}
-                  isSearchable
-                  isClearable
-                  isDisabled={!propertyData.state}
-                  filterOption={(option, searchText) =>
-                    option.label
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
-                  }
-                />
-              ) : (
-                <Input
-                  name="lga"
-                  label=""
-                  type="text"
-                  placeholder={
-                    propertyData.state
-                      ? "Enter LGA manually"
-                      : "Select state first"
-                  }
-                  value={
-                    typeof propertyData.lga === "string"
-                      ? propertyData.lga
-                      : typeof propertyData.lga === "object" &&
-                          propertyData.lga?.value
-                        ? propertyData.lga.value
-                        : ""
-                  }
-                  onChange={(e) =>
-                    updatePropertyData("lga", {
-                      value: e.target.value,
-                      label: e.target.value,
-                    })
-                  }
-                  className={
-                    errors?.lga && touched?.lga ? "border-red-500" : ""
-                  }
-                  disabled={!propertyData.state}
-                />
-              )}
+              <CreatableSelect
+                options={lgaOptions}
+                value={propertyData.lga}
+                onChange={(option) => updatePropertyData("lga", option)}
+                onCreateOption={(inputValue) => {
+                  const newOption = { value: inputValue, label: inputValue };
+                  updatePropertyData("lga", newOption);
+                }}
+                placeholder={
+                  propertyData.state
+                    ? lgaOptions.length > 0
+                      ? "Search or type LGA"
+                      : "Type LGA name"
+                    : "Select state first"
+                }
+                styles={{
+                  ...customStyles,
+                  control: (provided, state) => ({
+                    ...customStyles.control?.(provided, state),
+                    borderColor:
+                      errors?.lga && touched?.lga
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
+                    minHeight: "44px",
+                  }),
+                }}
+                isSearchable
+                isClearable
+                isDisabled={!propertyData.state}
+                formatCreateLabel={(inputValue) => `Add "${inputValue}"`}
+                noOptionsMessage={() => "Type to add LGA"}
+                filterOption={(option, searchText) =>
+                  option.label.toLowerCase().includes(searchText.toLowerCase())
+                }
+              />
               {errors?.lga && touched?.lga && (
                 <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
               )}
