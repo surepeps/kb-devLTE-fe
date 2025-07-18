@@ -131,7 +131,7 @@ const CustomDateInput = forwardRef<HTMLInputElement, any>(
 
 CustomDateInput.displayName = "CustomDateInput";
 
-const DateSelection: React.FC<DateSelectionProps> = ({ className = "" }) => {
+const DateSelection: React.FC<DateSelectionProps> = memo(({ className = "" }) => {
   const { state, updateFormData, getValidationErrorsForField } =
     usePreferenceForm();
 
