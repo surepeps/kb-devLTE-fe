@@ -29,7 +29,7 @@ interface PropertyData {
   // Step 3: Location
   state: { value: string; label: string } | null;
   lga: { value: string; label: string } | null;
-  area: string | { value: string; label: string };
+  area: string;
   streetAddress?: string; // For shortlet
 
   // Step 4: Size and Pricing
