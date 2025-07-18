@@ -7,13 +7,11 @@ import Button from "@/components/general-components/button";
 import Image from "next/image";
 import {
   mainNavigationData,
-  marketplaceDropdownData,
   type NavigationItem,
 } from "@/data/navigation-data";
 import Link from "next/link";
 import barIcon from "@/svgs/bars.svg";
 import { usePageContext } from "@/context/page-context";
-// import { useRouter } from 'next/router';
 import { usePathname, useRouter } from "next/navigation";
 import SideBar from "../general-components/sideBar";
 import { FaCaretDown } from "react-icons/fa";
@@ -22,7 +20,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
 import { useNotifications } from "@/context/notification-context";
 import notificationBellIcon from "@/svgs/bell.svg";
-import userIcon from "@/svgs/user.svg";
 import UserNotifications from "./user-notifications";
 import UserProfile from "./my-profile";
 
@@ -34,7 +31,6 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     setIsModalOpened,
     viewImage,
     isSubmittedSuccessfully,
-    setIsContactUsClicked,
   } = usePageContext();
   const [navigationState, setNavigationState] = useState(mainNavigationData);
   const pathName = usePathname();
@@ -331,7 +327,7 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   green={true}
                   onClick={() => {
                     window.localStorage.setItem("signupFromHeader", "true");
-                    router.push("/auth");
+                    router.push("/auth/register");
                   }}
                   className="text-base text-[#FFFFFF] leading-[25px] font-medium px-6 h-[44px] rounded-lg bg-[#8DDB90] hover:bg-[#7BC87F] transition-all duration-300"
                 />

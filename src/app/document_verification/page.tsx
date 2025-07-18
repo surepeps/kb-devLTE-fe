@@ -31,7 +31,7 @@ const initialDocumentNumbers: DocumentNumbers = {
 
 const DocumentVerificationPage: React.FC = () => {
   const [showGuideline, setShowGuideline] = useState<boolean>(false);
-  const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>(['Certificate of Occupancy']);
+  const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
   const [documentNumbers, setDocumentNumbers] = useState<DocumentNumbers>(initialDocumentNumbers);
   const [selectedFiles, setSelectedFiles] = useState<{ [key in DocumentType]?: File | null }>({});
   const [filePreviews, setFilePreviews] = useState<{ [key in DocumentType]?: string }>({});
@@ -70,6 +70,7 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): string => {
+    if (selectedDocuments.length === 0) return '₦20,000';
     return selectedDocuments.length === 1 ? '₦20,000' : '₦40,000';
   };
 
@@ -124,7 +125,7 @@ const DocumentVerificationPage: React.FC = () => {
             <span className="text-gray-800">Your Document</span>
           </h1>
           <p className="text-gray-600 mb-6">
-            Need to verify a document? Upload it and we'll handle the verification for you—fast, secure, and independent
+            Need to verify a document? Upload it and we&apos;ll handle the verification for you—fast, secure, and independent
           </p>
           
           <div className="mb-4">
@@ -156,14 +157,14 @@ const DocumentVerificationPage: React.FC = () => {
               <div className="mb-4">
                 <h4 className="font-medium text-gray-800 mb-2">What the Report Will Show</h4>
                 <p className="text-gray-600 text-sm mb-3">
-                  When you use our service, you'll receive a comprehensive report that breaks down critical information about your land document. Here's what's included:
+                  When you use our service, you&apos;ll receive a comprehensive report that breaks down critical information about your land document. Here&apos;s what&apos;s included:
                 </p>
                 
                 <ul className="space-y-3 text-sm text-gray-600">
                   <li className="flex items-start">
                     <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                     <div>
-                      <span className="font-medium">Document Authenticity:</span> We verify whether your document is genuine and properly registered with the relevant state authorities in Nigeria. This ensures you're not dealing with a forged or invalid document.
+                      <span className="font-medium">Document Authenticity:</span> We verify whether your document is genuine and properly registered with the relevant state authorities in Nigeria. This ensures you&apos;re not dealing with a forged or invalid document.
                     </div>
                   </li>
                   
@@ -177,7 +178,7 @@ const DocumentVerificationPage: React.FC = () => {
                   <li className="flex items-start">
                     <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                     <div>
-                      <span className="font-medium">Expert Recommendations:</span> Our legal team offers clear advice on what to do next—whether it's safe to proceed with a transaction or if further investigation is required. This guidance is tailored to your situation.
+                      <span className="font-medium">Expert Recommendations:</span> Our legal team offers clear advice on what to do next—whether it&apos;s safe to proceed with a transaction or if further investigation is required. This guidance is tailored to your situation.
                     </div>
                   </li>
                 </ul>

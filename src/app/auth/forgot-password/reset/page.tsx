@@ -9,7 +9,7 @@
 "use client";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
-import React, { FC, useEffect, useState, Suspense } from "react";
+import React, { FC, useEffect, useState, Suspense, useCallback } from "react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -22,6 +22,7 @@ import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import InputField from "@/components/common/InputField";
 
 const ResetPassword = () => {
   const isLoading = useLoading();
@@ -32,6 +33,15 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const togglePasswordVisibility = useCallback(() => {
+      setShowPassword((prev) => !prev);
+    }, []);
+  
+  // Memoized callback for confirm password toggle (for InputField)
+  const toggleConfirmPasswordVisibility = useCallback(() => {
+    setShowConfirmPassword((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     // Check if we have the reset code and email from verification step
@@ -152,43 +162,44 @@ const ResetPassword = () => {
             secure.
           </p>
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
-            <Input
+            <InputField
               formik={formik}
-              title="New Password"
-              id="password"
-              icon={""}
+              label="Password"
+              name="password"
               type="password"
               placeholder="Enter your new password"
-              seePassword={setShowPassword}
-              isSeePassword={showPassword}
-              isDisabled={isSubmitting}
+              showPasswordToggle={true}
+              isPasswordVisible={showPassword}
+              togglePasswordVisibility={togglePasswordVisibility}
             />
-            <Input
+            <InputField
               formik={formik}
-              title="Confirm New Password"
-              id="confirmPassword"
-              icon={""}
+              label="Confirm Password"
+              name="confirmPassword"
               type="password"
-              placeholder="Confirm your new password"
-              seePassword={setShowConfirmPassword}
-              isSeePassword={showConfirmPassword}
-              isDisabled={isSubmitting}
+              placeholder="CConfirm your new password"
+              showPasswordToggle={true}
+              isPasswordVisible={showConfirmPassword}
+              togglePasswordVisibility={toggleConfirmPasswordVisibility}
             />
           </div>
           {/**Button */}
-          <Button
-            value={isSubmitting ? "Resetting..." : "Reset Password"}
-            className="min-h-[65px] w-full py-[12px] px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
-            type="submit"
-            isDisabled={
-              isSubmitting ||
-              !formik.values.password ||
-              !formik.values.confirmPassword ||
-              !!formik.errors.password ||
-              !!formik.errors.confirmPassword
-            }
-            green={true}
-          />
+          <div className="w-full lg:px-[60px]">
+            <Button
+              value={isSubmitting ? "Resetting..." : "Reset Password"}
+              className="min-h-[60px] w-full rounded-md py-[12px] duration-300 transition ease-in-out px-[24px] bg-[#8DDB90] text-[#FAFAFA] text-base leading-[25.6px] font-bold mt-6"
+              type="submit"
+              isDisabled={
+                isSubmitting ||
+                !formik.values.password ||
+                !formik.values.confirmPassword ||
+                !!formik.errors.password ||
+                !!formik.errors.confirmPassword
+              }
+              green={true}
+            />
+          </div>
+          
           {/**Back to login */}
           <p className="text-base leading-[25.6px] font-normal">
             Remember your password?{" "}
