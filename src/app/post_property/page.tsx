@@ -352,6 +352,7 @@ const PostProperty = () => {
         },
         tenantCriteria: propertyData.tenantCriteria,
         jvConditions: propertyData.jvConditions,
+        description: propertyData.description,
         addtionalInfo: propertyData.additionalInfo,
         pictures: uploadedImageUrls,
         isTenanted: propertyData.isTenanted,
