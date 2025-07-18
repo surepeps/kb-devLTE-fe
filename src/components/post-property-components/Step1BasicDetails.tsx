@@ -202,6 +202,50 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             </div>
           )}
 
+        {/* Shortlet Duration (for shortlet only) */}
+        {propertyData.propertyType === "shortlet" &&
+          propertyData.propertyCategory !== "Land" && (
+            <div>
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                Shortlet Duration *
+              </h3>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+                <RadioCheck
+                  selectedValue={propertyData.shortletDuration}
+                  handleChange={() =>
+                    updatePropertyData("shortletDuration", "Daily")
+                  }
+                  type="radio"
+                  value="Daily"
+                  name="shortletDuration"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.shortletDuration}
+                  handleChange={() =>
+                    updatePropertyData("shortletDuration", "Weekly")
+                  }
+                  type="radio"
+                  name="shortletDuration"
+                  value="Weekly"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.shortletDuration}
+                  handleChange={() =>
+                    updatePropertyData("shortletDuration", "Monthly")
+                  }
+                  type="radio"
+                  name="shortletDuration"
+                  value="Monthly"
+                />
+              </div>
+              {errors?.shortletDuration && touched?.shortletDuration && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.shortletDuration}
+                </p>
+              )}
+            </div>
+          )}
+
         {/* Property Condition (for rent only) */}
         {propertyData.propertyType === "rent" &&
           propertyData.propertyCategory !== "Land" && (
