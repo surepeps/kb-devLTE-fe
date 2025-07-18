@@ -356,15 +356,18 @@ const PreferenceFormContent: React.FC = () => {
       // Reset form data immediately without confirmation only when switching tabs
       dispatch({ type: "RESET_FORM" });
 
-      // Use a small delay to ensure reset completes before setting new data
+      // Use immediate updates for step changes
       setTimeout(() => {
-        // Set the new preference type
-        updateFormData({
-          preferenceType: PREFERENCE_CONFIGS[preferenceKey].preferenceType,
-        });
+        // Set the new preference type with immediate flag
+        updateFormData(
+          {
+            preferenceType: PREFERENCE_CONFIGS[preferenceKey].preferenceType,
+          },
+          true,
+        ); // Use immediate update for preference type changes
         // Reset to first step
         goToStep(0);
-      }, 100);
+      }, 50); // Reduced timeout
     },
     [dispatch, updateFormData, goToStep, selectedPreferenceType],
   );
