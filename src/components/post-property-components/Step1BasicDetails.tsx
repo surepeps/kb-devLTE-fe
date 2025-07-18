@@ -440,7 +440,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                         : null
                   }
                   onChange={(option) => updatePropertyData("area", option)}
-                  placeholder="Select area/neighborhood"
+                  placeholder={
+                    propertyData.lga
+                      ? "Search and select area"
+                      : "Select LGA first"
+                  }
                   styles={{
                     ...customStyles,
                     control: (provided, state) => ({
@@ -449,11 +453,17 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                         errors?.area && touched?.area
                           ? "#ef4444"
                           : provided.borderColor || "#C7CAD0",
+                      minHeight: "44px",
                     }),
                   }}
                   isSearchable
                   isDisabled={!propertyData.lga}
                   isClearable
+                  filterOption={(option, searchText) =>
+                    option.label
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  }
                 />
               ) : (
                 <Input
