@@ -145,7 +145,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
             Property Category
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {(propertyData.propertyType === "jv"
               ? ["Residential", "Commercial", "Mixed Development"]
               : ["Residential", "Commercial", "Land"]
@@ -180,7 +180,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Select your rental type *
               </h3>
-              <div className="flex gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <RadioCheck
                   selectedValue={propertyData.rentalType}
                   handleChange={() => updatePropertyData("rentalType", "Rent")}
@@ -202,14 +202,59 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             </div>
           )}
 
-        {/* Property Condition (for rent only) */}
-        {propertyData.propertyType === "rent" &&
+        {/* Shortlet Duration (for shortlet only) */}
+        {propertyData.propertyType === "shortlet" &&
+          propertyData.propertyCategory !== "Land" && (
+            <div>
+              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                Shortlet Duration *
+              </h3>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+                <RadioCheck
+                  selectedValue={propertyData.shortletDuration}
+                  handleChange={() =>
+                    updatePropertyData("shortletDuration", "Daily")
+                  }
+                  type="radio"
+                  value="Daily"
+                  name="shortletDuration"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.shortletDuration}
+                  handleChange={() =>
+                    updatePropertyData("shortletDuration", "Weekly")
+                  }
+                  type="radio"
+                  name="shortletDuration"
+                  value="Weekly"
+                />
+                <RadioCheck
+                  selectedValue={propertyData.shortletDuration}
+                  handleChange={() =>
+                    updatePropertyData("shortletDuration", "Monthly")
+                  }
+                  type="radio"
+                  name="shortletDuration"
+                  value="Monthly"
+                />
+              </div>
+              {errors?.shortletDuration && touched?.shortletDuration && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.shortletDuration}
+                </p>
+              )}
+            </div>
+          )}
+
+        {/* Property Condition (for rent and shortlet) */}
+        {(propertyData.propertyType === "rent" ||
+          propertyData.propertyType === "shortlet") &&
           propertyData.propertyCategory !== "Land" && (
             <div>
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Property Condition *
               </h3>
-              <div className="flex flex-wrap gap-6">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
                 <RadioCheck
                   selectedValue={propertyData.propertyCondition}
                   handleChange={() =>
@@ -251,7 +296,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
             Price Details
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <div>
               <Input
                 name="price"
@@ -313,7 +358,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Land Size
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
                   Type of Measurement
@@ -358,7 +403,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
             Property Location
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
                 State *
@@ -367,7 +412,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 options={stateOptions}
                 value={propertyData.state}
                 onChange={(option) => updatePropertyData("state", option)}
-                placeholder="Select state"
+                placeholder="Search and select state"
                 styles={{
                   ...customStyles,
                   control: (provided, state) => ({
@@ -376,9 +421,14 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       errors?.state && touched?.state
                         ? "#ef4444"
                         : provided.borderColor || "#C7CAD0",
+                    minHeight: "44px",
                   }),
                 }}
                 isSearchable
+                isClearable
+                filterOption={(option, searchText) =>
+                  option.label.toLowerCase().includes(searchText.toLowerCase())
+                }
               />
               {errors?.state && touched?.state && (
                 <p className="text-red-500 text-sm mt-1">{errors.state}</p>
@@ -392,7 +442,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 options={lgaOptions}
                 value={propertyData.lga}
                 onChange={(option) => updatePropertyData("lga", option)}
-                placeholder="Select LGA"
+                placeholder={
+                  propertyData.state
+                    ? "Search and select LGA"
+                    : "Select state first"
+                }
                 styles={{
                   ...customStyles,
                   control: (provided, state) => ({
@@ -401,10 +455,15 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       errors?.lga && touched?.lga
                         ? "#ef4444"
                         : provided.borderColor || "#C7CAD0",
+                    minHeight: "44px",
                   }),
                 }}
                 isSearchable
+                isClearable
                 isDisabled={!propertyData.state}
+                filterOption={(option, searchText) =>
+                  option.label.toLowerCase().includes(searchText.toLowerCase())
+                }
               />
               {errors?.lga && touched?.lga && (
                 <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
@@ -426,7 +485,11 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                         : null
                   }
                   onChange={(option) => updatePropertyData("area", option)}
-                  placeholder="Select area/neighborhood"
+                  placeholder={
+                    propertyData.lga
+                      ? "Search and select area"
+                      : "Select LGA first"
+                  }
                   styles={{
                     ...customStyles,
                     control: (provided, state) => ({
@@ -435,11 +498,17 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                         errors?.area && touched?.area
                           ? "#ef4444"
                           : provided.borderColor || "#C7CAD0",
+                      minHeight: "44px",
                     }),
                   }}
                   isSearchable
                   isDisabled={!propertyData.lga}
                   isClearable
+                  filterOption={(option, searchText) =>
+                    option.label
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  }
                 />
               ) : (
                 <Input
@@ -474,7 +543,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Property Details
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
                   Type of Building *
@@ -565,7 +634,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
                   Number of Bathrooms

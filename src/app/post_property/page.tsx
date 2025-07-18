@@ -164,23 +164,8 @@ const PostProperty = () => {
       return;
     }
 
-    // For Agents, check requirements
+    // For Agents, the AgentAccessBarrier will handle the onboarding and approval checks
     if (user.userType === "Agent") {
-      // Check if agent has completed onboarding
-      if (!user.agentData?.agentType) {
-        toast.error("You need to complete onboarding to post properties");
-        router.push("/agent/onboard");
-        return;
-      }
-
-      // Check if agent is approved
-      if (user.accountApproved === false) {
-        toast.error("Your account needs to be approved to post properties");
-        router.push("/agent/under-review");
-        return;
-      }
-
-      // Agent is onboarded and approved, allow access
       return;
     }
 
@@ -353,6 +338,7 @@ const PostProperty = () => {
           email: propertyData.contactInfo.email,
         },
         areYouTheOwner: propertyData.isLegalOwner,
+        ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {
           measurementType: propertyData.measurementType,
           size: propertyData.landSize,
@@ -366,6 +352,7 @@ const PostProperty = () => {
         },
         tenantCriteria: propertyData.tenantCriteria,
         jvConditions: propertyData.jvConditions,
+        description: propertyData.description,
         addtionalInfo: propertyData.additionalInfo,
         pictures: uploadedImageUrls,
         isTenanted: propertyData.isTenanted,

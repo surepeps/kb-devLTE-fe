@@ -54,9 +54,11 @@ interface PropertyData {
 
   // Step 8: Ownership Declaration
   isLegalOwner: boolean;
+  ownershipDocuments: string[];
   isTenanted: string;
 
   // Additional Fields
+  description: string;
   additionalInfo: string;
 
   // Shortlet specific fields
@@ -155,7 +157,9 @@ const initialPropertyData: PropertyData = {
     phone: "",
   },
   isLegalOwner: false,
+  ownershipDocuments: [],
   isTenanted: "",
+  description: "",
   additionalInfo: "",
   availability: {
     minStay: 1,
