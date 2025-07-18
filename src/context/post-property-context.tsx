@@ -156,6 +156,7 @@ const initialPropertyData: PropertyData = {
     phone: "",
   },
   isLegalOwner: false,
+  ownershipDocuments: [],
   isTenanted: "",
   additionalInfo: "",
   availability: {
