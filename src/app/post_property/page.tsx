@@ -338,6 +338,7 @@ const PostProperty = () => {
           email: propertyData.contactInfo.email,
         },
         areYouTheOwner: propertyData.isLegalOwner,
+        ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {
           measurementType: propertyData.measurementType,
           size: propertyData.landSize,
