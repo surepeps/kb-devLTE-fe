@@ -209,7 +209,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <h3 className="text-lg font-semibold text-[#09391C] mb-4">
                 Property Condition *
               </h3>
-              <div className="flex flex-wrap gap-6">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
                 <RadioCheck
                   selectedValue={propertyData.propertyCondition}
                   handleChange={() =>
