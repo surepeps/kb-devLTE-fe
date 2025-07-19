@@ -333,7 +333,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       : "Property Value"
                 }
                 value={propertyData.price}
-                onChange={(value) => updatePropertyData("price", value)}
+                onChange={handlePriceChange}
                 placeholder="Enter amount"
                 prefix="₦"
                 error={errors?.price}
