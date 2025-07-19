@@ -400,7 +400,7 @@ const PostProperty = () => {
                             value="Review Property"
                             onClick={() => setShowPropertySummary(true)}
                             className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                            isDisabled={!validateCurrentStep() || isSubmitting}
+                            isDisabled={isSubmitting}
                           />
                         )}
                         <Button
@@ -408,7 +408,7 @@ const PostProperty = () => {
                           value={currentStep === 4 ? "Complete" : "Next"}
                           onClick={() => handleNext(validateForm, errors)}
                           className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                          isDisabled={!validateCurrentStep() || isSubmitting}
+                          isDisabled={isSubmitting}
                         />
                       </div>
                     </div>
