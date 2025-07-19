@@ -329,7 +329,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <EnhancedPriceInput
                   name="leaseHold"
                   label="Lease Hold Duration"
-                  value={propertyData.leaseHold}
+                  value={propertyData.leaseHold || ""}
                   onChange={(value) => updatePropertyData("leaseHold", value)}
                   placeholder="Enter duration"
                   suffix="years"
