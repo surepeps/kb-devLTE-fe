@@ -223,6 +223,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                 }
                 className="phone-input"
               />
+              {errors?.contactInfo?.phone && touched?.contactInfo?.phone && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.contactInfo.phone}
+                </p>
+              )}
             </div>
           </div>
         </div>
