@@ -149,7 +149,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {/* Property Category */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Category *
+            Property Category <span className="text-red-500">*</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {briefTypeConfig[
@@ -202,7 +202,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Select your rental type *
+              Select your rental type <span className="text-red-500">*</span>
             </h3>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               <RadioCheck
@@ -241,7 +241,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Shortlet Duration *
+              Shortlet Duration <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <RadioCheck
@@ -298,7 +298,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Property Condition *
+              Property Condition <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {propertyConditionOptions.map((option) => (
@@ -326,7 +326,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {/* Price */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Price Details *
+            Price Details <span className="text-red-500">*</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <div>
@@ -360,7 +360,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
             {propertyData.propertyType === "jv" && (
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Hold Duration *
+                  Hold Duration <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -404,12 +404,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Land Size *
+              Land Size <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Type of Measurement *
+                  Type of Measurement <span className="text-red-500">*</span>
                 </label>
                 <ReactSelect
                   options={[
@@ -447,7 +447,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Land Size *
+                  Land Size <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -466,12 +466,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {/* Location */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Location *
+            Property Location <span className="text-red-500">*</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                State *
+                State <span className="text-red-500">*</span>
               </label>
               <ReactSelect
                 options={stateOptions}
@@ -499,7 +499,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                Local Government *
+                Local Government <span className="text-red-500">*</span>
               </label>
               <CreatableSelect
                 options={lgaOptions}
@@ -542,7 +542,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                Area/Neighborhood *
+                Area/Neighborhood <span className="text-red-500">*</span>
               </label>
               <CreatableSelect
                 options={areaOptions}
@@ -598,12 +598,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Property Details *
+              Property Details <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Building Type *
+                  Building Type <span className="text-red-500">*</span>
                 </label>
                 <ReactSelect
                   options={
@@ -648,7 +648,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               ) && (
                 <div>
                   <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Number of Bedrooms *
+                    Number of Bedrooms <span className="text-red-500">*</span>
                   </label>
                   <ReactSelect
                     options={numberOptions}
@@ -774,12 +774,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {propertyData.propertyType === "shortlet" && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Shortlet Details *
+              Shortlet Details <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Street Address *
+                  Street Address <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -793,7 +793,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Max Number of Guests *
+                  Max Number of Guests <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
