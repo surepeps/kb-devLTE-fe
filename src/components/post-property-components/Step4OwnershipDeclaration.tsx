@@ -28,26 +28,10 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { errors, touched, setFieldTouched, setFieldValue } =
     useFormikContext<any>();
 
-  // Validation function
-  const validateField = async (fieldName: string, value: any) => {
-    try {
-      const schema = step4ValidationSchema();
-      await schema.validateAt(fieldName, {
-        ...propertyData,
-        [fieldName]: value,
-      });
-      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
-      return true;
-    } catch (error: any) {
-      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
-      return false;
-    }
-  };
-
   const handleFieldChange = async (fieldName: string, value: any) => {
+    setFieldTouched(fieldName, true);
+    setFieldValue(fieldName, value);
     updatePropertyData(fieldName as any, value);
-    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
-    await validateField(fieldName, value);
   };
 
   // Initialize contact info with user data
