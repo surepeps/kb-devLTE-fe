@@ -418,10 +418,13 @@ export const step3ValidationSchema = () => {
 
 export const step4ValidationSchema = () => {
   return Yup.object({
-    "contactInfo.firstName": Yup.string().required(),
-    "contactInfo.lastName": Yup.string().required(),
-    "contactInfo.email": Yup.string().email().required(),
-    "contactInfo.phone": Yup.string().required(),
+    contactInfo: Yup.object({
+      firstName: Yup.string().required("First name is required"),
+      lastName: Yup.string().required("Last name is required"),
+      email: Yup.string().email("Invalid email").required("Email is required"),
+      phone: Yup.string().required("Phone number is required"),
+    }).required(),
+    isLegalOwner: Yup.boolean().required("Please confirm ownership status"),
   });
 };
 
