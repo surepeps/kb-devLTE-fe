@@ -212,7 +212,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Rent"
                 name="rentalType"
                 variant="card"
-                error={touched.rentalType && errors.rentalType}
+                error={
+                  touched.rentalType &&
+                  (errors.rentalType || !propertyData.rentalType)
+                }
               />
               <RadioCheck
                 selectedValue={propertyData.rentalType}
@@ -221,7 +224,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="rentalType"
                 value="Lease"
                 variant="card"
-                error={touched.rentalType && errors.rentalType}
+                error={
+                  touched.rentalType &&
+                  (errors.rentalType || !propertyData.rentalType)
+                }
               />
             </div>
           </div>
@@ -247,7 +253,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Daily"
                 name="shortletDuration"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={
+                  touched.shortletDuration &&
+                  (errors.shortletDuration || !propertyData.shortletDuration)
+                }
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -258,7 +267,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 value="Weekly"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={
+                  touched.shortletDuration &&
+                  (errors.shortletDuration || !propertyData.shortletDuration)
+                }
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -269,7 +281,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 value="Monthly"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={
+                  touched.shortletDuration &&
+                  (errors.shortletDuration || !propertyData.shortletDuration)
+                }
               />
             </div>
           </div>
@@ -297,7 +312,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   value={option.value}
                   name="propertyCondition"
                   variant="card"
-                  error={touched.propertyCondition && errors.propertyCondition}
+                  error={
+                    touched.propertyCondition &&
+                    (errors.propertyCondition ||
+                      !propertyData.propertyCondition)
+                  }
                 />
               ))}
             </div>
