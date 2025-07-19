@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { useUserContext } from "@/context/user-context";
+import { step4ValidationSchema } from "@/utils/validation/post-property-validation";
 import Input from "@/components/general-components/Input";
 import RadioCheck from "@/components/general-components/radioCheck";
 import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
@@ -17,16 +18,36 @@ import "react-phone-number-input/style.css";
 import "@/styles/phone-input.css";
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed
 }
 
-const Step4OwnershipDeclaration: React.FC<StepProps> = ({
-  errors,
-  touched,
-}) => {
+const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
+
+  // Validation function
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const schema = step4ValidationSchema();
+      await schema.validateAt(fieldName, {
+        ...propertyData,
+        [fieldName]: value,
+      });
+      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
+      return true;
+    } catch (error: any) {
+      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
+      return false;
+    }
+  };
+
+  const handleFieldChange = async (fieldName: string, value: any) => {
+    updatePropertyData(fieldName as any, value);
+    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
+    await validateField(fieldName, value);
+  };
 
   // Initialize contact info with user data
   useEffect(() => {
@@ -47,10 +68,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
     field: keyof typeof propertyData.contactInfo,
     value: string,
   ) => {
-    updatePropertyData("contactInfo", {
+    const newContactInfo = {
       ...propertyData.contactInfo,
       [field]: value,
-    });
+    };
+    handleFieldChange("contactInfo", newContactInfo);
   };
 
   const handleDocumentToggle = (document: string) => {

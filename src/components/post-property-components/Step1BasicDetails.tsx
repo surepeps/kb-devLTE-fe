@@ -24,6 +24,10 @@ import {
   shouldShowField,
   getFieldsToClearOnCategoryChange,
 } from "@/data/comprehensive-post-property-config";
+import {
+  step1ValidationSchema,
+  formatCurrency,
+} from "@/utils/validation/post-property-validation";
 
 interface Option {
   value: string;
@@ -31,16 +35,43 @@ interface Option {
 }
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed as we'll use Formik validation internally
 }
 
-const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
+const Step1BasicDetails: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
-  const formik = useFormikContext();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
+
+  // Validation function
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const schema = step1ValidationSchema(propertyData.propertyType);
+      await schema.validateAt(fieldName, {
+        ...propertyData,
+        [fieldName]: value,
+      });
+      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
+      return true;
+    } catch (error: any) {
+      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
+      return false;
+    }
+  };
+
+  const handleFieldChange = async (fieldName: string, value: any) => {
+    updatePropertyData(fieldName as any, value);
+    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
+    await validateField(fieldName, value);
+  };
+
+  const handlePriceChange = (value: string) => {
+    const formattedValue = formatCurrency(value);
+    handleFieldChange("price", formattedValue);
+  };
 
   useEffect(() => {
     // Format states data using new location data
@@ -139,7 +170,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       fieldsToClear,
                     );
                   }
-                  updatePropertyData("propertyCategory", category);
+                  handleFieldChange("propertyCategory", category);
                 }}
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
@@ -173,7 +204,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               <RadioCheck
                 selectedValue={propertyData.rentalType}
-                handleChange={() => updatePropertyData("rentalType", "Rent")}
+                handleChange={() => handleFieldChange("rentalType", "Rent")}
                 type="radio"
                 value="Rent"
                 name="rentalType"
@@ -182,7 +213,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               />
               <RadioCheck
                 selectedValue={propertyData.rentalType}
-                handleChange={() => updatePropertyData("rentalType", "Lease")}
+                handleChange={() => handleFieldChange("rentalType", "Lease")}
                 type="radio"
                 name="rentalType"
                 value="Lease"
@@ -210,7 +241,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
                 handleChange={() =>
-                  updatePropertyData("shortletDuration", "Daily")
+                  handleFieldChange("shortletDuration", "Daily")
                 }
                 type="radio"
                 value="Daily"
@@ -221,7 +252,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
                 handleChange={() =>
-                  updatePropertyData("shortletDuration", "Weekly")
+                  handleFieldChange("shortletDuration", "Weekly")
                 }
                 type="radio"
                 name="shortletDuration"
@@ -232,7 +263,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
                 handleChange={() =>
-                  updatePropertyData("shortletDuration", "Monthly")
+                  handleFieldChange("shortletDuration", "Monthly")
                 }
                 type="radio"
                 name="shortletDuration"
@@ -265,7 +296,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   key={option.value}
                   selectedValue={propertyData.propertyCondition}
                   handleChange={() =>
-                    updatePropertyData("propertyCondition", option.value)
+                    handleFieldChange("propertyCondition", option.value)
                   }
                   type="radio"
                   value={option.value}
@@ -302,7 +333,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       : "Property Value"
                 }
                 value={propertyData.price}
-                onChange={(value) => updatePropertyData("price", value)}
+                onChange={handlePriceChange}
                 placeholder="Enter amount"
                 prefix="₦"
                 error={errors?.price}

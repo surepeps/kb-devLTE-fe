@@ -7,6 +7,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import { getPostPropertyValidationSchema } from "@/utils/validation/post-property-validation";
 import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
@@ -33,7 +34,7 @@ import Step4OwnershipDeclaration from "@/components/post-property-components/Ste
 // Import configuration helpers
 import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
-// Validation schemas for each step
+// Validation schemas for each step - now using comprehensive validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
     case 0:
@@ -42,88 +43,11 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-      let basicSchema: any = Yup.object({
-        propertyCategory: Yup.string().required(
-          "Property category is required",
-        ),
-        price: Yup.string().required("Price is required"),
-        state: Yup.object().nullable().required("State is required"),
-        lga: Yup.object()
-          .nullable()
-          .required("Local Government Area is required"),
-        area: Yup.string().required("Area/Neighborhood is required"),
-      });
-
-      // Additional validations based on property type
-      if (
-        (propertyData.propertyType === "rent" ||
-          propertyData.propertyType === "shortlet") &&
-        propertyData.propertyCategory !== "Land"
-      ) {
-        const additionalFields: any = {
-          propertyCondition: Yup.string().required(
-            "Property condition is required",
-          ),
-        };
-
-        if (propertyData.propertyType === "rent") {
-          additionalFields.rentalType = Yup.string().required(
-            "Rental type is required",
-          );
-        }
-
-        if (propertyData.propertyType === "shortlet") {
-          additionalFields.shortletDuration = Yup.string().required(
-            "Shortlet duration is required",
-          );
-        }
-
-        basicSchema = basicSchema.concat(Yup.object(additionalFields));
-      }
-
-      if (propertyData.propertyCategory !== "Land") {
-        basicSchema = basicSchema.concat(
-          Yup.object({
-            typeOfBuilding: Yup.string().required(
-              "Type of building is required",
-            ),
-            bedrooms: Yup.number().min(1, "At least 1 bedroom is required"),
-          }),
-        );
-      }
-
-      return basicSchema;
-
     case 2:
-      if (propertyData.propertyType === "sell") {
-        return Yup.object({
-          documents: Yup.array().min(1, "At least one document is required"),
-        });
-      }
-      if (propertyData.propertyType === "jv") {
-        return Yup.object({
-          jvConditions: Yup.array().min(
-            1,
-            "At least one JV condition is required",
-          ),
-        });
-      }
-      return Yup.object({}); // No validation for rent
-
     case 3:
-      return Yup.object({}); // Image validation handled separately
-
     case 4:
-      return Yup.object({
-        contactInfo: Yup.object({
-          firstName: Yup.string().required("First name is required"),
-          lastName: Yup.string().required("Last name is required"),
-          email: Yup.string()
-            .email("Invalid email")
-            .required("Email is required"),
-          phone: Yup.string().required("Phone number is required"),
-        }),
-      });
+      // Use comprehensive validation schema for all steps
+      return getPostPropertyValidationSchema(propertyData.propertyType);
 
     default:
       return Yup.object({});
@@ -223,27 +147,13 @@ const PostProperty = () => {
   ] as { label: string; status: "completed" | "active" | "pending" }[];
 
   const handleNext = async (validateForm: () => Promise<any>, errors: any) => {
-    // Validate current step
-    const stepErrors = await validateForm();
-
-    if (Object.keys(stepErrors).length > 0) {
-      // Show toast for first error found
-      const firstError = Object.values(stepErrors)[0];
-      if (typeof firstError === "string") {
-        toast.error(firstError);
-      } else if (typeof firstError === "object" && firstError !== null) {
-        const nestedError = Object.values(firstError)[0];
-        if (typeof nestedError === "string") {
-          toast.error(nestedError);
-        }
-      }
-      return;
-    }
-
+    // Step 3 (images) validation is handled separately by the component
     if (currentStep === 3 && !areImagesValid()) {
-      toast.error("Please upload at least 4 images to continue");
-      return;
+      return; // Component will show validation messages
     }
+
+    // For other steps, validation is handled by each component internally
+    // No need to validate here as components use red border validation
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
@@ -370,24 +280,24 @@ const PostProperty = () => {
     }
   };
 
-  const renderCurrentStep = (errors: any, touched: any) => {
+  const renderCurrentStep = () => {
     if (showPropertySummary) {
       return <EnhancedPropertySummary />;
     }
 
     switch (currentStep) {
       case 0:
-        return <Step0PropertyTypeSelection errors={errors} touched={touched} />;
+        return <Step0PropertyTypeSelection />;
       case 1:
-        return <Step1BasicDetails errors={errors} touched={touched} />;
+        return <Step1BasicDetails />;
       case 2:
-        return <Step2FeaturesConditions errors={errors} touched={touched} />;
+        return <Step2FeaturesConditions />;
       case 3:
-        return <Step3ImageUpload errors={errors} touched={touched} />;
+        return <Step3ImageUpload />;
       case 4:
-        return <Step4OwnershipDeclaration errors={errors} touched={touched} />;
+        return <Step4OwnershipDeclaration />;
       default:
-        return <Step0PropertyTypeSelection errors={errors} touched={touched} />;
+        return <Step0PropertyTypeSelection />;
     }
   };
 
@@ -450,7 +360,7 @@ const PostProperty = () => {
             {({ errors, touched, validateForm }) => (
               <Form>
                 <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
-                  {renderCurrentStep(errors, touched)}
+                  {renderCurrentStep()}
                 </div>
 
                 {/* Navigation Buttons */}
