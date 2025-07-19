@@ -635,38 +635,106 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 House Rules
               </h4>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Check-in Time
-                  </label>
-                  <input
-                    type="time"
-                    value={propertyData.houseRules?.checkIn || "15:00"}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        checkIn: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
-                  />
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border-2 border-dashed border-blue-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white text-lg">🕐</span>
+                  </div>
+                  <div>
+                    <h5 className="text-lg font-semibold text-gray-800">
+                      Check-in & Check-out Schedule
+                    </h5>
+                    <p className="text-sm text-gray-600">
+                      Set your preferred arrival and departure times
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Check-out Time
-                  </label>
-                  <input
-                    type="time"
-                    value={propertyData.houseRules?.checkOut || "11:00"}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        checkOut: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
-                  />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="relative">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                      Check-in Time *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="time"
+                        value={propertyData.houseRules?.checkIn || "15:00"}
+                        onChange={(e) => {
+                          const newValue = {
+                            ...propertyData.houseRules,
+                            checkIn: e.target.value,
+                          };
+                          handleFieldChange("houseRules", newValue);
+                        }}
+                        className={`w-full p-4 pl-12 border-2 rounded-xl text-lg font-medium transition-all focus:ring-4 focus:ring-green-100 focus:border-green-400 bg-white shadow-sm ${
+                          errors?.["houseRules.checkIn"] &&
+                          touched?.["houseRules.checkIn"]
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <span className="text-green-500 text-xl">📅</span>
+                      </div>
+                    </div>
+                    {errors?.["houseRules.checkIn"] &&
+                      touched?.["houseRules.checkIn"] && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {errors["houseRules.checkIn"]}
+                        </p>
+                      )}
+                    <p className="text-xs text-gray-500 mt-2">
+                      Guests can arrive from this time
+                    </p>
+                  </div>
+
+                  <div className="relative">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                      <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                      Check-out Time *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="time"
+                        value={propertyData.houseRules?.checkOut || "11:00"}
+                        onChange={(e) => {
+                          const newValue = {
+                            ...propertyData.houseRules,
+                            checkOut: e.target.value,
+                          };
+                          handleFieldChange("houseRules", newValue);
+                        }}
+                        className={`w-full p-4 pl-12 border-2 rounded-xl text-lg font-medium transition-all focus:ring-4 focus:ring-red-100 focus:border-red-400 bg-white shadow-sm ${
+                          errors?.["houseRules.checkOut"] &&
+                          touched?.["houseRules.checkOut"]
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <span className="text-red-500 text-xl">📤</span>
+                      </div>
+                    </div>
+                    {errors?.["houseRules.checkOut"] &&
+                      touched?.["houseRules.checkOut"] && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {errors["houseRules.checkOut"]}
+                        </p>
+                      )}
+                    <p className="text-xs text-gray-500 mt-2">
+                      Guests must leave by this time
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+                  <p className="text-sm text-blue-800 flex items-center gap-2">
+                    <span className="text-blue-500">💡</span>
+                    <strong>Pro Tip:</strong> Standard check-in is 3:00 PM and
+                    check-out is 11:00 AM. Flexible times can attract more
+                    guests!
+                  </p>
                 </div>
               </div>
 
