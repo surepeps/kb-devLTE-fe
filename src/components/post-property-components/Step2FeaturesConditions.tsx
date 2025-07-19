@@ -277,10 +277,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               {/* General Amenities */}
               <div className="bg-[#F8F9FA] rounded-lg p-4">
                 <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🏨 Shortlet Amenities
+                  🏨 General Amenities
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {shortletOptions.amenities.slice(0, 24).map((option) => (
+                  {shortletOptions.amenities.general.map((option) => (
                     <EnhancedCheckbox
                       key={option.value}
                       label={option.label}
@@ -298,13 +298,160 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 </div>
               </div>
 
-              {/* Additional Amenities */}
+              {/* Kitchen & Dining */}
               <div className="bg-[#FFF9E6] rounded-lg p-4">
                 <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🌟 Premium Features
+                  🍽️ Kitchen & Dining
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {shortletOptions.amenities.slice(24).map((option) => (
+                  {shortletOptions.amenities.kitchen.map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Bathroom */}
+              <div className="bg-[#E6F3FF] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  🚿 Bathroom
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.bathroom.map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Leisure & Wellness */}
+              <div className="bg-[#F0F9F0] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  🏊‍♂️ Leisure & Wellness
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.leisure.map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Transport & Parking */}
+              <div className="bg-[#F5F5F5] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  🚗 Transport & Parking
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.transport.map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Security */}
+              <div className="bg-[#FFE6E6] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  🛡️ Security
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.security.map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Family Friendly & Accessibility */}
+              <div className="bg-[#F9F0FF] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  👶 Family & Accessibility
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    ...shortletOptions.amenities.family,
+                    ...shortletOptions.amenities.accessibility,
+                  ].map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Location Perks */}
+              <div className="bg-[#FFE6F9] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  📍 Location Perks
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.location.map((option) => (
                     <EnhancedCheckbox
                       key={option.value}
                       label={option.label}

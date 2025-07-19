@@ -199,10 +199,7 @@ const initialPropertyData: PropertyData = {
     parties: false,
     otherRules: "",
   },
-  video: {
-    file: undefined,
-    url: "",
-  },
+  videos: [],
 };
 
 export function PostPropertyProvider({ children }: { children: ReactNode }) {
