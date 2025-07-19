@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import RadioCheck from "@/components/general-components/radioCheck";
+import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
 import {
   briefTypeConfig,
   documentOptions,
