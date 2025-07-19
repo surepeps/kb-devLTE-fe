@@ -1,11 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import RadioCheck from "@/components/general-components/radioCheck";
 import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
+import {
+  step2ValidationSchema,
+  formatCurrency,
+} from "@/utils/validation/post-property-validation";
 import {
   briefTypeConfig,
   documentOptions,
@@ -25,20 +29,42 @@ import {
 } from "@/data/comprehensive-post-property-config";
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed as we'll use Formik validation internally
 }
 
-const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
+const Step2FeaturesConditions: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
-  const formik = useFormikContext<any>();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
+
+  // Validation function
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const schema = step2ValidationSchema(propertyData.propertyType);
+      await schema.validateAt(fieldName, {
+        ...propertyData,
+        [fieldName]: value,
+      });
+      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
+      return true;
+    } catch (error: any) {
+      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
+      return false;
+    }
+  };
+
+  const handleFieldChange = async (fieldName: string, value: any) => {
+    updatePropertyData(fieldName as any, value);
+    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
+    await validateField(fieldName, value);
+  };
 
   const handleMultiSelectChange = (field: string, value: string) => {
     const currentValues = (propertyData as any)[field] || [];
     const newValues = currentValues.includes(value)
       ? currentValues.filter((item: string) => item !== value)
       : [...currentValues, value];
-    updatePropertyData(field as any, newValues);
+    handleFieldChange(field, newValues);
   };
 
   const renderMultiSelectOptions = (
@@ -460,14 +486,26 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
                   type="number"
                   min="1"
                   value={propertyData.availability?.minStay || 1}
-                  onChange={(e) =>
-                    updatePropertyData("availability", {
+                  onChange={(e) => {
+                    const newValue = {
                       ...propertyData.availability,
                       minStay: parseInt(e.target.value) || 1,
-                    })
-                  }
-                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                    };
+                    handleFieldChange("availability", newValue);
+                  }}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
+                    errors?.["availability.minStay"] &&
+                    touched?.["availability.minStay"]
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
                 />
+                {errors?.["availability.minStay"] &&
+                  touched?.["availability.minStay"] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors["availability.minStay"]}
+                    </p>
+                  )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -498,14 +536,25 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
                   type="number"
                   min="0"
                   value={propertyData.pricing?.nightly || ""}
-                  onChange={(e) =>
-                    updatePropertyData("pricing", {
+                  onChange={(e) => {
+                    const newValue = {
                       ...propertyData.pricing,
                       nightly: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                    };
+                    handleFieldChange("pricing", newValue);
+                  }}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
+                    errors?.["pricing.nightly"] && touched?.["pricing.nightly"]
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
                 />
+                {errors?.["pricing.nightly"] &&
+                  touched?.["pricing.nightly"] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors["pricing.nightly"]}
+                    </p>
+                  )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -516,14 +565,26 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
                   min="0"
                   max="100"
                   value={propertyData.pricing?.weeklyDiscount || ""}
-                  onChange={(e) =>
-                    updatePropertyData("pricing", {
+                  onChange={(e) => {
+                    const newValue = {
                       ...propertyData.pricing,
                       weeklyDiscount: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                    };
+                    handleFieldChange("pricing", newValue);
+                  }}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
+                    errors?.["pricing.weeklyDiscount"] &&
+                    touched?.["pricing.weeklyDiscount"]
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
                 />
+                {errors?.["pricing.weeklyDiscount"] &&
+                  touched?.["pricing.weeklyDiscount"] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors["pricing.weeklyDiscount"]}
+                    </p>
+                  )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -609,38 +670,106 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
                 House Rules
               </h4>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Check-in Time
-                  </label>
-                  <input
-                    type="time"
-                    value={propertyData.houseRules?.checkIn || "15:00"}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        checkIn: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
-                  />
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border-2 border-dashed border-blue-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white text-lg">🕐</span>
+                  </div>
+                  <div>
+                    <h5 className="text-lg font-semibold text-gray-800">
+                      Check-in & Check-out Schedule
+                    </h5>
+                    <p className="text-sm text-gray-600">
+                      Set your preferred arrival and departure times
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#707281] mb-2">
-                    Check-out Time
-                  </label>
-                  <input
-                    type="time"
-                    value={propertyData.houseRules?.checkOut || "11:00"}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        checkOut: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
-                  />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="relative">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                      Check-in Time *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="time"
+                        value={propertyData.houseRules?.checkIn || "15:00"}
+                        onChange={(e) => {
+                          const newValue = {
+                            ...propertyData.houseRules,
+                            checkIn: e.target.value,
+                          };
+                          handleFieldChange("houseRules", newValue);
+                        }}
+                        className={`w-full p-4 pl-12 border-2 rounded-xl text-lg font-medium transition-all focus:ring-4 focus:ring-green-100 focus:border-green-400 bg-white shadow-sm ${
+                          errors?.["houseRules.checkIn"] &&
+                          touched?.["houseRules.checkIn"]
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <span className="text-green-500 text-xl">📅</span>
+                      </div>
+                    </div>
+                    {errors?.["houseRules.checkIn"] &&
+                      touched?.["houseRules.checkIn"] && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {errors["houseRules.checkIn"]}
+                        </p>
+                      )}
+                    <p className="text-xs text-gray-500 mt-2">
+                      Guests can arrive from this time
+                    </p>
+                  </div>
+
+                  <div className="relative">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                      <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                      Check-out Time *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="time"
+                        value={propertyData.houseRules?.checkOut || "11:00"}
+                        onChange={(e) => {
+                          const newValue = {
+                            ...propertyData.houseRules,
+                            checkOut: e.target.value,
+                          };
+                          handleFieldChange("houseRules", newValue);
+                        }}
+                        className={`w-full p-4 pl-12 border-2 rounded-xl text-lg font-medium transition-all focus:ring-4 focus:ring-red-100 focus:border-red-400 bg-white shadow-sm ${
+                          errors?.["houseRules.checkOut"] &&
+                          touched?.["houseRules.checkOut"]
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <span className="text-red-500 text-xl">📤</span>
+                      </div>
+                    </div>
+                    {errors?.["houseRules.checkOut"] &&
+                      touched?.["houseRules.checkOut"] && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {errors["houseRules.checkOut"]}
+                        </p>
+                      )}
+                    <p className="text-xs text-gray-500 mt-2">
+                      Guests must leave by this time
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+                  <p className="text-sm text-blue-800 flex items-center gap-2">
+                    <span className="text-blue-500">💡</span>
+                    <strong>Pro Tip:</strong> Standard check-in is 3:00 PM and
+                    check-out is 11:00 AM. Flexible times can attract more
+                    guests!
+                  </p>
                 </div>
               </div>
 
@@ -725,7 +854,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
                 key={option.value}
                 selectedValue={propertyData.isTenanted}
                 handleChange={() =>
-                  updatePropertyData("isTenanted", option.value)
+                  handleFieldChange("isTenanted", option.value)
                 }
                 type="radio"
                 value={option.value}
