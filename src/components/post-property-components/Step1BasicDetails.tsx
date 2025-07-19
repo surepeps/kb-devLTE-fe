@@ -437,7 +437,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   onChange={(e) =>
                     handleFieldChange("landSize", e.target.value)
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("landSize")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("landSize", true)}`}
                 />
               </div>
             </div>
