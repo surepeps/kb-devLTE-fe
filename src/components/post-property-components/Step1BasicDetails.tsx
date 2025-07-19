@@ -323,9 +323,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   name="propertyCondition"
                   variant="card"
                   error={
-                    touched.propertyCondition &&
-                    (errors.propertyCondition ||
-                      !propertyData.propertyCondition)
+                    !!(
+                      touched.propertyCondition &&
+                      (errors.propertyCondition ||
+                        !propertyData.propertyCondition)
+                    )
                   }
                 />
               ))}
