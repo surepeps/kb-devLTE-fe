@@ -83,64 +83,26 @@ const isStepValid = (
     case 0:
       return !!propertyData.propertyType;
     case 1:
-      // For step 1, check if there are any validation errors for step 1 fields
-      const step1Fields = [
-        "propertyCategory",
-        "state",
-        "lga",
-        "area",
-        "price",
-        "rentalType",
-        "shortletDuration",
-        "propertyCondition",
-        "typeOfBuilding",
-        "bedrooms",
-        "holdDuration",
-        "measurementType",
-        "landSize",
-        "streetAddress",
-        "maxGuests",
-      ];
-
-      // Check if any step 1 field has errors
-      const hasStep1Errors = step1Fields.some((field) => formikErrors[field]);
-      if (hasStep1Errors) return false;
-
-      // Check required fields are filled based on property type
-      return checkStep1RequiredFields(propertyData);
-
+      // Step 1: Check basic required fields and no Formik errors for current step only
+      return (
+        checkStep1RequiredFields(propertyData) &&
+        Object.keys(formikErrors).length === 0
+      );
     case 2:
-      // For step 2, check step 2 specific fields
-      const step2Fields = [
-        "documents",
-        "isTenanted",
-        "jvConditions",
-        "features",
-      ];
-      const hasStep2Errors = step2Fields.some((field) => !!formikErrors[field]);
-
-      // Check nested object errors for shortlet
-      const hasNestedErrors =
-        !!formikErrors.availability ||
-        !!formikErrors.pricing ||
-        !!formikErrors.houseRules;
-
-      if (hasStep2Errors || hasNestedErrors) return false;
-
-      return checkStep2RequiredFields(propertyData);
-
+      // Step 2: Check step 2 requirements and no Formik errors for current step only
+      return (
+        checkStep2RequiredFields(propertyData) &&
+        Object.keys(formikErrors).length === 0
+      );
     case 3:
+      // Step 3: Image validation
       return areImagesValid();
-
     case 4:
-      // Check contact info and ownership fields
-      const hasContactErrors = !!formikErrors.contactInfo;
-      const hasOwnershipErrors = !!formikErrors.isLegalOwner;
-
-      if (hasContactErrors || hasOwnershipErrors) return false;
-
-      return checkStep4RequiredFields(propertyData);
-
+      // Step 4: Check step 4 requirements and no Formik errors for current step only
+      return (
+        checkStep4RequiredFields(propertyData) &&
+        Object.keys(formikErrors).length === 0
+      );
     default:
       return true;
   }
