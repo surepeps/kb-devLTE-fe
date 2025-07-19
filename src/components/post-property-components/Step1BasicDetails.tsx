@@ -344,7 +344,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <EnhancedPriceInput
                   name="holdDuration"
                   label="Hold Duration"
-                  value={propertyData.holdDuration}
+                  value={propertyData.holdDuration || ""}
                   onChange={(value) =>
                     updatePropertyData("holdDuration", value)
                   }
