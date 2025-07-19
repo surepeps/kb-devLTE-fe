@@ -17,6 +17,7 @@ interface RadioCheckProps {
   onClick?: () => void;
   variant?: "default" | "card";
   error?: boolean;
+  showLabel?: boolean;
 }
 
 const RadioCheck: FC<RadioCheckProps> = ({
@@ -34,6 +35,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
   onClick,
   variant = "default",
   error = false,
+  showLabel = true,
 }) => {
   const inputId = id ?? `${name}-${value}`;
   const isSelected =
@@ -140,16 +142,18 @@ const RadioCheck: FC<RadioCheckProps> = ({
           {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
         </div>
       </div>
-      <span
-        style={modifyStyle}
-        className={`
-          text-base font-medium transition-colors duration-200
-          ${isSelected ? "text-[#09391C]" : "text-gray-700"}
-          ${isDisabled ? "" : "group-hover:text-[#09391C]"}
-        `}
-      >
-        {title || value}
-      </span>
+      {showLabel && (
+        <span
+          style={modifyStyle}
+          className={`
+              text-base font-medium transition-colors duration-200
+              ${isSelected ? "text-[#09391C]" : "text-gray-700"}
+              ${isDisabled ? "" : "group-hover:text-[#09391C]"}
+            `}
+        >
+          {title || value}
+        </span>
+      )}
     </label>
   );
 };
