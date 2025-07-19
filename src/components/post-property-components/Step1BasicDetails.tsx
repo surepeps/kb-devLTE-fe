@@ -213,8 +213,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="rentalType"
                 variant="card"
                 error={
-                  touched.rentalType &&
-                  (errors.rentalType || !propertyData.rentalType)
+                  !!(
+                    touched.rentalType &&
+                    (errors.rentalType || !propertyData.rentalType)
+                  )
                 }
               />
               <RadioCheck
@@ -225,8 +227,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Lease"
                 variant="card"
                 error={
-                  touched.rentalType &&
-                  (errors.rentalType || !propertyData.rentalType)
+                  !!(
+                    touched.rentalType &&
+                    (errors.rentalType || !propertyData.rentalType)
+                  )
                 }
               />
             </div>
@@ -254,8 +258,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 variant="card"
                 error={
-                  touched.shortletDuration &&
-                  (errors.shortletDuration || !propertyData.shortletDuration)
+                  !!(
+                    touched.shortletDuration &&
+                    (errors.shortletDuration || !propertyData.shortletDuration)
+                  )
                 }
               />
               <RadioCheck
@@ -268,8 +274,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Weekly"
                 variant="card"
                 error={
-                  touched.shortletDuration &&
-                  (errors.shortletDuration || !propertyData.shortletDuration)
+                  !!(
+                    touched.shortletDuration &&
+                    (errors.shortletDuration || !propertyData.shortletDuration)
+                  )
                 }
               />
               <RadioCheck
@@ -282,8 +290,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Monthly"
                 variant="card"
                 error={
-                  touched.shortletDuration &&
-                  (errors.shortletDuration || !propertyData.shortletDuration)
+                  !!(
+                    touched.shortletDuration &&
+                    (errors.shortletDuration || !propertyData.shortletDuration)
+                  )
                 }
               />
             </div>
@@ -313,9 +323,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   name="propertyCondition"
                   variant="card"
                   error={
-                    touched.propertyCondition &&
-                    (errors.propertyCondition ||
-                      !propertyData.propertyCondition)
+                    !!(
+                      touched.propertyCondition &&
+                      (errors.propertyCondition ||
+                        !propertyData.propertyCondition)
+                    )
                   }
                 />
               ))}
@@ -343,8 +355,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 onChange={handlePriceChange}
                 placeholder="Enter amount"
                 prefix="₦"
-                error={errors?.price}
-                touched={touched?.price}
+                error={
+                  typeof errors?.price === "string" ? errors.price : undefined
+                }
+                touched={!!touched?.price}
                 required
                 description={
                   propertyData.propertyType === "rent"

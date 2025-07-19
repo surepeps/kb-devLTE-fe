@@ -85,8 +85,10 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = () => {
                 className="mt-1"
                 showLabel={false}
                 error={
-                  touched.propertyType &&
-                  (errors.propertyType || !propertyData.propertyType)
+                  !!(
+                    touched.propertyType &&
+                    (errors.propertyType || !propertyData.propertyType)
+                  )
                 }
               />
               <div className="flex-1">
