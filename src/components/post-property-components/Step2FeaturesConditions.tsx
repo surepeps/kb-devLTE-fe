@@ -714,7 +714,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 {errors?.["pricing.weeklyDiscount"] &&
                   touched?.["pricing.weeklyDiscount"] && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errors["pricing.weeklyDiscount"]}
+                      {typeof errors["pricing.weeklyDiscount"] === "string"
+                        ? errors["pricing.weeklyDiscount"]
+                        : "Invalid weekly discount"}
                     </p>
                   )}
               </div>
@@ -848,7 +850,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     {errors?.["houseRules.checkIn"] &&
                       touched?.["houseRules.checkIn"] && (
                         <p className="text-red-500 text-sm mt-2">
-                          {errors["houseRules.checkIn"]}
+                          {typeof errors["houseRules.checkIn"] === "string"
+                            ? errors["houseRules.checkIn"]
+                            : "Invalid check-in time"}
                         </p>
                       )}
                     <p className="text-xs text-gray-500 mt-2">
@@ -886,7 +890,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     {errors?.["houseRules.checkOut"] &&
                       touched?.["houseRules.checkOut"] && (
                         <p className="text-red-500 text-sm mt-2">
-                          {errors["houseRules.checkOut"]}
+                          {typeof errors["houseRules.checkOut"] === "string"
+                            ? errors["houseRules.checkOut"]
+                            : "Invalid check-out time"}
                         </p>
                       )}
                     <p className="text-xs text-gray-500 mt-2">
