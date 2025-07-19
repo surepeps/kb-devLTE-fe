@@ -34,7 +34,7 @@ import Step4OwnershipDeclaration from "@/components/post-property-components/Ste
 // Import configuration helpers
 import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
-// Validation schemas for each step
+// Validation schemas for each step - now using comprehensive validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
     case 0:
@@ -43,88 +43,11 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-      let basicSchema: any = Yup.object({
-        propertyCategory: Yup.string().required(
-          "Property category is required",
-        ),
-        price: Yup.string().required("Price is required"),
-        state: Yup.object().nullable().required("State is required"),
-        lga: Yup.object()
-          .nullable()
-          .required("Local Government Area is required"),
-        area: Yup.string().required("Area/Neighborhood is required"),
-      });
-
-      // Additional validations based on property type
-      if (
-        (propertyData.propertyType === "rent" ||
-          propertyData.propertyType === "shortlet") &&
-        propertyData.propertyCategory !== "Land"
-      ) {
-        const additionalFields: any = {
-          propertyCondition: Yup.string().required(
-            "Property condition is required",
-          ),
-        };
-
-        if (propertyData.propertyType === "rent") {
-          additionalFields.rentalType = Yup.string().required(
-            "Rental type is required",
-          );
-        }
-
-        if (propertyData.propertyType === "shortlet") {
-          additionalFields.shortletDuration = Yup.string().required(
-            "Shortlet duration is required",
-          );
-        }
-
-        basicSchema = basicSchema.concat(Yup.object(additionalFields));
-      }
-
-      if (propertyData.propertyCategory !== "Land") {
-        basicSchema = basicSchema.concat(
-          Yup.object({
-            typeOfBuilding: Yup.string().required(
-              "Type of building is required",
-            ),
-            bedrooms: Yup.number().min(1, "At least 1 bedroom is required"),
-          }),
-        );
-      }
-
-      return basicSchema;
-
     case 2:
-      if (propertyData.propertyType === "sell") {
-        return Yup.object({
-          documents: Yup.array().min(1, "At least one document is required"),
-        });
-      }
-      if (propertyData.propertyType === "jv") {
-        return Yup.object({
-          jvConditions: Yup.array().min(
-            1,
-            "At least one JV condition is required",
-          ),
-        });
-      }
-      return Yup.object({}); // No validation for rent
-
     case 3:
-      return Yup.object({}); // Image validation handled separately
-
     case 4:
-      return Yup.object({
-        contactInfo: Yup.object({
-          firstName: Yup.string().required("First name is required"),
-          lastName: Yup.string().required("Last name is required"),
-          email: Yup.string()
-            .email("Invalid email")
-            .required("Email is required"),
-          phone: Yup.string().required("Phone number is required"),
-        }),
-      });
+      // Use comprehensive validation schema for all steps
+      return getPostPropertyValidationSchema(propertyData.propertyType);
 
     default:
       return Yup.object({});
