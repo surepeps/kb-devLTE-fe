@@ -36,6 +36,7 @@ import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 // Import step-specific validation schemas
 import {
+  step1ValidationSchema,
   step2ValidationSchema,
   step3ValidationSchema,
   step4ValidationSchema,
