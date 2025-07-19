@@ -71,10 +71,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
 
   const renderCommercialFeatures = () => (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#F8F9FA] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🧱 Structure & Layout
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.structure.map((option) => (
             <EnhancedCheckbox
@@ -90,10 +90,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#FFF9E6] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🔌 Utilities & Power
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.utilities.map((option) => (
             <EnhancedCheckbox
@@ -109,10 +109,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#F0F7FF] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🛡 Security & Access
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.security.map((option) => (
             <EnhancedCheckbox
@@ -128,10 +128,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#F5F5F5] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🚗 Parking & Visibility
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.parking.map((option) => (
             <EnhancedCheckbox
