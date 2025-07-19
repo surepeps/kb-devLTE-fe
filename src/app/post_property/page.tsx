@@ -97,26 +97,17 @@ const isStepValid = (
     case 0:
       return !!propertyData.propertyType;
     case 1:
-      // Step 1: Check basic required fields and no Formik errors for current step only
-      return (
-        checkStep1RequiredFields(propertyData) &&
-        Object.keys(formikErrors).length === 0
-      );
+      // Step 1: Check basic required fields
+      return checkStep1RequiredFields(propertyData);
     case 2:
-      // Step 2: Check step 2 requirements and no Formik errors for current step only
-      return (
-        checkStep2RequiredFields(propertyData) &&
-        Object.keys(formikErrors).length === 0
-      );
+      // Step 2: Check step 2 requirements
+      return checkStep2RequiredFields(propertyData);
     case 3:
       // Step 3: Image validation
       return areImagesValid();
     case 4:
-      // Step 4: Check step 4 requirements and no Formik errors for current step only
-      return (
-        checkStep4RequiredFields(propertyData) &&
-        Object.keys(formikErrors).length === 0
-      );
+      // Step 4: Check step 4 requirements
+      return checkStep4RequiredFields(propertyData);
     default:
       return true;
   }
