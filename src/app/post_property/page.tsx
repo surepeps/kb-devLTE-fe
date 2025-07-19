@@ -36,12 +36,13 @@ import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 // Import step-specific validation schemas
 import {
+  step1ValidationSchema,
   step2ValidationSchema,
   step3ValidationSchema,
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
 
-// Validation schemas for each step - now using step-specific validation
+// Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
     case 0:
@@ -50,19 +51,33 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-      // Use comprehensive validation schema for step 1
-      return getPostPropertyValidationSchema(propertyData.propertyType);
+      // Only validate basic step 1 fields to avoid validating other steps
+      return Yup.object({
+        propertyCategory: Yup.string().required(
+          "Property category is required",
+        ),
+        state: Yup.object({
+          value: Yup.string().required(),
+          label: Yup.string().required(),
+        }).required("State is required"),
+        lga: Yup.object({
+          value: Yup.string().required(),
+          label: Yup.string().required(),
+        }).required("Local Government is required"),
+        area: Yup.string().required("Area is required"),
+        price: Yup.string().required("Price is required"),
+      });
 
     case 2:
-      // Use step-specific validation for step 2
+      // Only validate step 2 specific fields
       return step2ValidationSchema(propertyData.propertyType);
 
     case 3:
-      // Use step-specific validation for step 3
-      return step3ValidationSchema();
+      // No validation needed - handled by component
+      return Yup.object({});
 
     case 4:
-      // Use step-specific validation for step 4
+      // Only validate step 4 fields
       return step4ValidationSchema();
 
     default:
@@ -82,64 +97,17 @@ const isStepValid = (
     case 0:
       return !!propertyData.propertyType;
     case 1:
-      // For step 1, check if there are any validation errors for step 1 fields
-      const step1Fields = [
-        "propertyCategory",
-        "state",
-        "lga",
-        "area",
-        "price",
-        "rentalType",
-        "shortletDuration",
-        "propertyCondition",
-        "typeOfBuilding",
-        "bedrooms",
-        "holdDuration",
-        "measurementType",
-        "landSize",
-        "streetAddress",
-        "maxGuests",
-      ];
-
-      // Check if any step 1 field has errors
-      const hasStep1Errors = step1Fields.some((field) => formikErrors[field]);
-      if (hasStep1Errors) return false;
-
-      // Check required fields are filled based on property type
+      // Step 1: Check basic required fields
       return checkStep1RequiredFields(propertyData);
-
     case 2:
-      // For step 2, check step 2 specific fields
-      const step2Fields = [
-        "documents",
-        "isTenanted",
-        "jvConditions",
-        "features",
-      ];
-      const hasStep2Errors = step2Fields.some((field) => !!formikErrors[field]);
-
-      // Check nested object errors for shortlet
-      const hasNestedErrors =
-        !!formikErrors.availability ||
-        !!formikErrors.pricing ||
-        !!formikErrors.houseRules;
-
-      if (hasStep2Errors || hasNestedErrors) return false;
-
+      // Step 2: Check step 2 requirements
       return checkStep2RequiredFields(propertyData);
-
     case 3:
+      // Step 3: Image validation
       return areImagesValid();
-
     case 4:
-      // Check contact info and ownership fields
-      const hasContactErrors = !!formikErrors.contactInfo;
-      const hasOwnershipErrors = !!formikErrors.isLegalOwner;
-
-      if (hasContactErrors || hasOwnershipErrors) return false;
-
+      // Step 4: Check step 4 requirements
       return checkStep4RequiredFields(propertyData);
-
     default:
       return true;
   }
@@ -147,6 +115,7 @@ const isStepValid = (
 
 // Helper function to check step 1 required fields
 const checkStep1RequiredFields = (propertyData: any) => {
+  // Basic required fields for all property types
   const requiredFields = ["propertyCategory", "state", "lga", "area", "price"];
 
   // Add conditional required fields based on property type and category
@@ -154,6 +123,10 @@ const checkStep1RequiredFields = (propertyData: any) => {
     requiredFields.push("rentalType");
     if (propertyData.propertyCategory !== "Land") {
       requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+    }
+    // Commercial rent needs land size
+    if (propertyData.propertyCategory === "Commercial") {
+      requiredFields.push("measurementType", "landSize");
     }
   }
 
@@ -183,7 +156,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
     requiredFields.push("measurementType", "landSize");
   }
 
-  // Land size for Land category
+  // Land category always needs land size for all property types
   if (propertyData.propertyCategory === "Land") {
     if (!requiredFields.includes("measurementType"))
       requiredFields.push("measurementType");
@@ -349,21 +322,59 @@ const PostProperty = () => {
     errors: any,
     setFieldTouched: (field: string, isTouched: boolean) => void,
   ) => {
-    // Step 3 (images) validation is handled separately by the component
-    if (currentStep === 3 && !areImagesValid()) {
-      return; // Component will show validation messages
+    // Use step-specific validation instead of full form validation
+    let isCurrentStepValid = false;
+
+    switch (currentStep) {
+      case 0:
+        isCurrentStepValid = !!propertyData.propertyType;
+        break;
+      case 1:
+        isCurrentStepValid = checkStep1RequiredFields(propertyData);
+        break;
+      case 2:
+        isCurrentStepValid = checkStep2RequiredFields(propertyData);
+        break;
+      case 3:
+        isCurrentStepValid = areImagesValid();
+        break;
+      case 4:
+        isCurrentStepValid = checkStep4RequiredFields(propertyData);
+        break;
+      default:
+        isCurrentStepValid = true;
     }
 
-    // For other steps, validate the form first
-    const formErrors = await validateForm();
-
-    // Check if current step has validation errors
-    if (Object.keys(formErrors).length > 0) {
-      // Mark all fields as touched to show validation errors
-      Object.keys(formErrors).forEach((field) => {
-        setFieldTouched(field, true);
-      });
-      return; // Don't proceed if there are validation errors
+    if (!isCurrentStepValid) {
+      // Mark relevant fields as touched to show validation errors
+      if (currentStep === 1) {
+        const step1Fields = [
+          "propertyCategory",
+          "state",
+          "lga",
+          "area",
+          "price",
+        ];
+        step1Fields.forEach((field) => setFieldTouched(field, true));
+      } else if (currentStep === 2) {
+        setFieldTouched("isTenanted", true);
+        if (
+          propertyData.propertyType === "sell" ||
+          propertyData.propertyType === "jv"
+        ) {
+          setFieldTouched("documents", true);
+        }
+        if (propertyData.propertyType === "jv") {
+          setFieldTouched("jvConditions", true);
+        }
+      } else if (currentStep === 4) {
+        setFieldTouched("contactInfo.firstName", true);
+        setFieldTouched("contactInfo.lastName", true);
+        setFieldTouched("contactInfo.email", true);
+        setFieldTouched("contactInfo.phone", true);
+        setFieldTouched("isLegalOwner", true);
+      }
+      return; // Don't proceed if validation fails
     }
 
     if (currentStep < 4) {
