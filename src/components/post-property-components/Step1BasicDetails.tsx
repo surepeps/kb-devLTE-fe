@@ -296,7 +296,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   key={option.value}
                   selectedValue={propertyData.propertyCondition}
                   handleChange={() =>
-                    updatePropertyData("propertyCondition", option.value)
+                    handleFieldChange("propertyCondition", option.value)
                   }
                   type="radio"
                   value={option.value}
