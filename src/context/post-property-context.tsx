@@ -6,6 +6,16 @@ interface PropertyImage {
   file: File | null;
   preview: string | null;
   id: string;
+  url?: string | null;
+  isUploading?: boolean;
+}
+
+interface PropertyVideo {
+  file: File | null;
+  preview: string | null;
+  id: string;
+  url?: string | null;
+  isUploading?: boolean;
 }
 
 interface PropertyData {
@@ -96,10 +106,7 @@ interface PropertyData {
   };
 
   // Media
-  video?: {
-    file?: File;
-    url?: string;
-  };
+  videos?: PropertyVideo[];
 }
 
 interface PostPropertyContextType {
@@ -170,6 +177,7 @@ const initialPropertyData: PropertyData = {
   isTenanted: "",
   description: "",
   additionalInfo: "",
+  videos: [],
   availability: {
     minStay: 1,
     maxStay: undefined,
