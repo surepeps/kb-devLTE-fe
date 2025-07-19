@@ -140,7 +140,7 @@ const PostPropertyContext = createContext<PostPropertyContextType | undefined>(
 
 const initialPropertyData: PropertyData = {
   propertyType: "",
-  propertyCategory: "",
+  propertyCategory: "Residential",
   propertyCondition: "",
   typeOfBuilding: "",
   rentalType: "",
@@ -231,7 +231,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
       setImages([]);
       setCurrentStep(0);
     } else if (field === "resetFieldsAfterCategory") {
-      // Reset specific fields after property category change
+      // Reset specific fields after property category change - clear fields AFTER category, not before
       const fieldsToReset = value as string[];
       const newData = { ...propertyData };
 
@@ -240,6 +240,10 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
           (newData as any)[fieldName] = (initialPropertyData as any)[fieldName];
         }
       });
+
+      // Preserve propertyType and propertyCategory when clearing fields after category change
+      newData.propertyType = propertyData.propertyType;
+      newData.propertyCategory = propertyData.propertyCategory;
 
       setPropertyData(newData);
       // Reset images when property category changes
