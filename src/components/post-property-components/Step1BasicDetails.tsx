@@ -788,7 +788,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       parseInt(e.target.value) || 0,
                     )
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("maxGuests")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("maxGuests", true)}`}
                 />
               </div>
             </div>
