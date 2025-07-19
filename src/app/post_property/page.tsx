@@ -427,7 +427,8 @@ const PostProperty = () => {
 
       // 4. Prepare property payload
       const payload = {
-        propertyType: propertyData.propertyCategory,
+        propertyType: propertyData.propertyType,
+        propertyCategory: propertyData.propertyCategory,
         propertyCondition: propertyData.propertyCondition,
         typeOfBuilding: propertyData.typeOfBuilding,
         rentalType: propertyData.rentalType,
