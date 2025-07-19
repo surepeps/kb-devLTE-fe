@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import RadioCheck from "@/components/general-components/radioCheck";
 import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
@@ -30,6 +31,7 @@ interface StepProps {
 
 const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
+  const formik = useFormikContext<any>();
 
   const handleMultiSelectChange = (field: string, value: string) => {
     const currentValues = (propertyData as any)[field] || [];
@@ -176,22 +178,20 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {documentOptions.map((option) => (
-                <label
+                <EnhancedCheckbox
                   key={option.value}
-                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={(propertyData.documents || []).includes(
-                      option.value,
-                    )}
-                    onChange={() =>
-                      handleMultiSelectChange("documents", option.value)
-                    }
-                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm text-[#5A5D63]">{option.label}</span>
-                </label>
+                  label={option.label}
+                  name="documents"
+                  value={option.value}
+                  checked={(propertyData.documents || []).includes(
+                    option.value,
+                  )}
+                  onChange={() =>
+                    handleMultiSelectChange("documents", option.value)
+                  }
+                  variant="card"
+                  error={errors?.documents && touched?.documents}
+                />
               ))}
             </div>
             {errors?.documents && touched?.documents && (
@@ -237,27 +237,22 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
               <div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {rentalConditions.map((option) => (
-                    <label
+                    <EnhancedCheckbox
                       key={option.value}
-                      className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={(propertyData.rentalConditions || []).includes(
+                      label={option.label}
+                      name="rentalConditions"
+                      value={option.value}
+                      checked={(propertyData.rentalConditions || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange(
+                          "rentalConditions",
                           option.value,
-                        )}
-                        onChange={() =>
-                          handleMultiSelectChange(
-                            "rentalConditions",
-                            option.value,
-                          )
-                        }
-                        className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                      />
-                      <span className="text-sm text-[#5A5D63]">
-                        {option.label}
-                      </span>
-                    </label>
+                        )
+                      }
+                      variant="card"
+                    />
                   ))}
                 </div>
               </div>
@@ -321,22 +316,20 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {jvConditions.map((option) => (
-                <label
+                <EnhancedCheckbox
                   key={option.value}
-                  className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={(propertyData.jvConditions || []).includes(
-                      option.value,
-                    )}
-                    onChange={() =>
-                      handleMultiSelectChange("jvConditions", option.value)
-                    }
-                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm text-[#5A5D63]">{option.label}</span>
-                </label>
+                  label={option.label}
+                  name="jvConditions"
+                  value={option.value}
+                  checked={(propertyData.jvConditions || []).includes(
+                    option.value,
+                  )}
+                  onChange={() =>
+                    handleMultiSelectChange("jvConditions", option.value)
+                  }
+                  variant="card"
+                  error={errors?.jvConditions && touched?.jvConditions}
+                />
               ))}
             </div>
             {errors?.jvConditions && touched?.jvConditions && (
