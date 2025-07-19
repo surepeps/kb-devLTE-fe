@@ -177,7 +177,6 @@ const initialPropertyData: PropertyData = {
   isTenanted: "",
   description: "",
   additionalInfo: "",
-  videos: [],
   availability: {
     minStay: 1,
     maxStay: undefined,
