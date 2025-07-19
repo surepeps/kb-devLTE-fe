@@ -272,48 +272,28 @@ const PostProperty = () => {
     try {
       setIsSubmitting(true);
 
-      // 1. Upload images first and collect URLs
-      const uploadedImageUrls: string[] = [];
-      const validImages = images.filter((img) => img.file !== null);
+      // 1. Collect uploaded image URLs (images are auto-uploaded)
+      const uploadedImageUrls: string[] = images
+        .filter((img) => img.url)
+        .map((img) => img.url!);
 
-      if (validImages.length > 0) {
-        toast.loading("Uploading images...", { id: "upload" });
-      }
-
-      for (const image of validImages) {
-        if (image.file) {
-          const formData = new FormData();
-          formData.append("file", image.file);
-
-          try {
-            const uploadResponse = await POST_REQUEST_FILE_UPLOAD(
-              `${URLS.BASE}${URLS.uploadImg}`,
-              formData,
-              Cookies.get("token"),
-            );
-
-            if (uploadResponse?.url) {
-              uploadedImageUrls.push(uploadResponse.url);
-            }
-          } catch (error) {
-            console.error("Error uploading image:", error);
-            toast.error(`Failed to upload image: ${image.file.name}`);
-          }
+      // 2. Collect uploaded video URLs
+      const uploadedVideoUrls: string[] = [];
+      if (propertyData.videos && propertyData.videos.length > 0) {
+        const video = propertyData.videos[0];
+        if (video.url) {
+          uploadedVideoUrls.push(video.url);
         }
       }
 
-      if (validImages.length > 0) {
-        toast.success("Images uploaded successfully!", { id: "upload" });
-      }
-
-      // 2. Determine brief type
+      // 3. Determine brief type
       let briefType = "";
       if (propertyData.propertyType === "sell") briefType = "Outright Sales";
       else if (propertyData.propertyType === "rent") briefType = "Rent";
       else if (propertyData.propertyType === "shortlet") briefType = "Shortlet";
       else if (propertyData.propertyType === "jv") briefType = "Joint Venture";
 
-      // 3. Prepare property payload
+      // 4. Prepare property payload
       const payload = {
         propertyType: propertyData.propertyCategory,
         propertyCondition: propertyData.propertyCondition,
@@ -355,11 +335,12 @@ const PostProperty = () => {
         description: propertyData.description,
         addtionalInfo: propertyData.additionalInfo,
         pictures: uploadedImageUrls,
+        videos: uploadedVideoUrls,
         isTenanted: propertyData.isTenanted,
         holdDuration: propertyData.holdDuration,
       };
 
-      // 4. Submit to API
+      // 5. Submit to API
       const response = await POST_REQUEST(
         `${URLS.BASE}${URLS.listNewProperty}`,
         payload,
