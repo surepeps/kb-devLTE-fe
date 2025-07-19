@@ -54,114 +54,171 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
   }
 };
 
-// Helper function to check if current step is valid
+// Helper function to check if current step is valid using Formik validation
 const isStepValid = (
   step: number,
   propertyData: any,
   areImagesValid: () => boolean,
+  formikErrors: any,
+  formikTouched: any,
 ) => {
   switch (step) {
     case 0:
       return !!propertyData.propertyType;
     case 1:
-      // Check required fields for step 1
-      const requiredFields = [
+      // For step 1, check if there are any validation errors for step 1 fields
+      const step1Fields = [
         "propertyCategory",
         "state",
         "lga",
         "area",
         "price",
+        "rentalType",
+        "shortletDuration",
+        "propertyCondition",
+        "typeOfBuilding",
+        "bedrooms",
+        "holdDuration",
+        "measurementType",
+        "landSize",
+        "streetAddress",
+        "maxGuests",
       ];
 
-      // Add conditional required fields based on property type and category
-      if (propertyData.propertyType === "rent") {
-        requiredFields.push("rentalType");
-        if (propertyData.propertyCategory !== "Land") {
-          requiredFields.push(
-            "propertyCondition",
-            "typeOfBuilding",
-            "bedrooms",
-          );
-        }
-      }
+      // Check if any step 1 field has errors
+      const hasStep1Errors = step1Fields.some((field) => formikErrors[field]);
+      if (hasStep1Errors) return false;
 
-      if (propertyData.propertyType === "shortlet") {
-        requiredFields.push(
-          "shortletDuration",
-          "propertyCondition",
-          "typeOfBuilding",
-          "bedrooms",
-          "streetAddress",
-          "maxGuests",
-        );
-      }
+      // Check required fields are filled based on property type
+      return checkStep1RequiredFields(propertyData);
 
-      if (propertyData.propertyType === "jv") {
-        requiredFields.push("holdDuration");
-        if (propertyData.propertyCategory !== "Land") {
-          requiredFields.push(
-            "propertyCondition",
-            "typeOfBuilding",
-            "bedrooms",
-          );
-        }
-        requiredFields.push("measurementType", "landSize");
-      }
-
-      if (propertyData.propertyType === "sell") {
-        if (propertyData.propertyCategory !== "Land") {
-          requiredFields.push(
-            "propertyCondition",
-            "typeOfBuilding",
-            "bedrooms",
-          );
-        }
-        requiredFields.push("measurementType", "landSize");
-      }
-
-      // Land size and measurement type for Land category or sell/jv
-      if (
-        propertyData.propertyCategory === "Land" ||
-        ["sell", "jv"].includes(propertyData.propertyType)
-      ) {
-        if (!requiredFields.includes("measurementType"))
-          requiredFields.push("measurementType");
-        if (!requiredFields.includes("landSize"))
-          requiredFields.push("landSize");
-      }
-
-      return requiredFields.every((field) => {
-        const value = propertyData[field];
-        if (field === "state" || field === "lga") {
-          return value && value.value && value.value !== "";
-        }
-        return value && value !== "" && value !== 0;
-      });
     case 2:
-      // Basic validation for step 2 - at least some required fields based on property type
-      if (
-        propertyData.propertyType === "sell" ||
-        propertyData.propertyType === "jv"
-      ) {
-        return propertyData.documents && propertyData.documents.length > 0;
-      }
-      return true;
+      // For step 2, check step 2 specific fields
+      const step2Fields = [
+        "documents",
+        "isTenanted",
+        "jvConditions",
+        "features",
+      ];
+      const hasStep2Errors = step2Fields.some((field) => formikErrors[field]);
+      if (hasStep2Errors) return false;
+
+      return checkStep2RequiredFields(propertyData);
+
     case 3:
       return areImagesValid();
+
     case 4:
-      // Check contact info is filled
-      const contactInfo = propertyData.contactInfo;
-      return (
-        !!(
-          contactInfo.firstName &&
-          contactInfo.lastName &&
-          contactInfo.email &&
-          contactInfo.phone
-        ) && propertyData.isLegalOwner !== undefined
-      );
+      // Check contact info fields
+      const contactFields = [
+        "contactInfo.firstName",
+        "contactInfo.lastName",
+        "contactInfo.email",
+        "contactInfo.phone",
+      ];
+      const hasContactErrors = contactFields.some((field) => {
+        const keys = field.split(".");
+        let value = formikErrors;
+        for (const key of keys) {
+          value = value?.[key];
+        }
+        return !!value;
+      });
+
+      if (hasContactErrors) return false;
+
+      return checkStep4RequiredFields(propertyData);
+
     default:
       return true;
   }
+};
+
+// Helper function to check step 1 required fields
+const checkStep1RequiredFields = (propertyData: any) => {
+  const requiredFields = ["propertyCategory", "state", "lga", "area", "price"];
+
+  // Add conditional required fields based on property type and category
+  if (propertyData.propertyType === "rent") {
+    requiredFields.push("rentalType");
+    if (propertyData.propertyCategory !== "Land") {
+      requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+    }
+  }
+
+  if (propertyData.propertyType === "shortlet") {
+    requiredFields.push(
+      "shortletDuration",
+      "propertyCondition",
+      "typeOfBuilding",
+      "bedrooms",
+      "streetAddress",
+      "maxGuests",
+    );
+  }
+
+  if (propertyData.propertyType === "jv") {
+    requiredFields.push("holdDuration");
+    if (propertyData.propertyCategory !== "Land") {
+      requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+    }
+    requiredFields.push("measurementType", "landSize");
+  }
+
+  if (propertyData.propertyType === "sell") {
+    if (propertyData.propertyCategory !== "Land") {
+      requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+    }
+    requiredFields.push("measurementType", "landSize");
+  }
+
+  // Land size for Land category
+  if (propertyData.propertyCategory === "Land") {
+    if (!requiredFields.includes("measurementType"))
+      requiredFields.push("measurementType");
+    if (!requiredFields.includes("landSize")) requiredFields.push("landSize");
+  }
+
+  return requiredFields.every((field) => {
+    const value = propertyData[field];
+    if (field === "state" || field === "lga") {
+      return value && value.value && value.value !== "";
+    }
+    return value && value !== "" && value !== 0;
+  });
+};
+
+// Helper function to check step 2 required fields
+const checkStep2RequiredFields = (propertyData: any) => {
+  if (
+    propertyData.propertyType === "sell" ||
+    propertyData.propertyType === "jv"
+  ) {
+    const hasDocuments =
+      propertyData.documents && propertyData.documents.length > 0;
+    if (!hasDocuments) return false;
+  }
+
+  if (propertyData.propertyType === "jv") {
+    const hasJvConditions =
+      propertyData.jvConditions && propertyData.jvConditions.length > 0;
+    if (!hasJvConditions) return false;
+  }
+
+  return true;
+};
+
+// Helper function to check step 4 required fields
+const checkStep4RequiredFields = (propertyData: any) => {
+  const contactInfo = propertyData.contactInfo;
+  return (
+    !!(
+      contactInfo.firstName &&
+      contactInfo.lastName &&
+      contactInfo.email &&
+      contactInfo.phone
+    ) && propertyData.isLegalOwner !== undefined
+  );
 };
 
 const PostProperty = () => {
@@ -546,6 +603,8 @@ const PostProperty = () => {
                               currentStep,
                               propertyData,
                               areImagesValid,
+                              errors,
+                              touched,
                             )
                           }
                         />
