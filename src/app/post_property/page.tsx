@@ -132,23 +132,11 @@ const isStepValid = (
       return areImagesValid();
 
     case 4:
-      // Check contact info fields
-      const contactFields = [
-        "contactInfo.firstName",
-        "contactInfo.lastName",
-        "contactInfo.email",
-        "contactInfo.phone",
-      ];
-      const hasContactErrors = contactFields.some((field) => {
-        const keys = field.split(".");
-        let value = formikErrors;
-        for (const key of keys) {
-          value = value?.[key];
-        }
-        return !!value;
-      });
+      // Check contact info and ownership fields
+      const hasContactErrors = !!formikErrors.contactInfo;
+      const hasOwnershipErrors = !!formikErrors.isLegalOwner;
 
-      if (hasContactErrors) return false;
+      if (hasContactErrors || hasOwnershipErrors) return false;
 
       return checkStep4RequiredFields(propertyData);
 
