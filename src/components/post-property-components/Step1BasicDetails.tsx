@@ -46,6 +46,33 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
 
+  // Validation function
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const schema = step1ValidationSchema(propertyData.propertyType);
+      await schema.validateAt(fieldName, {
+        ...propertyData,
+        [fieldName]: value,
+      });
+      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
+      return true;
+    } catch (error: any) {
+      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
+      return false;
+    }
+  };
+
+  const handleFieldChange = async (fieldName: string, value: any) => {
+    updatePropertyData(fieldName as any, value);
+    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
+    await validateField(fieldName, value);
+  };
+
+  const handlePriceChange = (value: string) => {
+    const formattedValue = formatCurrency(value);
+    handleFieldChange("price", formattedValue);
+  };
+
   useEffect(() => {
     // Format states data using new location data
     const states = getStates().map((state: string) => ({
