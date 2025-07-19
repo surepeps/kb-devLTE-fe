@@ -397,7 +397,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <EnhancedPriceInput
                   name="landSize"
                   label="Land Size"
-                  value={propertyData.landSize}
+                  value={propertyData.landSize || ""}
                   onChange={(value) => updatePropertyData("landSize", value)}
                   placeholder="Enter size"
                   prefix=""
