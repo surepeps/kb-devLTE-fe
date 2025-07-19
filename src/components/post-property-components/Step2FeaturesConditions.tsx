@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
