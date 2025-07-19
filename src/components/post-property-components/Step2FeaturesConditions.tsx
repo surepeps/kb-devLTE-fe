@@ -799,21 +799,47 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               <h4 className="text-md font-semibold text-[#09391C] mb-3">
                 Cancellation Policy
               </h4>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {shortletOptions.cancellationPolicies.map((option) => (
-                  <RadioCheck
+                  <label
                     key={option.value}
-                    selectedValue={propertyData.pricing?.cancellationPolicy}
-                    handleChange={() =>
-                      updatePropertyData("pricing", {
-                        ...propertyData.pricing,
-                        cancellationPolicy: option.value,
-                      })
-                    }
-                    type="radio"
-                    value={option.value}
-                    name="cancellationPolicy"
-                  />
+                    className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      propertyData.pricing?.cancellationPolicy === option.value
+                        ? "border-[#8DDB90] bg-[#8DDB90]/10 text-[#09391C]"
+                        : "border-gray-200 hover:border-[#8DDB90]/50 text-gray-700"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="cancellationPolicy"
+                      value={option.value}
+                      checked={
+                        propertyData.pricing?.cancellationPolicy ===
+                        option.value
+                      }
+                      onChange={() =>
+                        updatePropertyData("pricing", {
+                          ...propertyData.pricing,
+                          cancellationPolicy: option.value,
+                        })
+                      }
+                      className="sr-only"
+                    />
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mr-3 ${
+                        propertyData.pricing?.cancellationPolicy ===
+                        option.value
+                          ? "border-[#8DDB90] bg-[#8DDB90]"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {propertyData.pricing?.cancellationPolicy ===
+                        option.value && (
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium">{option.label}</span>
+                  </label>
                 ))}
               </div>
             </div>
@@ -931,53 +957,43 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={propertyData.houseRules?.smoking || false}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        smoking: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm text-[#5A5D63]">
-                    Smoking Allowed
-                  </span>
-                </label>
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={propertyData.houseRules?.pets || false}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        pets: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm text-[#5A5D63]">Pets Allowed</span>
-                </label>
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={propertyData.houseRules?.parties || false}
-                    onChange={(e) =>
-                      updatePropertyData("houseRules", {
-                        ...propertyData.houseRules,
-                        parties: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm text-[#5A5D63]">
-                    Parties Allowed
-                  </span>
-                </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <EnhancedCheckbox
+                  label="Smoking Allowed"
+                  name="smoking"
+                  checked={propertyData.houseRules?.smoking || false}
+                  onChange={(e) =>
+                    updatePropertyData("houseRules", {
+                      ...propertyData.houseRules,
+                      smoking: e.target.checked,
+                    })
+                  }
+                  variant="card"
+                />
+                <EnhancedCheckbox
+                  label="Pets Allowed"
+                  name="pets"
+                  checked={propertyData.houseRules?.pets || false}
+                  onChange={(e) =>
+                    updatePropertyData("houseRules", {
+                      ...propertyData.houseRules,
+                      pets: e.target.checked,
+                    })
+                  }
+                  variant="card"
+                />
+                <EnhancedCheckbox
+                  label="Parties Allowed"
+                  name="parties"
+                  checked={propertyData.houseRules?.parties || false}
+                  onChange={(e) =>
+                    updatePropertyData("houseRules", {
+                      ...propertyData.houseRules,
+                      parties: e.target.checked,
+                    })
+                  }
+                  variant="card"
+                />
               </div>
 
               <div>
