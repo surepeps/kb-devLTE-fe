@@ -34,7 +34,14 @@ import Step4OwnershipDeclaration from "@/components/post-property-components/Ste
 // Import configuration helpers
 import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
-// Validation schemas for each step - now using comprehensive validation
+// Import step-specific validation schemas
+import {
+  step2ValidationSchema,
+  step3ValidationSchema,
+  step4ValidationSchema,
+} from "@/utils/validation/post-property-validation";
+
+// Validation schemas for each step - now using step-specific validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
     case 0:
@@ -43,11 +50,20 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-    case 2:
-    case 3:
-    case 4:
-      // Use comprehensive validation schema for all steps
+      // Use comprehensive validation schema for step 1
       return getPostPropertyValidationSchema(propertyData.propertyType);
+
+    case 2:
+      // Use step-specific validation for step 2
+      return step2ValidationSchema(propertyData.propertyType);
+
+    case 3:
+      // Use step-specific validation for step 3
+      return step3ValidationSchema();
+
+    case 4:
+      // Use step-specific validation for step 4
+      return step4ValidationSchema();
 
     default:
       return Yup.object({});
@@ -100,8 +116,15 @@ const isStepValid = (
         "jvConditions",
         "features",
       ];
-      const hasStep2Errors = step2Fields.some((field) => formikErrors[field]);
-      if (hasStep2Errors) return false;
+      const hasStep2Errors = step2Fields.some((field) => !!formikErrors[field]);
+
+      // Check nested object errors for shortlet
+      const hasNestedErrors =
+        !!formikErrors.availability ||
+        !!formikErrors.pricing ||
+        !!formikErrors.houseRules;
+
+      if (hasStep2Errors || hasNestedErrors) return false;
 
       return checkStep2RequiredFields(propertyData);
 
@@ -109,23 +132,11 @@ const isStepValid = (
       return areImagesValid();
 
     case 4:
-      // Check contact info fields
-      const contactFields = [
-        "contactInfo.firstName",
-        "contactInfo.lastName",
-        "contactInfo.email",
-        "contactInfo.phone",
-      ];
-      const hasContactErrors = contactFields.some((field) => {
-        const keys = field.split(".");
-        let value = formikErrors;
-        for (const key of keys) {
-          value = value?.[key];
-        }
-        return !!value;
-      });
+      // Check contact info and ownership fields
+      const hasContactErrors = !!formikErrors.contactInfo;
+      const hasOwnershipErrors = !!formikErrors.isLegalOwner;
 
-      if (hasContactErrors) return false;
+      if (hasContactErrors || hasOwnershipErrors) return false;
 
       return checkStep4RequiredFields(propertyData);
 
@@ -190,6 +201,12 @@ const checkStep1RequiredFields = (propertyData: any) => {
 
 // Helper function to check step 2 required fields
 const checkStep2RequiredFields = (propertyData: any) => {
+  // isTenanted is required for all property types
+  if (!propertyData.isTenanted || propertyData.isTenanted === "") {
+    return false;
+  }
+
+  // Documents are required for sell and jv types
   if (
     propertyData.propertyType === "sell" ||
     propertyData.propertyType === "jv"
@@ -199,10 +216,24 @@ const checkStep2RequiredFields = (propertyData: any) => {
     if (!hasDocuments) return false;
   }
 
+  // JV conditions are required for joint venture
   if (propertyData.propertyType === "jv") {
     const hasJvConditions =
       propertyData.jvConditions && propertyData.jvConditions.length > 0;
     if (!hasJvConditions) return false;
+  }
+
+  // For shortlet, check required pricing and house rules
+  if (propertyData.propertyType === "shortlet") {
+    const pricing = propertyData.pricing;
+    const houseRules = propertyData.houseRules;
+    const availability = propertyData.availability;
+
+    // Check required shortlet fields
+    if (!availability?.minStay || availability.minStay < 1) return false;
+    if (!pricing?.nightly || pricing.nightly <= 0) return false;
+    if (!houseRules?.checkIn || houseRules.checkIn === "") return false;
+    if (!houseRules?.checkOut || houseRules.checkOut === "") return false;
   }
 
   return true;
