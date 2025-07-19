@@ -3,13 +3,31 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import { Plus as PlusIcon, X as XIcon, Image as ImageIcon } from "lucide-react";
+import {
+  Plus as PlusIcon,
+  X as XIcon,
+  Image as ImageIcon,
+  Video as VideoIcon,
+} from "lucide-react";
 import toast from "react-hot-toast";
+import { POST_REQUEST_FILE_UPLOAD, POST_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
+import Cookies from "js-cookie";
 
 interface PropertyImage {
   file: File | null;
   preview: string | null;
   id: string;
+  url?: string | null; // For uploaded images
+  isUploading?: boolean;
+}
+
+interface PropertyVideo {
+  file: File | null;
+  preview: string | null;
+  id: string;
+  url?: string | null;
+  isUploading?: boolean;
 }
 
 interface StepProps {
@@ -18,17 +36,68 @@ interface StepProps {
 }
 
 const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
-  const { images, setImages, getMinimumRequiredImages, areImagesValid } =
-    usePostPropertyContext();
+  const {
+    images,
+    setImages,
+    getMinimumRequiredImages,
+    areImagesValid,
+    propertyData,
+    updatePropertyData,
+  } = usePostPropertyContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  // Get videos from propertyData or initialize empty array
+  const videos: PropertyVideo[] = propertyData.videos || [];
+
+  const setVideos = (newVideos: PropertyVideo[]) => {
+    updatePropertyData("videos", newVideos);
+  };
 
   const generateImageId = () => Math.random().toString(36).substr(2, 9);
 
-  const handleFileSelect = (files: FileList | null) => {
+  const uploadFile = async (file: File, type: "image" | "video" = "image") => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await POST_REQUEST_FILE_UPLOAD(
+        `${URLS.BASE}/upload-image`,
+        formData,
+        Cookies.get("token"),
+      );
+
+      if (response?.url) {
+        return response.url;
+      }
+      throw new Error("No URL in response");
+    } catch (error) {
+      console.error(`Error uploading ${type}:`, error);
+      toast.error(`Failed to upload ${type}: ${file.name}`);
+      return null;
+    }
+  };
+
+  const removeFile = async (url: string) => {
+    try {
+      await POST_REQUEST(
+        `${URLS.BASE}/remove-image`,
+        { imageUrl: url },
+        Cookies.get("token"),
+      );
+    } catch (error) {
+      console.error("Error removing file:", error);
+      toast.error("Failed to remove file from server");
+    }
+  };
+
+  const handleFileSelect = async (files: FileList | null) => {
     if (!files) return;
 
     const maxImages = 12;
-    const currentValidImages = images.filter((img) => img.file !== null).length;
+    const currentValidImages = images.filter(
+      (img) => img.file !== null || img.url,
+    ).length;
     const remainingSlots = maxImages - currentValidImages;
 
     if (files.length > remainingSlots) {
@@ -39,72 +108,104 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     }
 
     const newImages: PropertyImage[] = [];
+    const filesToProcess = Array.from(files).filter((file) =>
+      file.type.startsWith("image/"),
+    );
 
-    Array.from(files).forEach((file) => {
-      if (file.type.startsWith("image/")) {
-        if (file.size > 5 * 1024 * 1024) {
-          // 5MB limit
-          toast.error(`${file.name} is too large. Maximum size is 5MB.`);
-          return;
-        }
+    for (const file of filesToProcess) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Maximum size is 5MB.`);
+        continue;
+      }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const preview = e.target?.result as string;
-          newImages.push({
-            file,
-            preview,
-            id: generateImageId(),
-          });
-
-          if (
-            newImages.length ===
-            Array.from(files).filter((f) => f.type.startsWith("image/")).length
-          ) {
-            // Find empty slots and fill them
-            const updatedImages = [...images];
-            let newImageIndex = 0;
-
-            for (
-              let i = 0;
-              i < updatedImages.length && newImageIndex < newImages.length;
-              i++
-            ) {
-              if (updatedImages[i].file === null) {
-                updatedImages[i] = newImages[newImageIndex];
-                newImageIndex++;
-              }
-            }
-
-            // Add remaining images as new slots
-            while (
-              newImageIndex < newImages.length &&
-              updatedImages.length < maxImages
-            ) {
-              updatedImages.push(newImages[newImageIndex]);
-              newImageIndex++;
-            }
-
-            // Ensure we have at least 4 slots
-            while (updatedImages.length < Math.max(4, updatedImages.length)) {
-              updatedImages.push({
-                file: null,
-                preview: null,
-                id: generateImageId(),
-              });
-            }
-
-            setImages(updatedImages);
-          }
-        };
+      const reader = new FileReader();
+      const preview = await new Promise<string>((resolve) => {
+        reader.onload = (e) => resolve(e.target?.result as string);
         reader.readAsDataURL(file);
-      } else {
-        toast.error(`${file.name} is not a valid image file.`);
+      });
+
+      const imageData: PropertyImage = {
+        file,
+        preview,
+        id: generateImageId(),
+        isUploading: true,
+      };
+
+      newImages.push(imageData);
+    }
+
+    if (newImages.length === 0) return;
+
+    // Add images to state first (optimistic update)
+    const updatedImages = [...images];
+    let newImageIndex = 0;
+
+    for (
+      let i = 0;
+      i < updatedImages.length && newImageIndex < newImages.length;
+      i++
+    ) {
+      if (updatedImages[i].file === null && !updatedImages[i].url) {
+        updatedImages[i] = newImages[newImageIndex];
+        newImageIndex++;
+      }
+    }
+
+    while (
+      newImageIndex < newImages.length &&
+      updatedImages.length < maxImages
+    ) {
+      updatedImages.push(newImages[newImageIndex]);
+      newImageIndex++;
+    }
+
+    while (updatedImages.length < Math.max(4, updatedImages.length)) {
+      updatedImages.push({
+        file: null,
+        preview: null,
+        id: generateImageId(),
+      });
+    }
+
+    setImages(updatedImages);
+
+    // Upload images
+    const uploadPromises = newImages.map(async (imageData, index) => {
+      if (imageData.file) {
+        const url = await uploadFile(imageData.file, "image");
+        if (url) {
+          // Update the specific image with the URL
+          setImages((prev) =>
+            prev.map((img) =>
+              img.id === imageData.id
+                ? { ...img, url, isUploading: false }
+                : img,
+            ),
+          );
+        } else {
+          // Remove failed upload
+          setImages((prev) =>
+            prev.map((img) =>
+              img.id === imageData.id
+                ? { file: null, preview: null, id: generateImageId() }
+                : img,
+            ),
+          );
+        }
       }
     });
+
+    await Promise.all(uploadPromises);
   };
 
-  const handleImageRemove = (indexToRemove: number) => {
+  const handleImageRemove = async (indexToRemove: number) => {
+    const imageToRemove = images[indexToRemove];
+
+    // If image has URL, remove from server
+    if (imageToRemove.url) {
+      await removeFile(imageToRemove.url);
+    }
+
     const updatedImages = images.map((img, index) =>
       index === indexToRemove
         ? { file: null, preview: null, id: generateImageId() }
@@ -115,6 +216,59 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
   const handleAddMoreImages = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleVideoSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const file = files[0]; // Only allow one video
+    const maxVideoSize = 50 * 1024 * 1024; // 50MB limit
+
+    if (!file.type.startsWith("video/")) {
+      toast.error("Please select a valid video file.");
+      return;
+    }
+
+    if (file.size > maxVideoSize) {
+      toast.error("Video file is too large. Maximum size is 50MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    const preview = await new Promise<string>((resolve) => {
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.readAsDataURL(file);
+    });
+
+    const videoData: PropertyVideo = {
+      file,
+      preview,
+      id: generateImageId(),
+      isUploading: true,
+    };
+
+    setVideos([videoData]);
+
+    // Upload video
+    const url = await uploadFile(file, "video");
+    if (url) {
+      setVideos([{ ...videoData, url, isUploading: false }]);
+      toast.success("Video uploaded successfully!");
+    } else {
+      setVideos([]);
+    }
+  };
+
+  const handleVideoRemove = async () => {
+    const currentVideo = videos[0];
+    if (currentVideo?.url) {
+      await removeFile(currentVideo.url);
+    }
+    setVideos([]);
+  };
+
+  const handleAddVideo = () => {
+    videoInputRef.current?.click();
   };
 
   // Initialize with 4 empty slots if no images exist
@@ -132,7 +286,9 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     }
   }, []);
 
-  const validImagesCount = images.filter((img) => img.file !== null).length;
+  const validImagesCount = images.filter(
+    (img) => img.file !== null || img.url,
+  ).length;
   const minRequired = getMinimumRequiredImages();
 
   return (
@@ -163,13 +319,20 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      {/* Hidden file input */}
+      {/* Hidden file inputs */}
       <input
         ref={fileInputRef}
         type="file"
         multiple
         accept="image/*"
         onChange={(e) => handleFileSelect(e.target.files)}
+        className="hidden"
+      />
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        onChange={(e) => handleVideoSelect(e.target.files)}
         className="hidden"
       />
 
@@ -183,16 +346,22 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
             transition={{ delay: index * 0.1 }}
             className="relative aspect-square bg-[#F7F7F8] rounded-md border-2 border-dashed border-[#C7CAD0] hover:border-[#8DDB90] transition-colors group"
           >
-            {image.file && image.preview ? (
+            {(image.file && image.preview) || image.url ? (
               <>
                 <img
-                  src={image.preview}
+                  src={image.preview || image.url || ""}
                   alt={`Property ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg"
                 />
+                {image.isUploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                  </div>
+                )}
                 <button
                   onClick={() => handleImageRemove(index)}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  disabled={image.isUploading}
                 >
                   <XIcon size={16} />
                 </button>
@@ -217,9 +386,51 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         ))}
       </div>
 
-      {/* Add More Button */}
+      {/* Video Upload Section */}
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+          Upload Video (Optional)
+        </h3>
+        <p className="text-sm text-[#5A5D63] mb-4">
+          Add a video to showcase your property (maximum 1 video, 50MB limit)
+        </p>
+
+        {videos.length > 0 && videos[0] ? (
+          <div className="relative w-full max-w-md mx-auto bg-gray-100 rounded-lg overflow-hidden">
+            <video
+              src={videos[0].preview || videos[0].url || ""}
+              className="w-full h-48 object-cover"
+              controls
+            />
+            {videos[0].isUploading && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              </div>
+            )}
+            <button
+              onClick={handleVideoRemove}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
+              disabled={videos[0].isUploading}
+            >
+              <XIcon size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="text-center">
+            <button
+              onClick={handleAddVideo}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 mx-auto transition-colors"
+            >
+              <VideoIcon size={20} />
+              Add Video
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Add More Images Button */}
       {validImagesCount > 0 && validImagesCount < 12 && (
-        <div className="text-center">
+        <div className="text-center mt-6">
           <button
             onClick={handleAddMoreImages}
             className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 mx-auto transition-colors"
@@ -238,10 +449,15 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         </h4>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Upload at least {minRequired} high-quality images</li>
-          <li>• Maximum file size: 5MB per image</li>
-          <li>• Recommended formats: JPG, PNG, WebP</li>
+          <li>• Maximum file size: 5MB per image, 50MB per video</li>
+          <li>
+            • Recommended formats: JPG, PNG, WebP for images; MP4, MOV for video
+          </li>
           <li>• Include exterior, interior, and key features</li>
-          <li>• Maximum {12} images allowed</li>
+          <li>• Maximum {12} images and 1 video allowed</li>
+          <li>
+            • Images are automatically uploaded and can be removed anytime
+          </li>
         </ul>
       </div>
 

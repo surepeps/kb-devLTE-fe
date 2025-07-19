@@ -315,6 +315,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                 onChange={(e) =>
                   handleContactInfoChange("firstName", e.target.value)
                 }
+                error={errors?.contactInfo?.firstName}
+                touched={touched?.contactInfo?.firstName}
               />
               {errors?.contactInfo?.firstName &&
                 touched?.contactInfo?.firstName && (
@@ -333,6 +335,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                 onChange={(e) =>
                   handleContactInfoChange("lastName", e.target.value)
                 }
+                error={errors?.contactInfo?.lastName}
+                touched={touched?.contactInfo?.lastName}
               />
               {errors?.contactInfo?.lastName &&
                 touched?.contactInfo?.lastName && (
@@ -351,6 +355,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                 onChange={(e) =>
                   handleContactInfoChange("email", e.target.value)
                 }
+                error={errors?.contactInfo?.email}
+                touched={touched?.contactInfo?.email}
               />
               {errors?.contactInfo?.email && touched?.contactInfo?.email && (
                 <p className="text-red-500 text-sm mt-1">
