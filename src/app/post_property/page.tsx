@@ -41,7 +41,7 @@ import {
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
 
-// Validation schemas for each step - now using comprehensive validation
+// Validation schemas for each step - now using step-specific validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
     case 0:
@@ -50,11 +50,20 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-    case 2:
-    case 3:
-    case 4:
-      // Use comprehensive validation schema for all steps
+      // Use comprehensive validation schema for step 1
       return getPostPropertyValidationSchema(propertyData.propertyType);
+
+    case 2:
+      // Use step-specific validation for step 2
+      return step2ValidationSchema(propertyData.propertyType);
+
+    case 3:
+      // Use step-specific validation for step 3
+      return step3ValidationSchema();
+
+    case 4:
+      // Use step-specific validation for step 4
+      return step4ValidationSchema();
 
     default:
       return Yup.object({});
