@@ -34,6 +34,13 @@ import Step4OwnershipDeclaration from "@/components/post-property-components/Ste
 // Import configuration helpers
 import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
+// Import step-specific validation schemas
+import {
+  step2ValidationSchema,
+  step3ValidationSchema,
+  step4ValidationSchema,
+} from "@/utils/validation/post-property-validation";
+
 // Validation schemas for each step - now using comprehensive validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
