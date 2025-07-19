@@ -37,12 +37,34 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
   const [errors, setErrors] = useState<any>({});
   const [touched, setTouched] = useState<any>({});
 
+  // Validation function
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const schema = step2ValidationSchema(propertyData.propertyType);
+      await schema.validateAt(fieldName, {
+        ...propertyData,
+        [fieldName]: value,
+      });
+      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
+      return true;
+    } catch (error: any) {
+      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
+      return false;
+    }
+  };
+
+  const handleFieldChange = async (fieldName: string, value: any) => {
+    updatePropertyData(fieldName as any, value);
+    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
+    await validateField(fieldName, value);
+  };
+
   const handleMultiSelectChange = (field: string, value: string) => {
     const currentValues = (propertyData as any)[field] || [];
     const newValues = currentValues.includes(value)
       ? currentValues.filter((item: string) => item !== value)
       : [...currentValues, value];
-    updatePropertyData(field as any, newValues);
+    handleFieldChange(field, newValues);
   };
 
   const renderMultiSelectOptions = (
