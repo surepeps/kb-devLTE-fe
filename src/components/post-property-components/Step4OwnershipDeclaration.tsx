@@ -167,6 +167,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                   handleContactInfoChange("firstName", e.target.value)
                 }
               />
+              {errors?.contactInfo?.firstName &&
+                touched?.contactInfo?.firstName && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.contactInfo.firstName}
+                  </p>
+                )}
             </div>
             <div>
               <Input
@@ -179,6 +185,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                   handleContactInfoChange("lastName", e.target.value)
                 }
               />
+              {errors?.contactInfo?.lastName &&
+                touched?.contactInfo?.lastName && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.contactInfo.lastName}
+                  </p>
+                )}
             </div>
             <div>
               <Input
@@ -191,6 +203,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                   handleContactInfoChange("email", e.target.value)
                 }
               />
+              {errors?.contactInfo?.email && touched?.contactInfo?.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.contactInfo.email}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
