@@ -6,6 +6,8 @@ import Input from "@/components/general-components/Input";
 import ReactSelect from "react-select";
 import CreatableSelect from "react-select/creatable";
 import RadioCheck from "@/components/general-components/radioCheck";
+import EnhancedPriceInput from "@/components/general-components/EnhancedPriceInput";
+import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import customStyles from "@/styles/inputStyle";
 import {
@@ -35,13 +37,10 @@ interface StepProps {
 
 const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
+  const formik = useFormikContext();
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
-  const [formatedPrice, setFormatedPrice] = useState<string>("");
-  const [formatedHold, setFormatedHold] = useState<string>("");
-  const [formatedLandSize, setFormatedLandSize] = useState<string>("");
-  const [formatedLeaseHold, setFormatedLeaseHold] = useState<string>("");
 
   useEffect(() => {
     // Format states data using new location data
@@ -96,37 +95,6 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
       updatePropertyData("area", "");
     }
   }, [propertyData.state, propertyData.lga]);
-
-  const handlePriceChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    updatePropertyData("price", numericValue);
-    setFormatedPrice(
-      numericValue ? `₦${Number(numericValue).toLocaleString()}` : "",
-    );
-  };
-
-  const handleHoldDurationChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    updatePropertyData("holdDuration", numericValue);
-    setFormatedHold(numericValue ? `${numericValue} years` : "");
-  };
-
-  const formatNumber = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    return numericValue ? Number(numericValue).toLocaleString() : "";
-  };
-
-  const handleLandSizeChange = (value: string) => {
-    const formatted = formatNumber(value);
-    setFormatedLandSize(formatted);
-    updatePropertyData("landSize", value.replace(/[^0-9]/g, ""));
-  };
-
-  const handleLeaseHoldChange = (value: string) => {
-    const formatted = formatNumber(value);
-    setFormatedLeaseHold(formatted);
-    updatePropertyData("leaseHold", value.replace(/[^0-9]/g, ""));
-  };
 
   return (
     <motion.div
@@ -209,6 +177,8 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 type="radio"
                 value="Rent"
                 name="rentalType"
+                variant="card"
+                error={errors?.rentalType && touched?.rentalType}
               />
               <RadioCheck
                 selectedValue={propertyData.rentalType}
@@ -216,6 +186,8 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 type="radio"
                 name="rentalType"
                 value="Lease"
+                variant="card"
+                error={errors?.rentalType && touched?.rentalType}
               />
             </div>
             {errors?.rentalType && touched?.rentalType && (
@@ -234,7 +206,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Shortlet Duration *
             </h3>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
                 handleChange={() =>
@@ -243,6 +215,8 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 type="radio"
                 value="Daily"
                 name="shortletDuration"
+                variant="card"
+                error={errors?.shortletDuration && touched?.shortletDuration}
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -252,6 +226,8 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 type="radio"
                 name="shortletDuration"
                 value="Weekly"
+                variant="card"
+                error={errors?.shortletDuration && touched?.shortletDuration}
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -261,6 +237,8 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 type="radio"
                 name="shortletDuration"
                 value="Monthly"
+                variant="card"
+                error={errors?.shortletDuration && touched?.shortletDuration}
               />
             </div>
             {errors?.shortletDuration && touched?.shortletDuration && (
@@ -281,7 +259,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
               Property Condition *
             </h3>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {propertyConditionOptions.map((option) => (
                 <RadioCheck
                   key={option.value}
@@ -292,6 +270,10 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                   type="radio"
                   value={option.value}
                   name="propertyCondition"
+                  variant="card"
+                  error={
+                    errors?.propertyCondition && touched?.propertyCondition
+                  }
                 />
               ))}
             </div>
@@ -310,7 +292,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <div>
-              <Input
+              <EnhancedPriceInput
                 name="price"
                 label={
                   propertyData.propertyType === "sell"
@@ -319,17 +301,21 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                       ? "Annual Rent"
                       : "Property Value"
                 }
-                type="text"
+                value={propertyData.price}
+                onChange={(value) => updatePropertyData("price", value)}
                 placeholder="Enter amount"
-                value={formatedPrice}
-                onChange={(e) => handlePriceChange(e.target.value)}
-                className={
-                  errors?.price && touched?.price ? "border-red-500" : ""
+                prefix="₦"
+                error={errors?.price}
+                touched={touched?.price}
+                required
+                description={
+                  propertyData.propertyType === "rent"
+                    ? "Enter the total annual rent amount"
+                    : propertyData.propertyType === "sell"
+                      ? "Enter your desired selling price"
+                      : "Enter the estimated property value"
                 }
               />
-              {errors?.price && touched?.price && (
-                <p className="text-red-500 text-sm mt-1">{errors.price}</p>
-              )}
             </div>
 
             {/* Lease Hold for Rent (when Lease is selected) */}
@@ -340,13 +326,14 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
               { rentalType: propertyData.rentalType },
             ) && (
               <div>
-                <Input
+                <EnhancedPriceInput
                   name="leaseHold"
-                  label="Lease Hold Duration (Years)"
-                  type="text"
-                  placeholder="Enter lease hold duration"
-                  value={formatedLeaseHold}
-                  onChange={(e) => handleLeaseHoldChange(e.target.value)}
+                  label="Lease Hold Duration"
+                  value={propertyData.leaseHold}
+                  onChange={(value) => updatePropertyData("leaseHold", value)}
+                  placeholder="Enter duration"
+                  suffix="years"
+                  description="How many years is the lease valid for?"
                 />
               </div>
             )}
@@ -354,13 +341,16 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
             {/* Hold Duration for Joint Venture */}
             {propertyData.propertyType === "jv" && (
               <div>
-                <Input
+                <EnhancedPriceInput
                   name="holdDuration"
-                  label="Hold Duration (Years)"
-                  type="text"
-                  placeholder="Enter years"
-                  value={formatedHold}
-                  onChange={(e) => handleHoldDurationChange(e.target.value)}
+                  label="Hold Duration"
+                  value={propertyData.holdDuration}
+                  onChange={(value) =>
+                    updatePropertyData("holdDuration", value)
+                  }
+                  placeholder="Enter duration"
+                  suffix="years"
+                  description="Expected duration of the joint venture"
                 />
               </div>
             )}
@@ -404,13 +394,15 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 />
               </div>
               <div>
-                <Input
+                <EnhancedPriceInput
                   name="landSize"
-                  label="Enter Land Size"
-                  type="text"
-                  placeholder="Enter land size"
-                  value={formatedLandSize}
-                  onChange={(e) => handleLandSizeChange(e.target.value)}
+                  label="Land Size"
+                  value={propertyData.landSize}
+                  onChange={(value) => updatePropertyData("landSize", value)}
+                  placeholder="Enter size"
+                  prefix=""
+                  suffix={propertyData.measurementType || ""}
+                  description="Enter the size of the land"
                 />
               </div>
             </div>
