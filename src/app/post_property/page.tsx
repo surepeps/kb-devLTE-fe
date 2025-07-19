@@ -42,7 +42,7 @@ import {
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
 
-// Validation schemas for each step - now using step-specific validation
+// Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
 const getValidationSchema = (currentStep: number, propertyData: any) => {
   switch (currentStep) {
     case 0:
@@ -51,19 +51,33 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-      // Use step-specific validation for step 1
-      return step1ValidationSchema(propertyData.propertyType);
+      // Only validate basic step 1 fields to avoid validating other steps
+      return Yup.object({
+        propertyCategory: Yup.string().required(
+          "Property category is required",
+        ),
+        state: Yup.object({
+          value: Yup.string().required(),
+          label: Yup.string().required(),
+        }).required("State is required"),
+        lga: Yup.object({
+          value: Yup.string().required(),
+          label: Yup.string().required(),
+        }).required("Local Government is required"),
+        area: Yup.string().required("Area is required"),
+        price: Yup.string().required("Price is required"),
+      });
 
     case 2:
-      // Use step-specific validation for step 2
+      // Only validate step 2 specific fields
       return step2ValidationSchema(propertyData.propertyType);
 
     case 3:
-      // Use step-specific validation for step 3
-      return step3ValidationSchema();
+      // No validation needed - handled by component
+      return Yup.object({});
 
     case 4:
-      // Use step-specific validation for step 4
+      // Only validate step 4 fields
       return step4ValidationSchema();
 
     default:
