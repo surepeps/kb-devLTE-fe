@@ -63,9 +63,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   };
 
   const handleFieldChange = async (fieldName: string, value: any) => {
-    updatePropertyData(fieldName as any, value);
     setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
-    await validateField(fieldName, value);
+    updatePropertyData(fieldName as any, value);
+    // Validate after a small delay to ensure state is updated
+    setTimeout(() => {
+      validateField(fieldName, value);
+    }, 0);
   };
 
   const handlePriceChange = (value: string) => {
@@ -417,9 +420,17 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                         }
                       : null
                   }
-                  onChange={(option) =>
-                    updatePropertyData("measurementType", option?.value || "")
-                  }
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    setTouched((prev: any) => ({
+                      ...prev,
+                      measurementType: true,
+                    }));
+                    updatePropertyData("measurementType", value);
+                    setTimeout(() => {
+                      validateField("measurementType", value);
+                    }, 0);
+                  }}
                   placeholder="Select measurement type"
                   styles={customStyles}
                 />
@@ -453,7 +464,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               <ReactSelect
                 options={stateOptions}
                 value={propertyData.state}
-                onChange={(option) => updatePropertyData("state", option)}
+                onChange={(option) => {
+                  setTouched((prev: any) => ({ ...prev, state: true }));
+                  updatePropertyData("state", option);
+                  setTimeout(() => {
+                    validateField("state", option);
+                  }, 0);
+                }}
                 placeholder="Search and select state"
                 styles={{
                   ...customStyles,
@@ -483,7 +500,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               <CreatableSelect
                 options={lgaOptions}
                 value={propertyData.lga}
-                onChange={(option) => updatePropertyData("lga", option)}
+                onChange={(option) => {
+                  setTouched((prev: any) => ({ ...prev, lga: true }));
+                  updatePropertyData("lga", option);
+                  setTimeout(() => {
+                    validateField("lga", option);
+                  }, 0);
+                }}
                 onCreateOption={(inputValue) => {
                   const newOption = { value: inputValue, label: inputValue };
                   updatePropertyData("lga", newOption);
@@ -530,9 +553,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                     ? { value: propertyData.area, label: propertyData.area }
                     : null
                 }
-                onChange={(option) =>
-                  updatePropertyData("area", option?.value || "")
-                }
+                onChange={(option) => {
+                  const value = option?.value || "";
+                  setTouched((prev: any) => ({ ...prev, area: true }));
+                  updatePropertyData("area", value);
+                  setTimeout(() => {
+                    validateField("area", value);
+                  }, 0);
+                }}
                 onCreateOption={(inputValue) => {
                   updatePropertyData("area", inputValue);
                 }}
@@ -601,9 +629,17 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                         }
                       : null
                   }
-                  onChange={(option) =>
-                    updatePropertyData("typeOfBuilding", option?.value || "")
-                  }
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    setTouched((prev: any) => ({
+                      ...prev,
+                      typeOfBuilding: true,
+                    }));
+                    updatePropertyData("typeOfBuilding", value);
+                    setTimeout(() => {
+                      validateField("typeOfBuilding", value);
+                    }, 0);
+                  }}
                   placeholder="Select building type"
                   styles={{
                     ...customStyles,
@@ -643,12 +679,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                           }
                         : null
                     }
-                    onChange={(option) =>
-                      updatePropertyData(
-                        "bedrooms",
-                        parseInt(option?.value || "0") || 0,
-                      )
-                    }
+                    onChange={(option) => {
+                      const value = parseInt(option?.value || "0") || 0;
+                      setTouched((prev: any) => ({ ...prev, bedrooms: true }));
+                      updatePropertyData("bedrooms", value);
+                      setTimeout(() => {
+                        validateField("bedrooms", value);
+                      }, 0);
+                    }}
                     placeholder="Select bedrooms"
                     styles={{
                       ...customStyles,
