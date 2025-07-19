@@ -147,27 +147,13 @@ const PostProperty = () => {
   ] as { label: string; status: "completed" | "active" | "pending" }[];
 
   const handleNext = async (validateForm: () => Promise<any>, errors: any) => {
-    // Validate current step
-    const stepErrors = await validateForm();
-
-    if (Object.keys(stepErrors).length > 0) {
-      // Show toast for first error found
-      const firstError = Object.values(stepErrors)[0];
-      if (typeof firstError === "string") {
-        toast.error(firstError);
-      } else if (typeof firstError === "object" && firstError !== null) {
-        const nestedError = Object.values(firstError)[0];
-        if (typeof nestedError === "string") {
-          toast.error(nestedError);
-        }
-      }
-      return;
-    }
-
+    // Step 3 (images) validation is handled separately by the component
     if (currentStep === 3 && !areImagesValid()) {
-      toast.error("Please upload at least 4 images to continue");
-      return;
+      return; // Component will show validation messages
     }
+
+    // For other steps, validation is handled by each component internally
+    // No need to validate here as components use red border validation
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
