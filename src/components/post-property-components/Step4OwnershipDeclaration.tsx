@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { useUserContext } from "@/context/user-context";
 import Input from "@/components/general-components/Input";
+import RadioCheck from "@/components/general-components/radioCheck";
+import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { DocOnPropertyData } from "@/data/buy_data";
 import "react-phone-number-input/style.css";
@@ -87,30 +89,36 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                 have been authorized by the legal owner to list this property.
               </p>
               <div className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="legalOwner"
-                    checked={propertyData.isLegalOwner === true}
-                    onChange={() => handleLegalOwnerChange(true)}
-                    className="w-4 h-4 text-[#8DDB90] focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm font-medium text-gray-900">
-                    Yes, I am the legal owner of this property
-                  </span>
-                </label>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="legalOwner"
-                    checked={propertyData.isLegalOwner === false}
-                    onChange={() => handleLegalOwnerChange(false)}
-                    className="w-4 h-4 text-[#8DDB90] focus:ring-[#8DDB90]"
-                  />
-                  <span className="text-sm font-medium text-gray-900">
-                    I am authorized by the legal owner to list this property
-                  </span>
-                </label>
+                <RadioCheck
+                  selectedValue={
+                    propertyData.isLegalOwner === true
+                      ? "owner"
+                      : propertyData.isLegalOwner === false
+                        ? "authorized"
+                        : ""
+                  }
+                  handleChange={() => handleLegalOwnerChange(true)}
+                  type="radio"
+                  value="owner"
+                  name="legalOwner"
+                  variant="card"
+                  title="Yes, I am the legal owner of this property"
+                />
+                <RadioCheck
+                  selectedValue={
+                    propertyData.isLegalOwner === true
+                      ? "owner"
+                      : propertyData.isLegalOwner === false
+                        ? "authorized"
+                        : ""
+                  }
+                  handleChange={() => handleLegalOwnerChange(false)}
+                  type="radio"
+                  value="authorized"
+                  name="legalOwner"
+                  variant="card"
+                  title="I am authorized by the legal owner to list this property"
+                />
               </div>
             </div>
           </div>
@@ -126,24 +134,15 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {DocOnPropertyData.map((doc, index) => (
-              <motion.button
+              <EnhancedCheckbox
                 key={index}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleDocumentToggle(doc)}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${
-                  propertyData.ownershipDocuments.includes(doc)
-                    ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10 text-[#09391C]"
-                    : "border-gray-200 hover:border-[#8DDB90] text-gray-700"
-                }`}
-              >
-                <span className="text-sm font-medium">{doc}</span>
-                {propertyData.ownershipDocuments.includes(doc) && (
-                  <div className="mt-2">
-                    <span className="inline-block w-2 h-2 bg-[#8DDB90] rounded-full"></span>
-                  </div>
-                )}
-              </motion.button>
+                label={doc}
+                name="ownershipDocuments"
+                value={doc}
+                checked={propertyData.ownershipDocuments.includes(doc)}
+                onChange={() => handleDocumentToggle(doc)}
+                variant="card"
+              />
             ))}
           </div>
         </div>
@@ -225,7 +224,9 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
               • I understand that false information may result in listing
               removal
             </p>
-            <p>• I agree to Khabi-Teq&apos;s terms of service and privacy policy</p>
+            <p>
+              • I agree to Khabi-Teq&apos;s terms of service and privacy policy
+            </p>
             <p>
               • I consent to being contacted by potential buyers/tenants through
               this platform

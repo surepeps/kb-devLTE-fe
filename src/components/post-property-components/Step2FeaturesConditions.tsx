@@ -74,20 +74,15 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.structure.map((option) => (
-            <label
+            <EnhancedCheckbox
               key={option.value}
-              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={(propertyData.features || []).includes(option.value)}
-                onChange={() =>
-                  handleMultiSelectChange("features", option.value)
-                }
-                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-              />
-              <span className="text-sm text-[#5A5D63]">{option.label}</span>
-            </label>
+              label={option.label}
+              name="features"
+              value={option.value}
+              checked={(propertyData.features || []).includes(option.value)}
+              onChange={() => handleMultiSelectChange("features", option.value)}
+              variant="card"
+            />
           ))}
         </div>
       </div>
@@ -98,20 +93,15 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.utilities.map((option) => (
-            <label
+            <EnhancedCheckbox
               key={option.value}
-              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={(propertyData.features || []).includes(option.value)}
-                onChange={() =>
-                  handleMultiSelectChange("features", option.value)
-                }
-                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-              />
-              <span className="text-sm text-[#5A5D63]">{option.label}</span>
-            </label>
+              label={option.label}
+              name="features"
+              value={option.value}
+              checked={(propertyData.features || []).includes(option.value)}
+              onChange={() => handleMultiSelectChange("features", option.value)}
+              variant="card"
+            />
           ))}
         </div>
       </div>
@@ -122,20 +112,15 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.security.map((option) => (
-            <label
+            <EnhancedCheckbox
               key={option.value}
-              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={(propertyData.features || []).includes(option.value)}
-                onChange={() =>
-                  handleMultiSelectChange("features", option.value)
-                }
-                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-              />
-              <span className="text-sm text-[#5A5D63]">{option.label}</span>
-            </label>
+              label={option.label}
+              name="features"
+              value={option.value}
+              checked={(propertyData.features || []).includes(option.value)}
+              onChange={() => handleMultiSelectChange("features", option.value)}
+              variant="card"
+            />
           ))}
         </div>
       </div>
@@ -146,20 +131,15 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.parking.map((option) => (
-            <label
+            <EnhancedCheckbox
               key={option.value}
-              className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={(propertyData.features || []).includes(option.value)}
-                onChange={() =>
-                  handleMultiSelectChange("features", option.value)
-                }
-                className="w-4 h-4 text-[#8DDB90] border-gray-300 rounded focus:ring-[#8DDB90]"
-              />
-              <span className="text-sm text-[#5A5D63]">{option.label}</span>
-            </label>
+              label={option.label}
+              name="features"
+              value={option.value}
+              checked={(propertyData.features || []).includes(option.value)}
+              onChange={() => handleMultiSelectChange("features", option.value)}
+              variant="card"
+            />
           ))}
         </div>
       </div>
