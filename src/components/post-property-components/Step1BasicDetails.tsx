@@ -41,10 +41,6 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
-  const [formatedPrice, setFormatedPrice] = useState<string>("");
-  const [formatedHold, setFormatedHold] = useState<string>("");
-  const [formatedLandSize, setFormatedLandSize] = useState<string>("");
-  const [formatedLeaseHold, setFormatedLeaseHold] = useState<string>("");
 
   useEffect(() => {
     // Format states data using new location data
@@ -99,37 +95,6 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
       updatePropertyData("area", "");
     }
   }, [propertyData.state, propertyData.lga]);
-
-  const handlePriceChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    updatePropertyData("price", numericValue);
-    setFormatedPrice(
-      numericValue ? `₦${Number(numericValue).toLocaleString()}` : "",
-    );
-  };
-
-  const handleHoldDurationChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    updatePropertyData("holdDuration", numericValue);
-    setFormatedHold(numericValue ? `${numericValue} years` : "");
-  };
-
-  const formatNumber = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    return numericValue ? Number(numericValue).toLocaleString() : "";
-  };
-
-  const handleLandSizeChange = (value: string) => {
-    const formatted = formatNumber(value);
-    setFormatedLandSize(formatted);
-    updatePropertyData("landSize", value.replace(/[^0-9]/g, ""));
-  };
-
-  const handleLeaseHoldChange = (value: string) => {
-    const formatted = formatNumber(value);
-    setFormatedLeaseHold(formatted);
-    updatePropertyData("leaseHold", value.replace(/[^0-9]/g, ""));
-  };
 
   return (
     <motion.div
