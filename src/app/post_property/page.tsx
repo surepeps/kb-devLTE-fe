@@ -545,6 +545,104 @@ const PostProperty = () => {
               ]?.label
             }
           />
+
+          {/* Debug Section - only show in development */}
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-8 bg-gray-100 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Debug - Payload Preview
+              </h3>
+              <details className="cursor-pointer">
+                <summary className="text-sm font-medium text-gray-600 hover:text-gray-800">
+                  Click to view current form data
+                </summary>
+                <div className="mt-4 bg-white rounded border p-4 max-h-96 overflow-auto">
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    Property Data:
+                  </h4>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap mb-4">
+                    {JSON.stringify(propertyData, null, 2)}
+                  </pre>
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    Images ({images.length}):
+                  </h4>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap mb-4">
+                    {JSON.stringify(
+                      images.map((img) => ({
+                        hasFile: !!img.file,
+                        preview: img.preview?.substring(0, 50) + "...",
+                      })),
+                      null,
+                      2,
+                    )}
+                  </pre>
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    Expected Payload Structure:
+                  </h4>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+                    {JSON.stringify(
+                      {
+                        propertyType: propertyData.propertyCategory,
+                        propertyCondition: propertyData.propertyCondition,
+                        typeOfBuilding: propertyData.typeOfBuilding,
+                        rentalType: propertyData.rentalType,
+                        features: propertyData.features,
+                        docOnProperty: propertyData.documents.map((doc) => ({
+                          docName: doc,
+                          isProvided: true,
+                        })),
+                        location: {
+                          state: propertyData.state?.value || "",
+                          localGovernment: propertyData.lga?.value || "",
+                          area: propertyData.area,
+                        },
+                        price: propertyData.price,
+                        leaseHold: propertyData.leaseHold,
+                        shortletDuration: propertyData.shortletDuration,
+                        owner: {
+                          fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
+                          phoneNumber: propertyData.contactInfo.phone,
+                          email: propertyData.contactInfo.email,
+                        },
+                        areYouTheOwner: propertyData.isLegalOwner,
+                        ownershipDocuments:
+                          propertyData.ownershipDocuments || [],
+                        landSize: {
+                          measurementType: propertyData.measurementType,
+                          size: propertyData.landSize,
+                        },
+                        briefType:
+                          propertyData.propertyType === "sell"
+                            ? "Outright Sales"
+                            : propertyData.propertyType === "rent"
+                              ? "Rent"
+                              : propertyData.propertyType === "shortlet"
+                                ? "Shortlet"
+                                : propertyData.propertyType === "jv"
+                                  ? "Joint Venture"
+                                  : "",
+                        additionalFeatures: {
+                          noOfBedroom: propertyData.bedrooms.toString(),
+                          noOfBathroom: propertyData.bathrooms.toString(),
+                          noOfToilet: propertyData.toilets.toString(),
+                          noOfCarPark: propertyData.parkingSpaces.toString(),
+                        },
+                        tenantCriteria: propertyData.tenantCriteria,
+                        jvConditions: propertyData.jvConditions,
+                        description: propertyData.description,
+                        addtionalInfo: propertyData.additionalInfo,
+                        pictures: "[Will be uploaded image URLs]",
+                        isTenanted: propertyData.isTenanted,
+                        holdDuration: propertyData.holdDuration,
+                      },
+                      null,
+                      2,
+                    )}
+                  </pre>
+                </div>
+              </details>
+            </div>
+          )}
         </div>
       </div>
     </AgentAccessBarrier>

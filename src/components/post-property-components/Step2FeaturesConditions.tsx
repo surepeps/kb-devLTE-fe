@@ -71,10 +71,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
 
   const renderCommercialFeatures = () => (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#F8F9FA] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🧱 Structure & Layout
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.structure.map((option) => (
             <EnhancedCheckbox
@@ -90,10 +90,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#FFF9E6] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🔌 Utilities & Power
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.utilities.map((option) => (
             <EnhancedCheckbox
@@ -109,10 +109,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#F0F7FF] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🛡 Security & Access
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.security.map((option) => (
             <EnhancedCheckbox
@@ -128,10 +128,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+      <div className="bg-[#F5F5F5] rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
           🚗 Parking & Visibility
-        </h3>
+        </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.parking.map((option) => (
             <EnhancedCheckbox
@@ -201,23 +201,128 @@ const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
         )}
 
         {/* Features & Amenities */}
-        <div>
-          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Features & Amenities
-          </h3>
+        <div className="border border-[#E5E7EB] rounded-lg p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-[#E4EFE7] flex items-center justify-center">
+              <span className="text-xl">✨</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-[#09391C]">
+                Features & Amenities
+              </h3>
+              <p className="text-sm text-[#5A5D63]">
+                Select all features and amenities available in your property
+              </p>
+            </div>
+          </div>
 
           {/* Residential Features */}
           {propertyData.propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL &&
-            propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
-            renderMultiSelectOptions(residentialFeatures, "features", "")}
+            propertyData.propertyType !== BRIEF_TYPES.SHORTLET && (
+              <div className="space-y-4">
+                <div className="bg-[#F8F9FA] rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                    🏠 Residential Features
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {residentialFeatures.map((option) => (
+                      <EnhancedCheckbox
+                        key={option.value}
+                        label={option.label}
+                        name="features"
+                        value={option.value}
+                        checked={(propertyData.features || []).includes(
+                          option.value,
+                        )}
+                        onChange={() =>
+                          handleMultiSelectChange("features", option.value)
+                        }
+                        variant="card"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
           {/* Shortlet Amenities */}
-          {propertyData.propertyType === BRIEF_TYPES.SHORTLET &&
-            renderMultiSelectOptions(shortletOptions.amenities, "features", "")}
+          {propertyData.propertyType === BRIEF_TYPES.SHORTLET && (
+            <div className="space-y-6">
+              {/* General Amenities */}
+              <div className="bg-[#F8F9FA] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  🏨 Shortlet Amenities
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.slice(0, 24).map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional Amenities */}
+              <div className="bg-[#FFF9E6] rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                  🌟 Premium Features
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shortletOptions.amenities.slice(24).map((option) => (
+                    <EnhancedCheckbox
+                      key={option.value}
+                      label={option.label}
+                      name="features"
+                      value={option.value}
+                      checked={(propertyData.features || []).includes(
+                        option.value,
+                      )}
+                      onChange={() =>
+                        handleMultiSelectChange("features", option.value)
+                      }
+                      variant="card"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Land Features */}
-          {propertyData.propertyCategory === PROPERTY_CATEGORIES.LAND &&
-            renderMultiSelectOptions(landFeatures, "features", "")}
+          {propertyData.propertyCategory === PROPERTY_CATEGORIES.LAND && (
+            <div className="bg-[#F0F7F0] rounded-lg p-4">
+              <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
+                🌿 Land Features
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {landFeatures.map((option) => (
+                  <EnhancedCheckbox
+                    key={option.value}
+                    label={option.label}
+                    name="features"
+                    value={option.value}
+                    checked={(propertyData.features || []).includes(
+                      option.value,
+                    )}
+                    onChange={() =>
+                      handleMultiSelectChange("features", option.value)
+                    }
+                    variant="card"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Commercial Features */}
           {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL &&
