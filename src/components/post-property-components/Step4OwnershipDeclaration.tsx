@@ -68,10 +68,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     field: keyof typeof propertyData.contactInfo,
     value: string,
   ) => {
-    updatePropertyData("contactInfo", {
+    const newContactInfo = {
       ...propertyData.contactInfo,
       [field]: value,
-    });
+    };
+    handleFieldChange("contactInfo", newContactInfo);
   };
 
   const handleDocumentToggle = (document: string) => {
