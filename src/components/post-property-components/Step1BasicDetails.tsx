@@ -63,9 +63,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   };
 
   const handleFieldChange = async (fieldName: string, value: any) => {
-    updatePropertyData(fieldName as any, value);
     setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
-    await validateField(fieldName, value);
+    updatePropertyData(fieldName as any, value);
+    // Validate after a small delay to ensure state is updated
+    setTimeout(() => {
+      validateField(fieldName, value);
+    }, 0);
   };
 
   const handlePriceChange = (value: string) => {
@@ -417,9 +420,17 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                         }
                       : null
                   }
-                  onChange={(option) =>
-                    updatePropertyData("measurementType", option?.value || "")
-                  }
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    setTouched((prev: any) => ({
+                      ...prev,
+                      measurementType: true,
+                    }));
+                    updatePropertyData("measurementType", value);
+                    setTimeout(() => {
+                      validateField("measurementType", value);
+                    }, 0);
+                  }}
                   placeholder="Select measurement type"
                   styles={customStyles}
                 />
@@ -453,7 +464,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               <ReactSelect
                 options={stateOptions}
                 value={propertyData.state}
-                onChange={(option) => updatePropertyData("state", option)}
+                onChange={(option) => {
+                  setTouched((prev: any) => ({ ...prev, state: true }));
+                  updatePropertyData("state", option);
+                  setTimeout(() => {
+                    validateField("state", option);
+                  }, 0);
+                }}
                 placeholder="Search and select state"
                 styles={{
                   ...customStyles,
@@ -483,7 +500,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               <CreatableSelect
                 options={lgaOptions}
                 value={propertyData.lga}
-                onChange={(option) => updatePropertyData("lga", option)}
+                onChange={(option) => {
+                  setTouched((prev: any) => ({ ...prev, lga: true }));
+                  updatePropertyData("lga", option);
+                  setTimeout(() => {
+                    validateField("lga", option);
+                  }, 0);
+                }}
                 onCreateOption={(inputValue) => {
                   const newOption = { value: inputValue, label: inputValue };
                   updatePropertyData("lga", newOption);
@@ -530,9 +553,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                     ? { value: propertyData.area, label: propertyData.area }
                     : null
                 }
-                onChange={(option) =>
-                  updatePropertyData("area", option?.value || "")
-                }
+                onChange={(option) => {
+                  const value = option?.value || "";
+                  setTouched((prev: any) => ({ ...prev, area: true }));
+                  updatePropertyData("area", value);
+                  setTimeout(() => {
+                    validateField("area", value);
+                  }, 0);
+                }}
                 onCreateOption={(inputValue) => {
                   updatePropertyData("area", inputValue);
                 }}
@@ -588,7 +616,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 <ReactSelect
                   options={
                     propertyData.propertyCategory === "Residential"
-                      ? buildingTypeOptions.residential
+                      ? propertyData.propertyType === "shortlet"
+                        ? buildingTypeOptions.shortlet
+                        : buildingTypeOptions.residential
                       : propertyData.propertyCategory === "Commercial"
                         ? buildingTypeOptions.commercial
                         : []
@@ -601,9 +631,17 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                         }
                       : null
                   }
-                  onChange={(option) =>
-                    updatePropertyData("typeOfBuilding", option?.value || "")
-                  }
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    setTouched((prev: any) => ({
+                      ...prev,
+                      typeOfBuilding: true,
+                    }));
+                    updatePropertyData("typeOfBuilding", value);
+                    setTimeout(() => {
+                      validateField("typeOfBuilding", value);
+                    }, 0);
+                  }}
                   placeholder="Select building type"
                   styles={{
                     ...customStyles,
@@ -643,12 +681,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                           }
                         : null
                     }
-                    onChange={(option) =>
-                      updatePropertyData(
-                        "bedrooms",
-                        parseInt(option?.value || "0") || 0,
-                      )
-                    }
+                    onChange={(option) => {
+                      const value = parseInt(option?.value || "0") || 0;
+                      setTouched((prev: any) => ({ ...prev, bedrooms: true }));
+                      updatePropertyData("bedrooms", value);
+                      setTimeout(() => {
+                        validateField("bedrooms", value);
+                      }, 0);
+                    }}
                     placeholder="Select bedrooms"
                     styles={{
                       ...customStyles,
@@ -756,6 +796,68 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   placeholder="Select car parks"
                   styles={customStyles}
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Shortlet Specific Fields */}
+        {propertyData.propertyType === "shortlet" && (
+          <div>
+            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+              Shortlet Details
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Street Address *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter full street address"
+                  value={propertyData.streetAddress || ""}
+                  onChange={(e) =>
+                    handleFieldChange("streetAddress", e.target.value)
+                  }
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${
+                    errors?.streetAddress && touched?.streetAddress
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
+                />
+                {errors?.streetAddress && touched?.streetAddress && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.streetAddress}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Max Number of Guests *
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  placeholder="Enter max guests"
+                  value={propertyData.maxGuests || ""}
+                  onChange={(e) =>
+                    handleFieldChange(
+                      "maxGuests",
+                      parseInt(e.target.value) || 0,
+                    )
+                  }
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${
+                    errors?.maxGuests && touched?.maxGuests
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
+                />
+                {errors?.maxGuests && touched?.maxGuests && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.maxGuests}
+                  </p>
+                )}
               </div>
             </div>
           </div>

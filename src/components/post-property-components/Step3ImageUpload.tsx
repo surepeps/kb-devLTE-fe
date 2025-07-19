@@ -387,27 +387,26 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       </div>
 
       {/* Video Upload Section */}
-      <div className="mt-12">
-        <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-dashed border-purple-200">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-              <VideoIcon size={28} className="text-white" />
+      <div className="mt-8">
+        <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+          <div className="text-center mb-4">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+              <VideoIcon size={20} className="text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
-              🎬 Property Video Tour
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              Property Video Tour
             </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
-              Showcase your property with a captivating video tour. Videos get
-              3x more engagement than photos alone!
+            <p className="text-gray-600 text-sm max-w-md mx-auto">
+              Add a video to showcase your property (Optional)
             </p>
           </div>
 
           {videos.length > 0 && videos[0] ? (
-            <div className="max-w-2xl mx-auto">
-              <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="max-w-xl mx-auto">
+              <div className="relative bg-white rounded-lg shadow-sm overflow-hidden">
                 <video
                   src={videos[0].preview || videos[0].url || ""}
-                  className="w-full h-64 md:h-80 object-cover"
+                  className="w-full h-48 object-cover"
                   controls
                   poster="/api/placeholder/600/400"
                 />
@@ -446,25 +445,25 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
                 </div>
               </div>
 
-              <div className="mt-4 flex justify-center">
+              <div className="mt-3 flex justify-center">
                 <button
                   onClick={handleAddVideo}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all transform hover:scale-105 shadow-lg"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors text-sm"
                   disabled={videos[0].isUploading}
                 >
-                  <VideoIcon size={20} />
+                  <VideoIcon size={16} />
                   Replace Video
                 </button>
               </div>
             </div>
           ) : (
             <div className="text-center">
-              <div className="border-2 border-dashed border-purple-300 rounded-xl p-8 mb-6 hover:border-purple-400 transition-colors bg-white bg-opacity-50">
-                <div className="mb-4">
-                  <div className="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <VideoIcon size={32} className="text-purple-500" />
+              <div className="border border-dashed border-purple-300 rounded-lg p-6 mb-4 hover:border-purple-400 transition-colors bg-white bg-opacity-50">
+                <div className="mb-3">
+                  <div className="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                    <VideoIcon size={24} className="text-purple-500" />
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-700 mb-2">
+                  <h4 className="text-base font-semibold text-gray-700 mb-1">
                     No video yet
                   </h4>
                   <p className="text-gray-500 text-sm">
@@ -475,11 +474,9 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
               <button
                 onClick={handleAddVideo}
-                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 mx-auto transition-all transform hover:scale-105 shadow-xl"
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 mx-auto transition-colors"
               >
-                <div className="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <VideoIcon size={16} />
-                </div>
+                <VideoIcon size={16} />
                 Upload Property Video
                 <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">
                   Optional
@@ -489,37 +486,37 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
           )}
 
           {/* Video Guidelines */}
-          <div className="mt-8 bg-white bg-opacity-70 rounded-xl p-6">
-            <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="mt-4 bg-white bg-opacity-70 rounded-lg p-4">
+            <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2 text-sm">
               <span className="text-purple-500">📋</span>
               Video Guidelines
             </h4>
-            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
-              <div className="space-y-2">
+            <div className="grid md:grid-cols-2 gap-3 text-xs text-gray-600">
+              <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                   <span>Maximum file size: 50MB</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                   <span>Supported formats: MP4, MOV, AVI</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  <span>Recommended duration: 1-3 minutes</span>
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  <span>Duration: 1-3 minutes</span>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  <span>Show exterior and interior views</span>
+                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                  <span>Show exterior and interior</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                   <span>Good lighting and stable footage</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                   <span>Highlight key selling points</span>
                 </div>
               </div>
