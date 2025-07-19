@@ -565,14 +565,26 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   min="0"
                   max="100"
                   value={propertyData.pricing?.weeklyDiscount || ""}
-                  onChange={(e) =>
-                    updatePropertyData("pricing", {
+                  onChange={(e) => {
+                    const newValue = {
                       ...propertyData.pricing,
                       weeklyDiscount: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                    };
+                    handleFieldChange("pricing", newValue);
+                  }}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
+                    errors?.["pricing.weeklyDiscount"] &&
+                    touched?.["pricing.weeklyDiscount"]
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
                 />
+                {errors?.["pricing.weeklyDiscount"] &&
+                  touched?.["pricing.weeklyDiscount"] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors["pricing.weeklyDiscount"]}
+                    </p>
+                  )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
