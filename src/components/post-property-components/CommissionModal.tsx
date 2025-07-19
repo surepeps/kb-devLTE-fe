@@ -29,6 +29,13 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
   };
 
   const getCommissionDescription = () => {
+    const config = briefType
+      ? getCommissionText(briefType, userType, userName)
+      : "";
+    if (config) {
+      return config;
+    }
+
     if (userType === "agent") {
       return `As an agent, you earn ${commission} commission on successful transactions.`;
     }
@@ -85,8 +92,8 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
                   )}
                 </div>
 
-                <p className="text-[#1E1E1E] text-sm leading-relaxed">
-                  {getCommissionText(briefType || "", userType, userName)}
+                <p className="text-[#1E1E1E] text-sm leading-relaxed italic">
+                  "{getCommissionText(briefType || "", userType, userName)}"
                 </p>
               </div>
             </div>
