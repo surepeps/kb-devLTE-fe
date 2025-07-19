@@ -82,6 +82,7 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = ({
                 isChecked={propertyData.propertyType === key}
                 handleChange={handlePropertyTypeChange}
                 className="mt-1"
+                showLabel={false}
               />
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
