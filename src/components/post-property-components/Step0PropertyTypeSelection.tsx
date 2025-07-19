@@ -7,14 +7,10 @@ import { usePostPropertyContext } from "@/context/post-property-context";
 import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed
 }
 
-const Step0PropertyTypeSelection: React.FC<StepProps> = ({
-  errors,
-  touched,
-}) => {
+const Step0PropertyTypeSelection: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
 
   const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
