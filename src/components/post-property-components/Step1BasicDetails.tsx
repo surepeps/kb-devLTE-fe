@@ -47,28 +47,25 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     updatePropertyData(fieldName as any, value);
   };
 
-  const getFieldBorderClass = (fieldName: string) => {
+  const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
-    const isValid =
-      touched[fieldName] &&
-      !errors[fieldName] &&
-      propertyData[fieldName as keyof typeof propertyData];
+    const fieldValue = propertyData[fieldName as keyof typeof propertyData];
+    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
 
-    if (isInvalid)
+    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
     if (isValid)
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
     return "border-[#C7CAD0]";
   };
 
-  const getSelectBorderClass = (fieldName: string) => {
+  const getSelectBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
-    const isValid =
-      touched[fieldName] &&
-      !errors[fieldName] &&
-      propertyData[fieldName as keyof typeof propertyData];
+    const fieldValue = propertyData[fieldName as keyof typeof propertyData];
+    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
 
-    if (isInvalid) return "#ef4444";
+    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+      return "#ef4444";
     if (isValid) return "#22c55e";
     return "#C7CAD0";
   };
@@ -180,7 +177,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : touched.propertyCategory && errors.propertyCategory
+                    : touched.propertyCategory &&
+                        (errors.propertyCategory ||
+                          !propertyData.propertyCategory)
                       ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
                       : touched.propertyCategory &&
                           !errors.propertyCategory &&
@@ -213,7 +212,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Rent"
                 name="rentalType"
                 variant="card"
-                error={touched.rentalType && errors.rentalType}
+                error={
+                  touched.rentalType &&
+                  (errors.rentalType || !propertyData.rentalType)
+                }
               />
               <RadioCheck
                 selectedValue={propertyData.rentalType}
@@ -222,7 +224,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="rentalType"
                 value="Lease"
                 variant="card"
-                error={touched.rentalType && errors.rentalType}
+                error={
+                  touched.rentalType &&
+                  (errors.rentalType || !propertyData.rentalType)
+                }
               />
             </div>
           </div>
@@ -248,7 +253,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Daily"
                 name="shortletDuration"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={
+                  touched.shortletDuration &&
+                  (errors.shortletDuration || !propertyData.shortletDuration)
+                }
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -259,7 +267,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 value="Weekly"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={
+                  touched.shortletDuration &&
+                  (errors.shortletDuration || !propertyData.shortletDuration)
+                }
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -270,7 +281,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 value="Monthly"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={
+                  touched.shortletDuration &&
+                  (errors.shortletDuration || !propertyData.shortletDuration)
+                }
               />
             </div>
           </div>
@@ -298,7 +312,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   value={option.value}
                   name="propertyCondition"
                   variant="card"
-                  error={touched.propertyCondition && errors.propertyCondition}
+                  error={
+                    touched.propertyCondition &&
+                    (errors.propertyCondition ||
+                      !propertyData.propertyCondition)
+                  }
                 />
               ))}
             </div>
@@ -351,7 +369,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   onChange={(e) =>
                     handleFieldChange("holdDuration", e.target.value)
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration", true)}`}
                 />
               </div>
             )}
@@ -418,7 +436,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                     ...customStyles,
                     control: (provided, state) => ({
                       ...customStyles.control?.(provided, state),
-                      borderColor: getSelectBorderClass("measurementType"),
+                      borderColor: getSelectBorderClass(
+                        "measurementType",
+                        true,
+                      ),
                       minHeight: "44px",
                     }),
                   }}
@@ -435,7 +456,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   onChange={(e) =>
                     handleFieldChange("landSize", e.target.value)
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("landSize")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("landSize", true)}`}
                 />
               </div>
             </div>
@@ -465,7 +486,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   ...customStyles,
                   control: (provided, state) => ({
                     ...customStyles.control?.(provided, state),
-                    borderColor: getSelectBorderClass("state"),
+                    borderColor: getSelectBorderClass("state", true),
                     minHeight: "44px",
                   }),
                 }}
@@ -505,7 +526,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   ...customStyles,
                   control: (provided, state) => ({
                     ...customStyles.control?.(provided, state),
-                    borderColor: getSelectBorderClass("lga"),
+                    borderColor: getSelectBorderClass("lga", true),
                     minHeight: "44px",
                   }),
                 }}
@@ -552,7 +573,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   ...customStyles,
                   control: (provided, state) => ({
                     ...customStyles.control?.(provided, state),
-                    borderColor: getSelectBorderClass("area"),
+                    borderColor: getSelectBorderClass("area", true),
                     minHeight: "44px",
                   }),
                 }}
@@ -613,7 +634,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                     ...customStyles,
                     control: (provided, state) => ({
                       ...customStyles.control?.(provided, state),
-                      borderColor: getSelectBorderClass("typeOfBuilding"),
+                      borderColor: getSelectBorderClass("typeOfBuilding", true),
                     }),
                   }}
                 />
@@ -650,7 +671,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       ...customStyles,
                       control: (provided, state) => ({
                         ...customStyles.control?.(provided, state),
-                        borderColor: getSelectBorderClass("bedrooms"),
+                        borderColor: getSelectBorderClass("bedrooms", true),
                       }),
                     }}
                   />
@@ -767,7 +788,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   onChange={(e) =>
                     handleFieldChange("streetAddress", e.target.value)
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("streetAddress")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("streetAddress", true)}`}
                 />
               </div>
               <div>
@@ -786,7 +807,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       parseInt(e.target.value) || 0,
                     )
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("maxGuests")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("maxGuests", true)}`}
                 />
               </div>
             </div>
