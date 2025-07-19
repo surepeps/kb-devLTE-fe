@@ -213,7 +213,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               />
               <RadioCheck
                 selectedValue={propertyData.rentalType}
-                handleChange={() => updatePropertyData("rentalType", "Lease")}
+                handleChange={() => handleFieldChange("rentalType", "Lease")}
                 type="radio"
                 name="rentalType"
                 value="Lease"
