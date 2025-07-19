@@ -115,6 +115,7 @@ const isStepValid = (
 
 // Helper function to check step 1 required fields
 const checkStep1RequiredFields = (propertyData: any) => {
+  // Basic required fields for all property types
   const requiredFields = ["propertyCategory", "state", "lga", "area", "price"];
 
   // Add conditional required fields based on property type and category
@@ -122,6 +123,10 @@ const checkStep1RequiredFields = (propertyData: any) => {
     requiredFields.push("rentalType");
     if (propertyData.propertyCategory !== "Land") {
       requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+    }
+    // Commercial rent needs land size
+    if (propertyData.propertyCategory === "Commercial") {
+      requiredFields.push("measurementType", "landSize");
     }
   }
 
@@ -151,7 +156,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
     requiredFields.push("measurementType", "landSize");
   }
 
-  // Land size for Land category
+  // Land category always needs land size for all property types
   if (propertyData.propertyCategory === "Land") {
     if (!requiredFields.includes("measurementType"))
       requiredFields.push("measurementType");
