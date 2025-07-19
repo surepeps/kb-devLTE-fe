@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { useUserContext } from "@/context/user-context";
 import { step4ValidationSchema } from "@/utils/validation/post-property-validation";
@@ -24,8 +25,8 @@ interface StepProps {
 const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
-  const [errors, setErrors] = useState<any>({});
-  const [touched, setTouched] = useState<any>({});
+  const { errors, touched, setFieldTouched, setFieldValue } =
+    useFormikContext<any>();
 
   // Validation function
   const validateField = async (fieldName: string, value: any) => {
