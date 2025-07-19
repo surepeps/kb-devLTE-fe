@@ -11,6 +11,10 @@ import {
   formatCurrency,
 } from "@/utils/validation/post-property-validation";
 import {
+  formatPriceForDisplay,
+  cleanNumericInput,
+} from "@/utils/price-helpers";
+import {
   briefTypeConfig,
   documentOptions,
   getFeaturesByCategory,
@@ -666,27 +670,33 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Nightly Rate (₦) <span className="text-red-500">*</span>
+                  Nightly Rate <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={propertyData.pricing?.nightly || ""}
-                  onChange={(e) => {
-                    const newValue = {
-                      ...propertyData.pricing,
-                      nightly: parseInt(e.target.value) || 0,
-                    };
-                    handleFieldChange("pricing", newValue);
-                  }}
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
-                    touched["pricing.nightly"] && errors["pricing.nightly"]
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                      : touched["pricing.nightly"] && !errors["pricing.nightly"]
-                        ? "border-green-500 focus:border-green-500 focus:ring-green-100"
-                        : "border-[#C7CAD0]"
-                  }`}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formatPriceForDisplay(
+                      propertyData.pricing?.nightly || 0,
+                    )}
+                    onChange={(e) => {
+                      const numericValue = cleanNumericInput(e.target.value);
+                      const newValue = {
+                        ...propertyData.pricing,
+                        nightly: parseInt(numericValue) || 0,
+                      };
+                      handleFieldChange("pricing", newValue);
+                    }}
+                    placeholder="Enter nightly rate"
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
+                      touched["pricing.nightly"] && errors["pricing.nightly"]
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                        : touched["pricing.nightly"] &&
+                            !errors["pricing.nightly"]
+                          ? "border-green-500 focus:border-green-500 focus:ring-green-100"
+                          : "border-[#C7CAD0]"
+                    }`}
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -740,37 +750,47 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Cleaning Fee (₦)
+                  Cleaning Fee
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={propertyData.pricing?.cleaningFee || ""}
-                  onChange={(e) =>
-                    updatePropertyData("pricing", {
-                      ...propertyData.pricing,
-                      cleaningFee: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formatPriceForDisplay(
+                      propertyData.pricing?.cleaningFee || 0,
+                    )}
+                    onChange={(e) => {
+                      const numericValue = cleanNumericInput(e.target.value);
+                      updatePropertyData("pricing", {
+                        ...propertyData.pricing,
+                        cleaningFee: parseInt(numericValue) || 0,
+                      });
+                    }}
+                    placeholder="Enter cleaning fee"
+                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Security Deposit (₦)
+                  Security Deposit
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={propertyData.pricing?.securityDeposit || ""}
-                  onChange={(e) =>
-                    updatePropertyData("pricing", {
-                      ...propertyData.pricing,
-                      securityDeposit: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formatPriceForDisplay(
+                      propertyData.pricing?.securityDeposit || 0,
+                    )}
+                    onChange={(e) => {
+                      const numericValue = cleanNumericInput(e.target.value);
+                      updatePropertyData("pricing", {
+                        ...propertyData.pricing,
+                        securityDeposit: parseInt(numericValue) || 0,
+                      });
+                    }}
+                    placeholder="Enter security deposit"
+                    className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                  />
+                </div>
               </div>
             </div>
 
