@@ -312,21 +312,59 @@ const PostProperty = () => {
     errors: any,
     setFieldTouched: (field: string, isTouched: boolean) => void,
   ) => {
-    // Step 3 (images) validation is handled separately by the component
-    if (currentStep === 3 && !areImagesValid()) {
-      return; // Component will show validation messages
+    // Use step-specific validation instead of full form validation
+    let isCurrentStepValid = false;
+
+    switch (currentStep) {
+      case 0:
+        isCurrentStepValid = !!propertyData.propertyType;
+        break;
+      case 1:
+        isCurrentStepValid = checkStep1RequiredFields(propertyData);
+        break;
+      case 2:
+        isCurrentStepValid = checkStep2RequiredFields(propertyData);
+        break;
+      case 3:
+        isCurrentStepValid = areImagesValid();
+        break;
+      case 4:
+        isCurrentStepValid = checkStep4RequiredFields(propertyData);
+        break;
+      default:
+        isCurrentStepValid = true;
     }
 
-    // For other steps, validate the form first
-    const formErrors = await validateForm();
-
-    // Check if current step has validation errors
-    if (Object.keys(formErrors).length > 0) {
-      // Mark all fields as touched to show validation errors
-      Object.keys(formErrors).forEach((field) => {
-        setFieldTouched(field, true);
-      });
-      return; // Don't proceed if there are validation errors
+    if (!isCurrentStepValid) {
+      // Mark relevant fields as touched to show validation errors
+      if (currentStep === 1) {
+        const step1Fields = [
+          "propertyCategory",
+          "state",
+          "lga",
+          "area",
+          "price",
+        ];
+        step1Fields.forEach((field) => setFieldTouched(field, true));
+      } else if (currentStep === 2) {
+        setFieldTouched("isTenanted", true);
+        if (
+          propertyData.propertyType === "sell" ||
+          propertyData.propertyType === "jv"
+        ) {
+          setFieldTouched("documents", true);
+        }
+        if (propertyData.propertyType === "jv") {
+          setFieldTouched("jvConditions", true);
+        }
+      } else if (currentStep === 4) {
+        setFieldTouched("contactInfo.firstName", true);
+        setFieldTouched("contactInfo.lastName", true);
+        setFieldTouched("contactInfo.email", true);
+        setFieldTouched("contactInfo.phone", true);
+        setFieldTouched("isLegalOwner", true);
+      }
+      return; // Don't proceed if validation fails
     }
 
     if (currentStep < 4) {
