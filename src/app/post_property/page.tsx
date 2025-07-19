@@ -360,7 +360,7 @@ const PostProperty = () => {
             {({ errors, touched, validateForm }) => (
               <Form>
                 <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
-                  {renderCurrentStep(errors, touched)}
+                  {renderCurrentStep()}
                 </div>
 
                 {/* Navigation Buttons */}
