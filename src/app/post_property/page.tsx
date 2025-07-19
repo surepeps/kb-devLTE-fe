@@ -190,6 +190,12 @@ const checkStep1RequiredFields = (propertyData: any) => {
 
 // Helper function to check step 2 required fields
 const checkStep2RequiredFields = (propertyData: any) => {
+  // isTenanted is required for all property types
+  if (!propertyData.isTenanted || propertyData.isTenanted === "") {
+    return false;
+  }
+
+  // Documents are required for sell and jv types
   if (
     propertyData.propertyType === "sell" ||
     propertyData.propertyType === "jv"
@@ -199,10 +205,24 @@ const checkStep2RequiredFields = (propertyData: any) => {
     if (!hasDocuments) return false;
   }
 
+  // JV conditions are required for joint venture
   if (propertyData.propertyType === "jv") {
     const hasJvConditions =
       propertyData.jvConditions && propertyData.jvConditions.length > 0;
     if (!hasJvConditions) return false;
+  }
+
+  // For shortlet, check required pricing and house rules
+  if (propertyData.propertyType === "shortlet") {
+    const pricing = propertyData.pricing;
+    const houseRules = propertyData.houseRules;
+    const availability = propertyData.availability;
+
+    // Check required shortlet fields
+    if (!availability?.minStay || availability.minStay < 1) return false;
+    if (!pricing?.nightly || pricing.nightly <= 0) return false;
+    if (!houseRules?.checkIn || houseRules.checkIn === "") return false;
+    if (!houseRules?.checkOut || houseRules.checkOut === "") return false;
   }
 
   return true;
@@ -503,7 +523,7 @@ const PostProperty = () => {
           {/* Breadcrumb */}
           <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
             <span>Home</span>
-            <span className="mx-2">›</span>
+            <span className="mx-2">��</span>
             <span>Post Property</span>
             <span className="mx-2">›</span>
             <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
