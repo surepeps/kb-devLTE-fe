@@ -414,7 +414,7 @@ export const step2ValidationSchema = (propertyType: string) => {
     case "rent":
     default:
       return Yup.object({
-        isTenanted: Yup.string().required(),
+        isTenanted: Yup.string().required("Please specify tenancy status"),
       });
   }
 };
