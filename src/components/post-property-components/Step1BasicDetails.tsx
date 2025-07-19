@@ -23,6 +23,11 @@ import {
   getFieldsToClearOnCategoryChange,
 } from "@/data/comprehensive-post-property-config";
 import { formatCurrency } from "@/utils/validation/post-property-validation";
+import {
+  formatPriceForDisplay,
+  extractNumericValue,
+  cleanNumericInput,
+} from "@/utils/price-helpers";
 
 interface Option {
   value: string;
@@ -71,8 +76,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   };
 
   const handlePriceChange = (value: string) => {
-    const formattedValue = formatCurrency(value);
-    handleFieldChange("price", formattedValue);
+    // Store only numeric value for the payload, but display formatted
+    const numericValue = cleanNumericInput(value);
+    handleFieldChange("price", numericValue);
   };
 
   useEffect(() => {
@@ -94,6 +100,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         }),
       );
       setLgaOptions(lgas);
+
+      // Reset LGA and area when state changes
+      updatePropertyData("lga", null);
+      updatePropertyData("area", "");
     } else {
       setLgaOptions([]);
       setAreaOptions([]);
@@ -114,15 +124,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       }));
       setAreaOptions(areas);
 
-      // Clear area if it's not valid for new LGA
-      if (propertyData.area) {
-        const isValidArea = areas.some(
-          (area) => area.value === propertyData.area,
-        );
-        if (!isValidArea) {
-          updatePropertyData("area", "");
-        }
-      }
+      // Reset area when LGA changes
+      updatePropertyData("area", "");
     } else {
       setAreaOptions([]);
       updatePropertyData("area", "");
@@ -351,10 +354,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       ? "Annual Rent"
                       : "Property Value"
                 }
-                value={propertyData.price}
+                value={formatPriceForDisplay(propertyData.price)}
                 onChange={handlePriceChange}
                 placeholder="Enter amount"
-                prefix="₦"
+                prefix=""
                 error={
                   typeof errors?.price === "string" ? errors.price : undefined
                 }
@@ -380,9 +383,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   type="text"
                   placeholder="Enter duration (e.g., 5 years)"
                   value={propertyData.holdDuration || ""}
-                  onChange={(e) =>
-                    handleFieldChange("holdDuration", e.target.value)
-                  }
+                  onChange={(e) => {
+                    // Allow only numbers and common duration words
+                    const value = e.target.value;
+                    if (/^[0-9\s]*[a-zA-Z]*[\s]*$/.test(value)) {
+                      handleFieldChange("holdDuration", value);
+                    }
+                  }}
                   className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration", true)}`}
                 />
               </div>
@@ -396,15 +403,23 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               { rentalType: propertyData.rentalType },
             ) && (
               <div>
-                <EnhancedPriceInput
-                  name="leaseHold"
-                  label="Lease Hold Duration"
+                <label className="block text-sm font-medium text-[#707281] mb-2">
+                  Lease Hold Duration <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter duration in years"
                   value={propertyData.leaseHold || ""}
-                  onChange={(value) => updatePropertyData("leaseHold", value)}
-                  placeholder="Enter duration"
-                  suffix="years"
-                  description="How many years is the lease valid for?"
+                  onChange={(e) => {
+                    // Allow only numbers for lease duration
+                    const value = cleanNumericInput(e.target.value);
+                    updatePropertyData("leaseHold", value);
+                  }}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("leaseHold", true)}`}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  How many years is the lease valid for?
+                </p>
               </div>
             )}
           </div>
@@ -463,15 +478,26 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 <label className="block text-sm font-medium text-[#707281] mb-2">
                   Land Size <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter size"
-                  value={propertyData.landSize || ""}
-                  onChange={(e) =>
-                    handleFieldChange("landSize", e.target.value)
-                  }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("landSize", true)}`}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder={`Enter size${propertyData.measurementType ? ` in ${propertyData.measurementType.toLowerCase()}` : ""}`}
+                    value={propertyData.landSize || ""}
+                    onChange={(e) =>
+                      handleFieldChange("landSize", e.target.value)
+                    }
+                    className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${propertyData.measurementType ? "pr-20" : ""} ${getFieldBorderClass("landSize", true)}`}
+                  />
+                  {propertyData.measurementType && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {propertyData.measurementType === "Square Meter"
+                          ? "sqm"
+                          : propertyData.measurementType.toLowerCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

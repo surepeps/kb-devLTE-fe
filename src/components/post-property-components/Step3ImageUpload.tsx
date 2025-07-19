@@ -521,19 +521,6 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         </div>
       </div>
 
-      {/* Add More Images Button */}
-      {validImagesCount > 0 && validImagesCount < 12 && (
-        <div className="text-center mt-6">
-          <button
-            onClick={handleAddMoreImages}
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 mx-auto transition-colors"
-          >
-            <PlusIcon size={20} />
-            Add More Images ({validImagesCount}/12)
-          </button>
-        </div>
-      )}
-
       {/* Upload Guidelines */}
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
