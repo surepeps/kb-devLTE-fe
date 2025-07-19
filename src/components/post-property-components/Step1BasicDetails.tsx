@@ -355,8 +355,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 onChange={handlePriceChange}
                 placeholder="Enter amount"
                 prefix="₦"
-                error={errors?.price}
-                touched={touched?.price}
+                error={
+                  typeof errors?.price === "string" ? errors.price : undefined
+                }
+                touched={!!touched?.price}
                 required
                 description={
                   propertyData.propertyType === "rent"
