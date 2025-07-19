@@ -14,6 +14,7 @@ import {
   briefTypeConfig,
 } from "@/data/comprehensive-post-property-config";
 import "react-phone-number-input/style.css";
+import "@/styles/phone-input.css";
 
 interface StepProps {
   errors?: any;
@@ -361,7 +362,13 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
               <label className="block text-sm font-medium text-[#707281] mb-2">
                 Phone Number *
               </label>
-              <div className="relative">
+              <div
+                className={`phone-input-container ${
+                  errors?.contactInfo?.phone && touched?.contactInfo?.phone
+                    ? "has-error"
+                    : ""
+                }`}
+              >
                 <PhoneInput
                   international
                   countryCallingCodeEditable={false}
@@ -370,13 +377,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                   onChange={(value) =>
                     handleContactInfoChange("phone", value || "")
                   }
-                  className="w-full border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] h-[44px]"
-                  style={
-                    {
-                      "--PhoneInputCountryFlag-height": "1em",
-                      "--PhoneInput-color--focus": "#8DDB90",
-                    } as React.CSSProperties
-                  }
+                  placeholder="Enter phone number"
+                  className="enhanced-phone-input"
                 />
               </div>
               {errors?.contactInfo?.phone && touched?.contactInfo?.phone && (
@@ -384,6 +386,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
                   {errors.contactInfo.phone}
                 </p>
               )}
+              {propertyData.contactInfo.phone &&
+                !isValidPhoneNumber(propertyData.contactInfo.phone) && (
+                  <p className="text-yellow-600 text-sm mt-1">
+                    Please enter a valid phone number
+                  </p>
+                )}
             </div>
           </div>
         </div>
