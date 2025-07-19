@@ -524,7 +524,12 @@ const PostProperty = () => {
                           }
                           className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                           isDisabled={
-                            isSubmitting || (!isValid && currentStep !== 3)
+                            isSubmitting ||
+                            !isStepValid(
+                              currentStep,
+                              propertyData,
+                              areImagesValid,
+                            )
                           }
                         />
                       </div>
