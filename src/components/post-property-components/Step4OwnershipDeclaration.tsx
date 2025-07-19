@@ -90,20 +90,34 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = ({
               </p>
               <div className="space-y-3">
                 <RadioCheck
-                  selectedValue={propertyData.isLegalOwner ? "true" : "false"}
+                  selectedValue={
+                    propertyData.isLegalOwner === true
+                      ? "owner"
+                      : propertyData.isLegalOwner === false
+                        ? "authorized"
+                        : ""
+                  }
                   handleChange={() => handleLegalOwnerChange(true)}
                   type="radio"
-                  value="Yes, I am the legal owner of this property"
+                  value="owner"
                   name="legalOwner"
                   variant="card"
+                  title="Yes, I am the legal owner of this property"
                 />
                 <RadioCheck
-                  selectedValue={propertyData.isLegalOwner ? "true" : "false"}
+                  selectedValue={
+                    propertyData.isLegalOwner === true
+                      ? "owner"
+                      : propertyData.isLegalOwner === false
+                        ? "authorized"
+                        : ""
+                  }
                   handleChange={() => handleLegalOwnerChange(false)}
                   type="radio"
-                  value="I am authorized by the legal owner to list this property"
+                  value="authorized"
                   name="legalOwner"
                   variant="card"
+                  title="I am authorized by the legal owner to list this property"
                 />
               </div>
             </div>
