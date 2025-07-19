@@ -258,8 +258,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 variant="card"
                 error={
-                  touched.shortletDuration &&
-                  (errors.shortletDuration || !propertyData.shortletDuration)
+                  !!(
+                    touched.shortletDuration &&
+                    (errors.shortletDuration || !propertyData.shortletDuration)
+                  )
                 }
               />
               <RadioCheck
@@ -272,8 +274,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Weekly"
                 variant="card"
                 error={
-                  touched.shortletDuration &&
-                  (errors.shortletDuration || !propertyData.shortletDuration)
+                  !!(
+                    touched.shortletDuration &&
+                    (errors.shortletDuration || !propertyData.shortletDuration)
+                  )
                 }
               />
               <RadioCheck
@@ -286,8 +290,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Monthly"
                 variant="card"
                 error={
-                  touched.shortletDuration &&
-                  (errors.shortletDuration || !propertyData.shortletDuration)
+                  !!(
+                    touched.shortletDuration &&
+                    (errors.shortletDuration || !propertyData.shortletDuration)
+                  )
                 }
               />
             </div>
