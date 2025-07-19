@@ -255,77 +255,24 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   const getMinimumRequiredImages = () => 4;
 
   const areImagesValid = () => {
-    const validImages = images.filter((img) => img.file !== null);
+    const validImages = images.filter((img) => img.file !== null || img.url);
     return validImages.length >= getMinimumRequiredImages();
   };
 
   const validateCurrentStep = () => {
+    // Validation is now handled by Formik
+    // This function is kept for compatibility but should rely on Formik validation
     switch (currentStep) {
       case 0: // Property type selection
-        return propertyData.propertyType !== "";
-      case 1: // Basic details
-        const basicFieldsValid = !!(
-          propertyData.propertyCategory &&
-          propertyData.price &&
-          propertyData.state &&
-          propertyData.lga &&
-          propertyData.area
-        );
-
-        // Additional validations based on property type
-        if (
-          (propertyData.propertyType === "rent" ||
-            propertyData.propertyType === "shortlet") &&
-          propertyData.propertyCategory !== "Land"
-        ) {
-          let additionalValid = !!propertyData.propertyCondition;
-
-          if (propertyData.propertyType === "rent") {
-            additionalValid = additionalValid && !!propertyData.rentalType;
-          }
-
-          if (propertyData.propertyType === "shortlet") {
-            additionalValid =
-              additionalValid && !!propertyData.shortletDuration;
-          }
-
-          return basicFieldsValid && additionalValid;
-        }
-
-        if (propertyData.propertyCategory !== "Land") {
-          return (
-            basicFieldsValid &&
-            !!propertyData.typeOfBuilding &&
-            propertyData.bedrooms > 0
-          );
-        }
-
-        return basicFieldsValid;
-
-      case 2: // Features and conditions
-        if (
-          propertyData.propertyType === "rent" ||
-          propertyData.propertyType === "shortlet"
-        ) {
-          return true; // No required fields for rent/shortlet
-        }
-        if (propertyData.propertyType === "jv") {
-          return propertyData.jvConditions.length > 0;
-        }
-        // For sell
-        return propertyData.documents.length > 0;
-
+        return !!propertyData.propertyType;
+      case 1: // Basic details - will be validated by Formik
+        return true;
+      case 2: // Features and conditions - will be validated by Formik
+        return true;
       case 3: // Image upload
         return areImagesValid();
-
-      case 4: // Ownership and contact
-        return !!(
-          propertyData.contactInfo.firstName &&
-          propertyData.contactInfo.lastName &&
-          propertyData.contactInfo.email &&
-          propertyData.contactInfo.phone
-        );
-
+      case 4: // Ownership and contact - will be validated by Formik
+        return true;
       default:
         return true;
     }
