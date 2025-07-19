@@ -18,16 +18,14 @@ import "react-phone-number-input/style.css";
 import "@/styles/phone-input.css";
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed
 }
 
-const Step4OwnershipDeclaration: React.FC<StepProps> = ({
-  errors,
-  touched,
-}) => {
+const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
 
   // Initialize contact info with user data
   useEffect(() => {
