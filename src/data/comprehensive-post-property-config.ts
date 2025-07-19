@@ -66,10 +66,7 @@ export const briefTypeConfig = {
     label: "Shortlet",
     description: "I want to list my property for short-term rental",
     icon: "📅",
-    propertyCategories: [
-      PROPERTY_CATEGORIES.RESIDENTIAL,
-      PROPERTY_CATEGORIES.COMMERCIAL,
-    ],
+    propertyCategories: [PROPERTY_CATEGORIES.RESIDENTIAL],
     commission: {
       landowner: 5,
       agent: 50,
@@ -83,7 +80,7 @@ export const propertyConditionOptions = [
   { value: "Good Condition", label: "Good Condition" },
 ];
 
-// Building Type Options
+// Building Type Options - Updated to match specifications
 export const buildingTypeOptions = {
   residential: [
     { value: "Bungalow", label: "Bungalow" },
@@ -102,9 +99,16 @@ export const buildingTypeOptions = {
     { value: "Warehouse", label: "Warehouse" },
     { value: "Shopping Complex", label: "Shopping Complex" },
   ],
+  shortlet: [
+    { value: "Apartment", label: "Apartment" },
+    { value: "Duplex", label: "Duplex" },
+    { value: "Studio", label: "Studio" },
+    { value: "Bungalow", label: "Bungalow" },
+    { value: "Penthouse", label: "Penthouse" },
+  ],
 };
 
-// Document Types
+// Document Types - Exact list from specifications
 export const documentOptions = [
   { value: "Deed of Assignment", label: "Deed of Assignment" },
   { value: "Deed of Ownership", label: "Deed of Ownership" },
@@ -119,7 +123,7 @@ export const documentOptions = [
   { value: "Excision", label: "Excision" },
 ];
 
-// Features & Amenities for Residential Properties
+// Features & Amenities for Residential Properties - Exact list from specifications
 export const residentialFeatures = [
   { value: "Gym", label: "Gym" },
   { value: "Kitchenette", label: "Kitchenette" },
@@ -151,7 +155,7 @@ export const residentialFeatures = [
   { value: "Open Floor Plan", label: "Open Floor Plan" },
 ];
 
-// Features for Land Properties
+// Features for Land Properties - Exact list from specifications
 export const landFeatures = [
   { value: "Perimeter Fence", label: "Perimeter Fence" },
   { value: "Electricity Nearby", label: "Electricity Nearby" },
@@ -171,7 +175,7 @@ export const landFeatures = [
   },
 ];
 
-// Commercial Property Features
+// Commercial Property Features - Organized by categories as in specifications
 export const commercialFeatures = {
   structure: [
     { value: "Open Floor Plan", label: "Open Floor Plan" },
@@ -223,7 +227,7 @@ export const commercialFeatures = {
   ],
 };
 
-// Rental Conditions
+// Rental Conditions - Exact list from specifications
 export const rentalConditions = [
   { value: "No Pets Allowed", label: "No Pets Allowed" },
   { value: "Must Provide Credit Report", label: "Must Provide Credit Report" },
@@ -233,7 +237,7 @@ export const rentalConditions = [
   },
 ];
 
-// Employment Types
+// Employment Types - Exact list from specifications
 export const employmentTypes = [
   { value: "Employee", label: "Employee" },
   { value: "Self Employed", label: "Self Employed" },
@@ -241,14 +245,14 @@ export const employmentTypes = [
   { value: "Individual Tenant", label: "Individual Tenant" },
 ];
 
-// Tenant Gender Preferences
+// Tenant Gender Preferences - Exact list from specifications
 export const tenantGenderPreferences = [
   { value: "Male", label: "Male" },
   { value: "Female", label: "Female" },
   { value: "Both", label: "Both" },
 ];
 
-// JV Conditions
+// JV Conditions - Exact list from specifications
 export const jvConditions = [
   { value: "Proof of Fund", label: "Proof of Fund" },
   { value: "Premium", label: "Premium" },
@@ -256,14 +260,14 @@ export const jvConditions = [
   { value: "None", label: "None" },
 ];
 
-// Tenancy Status Options
+// Tenancy Status Options - Updated to match specifications exactly
 export const tenancyStatusOptions = [
-  { value: "Yes", label: "Yes (Currently Tenanted)" },
+  { value: "Yes", label: "Yes" },
   { value: "No", label: "No" },
   { value: "I live in it", label: "I live in it" },
 ];
 
-// Shortlet Specific Options
+// Shortlet Specific Options - Comprehensive list from specifications
 export const shortletOptions = {
   propertyTypes: [
     { value: "Apartment", label: "Apartment" },
@@ -286,73 +290,82 @@ export const shortletOptions = {
       label: "Strict – 50% refund up to 7 days before check-in",
     },
   ],
-  amenities: [
-    // General
-    { value: "Air Conditioning", label: "Air Conditioning" },
-    { value: "Wi-Fi", label: "Wi-Fi" },
-    { value: "Smart TV", label: "Smart TV" },
-    { value: "DSTV", label: "DSTV" },
-    { value: "King Bed", label: "King Bed" },
-    { value: "Balcony", label: "Balcony" },
-    { value: "Work Desk", label: "Work Desk" },
-    { value: "Inverter", label: "Inverter" },
-
-    // Kitchen & Dining
-    { value: "Gas Cooker", label: "Gas Cooker" },
-    { value: "Refrigerator", label: "Refrigerator" },
-    { value: "Microwave", label: "Microwave" },
-    { value: "Coffee Maker", label: "Coffee Maker" },
-    { value: "Kitchen Utensils", label: "Kitchen Utensils" },
-
-    // Bathroom
-    { value: "Ensuite", label: "Ensuite" },
-    { value: "Bathtub", label: "Bathtub" },
-    { value: "Water Heater", label: "Water Heater" },
-    { value: "Hair Dryer", label: "Hair Dryer" },
-    { value: "Towels", label: "Towels" },
-    { value: "Toiletries", label: "Toiletries" },
-
-    // Leisure & Wellness
-    { value: "Pool", label: "Pool" },
-    { value: "Gym", label: "Gym" },
-    { value: "Rooftop View", label: "Rooftop View" },
-    { value: "Lounge Area", label: "Lounge Area" },
-
-    // Transport & Parking
-    { value: "Free Parking", label: "Free Parking" },
-    { value: "Paid Parking", label: "Paid Parking" },
-    { value: "Car Hire", label: "Car Hire" },
-    { value: "Shuttle", label: "Shuttle" },
-    { value: "Elevator", label: "Elevator" },
-
-    // Laundry
-    { value: "Washing Machine", label: "Washing Machine" },
-    { value: "Dryer", label: "Dryer" },
-    { value: "Ironing", label: "Ironing" },
-
-    // Security
-    { value: "24/7 Security", label: "24/7 Security" },
-    { value: "CCTV", label: "CCTV" },
-    { value: "Gated Estate", label: "Gated Estate" },
-    { value: "Fire Extinguisher", label: "Fire Extinguisher" },
-    { value: "Smoke Detector", label: "Smoke Detector" },
-
-    // Family Friendly
-    { value: "Baby Cot", label: "Baby Cot" },
-    { value: "Kids Playground", label: "Kids Playground" },
-    { value: "High Chair", label: "High Chair" },
-
-    // Accessibility
-    { value: "Wheelchair Access", label: "Wheelchair Access" },
-    { value: "Step-Free Entry", label: "Step-Free Entry" },
-
-    // Location Perks
-    { value: "Sea View", label: "Sea View" },
-    { value: "Close to Mall", label: "Close to Mall" },
-    { value: "Airport Proximity", label: "Airport Proximity" },
-    { value: "Quiet Area", label: "Quiet Area" },
-  ],
+  amenities: {
+    general: [
+      { value: "Air Conditioning", label: "Air Conditioning" },
+      { value: "Wi-Fi", label: "Wi-Fi" },
+      { value: "Smart TV", label: "Smart TV" },
+      { value: "DSTV", label: "DSTV" },
+      { value: "King Bed", label: "King Bed" },
+      { value: "Balcony", label: "Balcony" },
+      { value: "Work Desk", label: "Work Desk" },
+      { value: "Inverter", label: "Inverter" },
+    ],
+    kitchen: [
+      { value: "Gas Cooker", label: "Gas Cooker" },
+      { value: "Refrigerator", label: "Refrigerator" },
+      { value: "Microwave", label: "Microwave" },
+      { value: "Coffee Maker", label: "Coffee Maker" },
+      { value: "Kitchen Utensils", label: "Kitchen Utensils" },
+    ],
+    bathroom: [
+      { value: "Ensuite", label: "Ensuite" },
+      { value: "Bathtub", label: "Bathtub" },
+      { value: "Water Heater", label: "Water Heater" },
+      { value: "Hair Dryer", label: "Hair Dryer" },
+      { value: "Towels", label: "Towels" },
+      { value: "Toiletries", label: "Toiletries" },
+    ],
+    leisure: [
+      { value: "Pool", label: "Pool" },
+      { value: "Gym", label: "Gym" },
+      { value: "Rooftop View", label: "Rooftop View" },
+      { value: "Lounge Area", label: "Lounge Area" },
+    ],
+    transport: [
+      { value: "Free Parking", label: "Free Parking" },
+      { value: "Paid Parking", label: "Paid Parking" },
+      { value: "Car Hire", label: "Car Hire" },
+      { value: "Shuttle", label: "Shuttle" },
+      { value: "Elevator", label: "Elevator" },
+    ],
+    laundry: [
+      { value: "Washing Machine", label: "Washing Machine" },
+      { value: "Dryer", label: "Dryer" },
+      { value: "Ironing", label: "Ironing" },
+    ],
+    security: [
+      { value: "24/7 Security", label: "24/7 Security" },
+      { value: "CCTV", label: "CCTV" },
+      { value: "Gated Estate", label: "Gated Estate" },
+      { value: "Fire Extinguisher", label: "Fire Extinguisher" },
+      { value: "Smoke Detector", label: "Smoke Detector" },
+    ],
+    family: [
+      { value: "Baby Cot", label: "Baby Cot" },
+      { value: "Kids Playground", label: "Kids Playground" },
+      { value: "High Chair", label: "High Chair" },
+    ],
+    accessibility: [
+      { value: "Wheelchair Access", label: "Wheelchair Access" },
+      { value: "Step-Free Entry", label: "Step-Free Entry" },
+    ],
+    location: [
+      { value: "Sea View", label: "Sea View" },
+      { value: "Close to Mall", label: "Close to Mall" },
+      { value: "Airport Proximity", label: "Airport Proximity" },
+      { value: "Quiet Area", label: "Quiet Area" },
+    ],
+  },
 };
+
+// Payment methods for shortlet
+export const paymentMethods = [
+  { value: "Bank Transfer (NGN)", label: "Bank Transfer (NGN)" },
+  { value: "MTN Momo", label: "MTN Momo" },
+  { value: "Opay", label: "Opay" },
+  { value: "Other Mobile Money", label: "Other Mobile Money" },
+];
 
 // Number options (for bedrooms, bathrooms, etc.)
 export const numberOptions = Array.from({ length: 21 }, (_, i) => ({
@@ -364,12 +377,36 @@ export const numberOptions = Array.from({ length: 21 }, (_, i) => ({
 export const getFeaturesByCategory = (category: string, briefType: string) => {
   switch (category) {
     case PROPERTY_CATEGORIES.RESIDENTIAL:
-      return briefType === BRIEF_TYPES.SHORTLET
-        ? shortletOptions.amenities
-        : residentialFeatures;
+      if (briefType === BRIEF_TYPES.SHORTLET) {
+        // Flatten all shortlet amenities
+        return [
+          ...shortletOptions.amenities.general,
+          ...shortletOptions.amenities.kitchen,
+          ...shortletOptions.amenities.bathroom,
+          ...shortletOptions.amenities.leisure,
+          ...shortletOptions.amenities.transport,
+          ...shortletOptions.amenities.laundry,
+          ...shortletOptions.amenities.security,
+          ...shortletOptions.amenities.family,
+          ...shortletOptions.amenities.accessibility,
+          ...shortletOptions.amenities.location,
+        ];
+      }
+      return residentialFeatures;
     case PROPERTY_CATEGORIES.COMMERCIAL:
       if (briefType === BRIEF_TYPES.SHORTLET) {
-        return shortletOptions.amenities;
+        return [
+          ...shortletOptions.amenities.general,
+          ...shortletOptions.amenities.kitchen,
+          ...shortletOptions.amenities.bathroom,
+          ...shortletOptions.amenities.leisure,
+          ...shortletOptions.amenities.transport,
+          ...shortletOptions.amenities.laundry,
+          ...shortletOptions.amenities.security,
+          ...shortletOptions.amenities.family,
+          ...shortletOptions.amenities.accessibility,
+          ...shortletOptions.amenities.location,
+        ];
       }
       return [
         ...commercialFeatures.structure,
@@ -392,7 +429,7 @@ export const shouldShowField = (
   dependencies?: Record<string, any>,
 ) => {
   const rules: Record<string, any> = {
-    // Property Condition - only for Residential/Commercial and Sell/Rent/Shortlet
+    // Property Condition - only for Residential/Commercial (not Land)
     propertyCondition:
       (briefType === BRIEF_TYPES.SELL ||
         briefType === BRIEF_TYPES.RENT ||
@@ -416,16 +453,15 @@ export const shouldShowField = (
       propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
       propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL,
 
-    // Land Size - for Land, Sell, JV
+    // Land Size - for all Sell properties, for Commercial Rent, and all JV
     landSize:
-      propertyCategory === PROPERTY_CATEGORIES.LAND ||
       briefType === BRIEF_TYPES.SELL ||
+      (briefType === BRIEF_TYPES.RENT &&
+        propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL) ||
       briefType === BRIEF_TYPES.JV,
 
-    // Rental Type - only for Rent and non-Land
-    rentalType:
-      briefType === BRIEF_TYPES.RENT &&
-      propertyCategory !== PROPERTY_CATEGORIES.LAND,
+    // Rental Type - only for Rent
+    rentalType: briefType === BRIEF_TYPES.RENT,
 
     // Lease Hold - only for Rent when Lease is selected
     leaseHold:
@@ -437,11 +473,25 @@ export const shouldShowField = (
     // JV Conditions - only for JV
     jvConditions: briefType === BRIEF_TYPES.JV,
 
-    // Rental Conditions - for Rent
-    rentalConditions: briefType === BRIEF_TYPES.RENT,
+    // Rental Conditions - for Rent (except Land)
+    rentalConditions:
+      briefType === BRIEF_TYPES.RENT &&
+      propertyCategory !== PROPERTY_CATEGORIES.LAND,
+
+    // Employment Type - for Rent (except Land)
+    employmentType:
+      briefType === BRIEF_TYPES.RENT &&
+      propertyCategory !== PROPERTY_CATEGORIES.LAND,
+
+    // Tenant Gender Preference - for Rent (except Land)
+    tenantGenderPreference:
+      briefType === BRIEF_TYPES.RENT &&
+      propertyCategory !== PROPERTY_CATEGORIES.LAND,
 
     // Shortlet specific fields
     shortletDuration: briefType === BRIEF_TYPES.SHORTLET,
+    streetAddress: briefType === BRIEF_TYPES.SHORTLET,
+    maxGuests: briefType === BRIEF_TYPES.SHORTLET,
     minStay: briefType === BRIEF_TYPES.SHORTLET,
     maxStay: briefType === BRIEF_TYPES.SHORTLET,
     nightly: briefType === BRIEF_TYPES.SHORTLET,
@@ -455,7 +505,8 @@ export const shouldShowField = (
     smokingAllowed: briefType === BRIEF_TYPES.SHORTLET,
     petsAllowed: briefType === BRIEF_TYPES.SHORTLET,
     partiesAllowed: briefType === BRIEF_TYPES.SHORTLET,
-    maxGuests: briefType === BRIEF_TYPES.SHORTLET,
+    paymentMethod: briefType === BRIEF_TYPES.SHORTLET,
+    bankDetails: briefType === BRIEF_TYPES.SHORTLET,
   };
 
   return rules[fieldId] !== undefined ? rules[fieldId] : true;
@@ -463,15 +514,6 @@ export const shouldShowField = (
 
 // Function to get fields that should be cleared when property category changes
 export const getFieldsToClearOnCategoryChange = (briefType: string) => {
-  const fieldsToPreserve = [
-    "propertyType",
-    "propertyCategory",
-    "state",
-    "lga",
-    "area",
-    "price",
-  ];
-
   return [
     "propertyCondition",
     "typeOfBuilding",
@@ -487,9 +529,17 @@ export const getFieldsToClearOnCategoryChange = (briefType: string) => {
     "documents",
     "jvConditions",
     "rentalConditions",
+    "employmentType",
+    "tenantGenderPreference",
     "isTenanted",
     "additionalInfo",
     "description",
+    "maxGuests",
+    "minStay",
+    "maxStay",
+    "pricing",
+    "houseRules",
+    "streetAddress",
   ];
 };
 
@@ -508,6 +558,8 @@ export const getCommissionText = (
       return `I, ${userName}, agree that Khabiteq Realty shall earn ${rate}% of the total value generated from this transaction when the deal is closed.`;
     } else if (briefType === BRIEF_TYPES.RENT) {
       return `I, ${userName}, agree that Khabiteq Realty shall earn ${rate}% of the final rental deal value as commission when the deal is closed.`;
+    } else if (briefType === BRIEF_TYPES.SELL) {
+      return `I, ${userName}, agree that Khabiteq Realty shall earn ${rate}% of the total value generated from this transaction as commission when the deal is closed.`;
     } else {
       return `I, ${userName}, agree that Khabiteq Realty shall earn ${rate}% of the total value generated from this transaction as commission when the deal is closed.`;
     }
