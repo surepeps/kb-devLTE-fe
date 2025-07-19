@@ -122,6 +122,8 @@ interface PostPropertyContextType {
   ) => void;
   isSubmitting: boolean;
   setIsSubmitting: (loading: boolean) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
   validateCurrentStep: () => boolean;
   resetForm: () => void;
   getMinimumRequiredImages: () => number;
@@ -207,6 +209,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   const [propertyData, setPropertyData] =
     useState<PropertyData>(initialPropertyData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showCommissionModal, setShowCommissionModal] = useState(false);
   const [showPropertySummary, setShowPropertySummary] = useState(false);
 
@@ -323,6 +326,8 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     updatePropertyData,
     isSubmitting,
     setIsSubmitting,
+    isLoading,
+    setIsLoading,
     validateCurrentStep,
     resetForm,
     getMinimumRequiredImages,
