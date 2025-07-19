@@ -170,7 +170,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       fieldsToClear,
                     );
                   }
-                  updatePropertyData("propertyCategory", category);
+                  handleFieldChange("propertyCategory", category);
                 }}
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
