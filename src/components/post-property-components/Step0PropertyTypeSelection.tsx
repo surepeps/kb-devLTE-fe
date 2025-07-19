@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useFormikContext } from "formik";
 import RadioCheck from "@/components/general-components/radioCheck";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
@@ -12,9 +13,15 @@ interface StepProps {
 
 const Step0PropertyTypeSelection: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
+  const { errors, touched, setFieldTouched, setFieldValue } =
+    useFormikContext<any>();
 
-  const handlePropertyTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newBriefType = e.target.value as "sell" | "rent" | "jv" | "shortlet";
+  const handlePropertyTypeChange = (
+    newBriefType: "sell" | "rent" | "jv" | "shortlet",
+  ) => {
+    // Mark field as touched for validation
+    setFieldTouched("propertyType", true);
+    setFieldValue("propertyType", newBriefType);
 
     // Reset form when brief type changes
     if (
@@ -54,20 +61,14 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = () => {
             className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
               propertyData.propertyType === key
                 ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10"
-                : "border-[#E5E7EB] hover:border-[#8DDB90] hover:bg-gray-50"
+                : touched.propertyType &&
+                    (errors.propertyType || !propertyData.propertyType)
+                  ? "border-red-500 hover:border-red-600 bg-red-50"
+                  : "border-[#E5E7EB] hover:border-[#8DDB90] hover:bg-gray-50"
             }`}
             onClick={() => {
               const newBriefType = key as "sell" | "rent" | "jv" | "shortlet";
-
-              // Reset form when brief type changes
-              if (
-                propertyData.propertyType &&
-                propertyData.propertyType !== newBriefType
-              ) {
-                updatePropertyData("resetFormExcept", ["propertyType"]);
-              }
-
-              updatePropertyData("propertyType", newBriefType);
+              handlePropertyTypeChange(newBriefType);
             }}
           >
             <div className="flex items-start gap-4">
@@ -76,9 +77,17 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = () => {
                 value={key}
                 type="radio"
                 isChecked={propertyData.propertyType === key}
-                handleChange={handlePropertyTypeChange}
+                handleChange={(e) =>
+                  handlePropertyTypeChange(
+                    e.target.value as "sell" | "rent" | "jv" | "shortlet",
+                  )
+                }
                 className="mt-1"
                 showLabel={false}
+                error={
+                  touched.propertyType &&
+                  (errors.propertyType || !propertyData.propertyType)
+                }
               />
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">

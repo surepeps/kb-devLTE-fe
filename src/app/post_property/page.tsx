@@ -54,6 +54,116 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
   }
 };
 
+// Helper function to check if current step is valid
+const isStepValid = (
+  step: number,
+  propertyData: any,
+  areImagesValid: () => boolean,
+) => {
+  switch (step) {
+    case 0:
+      return !!propertyData.propertyType;
+    case 1:
+      // Check required fields for step 1
+      const requiredFields = [
+        "propertyCategory",
+        "state",
+        "lga",
+        "area",
+        "price",
+      ];
+
+      // Add conditional required fields based on property type and category
+      if (propertyData.propertyType === "rent") {
+        requiredFields.push("rentalType");
+        if (propertyData.propertyCategory !== "Land") {
+          requiredFields.push(
+            "propertyCondition",
+            "typeOfBuilding",
+            "bedrooms",
+          );
+        }
+      }
+
+      if (propertyData.propertyType === "shortlet") {
+        requiredFields.push(
+          "shortletDuration",
+          "propertyCondition",
+          "typeOfBuilding",
+          "bedrooms",
+          "streetAddress",
+          "maxGuests",
+        );
+      }
+
+      if (propertyData.propertyType === "jv") {
+        requiredFields.push("holdDuration");
+        if (propertyData.propertyCategory !== "Land") {
+          requiredFields.push(
+            "propertyCondition",
+            "typeOfBuilding",
+            "bedrooms",
+          );
+        }
+        requiredFields.push("measurementType", "landSize");
+      }
+
+      if (propertyData.propertyType === "sell") {
+        if (propertyData.propertyCategory !== "Land") {
+          requiredFields.push(
+            "propertyCondition",
+            "typeOfBuilding",
+            "bedrooms",
+          );
+        }
+        requiredFields.push("measurementType", "landSize");
+      }
+
+      // Land size and measurement type for Land category or sell/jv
+      if (
+        propertyData.propertyCategory === "Land" ||
+        ["sell", "jv"].includes(propertyData.propertyType)
+      ) {
+        if (!requiredFields.includes("measurementType"))
+          requiredFields.push("measurementType");
+        if (!requiredFields.includes("landSize"))
+          requiredFields.push("landSize");
+      }
+
+      return requiredFields.every((field) => {
+        const value = propertyData[field];
+        if (field === "state" || field === "lga") {
+          return value && value.value && value.value !== "";
+        }
+        return value && value !== "" && value !== 0;
+      });
+    case 2:
+      // Basic validation for step 2 - at least some required fields based on property type
+      if (
+        propertyData.propertyType === "sell" ||
+        propertyData.propertyType === "jv"
+      ) {
+        return propertyData.documents && propertyData.documents.length > 0;
+      }
+      return true;
+    case 3:
+      return areImagesValid();
+    case 4:
+      // Check contact info is filled
+      const contactInfo = propertyData.contactInfo;
+      return (
+        !!(
+          contactInfo.firstName &&
+          contactInfo.lastName &&
+          contactInfo.email &&
+          contactInfo.phone
+        ) && propertyData.isLegalOwner !== undefined
+      );
+    default:
+      return true;
+  }
+};
+
 const PostProperty = () => {
   const router = useRouter();
   const { user } = useUserContext();
@@ -146,14 +256,27 @@ const PostProperty = () => {
     },
   ] as { label: string; status: "completed" | "active" | "pending" }[];
 
-  const handleNext = async (validateForm: () => Promise<any>, errors: any) => {
+  const handleNext = async (
+    validateForm: () => Promise<any>,
+    errors: any,
+    setFieldTouched: (field: string, isTouched: boolean) => void,
+  ) => {
     // Step 3 (images) validation is handled separately by the component
     if (currentStep === 3 && !areImagesValid()) {
       return; // Component will show validation messages
     }
 
-    // For other steps, validation is handled by each component internally
-    // No need to validate here as components use red border validation
+    // For other steps, validate the form first
+    const formErrors = await validateForm();
+
+    // Check if current step has validation errors
+    if (Object.keys(formErrors).length > 0) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(formErrors).forEach((field) => {
+        setFieldTouched(field, true);
+      });
+      return; // Don't proceed if there are validation errors
+    }
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
@@ -357,7 +480,14 @@ const PostProperty = () => {
             onSubmit={() => {}}
             enableReinitialize
           >
-            {({ errors, touched, validateForm }) => (
+            {({
+              errors,
+              touched,
+              validateForm,
+              setFieldTouched,
+              isValid,
+              isSubmitting: formikSubmitting,
+            }) => (
               <Form>
                 <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
                   {renderCurrentStep()}
@@ -406,9 +536,18 @@ const PostProperty = () => {
                         <Button
                           type="button"
                           value={currentStep === 4 ? "Complete" : "Next"}
-                          onClick={() => handleNext(validateForm, errors)}
+                          onClick={() =>
+                            handleNext(validateForm, errors, setFieldTouched)
+                          }
                           className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                          isDisabled={isSubmitting}
+                          isDisabled={
+                            isSubmitting ||
+                            !isStepValid(
+                              currentStep,
+                              propertyData,
+                              areImagesValid,
+                            )
+                          }
                         />
                       </div>
                     </div>

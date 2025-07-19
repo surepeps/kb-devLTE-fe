@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { useUserContext } from "@/context/user-context";
 import { step4ValidationSchema } from "@/utils/validation/post-property-validation";
@@ -24,29 +25,27 @@ interface StepProps {
 const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
-  const [errors, setErrors] = useState<any>({});
-  const [touched, setTouched] = useState<any>({});
+  const { errors, touched, setFieldTouched, setFieldValue } =
+    useFormikContext<any>();
 
-  // Validation function
-  const validateField = async (fieldName: string, value: any) => {
-    try {
-      const schema = step4ValidationSchema();
-      await schema.validateAt(fieldName, {
-        ...propertyData,
-        [fieldName]: value,
-      });
-      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
-      return true;
-    } catch (error: any) {
-      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
-      return false;
-    }
+  const getFieldBorderClass = (fieldName: string, isRequired = false) => {
+    const isInvalid = touched[fieldName] && errors[fieldName];
+    const fieldValue = fieldName.includes(".")
+      ? fieldName.split(".").reduce((obj, key) => obj?.[key], propertyData)
+      : propertyData[fieldName as keyof typeof propertyData];
+    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+
+    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    if (isValid)
+      return "border-green-500 focus:border-green-500 focus:ring-green-100";
+    return "border-[#C7CAD0]";
   };
 
   const handleFieldChange = async (fieldName: string, value: any) => {
+    setFieldTouched(fieldName, true);
+    setFieldValue(fieldName, value);
     updatePropertyData(fieldName as any, value);
-    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
-    await validateField(fieldName, value);
   };
 
   // Initialize contact info with user data
@@ -68,11 +67,15 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     field: keyof typeof propertyData.contactInfo,
     value: string,
   ) => {
+    const fieldName = `contactInfo.${field}`;
+    setFieldTouched(fieldName, true);
+    setFieldValue(fieldName, value);
+
     const newContactInfo = {
       ...propertyData.contactInfo,
       [field]: value,
     };
-    handleFieldChange("contactInfo", newContactInfo);
+    updatePropertyData("contactInfo", newContactInfo);
   };
 
   const handleDocumentToggle = (document: string) => {
@@ -260,6 +263,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   name="legalOwner"
                   variant="card"
                   title="Yes, I am the legal owner of this property"
+                  error={
+                    touched.isLegalOwner &&
+                    (errors.isLegalOwner ||
+                      propertyData.isLegalOwner === undefined)
+                  }
                 />
                 <RadioCheck
                   selectedValue={
@@ -275,6 +283,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   name="legalOwner"
                   variant="card"
                   title="I am authorized by the legal owner to list this property"
+                  error={
+                    touched.isLegalOwner &&
+                    (errors.isLegalOwner ||
+                      propertyData.isLegalOwner === undefined)
+                  }
                 />
               </div>
             </div>
