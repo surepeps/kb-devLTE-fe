@@ -204,7 +204,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               <RadioCheck
                 selectedValue={propertyData.rentalType}
-                handleChange={() => updatePropertyData("rentalType", "Rent")}
+                handleChange={() => handleFieldChange("rentalType", "Rent")}
                 type="radio"
                 value="Rent"
                 name="rentalType"
