@@ -280,24 +280,24 @@ const PostProperty = () => {
     }
   };
 
-  const renderCurrentStep = (errors: any, touched: any) => {
+  const renderCurrentStep = () => {
     if (showPropertySummary) {
       return <EnhancedPropertySummary />;
     }
 
     switch (currentStep) {
       case 0:
-        return <Step0PropertyTypeSelection errors={errors} touched={touched} />;
+        return <Step0PropertyTypeSelection />;
       case 1:
-        return <Step1BasicDetails errors={errors} touched={touched} />;
+        return <Step1BasicDetails />;
       case 2:
-        return <Step2FeaturesConditions errors={errors} touched={touched} />;
+        return <Step2FeaturesConditions />;
       case 3:
-        return <Step3ImageUpload errors={errors} touched={touched} />;
+        return <Step3ImageUpload />;
       case 4:
-        return <Step4OwnershipDeclaration errors={errors} touched={touched} />;
+        return <Step4OwnershipDeclaration />;
       default:
-        return <Step0PropertyTypeSelection errors={errors} touched={touched} />;
+        return <Step0PropertyTypeSelection />;
     }
   };
 
