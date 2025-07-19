@@ -1,8 +1,8 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { faArrowLeft, faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {
   ChangeEventHandler,
   FC,
@@ -11,11 +11,11 @@ import React, {
   MouseEvent,
   memo,
   MouseEventHandler,
-} from 'react';
+} from "react";
 //import naijaStates from 'naija-state-local-government';
-import Select, { components, MenuListProps } from 'react-select';
+import Select, { components, MenuListProps } from "react-select";
 //import { useCallback } from 'react';
-import customStyles from '@/styles/inputStyle';
+import customStyles from "@/styles/inputStyle";
 
 interface Option {
   value: string;
@@ -70,6 +70,8 @@ interface InputProps {
   multiline?: boolean;
   rows?: number;
   style?: React.CSSProperties;
+  error?: string;
+  touched?: boolean;
 }
 
 const Input: FC<InputProps> = memo(
@@ -110,6 +112,8 @@ const Input: FC<InputProps> = memo(
     multiline = false,
     rows = 3,
     style,
+    error,
+    touched,
   }) => {
     // useEffect(() => {
     //   console.log('Component re-rendered', formik?.values);
@@ -133,29 +137,31 @@ const Input: FC<InputProps> = memo(
         <label
           style={style}
           htmlFor={id}
-          className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}>
+          className={`min-h-[80px] w-full ${className} flex flex-col gap-[4px]`}
+        >
           <span
-            className={`text-base leading-[25.6px] font-medium text-[#1E1E1E]`}>
-            {label || <span className='invisible'>Placeholder</span>}
+            className={`text-base leading-[25.6px] font-medium text-[#1E1E1E]`}
+          >
+            {label || <span className="invisible">Placeholder</span>}
           </span>
 
           {forState && (
-            <div className='flex flex-col w-full'>
+            <div className="flex flex-col w-full">
               <Select
                 components={{
-                  MenuList: ComponentMenuList('Filter by Location'),
+                  MenuList: ComponentMenuList("Filter by Location"),
                 }}
                 options={stateOptions}
                 value={selectedState}
                 onChange={setSelectedState}
-                placeholder='Select State'
+                placeholder="Select State"
                 styles={customStyles}
                 isDisabled={isDisabled}
-                className='disabled:cursor-not-allowed'
+                className="disabled:cursor-not-allowed"
               />
               {(formik?.errors?.selectedState ||
                 formik?.touched?.selectedState) && (
-                <span className='text-red-600 text-xs'>
+                <span className="text-red-600 text-xs">
                   {formik?.errors?.selectedState}
                 </span>
               )}
@@ -163,24 +169,24 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forLGA && (
-            <div className='flex flex-col w-full'>
+            <div className="flex flex-col w-full">
               <Select
                 options={lgasOptions}
                 value={selectedLGA}
                 components={{
                   MenuList: ComponentMenuList(
-                    `Filter by ${stateValue?.normalize()} state`
+                    `Filter by ${stateValue?.normalize()} state`,
                   ),
                 }}
                 onChange={setSelectedLGA}
-                placeholder='Select LGA'
+                placeholder="Select LGA"
                 styles={customStyles}
                 isDisabled={lgasOptions?.length === 0}
-                className='disabled:cursor-not-allowed'
+                className="disabled:cursor-not-allowed"
               />
               {(formik?.errors?.selectedLGA ||
                 formik?.touched?.selectedLGA) && (
-                <span className='text-red-600 text-xs'>
+                <span className="text-red-600 text-xs">
                   {formik?.errors?.selectedLGA}
                 </span>
               )}
@@ -188,20 +194,20 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forRegion && (
-            <div className='flex flex-col w-full'>
+            <div className="flex flex-col w-full">
               <Select
                 options={stateOptions}
                 value={selectedRegion}
-                components={{ MenuList: ComponentMenuList('Filter by Region') }}
+                components={{ MenuList: ComponentMenuList("Filter by Region") }}
                 onChange={setSelectedRegion}
-                placeholder='Select Region of Operation'
+                placeholder="Select Region of Operation"
                 styles={customStyles}
                 isDisabled={isDisabled}
-                className='disabled:cursor-not-allowed'
+                className="disabled:cursor-not-allowed"
               />
               {(formik?.errors?.selectedRegion ||
                 formik?.touched?.selectedRegion) && (
-                <span className='text-red-600 text-xs'>
+                <span className="text-red-600 text-xs">
                   {formik?.errors?.selectedRegion}
                 </span>
               )}
@@ -209,20 +215,20 @@ const Input: FC<InputProps> = memo(
           )}
 
           {forIdtype && (
-            <div className='flex flex-col w-full'>
+            <div className="flex flex-col w-full">
               <Select
                 options={idTypeOptions}
                 value={selectedIdType}
                 onChange={setSelectedIdType}
-                components={{ MenuList: ComponentMenuList('Type of ID') }}
-                placeholder='Select Type if ID'
+                components={{ MenuList: ComponentMenuList("Type of ID") }}
+                placeholder="Select Type if ID"
                 styles={customStyles}
                 isDisabled={isDisabled}
-                className='disabled:cursor-not-allowed'
+                className="disabled:cursor-not-allowed"
               />
               {(formik?.errors?.selectedIdType ||
                 formik?.touched?.selectedIdType) && (
-                <span className='text-red-600 text-xs'>
+                <span className="text-red-600 text-xs">
                   {formik?.errors?.selectedIdType}
                 </span>
               )}
@@ -230,8 +236,8 @@ const Input: FC<InputProps> = memo(
           )}
 
           {!forLGA && !forState && !forRegion && !forIdtype && (
-            <div className='flex flex-col w-full'>
-              <div className='flex items-center relative'>
+            <div className="flex flex-col w-full">
+              <div className="flex items-center relative">
                 {multiline ? (
                   <textarea
                     id={id}
@@ -243,11 +249,11 @@ const Input: FC<InputProps> = memo(
                     onClick={isDisabled ? undefined : onClick}
                     onFocus={isDisabled ? undefined : onFocus}
                     readOnly={readOnly}
-                    placeholder={placeholder ?? 'This is placeholder'}
+                    placeholder={placeholder ?? "This is placeholder"}
                     rows={rows}
-                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer resize-none'
+                    className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] ${error && touched ? "border-red-500" : "border-[#D6DDEB]"} placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] ${error && touched ? "focus:outline-red-500" : "focus:outline-[#14b8a6]"} focus:outline-offset-0 rounded-[5px] cursor-pointer resize-none`}
                   />
-                ) : type === 'checkbox' || type === 'radio' ? (
+                ) : type === "checkbox" || type === "radio" ? (
                   <input
                     id={id}
                     name={name}
@@ -259,7 +265,7 @@ const Input: FC<InputProps> = memo(
                     onClick={isDisabled ? undefined : onClick}
                     onFocus={isDisabled ? undefined : onFocus}
                     readOnly={readOnly}
-                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-black text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
+                    className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] ${error && touched ? "border-red-500" : "border-[#D6DDEB]"} placeholder:text-[#A8ADB7] disabled:text-black text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] ${error && touched ? "focus:outline-red-500" : "focus:outline-[#14b8a6]"} focus:outline-offset-0 rounded-[5px] cursor-pointer`}
                   />
                 ) : (
                   <input
@@ -272,24 +278,25 @@ const Input: FC<InputProps> = memo(
                     disabled={isDisabled}
                     onClick={isDisabled ? undefined : onClick}
                     onFocus={isDisabled ? undefined : onFocus}
-                    min={type === 'number' ? minNumber : undefined}
-                    max={type === 'number' ? maxNumber : undefined}
+                    min={type === "number" ? minNumber : undefined}
+                    max={type === "number" ? maxNumber : undefined}
                     readOnly={readOnly}
-                    placeholder={placeholder ?? 'This is placeholder'}
-                    className='w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-black text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px] cursor-pointer'
+                    placeholder={placeholder ?? "This is placeholder"}
+                    className={`w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#FAFAFA] ${error && touched ? "border-red-500" : "border-[#D6DDEB]"} placeholder:text-[#A8ADB7] disabled:text-black text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] ${error && touched ? "focus:outline-red-500" : "focus:outline-[#14b8a6]"} focus:outline-offset-0 rounded-[5px] cursor-pointer`}
                   />
                 )}
                 {showDropdownIcon && !multiline && (
                   <FontAwesomeIcon
                     icon={faCaretDown}
-                    size='sm'
-                    className='absolute right-[16px] text-[#A8ADB7] pointer-events-none w-[16px] h-[16px]'
+                    size="sm"
+                    className="absolute right-[16px] text-[#A8ADB7] pointer-events-none w-[16px] h-[16px]"
                   />
                 )}
               </div>
-              {(formik?.errors?.[name] || formik?.touched?.[name]) && (
-                <span className='text-red-600 text-xs'>
-                  {formik?.errors?.[name]}
+              {((formik?.errors?.[name] && formik?.touched?.[name]) ||
+                (error && touched)) && (
+                <span className="text-red-600 text-xs">
+                  {error || formik?.errors?.[name]}
                 </span>
               )}
             </div>
@@ -297,10 +304,10 @@ const Input: FC<InputProps> = memo(
         </label>
       </Fragment>
     );
-  }
+  },
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 type OptionType = {
   label: string;
@@ -320,22 +327,23 @@ const ComponentMenuList = (heading: string) => {
     <components.MenuList {...props}>
       {heading && (
         <div
-          className='flex gap-[10px] justify-start items-center border-[#8D9096] border-b-[1px] w-[95%] mx-auto'
-          style={{ padding: '8px 12px', fontWeight: 'bold', color: '#555' }}>
+          className="flex gap-[10px] justify-start items-center border-[#8D9096] border-b-[1px] w-[95%] mx-auto"
+          style={{ padding: "8px 12px", fontWeight: "bold", color: "#555" }}
+        >
           <FontAwesomeIcon
             icon={faArrowLeft}
-            size='sm'
-            color='black'
-            className='cursor-pointer'
+            size="sm"
+            color="black"
+            className="cursor-pointer"
           />
-          <span className='text-[#000000] text-sm font-medium'>{heading}</span>
+          <span className="text-[#000000] text-sm font-medium">{heading}</span>
         </div>
       )}
       {props.children}
     </components.MenuList>
   );
 
-  WrappedMenuList.displayName = 'ComponentMenuList';
+  WrappedMenuList.displayName = "ComponentMenuList";
 
   return WrappedMenuList;
 };
