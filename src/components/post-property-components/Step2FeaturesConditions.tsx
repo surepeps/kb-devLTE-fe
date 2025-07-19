@@ -896,11 +896,11 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                           };
                           handleFieldChange("houseRules", newValue);
                         }}
-                        className={`w-full p-4 pl-12 border-2 rounded-xl text-lg font-medium transition-all focus:ring-4 focus:ring-red-100 focus:border-red-400 bg-white shadow-sm ${
+                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-sm ${
                           errors?.["houseRules.checkOut"] &&
                           touched?.["houseRules.checkOut"]
                             ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                            : "border-gray-200 hover:border-gray-300"
+                            : "border-[#C7CAD0]"
                         }`}
                       />
                       <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
