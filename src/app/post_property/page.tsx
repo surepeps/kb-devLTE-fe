@@ -11,6 +11,7 @@ import { getPostPropertyValidationSchema } from "@/utils/validation/post-propert
 import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
+import { extractNumericValue } from "@/utils/price-helpers";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -235,6 +236,7 @@ const PostProperty = () => {
     images,
     isSubmitting,
     setIsSubmitting,
+    isLoading,
     validateCurrentStep,
     resetForm,
     areImagesValid,
@@ -440,8 +442,9 @@ const PostProperty = () => {
           state: propertyData.state?.value || "",
           localGovernment: propertyData.lga?.value || "",
           area: propertyData.area,
+          streetAddress: propertyData.streetAddress,
         },
-        price: propertyData.price,
+        price: extractNumericValue(propertyData.price),
         leaseHold: propertyData.leaseHold,
         shortletDuration: propertyData.shortletDuration,
         owner: {
@@ -461,6 +464,7 @@ const PostProperty = () => {
           noOfBathroom: propertyData.bathrooms.toString(),
           noOfToilet: propertyData.toilets.toString(),
           noOfCarPark: propertyData.parkingSpaces.toString(),
+          maxGuests: propertyData.maxGuests?.toString(),
         },
         tenantCriteria: propertyData.tenantCriteria,
         jvConditions: propertyData.jvConditions,
@@ -470,6 +474,34 @@ const PostProperty = () => {
         videos: uploadedVideoUrls,
         isTenanted: propertyData.isTenanted,
         holdDuration: propertyData.holdDuration,
+        // Shortlet specific fields
+        availability: propertyData.availability
+          ? {
+              minStay: propertyData.availability.minStay,
+              maxStay: propertyData.availability.maxStay,
+              calendar: propertyData.availability.calendar,
+            }
+          : undefined,
+        pricing: propertyData.pricing
+          ? {
+              nightly: propertyData.pricing.nightly,
+              weeklyDiscount: propertyData.pricing.weeklyDiscount,
+              monthlyDiscount: propertyData.pricing.monthlyDiscount,
+              cleaningFee: propertyData.pricing.cleaningFee,
+              securityDeposit: propertyData.pricing.securityDeposit,
+              cancellationPolicy: propertyData.pricing.cancellationPolicy,
+            }
+          : undefined,
+        houseRules: propertyData.houseRules
+          ? {
+              checkIn: propertyData.houseRules.checkIn,
+              checkOut: propertyData.houseRules.checkOut,
+              smoking: propertyData.houseRules.smoking,
+              pets: propertyData.houseRules.pets,
+              parties: propertyData.houseRules.parties,
+              otherRules: propertyData.houseRules.otherRules,
+            }
+          : undefined,
       };
 
       // 5. Submit to API
@@ -641,6 +673,12 @@ const PostProperty = () => {
                           className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                           isDisabled={
                             isSubmitting ||
+                            isLoading ||
+                            images.some((img) => img.isUploading) ||
+                            (propertyData.videos &&
+                              propertyData.videos.some(
+                                (video) => video.isUploading,
+                              )) ||
                             !isStepValid(
                               currentStep,
                               propertyData,
