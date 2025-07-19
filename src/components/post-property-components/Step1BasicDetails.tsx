@@ -47,28 +47,25 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     updatePropertyData(fieldName as any, value);
   };
 
-  const getFieldBorderClass = (fieldName: string) => {
+  const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
-    const isValid =
-      touched[fieldName] &&
-      !errors[fieldName] &&
-      propertyData[fieldName as keyof typeof propertyData];
+    const fieldValue = propertyData[fieldName as keyof typeof propertyData];
+    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
 
-    if (isInvalid)
+    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
     if (isValid)
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
     return "border-[#C7CAD0]";
   };
 
-  const getSelectBorderClass = (fieldName: string) => {
+  const getSelectBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
-    const isValid =
-      touched[fieldName] &&
-      !errors[fieldName] &&
-      propertyData[fieldName as keyof typeof propertyData];
+    const fieldValue = propertyData[fieldName as keyof typeof propertyData];
+    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
 
-    if (isInvalid) return "#ef4444";
+    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+      return "#ef4444";
     if (isValid) return "#22c55e";
     return "#C7CAD0";
   };
@@ -180,7 +177,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : touched.propertyCategory && errors.propertyCategory
+                    : touched.propertyCategory &&
+                        (errors.propertyCategory ||
+                          !propertyData.propertyCategory)
                       ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
                       : touched.propertyCategory &&
                           !errors.propertyCategory &&
