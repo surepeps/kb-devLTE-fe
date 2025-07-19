@@ -263,7 +263,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
                 handleChange={() =>
-                  updatePropertyData("shortletDuration", "Monthly")
+                  handleFieldChange("shortletDuration", "Monthly")
                 }
                 type="radio"
                 name="shortletDuration"
