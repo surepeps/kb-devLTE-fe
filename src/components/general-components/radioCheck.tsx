@@ -85,7 +85,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
             </div>
           </div>
           <span style={modifyStyle} className="text-sm font-medium flex-1">
-            {value}
+            {title || value}
           </span>
           {isSelected && (
             <div className="ml-2 text-[#8DDB90]">
@@ -148,7 +148,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
           ${isDisabled ? "" : "group-hover:text-[#09391C]"}
         `}
       >
-        {value}
+        {title || value}
       </span>
     </label>
   );
