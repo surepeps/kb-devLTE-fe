@@ -99,8 +99,22 @@ const isStepValid = (
         "isTenanted",
         "jvConditions",
         "features",
+        "availability.minStay",
+        "pricing.nightly",
+        "houseRules.checkIn",
+        "houseRules.checkOut",
       ];
-      const hasStep2Errors = step2Fields.some((field) => formikErrors[field]);
+      const hasStep2Errors = step2Fields.some((field) => {
+        if (field.includes(".")) {
+          const keys = field.split(".");
+          let value = formikErrors;
+          for (const key of keys) {
+            value = value?.[key];
+          }
+          return !!value;
+        }
+        return !!formikErrors[field];
+      });
       if (hasStep2Errors) return false;
 
       return checkStep2RequiredFields(propertyData);
@@ -523,7 +537,7 @@ const PostProperty = () => {
           {/* Breadcrumb */}
           <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
             <span>Home</span>
-            <span className="mx-2">��</span>
+            <span className="mx-2">›</span>
             <span>Post Property</span>
             <span className="mx-2">›</span>
             <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
