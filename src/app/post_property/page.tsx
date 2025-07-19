@@ -115,23 +115,16 @@ const isStepValid = (
         "isTenanted",
         "jvConditions",
         "features",
-        "availability.minStay",
-        "pricing.nightly",
-        "houseRules.checkIn",
-        "houseRules.checkOut",
       ];
-      const hasStep2Errors = step2Fields.some((field) => {
-        if (field.includes(".")) {
-          const keys = field.split(".");
-          let value = formikErrors;
-          for (const key of keys) {
-            value = value?.[key];
-          }
-          return !!value;
-        }
-        return !!formikErrors[field];
-      });
-      if (hasStep2Errors) return false;
+      const hasStep2Errors = step2Fields.some((field) => !!formikErrors[field]);
+
+      // Check nested object errors for shortlet
+      const hasNestedErrors =
+        !!formikErrors.availability ||
+        !!formikErrors.pricing ||
+        !!formikErrors.houseRules;
+
+      if (hasStep2Errors || hasNestedErrors) return false;
 
       return checkStep2RequiredFields(propertyData);
 
