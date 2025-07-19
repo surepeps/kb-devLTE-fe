@@ -401,7 +401,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                Phone Number *
+                Phone Number <span className="text-red-500">*</span>
               </label>
               <div
                 className={`phone-input-container ${
