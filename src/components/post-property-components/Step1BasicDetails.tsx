@@ -616,7 +616,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 <ReactSelect
                   options={
                     propertyData.propertyCategory === "Residential"
-                      ? buildingTypeOptions.residential
+                      ? propertyData.propertyType === "shortlet"
+                        ? buildingTypeOptions.shortlet
+                        : buildingTypeOptions.residential
                       : propertyData.propertyCategory === "Commercial"
                         ? buildingTypeOptions.commercial
                         : []
