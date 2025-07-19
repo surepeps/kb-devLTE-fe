@@ -54,6 +54,99 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
   }
 };
 
+// Helper function to check if current step is valid
+const isStepValid = (
+  step: number,
+  propertyData: any,
+  areImagesValid: () => boolean,
+) => {
+  switch (step) {
+    case 0:
+      return !!propertyData.propertyType;
+    case 1:
+      // Check required fields for step 1
+      const requiredFields = [
+        "propertyCategory",
+        "state",
+        "lga",
+        "area",
+        "price",
+      ];
+
+      // Add conditional required fields based on property type and category
+      if (propertyData.propertyType === "rent") {
+        requiredFields.push("rentalType");
+        if (propertyData.propertyCategory !== "Land") {
+          requiredFields.push(
+            "propertyCondition",
+            "typeOfBuilding",
+            "bedrooms",
+          );
+        }
+      }
+
+      if (propertyData.propertyType === "shortlet") {
+        requiredFields.push(
+          "shortletDuration",
+          "propertyCondition",
+          "typeOfBuilding",
+          "bedrooms",
+          "streetAddress",
+          "maxGuests",
+        );
+      }
+
+      if (propertyData.propertyType === "jv") {
+        requiredFields.push("holdDuration");
+        if (propertyData.propertyCategory !== "Land") {
+          requiredFields.push(
+            "propertyCondition",
+            "typeOfBuilding",
+            "bedrooms",
+          );
+        }
+        requiredFields.push("measurementType", "landSize");
+      }
+
+      if (propertyData.propertyType === "sell") {
+        if (propertyData.propertyCategory !== "Land") {
+          requiredFields.push(
+            "propertyCondition",
+            "typeOfBuilding",
+            "bedrooms",
+          );
+        }
+        requiredFields.push("measurementType", "landSize");
+      }
+
+      // Land size and measurement type for Land category or sell/jv
+      if (
+        propertyData.propertyCategory === "Land" ||
+        ["sell", "jv"].includes(propertyData.propertyType)
+      ) {
+        if (!requiredFields.includes("measurementType"))
+          requiredFields.push("measurementType");
+        if (!requiredFields.includes("landSize"))
+          requiredFields.push("landSize");
+      }
+
+      return requiredFields.every((field) => {
+        const value = propertyData[field];
+        return value && value !== "" && value !== 0;
+      });
+    case 2:
+      // Step 2 validation will be handled by the component
+      return true;
+    case 3:
+      return areImagesValid();
+    case 4:
+      // Step 4 validation will be handled by the component
+      return true;
+    default:
+      return true;
+  }
+};
+
 const PostProperty = () => {
   const router = useRouter();
   const { user } = useUserContext();
