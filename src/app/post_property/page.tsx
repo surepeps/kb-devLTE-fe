@@ -366,7 +366,14 @@ const PostProperty = () => {
             onSubmit={() => {}}
             enableReinitialize
           >
-            {({ errors, touched, validateForm }) => (
+            {({
+              errors,
+              touched,
+              validateForm,
+              setFieldTouched,
+              isValid,
+              isSubmitting: formikSubmitting,
+            }) => (
               <Form>
                 <div className="bg-white rounded-xl shadow-sm p-4 md:p-8 mb-6 md:mb-8">
                   {renderCurrentStep()}
@@ -415,9 +422,13 @@ const PostProperty = () => {
                         <Button
                           type="button"
                           value={currentStep === 4 ? "Complete" : "Next"}
-                          onClick={() => handleNext(validateForm, errors)}
+                          onClick={() =>
+                            handleNext(validateForm, errors, setFieldTouched)
+                          }
                           className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                          isDisabled={isSubmitting}
+                          isDisabled={
+                            isSubmitting || (!isValid && currentStep !== 3)
+                          }
                         />
                       </div>
                     </div>
