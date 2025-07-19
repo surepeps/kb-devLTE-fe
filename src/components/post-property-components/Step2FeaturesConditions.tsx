@@ -751,7 +751,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 key={option.value}
                 selectedValue={propertyData.isTenanted}
                 handleChange={() =>
-                  updatePropertyData("isTenanted", option.value)
+                  handleFieldChange("isTenanted", option.value)
                 }
                 type="radio"
                 value={option.value}
