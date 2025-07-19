@@ -7,6 +7,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import { getPostPropertyValidationSchema } from "@/utils/validation/post-property-validation";
 import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
