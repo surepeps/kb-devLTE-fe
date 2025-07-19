@@ -28,6 +28,20 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { errors, touched, setFieldTouched, setFieldValue } =
     useFormikContext<any>();
 
+  const getFieldBorderClass = (fieldName: string, isRequired = false) => {
+    const isInvalid = touched[fieldName] && errors[fieldName];
+    const fieldValue = fieldName.includes(".")
+      ? fieldName.split(".").reduce((obj, key) => obj?.[key], propertyData)
+      : propertyData[fieldName as keyof typeof propertyData];
+    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+
+    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    if (isValid)
+      return "border-green-500 focus:border-green-500 focus:ring-green-100";
+    return "border-[#C7CAD0]";
+  };
+
   const handleFieldChange = async (fieldName: string, value: any) => {
     setFieldTouched(fieldName, true);
     setFieldValue(fieldName, value);
