@@ -11,6 +11,7 @@ import { getPostPropertyValidationSchema } from "@/utils/validation/post-propert
 import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
+import { extractNumericValue } from "@/utils/price-helpers";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -442,7 +443,7 @@ const PostProperty = () => {
           localGovernment: propertyData.lga?.value || "",
           area: propertyData.area,
         },
-        price: propertyData.price,
+        price: extractNumericValue(propertyData.price),
         leaseHold: propertyData.leaseHold,
         shortletDuration: propertyData.shortletDuration,
         owner: {
