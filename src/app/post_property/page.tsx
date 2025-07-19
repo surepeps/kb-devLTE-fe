@@ -152,8 +152,17 @@ const PostProperty = () => {
       return; // Component will show validation messages
     }
 
-    // For other steps, validation is handled by each component internally
-    // No need to validate here as components use red border validation
+    // For other steps, validate the form first
+    const formErrors = await validateForm();
+
+    // Check if current step has validation errors
+    if (Object.keys(formErrors).length > 0) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(formErrors).forEach((field) => {
+        setFieldTouched(field, true);
+      });
+      return; // Don't proceed if there are validation errors
+    }
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
