@@ -263,6 +263,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   name="legalOwner"
                   variant="card"
                   title="Yes, I am the legal owner of this property"
+                  error={
+                    touched.isLegalOwner &&
+                    (errors.isLegalOwner ||
+                      propertyData.isLegalOwner === undefined)
+                  }
                 />
                 <RadioCheck
                   selectedValue={
@@ -278,6 +283,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   name="legalOwner"
                   variant="card"
                   title="I am authorized by the legal owner to list this property"
+                  error={
+                    touched.isLegalOwner &&
+                    (errors.isLegalOwner ||
+                      propertyData.isLegalOwner === undefined)
+                  }
                 />
               </div>
             </div>
