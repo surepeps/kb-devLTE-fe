@@ -132,16 +132,33 @@ const isStepValid = (
 
       return requiredFields.every((field) => {
         const value = propertyData[field];
+        if (field === "state" || field === "lga") {
+          return value && value.value && value.value !== "";
+        }
         return value && value !== "" && value !== 0;
       });
     case 2:
-      // Step 2 validation will be handled by the component
+      // Basic validation for step 2 - at least some required fields based on property type
+      if (
+        propertyData.propertyType === "sell" ||
+        propertyData.propertyType === "jv"
+      ) {
+        return propertyData.documents && propertyData.documents.length > 0;
+      }
       return true;
     case 3:
       return areImagesValid();
     case 4:
-      // Step 4 validation will be handled by the component
-      return true;
+      // Check contact info is filled
+      const contactInfo = propertyData.contactInfo;
+      return (
+        !!(
+          contactInfo.firstName &&
+          contactInfo.lastName &&
+          contactInfo.email &&
+          contactInfo.phone
+        ) && propertyData.isLegalOwner !== undefined
+      );
     default:
       return true;
   }
