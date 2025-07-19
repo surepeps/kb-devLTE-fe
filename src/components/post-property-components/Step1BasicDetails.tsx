@@ -350,7 +350,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   onChange={(e) =>
                     handleFieldChange("holdDuration", e.target.value)
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration", true)}`}
                 />
               </div>
             )}
