@@ -7,6 +7,10 @@ import { usePostPropertyContext } from "@/context/post-property-context";
 import RadioCheck from "@/components/general-components/radioCheck";
 import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
 import {
+  step2ValidationSchema,
+  formatCurrency,
+} from "@/utils/validation/post-property-validation";
+import {
   briefTypeConfig,
   documentOptions,
   getFeaturesByCategory,
