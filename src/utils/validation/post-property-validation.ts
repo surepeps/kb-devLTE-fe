@@ -51,9 +51,7 @@ const lgaSchema = Yup.object({
   label: Yup.string().required(),
 }).required(messages.required("Local Government"));
 
-const areaSchema = Yup.string().required(
-  messages.required("Area/Neighborhood"),
-);
+const areaSchema = Yup.string().required();
 
 const priceSchema = Yup.string()
   .required(messages.required("Property Value"))
@@ -275,9 +273,7 @@ export const getPostPropertyValidationSchema = (propertyType: string) => {
 // Step-specific validation schemas
 export const step1ValidationSchema = (propertyType: string) => {
   const baseSchema = {
-    propertyCategory: Yup.string().required(
-      messages.required("Property category"),
-    ),
+    propertyCategory: Yup.string().required(),
     state: stateSchema,
     lga: lgaSchema,
     area: areaSchema,
@@ -288,69 +284,66 @@ export const step1ValidationSchema = (propertyType: string) => {
     case "rent":
       return Yup.object({
         ...baseSchema,
-        rentalType: Yup.string().required(messages.required("Rental type")),
-        propertyCondition: Yup.string().required(
-          messages.required("Property condition"),
-        ),
-        typeOfBuilding: Yup.string().required(
-          messages.required("Building type"),
-        ),
-        bedrooms: Yup.number()
-          .min(1)
-          .required(messages.required("Number of bedrooms")),
+        rentalType: Yup.string().required(),
+        propertyCondition: Yup.string().when("propertyCategory", {
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
+        typeOfBuilding: Yup.string().when("propertyCategory", {
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
+        bedrooms: Yup.number().when("propertyCategory", {
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.min(1).required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
+        landSize: Yup.string().when("propertyCategory", {
+          is: (category: string) => category === "Commercial",
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
+        measurementType: Yup.string().when("propertyCategory", {
+          is: (category: string) => category === "Commercial",
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
       });
 
     case "shortlet":
       return Yup.object({
         ...baseSchema,
-        shortletDuration: Yup.string().required(
-          messages.required("Shortlet duration"),
-        ),
-        propertyCondition: Yup.string().required(
-          messages.required("Property condition"),
-        ),
-        typeOfBuilding: Yup.string().required(
-          messages.required("Building type"),
-        ),
-        bedrooms: Yup.number()
-          .min(1)
-          .required(messages.required("Number of bedrooms")),
+        shortletDuration: Yup.string().required(),
+        propertyCondition: Yup.string().required(),
+        typeOfBuilding: Yup.string().required(),
+        bedrooms: Yup.number().min(1).required(),
+        streetAddress: Yup.string().required(),
+        maxGuests: Yup.number().min(1).required(),
       });
 
     case "jv":
       return Yup.object({
         ...baseSchema,
-        holdDuration: Yup.string().required(messages.required("Hold duration")),
+        holdDuration: Yup.string().required(),
         propertyCondition: Yup.string().when("propertyCategory", {
           is: (category: string) => category !== "Land",
-          then: (schema) =>
-            schema.required(messages.required("Property condition")),
+          then: (schema) => schema.required(),
           otherwise: (schema) => schema.nullable(),
         }),
         typeOfBuilding: Yup.string().when("propertyCategory", {
-          is: (category: string) =>
-            category === "Residential" || category === "Commercial",
-          then: (schema) => schema.required(messages.required("Building type")),
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.required(),
           otherwise: (schema) => schema.nullable(),
         }),
         bedrooms: Yup.number().when("propertyCategory", {
-          is: (category: string) =>
-            category === "Residential" || category === "Commercial",
-          then: (schema) =>
-            schema.min(1).required(messages.required("Number of bedrooms")),
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.min(1).required(),
           otherwise: (schema) => schema.nullable(),
         }),
-        measurementType: Yup.string().when("propertyCategory", {
-          is: "Land",
-          then: (schema) =>
-            schema.required(messages.required("Type of measurement")),
-          otherwise: (schema) => schema.nullable(),
-        }),
-        landSize: Yup.string().when("propertyCategory", {
-          is: "Land",
-          then: (schema) => schema.required(messages.required("Land size")),
-          otherwise: (schema) => schema.nullable(),
-        }),
+        measurementType: Yup.string().required(),
+        landSize: Yup.string().required(),
       });
 
     case "sell":
@@ -359,34 +352,21 @@ export const step1ValidationSchema = (propertyType: string) => {
         ...baseSchema,
         propertyCondition: Yup.string().when("propertyCategory", {
           is: (category: string) => category !== "Land",
-          then: (schema) =>
-            schema.required(messages.required("Property condition")),
+          then: (schema) => schema.required(),
           otherwise: (schema) => schema.nullable(),
         }),
         typeOfBuilding: Yup.string().when("propertyCategory", {
-          is: (category: string) =>
-            category === "Residential" || category === "Commercial",
-          then: (schema) => schema.required(messages.required("Building type")),
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.required(),
           otherwise: (schema) => schema.nullable(),
         }),
         bedrooms: Yup.number().when("propertyCategory", {
-          is: (category: string) =>
-            category === "Residential" || category === "Commercial",
-          then: (schema) =>
-            schema.min(1).required(messages.required("Number of bedrooms")),
+          is: (category: string) => category !== "Land",
+          then: (schema) => schema.min(1).required(),
           otherwise: (schema) => schema.nullable(),
         }),
-        measurementType: Yup.string().when("propertyCategory", {
-          is: "Land",
-          then: (schema) =>
-            schema.required(messages.required("Type of measurement")),
-          otherwise: (schema) => schema.nullable(),
-        }),
-        landSize: Yup.string().when("propertyCategory", {
-          is: "Land",
-          then: (schema) => schema.required(messages.required("Land size")),
-          otherwise: (schema) => schema.nullable(),
-        }),
+        measurementType: Yup.string().required(),
+        landSize: Yup.string().required(),
       });
   }
 };
@@ -395,53 +375,31 @@ export const step2ValidationSchema = (propertyType: string) => {
   switch (propertyType) {
     case "sell":
       return Yup.object({
-        documents: Yup.array()
-          .of(Yup.string())
-          .min(1, messages.minArray("document", 1))
-          .required("At least one property document is required"),
-        isTenanted: Yup.string().required(messages.required("Tenancy status")),
+        documents: Yup.array().of(Yup.string()).min(1).required(),
+        isTenanted: Yup.string().required(),
       });
 
     case "jv":
       return Yup.object({
-        documents: Yup.array()
-          .of(Yup.string())
-          .min(1, messages.minArray("document", 1))
-          .required("At least one property document is required"),
-        jvConditions: Yup.array()
-          .of(Yup.string())
-          .min(1, messages.minArray("JV condition", 1))
-          .required("At least one JV condition is required"),
-        isTenanted: Yup.string().required(messages.required("Tenancy status")),
+        documents: Yup.array().of(Yup.string()).min(1).required(),
+        jvConditions: Yup.array().of(Yup.string()).min(1).required(),
+        isTenanted: Yup.string().required(),
       });
 
     case "shortlet":
       return Yup.object({
-        availability: Yup.object({
-          minStay: Yup.number()
-            .min(1)
-            .required(messages.required("Minimum stay")),
-        }),
-        pricing: Yup.object({
-          nightly: Yup.number()
-            .min(1)
-            .required(messages.required("Nightly rate")),
-          weeklyDiscount: Yup.number()
-            .min(0, "Weekly discount cannot be negative")
-            .max(100, "Weekly discount cannot exceed 100%")
-            .nullable(),
-        }),
-        houseRules: Yup.object({
-          checkIn: Yup.string().required(messages.required("Check-in time")),
-          checkOut: Yup.string().required(messages.required("Check-out time")),
-        }),
-        isTenanted: Yup.string().required(messages.required("Tenancy status")),
+        "availability.minStay": Yup.number().min(1).required(),
+        "pricing.nightly": Yup.number().min(1).required(),
+        "pricing.weeklyDiscount": Yup.number().min(0).max(100).nullable(),
+        "houseRules.checkIn": Yup.string().required(),
+        "houseRules.checkOut": Yup.string().required(),
+        isTenanted: Yup.string().required(),
       });
 
     case "rent":
     default:
       return Yup.object({
-        isTenanted: Yup.string().required(messages.required("Tenancy status")),
+        isTenanted: Yup.string().required(),
       });
   }
 };
@@ -454,7 +412,10 @@ export const step3ValidationSchema = () => {
 
 export const step4ValidationSchema = () => {
   return Yup.object({
-    contactInfo: contactInfoSchema,
+    "contactInfo.firstName": Yup.string().required(),
+    "contactInfo.lastName": Yup.string().required(),
+    "contactInfo.email": Yup.string().email().required(),
+    "contactInfo.phone": Yup.string().required(),
   });
 };
 

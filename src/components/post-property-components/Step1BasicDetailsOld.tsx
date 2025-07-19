@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import Input from "@/components/general-components/Input";
 import ReactSelect from "react-select";
 import CreatableSelect from "react-select/creatable";
 import RadioCheck from "@/components/general-components/radioCheck";
@@ -14,6 +15,7 @@ import {
   getLGAsByState,
   getAreasByStateLGA,
 } from "@/utils/location-utils";
+import { propertyReferenceData } from "@/data/buy_page_data";
 import {
   briefTypeConfig,
   propertyConditionOptions,
@@ -22,7 +24,10 @@ import {
   shouldShowField,
   getFieldsToClearOnCategoryChange,
 } from "@/data/comprehensive-post-property-config";
-import { formatCurrency } from "@/utils/validation/post-property-validation";
+import {
+  step1ValidationSchema,
+  formatCurrency,
+} from "@/utils/validation/post-property-validation";
 
 interface Option {
   value: string;
@@ -35,42 +40,35 @@ interface StepProps {
 
 const Step1BasicDetails: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
-  const { errors, touched, setFieldTouched, setFieldValue } =
-    useFormikContext<any>();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
 
+  // Validation function
+  const validateField = async (fieldName: string, value: any) => {
+    try {
+      const schema = step1ValidationSchema(propertyData.propertyType);
+      await schema.validateAt(fieldName, {
+        ...propertyData,
+        [fieldName]: value,
+      });
+      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
+      return true;
+    } catch (error: any) {
+      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
+      return false;
+    }
+  };
+
   const handleFieldChange = async (fieldName: string, value: any) => {
-    setFieldTouched(fieldName, true);
-    setFieldValue(fieldName, value);
+    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
     updatePropertyData(fieldName as any, value);
-  };
-
-  const getFieldBorderClass = (fieldName: string) => {
-    const isInvalid = touched[fieldName] && errors[fieldName];
-    const isValid =
-      touched[fieldName] &&
-      !errors[fieldName] &&
-      propertyData[fieldName as keyof typeof propertyData];
-
-    if (isInvalid)
-      return "border-red-500 focus:border-red-500 focus:ring-red-100";
-    if (isValid)
-      return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    return "border-[#C7CAD0]";
-  };
-
-  const getSelectBorderClass = (fieldName: string) => {
-    const isInvalid = touched[fieldName] && errors[fieldName];
-    const isValid =
-      touched[fieldName] &&
-      !errors[fieldName] &&
-      propertyData[fieldName as keyof typeof propertyData];
-
-    if (isInvalid) return "#ef4444";
-    if (isValid) return "#22c55e";
-    return "#C7CAD0";
+    // Validate after a small delay to ensure state is updated
+    setTimeout(() => {
+      validateField(fieldName, value);
+    }, 0);
   };
 
   const handlePriceChange = (value: string) => {
@@ -152,7 +150,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {/* Property Category */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Category *
+            Property Category
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {briefTypeConfig[
@@ -180,19 +178,20 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : touched.propertyCategory && errors.propertyCategory
+                    : errors?.propertyCategory && touched?.propertyCategory
                       ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
-                      : touched.propertyCategory &&
-                          !errors.propertyCategory &&
-                          propertyData.propertyCategory
-                        ? "border-green-500 hover:border-green-600 text-[#5A5D63]"
-                        : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
+                      : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
                 }`}
               >
                 {category}
               </button>
             )) || []}
           </div>
+          {errors?.propertyCategory && touched?.propertyCategory && (
+            <p className="text-red-500 text-sm mt-2">
+              {errors.propertyCategory}
+            </p>
+          )}
         </div>
 
         {/* Rental Type (for rent only) */}
@@ -213,7 +212,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Rent"
                 name="rentalType"
                 variant="card"
-                error={touched.rentalType && errors.rentalType}
+                error={errors?.rentalType && touched?.rentalType}
               />
               <RadioCheck
                 selectedValue={propertyData.rentalType}
@@ -222,9 +221,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="rentalType"
                 value="Lease"
                 variant="card"
-                error={touched.rentalType && errors.rentalType}
+                error={errors?.rentalType && touched?.rentalType}
               />
             </div>
+            {errors?.rentalType && touched?.rentalType && (
+              <p className="text-red-500 text-sm mt-2">{errors.rentalType}</p>
+            )}
           </div>
         )}
 
@@ -248,7 +250,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Daily"
                 name="shortletDuration"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={errors?.shortletDuration && touched?.shortletDuration}
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -259,7 +261,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 value="Weekly"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={errors?.shortletDuration && touched?.shortletDuration}
               />
               <RadioCheck
                 selectedValue={propertyData.shortletDuration}
@@ -270,9 +272,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="shortletDuration"
                 value="Monthly"
                 variant="card"
-                error={touched.shortletDuration && errors.shortletDuration}
+                error={errors?.shortletDuration && touched?.shortletDuration}
               />
             </div>
+            {errors?.shortletDuration && touched?.shortletDuration && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.shortletDuration}
+              </p>
+            )}
           </div>
         )}
 
@@ -298,17 +305,24 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   value={option.value}
                   name="propertyCondition"
                   variant="card"
-                  error={touched.propertyCondition && errors.propertyCondition}
+                  error={
+                    errors?.propertyCondition && touched?.propertyCondition
+                  }
                 />
               ))}
             </div>
+            {errors?.propertyCondition && touched?.propertyCondition && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.propertyCondition}
+              </p>
+            )}
           </div>
         )}
 
         {/* Price */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Price Details *
+            Price Details
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <div>
@@ -338,24 +352,6 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               />
             </div>
 
-            {/* Hold Duration for Joint Venture */}
-            {propertyData.propertyType === "jv" && (
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Hold Duration *
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter duration (e.g., 5 years)"
-                  value={propertyData.holdDuration || ""}
-                  onChange={(e) =>
-                    handleFieldChange("holdDuration", e.target.value)
-                  }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration")}`}
-                />
-              </div>
-            )}
-
             {/* Lease Hold for Rent (when Lease is selected) */}
             {shouldShowField(
               "leaseHold",
@@ -375,6 +371,23 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 />
               </div>
             )}
+
+            {/* Hold Duration for Joint Venture */}
+            {propertyData.propertyType === "jv" && (
+              <div>
+                <EnhancedPriceInput
+                  name="holdDuration"
+                  label="Hold Duration"
+                  value={propertyData.holdDuration || ""}
+                  onChange={(value) =>
+                    updatePropertyData("holdDuration", value)
+                  }
+                  placeholder="Enter duration"
+                  suffix="years"
+                  description="Expected duration of the joint venture"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -386,12 +399,12 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Land Size *
+              Land Size
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Type of Measurement *
+                  Type of Measurement
                 </label>
                 <ReactSelect
                   options={[
@@ -409,33 +422,29 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   }
                   onChange={(option) => {
                     const value = option?.value || "";
-                    setFieldTouched("measurementType", true);
+                    setTouched((prev: any) => ({
+                      ...prev,
+                      measurementType: true,
+                    }));
                     updatePropertyData("measurementType", value);
-                    setFieldValue("measurementType", value);
+                    setTimeout(() => {
+                      validateField("measurementType", value);
+                    }, 0);
                   }}
                   placeholder="Select measurement type"
-                  styles={{
-                    ...customStyles,
-                    control: (provided, state) => ({
-                      ...customStyles.control?.(provided, state),
-                      borderColor: getSelectBorderClass("measurementType"),
-                      minHeight: "44px",
-                    }),
-                  }}
+                  styles={customStyles}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Land Size *
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter size"
+                <EnhancedPriceInput
+                  name="landSize"
+                  label="Land Size"
                   value={propertyData.landSize || ""}
-                  onChange={(e) =>
-                    handleFieldChange("landSize", e.target.value)
-                  }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("landSize")}`}
+                  onChange={(value) => updatePropertyData("landSize", value)}
+                  placeholder="Enter size"
+                  prefix=""
+                  suffix={propertyData.measurementType || ""}
+                  description="Enter the size of the land"
                 />
               </div>
             </div>
@@ -445,7 +454,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {/* Location */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Location *
+            Property Location
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             <div>
@@ -456,16 +465,21 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 options={stateOptions}
                 value={propertyData.state}
                 onChange={(option) => {
-                  setFieldTouched("state", true);
+                  setTouched((prev: any) => ({ ...prev, state: true }));
                   updatePropertyData("state", option);
-                  setFieldValue("state", option);
+                  setTimeout(() => {
+                    validateField("state", option);
+                  }, 0);
                 }}
                 placeholder="Search and select state"
                 styles={{
                   ...customStyles,
                   control: (provided, state) => ({
                     ...customStyles.control?.(provided, state),
-                    borderColor: getSelectBorderClass("state"),
+                    borderColor:
+                      errors?.state && touched?.state
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
                     minHeight: "44px",
                   }),
                 }}
@@ -475,6 +489,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   option.label.toLowerCase().includes(searchText.toLowerCase())
                 }
               />
+              {errors?.state && touched?.state && (
+                <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -484,15 +501,15 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 options={lgaOptions}
                 value={propertyData.lga}
                 onChange={(option) => {
-                  setFieldTouched("lga", true);
+                  setTouched((prev: any) => ({ ...prev, lga: true }));
                   updatePropertyData("lga", option);
-                  setFieldValue("lga", option);
+                  setTimeout(() => {
+                    validateField("lga", option);
+                  }, 0);
                 }}
                 onCreateOption={(inputValue) => {
                   const newOption = { value: inputValue, label: inputValue };
-                  setFieldTouched("lga", true);
                   updatePropertyData("lga", newOption);
-                  setFieldValue("lga", newOption);
                 }}
                 placeholder={
                   propertyData.state
@@ -505,7 +522,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   ...customStyles,
                   control: (provided, state) => ({
                     ...customStyles.control?.(provided, state),
-                    borderColor: getSelectBorderClass("lga"),
+                    borderColor:
+                      errors?.lga && touched?.lga
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
                     minHeight: "44px",
                   }),
                 }}
@@ -518,10 +538,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   option.label.toLowerCase().includes(searchText.toLowerCase())
                 }
               />
+              {errors?.lga && touched?.lga && (
+                <p className="text-red-500 text-sm mt-1">{errors.lga}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                Area/Neighborhood *
+                Area/Neighborhood
               </label>
               <CreatableSelect
                 options={areaOptions}
@@ -532,14 +555,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 }
                 onChange={(option) => {
                   const value = option?.value || "";
-                  setFieldTouched("area", true);
+                  setTouched((prev: any) => ({ ...prev, area: true }));
                   updatePropertyData("area", value);
-                  setFieldValue("area", value);
+                  setTimeout(() => {
+                    validateField("area", value);
+                  }, 0);
                 }}
                 onCreateOption={(inputValue) => {
-                  setFieldTouched("area", true);
                   updatePropertyData("area", inputValue);
-                  setFieldValue("area", inputValue);
                 }}
                 placeholder={
                   propertyData.lga
@@ -552,7 +575,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   ...customStyles,
                   control: (provided, state) => ({
                     ...customStyles.control?.(provided, state),
-                    borderColor: getSelectBorderClass("area"),
+                    borderColor:
+                      errors?.area && touched?.area
+                        ? "#ef4444"
+                        : provided.borderColor || "#C7CAD0",
                     minHeight: "44px",
                   }),
                 }}
@@ -565,6 +591,9 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   option.label.toLowerCase().includes(searchText.toLowerCase())
                 }
               />
+              {errors?.area && touched?.area && (
+                <p className="text-red-500 text-sm mt-1">{errors.area}</p>
+              )}
             </div>
           </div>
         </div>
@@ -577,7 +606,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Property Details *
+              Property Details
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6">
               <div>
@@ -604,19 +633,32 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   }
                   onChange={(option) => {
                     const value = option?.value || "";
-                    setFieldTouched("typeOfBuilding", true);
+                    setTouched((prev: any) => ({
+                      ...prev,
+                      typeOfBuilding: true,
+                    }));
                     updatePropertyData("typeOfBuilding", value);
-                    setFieldValue("typeOfBuilding", value);
+                    setTimeout(() => {
+                      validateField("typeOfBuilding", value);
+                    }, 0);
                   }}
                   placeholder="Select building type"
                   styles={{
                     ...customStyles,
                     control: (provided, state) => ({
                       ...customStyles.control?.(provided, state),
-                      borderColor: getSelectBorderClass("typeOfBuilding"),
+                      borderColor:
+                        errors?.typeOfBuilding && touched?.typeOfBuilding
+                          ? "#ef4444"
+                          : provided.borderColor || "#C7CAD0",
                     }),
                   }}
                 />
+                {errors?.typeOfBuilding && touched?.typeOfBuilding && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.typeOfBuilding}
+                  </p>
+                )}
               </div>
 
               {/* Room Details */}
@@ -641,19 +683,29 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                     }
                     onChange={(option) => {
                       const value = parseInt(option?.value || "0") || 0;
-                      setFieldTouched("bedrooms", true);
+                      setTouched((prev: any) => ({ ...prev, bedrooms: true }));
                       updatePropertyData("bedrooms", value);
-                      setFieldValue("bedrooms", value);
+                      setTimeout(() => {
+                        validateField("bedrooms", value);
+                      }, 0);
                     }}
                     placeholder="Select bedrooms"
                     styles={{
                       ...customStyles,
                       control: (provided, state) => ({
                         ...customStyles.control?.(provided, state),
-                        borderColor: getSelectBorderClass("bedrooms"),
+                        borderColor:
+                          errors?.bedrooms && touched?.bedrooms
+                            ? "#ef4444"
+                            : provided.borderColor || "#C7CAD0",
                       }),
                     }}
                   />
+                  {errors?.bedrooms && touched?.bedrooms && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.bedrooms}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -753,7 +805,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         {propertyData.propertyType === "shortlet" && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Shortlet Details *
+              Shortlet Details
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <div>
@@ -767,8 +819,17 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                   onChange={(e) =>
                     handleFieldChange("streetAddress", e.target.value)
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("streetAddress")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${
+                    errors?.streetAddress && touched?.streetAddress
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
                 />
+                {errors?.streetAddress && touched?.streetAddress && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.streetAddress}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -786,8 +847,17 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       parseInt(e.target.value) || 0,
                     )
                   }
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("maxGuests")}`}
+                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${
+                    errors?.maxGuests && touched?.maxGuests
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                      : "border-[#C7CAD0]"
+                  }`}
                 />
+                {errors?.maxGuests && touched?.maxGuests && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.maxGuests}
+                  </p>
+                )}
               </div>
             </div>
           </div>

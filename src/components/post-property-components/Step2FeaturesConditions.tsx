@@ -34,29 +34,27 @@ interface StepProps {
 
 const Step2FeaturesConditions: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
-  const [errors, setErrors] = useState<any>({});
-  const [touched, setTouched] = useState<any>({});
-
-  // Validation function
-  const validateField = async (fieldName: string, value: any) => {
-    try {
-      const schema = step2ValidationSchema(propertyData.propertyType);
-      await schema.validateAt(fieldName, {
-        ...propertyData,
-        [fieldName]: value,
-      });
-      setErrors((prev: any) => ({ ...prev, [fieldName]: undefined }));
-      return true;
-    } catch (error: any) {
-      setErrors((prev: any) => ({ ...prev, [fieldName]: error.message }));
-      return false;
-    }
-  };
+  const { errors, touched, setFieldTouched, setFieldValue } =
+    useFormikContext<any>();
 
   const handleFieldChange = async (fieldName: string, value: any) => {
+    setFieldTouched(fieldName, true);
+    setFieldValue(fieldName, value);
     updatePropertyData(fieldName as any, value);
-    setTouched((prev: any) => ({ ...prev, [fieldName]: true }));
-    await validateField(fieldName, value);
+  };
+
+  const getFieldBorderClass = (fieldName: string) => {
+    const isInvalid = touched[fieldName] && errors[fieldName];
+    const isValid =
+      touched[fieldName] &&
+      !errors[fieldName] &&
+      propertyData[fieldName as keyof typeof propertyData];
+
+    if (isInvalid)
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    if (isValid)
+      return "border-green-500 focus:border-green-500 focus:ring-green-100";
+    return "border-[#C7CAD0]";
   };
 
   const handleMultiSelectChange = (field: string, value: string) => {
@@ -216,13 +214,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     handleMultiSelectChange("documents", option.value)
                   }
                   variant="card"
-                  error={errors?.documents && touched?.documents}
+                  error={touched.documents && errors.documents}
                 />
               ))}
             </div>
-            {errors?.documents && touched?.documents && (
-              <p className="text-red-500 text-sm mt-2">{errors.documents}</p>
-            )}
           </div>
         )}
 
@@ -606,13 +601,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     handleMultiSelectChange("jvConditions", option.value)
                   }
                   variant="card"
-                  error={errors?.jvConditions && touched?.jvConditions}
+                  error={touched.jvConditions && errors.jvConditions}
                 />
               ))}
             </div>
-            {errors?.jvConditions && touched?.jvConditions && (
-              <p className="text-red-500 text-sm mt-2">{errors.jvConditions}</p>
-            )}
           </div>
         )}
 
@@ -641,18 +633,15 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     handleFieldChange("availability", newValue);
                   }}
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
-                    errors?.["availability.minStay"] &&
-                    touched?.["availability.minStay"]
+                    touched["availability.minStay"] &&
+                    errors["availability.minStay"]
                       ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                      : "border-[#C7CAD0]"
+                      : touched["availability.minStay"] &&
+                          !errors["availability.minStay"]
+                        ? "border-green-500 focus:border-green-500 focus:ring-green-100"
+                        : "border-[#C7CAD0]"
                   }`}
                 />
-                {errors?.["availability.minStay"] &&
-                  touched?.["availability.minStay"] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors["availability.minStay"]}
-                    </p>
-                  )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -691,17 +680,13 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     handleFieldChange("pricing", newValue);
                   }}
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
-                    errors?.["pricing.nightly"] && touched?.["pricing.nightly"]
+                    touched["pricing.nightly"] && errors["pricing.nightly"]
                       ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                      : "border-[#C7CAD0]"
+                      : touched["pricing.nightly"] && !errors["pricing.nightly"]
+                        ? "border-green-500 focus:border-green-500 focus:ring-green-100"
+                        : "border-[#C7CAD0]"
                   }`}
                 />
-                {errors?.["pricing.nightly"] &&
-                  touched?.["pricing.nightly"] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors["pricing.nightly"]}
-                    </p>
-                  )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -857,7 +842,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                         }`}
                       />
                       <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <span className="text-green-500 text-xl">📅</span>
+                        <span className="text-green-500 text-xl">��</span>
                       </div>
                     </div>
                     {errors?.["houseRules.checkIn"] &&
@@ -1009,9 +994,6 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               />
             ))}
           </div>
-          {errors?.isTenanted && touched?.isTenanted && (
-            <p className="text-red-500 text-sm mt-2">{errors.isTenanted}</p>
-          )}
         </div>
 
         {/* Additional Information */}
