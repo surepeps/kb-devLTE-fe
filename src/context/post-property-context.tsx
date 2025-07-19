@@ -222,6 +222,9 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
       });
 
       setPropertyData(newData);
+      // Reset images and go back to step 0 when brief type changes
+      setImages([]);
+      setCurrentStep(0);
     } else if (field === "resetFieldsAfterCategory") {
       // Reset specific fields after property category change
       const fieldsToReset = value as string[];
@@ -234,6 +237,8 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
       });
 
       setPropertyData(newData);
+      // Reset images when property category changes
+      setImages([]);
     } else {
       setPropertyData((prev) => ({
         ...prev,
