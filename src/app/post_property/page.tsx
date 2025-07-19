@@ -51,8 +51,8 @@ const getValidationSchema = (currentStep: number, propertyData: any) => {
       });
 
     case 1:
-      // Use comprehensive validation schema for step 1
-      return getPostPropertyValidationSchema(propertyData.propertyType);
+      // Use step-specific validation for step 1
+      return step1ValidationSchema(propertyData.propertyType);
 
     case 2:
       // Use step-specific validation for step 2
