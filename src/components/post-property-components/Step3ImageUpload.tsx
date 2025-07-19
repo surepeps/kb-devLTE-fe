@@ -387,45 +387,145 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       </div>
 
       {/* Video Upload Section */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-          Upload Video (Optional)
-        </h3>
-        <p className="text-sm text-[#5A5D63] mb-4">
-          Add a video to showcase your property (maximum 1 video, 50MB limit)
-        </p>
+      <div className="mt-12">
+        <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-dashed border-purple-200">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+              <VideoIcon size={28} className="text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              🎬 Property Video Tour
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Showcase your property with a captivating video tour. Videos get
+              3x more engagement than photos alone!
+            </p>
+          </div>
 
-        {videos.length > 0 && videos[0] ? (
-          <div className="relative w-full max-w-md mx-auto bg-gray-100 rounded-lg overflow-hidden">
-            <video
-              src={videos[0].preview || videos[0].url || ""}
-              className="w-full h-48 object-cover"
-              controls
-            />
-            {videos[0].isUploading && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          {videos.length > 0 && videos[0] ? (
+            <div className="max-w-2xl mx-auto">
+              <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
+                <video
+                  src={videos[0].preview || videos[0].url || ""}
+                  className="w-full h-64 md:h-80 object-cover"
+                  controls
+                  poster="/api/placeholder/600/400"
+                />
+
+                {videos[0].isUploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center">
+                    <div className="relative">
+                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <VideoIcon size={24} className="text-white" />
+                      </div>
+                    </div>
+                    <p className="text-white mt-4 font-medium">
+                      Uploading your amazing video...
+                    </p>
+                    <div className="w-48 bg-gray-200 rounded-full h-2 mt-2">
+                      <div
+                        className="bg-blue-500 h-2 rounded-full animate-pulse"
+                        style={{ width: "60%" }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleVideoRemove}
+                  className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white rounded-full p-3 shadow-lg transition-all transform hover:scale-110 disabled:opacity-50 disabled:transform-none"
+                  disabled={videos[0].isUploading}
+                  title="Remove video"
+                >
+                  <XIcon size={20} />
+                </button>
+
+                <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
+                  ✅ Video Added
+                </div>
               </div>
-            )}
-            <button
-              onClick={handleVideoRemove}
-              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
-              disabled={videos[0].isUploading}
-            >
-              <XIcon size={16} />
-            </button>
+
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={handleAddVideo}
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all transform hover:scale-105 shadow-lg"
+                  disabled={videos[0].isUploading}
+                >
+                  <VideoIcon size={20} />
+                  Replace Video
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="border-2 border-dashed border-purple-300 rounded-xl p-8 mb-6 hover:border-purple-400 transition-colors bg-white bg-opacity-50">
+                <div className="mb-4">
+                  <div className="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                    <VideoIcon size={32} className="text-purple-500" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-700 mb-2">
+                    No video yet
+                  </h4>
+                  <p className="text-gray-500 text-sm">
+                    Click below to add your property video
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleAddVideo}
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 mx-auto transition-all transform hover:scale-105 shadow-xl"
+              >
+                <div className="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <VideoIcon size={16} />
+                </div>
+                Upload Property Video
+                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">
+                  Optional
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Video Guidelines */}
+          <div className="mt-8 bg-white bg-opacity-70 rounded-xl p-6">
+            <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="text-purple-500">📋</span>
+              Video Guidelines
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Maximum file size: 50MB</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Supported formats: MP4, MOV, AVI</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Recommended duration: 1-3 minutes</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span>Show exterior and interior views</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span>Good lighting and stable footage</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span>Highlight key selling points</span>
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="text-center">
-            <button
-              onClick={handleAddVideo}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 mx-auto transition-colors"
-            >
-              <VideoIcon size={20} />
-              Add Video
-            </button>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Add More Images Button */}
