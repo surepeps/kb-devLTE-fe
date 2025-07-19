@@ -451,7 +451,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               </label>
               <div
                 className={`phone-input-container ${
-                  errors?.contactInfo?.phone && touched?.contactInfo?.phone
+                  typeof errors?.contactInfo === "object" &&
+                  errors.contactInfo &&
+                  (errors.contactInfo as any).phone &&
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo &&
+                  (touched.contactInfo as any).phone
                     ? "has-error"
                     : ""
                 }`}
@@ -468,11 +473,16 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   className="enhanced-phone-input"
                 />
               </div>
-              {errors?.contactInfo?.phone && touched?.contactInfo?.phone && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.contactInfo.phone}
-                </p>
-              )}
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).phone &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).phone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {(errors.contactInfo as any).phone}
+                  </p>
+                )}
               {propertyData.contactInfo.phone &&
                 !isValidPhoneNumber(propertyData.contactInfo.phone) && (
                   <p className="text-yellow-600 text-sm mt-1">
