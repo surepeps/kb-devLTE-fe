@@ -375,15 +375,24 @@ export const step2ValidationSchema = (propertyType: string) => {
   switch (propertyType) {
     case "sell":
       return Yup.object({
-        documents: Yup.array().of(Yup.string()).min(1).required(),
-        isTenanted: Yup.string().required(),
+        documents: Yup.array()
+          .of(Yup.string())
+          .min(1, "Please select at least one property document")
+          .required("Property documents are required"),
+        isTenanted: Yup.string().required("Please specify tenancy status"),
       });
 
     case "jv":
       return Yup.object({
-        documents: Yup.array().of(Yup.string()).min(1).required(),
-        jvConditions: Yup.array().of(Yup.string()).min(1).required(),
-        isTenanted: Yup.string().required(),
+        documents: Yup.array()
+          .of(Yup.string())
+          .min(1, "Please select at least one property document")
+          .required("Property documents are required"),
+        jvConditions: Yup.array()
+          .of(Yup.string())
+          .min(1, "Please select at least one JV condition")
+          .required("JV conditions are required"),
+        isTenanted: Yup.string().required("Please specify tenancy status"),
       });
 
     case "shortlet":
