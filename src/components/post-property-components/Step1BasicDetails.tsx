@@ -35,13 +35,13 @@ interface Option {
 }
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed as we'll use Formik validation internally
 }
 
-const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
+const Step1BasicDetails: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
-  const formik = useFormikContext();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
