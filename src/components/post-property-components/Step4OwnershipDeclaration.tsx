@@ -389,13 +389,26 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                 onChange={(e) =>
                   handleContactInfoChange("lastName", e.target.value)
                 }
-                error={errors?.contactInfo?.lastName}
-                touched={touched?.contactInfo?.lastName}
+                error={
+                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                    ? (errors.contactInfo as any).lastName
+                    : undefined
+                }
+                touched={
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo
+                    ? !!(touched.contactInfo as any).lastName
+                    : false
+                }
               />
-              {errors?.contactInfo?.lastName &&
-                touched?.contactInfo?.lastName && (
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).lastName &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).lastName && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.contactInfo.lastName}
+                    {(errors.contactInfo as any).lastName}
                   </p>
                 )}
             </div>
@@ -409,14 +422,28 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                 onChange={(e) =>
                   handleContactInfoChange("email", e.target.value)
                 }
-                error={errors?.contactInfo?.email}
-                touched={touched?.contactInfo?.email}
+                error={
+                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                    ? (errors.contactInfo as any).email
+                    : undefined
+                }
+                touched={
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo
+                    ? !!(touched.contactInfo as any).email
+                    : false
+                }
               />
-              {errors?.contactInfo?.email && touched?.contactInfo?.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.contactInfo.email}
-                </p>
-              )}
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).email &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {(errors.contactInfo as any).email}
+                  </p>
+                )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
