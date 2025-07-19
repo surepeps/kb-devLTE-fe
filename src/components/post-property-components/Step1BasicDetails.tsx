@@ -329,7 +329,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <EnhancedPriceInput
                   name="leaseHold"
                   label="Lease Hold Duration"
-                  value={propertyData.leaseHold}
+                  value={propertyData.leaseHold || ""}
                   onChange={(value) => updatePropertyData("leaseHold", value)}
                   placeholder="Enter duration"
                   suffix="years"
@@ -344,7 +344,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <EnhancedPriceInput
                   name="holdDuration"
                   label="Hold Duration"
-                  value={propertyData.holdDuration}
+                  value={propertyData.holdDuration || ""}
                   onChange={(value) =>
                     updatePropertyData("holdDuration", value)
                   }
@@ -397,7 +397,7 @@ const Step1BasicDetails: React.FC<StepProps> = ({ errors, touched }) => {
                 <EnhancedPriceInput
                   name="landSize"
                   label="Land Size"
-                  value={propertyData.landSize}
+                  value={propertyData.landSize || ""}
                   onChange={(value) => updatePropertyData("landSize", value)}
                   placeholder="Enter size"
                   prefix=""
