@@ -31,8 +31,10 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const fieldValue = fieldName.includes(".")
-      ? fieldName.split(".").reduce((obj, key) => obj?.[key], propertyData)
-      : propertyData[fieldName as keyof typeof propertyData];
+      ? fieldName
+          .split(".")
+          .reduce((obj: any, key: string) => obj?.[key], propertyData)
+      : (propertyData as any)[fieldName];
     const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
 
     if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
@@ -264,9 +266,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   variant="card"
                   title="Yes, I am the legal owner of this property"
                   error={
-                    touched.isLegalOwner &&
-                    (errors.isLegalOwner ||
-                      propertyData.isLegalOwner === undefined)
+                    !!(
+                      touched.isLegalOwner &&
+                      (errors.isLegalOwner ||
+                        propertyData.isLegalOwner === undefined)
+                    )
                   }
                 />
                 <RadioCheck
@@ -284,9 +288,11 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   variant="card"
                   title="I am authorized by the legal owner to list this property"
                   error={
-                    touched.isLegalOwner &&
-                    (errors.isLegalOwner ||
-                      propertyData.isLegalOwner === undefined)
+                    !!(
+                      touched.isLegalOwner &&
+                      (errors.isLegalOwner ||
+                        propertyData.isLegalOwner === undefined)
+                    )
                   }
                 />
               </div>
@@ -350,13 +356,26 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                 onChange={(e) =>
                   handleContactInfoChange("firstName", e.target.value)
                 }
-                error={errors?.contactInfo?.firstName}
-                touched={touched?.contactInfo?.firstName}
+                error={
+                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                    ? (errors.contactInfo as any).firstName
+                    : undefined
+                }
+                touched={
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo
+                    ? !!(touched.contactInfo as any).firstName
+                    : false
+                }
               />
-              {errors?.contactInfo?.firstName &&
-                touched?.contactInfo?.firstName && (
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).firstName &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).firstName && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.contactInfo.firstName}
+                    {(errors.contactInfo as any).firstName}
                   </p>
                 )}
             </div>
@@ -370,13 +389,26 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                 onChange={(e) =>
                   handleContactInfoChange("lastName", e.target.value)
                 }
-                error={errors?.contactInfo?.lastName}
-                touched={touched?.contactInfo?.lastName}
+                error={
+                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                    ? (errors.contactInfo as any).lastName
+                    : undefined
+                }
+                touched={
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo
+                    ? !!(touched.contactInfo as any).lastName
+                    : false
+                }
               />
-              {errors?.contactInfo?.lastName &&
-                touched?.contactInfo?.lastName && (
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).lastName &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).lastName && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.contactInfo.lastName}
+                    {(errors.contactInfo as any).lastName}
                   </p>
                 )}
             </div>
@@ -390,14 +422,28 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                 onChange={(e) =>
                   handleContactInfoChange("email", e.target.value)
                 }
-                error={errors?.contactInfo?.email}
-                touched={touched?.contactInfo?.email}
+                error={
+                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                    ? (errors.contactInfo as any).email
+                    : undefined
+                }
+                touched={
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo
+                    ? !!(touched.contactInfo as any).email
+                    : false
+                }
               />
-              {errors?.contactInfo?.email && touched?.contactInfo?.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.contactInfo.email}
-                </p>
-              )}
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).email &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {(errors.contactInfo as any).email}
+                  </p>
+                )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
@@ -405,7 +451,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               </label>
               <div
                 className={`phone-input-container ${
-                  errors?.contactInfo?.phone && touched?.contactInfo?.phone
+                  typeof errors?.contactInfo === "object" &&
+                  errors.contactInfo &&
+                  (errors.contactInfo as any).phone &&
+                  typeof touched?.contactInfo === "object" &&
+                  touched.contactInfo &&
+                  (touched.contactInfo as any).phone
                     ? "has-error"
                     : ""
                 }`}
@@ -422,11 +473,16 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   className="enhanced-phone-input"
                 />
               </div>
-              {errors?.contactInfo?.phone && touched?.contactInfo?.phone && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.contactInfo.phone}
-                </p>
-              )}
+              {typeof errors?.contactInfo === "object" &&
+                errors.contactInfo &&
+                (errors.contactInfo as any).phone &&
+                typeof touched?.contactInfo === "object" &&
+                touched.contactInfo &&
+                (touched.contactInfo as any).phone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {(errors.contactInfo as any).phone}
+                  </p>
+                )}
               {propertyData.contactInfo.phone &&
                 !isValidPhoneNumber(propertyData.contactInfo.phone) && (
                   <p className="text-yellow-600 text-sm mt-1">
