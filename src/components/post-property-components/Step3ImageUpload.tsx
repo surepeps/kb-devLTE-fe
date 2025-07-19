@@ -10,7 +10,7 @@ import {
   Video as VideoIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { POST_REQUEST_FILE_UPLOAD, DELETE_REQUEST } from "@/utils/requests";
+import { POST_REQUEST_FILE_UPLOAD, POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 
@@ -80,7 +80,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
   const removeFile = async (url: string) => {
     try {
-      await DELETE_REQUEST(
+      await POST_REQUEST(
         `${URLS.BASE}/remove-image`,
         { imageUrl: url },
         Cookies.get("token"),
