@@ -515,16 +515,38 @@ export const shouldShowField = (
 // Function to get fields that should be cleared when property category changes
 export const getFieldsToClearOnCategoryChange = (briefType: string) => {
   return [
+    // Clear price and location fields
+    "price",
+    "state",
+    "lga",
+    "area",
+    "streetAddress",
+
+    // Clear property details
     "propertyCondition",
     "typeOfBuilding",
     "bedrooms",
     "bathrooms",
     "toilets",
+    "parkingSpaces",
+    "maxGuests",
+
+    // Clear size and measurement
     "landSize",
     "measurementType",
+
+    // Clear rental/lease specific
     "rentalType",
     "leaseHold",
+    "holdDuration",
+
+    // Clear shortlet specific
     "shortletDuration",
+    "availability",
+    "pricing",
+    "houseRules",
+
+    // Clear features and conditions
     "features",
     "documents",
     "jvConditions",
@@ -532,14 +554,10 @@ export const getFieldsToClearOnCategoryChange = (briefType: string) => {
     "employmentType",
     "tenantGenderPreference",
     "isTenanted",
+
+    // Clear descriptions
     "additionalInfo",
     "description",
-    "maxGuests",
-    "minStay",
-    "maxStay",
-    "pricing",
-    "houseRules",
-    "streetAddress",
   ];
 };
 
