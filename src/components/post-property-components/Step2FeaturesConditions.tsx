@@ -198,7 +198,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Property Documents / Title *
+              Property Documents / Title <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {documentOptions.map((option) => (
@@ -585,7 +585,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
         ) && (
           <div>
             <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              JV Conditions *
+              JV Conditions <span className="text-red-500">*</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {jvConditions.map((option) => (
@@ -619,7 +619,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Minimum Stay (nights) *
+                  Minimum Stay (nights) <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -666,7 +666,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Nightly Rate (₦) *
+                  Nightly Rate (₦) <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -821,7 +821,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   <div className="relative">
                     <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
                       <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                      Check-in Time *
+                      Check-in Time <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <input
@@ -859,7 +859,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   <div className="relative">
                     <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
                       <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                      Check-out Time *
+                      Check-out Time <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <input
@@ -978,7 +978,8 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
         {/* Property Tenancy Status */}
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Is the property currently tenanted? *
+            Is the property currently tenanted?{" "}
+            <span className="text-red-500">*</span>
           </h3>
           <div className="flex flex-col sm:flex-row gap-4">
             {tenancyStatusOptions.map((option) => (
