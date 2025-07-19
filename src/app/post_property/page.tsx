@@ -442,6 +442,7 @@ const PostProperty = () => {
           state: propertyData.state?.value || "",
           localGovernment: propertyData.lga?.value || "",
           area: propertyData.area,
+          streetAddress: propertyData.streetAddress,
         },
         price: extractNumericValue(propertyData.price),
         leaseHold: propertyData.leaseHold,
@@ -463,6 +464,7 @@ const PostProperty = () => {
           noOfBathroom: propertyData.bathrooms.toString(),
           noOfToilet: propertyData.toilets.toString(),
           noOfCarPark: propertyData.parkingSpaces.toString(),
+          maxGuests: propertyData.maxGuests?.toString(),
         },
         tenantCriteria: propertyData.tenantCriteria,
         jvConditions: propertyData.jvConditions,
@@ -472,6 +474,34 @@ const PostProperty = () => {
         videos: uploadedVideoUrls,
         isTenanted: propertyData.isTenanted,
         holdDuration: propertyData.holdDuration,
+        // Shortlet specific fields
+        availability: propertyData.availability
+          ? {
+              minStay: propertyData.availability.minStay,
+              maxStay: propertyData.availability.maxStay,
+              calendar: propertyData.availability.calendar,
+            }
+          : undefined,
+        pricing: propertyData.pricing
+          ? {
+              nightly: propertyData.pricing.nightly,
+              weeklyDiscount: propertyData.pricing.weeklyDiscount,
+              monthlyDiscount: propertyData.pricing.monthlyDiscount,
+              cleaningFee: propertyData.pricing.cleaningFee,
+              securityDeposit: propertyData.pricing.securityDeposit,
+              cancellationPolicy: propertyData.pricing.cancellationPolicy,
+            }
+          : undefined,
+        houseRules: propertyData.houseRules
+          ? {
+              checkIn: propertyData.houseRules.checkIn,
+              checkOut: propertyData.houseRules.checkOut,
+              smoking: propertyData.houseRules.smoking,
+              pets: propertyData.houseRules.pets,
+              parties: propertyData.houseRules.parties,
+              otherRules: propertyData.houseRules.otherRules,
+            }
+          : undefined,
       };
 
       // 5. Submit to API
