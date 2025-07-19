@@ -652,7 +652,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                       ...customStyles,
                       control: (provided, state) => ({
                         ...customStyles.control?.(provided, state),
-                        borderColor: getSelectBorderClass("bedrooms"),
+                        borderColor: getSelectBorderClass("bedrooms", true),
                       }),
                     }}
                   />
