@@ -29,13 +29,13 @@ import {
 } from "@/data/comprehensive-post-property-config";
 
 interface StepProps {
-  errors?: any;
-  touched?: any;
+  // No props needed as we'll use Formik validation internally
 }
 
-const Step2FeaturesConditions: React.FC<StepProps> = ({ errors, touched }) => {
+const Step2FeaturesConditions: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
-  const formik = useFormikContext<any>();
+  const [errors, setErrors] = useState<any>({});
+  const [touched, setTouched] = useState<any>({});
 
   const handleMultiSelectChange = (field: string, value: string) => {
     const currentValues = (propertyData as any)[field] || [];
