@@ -24,6 +24,10 @@ import {
   shouldShowField,
   getFieldsToClearOnCategoryChange,
 } from "@/data/comprehensive-post-property-config";
+import {
+  step1ValidationSchema,
+  formatCurrency,
+} from "@/utils/validation/post-property-validation";
 
 interface Option {
   value: string;
