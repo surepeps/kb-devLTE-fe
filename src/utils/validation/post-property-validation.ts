@@ -388,12 +388,18 @@ export const step2ValidationSchema = (propertyType: string) => {
 
     case "shortlet":
       return Yup.object({
-        "availability.minStay": Yup.number().min(1).required(),
-        "pricing.nightly": Yup.number().min(1).required(),
-        "pricing.weeklyDiscount": Yup.number().min(0).max(100).nullable(),
-        "houseRules.checkIn": Yup.string().required(),
-        "houseRules.checkOut": Yup.string().required(),
-        isTenanted: Yup.string().required(),
+        availability: Yup.object({
+          minStay: Yup.number().min(1).required("Minimum stay is required"),
+        }).required(),
+        pricing: Yup.object({
+          nightly: Yup.number().min(1).required("Nightly rate is required"),
+          weeklyDiscount: Yup.number().min(0).max(100).nullable(),
+        }).required(),
+        houseRules: Yup.object({
+          checkIn: Yup.string().required("Check-in time is required"),
+          checkOut: Yup.string().required("Check-out time is required"),
+        }).required(),
+        isTenanted: Yup.string().required("Tenancy status is required"),
       });
 
     case "rent":
