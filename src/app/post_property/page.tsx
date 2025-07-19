@@ -146,7 +146,11 @@ const PostProperty = () => {
     },
   ] as { label: string; status: "completed" | "active" | "pending" }[];
 
-  const handleNext = async (validateForm: () => Promise<any>, errors: any) => {
+  const handleNext = async (
+    validateForm: () => Promise<any>,
+    errors: any,
+    setFieldTouched: (field: string, isTouched: boolean) => void,
+  ) => {
     // Step 3 (images) validation is handled separately by the component
     if (currentStep === 3 && !areImagesValid()) {
       return; // Component will show validation messages
