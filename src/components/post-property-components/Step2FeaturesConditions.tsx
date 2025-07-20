@@ -99,9 +99,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
 
   const renderCommercialFeatures = () => (
     <div className="space-y-6">
-      <div className="bg-[#F8F9FA] rounded-lg p-4">
-        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-          🧱 Structure & Layout
+      <div className="border border-gray-200 rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3">
+          Structure & Layout
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.structure.map((option) => (
@@ -118,9 +118,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
         </div>
       </div>
 
-      <div className="bg-[#FFF9E6] rounded-lg p-4">
-        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-          🔌 Utilities & Power
+      <div className="border border-gray-200 rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3">
+          Utilities & Power
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.utilities.map((option) => (
@@ -137,9 +137,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
         </div>
       </div>
 
-      <div className="bg-[#F0F7FF] rounded-lg p-4">
-        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-          🛡 Security & Access
+      <div className="border border-gray-200 rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3">
+          Security & Access
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.security.map((option) => (
@@ -156,9 +156,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
         </div>
       </div>
 
-      <div className="bg-[#F5F5F5] rounded-lg p-4">
-        <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-          🚗 Parking & Visibility
+      <div className="border border-gray-200 rounded-lg p-4">
+        <h4 className="text-md font-semibold text-[#09391C] mb-3">
+          Parking & Visibility
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {commercialFeatures.parking.map((option) => (
