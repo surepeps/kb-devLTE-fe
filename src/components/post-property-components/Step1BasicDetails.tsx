@@ -275,13 +275,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : touched.propertyCategory &&
-                        (errors.propertyCategory ||
-                          !propertyData.propertyCategory)
+                    : !propertyData.propertyCategory
                       ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
-                      : touched.propertyCategory &&
-                          !errors.propertyCategory &&
-                          propertyData.propertyCategory
+                      : propertyData.propertyCategory &&
+                          !errors.propertyCategory
                         ? "border-green-500 hover:border-green-600 text-[#5A5D63]"
                         : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
                 }`}
