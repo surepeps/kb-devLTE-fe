@@ -512,16 +512,10 @@ const PostProperty = () => {
         Cookies.get("token"),
       );
 
-      if (response && (response as any).owner) {
-        toast.success("Property listed successfully!");
+            if (response && (response as any).success && (response as any).data) {
+        toast.success("Property created successfully!");
         resetForm();
-
-        // Redirect based on user type
-        if (user?.userType === "Agent") {
-          router.push("/agent");
-        } else {
-          router.push("/my-listings");
-        }
+        setShowSuccessModal(true);
       } else {
         const errorMessage =
           (response as any)?.error || "Failed to submit property";
