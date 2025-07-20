@@ -429,31 +429,36 @@ export const shouldShowField = (
   dependencies?: Record<string, any>,
 ) => {
   const rules: Record<string, any> = {
-    // Property Condition - only for Residential/Commercial (not Land)
+        // Property Condition - only for Residential/Commercial (not Land), and NEVER for JV
     propertyCondition:
+      briefType !== BRIEF_TYPES.JV &&
       (briefType === BRIEF_TYPES.SELL ||
         briefType === BRIEF_TYPES.RENT ||
         briefType === BRIEF_TYPES.SHORTLET) &&
       (propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
         propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL),
 
-    // Building Type - only for Residential/Commercial
+        // Building Type - only for Residential/Commercial, but NEVER for JV
     typeOfBuilding:
-      propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
-      propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL,
+      briefType !== BRIEF_TYPES.JV &&
+      (propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
+        propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL),
 
-    // Room Details - only for Residential/Commercial
+        // Room Details - only for Residential/Commercial, but NEVER for JV
     bedrooms:
-      propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
-      propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL,
+      briefType !== BRIEF_TYPES.JV &&
+      (propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
+        propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL),
     bathrooms:
-      propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
-      propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL,
+      briefType !== BRIEF_TYPES.JV &&
+      (propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
+        propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL),
     toilets:
-      propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
-      propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL,
+      briefType !== BRIEF_TYPES.JV &&
+      (propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
+        propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL),
 
-    // Land Size - for all Sell properties, for Commercial Rent, and all JV
+        // Land Size - for all Sell properties, for Commercial Rent, and all JV
     landSize:
       briefType === BRIEF_TYPES.SELL ||
       (briefType === BRIEF_TYPES.RENT &&
