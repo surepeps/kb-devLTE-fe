@@ -23,13 +23,13 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 }) => {
   const router = useRouter();
 
-  const handleViewListings = () => {
-    router.push("/my-listings");
+    const handleReturnDashboard = () => {
+    router.push("/dashboard");
     onClose();
   };
 
-  const handleAddAnother = () => {
-        router.push("/post-property");
+  const handleCreateNewBrief = () => {
+    router.push("/post-property");
     onClose();
   };
 
