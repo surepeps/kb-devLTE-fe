@@ -227,7 +227,7 @@ export const commercialFeatures = {
   ],
 };
 
-// Rental Conditions - Exact list from specifications
+// Rental Conditions - Updated to match exact specifications
 export const rentalConditions = [
   { value: "No Pets Allowed", label: "No Pets Allowed" },
   { value: "Must Provide Credit Report", label: "Must Provide Credit Report" },
