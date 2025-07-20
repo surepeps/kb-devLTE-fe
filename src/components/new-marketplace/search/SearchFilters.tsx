@@ -370,7 +370,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               type="button"
               onClick={() => {
                 // Navigate to post property
-                window.open("/post_property", "_blank");
+                                window.open("/post-property", "_blank");
               }}
             >
               List property
