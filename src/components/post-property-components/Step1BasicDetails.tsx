@@ -357,7 +357,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value={formatPriceForDisplay(propertyData.price)}
                 onChange={handlePriceChange}
                 placeholder="Enter amount"
-                prefix=""
+                prefix="₦"
                 error={
                   typeof errors?.price === "string" ? errors.price : undefined
                 }
