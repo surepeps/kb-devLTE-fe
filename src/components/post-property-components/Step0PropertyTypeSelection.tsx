@@ -61,8 +61,7 @@ const Step0PropertyTypeSelection: React.FC<StepProps> = () => {
             className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
               propertyData.propertyType === key
                 ? "border-[#8DDB90] bg-[#8DDB90] bg-opacity-10"
-                : touched.propertyType &&
-                    (errors.propertyType || !propertyData.propertyType)
+                : touched.propertyType && errors.propertyType
                   ? "border-red-500 hover:border-red-600 bg-red-50"
                   : "border-[#E5E7EB] hover:border-[#8DDB90] hover:bg-gray-50"
             }`}
