@@ -55,25 +55,50 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const fieldValue = propertyData[fieldName as keyof typeof propertyData];
-    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+    const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+    const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
-    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+    // Show red border for required fields that are empty (regardless of touched state)
+    if (isRequired && !hasValue) {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
-    if (isValid)
+    }
+
+    // Show red border for invalid fields that have been touched
+    if (isInvalid) {
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    }
+
+    // Show green border for valid fields with values
+    if (isValid) {
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    // Default border color for all fields
+    }
+
+    // Default border color for non-required empty fields
     return "border-[#C7CAD0]";
   };
 
   const getSelectBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const fieldValue = propertyData[fieldName as keyof typeof propertyData];
-    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+    const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+    const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
-    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+    // Show red border for required fields that are empty (regardless of touched state)
+    if (isRequired && !hasValue) {
       return "#ef4444";
-    if (isValid) return "#22c55e";
-    // Default border color for all fields
+    }
+
+    // Show red border for invalid fields that have been touched
+    if (isInvalid) {
+      return "#ef4444";
+    }
+
+    // Show green border for valid fields with values
+    if (isValid) {
+      return "#22c55e";
+    }
+
+    // Default border color for non-required empty fields
     return "#C7CAD0";
   };
 
@@ -134,6 +159,74 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     }
   }, [propertyData.state, propertyData.lga]);
 
+  // Mark required fields as touched on component mount to show validation borders
+  useEffect(() => {
+    const requiredFields = [
+      "propertyCategory",
+      "state",
+      "lga",
+      "area",
+      "price",
+    ];
+
+    // Add conditional required fields based on property type
+    if (propertyData.propertyType === "rent") {
+      requiredFields.push("rentalType");
+      if (propertyData.propertyCategory !== "Land") {
+        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+      }
+      if (propertyData.propertyCategory === "Commercial") {
+        requiredFields.push("measurementType", "landSize");
+      }
+    }
+
+    if (propertyData.propertyType === "shortlet") {
+      requiredFields.push(
+        "shortletDuration",
+        "propertyCondition",
+        "typeOfBuilding",
+        "bedrooms",
+        "streetAddress",
+        "maxGuests",
+      );
+    }
+
+    if (propertyData.propertyType === "jv") {
+      requiredFields.push("holdDuration");
+      if (propertyData.propertyCategory !== "Land") {
+        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+      }
+      requiredFields.push("measurementType", "landSize");
+    }
+
+    if (propertyData.propertyType === "sell") {
+      if (propertyData.propertyCategory !== "Land") {
+        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+      }
+      requiredFields.push("measurementType", "landSize");
+    }
+
+    // Land category always needs land size for all property types
+    if (propertyData.propertyCategory === "Land") {
+      if (!requiredFields.includes("measurementType"))
+        requiredFields.push("measurementType");
+      if (!requiredFields.includes("landSize")) requiredFields.push("landSize");
+    }
+
+    // Mark fields as touched only if they don't have values
+    requiredFields.forEach((field) => {
+      const fieldValue = propertyData[field as keyof typeof propertyData];
+      const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+      if (!hasValue) {
+        setFieldTouched(field, false); // Don't mark as touched to use the isRequired logic
+      }
+    });
+  }, [
+    propertyData.propertyType,
+    propertyData.propertyCategory,
+    setFieldTouched,
+  ]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -182,13 +275,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 className={`p-4 border-2 rounded-lg text-center transition-all ${
                   propertyData.propertyCategory === category
                     ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C] font-semibold"
-                    : touched.propertyCategory &&
-                        (errors.propertyCategory ||
-                          !propertyData.propertyCategory)
+                    : !propertyData.propertyCategory
                       ? "border-red-500 hover:border-red-600 text-[#5A5D63]"
-                      : touched.propertyCategory &&
-                          !errors.propertyCategory &&
-                          propertyData.propertyCategory
+                      : propertyData.propertyCategory &&
+                          !errors.propertyCategory
                         ? "border-green-500 hover:border-green-600 text-[#5A5D63]"
                         : "border-[#C7CAD0] hover:border-[#8DDB90] text-[#5A5D63]"
                 }`}
@@ -218,10 +308,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="rentalType"
                 variant="card"
                 error={
-                  !!(
-                    touched.rentalType &&
-                    (errors.rentalType || !propertyData.rentalType)
-                  )
+                  !propertyData.rentalType ||
+                  (touched.rentalType && errors.rentalType)
                 }
               />
               <RadioCheck
@@ -232,10 +320,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Lease"
                 variant="card"
                 error={
-                  !!(
-                    touched.rentalType &&
-                    (errors.rentalType || !propertyData.rentalType)
-                  )
+                  !propertyData.rentalType ||
+                  (touched.rentalType && errors.rentalType)
                 }
               />
             </div>
