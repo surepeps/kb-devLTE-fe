@@ -61,7 +61,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
     if (isValid)
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    return "border-[#C7CAD0]";
+    // Show red border by default for required fields, gray for optional
+    return isRequired ? "border-red-500" : "border-[#C7CAD0]";
   };
 
   const getSelectBorderClass = (fieldName: string, isRequired = false) => {
@@ -72,7 +73,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
       return "#ef4444";
     if (isValid) return "#22c55e";
-    return "#C7CAD0";
+    // Show red border by default for required fields, gray for optional
+    return isRequired ? "#ef4444" : "#C7CAD0";
   };
 
   const handlePriceChange = (value: string) => {
@@ -357,7 +359,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value={formatPriceForDisplay(propertyData.price)}
                 onChange={handlePriceChange}
                 placeholder="Enter amount"
-                prefix=""
+                prefix="₦"
                 error={
                   typeof errors?.price === "string" ? errors.price : undefined
                 }
@@ -481,12 +483,27 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder={`Enter size${propertyData.measurementType ? ` in ${propertyData.measurementType.toLowerCase()}` : ""}`}
-                    value={propertyData.landSize || ""}
-                    onChange={(e) =>
-                      handleFieldChange("landSize", e.target.value)
+                    placeholder={`${!propertyData.measurementType ? "Select measurement type first" : `Enter size${propertyData.measurementType ? ` in ${propertyData.measurementType.toLowerCase()}` : ""}`}`}
+                    value={
+                      propertyData.landSize
+                        ? Number(
+                            propertyData.landSize
+                              .toString()
+                              .replace(/[^0-9]/g, ""),
+                          ).toLocaleString()
+                        : ""
                     }
-                    className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${propertyData.measurementType ? "pr-20" : ""} ${getFieldBorderClass("landSize", true)}`}
+                    onChange={(e) => {
+                      if (!propertyData.measurementType) return;
+                      // Only allow numbers and format with commas
+                      const numericValue = e.target.value.replace(
+                        /[^0-9]/g,
+                        "",
+                      );
+                      handleFieldChange("landSize", numericValue);
+                    }}
+                    disabled={!propertyData.measurementType}
+                    className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${propertyData.measurementType ? "pr-20" : ""} ${!propertyData.measurementType ? "bg-gray-100 cursor-not-allowed" : ""} ${getFieldBorderClass("landSize", true)}`}
                   />
                   {propertyData.measurementType && (
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
