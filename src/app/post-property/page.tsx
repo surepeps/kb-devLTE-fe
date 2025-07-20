@@ -24,6 +24,7 @@ import Step3ImageUpload from "@/components/post-property-components/Step3ImageUp
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
 import CommissionModal from "@/components/post-property-components/CommissionModal";
+import SuccessModal from "@/components/post-property-components/SuccessModal";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
 import Preloader from "@/components/general-components/preloader";
@@ -512,16 +513,10 @@ const PostProperty = () => {
         Cookies.get("token"),
       );
 
-      if (response && (response as any).owner) {
-        toast.success("Property listed successfully!");
+            if (response && (response as any).success && (response as any).data) {
+        toast.success("Property created successfully!");
         resetForm();
-
-        // Redirect based on user type
-        if (user?.userType === "Agent") {
-          router.push("/agent");
-        } else {
-          router.push("/my-listings");
-        }
+        setShowSuccessModal(true);
       } else {
         const errorMessage =
           (response as any)?.error || "Failed to submit property";
@@ -811,8 +806,19 @@ const PostProperty = () => {
                   </pre>
                 </div>
               </details>
-            </div>
+                        </div>
           )}
+
+          {/* Success Modal */}
+          <SuccessModal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            propertyData={{
+              propertyType: propertyData.propertyType,
+              price: propertyData.price,
+              location: `${propertyData.area}, ${propertyData.lga?.label}, ${propertyData.state?.label}`
+            }}
+          />
         </div>
       </div>
     </AgentAccessBarrier>

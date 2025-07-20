@@ -30,7 +30,7 @@ const AgentNav = ({ isDisabled }: { isDisabled?: boolean }) => {
                   userType: 'agent',
                   payload: {},
                 });
-                router.push('/post_property');
+                                router.push('/post-property');
               } else {
                 handleSelect(item);
               }

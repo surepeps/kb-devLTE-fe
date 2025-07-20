@@ -154,7 +154,7 @@ export default function LandlordDashboard() {
     {
       title: "List New Property",
       description: "Add a new property to your portfolio",
-      href: "/post_property",
+            href: "/post-property",
       icon: PlusIcon,
       color: "bg-gradient-to-r from-green-500 to-green-600",
       textColor: "text-green-600",
@@ -222,8 +222,8 @@ export default function LandlordDashboard() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/post_property"
+                            <Link
+                href="/post-property"
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <PlusIcon size={20} />
@@ -357,8 +357,8 @@ export default function LandlordDashboard() {
                   <p className="text-gray-500 mb-6 max-w-sm mx-auto">
                     Start building your portfolio by listing your first property
                   </p>
-                  <Link
-                    href="/post_property"
+                                    <Link
+                    href="/post-property"
                     className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-all duration-200 transform hover:scale-105"
                   >
                     <PlusIcon size={20} />
