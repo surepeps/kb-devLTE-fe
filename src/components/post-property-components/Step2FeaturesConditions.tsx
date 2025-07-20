@@ -6,6 +6,7 @@ import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import RadioCheck from "@/components/general-components/radioCheck";
 import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
+import AdvancedTimeSelector from "@/components/general-components/AdvancedTimeSelector";
 import {
   step2ValidationSchema,
   formatCurrency,
@@ -860,25 +861,23 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     <label className="text-sm font-semibold text-gray-700 mb-3 block">
                       Check-in Time <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type="time"
-                        value={propertyData.houseRules?.checkIn || "15:00"}
-                        onChange={(e) => {
-                          const newValue = {
-                            ...propertyData.houseRules,
-                            checkIn: e.target.value,
-                          };
-                          handleFieldChange("houseRules", newValue);
-                        }}
-                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-sm ${
+                    <AdvancedTimeSelector
+                      value={propertyData.houseRules?.checkIn || "15:00"}
+                      onChange={(time) => {
+                        const newValue = {
+                          ...propertyData.houseRules,
+                          checkIn: time,
+                        };
+                        handleFieldChange("houseRules", newValue);
+                      }}
+                      placeholder="Select check-in time"
+                      error={
+                        !!(
                           errors?.["houseRules.checkIn"] &&
                           touched?.["houseRules.checkIn"]
-                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                            : "border-[#C7CAD0]"
-                        }`}
-                      />
-                    </div>
+                        )
+                      }
+                    />
                     {errors?.["houseRules.checkIn"] &&
                       touched?.["houseRules.checkIn"] && (
                         <p className="text-red-500 text-sm mt-2">
@@ -896,25 +895,23 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     <label className="text-sm font-semibold text-gray-700 mb-3 block">
                       Check-out Time <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type="time"
-                        value={propertyData.houseRules?.checkOut || "11:00"}
-                        onChange={(e) => {
-                          const newValue = {
-                            ...propertyData.houseRules,
-                            checkOut: e.target.value,
-                          };
-                          handleFieldChange("houseRules", newValue);
-                        }}
-                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-sm ${
+                    <AdvancedTimeSelector
+                      value={propertyData.houseRules?.checkOut || "11:00"}
+                      onChange={(time) => {
+                        const newValue = {
+                          ...propertyData.houseRules,
+                          checkOut: time,
+                        };
+                        handleFieldChange("houseRules", newValue);
+                      }}
+                      placeholder="Select check-out time"
+                      error={
+                        !!(
                           errors?.["houseRules.checkOut"] &&
                           touched?.["houseRules.checkOut"]
-                            ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-                            : "border-[#C7CAD0]"
-                        }`}
-                      />
-                    </div>
+                        )
+                      }
+                    />
                     {errors?.["houseRules.checkOut"] &&
                       touched?.["houseRules.checkOut"] && (
                         <p className="text-red-500 text-sm mt-2">
