@@ -308,10 +308,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 name="rentalType"
                 variant="card"
                 error={
-                  !!(
-                    touched.rentalType &&
-                    (errors.rentalType || !propertyData.rentalType)
-                  )
+                  !propertyData.rentalType ||
+                  (touched.rentalType && errors.rentalType)
                 }
               />
               <RadioCheck
@@ -322,10 +320,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 value="Lease"
                 variant="card"
                 error={
-                  !!(
-                    touched.rentalType &&
-                    (errors.rentalType || !propertyData.rentalType)
-                  )
+                  !propertyData.rentalType ||
+                  (touched.rentalType && errors.rentalType)
                 }
               />
             </div>
