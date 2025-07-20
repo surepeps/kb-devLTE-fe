@@ -35,12 +35,25 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
           .split(".")
           .reduce((obj: any, key: string) => obj?.[key], propertyData)
       : (propertyData as any)[fieldName];
-    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+    const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+    const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
-    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+    // Show red border for required fields that are empty (regardless of touched state)
+    if (isRequired && !hasValue) {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
-    if (isValid)
+    }
+
+    // Show red border for invalid fields that have been touched
+    if (isInvalid) {
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    }
+
+    // Show green border for valid fields with values
+    if (isValid) {
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
+    }
+
+    // Default border color for non-required empty fields
     return "border-[#C7CAD0]";
   };
 
@@ -266,11 +279,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   variant="card"
                   title="Yes, I am the legal owner of this property"
                   error={
-                    !!(
-                      touched.isLegalOwner &&
-                      (errors.isLegalOwner ||
-                        propertyData.isLegalOwner === undefined)
-                    )
+                    propertyData.isLegalOwner === undefined ||
+                    (touched.isLegalOwner && errors.isLegalOwner)
                   }
                 />
                 <RadioCheck
@@ -288,11 +298,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   variant="card"
                   title="I am authorized by the legal owner to list this property"
                   error={
-                    !!(
-                      touched.isLegalOwner &&
-                      (errors.isLegalOwner ||
-                        propertyData.isLegalOwner === undefined)
-                    )
+                    propertyData.isLegalOwner === undefined ||
+                    (touched.isLegalOwner && errors.isLegalOwner)
                   }
                 />
               </div>
@@ -357,15 +364,15 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("firstName", e.target.value)
                 }
                 error={
-                  typeof errors?.contactInfo === "object" && errors.contactInfo
-                    ? (errors.contactInfo as any).firstName
-                    : undefined
+                  !propertyData.contactInfo.firstName
+                    ? "First name is required"
+                    : typeof errors?.contactInfo === "object" &&
+                        errors.contactInfo
+                      ? (errors.contactInfo as any).firstName
+                      : undefined
                 }
                 touched={
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo
-                    ? !!(touched.contactInfo as any).firstName
-                    : false
+                  true // Always show validation state
                 }
               />
               {typeof errors?.contactInfo === "object" &&
@@ -390,15 +397,15 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("lastName", e.target.value)
                 }
                 error={
-                  typeof errors?.contactInfo === "object" && errors.contactInfo
-                    ? (errors.contactInfo as any).lastName
-                    : undefined
+                  !propertyData.contactInfo.lastName
+                    ? "Last name is required"
+                    : typeof errors?.contactInfo === "object" &&
+                        errors.contactInfo
+                      ? (errors.contactInfo as any).lastName
+                      : undefined
                 }
                 touched={
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo
-                    ? !!(touched.contactInfo as any).lastName
-                    : false
+                  true // Always show validation state
                 }
               />
               {typeof errors?.contactInfo === "object" &&
@@ -423,15 +430,15 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("email", e.target.value)
                 }
                 error={
-                  typeof errors?.contactInfo === "object" && errors.contactInfo
-                    ? (errors.contactInfo as any).email
-                    : undefined
+                  !propertyData.contactInfo.email
+                    ? "Email is required"
+                    : typeof errors?.contactInfo === "object" &&
+                        errors.contactInfo
+                      ? (errors.contactInfo as any).email
+                      : undefined
                 }
                 touched={
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo
-                    ? !!(touched.contactInfo as any).email
-                    : false
+                  true // Always show validation state
                 }
               />
               {typeof errors?.contactInfo === "object" &&
@@ -451,14 +458,22 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               </label>
               <div
                 className={`phone-input-container ${
-                  typeof errors?.contactInfo === "object" &&
-                  errors.contactInfo &&
-                  (errors.contactInfo as any).phone &&
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo &&
-                  (touched.contactInfo as any).phone
+                  !propertyData.contactInfo.phone ||
+                  (typeof errors?.contactInfo === "object" &&
+                    errors.contactInfo &&
+                    (errors.contactInfo as any).phone &&
+                    typeof touched?.contactInfo === "object" &&
+                    touched.contactInfo &&
+                    (touched.contactInfo as any).phone)
                     ? "has-error"
-                    : ""
+                    : propertyData.contactInfo.phone &&
+                        !(
+                          typeof errors?.contactInfo === "object" &&
+                          errors.contactInfo &&
+                          (errors.contactInfo as any).phone
+                        )
+                      ? "has-success"
+                      : ""
                 }`}
               >
                 <PhoneInput
