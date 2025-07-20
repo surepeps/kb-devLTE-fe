@@ -159,6 +159,74 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     }
   }, [propertyData.state, propertyData.lga]);
 
+  // Mark required fields as touched on component mount to show validation borders
+  useEffect(() => {
+    const requiredFields = [
+      "propertyCategory",
+      "state",
+      "lga",
+      "area",
+      "price",
+    ];
+
+    // Add conditional required fields based on property type
+    if (propertyData.propertyType === "rent") {
+      requiredFields.push("rentalType");
+      if (propertyData.propertyCategory !== "Land") {
+        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+      }
+      if (propertyData.propertyCategory === "Commercial") {
+        requiredFields.push("measurementType", "landSize");
+      }
+    }
+
+    if (propertyData.propertyType === "shortlet") {
+      requiredFields.push(
+        "shortletDuration",
+        "propertyCondition",
+        "typeOfBuilding",
+        "bedrooms",
+        "streetAddress",
+        "maxGuests",
+      );
+    }
+
+    if (propertyData.propertyType === "jv") {
+      requiredFields.push("holdDuration");
+      if (propertyData.propertyCategory !== "Land") {
+        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+      }
+      requiredFields.push("measurementType", "landSize");
+    }
+
+    if (propertyData.propertyType === "sell") {
+      if (propertyData.propertyCategory !== "Land") {
+        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
+      }
+      requiredFields.push("measurementType", "landSize");
+    }
+
+    // Land category always needs land size for all property types
+    if (propertyData.propertyCategory === "Land") {
+      if (!requiredFields.includes("measurementType"))
+        requiredFields.push("measurementType");
+      if (!requiredFields.includes("landSize")) requiredFields.push("landSize");
+    }
+
+    // Mark fields as touched only if they don't have values
+    requiredFields.forEach((field) => {
+      const fieldValue = propertyData[field as keyof typeof propertyData];
+      const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+      if (!hasValue) {
+        setFieldTouched(field, false); // Don't mark as touched to use the isRequired logic
+      }
+    });
+  }, [
+    propertyData.propertyType,
+    propertyData.propertyCategory,
+    setFieldTouched,
+  ]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
