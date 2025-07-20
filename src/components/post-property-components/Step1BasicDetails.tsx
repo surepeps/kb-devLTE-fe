@@ -55,25 +55,50 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const fieldValue = propertyData[fieldName as keyof typeof propertyData];
-    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+    const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+    const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
-    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+    // Show red border for required fields that are empty (regardless of touched state)
+    if (isRequired && !hasValue) {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
-    if (isValid)
+    }
+
+    // Show red border for invalid fields that have been touched
+    if (isInvalid) {
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    }
+
+    // Show green border for valid fields with values
+    if (isValid) {
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    // Default border color for all fields
+    }
+
+    // Default border color for non-required empty fields
     return "border-[#C7CAD0]";
   };
 
   const getSelectBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const fieldValue = propertyData[fieldName as keyof typeof propertyData];
-    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+    const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+    const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
-    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+    // Show red border for required fields that are empty (regardless of touched state)
+    if (isRequired && !hasValue) {
       return "#ef4444";
-    if (isValid) return "#22c55e";
-    // Default border color for all fields
+    }
+
+    // Show red border for invalid fields that have been touched
+    if (isInvalid) {
+      return "#ef4444";
+    }
+
+    // Show green border for valid fields with values
+    if (isValid) {
+      return "#22c55e";
+    }
+
+    // Default border color for non-required empty fields
     return "#C7CAD0";
   };
 
