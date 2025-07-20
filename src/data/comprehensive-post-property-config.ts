@@ -65,7 +65,7 @@ export const briefTypeConfig = {
   [BRIEF_TYPES.SHORTLET]: {
     label: "Shortlet",
     description: "I want to list my property for short-term rental",
-    icon: "📅",
+    icon: "���",
     propertyCategories: [PROPERTY_CATEGORIES.RESIDENTIAL],
     commission: {
       landowner: 5,
@@ -519,7 +519,7 @@ export const shouldShowField = (
 
 // Function to get fields that should be cleared when property category changes
 export const getFieldsToClearOnCategoryChange = (briefType: string) => {
-  return [
+    return [
     // Clear price and location fields
     "price",
     "state",
@@ -543,7 +543,6 @@ export const getFieldsToClearOnCategoryChange = (briefType: string) => {
     // Clear rental/lease specific
     "rentalType",
     "leaseHold",
-    "holdDuration",
 
     // Clear shortlet specific
     "shortletDuration",
