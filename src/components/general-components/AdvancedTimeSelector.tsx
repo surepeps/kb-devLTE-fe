@@ -63,12 +63,15 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
     setSelectedHour(hour);
     const newTime = `${hour}:${selectedMinute || "00"}`;
     onChange(newTime);
+    // Don't close dropdown yet, let user select minute
   };
 
   const handleMinuteSelect = (minute: string) => {
     setSelectedMinute(minute);
     const newTime = `${selectedHour || "00"}:${minute}`;
     onChange(newTime);
+    // Close dropdown after minute selection
+    setIsOpen(false);
   };
 
   const formatDisplayTime = () => {
@@ -92,7 +95,7 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
             ? "border-red-500 focus:border-red-500 focus:ring-red-100"
             : value
               ? "border-green-500 hover:border-green-600"
-              : "border-red-500 hover:border-red-600"
+              : "border-[#C7CAD0] hover:border-[#8DDB90]"
         } ${
           disabled
             ? "bg-gray-50 text-gray-400 cursor-not-allowed"
