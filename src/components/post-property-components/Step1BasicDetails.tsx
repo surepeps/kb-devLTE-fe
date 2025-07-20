@@ -481,12 +481,27 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder={`Enter size${propertyData.measurementType ? ` in ${propertyData.measurementType.toLowerCase()}` : ""}`}
-                    value={propertyData.landSize || ""}
-                    onChange={(e) =>
-                      handleFieldChange("landSize", e.target.value)
+                    placeholder={`${!propertyData.measurementType ? "Select measurement type first" : `Enter size${propertyData.measurementType ? ` in ${propertyData.measurementType.toLowerCase()}` : ""}`}`}
+                    value={
+                      propertyData.landSize
+                        ? Number(
+                            propertyData.landSize
+                              .toString()
+                              .replace(/[^0-9]/g, ""),
+                          ).toLocaleString()
+                        : ""
                     }
-                    className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${propertyData.measurementType ? "pr-20" : ""} ${getFieldBorderClass("landSize", true)}`}
+                    onChange={(e) => {
+                      if (!propertyData.measurementType) return;
+                      // Only allow numbers and format with commas
+                      const numericValue = e.target.value.replace(
+                        /[^0-9]/g,
+                        "",
+                      );
+                      handleFieldChange("landSize", numericValue);
+                    }}
+                    disabled={!propertyData.measurementType}
+                    className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${propertyData.measurementType ? "pr-20" : ""} ${!propertyData.measurementType ? "bg-gray-100 cursor-not-allowed" : ""} ${getFieldBorderClass("landSize", true)}`}
                   />
                   {propertyData.measurementType && (
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
