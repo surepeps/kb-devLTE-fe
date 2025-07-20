@@ -205,7 +205,6 @@ const jvPropertySchema = Yup.object({
       "Please select a valid property category",
     )
     .required(messages.required("Property category")),
-  holdDuration: Yup.string().required(messages.required("Hold duration")),
   propertyCondition: Yup.string().when("propertyCategory", {
     is: (category: string) => category !== "Land",
     then: (schema) => schema.required(messages.required("Property condition")),
