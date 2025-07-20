@@ -622,7 +622,12 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     handleMultiSelectChange("jvConditions", option.value)
                   }
                   variant="card"
-                  error={!!(touched.jvConditions && errors.jvConditions)}
+                  error={
+                    (propertyData.propertyType === "jv" &&
+                      (!propertyData.jvConditions ||
+                        propertyData.jvConditions.length === 0)) ||
+                    (touched.jvConditions && errors.jvConditions)
+                  }
                 />
               ))}
             </div>
