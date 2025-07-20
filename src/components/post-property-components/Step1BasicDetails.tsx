@@ -159,7 +159,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     }
   }, [propertyData.state, propertyData.lga]);
 
-  // Mark required fields as touched on component mount to show validation borders
+    // Mark required fields as touched on component mount to show validation borders
   useEffect(() => {
     const requiredFields = [
       "propertyCategory",
@@ -196,6 +196,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       if (propertyData.propertyCategory !== "Land") {
         requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
       }
+      // JV ALWAYS requires land size for ALL property categories
       requiredFields.push("measurementType", "landSize");
     }
 
@@ -206,7 +207,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       requiredFields.push("measurementType", "landSize");
     }
 
-    // Land category always needs land size for all property types
+    // Additional validation: Land size is required for:
+    // - All Sell properties (already handled above)
+    // - All JV properties (already handled above)
+    // - Commercial Rent properties (already handled above)
+    // - Land category for all property types
     if (propertyData.propertyCategory === "Land") {
       if (!requiredFields.includes("measurementType"))
         requiredFields.push("measurementType");
