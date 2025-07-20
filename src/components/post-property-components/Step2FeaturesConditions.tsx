@@ -845,25 +845,19 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 House Rules
               </h4>
 
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border-2 border-dashed border-blue-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-white text-lg">🕐</span>
-                  </div>
-                  <div>
-                    <h5 className="text-lg font-semibold text-gray-800">
-                      Check-in & Check-out Schedule
-                    </h5>
-                    <p className="text-sm text-gray-600">
-                      Set your preferred arrival and departure times
-                    </p>
-                  </div>
+              <div className="border border-gray-200 rounded-lg p-6">
+                <div className="mb-4">
+                  <h5 className="text-lg font-semibold text-gray-800 mb-2">
+                    Check-in & Check-out Schedule
+                  </h5>
+                  <p className="text-sm text-gray-600">
+                    Set your preferred arrival and departure times
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="relative">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">
                       Check-in Time <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -884,9 +878,6 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                             : "border-[#C7CAD0]"
                         }`}
                       />
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <span className="text-green-500 text-xl">��</span>
-                      </div>
                     </div>
                     {errors?.["houseRules.checkIn"] &&
                       touched?.["houseRules.checkIn"] && (
@@ -902,8 +893,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   </div>
 
                   <div className="relative">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                      <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">
                       Check-out Time <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -924,9 +914,6 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                             : "border-[#C7CAD0]"
                         }`}
                       />
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <span className="text-red-500 text-xl">📤</span>
-                      </div>
                     </div>
                     {errors?.["houseRules.checkOut"] &&
                       touched?.["houseRules.checkOut"] && (
@@ -942,10 +929,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 p-3 bg-blue-100 rounded-lg">
-                  <p className="text-sm text-blue-800 flex items-center gap-2">
-                    <span className="text-blue-500">💡</span>
-                    <strong>Pro Tip:</strong> Standard check-in is 3:00 PM and
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">
+                    <strong>Tip:</strong> Standard check-in is 3:00 PM and
                     check-out is 11:00 AM. Flexible times can attract more
                     guests!
                   </p>
