@@ -182,19 +182,23 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       if (imageData.file) {
         const url = await uploadFile(imageData.file, "image");
         if (url) {
-          // Update the specific image with the URL
-          const updatedImages = images.map((img: PropertyImage) =>
-            img.id === imageData.id ? { ...img, url, isUploading: false } : img,
+          // Update the specific image with the URL and keep the current images state
+          setImages((currentImages) =>
+            currentImages.map((img: PropertyImage) =>
+              img.id === imageData.id
+                ? { ...img, url, isUploading: false }
+                : img,
+            ),
           );
-          setImages(updatedImages);
         } else {
           // Remove failed upload
-          const updatedImages = images.map((img: PropertyImage) =>
-            img.id === imageData.id
-              ? { file: null, preview: null, id: generateImageId() }
-              : img,
+          setImages((currentImages) =>
+            currentImages.map((img: PropertyImage) =>
+              img.id === imageData.id
+                ? { file: null, preview: null, id: generateImageId() }
+                : img,
+            ),
           );
-          setImages(updatedImages);
         }
       }
     });
@@ -353,7 +357,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
             {(image.file && image.preview) || image.url ? (
               <>
                 <img
-                  src={image.preview || image.url || ""}
+                  src={image.url || image.preview || ""}
                   alt={`Property ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg"
                 />
@@ -409,10 +413,10 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
             <div className="max-w-xl mx-auto">
               <div className="relative bg-white rounded-lg shadow-sm overflow-hidden">
                 <video
-                  src={videos[0].preview || videos[0].url || ""}
+                  src={videos[0].url || videos[0].preview || ""}
                   className="w-full h-48 object-cover"
                   controls
-                  poster="/api/placeholder/600/400"
+                  preload="metadata"
                 />
 
                 {videos[0].isUploading && (
