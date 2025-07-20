@@ -806,8 +806,19 @@ const PostProperty = () => {
                   </pre>
                 </div>
               </details>
-            </div>
+                        </div>
           )}
+
+          {/* Success Modal */}
+          <SuccessModal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            propertyData={{
+              propertyType: propertyData.propertyType,
+              price: propertyData.price,
+              location: `${propertyData.area}, ${propertyData.lga?.label}, ${propertyData.state?.label}`
+            }}
+          />
         </div>
       </div>
     </AgentAccessBarrier>
