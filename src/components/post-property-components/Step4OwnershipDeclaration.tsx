@@ -279,11 +279,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   variant="card"
                   title="Yes, I am the legal owner of this property"
                   error={
-                    !!(
-                      touched.isLegalOwner &&
-                      (errors.isLegalOwner ||
-                        propertyData.isLegalOwner === undefined)
-                    )
+                    propertyData.isLegalOwner === undefined ||
+                    (touched.isLegalOwner && errors.isLegalOwner)
                   }
                 />
                 <RadioCheck
@@ -301,11 +298,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   variant="card"
                   title="I am authorized by the legal owner to list this property"
                   error={
-                    !!(
-                      touched.isLegalOwner &&
-                      (errors.isLegalOwner ||
-                        propertyData.isLegalOwner === undefined)
-                    )
+                    propertyData.isLegalOwner === undefined ||
+                    (touched.isLegalOwner && errors.isLegalOwner)
                   }
                 />
               </div>
@@ -518,8 +512,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               • I agree to Khabi-Teq&apos;s terms of service and privacy policy
             </p>
             <p>
-              • I consent to being contacted by potential buyers/tenants through
-              this platform
+              �� I consent to being contacted by potential buyers/tenants
+              through this platform
             </p>
           </div>
         </div>
