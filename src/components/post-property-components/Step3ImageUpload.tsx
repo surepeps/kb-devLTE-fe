@@ -182,23 +182,21 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       if (imageData.file) {
         const url = await uploadFile(imageData.file, "image");
         if (url) {
-          // Update the specific image with the URL and keep the current images state
-          setImages((currentImages) =>
-            currentImages.map((img: PropertyImage) =>
-              img.id === imageData.id
-                ? { ...img, url, isUploading: false }
-                : img,
-            ),
+                    // Update the specific image with the URL and keep the current images state
+          const updatedImages = images.map((img: PropertyImage) =>
+            img.id === imageData.id
+              ? { ...img, url, isUploading: false }
+              : img,
           );
+          setImages(updatedImages);
         } else {
-          // Remove failed upload
-          setImages((currentImages) =>
-            currentImages.map((img: PropertyImage) =>
-              img.id === imageData.id
-                ? { file: null, preview: null, id: generateImageId() }
-                : img,
-            ),
+                    // Remove failed upload
+          const updatedImages = images.map((img: PropertyImage) =>
+            img.id === imageData.id
+              ? { file: null, preview: null, id: generateImageId() }
+              : img,
           );
+          setImages(updatedImages);
         }
       }
     });
