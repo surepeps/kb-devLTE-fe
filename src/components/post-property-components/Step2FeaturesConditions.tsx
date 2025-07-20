@@ -234,7 +234,13 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                     handleMultiSelectChange("documents", option.value)
                   }
                   variant="card"
-                  error={!!(touched.documents && errors.documents)}
+                  error={
+                    ((propertyData.propertyType === "sell" ||
+                      propertyData.propertyType === "jv") &&
+                      (!propertyData.documents ||
+                        propertyData.documents.length === 0)) ||
+                    (touched.documents && errors.documents)
+                  }
                 />
               ))}
             </div>
