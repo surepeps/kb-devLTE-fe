@@ -143,8 +143,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
     );
   }
 
-    if (propertyData.propertyType === "jv") {
-    requiredFields.push("holdDuration");
+        if (propertyData.propertyType === "jv") {
     // JV ALWAYS requires land size for ALL property categories
     // JV does NOT require property condition, building type, or bedrooms for ANY category
     requiredFields.push("measurementType", "landSize");
