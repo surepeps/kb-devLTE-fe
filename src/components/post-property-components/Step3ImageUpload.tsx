@@ -59,18 +59,22 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   const uploadFile = async (file: File, type: "image" | "video" = "image") => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append(
+      "for",
+      type === "image" ? "property-image" : "property-video",
+    );
 
     try {
       const response = await POST_REQUEST_FILE_UPLOAD(
-        `${URLS.BASE}/upload-image`,
+        `${URLS.BASE}/upload-single-file`,
         formData,
         Cookies.get("token"),
       );
 
-      if (response?.url) {
+      if (response?.success && response?.url) {
         return response.url;
       }
-      throw new Error("No URL in response");
+      throw new Error(response?.message || "Upload failed");
     } catch (error) {
       console.error(`Error uploading ${type}:`, error);
       toast.error(`Failed to upload ${type}: ${file.name}`);
@@ -80,11 +84,15 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
   const removeFile = async (url: string) => {
     try {
-      await POST_REQUEST(
-        `${URLS.BASE}/remove-image`,
-        { imageUrl: url },
+      const response = await POST_REQUEST(
+        `${URLS.BASE}/delete-single-file`,
+        { url },
         Cookies.get("token"),
       );
+
+      if (!response?.success) {
+        throw new Error(response?.message || "Delete failed");
+      }
     } catch (error) {
       console.error("Error removing file:", error);
       toast.error("Failed to remove file from server");
@@ -218,7 +226,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     if (!files || files.length === 0) return;
 
     const file = files[0]; // Only allow one video
-    const maxVideoSize = 50 * 1024 * 1024; // 50MB limit
+    const maxVideoSize = 15 * 1024 * 1024; // 15MB limit
 
     if (!file.type.startsWith("video/")) {
       toast.error("Please select a valid video file.");
@@ -226,7 +234,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     }
 
     if (file.size > maxVideoSize) {
-      toast.error("Video file is too large. Maximum size is 50MB.");
+      toast.error("Video file is too large. Maximum size is 15MB.");
       return;
     }
 
