@@ -35,12 +35,25 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
           .split(".")
           .reduce((obj: any, key: string) => obj?.[key], propertyData)
       : (propertyData as any)[fieldName];
-    const isValid = touched[fieldName] && !errors[fieldName] && fieldValue;
+    const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
+    const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
-    if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
+    // Show red border for required fields that are empty (regardless of touched state)
+    if (isRequired && !hasValue) {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
-    if (isValid)
+    }
+
+    // Show red border for invalid fields that have been touched
+    if (isInvalid) {
+      return "border-red-500 focus:border-red-500 focus:ring-red-100";
+    }
+
+    // Show green border for valid fields with values
+    if (isValid) {
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
+    }
+
+    // Default border color for non-required empty fields
     return "border-[#C7CAD0]";
   };
 
