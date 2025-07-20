@@ -358,8 +358,8 @@ export default function AgentDashboard() {
               </h2>
             </div>
             <div className="p-4 sm:p-6 space-y-4">
-              <Link
-                href="/post_property"
+                            <Link
+                href="/post-property"
                 className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
                 <div className="p-2 bg-white bg-opacity-20 rounded-lg">
