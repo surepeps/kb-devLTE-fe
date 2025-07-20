@@ -61,7 +61,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
     if (isValid)
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    return "border-[#C7CAD0]";
+    // Show red border by default for required fields, gray for optional
+    return isRequired ? "border-red-500" : "border-[#C7CAD0]";
   };
 
   const getSelectBorderClass = (fieldName: string, isRequired = false) => {
@@ -72,7 +73,8 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
     if (isInvalid || (isRequired && touched[fieldName] && !fieldValue))
       return "#ef4444";
     if (isValid) return "#22c55e";
-    return "#C7CAD0";
+    // Show red border by default for required fields, gray for optional
+    return isRequired ? "#ef4444" : "#C7CAD0";
   };
 
   const handlePriceChange = (value: string) => {
