@@ -163,7 +163,7 @@ const MyListing = ({ briefs = [], loading = false }: { briefs: any[]; loading?: 
               className='h-[34px] w-full md:w-[133px] bg-[#8DDB90] text-white shadow-md font-medium text-sm mt-2 md:mt-0'
               type='button'
               onClick={() => {
-                router.push('/post_property');
+                                router.push('/post-property');
               }}>
               Post a property
             </button>
