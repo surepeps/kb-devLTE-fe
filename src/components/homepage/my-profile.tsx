@@ -79,7 +79,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             icon: <Home size={18} />,
             label: "List Property",
             action: () => {
-              router.push("/post_property");
+                            router.push("/post-property");
               closeUserProfileModal(false);
             },
           },

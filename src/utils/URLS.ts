@@ -19,7 +19,7 @@ export const URLS = {
   verifyEmail: "/verify-email",
   resendVerification: "/resend-verification",
   agentCreateBrief: "/properties/sell/new",
-  listNewProperty: "/properties/new",
+    listNewProperty: "/user/property/create",
   userSubmitPreference: "/properties/preference/new",
   getMyProperties: "/properties/mine/all",
   getOneProperty: "/properties/",
