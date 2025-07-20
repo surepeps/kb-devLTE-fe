@@ -364,10 +364,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("firstName", e.target.value)
                 }
                 error={
-                  !propertyData.contactInfo.firstName ||
-                  (typeof errors?.contactInfo === "object" && errors.contactInfo
-                    ? (errors.contactInfo as any).firstName
-                    : undefined)
+                  !propertyData.contactInfo.firstName
+                    ? "First name is required"
+                    : typeof errors?.contactInfo === "object" &&
+                        errors.contactInfo
+                      ? (errors.contactInfo as any).firstName
+                      : undefined
                 }
                 touched={
                   true // Always show validation state
@@ -395,10 +397,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("lastName", e.target.value)
                 }
                 error={
-                  !propertyData.contactInfo.lastName ||
-                  (typeof errors?.contactInfo === "object" && errors.contactInfo
-                    ? (errors.contactInfo as any).lastName
-                    : undefined)
+                  !propertyData.contactInfo.lastName
+                    ? "Last name is required"
+                    : typeof errors?.contactInfo === "object" &&
+                        errors.contactInfo
+                      ? (errors.contactInfo as any).lastName
+                      : undefined
                 }
                 touched={
                   true // Always show validation state
@@ -426,10 +430,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("email", e.target.value)
                 }
                 error={
-                  !propertyData.contactInfo.email ||
-                  (typeof errors?.contactInfo === "object" && errors.contactInfo
-                    ? (errors.contactInfo as any).email
-                    : undefined)
+                  !propertyData.contactInfo.email
+                    ? "Email is required"
+                    : typeof errors?.contactInfo === "object" &&
+                        errors.contactInfo
+                      ? (errors.contactInfo as any).email
+                      : undefined
                 }
                 touched={
                   true // Always show validation state
