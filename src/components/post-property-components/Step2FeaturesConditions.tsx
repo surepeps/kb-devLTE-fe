@@ -246,16 +246,17 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
           </div>
         )}
 
-        {/* Features & Amenities */}
-        <div className="border border-[#E5E7EB] rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-[#09391C] mb-2">
-              Features & Amenities
-            </h3>
-            <p className="text-sm text-[#5A5D63]">
-              Select all features and amenities available in your property
-            </p>
-          </div>
+                {/* Features & Amenities - NOT for Joint Venture */}
+        {propertyData.propertyType !== BRIEF_TYPES.JV && (
+          <div className="border border-[#E5E7EB] rounded-lg p-6">
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-[#09391C] mb-2">
+                Features & Amenities
+              </h3>
+              <p className="text-sm text-[#5A5D63]">
+                Select all features and amenities available in your property
+              </p>
+            </div>
 
           {/* Residential Features */}
           {propertyData.propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL &&
@@ -512,92 +513,189 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
             </div>
           )}
 
-          {/* Commercial Features */}
-          {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL &&
-            propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
-            renderCommercialFeatures()}
-        </div>
+                      {/* Commercial Features */}
+            {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL &&
+              propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
+              renderCommercialFeatures()}
+          </div>
+        )}
 
-        {/* Rental Conditions for Rent properties */}
-        {propertyData.propertyType === BRIEF_TYPES.RENT &&
-          propertyData.propertyCategory !== PROPERTY_CATEGORIES.LAND && (
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Rental Conditions
-              </h3>
+                {/* Rental Conditions - Different for each property type */}
+        {propertyData.propertyType === BRIEF_TYPES.RENT && (
+          <div className="space-y-6">
+            {/* Residential Rental Properties */}
+            {propertyData.propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                  Rental Conditions
+                </h3>
 
-              {/* Rental Conditions Checkboxes */}
-              <div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {rentalConditions.map((option) => (
-                    <EnhancedCheckbox
-                      key={option.value}
-                      label={option.label}
-                      name="rentalConditions"
-                      value={option.value}
-                      checked={(propertyData.rentalConditions || []).includes(
-                        option.value,
-                      )}
-                      onChange={() =>
-                        handleMultiSelectChange(
-                          "rentalConditions",
+                {/* Rental Conditions Checkboxes */}
+                <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {rentalConditions.map((option) => (
+                      <EnhancedCheckbox
+                        key={option.value}
+                        label={option.label}
+                        name="rentalConditions"
+                        value={option.value}
+                        checked={(propertyData.rentalConditions || []).includes(
                           option.value,
-                        )
-                      }
-                      variant="card"
-                    />
-                  ))}
+                        )}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            "rentalConditions",
+                            option.value,
+                          )
+                        }
+                        variant="card"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Employment Type */}
+                <div>
+                  <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                    Employment Type
+                  </h4>
+                  <div className="flex flex-wrap gap-4">
+                    {employmentTypes.map((option) => (
+                      <RadioCheck
+                        key={option.value}
+                        selectedValue={propertyData.employmentType}
+                        handleChange={() =>
+                          updatePropertyData("employmentType", option.value)
+                        }
+                        type="radio"
+                        value={option.value}
+                        name="employmentType"
+                        variant="card"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tenant Gender Preference */}
+                <div>
+                  <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                    Tenant Gender Preference
+                  </h4>
+                  <div className="flex flex-wrap gap-4">
+                    {tenantGenderPreferences.map((option) => (
+                      <RadioCheck
+                        key={option.value}
+                        selectedValue={propertyData.tenantGenderPreference}
+                        handleChange={() =>
+                          updatePropertyData(
+                            "tenantGenderPreference",
+                            option.value,
+                          )
+                        }
+                        type="radio"
+                        value={option.value}
+                        name="tenantGenderPreference"
+                        variant="card"
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
+            )}
 
-              {/* Employment Type */}
-              <div>
-                <h4 className="text-md font-semibold text-[#09391C] mb-3">
-                  Employment Type
-                </h4>
-                <div className="flex flex-wrap gap-4">
-                  {employmentTypes.map((option) => (
-                    <RadioCheck
-                      key={option.value}
-                      selectedValue={propertyData.employmentType}
-                      handleChange={() =>
-                        updatePropertyData("employmentType", option.value)
-                      }
-                      type="radio"
-                      value={option.value}
-                      name="employmentType"
-                      variant="card"
-                    />
-                  ))}
-                </div>
-              </div>
+            {/* Commercial Rental Properties */}
+            {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                  Rental Conditions
+                </h3>
 
-              {/* Tenant Gender Preference */}
-              <div>
-                <h4 className="text-md font-semibold text-[#09391C] mb-3">
-                  Tenant Gender Preference
-                </h4>
-                <div className="flex flex-wrap gap-4">
-                  {tenantGenderPreferences.map((option) => (
-                    <RadioCheck
-                      key={option.value}
-                      selectedValue={propertyData.tenantGenderPreference}
-                      handleChange={() =>
-                        updatePropertyData(
-                          "tenantGenderPreference",
+                {/* Rental Conditions Checkboxes */}
+                <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {rentalConditions.map((option) => (
+                      <EnhancedCheckbox
+                        key={option.value}
+                        label={option.label}
+                        name="rentalConditions"
+                        value={option.value}
+                        checked={(propertyData.rentalConditions || []).includes(
                           option.value,
-                        )
-                      }
-                      type="radio"
-                      value={option.value}
-                      name="tenantGenderPreference"
-                      variant="card"
-                    />
-                  ))}
+                        )}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            "rentalConditions",
+                            option.value,
+                          )
+                        }
+                        variant="card"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Employment Type */}
+                <div>
+                  <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                    Employment Type
+                  </h4>
+                  <div className="flex flex-wrap gap-4">
+                    {employmentTypes.map((option) => (
+                      <RadioCheck
+                        key={option.value}
+                        selectedValue={propertyData.employmentType}
+                        handleChange={() =>
+                          updatePropertyData("employmentType", option.value)
+                        }
+                        type="radio"
+                        value={option.value}
+                        name="employmentType"
+                        variant="card"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tenant Gender Preference */}
+                <div>
+                  <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                    Tenant Gender Preference
+                  </h4>
+                  <div className="flex flex-wrap gap-4">
+                    {tenantGenderPreferences.map((option) => (
+                      <RadioCheck
+                        key={option.value}
+                        selectedValue={propertyData.tenantGenderPreference}
+                        handleChange={() =>
+                          updatePropertyData(
+                            "tenantGenderPreference",
+                            option.value,
+                          )
+                        }
+                        type="radio"
+                        value={option.value}
+                        name="tenantGenderPreference"
+                        variant="card"
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Land Rental Properties - No rental conditions, employment type, or gender preferences */}
+            {propertyData.propertyCategory === PROPERTY_CATEGORIES.LAND && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                  Land Rental Details
+                </h3>
+                <p className="text-sm text-[#5A5D63]">
+                  No additional rental conditions are required for land properties.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* JV Conditions for Joint Venture */}
         {shouldShowField(
