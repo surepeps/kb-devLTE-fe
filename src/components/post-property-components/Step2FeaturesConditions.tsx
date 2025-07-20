@@ -1027,6 +1027,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 type="radio"
                 value={option.value}
                 name="isTenanted"
+                error={
+                  !propertyData.isTenanted ||
+                  (touched.isTenanted && errors.isTenanted)
+                }
               />
             ))}
           </div>
