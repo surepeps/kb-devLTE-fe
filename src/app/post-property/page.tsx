@@ -148,6 +148,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
     if (propertyData.propertyCategory !== "Land") {
       requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
     }
+    // JV ALWAYS requires land size for ALL property categories
     requiredFields.push("measurementType", "landSize");
   }
 
@@ -158,7 +159,11 @@ const checkStep1RequiredFields = (propertyData: any) => {
     requiredFields.push("measurementType", "landSize");
   }
 
-  // Land category always needs land size for all property types
+  // Additional validation: Land size is required for:
+  // - All Sell properties
+  // - All JV properties (already handled above)
+  // - Commercial Rent properties (already handled above)
+  // - Land category for all property types
   if (propertyData.propertyCategory === "Land") {
     if (!requiredFields.includes("measurementType"))
       requiredFields.push("measurementType");
