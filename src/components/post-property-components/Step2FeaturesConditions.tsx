@@ -48,7 +48,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
     updatePropertyData(fieldName as any, value);
   };
 
-  const getFieldBorderClass = (fieldName: string) => {
+  const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const isValid =
       touched[fieldName] &&
@@ -59,7 +59,8 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
     if (isValid)
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    return "border-[#C7CAD0]";
+    // Show red border by default for required fields, gray for optional
+    return isRequired ? "border-red-500" : "border-[#C7CAD0]";
   };
 
   const handleMultiSelectChange = (field: string, value: string) => {
