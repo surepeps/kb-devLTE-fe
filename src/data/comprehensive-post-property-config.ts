@@ -162,17 +162,11 @@ export const landFeatures = [
   { value: "Drainage System In Place", label: "Drainage System In Place" },
   { value: "Water Supply Available", label: "Water Supply Available" },
   { value: "Security Post or Nearby", label: "Security Post or Nearby" },
-  {
-    value: "Estate Land (Within a Gated Estate)",
-    label: "Estate Land (Within a Gated Estate)",
-  },
+  { value: "Estate Land (within a gated estate)", label: "Estate Land (within a gated estate)" },
   { value: "Developed Neighborhood", label: "Developed Neighborhood" },
   { value: "Developing Neighborhood", label: "Developing Neighborhood" },
   { value: "High Foot Traffic Area", label: "High Foot Traffic Area" },
-  {
-    value: "Close to Major Landmark / Expressway",
-    label: "Close to Major Landmark / Expressway",
-  },
+  { value: "Close to Major Landmark / Expressway", label: "Close to Major Landmark / Expressway" },
 ];
 
 // Commercial Property Features - Organized by categories as in specifications
@@ -519,7 +513,7 @@ export const shouldShowField = (
 
 // Function to get fields that should be cleared when property category changes
 export const getFieldsToClearOnCategoryChange = (briefType: string) => {
-  return [
+    return [
     // Clear price and location fields
     "price",
     "state",
@@ -543,7 +537,6 @@ export const getFieldsToClearOnCategoryChange = (briefType: string) => {
     // Clear rental/lease specific
     "rentalType",
     "leaseHold",
-    "holdDuration",
 
     // Clear shortlet specific
     "shortletDuration",

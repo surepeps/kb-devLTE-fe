@@ -121,7 +121,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
   const requiredFields = ["propertyCategory", "state", "lga", "area", "price"];
 
   // Add conditional required fields based on property type and category
-  if (propertyData.propertyType === "rent") {
+    if (propertyData.propertyType === "rent") {
     requiredFields.push("rentalType");
     if (propertyData.propertyCategory !== "Land") {
       requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
@@ -129,6 +129,10 @@ const checkStep1RequiredFields = (propertyData: any) => {
     // Commercial rent needs land size
     if (propertyData.propertyCategory === "Commercial") {
       requiredFields.push("measurementType", "landSize");
+    }
+    // Land rental properties require lease hold if rental type is "Lease"
+    if (propertyData.propertyCategory === "Land" && propertyData.rentalType === "Lease") {
+      requiredFields.push("leaseHold");
     }
   }
 
@@ -143,8 +147,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
     );
   }
 
-    if (propertyData.propertyType === "jv") {
-    requiredFields.push("holdDuration");
+        if (propertyData.propertyType === "jv") {
     // JV ALWAYS requires land size for ALL property categories
     // JV does NOT require property condition, building type, or bedrooms for ANY category
     requiredFields.push("measurementType", "landSize");

@@ -437,27 +437,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
               />
             </div>
 
-            {/* Hold Duration for Joint Venture */}
-            {propertyData.propertyType === "jv" && (
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Hold Duration <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter duration (e.g., 5 years)"
-                  value={propertyData.holdDuration || ""}
-                  onChange={(e) => {
-                    // Allow only numbers and common duration words
-                    const value = e.target.value;
-                    if (/^[0-9\s]*[a-zA-Z]*[\s]*$/.test(value)) {
-                      handleFieldChange("holdDuration", value);
-                    }
-                  }}
-                  className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${getFieldBorderClass("holdDuration", true)}`}
-                />
-              </div>
-            )}
+            
 
             {/* Lease Hold for Rent (when Lease is selected) */}
             {shouldShowField(
