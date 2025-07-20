@@ -47,8 +47,8 @@ const NoBriefsPlaceholder: React.FC<NoBriefsPlaceholderProps> = ({
               </button>
             )}
 
-            <Link
-              href="/post_property"
+                        <Link
+              href="/post-property"
               className="px-6 py-3 bg-[#8DDB90] text-white rounded-lg font-medium hover:bg-[#7BC87F] transition-colors inline-flex items-center gap-2"
             >
               <Plus size={16} />
