@@ -322,10 +322,9 @@ export const step1ValidationSchema = (propertyType: string) => {
         maxGuests: Yup.number().min(1).required(),
       });
 
-    case "jv":
+        case "jv":
       return Yup.object({
         ...baseSchema,
-        holdDuration: Yup.string().required(),
         propertyCondition: Yup.string().when("propertyCategory", {
           is: (category: string) => category !== "Land",
           then: (schema) => schema.required(),
