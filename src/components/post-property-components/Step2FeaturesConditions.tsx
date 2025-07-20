@@ -246,16 +246,17 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
           </div>
         )}
 
-        {/* Features & Amenities */}
-        <div className="border border-[#E5E7EB] rounded-lg p-6">
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-[#09391C] mb-2">
-              Features & Amenities
-            </h3>
-            <p className="text-sm text-[#5A5D63]">
-              Select all features and amenities available in your property
-            </p>
-          </div>
+                {/* Features & Amenities - NOT for Joint Venture */}
+        {propertyData.propertyType !== BRIEF_TYPES.JV && (
+          <div className="border border-[#E5E7EB] rounded-lg p-6">
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-[#09391C] mb-2">
+                Features & Amenities
+              </h3>
+              <p className="text-sm text-[#5A5D63]">
+                Select all features and amenities available in your property
+              </p>
+            </div>
 
           {/* Residential Features */}
           {propertyData.propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL &&
@@ -512,11 +513,12 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
             </div>
           )}
 
-          {/* Commercial Features */}
-          {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL &&
-            propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
-            renderCommercialFeatures()}
-        </div>
+                      {/* Commercial Features */}
+            {propertyData.propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL &&
+              propertyData.propertyType !== BRIEF_TYPES.SHORTLET &&
+              renderCommercialFeatures()}
+          </div>
+        )}
 
         {/* Rental Conditions for Rent properties */}
         {propertyData.propertyType === BRIEF_TYPES.RENT &&
