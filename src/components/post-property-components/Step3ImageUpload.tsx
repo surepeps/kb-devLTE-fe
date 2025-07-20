@@ -190,14 +190,13 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
           );
           setImages(updatedImages);
         } else {
-          // Remove failed upload
-          setImages((currentImages) =>
-            currentImages.map((img: PropertyImage) =>
-              img.id === imageData.id
-                ? { file: null, preview: null, id: generateImageId() }
-                : img,
-            ),
+                    // Remove failed upload
+          const updatedImages = images.map((img: PropertyImage) =>
+            img.id === imageData.id
+              ? { file: null, preview: null, id: generateImageId() }
+              : img,
           );
+          setImages(updatedImages);
         }
       }
     });
