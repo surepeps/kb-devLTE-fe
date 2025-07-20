@@ -52,7 +52,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
             isSelected
               ? "border-[#8DDB90] bg-[#8DDB90]/10 text-[#09391C] shadow-sm"
               : error
-                ? "border-red-300 hover:border-red-400 text-gray-700"
+                ? "border-red-500 hover:border-red-600 text-gray-700 bg-red-50/50"
                 : "border-gray-200 hover:border-[#8DDB90]/50 text-gray-700 hover:bg-gray-50"
           }
           ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
@@ -78,7 +78,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
                 isSelected
                   ? "border-[#8DDB90] bg-[#8DDB90]"
                   : error
-                    ? "border-red-400"
+                    ? "border-red-500 bg-red-50"
                     : "border-gray-300"
               }
             `}
@@ -134,7 +134,7 @@ const RadioCheck: FC<RadioCheckProps> = ({
             isSelected
               ? "border-[#8DDB90] bg-[#8DDB90] shadow-sm"
               : error
-                ? "border-red-400 group-hover:border-red-500"
+                ? "border-red-500 bg-red-50 group-hover:border-red-600"
                 : "border-gray-300 group-hover:border-[#8DDB90]"
           }
         `}
