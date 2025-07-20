@@ -120,10 +120,10 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <Button
+                            <Button
                 type="button"
-                value="View My Listings"
-                onClick={handleViewListings}
+                value="Return back to dashboard"
+                onClick={handleReturnDashboard}
                 className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <Eye size={18} />
@@ -131,8 +131,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
               <Button
                 type="button"
-                value="List Another Property"
-                onClick={handleAddAnother}
+                value="Create new brief"
+                onClick={handleCreateNewBrief}
                 className="w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <Home size={18} />
