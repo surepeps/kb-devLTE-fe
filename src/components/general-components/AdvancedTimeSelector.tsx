@@ -31,6 +31,10 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
       const [hour, minute] = value.split(":");
       setSelectedHour(hour);
       setSelectedMinute(minute);
+    } else {
+      // Reset state when value is cleared
+      setSelectedHour("");
+      setSelectedMinute("");
     }
   }, [value]);
 
@@ -63,12 +67,15 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
     setSelectedHour(hour);
     const newTime = `${hour}:${selectedMinute || "00"}`;
     onChange(newTime);
+    // Don't close dropdown yet, let user select minute
   };
 
   const handleMinuteSelect = (minute: string) => {
     setSelectedMinute(minute);
     const newTime = `${selectedHour || "00"}:${minute}`;
     onChange(newTime);
+    // Close dropdown after minute selection
+    setIsOpen(false);
   };
 
   const formatDisplayTime = () => {
@@ -92,7 +99,7 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
             ? "border-red-500 focus:border-red-500 focus:ring-red-100"
             : value
               ? "border-green-500 hover:border-green-600"
-              : "border-red-500 hover:border-red-600"
+              : "border-[#C7CAD0] hover:border-[#8DDB90]"
         } ${
           disabled
             ? "bg-gray-50 text-gray-400 cursor-not-allowed"
@@ -111,6 +118,10 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
 
       {isOpen && !disabled && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          {/* Instructions */}
+          <div className="p-2 bg-blue-50 text-xs text-blue-600 border-b border-gray-200">
+            Select hour first, then minute. Use quick select for common times.
+          </div>
           <div className="flex">
             {/* Hours column */}
             <div className="w-1/2 border-r border-gray-200">
@@ -173,6 +184,7 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
             <div className="flex gap-1 flex-wrap">
               {[
                 { label: "9 AM", value: "09:00" },
+                { label: "11 AM", value: "11:00" },
                 { label: "12 PM", value: "12:00" },
                 { label: "3 PM", value: "15:00" },
                 { label: "6 PM", value: "18:00" },
@@ -184,7 +196,7 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
                     onChange(preset.value);
                     setIsOpen(false);
                   }}
-                  className="px-2 py-1 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+                  className="px-2 py-1 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
                 >
                   {preset.label}
                 </button>
