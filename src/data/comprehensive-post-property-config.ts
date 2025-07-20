@@ -65,7 +65,7 @@ export const briefTypeConfig = {
   [BRIEF_TYPES.SHORTLET]: {
     label: "Shortlet",
     description: "I want to list my property for short-term rental",
-    icon: "���",
+    icon: "📅",
     propertyCategories: [PROPERTY_CATEGORIES.RESIDENTIAL],
     commission: {
       landowner: 5,
@@ -162,17 +162,11 @@ export const landFeatures = [
   { value: "Drainage System In Place", label: "Drainage System In Place" },
   { value: "Water Supply Available", label: "Water Supply Available" },
   { value: "Security Post or Nearby", label: "Security Post or Nearby" },
-  {
-    value: "Estate Land (Within a Gated Estate)",
-    label: "Estate Land (Within a Gated Estate)",
-  },
+  { value: "Estate Land (within a gated estate)", label: "Estate Land (within a gated estate)" },
   { value: "Developed Neighborhood", label: "Developed Neighborhood" },
   { value: "Developing Neighborhood", label: "Developing Neighborhood" },
   { value: "High Foot Traffic Area", label: "High Foot Traffic Area" },
-  {
-    value: "Close to Major Landmark / Expressway",
-    label: "Close to Major Landmark / Expressway",
-  },
+  { value: "Close to Major Landmark / Expressway", label: "Close to Major Landmark / Expressway" },
 ];
 
 // Commercial Property Features - Organized by categories as in specifications
