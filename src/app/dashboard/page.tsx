@@ -154,7 +154,7 @@ export default function LandlordDashboard() {
     {
       title: "List New Property",
       description: "Add a new property to your portfolio",
-      href: "/post_property",
+            href: "/post-property",
       icon: PlusIcon,
       color: "bg-gradient-to-r from-green-500 to-green-600",
       textColor: "text-green-600",
