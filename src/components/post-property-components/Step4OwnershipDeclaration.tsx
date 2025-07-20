@@ -370,15 +370,13 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("firstName", e.target.value)
                 }
                 error={
-                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                  !propertyData.contactInfo.firstName ||
+                  (typeof errors?.contactInfo === "object" && errors.contactInfo
                     ? (errors.contactInfo as any).firstName
-                    : undefined
+                    : undefined)
                 }
                 touched={
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo
-                    ? !!(touched.contactInfo as any).firstName
-                    : false
+                  true // Always show validation state
                 }
               />
               {typeof errors?.contactInfo === "object" &&
@@ -403,15 +401,13 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("lastName", e.target.value)
                 }
                 error={
-                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                  !propertyData.contactInfo.lastName ||
+                  (typeof errors?.contactInfo === "object" && errors.contactInfo
                     ? (errors.contactInfo as any).lastName
-                    : undefined
+                    : undefined)
                 }
                 touched={
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo
-                    ? !!(touched.contactInfo as any).lastName
-                    : false
+                  true // Always show validation state
                 }
               />
               {typeof errors?.contactInfo === "object" &&
@@ -436,15 +432,13 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   handleContactInfoChange("email", e.target.value)
                 }
                 error={
-                  typeof errors?.contactInfo === "object" && errors.contactInfo
+                  !propertyData.contactInfo.email ||
+                  (typeof errors?.contactInfo === "object" && errors.contactInfo
                     ? (errors.contactInfo as any).email
-                    : undefined
+                    : undefined)
                 }
                 touched={
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo
-                    ? !!(touched.contactInfo as any).email
-                    : false
+                  true // Always show validation state
                 }
               />
               {typeof errors?.contactInfo === "object" &&
