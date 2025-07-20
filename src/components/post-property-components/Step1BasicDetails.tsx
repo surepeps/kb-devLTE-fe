@@ -191,12 +191,10 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       );
     }
 
-    if (propertyData.propertyType === "jv") {
+        if (propertyData.propertyType === "jv") {
       requiredFields.push("holdDuration");
-      if (propertyData.propertyCategory !== "Land") {
-        requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
-      }
       // JV ALWAYS requires land size for ALL property categories
+      // JV does NOT require property condition, building type, or bedrooms for ANY category
       requiredFields.push("measurementType", "landSize");
     }
 
