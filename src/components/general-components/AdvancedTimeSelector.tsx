@@ -90,7 +90,9 @@ const AdvancedTimeSelector: React.FC<AdvancedTimeSelectorProps> = ({
         className={`w-full p-3 border rounded-lg text-left flex items-center justify-between focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] transition-all ${
           error
             ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-            : "border-[#C7CAD0] hover:border-gray-400"
+            : value
+              ? "border-green-500 hover:border-green-600"
+              : "border-red-500 hover:border-red-600"
         } ${
           disabled
             ? "bg-gray-50 text-gray-400 cursor-not-allowed"
