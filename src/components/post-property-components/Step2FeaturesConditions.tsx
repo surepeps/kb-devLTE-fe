@@ -59,8 +59,8 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
       return "border-red-500 focus:border-red-500 focus:ring-red-100";
     if (isValid)
       return "border-green-500 focus:border-green-500 focus:ring-green-100";
-    // Show red border by default for required fields, gray for optional
-    return isRequired ? "border-red-500" : "border-[#C7CAD0]";
+    // Default border color for all fields
+    return "border-[#C7CAD0]";
   };
 
   const handleMultiSelectChange = (field: string, value: string) => {
