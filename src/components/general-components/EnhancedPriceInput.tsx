@@ -71,6 +71,8 @@ const EnhancedPriceInput: FC<EnhancedPriceInputProps> = ({
   };
 
   const hasError = error && touched;
+  const hasValue = value && value.toString().replace(/[^0-9]/g, "") !== "";
+  const isValid = hasValue && !hasError;
 
   return (
     <div className={`space-y-2 ${className || ""}`}>
@@ -90,13 +92,15 @@ const EnhancedPriceInput: FC<EnhancedPriceInputProps> = ({
           relative flex items-center border-2 rounded-lg transition-all duration-200
                     ${
                       hasError
-                        ? "border-red-400 focus-within:border-red-500"
+                        ? "border-red-500 focus-within:border-red-600"
                         : isFocused
-                          ? "border-[#8DDB90] shadow-sm"
-                          : touched && !error && value
+                          ? isValid
+                            ? "border-green-500 shadow-sm"
+                            : "border-[#8DDB90] shadow-sm"
+                          : isValid
                             ? "border-green-500 hover:border-green-600"
-                            : required
-                              ? "border-red-400 hover:border-red-500"
+                            : required && !hasValue
+                              ? "border-red-500 hover:border-red-600"
                               : "border-gray-200 hover:border-gray-300"
                     }
           ${disabled ? "bg-gray-50 opacity-60" : "bg-white"}
