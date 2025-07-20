@@ -227,27 +227,22 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
 
         {/* Features & Amenities */}
         <div className="border border-[#E5E7EB] rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-[#E4EFE7] flex items-center justify-center">
-              <span className="text-xl">✨</span>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-[#09391C]">
-                Features & Amenities
-              </h3>
-              <p className="text-sm text-[#5A5D63]">
-                Select all features and amenities available in your property
-              </p>
-            </div>
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-[#09391C] mb-2">
+              Features & Amenities
+            </h3>
+            <p className="text-sm text-[#5A5D63]">
+              Select all features and amenities available in your property
+            </p>
           </div>
 
           {/* Residential Features */}
           {propertyData.propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL &&
             propertyData.propertyType !== BRIEF_TYPES.SHORTLET && (
               <div className="space-y-4">
-                <div className="bg-[#F8F9FA] rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                    🏠 Residential Features
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                    Residential Features
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {residentialFeatures.map((option) => (
@@ -274,9 +269,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
           {propertyData.propertyType === BRIEF_TYPES.SHORTLET && (
             <div className="space-y-6">
               {/* General Amenities */}
-              <div className="bg-[#F8F9FA] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🏨 General Amenities
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  General Amenities
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.general.map((option) => (
@@ -298,9 +293,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Kitchen & Dining */}
-              <div className="bg-[#FFF9E6] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🍽️ Kitchen & Dining
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Kitchen & Dining
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.kitchen.map((option) => (
@@ -322,9 +317,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Bathroom */}
-              <div className="bg-[#E6F3FF] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🚿 Bathroom
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Bathroom
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.bathroom.map((option) => (
@@ -346,9 +341,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Leisure & Wellness */}
-              <div className="bg-[#F0F9F0] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🏊‍♂️ Leisure & Wellness
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Leisure & Wellness
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.leisure.map((option) => (
@@ -370,9 +365,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Transport & Parking */}
-              <div className="bg-[#F5F5F5] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🚗 Transport & Parking
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Transport & Parking
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.transport.map((option) => (
@@ -394,9 +389,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Security */}
-              <div className="bg-[#FFE6E6] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  🛡️ Security
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Security
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.security.map((option) => (
@@ -418,9 +413,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Family Friendly & Accessibility */}
-              <div className="bg-[#F9F0FF] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  👶 Family & Accessibility
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Family & Accessibility
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {[
@@ -445,9 +440,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
               </div>
 
               {/* Location Perks */}
-              <div className="bg-[#FFE6F9] rounded-lg p-4">
-                <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                  📍 Location Perks
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                  Location Perks
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {shortletOptions.amenities.location.map((option) => (
@@ -472,9 +467,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
 
           {/* Land Features */}
           {propertyData.propertyCategory === PROPERTY_CATEGORIES.LAND && (
-            <div className="bg-[#F0F7F0] rounded-lg p-4">
-              <h4 className="text-md font-semibold text-[#09391C] mb-3 flex items-center gap-2">
-                🌿 Land Features
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="text-md font-semibold text-[#09391C] mb-3">
+                Land Features
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {landFeatures.map((option) => (
