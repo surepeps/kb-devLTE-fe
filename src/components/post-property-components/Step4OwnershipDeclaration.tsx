@@ -452,14 +452,22 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               </label>
               <div
                 className={`phone-input-container ${
-                  typeof errors?.contactInfo === "object" &&
-                  errors.contactInfo &&
-                  (errors.contactInfo as any).phone &&
-                  typeof touched?.contactInfo === "object" &&
-                  touched.contactInfo &&
-                  (touched.contactInfo as any).phone
+                  !propertyData.contactInfo.phone ||
+                  (typeof errors?.contactInfo === "object" &&
+                    errors.contactInfo &&
+                    (errors.contactInfo as any).phone &&
+                    typeof touched?.contactInfo === "object" &&
+                    touched.contactInfo &&
+                    (touched.contactInfo as any).phone)
                     ? "has-error"
-                    : ""
+                    : propertyData.contactInfo.phone &&
+                        !(
+                          typeof errors?.contactInfo === "object" &&
+                          errors.contactInfo &&
+                          (errors.contactInfo as any).phone
+                        )
+                      ? "has-success"
+                      : ""
                 }`}
               >
                 <PhoneInput
@@ -512,8 +520,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               • I agree to Khabi-Teq&apos;s terms of service and privacy policy
             </p>
             <p>
-              �� I consent to being contacted by potential buyers/tenants
-              through this platform
+              • I consent to being contacted by potential buyers/tenants through
+              this platform
             </p>
           </div>
         </div>
