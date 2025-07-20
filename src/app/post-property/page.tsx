@@ -24,6 +24,7 @@ import Step3ImageUpload from "@/components/post-property-components/Step3ImageUp
 import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
 import CommissionModal from "@/components/post-property-components/CommissionModal";
+import SuccessModal from "@/components/post-property-components/SuccessModal";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
 import Preloader from "@/components/general-components/preloader";
