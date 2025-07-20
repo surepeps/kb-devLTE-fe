@@ -235,11 +235,10 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   }
                   variant="card"
                   error={
-                    ((propertyData.propertyType === "sell" ||
+                    (propertyData.propertyType === "sell" ||
                       propertyData.propertyType === "jv") &&
-                      (!propertyData.documents ||
-                        propertyData.documents.length === 0)) ||
-                    (touched.documents && errors.documents)
+                    (!propertyData.documents ||
+                      propertyData.documents.length === 0)
                   }
                 />
               ))}
@@ -567,6 +566,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                       type="radio"
                       value={option.value}
                       name="employmentType"
+                      variant="card"
                     />
                   ))}
                 </div>
@@ -591,6 +591,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                       type="radio"
                       value={option.value}
                       name="tenantGenderPreference"
+                      variant="card"
                     />
                   ))}
                 </div>
@@ -623,10 +624,9 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                   }
                   variant="card"
                   error={
-                    (propertyData.propertyType === "jv" &&
-                      (!propertyData.jvConditions ||
-                        propertyData.jvConditions.length === 0)) ||
-                    (touched.jvConditions && errors.jvConditions)
+                    propertyData.propertyType === "jv" &&
+                    (!propertyData.jvConditions ||
+                      propertyData.jvConditions.length === 0)
                   }
                 />
               ))}
@@ -1038,10 +1038,8 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 type="radio"
                 value={option.value}
                 name="isTenanted"
-                error={
-                  !propertyData.isTenanted ||
-                  (touched.isTenanted && errors.isTenanted)
-                }
+                variant="card"
+                error={!propertyData.isTenanted}
               />
             ))}
           </div>
