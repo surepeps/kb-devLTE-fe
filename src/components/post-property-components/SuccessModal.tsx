@@ -29,7 +29,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   };
 
   const handleAddAnother = () => {
-    router.push("/post_property");
+        router.push("/post-property");
     onClose();
   };
 
