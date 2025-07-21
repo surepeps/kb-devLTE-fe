@@ -237,7 +237,7 @@ const checkStep4RequiredFields = (propertyData: any) => {
 const UpdateProperty = () => {
   const router = useRouter();
   const params = useParams();
-  const { propertyId } = params;
+  const propertyId = params?.propertyId as string;
   const { user } = useUserContext();
   const {
     currentStep,
