@@ -8,6 +8,7 @@ import { usePreferenceForm } from "@/context/preference-form-context";
 interface SubmitButtonProps {
   onSubmit: () => void;
   className?: string;
+  buttonText?: string; // Optional custom button text
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = memo(
