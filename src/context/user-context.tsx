@@ -54,12 +54,16 @@ interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   logout: (callback?: () => void) => void;
+  isLoading: boolean;
+  isInitialized: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const pathName = usePathname();
   const router = useRouter();
@@ -73,7 +77,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const url = URLS.BASE + URLS.user + URLS.userProfile;
     const token = Cookies.get("token");
 
+    setIsLoading(true);
+
     if (!token) {
+      setIsLoading(false);
+      setIsInitialized(true);
       if (pathName && !pathName.includes("/auth")) {
         router.push("/auth/login");
       }
@@ -97,7 +105,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.log("Error", error);
-      router.push("/auth/login");
+      if (pathName && !pathName.includes("/auth")) {
+        router.push("/auth/login");
+      }
+    } finally {
+      setIsLoading(false);
+      setIsInitialized(true);
     }
   };
 
@@ -128,20 +141,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (token) {
       getUser();
     } else {
+      setIsLoading(false);
+      setIsInitialized(true);
       if (pathName && !pathName.includes("/auth")) {
         // Optionally redirect to login
         // router.push("/auth/login");
       }
     }
-  }, []);
+  }, [pathName, router]);
 
   const contextValue = useMemo(
     () => ({
       user,
       setUser,
       logout,
+      isLoading,
+      isInitialized,
     }),
-    [user, setUser, logout],
+    [user, setUser, logout, isLoading, isInitialized],
   );
 
   return (
