@@ -4,6 +4,7 @@ import { usePageContext } from '@/context/page-context';
 import React, { Fragment, ReactNode, useState } from 'react';
 import SubmitPopUp from '../submit';
 import OnUpgradeNotification from '../settings-components/on-ugrade-notification';
+import AuthGuard from '../common/AuthGuard';
 //import SubmitPopUp from './submit';
 
 const Body = ({ children }: { children: ReactNode }) => {
