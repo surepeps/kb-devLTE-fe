@@ -523,28 +523,35 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
-  // Auto-generate payload helper - memoized
+    // Auto-generate payload helper - memoized
   const generatePayload = useCallback(
     <T extends BasePayload>(
       baseStatus: string,
       userPayload: Partial<T> = {},
       additionalDefaults: Partial<T> = {},
-    ): T =>
-      ({
+    ): T => {
+      const payload = {
         status: baseStatus,
         counterDateTimeObj: state.counterDateTimeObj,
         inspectionDateStatus:
           userPayload.inspectionDateStatus ?? state.inspectionDateStatus,
         userId: state.currentUserId || "", // Get from state
         userType: state.currentUserType || "", // Get from state
+        // Include counter tracking information
+        priceCounterCount: state.counterTracking.priceCounterCount,
+        loiCounterCount: state.counterTracking.loiCounterCount,
         ...additionalDefaults,
         ...userPayload,
-      }) as T,
+      } as T;
+
+      return payload;
+    },
     [
       state.counterDateTimeObj,
       state.inspectionDateStatus,
       state.currentUserId,
       state.currentUserType,
+      state.counterTracking,
     ],
   ); // Add dependencies
 
@@ -603,12 +610,33 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "SET_CURRENT_USER_ID", payload });
   }, []);
 
-  const setCurrentUserType = useCallback(
+    const setCurrentUserType = useCallback(
     (payload: "seller" | "buyer" | null) => {
       dispatch({ type: "SET_CURRENT_USER_TYPE", payload });
     },
     [],
   );
+
+  // NEW: Counter management callbacks
+  const incrementPriceCounter = useCallback(() => {
+    dispatch({ type: "INCREMENT_PRICE_COUNTER" });
+  }, []);
+
+  const incrementLoiCounter = useCallback(() => {
+    dispatch({ type: "INCREMENT_LOI_COUNTER" });
+  }, []);
+
+  const setCounterLimits = useCallback((payload: CounterLimits) => {
+    dispatch({ type: "SET_COUNTER_LIMITS", payload });
+  }, []);
+
+  const resetCounters = useCallback(() => {
+    dispatch({ type: "RESET_COUNTERS" });
+  }, []);
+
+  const setGlobalAccessibility = useCallback((payload: boolean) => {
+    dispatch({ type: "SET_GLOBAL_ACCESSIBILITY", payload });
+  }, []);
 
   const goToNextPage = useCallback((payload: ContentTracker) => {
     dispatch({ type: "SET_CONTENT_TRACKER", payload });
@@ -619,9 +647,106 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "RESET_COUNTER_DATE_TIME" });
   }, []);
 
-  const resetToOriginalDateTime = useCallback(() => {
+    const resetToOriginalDateTime = useCallback(() => {
     dispatch({ type: "RESET_COUNTER_DATE_TIME" });
   }, []);
+
+  // NEW: Helper functions for counter management
+  const canMakeCounter = useCallback(
+    (type: 'price' | 'loi') => {
+      return state.counterTracking.canCounter(type);
+    },
+    [state.counterTracking]
+  );
+
+  const getRemainingCounters = useCallback(
+    (type: 'price' | 'loi') => {
+      return state.counterTracking.getRemainingCounters(type);
+    },
+    [state.counterTracking]
+  );
+
+  // NEW: Global initialization function
+  const initializeFromExternalData = useCallback(
+    (data: any, userRole: 'seller' | 'buyer') => {
+      const property = data.propertyId || {};
+
+      // Determine negotiation type
+      const negotiationType: NegotiationType = data.letterOfIntention
+        ? "LOI"
+        : ["Outright Sales", "Rent"].includes(property.briefType)
+          ? "NORMAL"
+          : "LOI";
+
+      let userIdToSet: string | null = null;
+      let userTypeToSet: "seller" | "buyer" | null = null;
+
+      // Logic to set userId and userType based on userRole
+      if (userRole === "seller") {
+        userIdToSet = property?.owner || data.owner?._id;
+        userTypeToSet = "seller";
+      } else if (userRole === "buyer") {
+        userIdToSet = data.requestedBy?._id || null;
+        userTypeToSet = "buyer";
+      }
+
+      // Extract counter counts from existing data
+      const priceCounterCount = data.priceCounterCount || 0;
+      const loiCounterCount = data.loiCounterCount || 0;
+
+      // Use batch update for better performance
+      const batchUpdates = {
+        formStatus: "success" as const,
+        negotiationType,
+        createdAt: data.createdAt || null,
+        dateTimeObj: {
+          date: data.inspectionDate || "",
+          time: data.inspectionTime || "",
+          selectedDate: data.inspectionDate
+            ? new Date(data.inspectionDate).toISOString().split("T")[0]
+            : "",
+          selectedTime: data.inspectionTime || "N/A",
+        },
+        counterDateTimeObj: {
+          date: "",
+          time: "",
+          selectedDate: data.inspectionDate
+            ? new Date(data.inspectionDate).toISOString().split("T")[0]
+            : "",
+          selectedTime: data.inspectionTime || "N/A",
+        },
+        details: {
+          negotiationID: data._id,
+          firstName: data.owner?.firstName || "",
+          lastName: data.owner?.lastName || "",
+          currentAmount: property.price || 0,
+          buyOffer: data.negotiationPrice || 0,
+          letterOfIntention: data.letterOfIntention || "",
+          propertyData: property,
+          clientData: data.requestedBy,
+          negotiationStatus: data.status || "pending_inspection",
+          sellerCounterOffer: data.sellerCounterOffer || null,
+          pendingResponseFrom: data.pendingResponseFrom,
+          stage: data.stage,
+          inspection: {
+            inspectionDate: data.inspectionDate,
+            inspectionTime: data.inspectionTime,
+          },
+        },
+        currentUserId: userIdToSet,
+        currentUserType: userTypeToSet,
+        counterTracking: createCounterTracking(priceCounterCount, loiCounterCount, state.counterLimits),
+        isGloballyAccessible: true,
+      };
+
+      batchUpdate(batchUpdates);
+    },
+    [state.counterLimits, batchUpdate]
+  );
+
+  const makeGloballyAccessible = useCallback(() => {
+    setGlobalAccessibility(true);
+  }, [setGlobalAccessibility]);
 
   // Create stable actions object using useMemo with individual stable functions
   const actions = useMemo(
@@ -654,9 +779,22 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setError,
       setFormStatus,
       setInspectionStatus,
-      setInspectionDateStatus,
+            setInspectionDateStatus,
       setCurrentUserId, // Exposed action
       setCurrentUserType, // Exposed action
+
+      // Counter management actions
+      incrementPriceCounter,
+      incrementLoiCounter,
+      setCounterLimits,
+      resetCounters,
+      canMakeCounter,
+      getRemainingCounters,
+
+      // Global accessibility actions
+      setGlobalAccessibility,
+      makeGloballyAccessible,
+      initializeFromExternalData,
 
       setLoading: (type: LoadingType, loading: boolean) => {
         const actionType = `SET_IS_${type.toUpperCase()}` as any;
@@ -756,7 +894,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
         return false;
       },
 
-      counterOffer: async (
+            counterOffer: async (
         negotiationId: string,
         userPayload: Partial<CounterOfferPayload> = {},
       ): Promise<boolean> => {
@@ -769,6 +907,24 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
           });
           return false;
         }
+
+        // Determine the counter type based on negotiation type
+        const counterType = state.negotiationType === "LOI" ? "loi" : "price";
+
+        // Check if user can make more counters
+        if (!canMakeCounter(counterType)) {
+          const remainingCounters = getRemainingCounters(counterType);
+          const limitMessage = counterType === "price"
+            ? "You have reached the maximum number of price negotiations for this property."
+            : `You have reached the maximum number of LOI request changes (${state.counterLimits.loiRequests}). Remaining: ${remainingCounters || 0}`;
+
+          dispatch({
+            type: "SET_ERROR",
+            payload: limitMessage,
+          });
+          return false;
+        }
+
         const payload = generatePayload<CounterOfferPayload>(
           "countered",
           userPayload,
@@ -795,6 +951,13 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
           responseData.inspectionData &&
           responseData.inspectionData.status
         ) {
+          // Increment the appropriate counter
+          if (counterType === "price") {
+            incrementPriceCounter();
+          } else {
+            incrementLoiCounter();
+          }
+
           actions.setDetails({
             ...state.details, // Spread existing details
             negotiationStatus: responseData.inspectionData.status,
@@ -890,8 +1053,17 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
       setError,
       setInspectionStatus,
       setInspectionDateStatus,
-      setCurrentUserId, // Add to dependencies
+            setCurrentUserId, // Add to dependencies
       setCurrentUserType, // Add to dependencies
+      incrementPriceCounter,
+      incrementLoiCounter,
+      setCounterLimits,
+      resetCounters,
+      setGlobalAccessibility,
+      canMakeCounter,
+      getRemainingCounters,
+      initializeFromExternalData,
+      makeGloballyAccessible,
       goToNextPage,
       resetCounterDateTime,
       resetToOriginalDateTime,
@@ -901,6 +1073,8 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
       state.inspectionStatus,
       state.currentUserId, // Add state values as dependencies for actions that rely on them
       state.currentUserType,
+      state.counterTracking,
+      state.counterLimits,
     ],
   );
 
@@ -1072,7 +1246,7 @@ export const useNegotiationDataWithContext = (
 export const useNegotiationData = () => {
   const { state, actions } = useNegotiation();
 
-  return useMemo(
+    return useMemo(
     () => ({
       // Data
       offerPrice: state.offerPrice,
@@ -1087,6 +1261,13 @@ export const useNegotiationData = () => {
       setError: actions.setError,
       currentUserId: state.currentUserId,
       currentUserType: state.currentUserType,
+
+      // Counter tracking data
+      counterLimits: state.counterLimits,
+      counterTracking: state.counterTracking,
+      priceCounterCount: state.counterTracking.priceCounterCount,
+      loiCounterCount: state.counterTracking.loiCounterCount,
+      isGloballyAccessible: state.isGloballyAccessible,
 
       // UI State
       contentTracker: state.contentTracker,
@@ -1104,6 +1285,18 @@ export const useNegotiationData = () => {
       setCurrentUserType: actions.setCurrentUserType,
       setCounterOffer: actions.setCounterOffer,
 
+      // Counter management actions
+      canMakeCounter: actions.canMakeCounter,
+      getRemainingCounters: actions.getRemainingCounters,
+      incrementPriceCounter: actions.incrementPriceCounter,
+      incrementLoiCounter: actions.incrementLoiCounter,
+      resetCounters: actions.resetCounters,
+      setCounterLimits: actions.setCounterLimits,
+
+      // Global accessibility
+      makeGloballyAccessible: actions.makeGloballyAccessible,
+      initializeFromExternalData: actions.initializeFromExternalData,
+
       // Utils
       isCounterDateTimeModified: () => {
         return (
@@ -1117,6 +1310,14 @@ export const useNegotiationData = () => {
       resetAllToOriginal: () => {
         actions.resetCounterDateTime();
       },
+
+      // Counter limit checking utilities
+      isPriceCounterAtLimit: () => state.counterTracking.isAtLimit('price'),
+      isLoiCounterAtLimit: () => state.counterTracking.isAtLimit('loi'),
+      canCounterPrice: () => state.counterTracking.canCounter('price'),
+      canCounterLoi: () => state.counterTracking.canCounter('loi'),
+      getRemainingPriceCounters: () => state.counterTracking.getRemainingCounters('price'),
+      getRemainingLoiCounters: () => state.counterTracking.getRemainingCounters('loi'),
     }),
     [
       // State dependencies
@@ -1129,8 +1330,11 @@ export const useNegotiationData = () => {
       state.inspectionStatus,
       state.inspectionDateStatus,
       state.error,
-      state.currentUserId,
+            state.currentUserId,
       state.currentUserType,
+      state.counterLimits,
+      state.counterTracking,
+      state.isGloballyAccessible,
       state.contentTracker,
       state.isNegotiated,
       state.dateTimeObj,
@@ -1144,9 +1348,17 @@ export const useNegotiationData = () => {
       actions.setInspectionStatus,
       actions.setInspectionDateStatus,
       actions.setCurrentUserType,
-      actions.resetCounterDateTime,
+            actions.resetCounterDateTime,
       actions.setError,
       actions.setCounterOffer,
+      actions.canMakeCounter,
+      actions.getRemainingCounters,
+      actions.incrementPriceCounter,
+      actions.incrementLoiCounter,
+      actions.resetCounters,
+      actions.setCounterLimits,
+      actions.makeGloballyAccessible,
+      actions.initializeFromExternalData,
     ],
   );
 };
@@ -1214,4 +1426,11 @@ export type {
   CounterOfferPayload,
   InspectionStatus,
   LoadingType,
+  CounterLimits,
+  CounterTracking,
+  NegotiationState,
+  NegotiationActions,
 };
+
+// Export helper functions for external use
+export { createCounterTracking, defaultCounterLimits };
