@@ -17,9 +17,9 @@ interface NegotiationContextWrapperProps {
  * 2. Use useNegotiation() or useGlobalNegotiation() hooks within the wrapped component
  * 3. Call makeGloballyAccessible() to enable global access after initialization
  */
-export const NegotiationContextWrapper: React.FC<NegotiationContextWrapperProps> = ({ 
-  children, 
-  enabled = true 
+export const NegotiationContextWrapper: React.FC<NegotiationContextWrapperProps> = ({
+  children,
+  enabled = true
 }) => {
   if (!enabled) {
     return <>{children}</>;

@@ -324,7 +324,7 @@ export default function MyInspectionRequestsPage() {
         return { bg: "bg-blue-100", text: "text-blue-800", icon: CheckCircleIcon };
       case "cancelled":
       case "rejected":
-        return { bg: "bg-red-100", text: "text-red-800", icon: XCircle };
+        return { bg: "bg-red-100", text: "text-red-800", icon: XCircleIcon };
       default:
         return { bg: "bg-gray-100", text: "text-gray-800", icon: AlertCircleIcon };
     }
@@ -618,7 +618,7 @@ export default function MyInspectionRequestsPage() {
           {/* Inspections List */}
           {filteredInspections.length === 0 ? (
             <div className="bg-white rounded-xl p-8 sm:p-12 text-center shadow-sm border border-gray-100">
-              <Building size={64} className="mx-auto text-gray-400 mb-4" />
+              <BuildingIcon size={64} className="mx-auto text-gray-400 mb-4" />
               <h3 className="text-xl font-medium text-gray-600 mb-2">
                 {searchTerm || Object.values(filters).some(f => f && f !== "newest")
                   ? "No matching inspection requests found"
@@ -692,7 +692,7 @@ export default function MyInspectionRequestsPage() {
                             <div className="flex flex-col items-end gap-2">
                               <StatusIcon size={20} className={statusStyles.text.replace('text-', 'text-').replace('-800', '-600')} />
                               <span className="text-xs text-gray-500">
-                                {inspection.propertyType} • {inspection.inspectionMode}
+                                {inspection.propertyId.propertyType} • {inspection.inspectionMode}
                               </span>
                             </div>
                           </div>
