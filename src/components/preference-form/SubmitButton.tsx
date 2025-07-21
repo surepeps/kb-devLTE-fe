@@ -12,7 +12,7 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = memo(
-  ({ onSubmit, className = "" }) => {
+  ({ onSubmit, className = "", buttonText }) => {
     const {
       state,
       isFormValid,
