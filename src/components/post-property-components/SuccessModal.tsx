@@ -14,6 +14,7 @@ interface SuccessModalProps {
     price: string;
     location: string;
   };
+  isUpdate?: boolean; // New prop to differentiate between create and update
 }
 
 const SuccessModal: React.FC<SuccessModalProps> = ({
