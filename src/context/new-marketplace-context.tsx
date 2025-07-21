@@ -428,7 +428,7 @@ export const NewMarketplaceProvider: React.FC<{
         (item) => item.propertyId === propertyId,
       );
     },
-    [buyTab, jvTab, rentTab],
+    [buyTab, jvTab, rentTab, shortletTab],
   );
 
   const canSelectMoreForInspection = useCallback(
@@ -443,7 +443,7 @@ export const NewMarketplaceProvider: React.FC<{
               : shortletTab;
       return tabState.selectedForInspection.length < 2;
     },
-    [buyTab, jvTab, rentTab],
+    [buyTab, jvTab, rentTab, shortletTab],
   );
 
   // Price negotiation methods (for buy, rent and shortlet tabs)
@@ -504,7 +504,7 @@ export const NewMarketplaceProvider: React.FC<{
         null
       );
     },
-    [buyTab, rentTab],
+    [buyTab, rentTab, shortletTab],
   );
 
   // LOI document methods (for JV tab)
@@ -978,13 +978,13 @@ export const NewMarketplaceProvider: React.FC<{
   );
 
   // Auto-fetch initial data on mount for active tab
-  // useEffect(() => {
-  //   const currentTabState = getCurrentTabState();
-  //   if (currentTabState.formikStatus === "idle") {
-  //     console.log(`Auto-fetching initial data for ${activeTab} tab`);
-  //     fetchTabData(activeTab);
-  //   }
-  // }, [activeTab, fetchTabData, getCurrentTabState]);
+  useEffect(() => {
+    const currentTabState = getCurrentTabState();
+    if (currentTabState.formikStatus === "idle" && currentTabState.properties.length === 0) {
+      console.log(`Auto-fetching initial data for ${activeTab} tab`);
+      fetchTabData(activeTab);
+    }
+  }, [activeTab, fetchTabData, getCurrentTabState]);
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {
