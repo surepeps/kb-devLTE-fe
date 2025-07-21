@@ -62,18 +62,20 @@ export default function RootLayout({
           <ModalProvider>
             <PageContextProvider>
               <CreateBriefProvider>
-                <SelectedBriefsProvider>
+                                <SelectedBriefsProvider>
                   <NewMarketplaceProvider>
-                    <html lang="en">
-                      <body
-                        className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                      >
-                        <HeaderFooterWrapper>
-                          <Body>{children}</Body>
-                        </HeaderFooterWrapper>
-                        <Toaster />
-                      </body>
-                    </html>
+                    <NegotiationContextWrapper>
+                      <html lang="en">
+                        <body
+                          className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                        >
+                          <HeaderFooterWrapper>
+                            <Body>{children}</Body>
+                          </HeaderFooterWrapper>
+                          <Toaster />
+                        </body>
+                      </html>
+                    </NegotiationContextWrapper>
                   </NewMarketplaceProvider>
                 </SelectedBriefsProvider>
               </CreateBriefProvider>
