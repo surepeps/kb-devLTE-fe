@@ -21,6 +21,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   isOpen,
   onClose,
   propertyData,
+  isUpdate = false,
 }) => {
   const router = useRouter();
 
