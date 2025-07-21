@@ -329,7 +329,8 @@ StepProgressIndicator.displayName = "StepProgressIndicator";
 const UpdatePreferenceFormContent: React.FC = () => {
   const router = useRouter();
   const params = useParams();
-  const { buyerId, preferenceId } = params;
+  const buyerId = params?.buyerId as string;
+  const preferenceId = params?.preferenceId as string;
   
   const { state, updateFormData, resetForm, goToStep, dispatch, isFormValid } =
     usePreferenceForm();
