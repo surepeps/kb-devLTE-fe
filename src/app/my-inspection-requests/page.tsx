@@ -618,7 +618,7 @@ export default function MyInspectionRequestsPage() {
           {/* Inspections List */}
           {filteredInspections.length === 0 ? (
             <div className="bg-white rounded-xl p-8 sm:p-12 text-center shadow-sm border border-gray-100">
-              <Building size={64} className="mx-auto text-gray-400 mb-4" />
+              <BuildingIcon size={64} className="mx-auto text-gray-400 mb-4" />
               <h3 className="text-xl font-medium text-gray-600 mb-2">
                 {searchTerm || Object.values(filters).some(f => f && f !== "newest")
                   ? "No matching inspection requests found"
