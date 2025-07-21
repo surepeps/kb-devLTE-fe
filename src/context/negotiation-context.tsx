@@ -28,6 +28,21 @@ type InspectionStatus = "accept" | "reject" | "countered";
 type InspectionDateStatus = "none" | "available" | "unavailable" | "countered";
 type LoadingType = "submitting" | "accepting" | "rejecting" | "countering";
 
+// Counter limits interface
+interface CounterLimits {
+  priceNegotiation: number | null; // null means no limit
+  loiRequests: number;
+}
+
+// Counter tracking interface
+interface CounterTracking {
+  priceCounterCount: number;
+  loiCounterCount: number;
+  isAtLimit: (type: 'price' | 'loi') => boolean;
+  canCounter: (type: 'price' | 'loi') => boolean;
+  getRemainingCounters: (type: 'price' | 'loi') => number | null;
+}
+
 interface NegotiationState {
   // Data states
   formStatus: "idle" | "success" | "failed" | "pending";
@@ -41,6 +56,10 @@ interface NegotiationState {
   // NEW: Add userId and userType to state
   currentUserId: string | null;
   currentUserType: "seller" | "buyer" | null;
+
+  // Counter tracking states
+  counterLimits: CounterLimits;
+  counterTracking: CounterTracking;
 
   // UI states
   contentTracker: ContentTracker;
@@ -61,6 +80,9 @@ interface NegotiationState {
 
   // Error states
   error: string | null;
+
+  // Global accessibility flag
+  isGloballyAccessible: boolean;
 }
 
 // API Payload interfaces
@@ -111,6 +133,12 @@ type NegotiationAction =
   // NEW: Actions for setting currentUserId and currentUserType
   | { type: "SET_CURRENT_USER_ID"; payload: string | null }
   | { type: "SET_CURRENT_USER_TYPE"; payload: "seller" | "buyer" | null }
+  // NEW: Counter tracking actions
+  | { type: "INCREMENT_PRICE_COUNTER" }
+  | { type: "INCREMENT_LOI_COUNTER" }
+  | { type: "SET_COUNTER_LIMITS"; payload: CounterLimits }
+  | { type: "RESET_COUNTERS" }
+  | { type: "SET_GLOBAL_ACCESSIBILITY"; payload: boolean }
   | { type: "RESET_MODALS" }
   | { type: "RESET_COUNTER_DATE_TIME" }
   | { type: "BATCH_UPDATE"; payload: Partial<NegotiationState> };
@@ -141,6 +169,19 @@ interface NegotiationActions {
   // NEW: Setters for currentUserId and currentUserType
   setCurrentUserId: (id: string | null) => void;
   setCurrentUserType: (type: "seller" | "buyer" | null) => void;
+
+  // NEW: Counter management actions
+  incrementPriceCounter: () => void;
+  incrementLoiCounter: () => void;
+  setCounterLimits: (limits: CounterLimits) => void;
+  resetCounters: () => void;
+  canMakeCounter: (type: 'price' | 'loi') => boolean;
+  getRemainingCounters: (type: 'price' | 'loi') => number | null;
+
+  // NEW: Global accessibility actions
+  setGlobalAccessibility: (accessible: boolean) => void;
+  makeGloballyAccessible: () => void;
+  initializeFromExternalData: (data: any, userRole: 'seller' | 'buyer') => void;
 
   // Reset actions
   resetCounterDateTime: () => void;
@@ -175,6 +216,36 @@ interface NegotiationContextType {
   actions: NegotiationActions;
 }
 
+// Helper function to create counter tracking
+const createCounterTracking = (priceCount: number = 0, loiCount: number = 0, limits: CounterLimits): CounterTracking => ({
+  priceCounterCount: priceCount,
+  loiCounterCount: loiCount,
+  isAtLimit: (type: 'price' | 'loi') => {
+    if (type === 'price') {
+      return limits.priceNegotiation !== null && priceCount >= limits.priceNegotiation;
+    }
+    return loiCount >= limits.loiRequests;
+  },
+  canCounter: (type: 'price' | 'loi') => {
+    if (type === 'price') {
+      return limits.priceNegotiation === null || priceCount < limits.priceNegotiation;
+    }
+    return loiCount < limits.loiRequests;
+  },
+  getRemainingCounters: (type: 'price' | 'loi') => {
+    if (type === 'price') {
+      return limits.priceNegotiation === null ? null : Math.max(0, limits.priceNegotiation - priceCount);
+    }
+    return Math.max(0, limits.loiRequests - loiCount);
+  },
+});
+
+// Default counter limits
+const defaultCounterLimits: CounterLimits = {
+  priceNegotiation: null, // No limit for price negotiations
+  loiRequests: 3, // Max 3 LOI request changes
+};
+
 // Initial state
 const initialState: NegotiationState = {
   formStatus: "pending",
@@ -192,6 +263,8 @@ const initialState: NegotiationState = {
   inspectionDateStatus: null,
   currentUserId: null, // Initial state
   currentUserType: null, // Initial state
+  counterLimits: defaultCounterLimits,
+  counterTracking: createCounterTracking(0, 0, defaultCounterLimits),
   contentTracker: "Negotiation",
   isNegotiated: true,
   showSubmitOfferModal: false,
@@ -204,6 +277,7 @@ const initialState: NegotiationState = {
   isCountering: false,
   isSubmittingBasedOnStatus: false,
   error: null,
+  isGloballyAccessible: false,
 };
 
 // Optimized reducer with batch updates and shallow comparison
@@ -223,14 +297,57 @@ const negotiationReducer = (
       return hasChanges ? { ...state, ...action.payload } : state;
     }
 
-    case "RESET_COUNTER_DATE_TIME":
+        case "RESET_COUNTER_DATE_TIME":
       return {
         ...state,
         counterDateTimeObj: { ...state.dateTimeObj },
         inspectionDateStatus: "available",
       };
 
-    case "SET_FORM_STATUS":
+    case "INCREMENT_PRICE_COUNTER":
+      return {
+        ...state,
+        counterTracking: createCounterTracking(
+          state.counterTracking.priceCounterCount + 1,
+          state.counterTracking.loiCounterCount,
+          state.counterLimits
+        ),
+      };
+
+    case "INCREMENT_LOI_COUNTER":
+      return {
+        ...state,
+        counterTracking: createCounterTracking(
+          state.counterTracking.priceCounterCount,
+          state.counterTracking.loiCounterCount + 1,
+          state.counterLimits
+        ),
+      };
+
+    case "SET_COUNTER_LIMITS":
+      return {
+        ...state,
+        counterLimits: action.payload,
+        counterTracking: createCounterTracking(
+          state.counterTracking.priceCounterCount,
+          state.counterTracking.loiCounterCount,
+          action.payload
+        ),
+      };
+
+    case "RESET_COUNTERS":
+      return {
+        ...state,
+        counterTracking: createCounterTracking(0, 0, state.counterLimits),
+      };
+
+    case "SET_GLOBAL_ACCESSIBILITY":
+      return {
+        ...state,
+        isGloballyAccessible: action.payload,
+      };
+
+        case "SET_FORM_STATUS":
     case "SET_DETAILS":
     case "SET_NEGOTIATION_TYPE":
     case "SET_CREATED_AT":
@@ -250,6 +367,7 @@ const negotiationReducer = (
     case "SET_IS_COUNTERING":
     case "SET_IS_SUBMITTING_BASED_ON_STATUS":
     case "SET_ERROR":
+    case "SET_GLOBAL_ACCESSIBILITY":
     // NEW: Handle setting userId and userType
     case "SET_CURRENT_USER_ID":
     case "SET_CURRENT_USER_TYPE": {
