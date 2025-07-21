@@ -26,22 +26,22 @@ export const useNegotiationUtils = () => {
       return { canCounter: false, message: 'Negotiation context not available' };
     }
 
-    const canCounter = negotiationContext.canMakeCounter(type);
-    const remaining = negotiationContext.getRemainingCounters(type);
+    const canCounter = negotiationContext.state.counterTracking.canCounter(type);
+    const remaining = negotiationContext.state.counterTracking.getRemainingCounters(type);
 
     if (!canCounter) {
-      const message = type === 'price' 
+      const message = type === 'price'
         ? 'You have reached the maximum number of price negotiations for this property.'
-        : `You have reached the maximum number of LOI request changes (${negotiationContext.counterLimits.loiRequests}). No more changes allowed.`;
-      
+        : `You have reached the maximum number of LOI request changes (${negotiationContext.state.counterLimits.loiRequests}). No more changes allowed.`;
+
       return { canCounter: false, message };
     }
 
     if (type === 'loi' && remaining !== null && remaining <= 1) {
-      const message = remaining === 1 
+      const message = remaining === 1
         ? 'This is your last LOI request change!'
         : 'You have used all your LOI request changes.';
-      
+
       return { canCounter: true, message, isLastChance: remaining === 1 };
     }
 
