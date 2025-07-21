@@ -14,6 +14,7 @@ import Countdown from './coming-soon-modal/page';
 import { NotificationProvider } from '@/context/notification-context';
 import { ModalProvider } from '@/context/modalContext';
 import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
+import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
 
 const SHOW_COMING_SOON = false;
 
