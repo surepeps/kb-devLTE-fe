@@ -145,14 +145,16 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
                 <Eye size={18} />
               </Button>
 
-              <Button
-                type="button"
-                value="Create new brief"
-                onClick={handleCreateNewBrief}
-                className="w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                <Home size={18} />
-              </Button>
+                            {!isUpdate && (
+                <Button
+                  type="button"
+                  value="Create new brief"
+                  onClick={handleCreateNewBrief}
+                  className="w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Home size={18} />
+                </Button>
+              )}
             </div>
           </div>
 
