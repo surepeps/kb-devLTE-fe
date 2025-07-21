@@ -14,6 +14,7 @@ import Countdown from './coming-soon-modal/page';
 import { NotificationProvider } from '@/context/notification-context';
 import { ModalProvider } from '@/context/modalContext';
 import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
+import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
 
 const SHOW_COMING_SOON = false;
 
@@ -61,18 +62,20 @@ export default function RootLayout({
           <ModalProvider>
             <PageContextProvider>
               <CreateBriefProvider>
-                <SelectedBriefsProvider>
+                                <SelectedBriefsProvider>
                   <NewMarketplaceProvider>
-                    <html lang="en">
-                      <body
-                        className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                      >
-                        <HeaderFooterWrapper>
-                          <Body>{children}</Body>
-                        </HeaderFooterWrapper>
-                        <Toaster />
-                      </body>
-                    </html>
+                    <NegotiationContextWrapper>
+                      <html lang="en">
+                        <body
+                          className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                        >
+                          <HeaderFooterWrapper>
+                            <Body>{children}</Body>
+                          </HeaderFooterWrapper>
+                          <Toaster />
+                        </body>
+                      </html>
+                    </NegotiationContextWrapper>
                   </NewMarketplaceProvider>
                 </SelectedBriefsProvider>
               </CreateBriefProvider>
