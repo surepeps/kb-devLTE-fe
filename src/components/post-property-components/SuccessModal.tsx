@@ -14,12 +14,14 @@ interface SuccessModalProps {
     price: string;
     location: string;
   };
+  isUpdate?: boolean; // New prop to differentiate between create and update
 }
 
 const SuccessModal: React.FC<SuccessModalProps> = ({
   isOpen,
   onClose,
   propertyData,
+  isUpdate = false,
 }) => {
   const router = useRouter();
 
@@ -68,11 +70,14 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               >
                 <CheckCircle size={32} className="text-[#8DDB90]" />
               </motion.div>
-              <h2 className="text-2xl font-bold text-white mb-1">
-                Property Listed Successfully!
+                            <h2 className="text-2xl font-bold text-white mb-1">
+                {isUpdate ? "Property Updated Successfully!" : "Property Listed Successfully!"}
               </h2>
               <p className="text-white text-opacity-90">
-                Your property is now live and ready for potential buyers
+                {isUpdate
+                  ? "Your property listing has been updated with the latest information"
+                  : "Your property is now live and ready for potential buyers"
+                }
               </p>
             </div>
           </div>
@@ -105,16 +110,27 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               </div>
             )}
 
-            {/* What happens next */}
+                        {/* What happens next */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-800 mb-2">
                 What happens next?
               </h4>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Your property will be reviewed within 24 hours</li>
-                <li>• Once approved, it will appear in search results</li>
-                <li>• You&apos;ll receive notifications for inquiries</li>
-                <li>• Potential buyers can schedule inspections</li>
+                {isUpdate ? (
+                  <>
+                    <li>• Your updated property details are now live</li>
+                    <li>• Changes will be visible to potential buyers immediately</li>
+                    <li>• Existing inquiries will see the updated information</li>
+                    <li>• You&apos;ll continue receiving notifications for new inquiries</li>
+                  </>
+                ) : (
+                  <>
+                    <li>• Your property will be reviewed within 24 hours</li>
+                    <li>• Once approved, it will appear in search results</li>
+                    <li>• You&apos;ll receive notifications for inquiries</li>
+                    <li>• Potential buyers can schedule inspections</li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -129,14 +145,16 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
                 <Eye size={18} />
               </Button>
 
-              <Button
-                type="button"
-                value="Create new brief"
-                onClick={handleCreateNewBrief}
-                className="w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                <Home size={18} />
-              </Button>
+                            {!isUpdate && (
+                <Button
+                  type="button"
+                  value="Create new brief"
+                  onClick={handleCreateNewBrief}
+                  className="w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Home size={18} />
+                </Button>
+              )}
             </div>
           </div>
 
