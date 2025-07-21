@@ -324,7 +324,7 @@ export default function MyInspectionRequestsPage() {
         return { bg: "bg-blue-100", text: "text-blue-800", icon: CheckCircleIcon };
       case "cancelled":
       case "rejected":
-        return { bg: "bg-red-100", text: "text-red-800", icon: XCircle };
+        return { bg: "bg-red-100", text: "text-red-800", icon: XCircleIcon };
       default:
         return { bg: "bg-gray-100", text: "text-gray-800", icon: AlertCircleIcon };
     }
