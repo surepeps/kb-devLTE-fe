@@ -1,51 +1,28 @@
 /** @format */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
-import React, {
-  FC,
-  Fragment,
-  MouseEventHandler,
-  useEffect,
-  useState,
-} from "react";
-import arrowRightIcon from "@/svgs/arrowR.svg";
+
+import React, { useEffect, useState, Fragment } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, MapPin, Calendar, Share2, Heart, Phone, Mail, Star, Bed, Bath, Car, Maximize, CheckCircle, ExternalLink, Camera, ArrowLeft, ArrowRight, X, Eye, Clock, Home, User, FileText, Shield } from "lucide-react";
 import Image from "next/image";
-import { usePageContext } from "@/context/page-context";
-import { useLoading } from "@/hooks/useLoading";
-import Loading from "@/components/loading-component/loading";
-import { epilogue } from "@/styles/font";
-import checkIcon from "@/svgs/checkIcon.svg";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import PhoneInput, {
-  Country,
-  isValidPhoneNumber,
-} from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { useParams, usePathname, useRouter } from "next/navigation";
 import axios from "axios";
-import { URLS } from "@/utils/URLS";
-import { useSelectedBriefs } from "@/context/selected-briefs-context";
 import toast from "react-hot-toast";
-import { shuffleArray } from "@/utils/shuffleArray";
+import { URLS } from "@/utils/URLS";
+import { usePageContext } from "@/context/page-context";
+import { useSelectedBriefs } from "@/context/selected-briefs-context";
+import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Rectangle.png";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Navigation, Pagination, Autoplay, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import copy from "@/utils/copyItem";
-import Card from "@/components/general-components/card";
-import { IsMobile } from "@/hooks/isMobile";
-import BreadcrumbNav from "@/components/general-components/BreadcrumbNav";
-import Link from "next/link";
-import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
+import "swiper/css/thumbs";
+import Loading from "@/components/loading-component/loading";
 
-// const selectedBriefs = 9;
-
-interface DetailsProps {
+interface PropertyDetails {
+  _id: string;
   propertyId: string;
   price: number;
   propertyType: string;
@@ -82,1065 +59,598 @@ interface DetailsProps {
   docOnProperty: { isProvided: boolean; _id: string; docName: string }[];
   briefType?: string;
   propertyCondition?: string;
-  _id?: string;
-  __v?: number;
   noOfCarParks?: number;
   noOfBathrooms?: number;
   noOfToilets?: number;
 }
 
-interface FormProps {
-  name: string;
-  email: string;
-  phoneNumber: string;
-  gender: string;
-  message: string;
-}
+// Image Gallery Component
+const ImageGallery = ({ images }: { images: string[] }) => {
+  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const { setImageData, setViewImage } = usePageContext();
 
-type HouseFrameProps = {
-  propertyType: string;
-  pictures: string[];
-  features: { featureName: string; id: string }[];
-  location: {
-    state: string;
-    area: string;
-    localGovernment: string;
+  const validImages = images.length > 0 ? images : [sampleImage.src];
+
+  const openLightbox = (index: number) => {
+    setActiveIndex(index);
+    setIsLightboxOpen(true);
   };
-  noOfBedrooms: number;
-  _id: string;
-};
-
-const ProductDetailsPage = () => {
-  const { selectedBriefs, setSelectedBriefs } = useSelectedBriefs();
-  // const searchParams = useSearchParams();
-  // const selectedBriefsList = JSON.parse(searchParams?.get('selectedBriefs') || '[]');
-  // const selectedBriefs = selectedBriefsList.length;
-
-  const [point, setPoint] = useState<string>("Details");
-  const { isContactUsClicked, isModalOpened, setImageData, setViewImage } =
-    usePageContext();
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const isLoading = useLoading();
-  const [details, setDetails] = useState<DetailsProps>({
-    propertyId: "",
-    price: 0,
-    propertyType: "",
-    bedRoom: 0,
-    propertyStatus: "",
-    location: {
-      state: "",
-      localGovernment: "",
-      area: "",
-    },
-    landSize: {
-      measurementType: "",
-      size: null,
-    },
-    additionalFeatures: {
-      additionalFeatures: [],
-    },
-    features: [],
-    tenantCriteria: [],
-    areYouTheOwner: false,
-    isAvailable: false,
-    isApproved: false,
-    isRejected: false,
-    isPreference: false,
-    isPremium: false,
-    pictures: [],
-    createdAt: "",
-    updatedAt: "",
-    owner: "",
-    docOnProperty: [],
-    briefType: "",
-    propertyCondition: "",
-    noOfCarParks: 0,
-    noOfBathrooms: 0,
-    noOfToilets: 0,
-    _id: "",
-    __v: 0,
-  });
-  const [featureData, setFeatureData] = useState<
-    { _id: string; featureName: string }[]
-  >([]);
-  const path = usePathname();
-  const params = useParams();
-  const marketType = params?.marketType ?? "";
-  const id = params?.ID ?? "";
-
-  // const id = Array.isArray(params?.id)
-  // 	? params.id[0]
-  // 	: typeof params?.id === "string"
-  // 	? params.id
-  // 	: "";
-
-  const router = useRouter();
-  const [isDataLoading, setDataLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any[]>([]);
-  const [agreedToTermsOfUse, setAgreedToTermsUse] = useState<boolean>(false);
-  // const [selectedBriefs, setSelectedBriefs] = useState(2);
-  // const [selectedBriefsList, setSelectedBriefsList] = useState<any[]>([]);
-  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
-    useState<boolean>(false);
-  const is_mobile = IsMobile();
-  const { setPropertySelectedForInspection, setIsComingFromPriceNeg } =
-    usePageContext();
-
-  const handlePreviousSlide = () => {
-    const scrollableElement = document.getElementById(
-      "scrollableElement",
-    ) as HTMLElement;
-
-    if (scrollableElement) {
-      const maxScrollPosition =
-        scrollableElement.scrollWidth - scrollableElement.clientWidth;
-      const increment = 500; // The amount to scroll each time (in pixels)
-
-      // Calculate the next scroll position
-      const newScrollPosition = Math.min(
-        scrollPosition - increment,
-        maxScrollPosition,
-      );
-
-      // Scroll the element
-      scrollableElement.scrollTo({
-        left: newScrollPosition,
-        behavior: "smooth",
-      });
-
-      // Update the state with the new scroll position
-      setScrollPosition(newScrollPosition);
-    }
-  };
-
-  const handleNextSlide = () => {
-    const scrollableElement = document.getElementById(
-      "scrollableElement",
-    ) as HTMLElement;
-
-    if (scrollableElement) {
-      const maxScrollPosition =
-        scrollableElement.scrollWidth - scrollableElement.clientWidth;
-      const increment = 500; // The amount to scroll each time (in pixels)
-
-      // Calculate the next scroll position
-      const newScrollPosition = Math.min(
-        scrollPosition + increment,
-        maxScrollPosition,
-      );
-
-      // Scroll the element
-      scrollableElement.scrollTo({
-        left: newScrollPosition,
-        behavior: "smooth",
-      });
-
-      // Update the state with the new scroll position
-      setScrollPosition(newScrollPosition);
-    }
-  };
-
-  const validationSchema = Yup.object({
-    name: Yup.string().required("Name is required"),
-    email: Yup.string()
-      .email()
-      .required()
-      .matches(/^[^\s@]+@[^\s@]+\.com$/, "Invalid email address"),
-    phoneNumber: Yup.string()
-      .required()
-      .required("Contact number is required")
-      .test("isValidPhoneNumber", "Invalid phone number", (value) =>
-        isValidPhoneNumber(value || ""),
-      ),
-    gender: Yup.string().required("Gender is required"),
-    message: Yup.string().required(),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      phoneNumber: "",
-      gender: "",
-      message: "",
-    },
-    validationSchema,
-    onSubmit: async (values: FormProps, { resetForm }) => {
-      const payload = {
-        propertyId: details.propertyId,
-        requestFrom: {
-          email: values.email,
-          phoneNumber: values.phoneNumber,
-          fullName: values.name,
-        },
-        propertyType: "PropertyRent",
-      };
-      if (agreedToTermsOfUse) {
-        try {
-          const response = await toast.promise(
-            () =>
-              axios.post(URLS.BASE + "/property/request-inspection", payload),
-            {
-              loading: "Submitting request...",
-              success: "Successfully submitted for inspection",
-              // error: 'Failed to submit request',
-            },
-          );
-
-          // Display the API response message in a toast
-          if (response?.data?.message) {
-            toast.success(response.data.message);
-          }
-        } catch (error: any) {
-          // Handle error and display the error message from the API
-          if (error.response?.data?.message) {
-            toast.error(error.response.data.message);
-          } else {
-            console.error(error);
-          }
-
-          formik.setValues({
-            name: "",
-            email: "",
-            phoneNumber: "",
-            gender: "",
-            message: "",
-          });
-        }
-        return;
-      }
-      toast.error("You need to agree to the terms of use.");
-      return;
-    },
-  });
-
-  useEffect(() => {
-    const getProductDetails = async () => {
-      try {
-        const res = await axios.get(URLS.BASE + URLS.getOneProperty + id);
-
-        if (res.status === 200) {
-          if (typeof res.data === "object") {
-            setDetails({
-              price: res.data.price,
-              propertyType: res.data.propertyType,
-              bedRoom:
-                res.data.bedRoom ||
-                res.data.noOfBedrooms ||
-                res.data.additionalFeatures?.noOfBedrooms ||
-                0,
-              propertyStatus: res.data.propertyCondition || "",
-              location: res.data.location,
-              tenantCriteria: res.data.tenantCriteria || [],
-              pictures:
-                res.data.pictures && res.data.pictures.length > 0
-                  ? res.data.pictures
-                  : [sampleImage.src],
-              propertyId: res.data._id,
-              createdAt: res.data.createdAt,
-              owner: res.data.owner,
-              updatedAt: res.data.updatedAt,
-              isAvailable:
-                res.data.isAvailable === "yes" || res.data.isAvailable === true,
-              docOnProperty: res.data.docOnProperty || [],
-              landSize: res.data.landSize || {
-                measurementType: "",
-                size: null,
-              },
-              additionalFeatures: {
-                additionalFeatures:
-                  res.data.additionalFeatures?.additionalFeatures || [],
-                noOfBedrooms: res.data.additionalFeatures?.noOfBedrooms || 0,
-                noOfBathrooms: res.data.additionalFeatures?.noOfBathrooms || 0,
-                noOfToilets: res.data.additionalFeatures?.noOfToilets || 0,
-                noOfCarParks: res.data.additionalFeatures?.noOfCarParks || 0,
-              },
-              features: res.data.features || [],
-              areYouTheOwner: res.data.areYouTheOwner ?? false,
-              isApproved: res.data.isApproved ?? false,
-              isRejected: res.data.isRejected ?? false,
-              isPreference: res.data.isPreference ?? false,
-              isPremium: res.data.isPremium ?? false,
-              briefType: res.data.briefType || "",
-              propertyCondition: res.data.propertyCondition || "",
-              _id: res.data._id || "",
-              __v: res.data.__v || 0,
-            });
-            setFeatureData(
-              Array.isArray(res.data.features)
-                ? res.data.features.map((feature: string, idx: number) => ({
-                    _id: String(idx),
-                    featureName: feature,
-                  }))
-                : [],
-            );
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getProductDetails();
-  }, [id]);
-
-  useEffect(() => {
-    const getAllRentProperties = async () => {
-      setDataLoading(true);
-      try {
-        const resposne = await axios.get(URLS.BASE + "/properties/rents/all");
-        // console.log(resposne);
-        if (resposne.status === 200) {
-          const shuffledData = shuffleArray(resposne.data.data);
-          //  console.log(shuffledData);
-          setData(shuffledData.slice(0, 3));
-          setDataLoading(false);
-        }
-      } catch (error) {
-        console.log(error);
-        setDataLoading(false);
-      } finally {
-        setDataLoading(false);
-      }
-    };
-
-    getAllRentProperties();
-  }, []);
-
-  if (isLoading) return <Loading />;
 
   return (
-    <Fragment>
-      {path && path.match(/[0-9]/) ? (
-        <section
-          className={`flex justify-center w-full bg-[#EEF1F1] md:pb-[50px] ${
-            (isContactUsClicked || isModalOpened) &&
-            "filter brightness-[30%] transition-all duration-500 overflow-hidden"
-          }`}
+    <div className="space-y-4">
+      {/* Main Image Swiper */}
+      <div className="relative group">
+        <Swiper
+          modules={[Navigation, Pagination, Thumbs, Autoplay]}
+          thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+          navigation={{
+            nextEl: '.swiper-button-next-custom',
+            prevEl: '.swiper-button-prev-custom',
+          }}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          loop={validImages.length > 1}
+          className="w-full aspect-[16/10] md:aspect-[4/3] lg:aspect-[16/10] rounded-2xl overflow-hidden shadow-lg"
+          onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
         >
-          <div className="flex flex-col items-center gap-[20px] w-full">
-            <div className="container w-full flex flex-col items-start px-[10px] lg:px-[40px]">
-              <div className="w-full flex justify-start md:mb-5">
-                <BreadcrumbNav
-                  point={point}
-                  onBack={() => router.back()}
-                  arrowIcon={arrowRightIcon}
-                  backText="Home"
+          {validImages.map((image, index) => (
+            <SwiperSlide key={index} className="relative">
+              <Image
+                src={image}
+                alt={`Property image ${index + 1}`}
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-700"
+                priority={index === 0}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 60vw"
+              />
+              <button
+                onClick={() => openLightbox(index)}
+                className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+              >
+                <Camera className="w-5 h-5" />
+              </button>
+            </SwiperSlide>
+          ))}
+          
+          {/* Custom Navigation Buttons */}
+          <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </Swiper>
+      </div>
+
+      {/* Thumbnail Gallery */}
+      {validImages.length > 1 && (
+        <Swiper
+          onSwiper={setThumbsSwiper}
+          spaceBetween={12}
+          slidesPerView={4}
+          breakpoints={{
+            640: { slidesPerView: 5 },
+            768: { slidesPerView: 6 },
+            1024: { slidesPerView: 7 },
+          }}
+          watchSlidesProgress
+          className="thumbnail-swiper"
+        >
+          {validImages.map((image, index) => (
+            <SwiperSlide key={index} className="cursor-pointer">
+              <div className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-300 ${
+                index === activeIndex ? 'ring-2 ring-blue-500 opacity-100' : 'opacity-70 hover:opacity-100'
+              }`}>
+                <Image
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="120px"
                 />
               </div>
-              {/* <h2
-                className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold mt-6 text-black px-3 md:px-5`}>
-                Newly Built 5 bedroom Duplex with BQ in a highly secured area in
-                the heart of GRA
-              </h2> */}
-            </div>
-
-            {/* Responsive layout container */}
-            <div className="flex flex-col lg:flex-row justify-between items-start container px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto">
-              <div className="w-full lg:w-[70%] flex flex-col">
-                <div className="w-full flex flex-col gap-4 md:gap-6">
-                  <ImageSwiper
-                    images={
-                      details.pictures["length"] !== 0
-                        ? details.pictures
-                        : [sampleImage.src]
-                    }
-                  />
-
-                  <div className="w-full h-full flex flex-col gap-4 md:gap-6">
-                    {details.pictures["length"] !== 0 ? (
-                      <div className="flex gap-2 md:gap-3 overflow-x-auto w-full justify-start scrollbar-hide">
-                        {details.pictures.map((src: string, idx: number) => (
-                          <img
-                            src={src}
-                            key={idx}
-                            width={200}
-                            height={200}
-                            onClick={() => {
-                              setImageData([src]);
-                              setViewImage(true);
-                            }}
-                            className="w-16 h-12 md:w-20 md:h-16 lg:w-24 lg:h-18 object-cover bg-gray-200 rounded cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
-                            alt={`Property image ${idx + 1}`}
-                          />
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {/**Details */}
-                    <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 border-b border-[#C7CAD0] pb-6 md:pb-8">
-                      <BoxContainer
-                        heading="Bedrooms"
-                        subHeading={
-                          details.additionalFeatures?.noOfBedrooms &&
-                          details.additionalFeatures.noOfBedrooms > 0
-                            ? details.additionalFeatures.noOfBedrooms.toString()
-                            : details.bedRoom && details.bedRoom > 0
-                              ? details.bedRoom.toString()
-                              : "-"
-                        }
-                      />
-                      <BoxContainer
-                        heading="Bathroom"
-                        subHeading={
-                          details.additionalFeatures?.noOfBathrooms &&
-                          details.additionalFeatures.noOfBathrooms > 0
-                            ? details.additionalFeatures.noOfBathrooms.toString()
-                            : details.noOfBathrooms && details.noOfBathrooms > 0
-                              ? details.noOfBathrooms.toString()
-                              : "-"
-                        }
-                      />
-                      <BoxContainer
-                        heading="Toilet"
-                        subHeading={
-                          details.additionalFeatures?.noOfToilets &&
-                          details.additionalFeatures.noOfToilets > 0
-                            ? details.additionalFeatures.noOfToilets.toString()
-                            : details.noOfToilets && details.noOfToilets > 0
-                              ? details.noOfToilets.toString()
-                              : "-"
-                        }
-                      />
-                      <BoxContainer
-                        heading="Parking space"
-                        subHeading={
-                          details.additionalFeatures?.noOfCarParks &&
-                          details.additionalFeatures.noOfCarParks > 0
-                            ? details.additionalFeatures.noOfCarParks.toString()
-                            : details.noOfCarParks && details.noOfCarParks > 0
-                              ? details.noOfCarParks.toString()
-                              : "-"
-                        }
-                      />
-                    </div>
-
-                    {/* Property Information Grid */}
-                    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 border-b border-[#C7CAD0] pb-4 md:pb-6">
-                      <BoxContainer
-                        heading="Listing Type"
-                        subHeading={details.briefType || "Nil"}
-                      />
-                      <BoxContainer
-                        heading="Property Type"
-                        subHeading={details.propertyType || "-"}
-                      />
-                      <BoxContainer
-                        heading="Location"
-                        subHeading={
-                          details.location.state &&
-                          details.location.localGovernment
-                            ? `${details.location.state}, ${details.location.localGovernment}`
-                            : "-"
-                        }
-                      />
-                      <BoxContainer
-                        heading="Price"
-                        subHeading={
-                          details.price !== undefined && details.price !== null
-                            ? Number(details.price).toLocaleString()
-                            : "-"
-                        }
-                      />
-                      <BoxContainer
-                        heading="Property Title"
-                        subHeading={"Nil"}
-                      />
-                      <BoxContainer
-                        heading="Property Condition"
-                        subHeading={details.propertyStatus || "Nil"}
-                      />
-                      <BoxContainer
-                        heading="Land Size"
-                        subHeading={
-                          details.landSize &&
-                          details.landSize.size !== null &&
-                          details.landSize.size !== undefined
-                            ? details.landSize.measurementType
-                              ? `${details.landSize.size} ${details.landSize.measurementType}`
-                              : details.landSize.size.toString()
-                            : "-"
-                        }
-                      />
-                    </div>
-                    {/* </div> */}
-
-                    {/**Property Features */}
-                    {featureData["length"] !== 0 ? (
-                      <SimilarComponent
-                        heading="Property Features"
-                        data={featureData.map((item) => item?.featureName)}
-                      />
-                    ) : null}
-
-                    {details.tenantCriteria["length"] !== 0 ? (
-                      <SimilarComponent
-                        heading="Tenant Criteria"
-                        data={details.tenantCriteria.map(
-                          (item) => item?.criteria,
-                        )}
-                      />
-                    ) : null}
-
-                    <div className="w-full flex flex-col gap-[10px] bg-[#F7F7F8] p-6">
-                      <h2
-                        className={`${epilogue.className} text-base sm:text-xl md:text-2xl font-semibold text-black`}
-                      >
-                        Additional information
-                      </h2>
-                      <p>
-                        {/* {details.additionalFeatures?.additionalFeatures &&
-                        details.additionalFeatures.additionalFeatures.length > 0
-                          ? details.additionalFeatures.additionalFeatures.join(
-                              ', '
-                            )
-                          : 'No additional information provided.'
-                          } */}
-                      </p>
-                    </div>
-
-                    <div className="w-full flex flex-col gap-[10px] p-6">
-                      <p className="text-sm text-[#25324B] font-extralight">
-                        I hereby agree to indemnify and hold harmless Khabi-Teq
-                        Realty, its affiliates, directors, and agents from and
-                        against any and all claims, losses, liabilities, or
-                        damages arising from or related to any transaction
-                        conducted by me on its platform
-                      </p>
-                    </div>
-
-                    <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center mt-8 md:mt-10 gap-3 md:gap-4">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPropertySelectedForInspection(details);
-                          setIsAddForInspectionModalOpened(true);
-                        }}
-                        className="flex-1 sm:flex-none sm:min-w-[200px] h-12 md:h-14 bg-[#8DDB90] hover:bg-[#7BC87F] text-sm md:text-base font-bold text-white rounded-lg transition-colors"
-                      >
-                        Select for inspection
-                      </button>
-                      <button
-                        onClick={() => {
-                          setPropertySelectedForInspection(details);
-                          setIsAddForInspectionModalOpened(true);
-                          setIsComingFromPriceNeg(true);
-                        }}
-                        type="button"
-                        className="flex-1 sm:flex-none sm:min-w-[200px] h-12 md:h-14 bg-[#1976D2] hover:bg-[#1565C0] text-sm md:text-base font-bold text-white rounded-lg transition-colors"
-                      >
-                        Price Negotiation
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="hidden lg:flex w-full lg:w-[30%] flex-col items-end">
-                <div className="w-full lg:w-[300px] xl:w-[320px] flex justify-center items-center">
-                  <div className="flex justify-between items-start w-full">
-                    <div className="w-full flex flex-col gap-6 h-[inherit]">
-                      <div className="flex flex-col bg-white gap-3 border border-[#D6DDEB] w-full py-4 px-4 rounded-lg shadow-sm overflow-x-auto hide-scrollbar">
-                        <div className="flex w-full gap-[10px] flex-nowrap items-center">
-                          <span className="text-base text-[#7C8493] whitespace-nowrap">
-                            Reference ID:
-                          </span>
-                          <span
-                            // onClick={() => copy(details.owner)}
-                            className={`${epilogue.className} text-base text-clip text-[#25324B] break-all min-w-0 flex-1`}
-                            style={{ wordBreak: "break-all" }}
-                          >
-                            {details.owner}
-                          </span>
-                        </div>
-                        {/**Date Added */}
-                        <div className="flex gap-[10px] w-full">
-                          <span className="text-base text-[#7C8493]">
-                            Date added:
-                          </span>{" "}
-                          <span
-                            className={`${epilogue.className} text-lg text-[#25324B]`}
-                          >
-                            {details.createdAt.split("T")[0]}
-                          </span>
-                        </div>
-                        {/**Last Update */}
-                        <div className="flex gap-[10px] w-full">
-                          <span className="text-base text-[#7C8493]">
-                            Last Update:
-                          </span>{" "}
-                          <span
-                            className={`${epilogue.className} text-lg text-[#25324B]`}
-                          >
-                            {details.updatedAt.split("T")[0]}
-                          </span>
-                        </div>
-                        {/**Market Status */}
-                        <div className="flex gap-[10px] w-full">
-                          <span className="text-base text-[#7C8493]">
-                            Market Status
-                          </span>{" "}
-                          <span
-                            className={`${epilogue.className} text-lg text-[#25324B]`}
-                          >
-                            {details.isAvailable
-                              ? "Available"
-                              : "Not Available"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="w-full lg:w-[282px] flex flex-col gap-[15px]">
-                        <h2 className="text-base text-black">
-                          Click here to view the selected brief for inspection
-                        </h2>
-                        <button
-                          type="button"
-                          className="w-full h-[60px] border-[1px] border-[#FF3D00] text-[#FF3D00] font-medium text-lg"
-                        >
-                          {Array.from(selectedBriefs).length} selected brief
-                        </button>
-                      </div>
-                      <div className="w-full items-end hidden h-full md:flex md:flex-col gap-[10px]">
-                        {data.map((property, idx: number) => {
-                          return (
-                            <Card
-                              isAddForInspectionModalOpened={
-                                isAddForInspectionModalOpened
-                              }
-                              style={
-                                is_mobile
-                                  ? { width: "100%" }
-                                  : { width: "281px" }
-                              }
-                              images={property?.pictures}
-                              onCardPageClick={() => {
-                                router.push(`/property/Rent/${property._id}`);
-                              }}
-                              // onClick={() =>
-                              //   handlePropertiesSelection(idx.toLocaleString())
-                              // }
-                              cardData={[
-                                {
-                                  header: "Property Type",
-                                  value: property.propertyType,
-                                },
-                                {
-                                  header: "Price",
-                                  value: `₦${Number(property.rentalPrice).toLocaleString()}`,
-                                },
-                                {
-                                  header: "Bedrooms",
-                                  value: property.noOfBedrooms || "N/A",
-                                },
-                                {
-                                  header: "Location",
-                                  value: `${property.location.state}, ${property.location.localGovernment}`,
-                                },
-                                {
-                                  header: "Documents",
-                                  value: `<ol class='' style='list-style: 'dics';'>${property?.docOnProperty?.map(
-                                    (item: { _id: string; docName: string }) =>
-                                      `<li key={${item._id}>${item.docName}</li>`,
-                                  )}<ol>`,
-                                },
-                              ]}
-                              key={idx}
-                              // isDisabled={uniqueProperties.has(idx.toLocaleString())}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mobile Sidebar - shows on smaller screens */}
-              <div className="lg:hidden w-full mt-8">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                  <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                    Property Information
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#7C8493]">
-                        Reference ID:
-                      </span>
-                      <span className="text-sm text-[#25324B] font-medium break-all">
-                        {details.owner}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#7C8493]">
-                        Date added:
-                      </span>
-                      <span className="text-sm text-[#25324B]">
-                        {details.createdAt.split("T")[0]}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#7C8493]">
-                        Last Update:
-                      </span>
-                      <span className="text-sm text-[#25324B]">
-                        {details.updatedAt.split("T")[0]}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-[#7C8493]">
-                        Market Status:
-                      </span>
-                      <span className="text-sm text-[#25324B]">
-                        {details.isAvailable ? "Available" : "Not Available"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Selected briefs section for mobile */}
-                {Array.from(selectedBriefs).length > 0 && (
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                    <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                      Selected Briefs
-                    </h3>
-                    <button
-                      type="button"
-                      className="w-full h-[48px] border border-[#FF3D00] text-[#FF3D00] font-medium text-base rounded-lg"
-                    >
-                      {Array.from(selectedBriefs).length} selected brief
-                      {Array.from(selectedBriefs).length !== 1 ? "s" : ""}
-                    </button>
-                  </div>
-                )}
-
-                {/* Similar properties for mobile */}
-                {data.length > 0 && (
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                      Similar Properties
-                    </h3>
-                    <div className="space-y-4">
-                      {data.map((property, idx) => (
-                        <Card
-                          key={idx}
-                          isAddForInspectionModalOpened={
-                            isAddForInspectionModalOpened
-                          }
-                          style={{ width: "100%" }}
-                          images={property?.pictures}
-                          onCardPageClick={() => {
-                            router.push(`/property/Rent/${property._id}`);
-                          }}
-                          cardData={[
-                            {
-                              header: "Property Type",
-                              value: property.propertyType,
-                            },
-                            {
-                              header: "Price",
-                              value: `₦${Number(property.rentalPrice).toLocaleString()}`,
-                            },
-                            {
-                              header: "Bedrooms",
-                              value: property.noOfBedrooms || "N/A",
-                            },
-                            {
-                              header: "Location",
-                              value: `${property.location.state}, ${property.location.localGovernment}`,
-                            },
-                          ]}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            {selectedBriefs && selectedBriefs.length > 0 && (
-              <></>
-              // <MobileSelectedBottomBar
-              //   selectedBriefs={selectedBriefs.length}
-              //   selectedBriefsList={selectedBriefs}
-              //   onRemoveAllBriefs={() => {
-              //     console.log("View Briefs", selectedBriefs);
-              //   }}
-              //   onSubmitForInspection={() => {
-              //     console.log("Submit for inspection", selectedBriefs);
-              //   }}
-              // />
-            )}
-          </div>
-        </section>
-      ) : (
-        <></>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       )}
-    </Fragment>
-  );
-};
 
-// const Input = ({
-//   name,
-//   placeholder,
-//   type,
-//   formik,
-//   onChange,
-//   label,
-// }: {
-//   name: string;
-//   placeholder: string;
-//   type: string;
-//   formik: any;
-//   onChange?: (name: string, value: string) => void;
-//   label: string;
-// }) => {
-//   return (
-//     <label
-//       className='md:1/2 w-full min-h-[80px] gap-[4px] flex flex-col'
-//       htmlFor={name}>
-//       <h2 className='text-base leading-[25.6px] text-[#1E1E1E] font-medium'>
-//         {name}
-//       </h2>
-//       {type === 'number' ? (
-//         <PhoneInputField
-//           id='phoneNumber'
-//           name='phoneNumber'
-//           value={formik.values[name]}
-//           onChange={formik.setFieldValue}
-//           onBlur={formik.handleBlur}
-//           error={formik.errors[name]}
-//           touched={formik.touched[name]}
-//           // className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
-//           placeholder='Enter Your phone number'
-//         />
-//       ) : (
-//         <input
-//           type={type}
-//           id={label}
-//           value={formik.values[label]}
-//           onBlur={formik.handleBlur}
-//           onChange={formik.handleChange}
-//           name={label}
-//           placeholder={placeholder}
-//           className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]  disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]'
-//         />
-//       )}
-
-//       {(formik.touched[label] || formik.errors[label]) && (
-//         <span className='text-sm text-red-500'>{formik.errors[label]}</span>
-//       )}
-//     </label>
-//   );
-// };
-
-// components/PhoneInputField.tsx
-
-interface PhoneInputFieldProps {
-  name: string;
-  value: string;
-  onChange: (name: string, value: string) => void;
-  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  error?: string;
-  touched?: boolean;
-  placeholder?: string;
-  defaultCountry?: Country | undefined;
-  id: string;
-  className?: string;
-}
-
-// const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
-//   name,
-//   value,
-//   onChange,
-//   onBlur,
-//   error,
-//   touched,
-//   placeholder = 'Enter phone number',
-//   defaultCountry = 'NG', // Default country set to Nigeria
-//   className,
-// }) => {
-//   return (
-//     <div className='w-full'>
-//       <PhoneInput
-//         international
-//         defaultCountry={defaultCountry}
-//         placeholder={placeholder}
-//         value={value}
-//         onChange={(value) => onChange(name, value || '')}
-//         onBlur={onBlur}
-//         id={name}
-//         name={name}
-//         className='min-h-[50px] w-full border-[1px] bg-[#FAFAFA] border-[#D6DDEB] py-[12px] px-[16px] text-base leading-[25.6px] text-[#1E1E1E] outline-none font-normal placeholder:text-[#A8ADB7]'
-//       />
-//       {touched && error && (
-//         <span className='text-sm text-red-500'>{error}</span>
-//       )}
-//     </div>
-//   );
-// };
-
-//specifically built for image swiper
-
-type NavigationButtonProps = {
-  handleNav: () => void;
-  type: "arrow left" | "arrow right";
-  className?: string;
-};
-const NavigationButton: FC<NavigationButtonProps> = ({
-  handleNav,
-  type,
-  className,
-}): React.JSX.Element => {
-  const renderArrow = () => {
-    switch (type) {
-      case "arrow left":
-        return (
-          <FaCaretLeft
-            width={16}
-            height={16}
-            color="#09391C"
-            className="w-[16px] h-[16px]"
-          />
-        );
-      case "arrow right":
-        return (
-          <FaCaretRight
-            width={16}
-            height={16}
-            color="#09391C"
-            className="w-[16px] h-[16px]"
-          />
-        );
-    }
-  };
-  return (
-    <button
-      onClick={handleNav}
-      type="button"
-      className={`w-[35px] h-[35px] border-[1px] border-[#5A5D63]/[50%] flex items-center justify-center ${className}`}
-    >
-      {type && renderArrow()}
-    </button>
-  );
-};
-
-const ImageSwiper = ({ images }: { images: string[] }) => {
-  //const images = [sampleImage.src, sampleImage.src];
-
-  const swiperRef = React.useRef<any>(null);
-
-  const handleNext = () => {
-    if (swiperRef.current) {
-      swiperRef.current.slideNext();
-    }
-  };
-
-  const handlePrev = () => {
-    if (swiperRef.current) {
-      swiperRef.current.slidePrev();
-    }
-  };
-
-  return (
-    <Swiper
-      modules={[Pagination, Navigation, Autoplay]}
-      spaceBetween={30}
-      slidesPerView={1}
-      onSwiper={(swiper) => (swiperRef.current = swiper)}
-      pagination={{ clickable: true }}
-      autoplay={{ delay: 3000 }}
-      loop={true}
-      className="w-full max-w-full lg:w-[837px]"
-    >
-      {images.map((src, i) => (
-        <SwiperSlide key={i}>
-          <img
-            src={src}
-            alt={`Slide ${i + 1}`}
-            className="w-full object-cover lg:w-[837px] h-[422px]"
-          />
-        </SwiperSlide>
-      ))}
-      <NavigationButton
-        handleNav={handlePrev}
-        type="arrow left"
-        className="absolute left-5 top-1/2 transform -translate-y-1/2 z-10"
-      />
-      <NavigationButton
-        handleNav={handleNext}
-        type="arrow right"
-        className="absolute right-5 top-1/2 transform -translate-y-1/2 z-10"
-      />
-    </Swiper>
-  );
-};
-
-const SimilarComponent = ({
-  data,
-  heading,
-}: {
-  data: string[];
-  heading: string;
-}) => {
-  return (
-    <div className="min-h-fit bg-[#F7F7F8] p-[15px] flex flex-col gap-[24px]">
-      <h2
-        className={`md:text-[24px] md:leading-[38.4px] text-[20px] leading-[32px] font-semibold font-epilogue`}
-      >
-        {heading}
-      </h2>
-
-      <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-[8px]">
-        {data.map((item: string, idx: number) => {
-          return (
-            <div key={idx} className="flex items-center gap-[8px]">
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {isLightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="relative max-w-7xl max-h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Image
-                src={checkIcon}
-                width={20}
-                height={20}
-                className="w-[20px] h-[20px]"
-                alt=""
+                src={validImages[activeIndex]}
+                alt={`Property image ${activeIndex + 1}`}
+                width={1200}
+                height={800}
+                className="max-w-full max-h-[90vh] object-contain rounded-lg"
               />
-              <span className="text-base leading-[25.6px] font-normal text-[#5A5D63]">
-                {item}
-              </span>
+              <button
+                onClick={() => setIsLightboxOpen(false)}
+                className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// Property Stats Component
+const PropertyStats = ({ details }: { details: PropertyDetails }) => {
+  const stats = [
+    {
+      icon: <Bed className="w-5 h-5" />,
+      label: "Bedrooms",
+      value: details.additionalFeatures?.noOfBedrooms || details.bedRoom || 0,
+    },
+    {
+      icon: <Bath className="w-5 h-5" />,
+      label: "Bathrooms",
+      value: details.additionalFeatures?.noOfBathrooms || details.noOfBathrooms || 0,
+    },
+    {
+      icon: <Car className="w-5 h-5" />,
+      label: "Parking",
+      value: details.additionalFeatures?.noOfCarParks || details.noOfCarParks || 0,
+    },
+    {
+      icon: <Maximize className="w-5 h-5" />,
+      label: "Land Size",
+      value: details.landSize?.size ? `${details.landSize.size} ${details.landSize.measurementType || ''}` : 'N/A',
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {stats.map((stat, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:shadow-md transition-shadow"
+        >
+          <div className="flex items-center justify-center text-blue-600 mb-2">
+            {stat.icon}
+          </div>
+          <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
+          <p className="font-semibold text-gray-900">{stat.value}</p>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// Feature List Component
+const FeatureList = ({ features, title }: { features: string[]; title: string }) => {
+  if (!features.length) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6"
+    >
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+        {title}
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {features.map((feature, index) => (
+          <div key={index} className="flex items-center text-gray-700">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0" />
+            <span className="text-sm">{feature}</span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+// Property Info Card Component
+const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
+  const infoItems = [
+    { label: "Property Type", value: details.propertyType, icon: <Home className="w-4 h-4" /> },
+    { label: "Listing Type", value: details.briefType || "Standard", icon: <FileText className="w-4 h-4" /> },
+    { label: "Condition", value: details.propertyCondition || "Good", icon: <Shield className="w-4 h-4" /> },
+    { label: "Owner", value: details.areYouTheOwner ? "Owner" : "Agent", icon: <User className="w-4 h-4" /> },
+    { label: "Date Listed", value: new Date(details.createdAt).toLocaleDateString(), icon: <Calendar className="w-4 h-4" /> },
+    { label: "Last Updated", value: new Date(details.updatedAt).toLocaleDateString(), icon: <Clock className="w-4 h-4" /> },
+  ];
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Information</h3>
+      <div className="space-y-4">
+        {infoItems.map((item, index) => (
+          <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+            <div className="flex items-center text-gray-600">
+              {item.icon}
+              <span className="ml-2 text-sm">{item.label}</span>
             </div>
-          );
-        })}
+            <span className="text-sm font-medium text-gray-900">{item.value}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-const BoxContainer = ({
-  heading,
-  subHeading,
-}: {
-  heading: string;
-  subHeading: string;
+// Action Buttons Component
+const ActionButtons = ({ details, onInspection, onNegotiation }: { 
+  details: PropertyDetails; 
+  onInspection: () => void; 
+  onNegotiation: () => void; 
 }) => {
-  const changeColorBehaviors = () => {
-    switch (heading) {
-      case "Price":
-        return { bg: "bg-green-100", color: "text-[#25324B]" };
-      case "Property Type":
-        return { bg: "bg-white", color: "text-[#09391C]" };
-      default:
-        return { bg: "bg-white", color: "text-[#25324B]" };
+  const [isLiked, setIsLiked] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      {/* Price */}
+      <div className="text-center md:text-left">
+        <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          ₦{details.price ? Number(details.price).toLocaleString() : 'Contact for price'}
+        </div>
+        <div className="flex items-center justify-center md:justify-start text-gray-600">
+          <MapPin className="w-4 h-4 mr-1" />
+          <span className="text-sm">
+            {details.location.area}, {details.location.localGovernment}, {details.location.state}
+          </span>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button
+          onClick={onInspection}
+          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center"
+        >
+          <Eye className="w-5 h-5 mr-2" />
+          Schedule Inspection
+        </button>
+        <button
+          onClick={onNegotiation}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center"
+        >
+          <ExternalLink className="w-5 h-5 mr-2" />
+          Price Negotiation
+        </button>
+      </div>
+
+      {/* Secondary Actions */}
+      <div className="flex gap-3">
+        <button
+          onClick={() => setIsLiked(!isLiked)}
+          className={`flex-1 border-2 ${isLiked ? 'border-red-500 text-red-500' : 'border-gray-300 text-gray-600'} hover:border-red-500 hover:text-red-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center`}
+        >
+          <Heart className={`w-5 h-5 mr-2 ${isLiked ? 'fill-current' : ''}`} />
+          {isLiked ? 'Saved' : 'Save'}
+        </button>
+        <button className="flex-1 border-2 border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center">
+          <Share2 className="w-5 h-5 mr-2" />
+          Share
+        </button>
+      </div>
+
+      {/* Status Badge */}
+      <div className="flex justify-center md:justify-start">
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+          details.isAvailable 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {details.isAvailable ? 'Available' : 'Not Available'}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+const ProductDetailsPage = () => {
+  const params = useParams();
+  const router = useRouter();
+  const [details, setDetails] = useState<PropertyDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [similarProperties, setSimilarProperties] = useState<any[]>([]);
+  const { setPropertySelectedForInspection, setIsComingFromPriceNeg } = usePageContext();
+  const { selectedBriefs } = useSelectedBriefs();
+
+  const marketType = params?.marketType ?? "";
+  const id = params?.ID ?? "";
+
+  useEffect(() => {
+    const fetchPropertyDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${URLS.BASE}${URLS.getOneProperty}${id}`);
+        
+        if (response.status === 200) {
+          const propertyData = response.data;
+          setDetails({
+            _id: propertyData._id,
+            propertyId: propertyData._id,
+            price: propertyData.price,
+            propertyType: propertyData.propertyType,
+            bedRoom: propertyData.bedRoom || propertyData.noOfBedrooms || 0,
+            propertyStatus: propertyData.propertyCondition || "",
+            location: propertyData.location,
+            landSize: propertyData.landSize || { measurementType: "", size: null },
+            additionalFeatures: {
+              additionalFeatures: propertyData.additionalFeatures?.additionalFeatures || [],
+              noOfBedrooms: propertyData.additionalFeatures?.noOfBedrooms || 0,
+              noOfBathrooms: propertyData.additionalFeatures?.noOfBathrooms || 0,
+              noOfToilets: propertyData.additionalFeatures?.noOfToilets || 0,
+              noOfCarParks: propertyData.additionalFeatures?.noOfCarParks || 0,
+            },
+            features: propertyData.features || [],
+            tenantCriteria: propertyData.tenantCriteria || [],
+            areYouTheOwner: propertyData.areYouTheOwner ?? false,
+            isAvailable: propertyData.isAvailable === "yes" || propertyData.isAvailable === true,
+            isApproved: propertyData.isApproved ?? false,
+            isRejected: propertyData.isRejected ?? false,
+            isPreference: propertyData.isPreference ?? false,
+            isPremium: propertyData.isPremium ?? false,
+            pictures: propertyData.pictures && propertyData.pictures.length > 0 
+              ? propertyData.pictures 
+              : [sampleImage.src],
+            createdAt: propertyData.createdAt,
+            updatedAt: propertyData.updatedAt,
+            owner: propertyData.owner,
+            docOnProperty: propertyData.docOnProperty || [],
+            briefType: propertyData.briefType || "",
+            propertyCondition: propertyData.propertyCondition || "",
+            noOfCarParks: propertyData.noOfCarParks || 0,
+            noOfBathrooms: propertyData.noOfBathrooms || 0,
+            noOfToilets: propertyData.noOfToilets || 0,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching property details:", error);
+        toast.error("Failed to load property details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchPropertyDetails();
+    }
+  }, [id]);
+
+  // Fetch similar properties
+  useEffect(() => {
+    const fetchSimilarProperties = async () => {
+      try {
+        const response = await axios.get(`${URLS.BASE}/properties/rents/all`);
+        if (response.status === 200) {
+          setSimilarProperties(response.data.data.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Error fetching similar properties:", error);
+      }
+    };
+
+    fetchSimilarProperties();
+  }, []);
+
+  const handleInspection = () => {
+    if (details) {
+      setPropertySelectedForInspection(details);
+      toast.success("Property selected for inspection");
     }
   };
+
+  const handleNegotiation = () => {
+    if (details) {
+      setPropertySelectedForInspection(details);
+      setIsComingFromPriceNeg(true);
+      toast.success("Starting price negotiation");
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!details) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Property Not Found</h2>
+          <p className="text-gray-600 mb-4">The property you're looking for doesn't exist.</p>
+          <button
+            onClick={() => router.back()}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`w-full ${
-        heading && changeColorBehaviors().bg
-      }  py-[5px] px-[5] md:px-[10px] h-[58px] md:h-[83px] flex justify-center flex-col border-[1px] border-[#D6DDEB]`}
-    >
-      <h4 className="text-xs md:text-lg text-[#7C8493]">{heading}</h4>
-      <h3
-        className={`text-sm md:text-lg font-semibold ${
-          heading && changeColorBehaviors().color
-        } ${epilogue.className}`}
-      >
-        {subHeading}
-      </h3>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 mr-1" />
+              <span className="font-medium">Back</span>
+            </button>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">ID: {details.owner.slice(-8)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Image Gallery */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <ImageGallery images={details.pictures} />
+            </motion.div>
+
+            {/* Property Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <PropertyStats details={details} />
+            </motion.div>
+
+            {/* Property Features */}
+            {details.features.length > 0 && (
+              <FeatureList features={details.features} title="Property Features" />
+            )}
+
+            {/* Tenant Criteria */}
+            {details.tenantCriteria.length > 0 && (
+              <FeatureList 
+                features={details.tenantCriteria.map(c => c.criteria)} 
+                title="Tenant Requirements" 
+              />
+            )}
+
+            {/* Additional Information */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="bg-white border border-gray-200 rounded-xl p-6"
+            >
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+              <div className="prose prose-gray max-w-none">
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  This property is managed by Khabi-Teq Realty. All transactions are secure and verified. 
+                  For more information about this property, please contact us directly or schedule an inspection.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
+            >
+              <ActionButtons 
+                details={details} 
+                onInspection={handleInspection}
+                onNegotiation={handleNegotiation}
+              />
+            </motion.div>
+
+            {/* Property Information */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <PropertyInfoCard details={details} />
+            </motion.div>
+
+            {/* Selected Briefs */}
+            {Array.from(selectedBriefs).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Selected Briefs</h3>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                  <p className="text-orange-800 font-medium">
+                    {Array.from(selectedBriefs).length} brief{Array.from(selectedBriefs).length !== 1 ? 's' : ''} selected
+                  </p>
+                  <button className="mt-2 text-orange-600 hover:text-orange-700 text-sm font-medium">
+                    View Details
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Similar Properties */}
+            {similarProperties.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Similar Properties</h3>
+                <div className="space-y-4">
+                  {similarProperties.slice(0, 2).map((property, index) => (
+                    <div
+                      key={index}
+                      onClick={() => router.push(`/property/Rent/${property._id}`)}
+                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    >
+                      <div className="flex space-x-3">
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
+                          <Image
+                            src={property.pictures?.[0] || sampleImage.src}
+                            alt="Property thumbnail"
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {property.propertyType}
+                          </p>
+                          <p className="text-xs text-gray-500 mb-1">
+                            {property.location.state}, {property.location.localGovernment}
+                          </p>
+                          <p className="text-sm font-semibold text-green-600">
+                            ₦{Number(property.rentalPrice || property.price || 0).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
