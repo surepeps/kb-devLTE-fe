@@ -70,11 +70,14 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               >
                 <CheckCircle size={32} className="text-[#8DDB90]" />
               </motion.div>
-              <h2 className="text-2xl font-bold text-white mb-1">
-                Property Listed Successfully!
+                            <h2 className="text-2xl font-bold text-white mb-1">
+                {isUpdate ? "Property Updated Successfully!" : "Property Listed Successfully!"}
               </h2>
               <p className="text-white text-opacity-90">
-                Your property is now live and ready for potential buyers
+                {isUpdate
+                  ? "Your property listing has been updated with the latest information"
+                  : "Your property is now live and ready for potential buyers"
+                }
               </p>
             </div>
           </div>
