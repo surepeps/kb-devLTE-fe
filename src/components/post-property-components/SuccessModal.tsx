@@ -110,16 +110,27 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               </div>
             )}
 
-            {/* What happens next */}
+                        {/* What happens next */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-800 mb-2">
                 What happens next?
               </h4>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Your property will be reviewed within 24 hours</li>
-                <li>• Once approved, it will appear in search results</li>
-                <li>• You&apos;ll receive notifications for inquiries</li>
-                <li>• Potential buyers can schedule inspections</li>
+                {isUpdate ? (
+                  <>
+                    <li>• Your updated property details are now live</li>
+                    <li>• Changes will be visible to potential buyers immediately</li>
+                    <li>• Existing inquiries will see the updated information</li>
+                    <li>• You&apos;ll continue receiving notifications for new inquiries</li>
+                  </>
+                ) : (
+                  <>
+                    <li>• Your property will be reviewed within 24 hours</li>
+                    <li>• Once approved, it will appear in search results</li>
+                    <li>• You&apos;ll receive notifications for inquiries</li>
+                    <li>• Potential buyers can schedule inspections</li>
+                  </>
+                )}
               </ul>
             </div>
 
