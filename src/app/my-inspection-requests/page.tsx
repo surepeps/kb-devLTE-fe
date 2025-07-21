@@ -692,7 +692,7 @@ export default function MyInspectionRequestsPage() {
                             <div className="flex flex-col items-end gap-2">
                               <StatusIcon size={20} className={statusStyles.text.replace('text-', 'text-').replace('-800', '-600')} />
                               <span className="text-xs text-gray-500">
-                                {inspection.propertyType} • {inspection.inspectionMode}
+                                {inspection.propertyId.propertyType} • {inspection.inspectionMode}
                               </span>
                             </div>
                           </div>
