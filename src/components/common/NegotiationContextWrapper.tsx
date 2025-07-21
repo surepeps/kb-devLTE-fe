@@ -21,8 +21,7 @@ export const NegotiationContextWrapper: React.FC<NegotiationContextWrapperProps>
   children,
   enabled = true
 }) => {
-  // Temporarily disable to test for errors
-  if (!enabled || true) {
+  if (!enabled) {
     return <>{children}</>;
   }
 
