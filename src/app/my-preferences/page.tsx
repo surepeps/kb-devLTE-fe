@@ -497,14 +497,14 @@ export default function MyPreferencesPage() {
       label: "View Analytics",
       icon: TrendingUpIcon,
       color: "purple",
-      action: () => toast.info("Analytics coming soon"),
+      action: () => toast("Analytics coming soon", { icon: "ℹ️" }),
     },
     {
       id: "settings",
       label: "Settings",
       icon: SettingsIcon,
       color: "gray",
-      action: () => toast.info("Settings coming soon"),
+      action: () => toast("Settings coming soon", { icon: "ℹ️" }),
     },
   ], [router]);
 
