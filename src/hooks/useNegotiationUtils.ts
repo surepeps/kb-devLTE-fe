@@ -22,7 +22,32 @@ export const useNegotiationUtils = () => {
 
   // Helper function to check counter limits and show appropriate messages
   const checkCounterLimits = useCallback((type: 'price' | 'loi') => {
-    if (!negotiationContext || !isGloballyAccessible) {
+    // Try global context first if available
+    if (isGloballyAccessible && 'canMakeCounter' in globalContext && 'getRemainingCounters' in globalContext) {
+      const canCounter = globalContext.canMakeCounter(type);
+      const remaining = globalContext.getRemainingCounters(type);
+
+      if (!canCounter) {
+        const message = type === 'price'
+          ? 'You have reached the maximum number of price negotiations for this property.'
+          : `You have reached the maximum number of LOI request changes (${globalContext.counterLimits?.loiRequests || 0}). No more changes allowed.`;
+
+        return { canCounter: false, message };
+      }
+
+      if (type === 'loi' && remaining !== null && remaining <= 1) {
+        const message = remaining === 1
+          ? 'This is your last LOI request change!'
+          : 'You have used all your LOI request changes.';
+
+        return { canCounter: true, message, isLastChance: remaining === 1 };
+      }
+
+      return { canCounter: true, message: '' };
+    }
+
+    // Fall back to negotiation context
+    if (!negotiationContext) {
       return { canCounter: false, message: 'Negotiation context not available' };
     }
 
@@ -46,7 +71,7 @@ export const useNegotiationUtils = () => {
     }
 
     return { canCounter: true, message: '' };
-  }, [negotiationContext, isGloballyAccessible]);
+  }, [negotiationContext, isGloballyAccessible, globalContext]);
 
   // Function to show counter limit warnings
   const showCounterLimitWarning = useCallback((type: 'price' | 'loi') => {
