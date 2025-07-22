@@ -45,8 +45,30 @@ export const GET_REQUEST = async (
       };
     }
 
-    const response = await request.json();
-    return response;
+    // Check if response has content before parsing JSON
+    const text = await request.text();
+    if (!text) {
+      console.warn("Empty response received from:", url);
+      return {
+        error: "Empty response",
+        success: false,
+        message: "Server returned empty response.",
+        data: [],
+      };
+    }
+
+    try {
+      const response = JSON.parse(text);
+      return response;
+    } catch (parseError) {
+      console.error("JSON parse error for response from:", url, "Response text:", text);
+      return {
+        error: "Invalid JSON response",
+        success: false,
+        message: "Server returned invalid data format.",
+        data: [],
+      };
+    }
   } catch (error: unknown) {
     const errorMsg = (error as Error).message || "Network error";
     console.error("GET_REQUEST error:", errorMsg);
