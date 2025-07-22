@@ -986,8 +986,6 @@ export const NewMarketplaceProvider: React.FC<{
         return;
       }
 
-      console.log(`=== fetchTabData: Starting initial data fetch for ${tab} tab ===`);
-
       // Map tab to correct briefType for API
       const briefTypeMapping = {
         buy: "Outright Sales",
@@ -1001,14 +999,8 @@ export const NewMarketplaceProvider: React.FC<{
         limit: itemsPerPage,
         ...searchParams,
       };
-      console.log(`fetchTabData: Using search params:`, defaultSearchParams);
 
-      try {
-        await searchTabProperties(tab, defaultSearchParams);
-        console.log(`fetchTabData: Completed for ${tab} tab`);
-      } catch (error) {
-        console.error(`fetchTabData: Error for ${tab} tab:`, error);
-      }
+      await searchTabProperties(tab, defaultSearchParams);
     },
     [searchTabProperties, itemsPerPage],
   );
