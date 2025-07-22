@@ -5,8 +5,8 @@ import React, { useState } from "react";
 import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import GlobalPropertyCard from "./GlobalPropertyCard";
 import GlobalJVPropertyCard from "./GlobalJVPropertyCard";
-import GlobalPriceNegotiationModal from "@/components/modals/GlobalPriceNegotiationModal";
-import GlobalLOIUploadModal from "@/components/modals/GlobalLOIUploadModal";
+import AdvancedPriceNegotiationModal from "@/components/modals/AdvancedPriceNegotiationModal";
+import AdvancedLOIUploadModal from "@/components/modals/AdvancedLOIUploadModal";
 
 interface EnhancedGlobalPropertyCardProps {
   type: "standard" | "jv";
