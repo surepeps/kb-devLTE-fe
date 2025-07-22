@@ -20,7 +20,7 @@ import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import { waitForInitialization } from "@/utils/appInit";
-import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
+// Note: Property actions are now handled by EnhancedGlobalPropertyCard internally
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -40,13 +40,7 @@ const Section2 = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  const {
-    toggleInspectionSelection,
-    isSelectedForInspection,
-    selectedCount,
-    addNegotiatedPrice,
-    addLOIDocument,
-  } = useGlobalPropertyActions();
+  // Note: Property actions context removed - handled by EnhancedGlobalPropertyCard
 
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
@@ -96,20 +90,7 @@ const Section2 = () => {
     if (buttons.button4) return (window.location.href = "/market-place");
   };
 
-  const handleSubmitInspection = (property: any) => {
-    const sourceTab = buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy";
-    toggleInspectionSelection(property, sourceTab, "homepage");
-  };
-
-  const handlePriceNegotiation = (property: any) => {
-    // For home page, redirect to marketplace for price negotiation
-    router.push(`/market-place`);
-  };
-
-  const handleLOIUpload = (property: any) => {
-    // For home page, redirect to marketplace for LOI upload
-    router.push(`/market-place`);
-  };
+  // Note: Handle functions removed - now handled by EnhancedGlobalPropertyCard internally
 
   const getBriefType = (marketPlace: string) => {
     switch (marketPlace) {
@@ -337,8 +318,7 @@ const Section2 = () => {
 
               const cardData = createPropertyCardData(property, propertyType);
 
-              // Check if property is selected for inspection
-              const isSelected = isSelectedForInspection(property._id);
+              // Property selection is now handled by EnhancedGlobalPropertyCard internally
 
               return (
                 <EnhancedGlobalPropertyCard
