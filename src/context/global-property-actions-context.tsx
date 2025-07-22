@@ -227,8 +227,7 @@ export const GlobalPropertyActionsProvider: React.FC<{
     setSelectedForInspection([]);
     setNegotiatedPrices([]);
     setLoiDocuments([]);
-    saveToStorage([], [], []);
-  }, [saveToStorage]);
+  }, []);
 
   const isSelectedForInspection = useCallback(
     (propertyId: string): boolean => {
