@@ -337,7 +337,12 @@ export const GlobalPropertyActionsProvider: React.FC<{
         const newDocuments = current.filter(
           (doc) => doc.propertyId !== propertyId
         );
-        saveToStorage(selectedForInspection, negotiatedPrices, newDocuments);
+
+        // Schedule storage save after state update
+        setTimeout(() => {
+          saveToStorage(selectedForInspection, negotiatedPrices, newDocuments);
+        }, 0);
+
         return newDocuments;
       });
     },
