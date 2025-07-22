@@ -233,10 +233,8 @@ export const NewMarketplaceProvider: React.FC<{
   const isMountedRef = useRef(true);
 
   useEffect(() => {
-    console.log('NewMarketplaceProvider initialized');
     return () => {
       isMountedRef.current = false;
-      console.log('NewMarketplaceProvider unmounted');
     };
   }, []);
 
