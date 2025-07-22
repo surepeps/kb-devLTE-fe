@@ -103,41 +103,41 @@ export const useGlobalInspectionState = () => {
     return "Outright Sales";
   }, []);
 
-  // Check if can select more properties
+  // Check if can select more properties (wrapper around global context)
   const canSelectMore = useCallback(() => {
-    return state.selectedProperties.length < 2;
-  }, [state.selectedProperties.length]);
+    return canSelectMoreForInspection();
+  }, [canSelectMoreForInspection]);
 
   return {
-    // State
-    selectedProperties: state.selectedProperties,
-    negotiatedPrices: state.negotiatedPrices,
-    loiDocuments: state.loiDocuments,
-    
+    // State (from global context)
+    selectedProperties: selectedForInspection,
+    negotiatedPrices,
+    loiDocuments,
+
     // Property selection
     addProperty,
     removeProperty,
     toggleProperty,
     isPropertySelected,
     canSelectMore,
-    
+
     // Price negotiation
     addNegotiatedPrice,
     clearNegotiatedPrice,
     getNegotiatedPrice,
-    
+
     // LOI documents
     addLOIDocument,
     clearLOIDocument,
     getLOIDocument,
-    
+
     // Utilities
     clearAllSelections,
     getPropertyType,
-    
-    // Computed values
-    hasSelectedProperties: state.selectedProperties.length > 0,
-    selectedCount: state.selectedProperties.length,
-    maxReached: state.selectedProperties.length >= 2,
+
+    // Computed values (from global context)
+    hasSelectedProperties,
+    selectedCount,
+    maxReached: selectedCount >= 2,
   };
 };
