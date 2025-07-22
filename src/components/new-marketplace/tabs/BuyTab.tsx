@@ -36,9 +36,10 @@ const BuyTab = () => {
       buyTab.formikStatus === "idle" &&
       buyTab.properties.length === 0
     ) {
+      console.log("BuyTab: Fetching initial data");
       fetchTabData("buy");
     }
-  }, [activeTab, buyTab.formikStatus, buyTab.properties.length, fetchTabData]);
+  }, [activeTab, fetchTabData]); // Removed buyTab dependencies to prevent loops
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page
