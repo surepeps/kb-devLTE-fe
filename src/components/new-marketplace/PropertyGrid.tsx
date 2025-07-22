@@ -170,34 +170,47 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
         {/* Properties Grid */}
         <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 xl:gap-4 justify-items-center px-2 lg:px-2">
           <AnimatePresence>
-            {properties.map((property, index) => (
-              <motion.div
-                key={property._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="w-full"
-              >
-                <PropertyCard
-                  tab={tab}
-                  property={property}
-                  cardData={getPropertyCardData(property)}
-                  images={property.pictures || property.images || []}
-                  isPremium={property.isPremium || false}
-                  onPropertyClick={() => onPropertyClick(property)}
-                  onInspectionToggle={() => onInspectionToggle(property)}
-                  onPriceNegotiation={() => onPriceNegotiation(property)}
-                  onRemoveNegotiation={onRemoveNegotiation}
-                  isSelected={selectedForInspection.some(
-                    (item) => item.propertyId === property._id,
-                  )}
-                  negotiatedPrice={negotiatedPrices.find(
-                    (price) => price.propertyId === property._id,
-                  )}
-                />
-              </motion.div>
-            ))}
+            {properties.map((property, index) => {
+              const cardData = createPropertyCardData(property, tab === "jv" ? "Joint Venture" : undefined);
+              const isSelected = selectedForInspection.some(
+                (item) => item.propertyId === property._id,
+              );
+              const negotiatedPrice = negotiatedPrices.find(
+                (price) => price.propertyId === property._id,
+              );
+              const loiDocument = loiDocuments.find(
+                (doc) => doc.propertyId === property._id,
+              );
+
+              return (
+                <motion.div
+                  key={property._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="w-full"
+                >
+                  <UniversalPropertyCard
+                    property={property}
+                    cardData={cardData}
+                    images={property.pictures || property.images || []}
+                    isPremium={property.isPremium || false}
+                    onPropertyClick={() => onPropertyClick(property)}
+                    onInspectionToggle={() => onInspectionToggle(property)}
+                    onPriceNegotiation={() => onPriceNegotiation?.(property)}
+                    onRemoveNegotiation={onRemoveNegotiation}
+                    onLOIUpload={() => onLOIUpload?.(property)}
+                    onRemoveLOI={onRemoveLOI}
+                    isSelected={isSelected}
+                    negotiatedPrice={negotiatedPrice}
+                    loiDocument={loiDocument}
+                    maxSelections={2}
+                    currentSelections={selectedForInspection.length}
+                  />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
 
