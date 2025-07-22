@@ -75,7 +75,7 @@ export default function RootLayout({
                             <HeaderFooterWrapper>
                               <Body>{children}</Body>
                             </HeaderFooterWrapper>
-                            {/* GlobalInspectionFAB removed since inspection functionality was removed */}
+                            <GlobalPropertyActionsFAB />
                             <Toaster />
                           </body>
                         </html>
