@@ -276,15 +276,10 @@ export const GlobalPropertyActionsProvider: React.FC<{
       setNegotiatedPrices((current) => {
         const newPrices = current.filter((p) => p.propertyId !== propertyId);
 
-        // Schedule storage save after state update
-        setTimeout(() => {
-          saveToStorage(selectedForInspection, newPrices, loiDocuments);
-        }, 0);
-
         return newPrices;
       });
     },
-    [selectedForInspection, loiDocuments, saveToStorage]
+    []
   );
 
   const getNegotiatedPrice = useCallback(
