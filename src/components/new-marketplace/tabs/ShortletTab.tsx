@@ -5,29 +5,15 @@ import React, { useEffect, useState } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import ShortletPropertySearch from "../search/ShortletPropertySearch";
 import PropertyGrid from "../PropertyGrid";
-import PriceNegotiationModal from "../modals/PriceNegotiationModal";
 
 const ShortletTab = () => {
   const {
     shortletTab,
     fetchTabData,
     activeTab,
-    isSelectedForInspection,
-    toggleInspectionSelection,
-    addNegotiatedPrice,
-    removeNegotiatedPrice,
-    getNegotiatedPrice,
-    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
-  // Modal states
-  const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
-    isOpen: boolean;
-    property: any;
-  }>({
-    isOpen: false,
-    property: null,
-  });
+  // Note: Modal states removed as per requirements
 
   // Fetch initial data when tab becomes active (only once)
   useEffect(() => {
@@ -51,41 +37,7 @@ const ShortletTab = () => {
     window.open(`/property/shortlet/${propertyId}`, "_blank");
   };
 
-  const handleInspectionToggle = (property: any) => {
-    toggleInspectionSelection("shortlet", property);
-  };
-
-  const handlePriceNegotiation = (property: any) => {
-    setPriceNegotiationModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleNegotiationSubmit = (property: any, negotiatedPrice: number) => {
-    const originalPrice = property.price || 0;
-    addNegotiatedPrice(
-      "shortlet",
-      property._id,
-      originalPrice,
-      negotiatedPrice,
-    );
-
-    // Automatically select for inspection
-    if (!isSelectedForInspection("shortlet", property._id)) {
-      toggleInspectionSelection("shortlet", property);
-    }
-
-    setPriceNegotiationModal({ isOpen: false, property: null });
-  };
-
-  const handleRemoveNegotiation = (propertyId: string) => {
-    removeNegotiatedPrice("shortlet", propertyId);
-  };
-
-  const openAddForInspection = () => {
-    setIsAddForInspectionOpen(true);
-  };
+  // Note: Inspection and negotiation handlers removed as per requirements
 
   return (
     <div className="space-y-6">
@@ -103,29 +55,9 @@ const ShortletTab = () => {
         totalPages={shortletTab.totalPages}
         totalItems={shortletTab.totalItems}
         onPropertyClick={handlePropertyClick}
-        onInspectionToggle={handleInspectionToggle}
-        onPriceNegotiation={handlePriceNegotiation}
-        onRemoveNegotiation={handleRemoveNegotiation}
-        selectedForInspection={shortletTab.selectedForInspection}
-        negotiatedPrices={shortletTab.negotiatedPrices}
-        onOpenAddForInspection={openAddForInspection}
       />
 
-      {/* Price Negotiation Modal */}
-      {priceNegotiationModal.isOpen && (
-        <PriceNegotiationModal
-          isOpen={priceNegotiationModal.isOpen}
-          property={priceNegotiationModal.property}
-          onClose={() =>
-            setPriceNegotiationModal({ isOpen: false, property: null })
-          }
-          onSubmit={handleNegotiationSubmit}
-          existingNegotiation={getNegotiatedPrice(
-            "shortlet",
-            priceNegotiationModal.property?._id,
-          )}
-        />
-      )}
+      {/* Note: Modals removed as per requirements */}
     </div>
   );
 };
