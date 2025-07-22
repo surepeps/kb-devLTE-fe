@@ -66,19 +66,21 @@ export default function RootLayout({
               <CreateBriefProvider>
                                 <SelectedBriefsProvider>
                   <NewMarketplaceProvider>
-                    <NegotiationContextWrapper>
-                      <html lang="en">
-                        <body
-                          className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                        >
-                          <HeaderFooterWrapper>
-                            <Body>{children}</Body>
-                          </HeaderFooterWrapper>
-                          {/* GlobalInspectionFAB removed since inspection functionality was removed */}
-                          <Toaster />
-                        </body>
-                      </html>
-                    </NegotiationContextWrapper>
+                    <GlobalPropertyActionsProvider>
+                      <NegotiationContextWrapper>
+                        <html lang="en">
+                          <body
+                            className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                          >
+                            <HeaderFooterWrapper>
+                              <Body>{children}</Body>
+                            </HeaderFooterWrapper>
+                            {/* GlobalInspectionFAB removed since inspection functionality was removed */}
+                            <Toaster />
+                          </body>
+                        </html>
+                      </NegotiationContextWrapper>
+                    </GlobalPropertyActionsProvider>
                   </NewMarketplaceProvider>
                 </SelectedBriefsProvider>
               </CreateBriefProvider>
