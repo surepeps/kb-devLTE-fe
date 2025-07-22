@@ -12,23 +12,7 @@ import React, {
 } from "react";
 import toast from "react-hot-toast";
 
-// Types
-interface NegotiatedPrice {
-  propertyId: string;
-  originalPrice: number;
-  negotiatedPrice: number;
-}
-
-interface InspectionProperty {
-  propertyId: string;
-  property: any;
-}
-
-interface LOIDocument {
-  propertyId: string;
-  document: File | null;
-  documentUrl?: string;
-}
+// Types - Simplified to focus on property data and search
 
 export interface MarketTypeSelection {
   name: string;
@@ -65,10 +49,6 @@ interface TabState {
   currentPage: number;
   totalPages: number;
   totalItems: number;
-  // Tab-specific inspection selections
-  selectedForInspection: InspectionProperty[];
-  negotiatedPrices: NegotiatedPrice[];
-  loiDocuments: LOIDocument[];
   // Tab-specific filters
   usageOptions: string[];
   rentFilterBy: string[];
@@ -119,48 +99,7 @@ interface NewMarketplaceContextType {
     },
   ) => void;
 
-  // Inspection selection (max 2 properties per tab)
-  toggleInspectionSelection: (
-    tab: "buy" | "jv" | "rent" | "shortlet",
-    property: any,
-  ) => void;
-  removeFromInspection: (
-    tab: "buy" | "jv" | "rent" | "shortlet",
-    propertyId: string,
-  ) => void;
-  clearInspectionSelection: (tab: "buy" | "jv" | "rent" | "shortlet") => void;
-  isSelectedForInspection: (
-    tab: "buy" | "jv" | "rent" | "shortlet",
-    propertyId: string,
-  ) => boolean;
-  canSelectMoreForInspection: (
-    tab: "buy" | "jv" | "rent" | "shortlet",
-  ) => boolean;
-
-  // Price negotiation (for buy, rent and shortlet tabs)
-  addNegotiatedPrice: (
-    tab: "buy" | "rent" | "shortlet",
-    propertyId: string,
-    originalPrice: number,
-    negotiatedPrice: number,
-  ) => void;
-  removeNegotiatedPrice: (
-    tab: "buy" | "rent" | "shortlet",
-    propertyId: string,
-  ) => void;
-  getNegotiatedPrice: (
-    tab: "buy" | "rent" | "shortlet",
-    propertyId: string,
-  ) => NegotiatedPrice | null;
-
-  // LOI documents (for JV tab)
-  addLOIDocument: (
-    propertyId: string,
-    document: File,
-    documentUrl?: string,
-  ) => void;
-  removeLOIDocument: (propertyId: string) => void;
-  getLOIDocument: (propertyId: string) => LOIDocument | null;
+  // Note: Inspection selection and negotiation functionality removed as per requirements
 
   // Filter management
   setTabFilter: (
@@ -188,9 +127,7 @@ interface NewMarketplaceContextType {
     searchParams: SearchParams,
   ) => Promise<void>;
 
-  // Add for inspection modal state
-  isAddForInspectionOpen: boolean;
-  setIsAddForInspectionOpen: (open: boolean) => void;
+  // Note: Add for inspection modal removed as per requirements
 
   // Item per page
   itemsPerPage: number;
@@ -204,7 +141,7 @@ const NewMarketplaceContext = createContext<
   NewMarketplaceContextType | undefined
 >(undefined);
 
-// Initial tab state
+// Initial tab state - simplified to focus on property data and search
 const createInitialTabState = (): TabState => ({
   properties: [],
   formikStatus: "idle",
@@ -216,9 +153,6 @@ const createInitialTabState = (): TabState => ({
   currentPage: 1,
   totalPages: 1,
   totalItems: 0,
-  selectedForInspection: [],
-  negotiatedPrices: [],
-  loiDocuments: [],
   usageOptions: [],
   rentFilterBy: [],
   jvFilterBy: ["All"],
