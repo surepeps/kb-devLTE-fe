@@ -73,6 +73,7 @@ export default function RootLayout({
                           <HeaderFooterWrapper>
                             <Body>{children}</Body>
                           </HeaderFooterWrapper>
+                          <GlobalInspectionFAB />
                           <Toaster />
                         </body>
                       </html>
