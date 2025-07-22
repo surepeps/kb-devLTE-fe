@@ -5,29 +5,15 @@ import React, { useEffect, useState } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import JointVentureSearch from "../search/JointVentureSearch";
 import PropertyGrid from "../PropertyGrid";
-import LOIUploadModal from "../modals/LOIUploadModal";
 
 const JointVentureTab = () => {
   const {
     jvTab,
     fetchTabData,
     activeTab,
-    isSelectedForInspection,
-    toggleInspectionSelection,
-    addLOIDocument,
-    removeLOIDocument,
-    getLOIDocument,
-
   } = useNewMarketplace();
 
-  // Modal states
-  const [loiUploadModal, setLoiUploadModal] = useState<{
-    isOpen: boolean;
-    property: any;
-  }>({
-    isOpen: false,
-    property: null,
-  });
+  // Note: Modal states removed as per requirements
 
   // Fetch initial data when tab becomes active (only once)
   useEffect(() => {
@@ -46,35 +32,7 @@ const JointVentureTab = () => {
     window.open(`/property/jv/${propertyId}`, "_blank");
   };
 
-  const handleInspectionToggle = (property: any) => {
-    toggleInspectionSelection("jv", property);
-  };
-
-  const handleLOIUpload = (property: any) => {
-    setLoiUploadModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleLOISubmit = (
-    property: any,
-    document: File,
-    documentUrl?: string,
-  ) => {
-    addLOIDocument(property._id, document, documentUrl);
-
-    // Automatically select for inspection
-    if (!isSelectedForInspection("jv", property._id)) {
-      toggleInspectionSelection("jv", property);
-    }
-
-    setLoiUploadModal({ isOpen: false, property: null });
-  };
-
-  const handleRemoveLOI = (propertyId: string) => {
-    removeLOIDocument(propertyId);
-  };
+  // Note: Inspection and LOI handlers removed as per requirements
 
 
 
@@ -94,23 +52,9 @@ const JointVentureTab = () => {
         totalPages={jvTab.totalPages}
         totalItems={jvTab.totalItems}
         onPropertyClick={handlePropertyClick}
-        onInspectionToggle={handleInspectionToggle}
-        onLOIUpload={handleLOIUpload}
-        onRemoveLOI={handleRemoveLOI}
-        selectedForInspection={jvTab.selectedForInspection}
-        loiDocuments={jvTab.loiDocuments}
       />
 
-      {/* LOI Upload Modal */}
-      {loiUploadModal.isOpen && (
-        <LOIUploadModal
-          isOpen={loiUploadModal.isOpen}
-          property={loiUploadModal.property}
-          onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
-          onSubmit={handleLOISubmit}
-          existingDocument={getLOIDocument(loiUploadModal.property?._id)}
-        />
-      )}
+      {/* Note: Modals removed as per requirements */}
     </div>
   );
 };
