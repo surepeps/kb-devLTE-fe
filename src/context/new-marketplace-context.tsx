@@ -984,7 +984,7 @@ export const NewMarketplaceProvider: React.FC<{
       console.log(`Auto-fetching initial data for ${activeTab} tab`);
       fetchTabData(activeTab);
     }
-  }, [activeTab, fetchTabData, getCurrentTabState]);
+  }, [activeTab, fetchTabData]); // Removed getCurrentTabState from dependencies to prevent loops
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {
