@@ -33,7 +33,7 @@ interface PropertyGridProps {
   selectedForInspection: any[];
   negotiatedPrices?: any[];
   loiDocuments?: any[];
-  onOpenAddForInspection: () => void;
+
 }
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
