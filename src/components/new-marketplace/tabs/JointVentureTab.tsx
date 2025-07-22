@@ -76,9 +76,7 @@ const JointVentureTab = () => {
     removeLOIDocument(propertyId);
   };
 
-  const openAddForInspection = () => {
-    setIsAddForInspectionOpen(true);
-  };
+
 
   return (
     <div className="space-y-6">
