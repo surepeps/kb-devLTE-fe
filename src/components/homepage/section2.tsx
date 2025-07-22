@@ -5,22 +5,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
-import arrowIcon from "@/svgs/arrowIcon.svg";
-import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import toast from "react-hot-toast";
-import imgSample from "@/assets/assets.png";
 import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
 import "ldrs/react/Trio.css";
 import { Trio } from "ldrs/react";
 import { epilogue } from "@/styles/font";
 import { shuffleArray } from "@/utils/shuffleArray";
-import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
-import { waitForInitialization } from "@/utils/appInit";
-import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -36,91 +31,8 @@ const Section2 = () => {
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
-
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  const {
-    toggleInspectionSelection,
-    isSelectedForInspection,
-    addNegotiatedPrice,
-    removeNegotiatedPrice,
-    getNegotiatedPrice,
-    addLOIDocument,
-    removeLOIDocument,
-    getLOIDocument,
-  } = useGlobalPropertyActions();
-
-  const fetchAllRentProperties = async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await axios.get(URLS.BASE + URLS.rentersFetchBriefs);
-
-      if (response.status !== 200) {
-        setIsLoading(false);
-        throw new Error("Failed to fetch data");
-      }
-
-      const data = response.data.data;
-      console.log(response, data);
-      const shuffled = shuffleArray(data);
-      setProperties(
-        shuffled.slice(0, 4).map((item: any) => ({
-          ...item,
-          price: item?.rentalPrice,
-          propertyFeatures: {
-            additionalFeatures: item?.features?.map(
-              (item: { featureName: string }) => item.featureName,
-            ),
-            noOfBedrooms: item.noOfBedrooms,
-          },
-          docOnProperty: item?.tenantCriteria?.map(
-            ({ criteria, _id }: { criteria: string; _id: string }) => ({
-              docName: criteria,
-              _id: _id,
-              isProvided: true,
-            }),
-          ),
-        })),
-      );
-      setCardData(data);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  };
-
-  const handleShowMoreClick = () => {
-    if (buttons.button1) return (window.location.href = "/market-place");
-    if (buttons.button2) return (window.location.href = "/market-place");
-    if (buttons.button3) return (window.location.href = "/market-place");
-    if (buttons.button4) return (window.location.href = "/market-place");
-  };
-
-  const handleSubmitInspection = (property: any) => {
-    const sourceTab = buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy";
-    toggleInspectionSelection(property, sourceTab, "homepage");
-  };
-
-  const handlePriceNegotiation = (property: any) => {
-    // For home page, redirect to marketplace for detailed negotiation
-    router.push(`/market-place`);
-  };
-
-  const handleLOIUpload = (property: any) => {
-    // For home page, redirect to marketplace for LOI upload
-    router.push(`/market-place`);
-  };
-
-  const handleRemoveNegotiation = (propertyId: string) => {
-    removeNegotiatedPrice(propertyId);
-  };
-
-  const handleRemoveLOI = (propertyId: string) => {
-    removeLOIDocument(propertyId);
-  };
 
   const getBriefType = (marketPlace: string) => {
     switch (marketPlace) {
@@ -153,18 +65,6 @@ const Section2 = () => {
       URLS.fetchBriefs
     }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
-    const initAndFetch = async () => {
-      try {
-        await waitForInitialization();
-        fetchData();
-      } catch (error) {
-        console.error("Failed to initialize section2:", error);
-        setProperties([]);
-        setCardData([]);
-        setIsLoading(false);
-      }
-    };
-
     const fetchData = async (retryCount = 0) => {
       setIsLoading(true);
       try {
@@ -186,14 +86,6 @@ const Section2 = () => {
         // Handle API error response
         if (data.error) {
           console.warn("API request failed:", data.error);
-
-          // Retry once on network errors
-          if (retryCount === 0 && data.error.includes("Network")) {
-            console.log("Retrying properties fetch...");
-            setTimeout(() => fetchData(1), 2000);
-            return;
-          }
-
           setProperties([]);
           setCardData([]);
           return;
@@ -224,14 +116,6 @@ const Section2 = () => {
         setCardData(approved);
       } catch (err) {
         console.error("Failed to fetch properties:", err);
-
-        // Retry once on unexpected errors
-        if (retryCount === 0) {
-          console.log("Retrying properties fetch due to error...");
-          setTimeout(() => fetchData(1), 2000);
-          return;
-        }
-
         setProperties([]);
         setCardData([]);
       } finally {
@@ -239,8 +123,12 @@ const Section2 = () => {
       }
     };
 
-    initAndFetch();
+    fetchData();
   }, [selectedMarketPlace, setCardData, buttons.button2]);
+
+  const handleShowMoreClick = () => {
+    window.location.href = "/market-place";
+  };
 
   return (
     <section className="flex justify-center items-center bg-[#8DDB901A] pb-[30px]">
@@ -348,32 +236,9 @@ const Section2 = () => {
 
               const cardData = createPropertyCardData(property, propertyType);
 
-              // Check if property is selected for inspection
-              const isSelected = isSelectedForInspection(property._id);
-              const negotiatedPrice = getNegotiatedPrice(property._id);
-              const loiDocument = getLOIDocument(property._id);
-
-              return buttons.button4 ? (
-                <GlobalJVPropertyCard
+              return (
+                <UniversalPropertyCard
                   key={idx}
-                  property={property}
-                  cardData={cardData}
-                  images={property?.pictures || []}
-                  isPremium={property?.isPremium || false}
-                  onPropertyClick={() => {
-                    router.push(`/property/jv/${property?._id}`);
-                  }}
-                  onLOIUpload={() => handleLOIUpload(property)}
-                  onInspectionToggle={() => handleSubmitInspection(property)}
-                  onRemoveLOI={handleRemoveLOI}
-                  isSelected={isSelected}
-                  loiDocument={loiDocument}
-                  className="mx-auto"
-                />
-              ) : (
-                <GlobalPropertyCard
-                  key={idx}
-                  tab={buttons.button3 ? "rent" : "buy"}
                   property={property}
                   cardData={cardData}
                   images={property?.pictures || []}
@@ -383,13 +248,15 @@ const Section2 = () => {
                       router.push(`/property/buy/${property?._id}`);
                     } else if (buttons.button3) {
                       router.push(`/property/rent/${property?._id}`);
+                    } else if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
                     }
                   }}
-                  onPriceNegotiation={() => handlePriceNegotiation(property)}
-                  onInspectionToggle={() => handleSubmitInspection(property)}
-                  onRemoveNegotiation={handleRemoveNegotiation}
-                  isSelected={isSelected}
-                  negotiatedPrice={negotiatedPrice}
+                  maxSelections={2}
+                  currentSelections={0}
+                  useGlobalInspection={false}
+                  sourceTab={buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy"}
+                  sourcePage="homepage"
                   className="mx-auto"
                 />
               );
@@ -412,14 +279,7 @@ const Section2 = () => {
           >
             <span className="text-base font-display text-[#09391C] leading-[25px] font-semibold">
               View more
-            </span>{" "}
-            {/* <Image
-              src={arrowIcon}
-              width={12}
-              height={15}
-              alt=''
-              className='w-[12px] h-[15px]'
-            /> */}
+            </span>
           </button>
         </div>
       </div>
