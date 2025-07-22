@@ -9,6 +9,8 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import markerSVG from "@/svgs/marker.svg";
 import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "@/components/new-marketplace/ImageSwiper";
+import Button from "@/components/general-components/button";
+import { X } from "lucide-react";
 
 interface GlobalJVPropertyCardProps {
   property: any;
@@ -16,6 +18,15 @@ interface GlobalJVPropertyCardProps {
   images: any[];
   isPremium: boolean;
   onPropertyClick?: () => void;
+  onLOIUpload?: () => void;
+  onInspectionToggle?: () => void;
+  onRemoveLOI?: (propertyId: string) => void;
+  isSelected?: boolean;
+  loiDocument?: {
+    propertyId: string;
+    document: File | null;
+    documentUrl?: string;
+  } | null;
   className?: string;
 }
 
@@ -25,8 +36,14 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   images,
   isPremium,
   onPropertyClick,
+  onLOIUpload,
+  onInspectionToggle,
+  onRemoveLOI,
+  isSelected = false,
+  loiDocument,
   className = "",
 }) => {
+  const hasLOIDocument = loiDocument != null && loiDocument !== undefined;
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,7 +51,7 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
       transition={{ delay: 0.2, duration: 0.5 }}
       exit={{ opacity: 0, y: 20 }}
       viewport={{ once: true }}
-      className={`w-full max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[350px] rounded-md shrink-0 bg-white border-[1px] p-3 gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col ${className}`}
+      className={`w-full max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[450px] rounded-md shrink-0 bg-white border-[1px] p-3 gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col ${className}`}
     >
       <div className="flex flex-col gap-[8px] w-full flex-grow">
         {/* Image Section */}
@@ -168,6 +185,62 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
             )}
           </div>
         </div>
+
+        {/* Action Buttons */}
+        {(onLOIUpload || onInspectionToggle) && (
+          <div className="flex flex-col gap-2 mt-auto pt-4">
+            {/* Submit LOI Button */}
+            {onLOIUpload && (
+              hasLOIDocument ? (
+                <div className="min-h-[50px] py-[12px] px-[24px] bg-[#FF9800] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between rounded">
+                  <span className="text-xs">LOI Document Uploaded</span>
+                  {onRemoveLOI && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveLOI(property._id);
+                      }}
+                      className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
+                      title="Clear LOI document"
+                    >
+                      <X size={16} className="text-white" />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <Button
+                  value="Submit LOI"
+                  type="button"
+                  onClick={onLOIUpload}
+                  className="min-h-[50px] py-[12px] px-[24px] bg-[#FF9800] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#F57C00] transition-colors"
+                />
+              )
+            )}
+
+            {/* Select for Inspection Button */}
+            {onInspectionToggle && (
+              <button
+                onClick={onInspectionToggle}
+                disabled={false}
+                className={`min-h-[50px] py-[12px] px-[24px] ${
+                  isSelected
+                    ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
+                    : "bg-[#8DDB90] hover:bg-[#76c77a]"
+                } text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
+                type="button"
+              >
+                {isSelected ? (
+                  <>
+                    <span>Selected</span>
+                    <X size={16} className="text-white" />
+                  </>
+                ) : (
+                  "Select for Inspection"
+                )}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );
