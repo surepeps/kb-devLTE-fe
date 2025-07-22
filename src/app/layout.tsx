@@ -16,7 +16,7 @@ import { ModalProvider } from '@/context/modalContext';
 import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
 import { GlobalPropertyActionsProvider } from '@/context/global-property-actions-context';
 import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
-import GlobalInspectionFAB from '@/components/common/GlobalInspectionFAB';
+import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsFAB';
 
 const SHOW_COMING_SOON = false;
 
