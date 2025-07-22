@@ -29,27 +29,24 @@ const BuyTab = () => {
     property: null,
   });
 
-  // Fetch initial data when tab becomes active (only once)
+  // Fetch initial data when tab becomes active
   useEffect(() => {
     console.log(`=== BuyTab useEffect triggered ===`);
     console.log(`activeTab: ${activeTab}`);
-    console.log(`buyTab:`, {
-      formikStatus: buyTab.formikStatus,
-      propertiesLength: buyTab.properties.length,
-      searchStatus: buyTab.searchStatus
-    });
+    console.log(`buyTab.formikStatus: ${buyTab.formikStatus}`);
+    console.log(`buyTab.properties.length: ${buyTab.properties.length}`);
+    console.log(`buyTab.searchStatus:`, buyTab.searchStatus);
 
-    if (
-      activeTab === "buy" &&
-      buyTab.formikStatus === "idle" &&
-      buyTab.properties.length === 0
-    ) {
-      console.log("=== BuyTab: TRIGGERING FETCH ===");
-      fetchTabData("buy");
-    } else {
-      console.log("BuyTab: Fetch skipped - conditions not met");
+    // Always try to fetch if tab is active and no data
+    if (activeTab === "buy") {
+      if (buyTab.formikStatus === "idle" && buyTab.properties.length === 0) {
+        console.log("=== BuyTab: TRIGGERING FETCH ===");
+        fetchTabData("buy");
+      } else {
+        console.log("BuyTab: Fetch skipped - data exists or loading");
+      }
     }
-  }, [activeTab, fetchTabData]); // Removed buyTab dependencies to prevent loops
+  }, [activeTab, buyTab.formikStatus, buyTab.properties.length, fetchTabData]);
 
   const handlePropertyClick = (property: any) => {
     // Navigate to property details page
