@@ -219,9 +219,6 @@ export const GlobalPropertyActionsProvider: React.FC<{
       setSelectedForInspection(newSelection);
       setNegotiatedPrices(newPrices);
       setLoiDocuments(newDocuments);
-
-      // Save to storage
-      saveToStorage(newSelection, newPrices, newDocuments);
     },
     [selectedForInspection, negotiatedPrices, loiDocuments, saveToStorage]
   );
