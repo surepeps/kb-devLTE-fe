@@ -79,20 +79,6 @@ const BuyTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Temporary Debug Panel */}
-      <div className="bg-yellow-50 p-4 rounded border">
-        <h4 className="font-bold mb-2">Debug Info</h4>
-        <p className="text-sm">Status: {buyTab.formikStatus}</p>
-        <p className="text-sm">Properties: {buyTab.properties.length}</p>
-        <p className="text-sm">Search Status: {buyTab.searchStatus.status}</p>
-        <button
-          onClick={handleManualFetch}
-          className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm"
-        >
-          Manual Fetch
-        </button>
-      </div>
-
       {/* Search and Filters */}
       <BuyPropertySearch />
 
