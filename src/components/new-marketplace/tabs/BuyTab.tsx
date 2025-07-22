@@ -5,29 +5,15 @@ import React, { useEffect, useState } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import BuyPropertySearch from "../search/BuyPropertySearch";
 import PropertyGrid from "../PropertyGrid";
-import PriceNegotiationModal from "../modals/PriceNegotiationModal";
 
 const BuyTab = () => {
   const {
     buyTab,
     fetchTabData,
     activeTab,
-    isSelectedForInspection,
-    toggleInspectionSelection,
-    addNegotiatedPrice,
-    removeNegotiatedPrice,
-    getNegotiatedPrice,
-
   } = useNewMarketplace();
 
-  // Modal states
-  const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
-    isOpen: boolean;
-    property: any;
-  }>({
-    isOpen: false,
-    property: null,
-  });
+  // Note: Modal states removed as per requirements
 
   // Fetch initial data when tab becomes active
   useEffect(() => {
@@ -46,32 +32,7 @@ const BuyTab = () => {
     window.open(`/property/buy/${propertyId}`, "_blank");
   };
 
-  const handleInspectionToggle = (property: any) => {
-    toggleInspectionSelection("buy", property);
-  };
-
-  const handlePriceNegotiation = (property: any) => {
-    setPriceNegotiationModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleNegotiationSubmit = (property: any, negotiatedPrice: number) => {
-    const originalPrice = property.price || 0;
-    addNegotiatedPrice("buy", property._id, originalPrice, negotiatedPrice);
-
-    // Automatically select for inspection
-    if (!isSelectedForInspection("buy", property._id)) {
-      toggleInspectionSelection("buy", property);
-    }
-
-    setPriceNegotiationModal({ isOpen: false, property: null });
-  };
-
-  const handleRemoveNegotiation = (propertyId: string) => {
-    removeNegotiatedPrice("buy", propertyId);
-  };
+  // Note: Inspection and negotiation handlers removed as per requirements
 
 
 
@@ -91,28 +52,9 @@ const BuyTab = () => {
         totalPages={buyTab.totalPages}
         totalItems={buyTab.totalItems}
         onPropertyClick={handlePropertyClick}
-        onInspectionToggle={handleInspectionToggle}
-        onPriceNegotiation={handlePriceNegotiation}
-        onRemoveNegotiation={handleRemoveNegotiation}
-        selectedForInspection={buyTab.selectedForInspection}
-        negotiatedPrices={buyTab.negotiatedPrices}
       />
 
-      {/* Price Negotiation Modal */}
-      {priceNegotiationModal.isOpen && (
-        <PriceNegotiationModal
-          isOpen={priceNegotiationModal.isOpen}
-          property={priceNegotiationModal.property}
-          onClose={() =>
-            setPriceNegotiationModal({ isOpen: false, property: null })
-          }
-          onSubmit={handleNegotiationSubmit}
-          existingNegotiation={getNegotiatedPrice(
-            "buy",
-            priceNegotiationModal.property?._id,
-          )}
-        />
-      )}
+      {/* Note: Modals removed as per requirements */}
     </div>
   );
 };
