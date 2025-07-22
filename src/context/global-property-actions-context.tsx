@@ -265,7 +265,11 @@ export const GlobalPropertyActionsProvider: React.FC<{
           ];
         }
 
-        saveToStorage(selectedForInspection, newPrices, loiDocuments);
+        // Schedule storage save after state update
+        setTimeout(() => {
+          saveToStorage(selectedForInspection, newPrices, loiDocuments);
+        }, 0);
+
         return newPrices;
       });
     },
