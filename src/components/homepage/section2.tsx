@@ -63,17 +63,7 @@ const Section2 = () => {
 
   const areHousesVisible = useInView(housesRef, { once: true });
 
-  // Global property actions context
-  const {
-    toggleInspectionSelection,
-    isSelectedForInspection,
-    addNegotiatedPrice,
-    getNegotiatedPrice,
-    removeNegotiatedPrice,
-    addLOIDocument,
-    getLOIDocument,
-    removeLOIDocument,
-  } = useGlobalPropertyActions();
+
 
   const getBriefType = (marketPlace: string) => {
     switch (marketPlace) {
