@@ -96,7 +96,6 @@ const BuyTab = () => {
         onRemoveNegotiation={handleRemoveNegotiation}
         selectedForInspection={buyTab.selectedForInspection}
         negotiatedPrices={buyTab.negotiatedPrices}
-        onOpenAddForInspection={openAddForInspection}
       />
 
       {/* Price Negotiation Modal */}
