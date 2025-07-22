@@ -2,8 +2,11 @@
 
 "use client";
 import React from "react";
+import { usePathname } from "next/navigation";
 import StandardPropertyCard, { StandardPropertyCardProps } from "./StandardPropertyCard";
 import JVPropertyCard, { JVPropertyCardProps } from "./JVPropertyCard";
+import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
+import toast from "react-hot-toast";
 
 // Combined props interface
 export interface UniversalPropertyCardProps {
