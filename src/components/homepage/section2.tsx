@@ -320,32 +320,7 @@ const Section2 = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      {showPriceModal && selectedProperty && (
-        <GlobalPriceNegotiationModal
-          isOpen={showPriceModal}
-          property={selectedProperty}
-          onClose={() => {
-            setShowPriceModal(false);
-            setSelectedProperty(null);
-          }}
-          onSubmit={handlePriceNegotiationSubmit}
-          existingNegotiation={getNegotiatedPrice(selectedProperty._id)}
-        />
-      )}
 
-      {showLOIModal && selectedProperty && (
-        <GlobalLOIUploadModal
-          isOpen={showLOIModal}
-          property={selectedProperty}
-          onClose={() => {
-            setShowLOIModal(false);
-            setSelectedProperty(null);
-          }}
-          onSubmit={handleLOISubmit}
-          existingDocument={getLOIDocument(selectedProperty._id)}
-        />
-      )}
     </section>
   );
 };
