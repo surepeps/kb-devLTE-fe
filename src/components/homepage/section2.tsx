@@ -161,29 +161,7 @@ const Section2 = () => {
     window.location.href = "/market-place";
   };
 
-  const handlePriceNegotiation = (property: any) => {
-    setSelectedProperty(property);
-    setShowPriceModal(true);
-  };
 
-  const handleLOIUpload = (property: any) => {
-    setSelectedProperty(property);
-    setShowLOIModal(true);
-  };
-
-  const handlePriceNegotiationSubmit = async (property: any, negotiatedPrice: number) => {
-    const originalPrice = property?.price || property?.rentalPrice || 0;
-    addNegotiatedPrice(property._id, originalPrice, negotiatedPrice);
-  };
-
-  const handleLOISubmit = async (property: any, document: File) => {
-    addLOIDocument(property._id, document);
-  };
-
-  const handleInspectionToggle = (property: any) => {
-    const sourceTab = buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy";
-    toggleInspectionSelection(property, sourceTab, "homepage");
-  };
 
   return (
     <section className="flex justify-center items-center bg-[#8DDB901A] pb-[30px]">
