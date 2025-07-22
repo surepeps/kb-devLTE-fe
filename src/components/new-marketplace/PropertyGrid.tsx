@@ -166,6 +166,9 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                     loiDocument={loiDocument}
                     maxSelections={2}
                     currentSelections={selectedForInspection.length}
+                    useGlobalInspection={true}
+                    sourceTab={tab}
+                    sourcePage="marketplace"
                   />
                 </motion.div>
               );
