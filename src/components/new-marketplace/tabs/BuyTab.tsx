@@ -31,13 +31,23 @@ const BuyTab = () => {
 
   // Fetch initial data when tab becomes active (only once)
   useEffect(() => {
+    console.log(`=== BuyTab useEffect triggered ===`);
+    console.log(`activeTab: ${activeTab}`);
+    console.log(`buyTab:`, {
+      formikStatus: buyTab.formikStatus,
+      propertiesLength: buyTab.properties.length,
+      searchStatus: buyTab.searchStatus
+    });
+
     if (
       activeTab === "buy" &&
       buyTab.formikStatus === "idle" &&
       buyTab.properties.length === 0
     ) {
-      console.log("BuyTab: Fetching initial data");
+      console.log("=== BuyTab: TRIGGERING FETCH ===");
       fetchTabData("buy");
+    } else {
+      console.log("BuyTab: Fetch skipped - conditions not met");
     }
   }, [activeTab, fetchTabData]); // Removed buyTab dependencies to prevent loops
 
