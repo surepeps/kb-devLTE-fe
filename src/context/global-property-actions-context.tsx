@@ -158,15 +158,18 @@ export const GlobalPropertyActionsProvider: React.FC<{
         );
 
         let newSelection: InspectionProperty[];
+        let toastMessage = "";
+        let toastType: "success" | "error" = "success";
 
         if (isAlreadySelected) {
           newSelection = current.filter(
             (item) => item.propertyId !== propertyId
           );
-          toast.success("Property removed from inspection");
+          toastMessage = "Property removed from inspection";
         } else {
           if (current.length >= 2) {
-            toast.error("Maximum of 2 properties can be selected for inspection");
+            toastMessage = "Maximum of 2 properties can be selected for inspection";
+            toastType = "error";
             return current;
           }
 
@@ -174,8 +177,17 @@ export const GlobalPropertyActionsProvider: React.FC<{
             ...current,
             { propertyId, property, sourceTab, sourcePage },
           ];
-          toast.success("Property selected for inspection");
+          toastMessage = "Property selected for inspection";
         }
+
+        // Schedule toast notification to run after state update
+        setTimeout(() => {
+          if (toastType === "error") {
+            toast.error(toastMessage);
+          } else {
+            toast.success(toastMessage);
+          }
+        }, 0);
 
         saveToStorage(newSelection, negotiatedPrices, loiDocuments);
         return newSelection;
