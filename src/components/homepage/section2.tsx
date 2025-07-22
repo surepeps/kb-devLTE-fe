@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
 import arrowIcon from "@/svgs/arrowIcon.svg";
-import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import toast from "react-hot-toast";
 import imgSample from "@/assets/assets.png";
@@ -20,7 +20,7 @@ import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import { waitForInitialization } from "@/utils/appInit";
-import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -40,7 +40,13 @@ const Section2 = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  const globalInspection = useGlobalInspectionState();
+  const {
+    toggleInspectionSelection,
+    isSelectedForInspection,
+    selectedCount,
+    addNegotiatedPrice,
+    addLOIDocument,
+  } = useGlobalPropertyActions();
 
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
@@ -91,32 +97,18 @@ const Section2 = () => {
   };
 
   const handleSubmitInspection = (property: any) => {
-    if (buttons.button1 || buttons.button2) {
-      // Use global inspection state
-      try {
-        const sourceTab = buttons.button1 ? "buy" : buttons.button2 ? "buy" : "rent";
-        globalInspection.addProperty(property, sourceTab, "homepage");
-        toast.success("Successfully added for inspection");
-      } catch (error: any) {
-        toast.error(error.message || "Failed to add property for inspection");
-      }
-    } else if (buttons.button3) {
-      // Rent/Lease functionality
-      try {
-        globalInspection.addProperty(property, "rent", "homepage");
-        toast.success("Successfully added for inspection");
-      } catch (error: any) {
-        toast.error(error.message || "Failed to add property for inspection");
-      }
-    } else if (buttons.button4) {
-      // Joint Venture functionality
-      try {
-        globalInspection.addProperty(property, "jv", "homepage");
-        toast.success("Successfully added for inspection");
-      } catch (error: any) {
-        toast.error(error.message || "Failed to add property for inspection");
-      }
-    }
+    const sourceTab = buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy";
+    toggleInspectionSelection(property, sourceTab, "homepage");
+  };
+
+  const handlePriceNegotiation = (property: any) => {
+    // For home page, redirect to marketplace for price negotiation
+    router.push(`/market-place`);
+  };
+
+  const handleLOIUpload = (property: any) => {
+    // For home page, redirect to marketplace for LOI upload
+    router.push(`/market-place`);
   };
 
   const getBriefType = (marketPlace: string) => {
@@ -345,12 +337,28 @@ const Section2 = () => {
 
               const cardData = createPropertyCardData(property, propertyType);
 
-              // Check if property is selected for inspection using global state
-              const isSelected = globalInspection.isPropertySelected(property._id);
+              // Check if property is selected for inspection
+              const isSelected = isSelectedForInspection(property._id);
 
-              return (
-                <UniversalPropertyCard
+              return buttons.button4 ? (
+                <GlobalJVPropertyCard
                   key={idx}
+                  property={property}
+                  cardData={cardData}
+                  images={property?.pictures || []}
+                  isPremium={property?.isPremium || false}
+                  onPropertyClick={() => {
+                    router.push(`/property/jv/${property?._id}`);
+                  }}
+                  onLOIUpload={() => handleLOIUpload(property)}
+                  onInspectionToggle={() => handleSubmitInspection(property)}
+                  isSelected={isSelected}
+                  className="mx-auto"
+                />
+              ) : (
+                <GlobalPropertyCard
+                  key={idx}
+                  tab={buttons.button3 ? "rent" : "buy"}
                   property={property}
                   cardData={cardData}
                   images={property?.pictures || []}
@@ -360,33 +368,12 @@ const Section2 = () => {
                       router.push(`/property/buy/${property?._id}`);
                     } else if (buttons.button3) {
                       router.push(`/property/rent/${property?._id}`);
-                    } else if (buttons.button4) {
-                      router.push(`/property/jv/${property?._id}`);
                     }
                   }}
-                  onInspectionToggle={() => {
-                    handleSubmitInspection(property);
-                  }}
-                  onPriceNegotiation={() => {
-                    // For home page, redirect to marketplace for price negotiation
-                    router.push(`/market-place`);
-                  }}
-                  onLOIUpload={() => {
-                    // For home page, redirect to marketplace for LOI upload
-                    router.push(`/market-place`);
-                  }}
-                  onRemoveNegotiation={() => {}}
-                  onRemoveLOI={() => {}}
+                  onPriceNegotiation={() => handlePriceNegotiation(property)}
+                  onInspectionToggle={() => handleSubmitInspection(property)}
                   isSelected={isSelected}
-                  maxSelections={2}
-                  currentSelections={globalInspection.selectedCount}
-                  useGlobalInspection={true}
-                  sourceTab={buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy"}
-                  sourcePage="homepage"
-                  // Customize for home page usage
-                  showPriceNegotiation={false} // Hide price negotiation on home page
-                  showLOIUpload={false} // Hide LOI upload on home page
-                  className="mx-auto" // Center the cards
+                  className="mx-auto"
                 />
               );
             })
