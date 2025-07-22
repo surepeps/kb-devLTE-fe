@@ -194,7 +194,6 @@ export const GlobalPropertyActionsProvider: React.FC<{
           }
         }, 0);
 
-        saveToStorage(newSelection, negotiatedPrices, loiDocuments);
         return newSelection;
       });
     },
