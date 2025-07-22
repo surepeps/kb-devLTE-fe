@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
 import arrowIcon from "@/svgs/arrowIcon.svg";
-import Card from "../general-components/card";
+import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import toast from "react-hot-toast";
 import imgSample from "@/assets/assets.png";
@@ -20,6 +20,7 @@ import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import { waitForInitialization } from "@/utils/appInit";
+import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -35,11 +36,11 @@ const Section2 = () => {
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
-  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
-    useState<boolean>(false);
+
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const globalInspection = useGlobalInspectionState();
 
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
@@ -90,44 +91,31 @@ const Section2 = () => {
   };
 
   const handleSubmitInspection = (property: any) => {
-    if (buttons.button1) {
-      //Retrieve existing selectedBriefs from localStorage
-      const existingBriefs = JSON.parse(
-        localStorage.getItem("selectedBriefs") || "[]",
-      );
-
-      //check if the new property exists
-      const isPropertyExisting = existingBriefs.find(
-        (brief: any) => brief._id === property._id,
-      );
-
-      if (isPropertyExisting) {
-        //apply toast warning
-        toast.error("Property already selected");
-        return;
+    if (buttons.button1 || buttons.button2) {
+      // Use global inspection state
+      try {
+        const sourceTab = buttons.button1 ? "buy" : buttons.button2 ? "buy" : "rent";
+        globalInspection.addProperty(property, sourceTab, "homepage");
+        toast.success("Successfully added for inspection");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add property for inspection");
       }
-
-      //check if the properties selected has exceeded 3
-      if (existingBriefs.length >= 3) {
-        //apply toast warning
-        toast.error("Maximum properties selected");
-        return;
-      }
-
-      //Ensure it's an array and add the new property
-      const updatedBriefs = Array.isArray(existingBriefs)
-        ? [...existingBriefs, property]
-        : [property];
-
-      //Save back to localStorage
-      localStorage.setItem("selectedBriefs", JSON.stringify(updatedBriefs));
-      toast.success("Successfully added for inspection");
-    } else if (buttons.button2) {
-      //
-      toast.error("Feature not available yet");
     } else if (buttons.button3) {
-      //apply toast warning
-      toast.error("Feature not available yet");
+      // Rent/Lease functionality
+      try {
+        globalInspection.addProperty(property, "rent", "homepage");
+        toast.success("Successfully added for inspection");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add property for inspection");
+      }
+    } else if (buttons.button4) {
+      // Joint Venture functionality
+      try {
+        globalInspection.addProperty(property, "jv", "homepage");
+        toast.success("Successfully added for inspection");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add property for inspection");
+      }
     }
   };
 
@@ -350,65 +338,55 @@ const Section2 = () => {
             </div>
           ) : properties.length !== 0 ? (
             properties?.map((property: any, idx: number) => {
+              // Determine property type for card data generation
+              let propertyType = "Outright Sales";
+              if (buttons.button3) propertyType = "Rent";
+              if (buttons.button4) propertyType = "Joint Venture";
+
+              const cardData = createPropertyCardData(property, propertyType);
+
+              // Check if property is selected for inspection using global state
+              const isSelected = globalInspection.isPropertySelected(property._id);
+
               return (
-                <Card
-                  isAddForInspectionModalOpened={isAddForInspectionModalOpened}
-                  images={property?.pictures}
-                  isPremium={property?.isPremium}
-                  onCardPageClick={() => {
+                <UniversalPropertyCard
+                  key={idx}
+                  property={property}
+                  cardData={cardData}
+                  images={property?.pictures || []}
+                  isPremium={property?.isPremium || false}
+                  onPropertyClick={() => {
                     if (buttons.button1) {
-                      return router.push(`/property/${"Buy"}/${property?._id}`);
+                      router.push(`/property/buy/${property?._id}`);
                     } else if (buttons.button3) {
-                      return router.push(`property/${"Rent"}/${property?._id}`);
+                      router.push(`/property/rent/${property?._id}`);
+                    } else if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
                     }
                   }}
-                  onClick={() => {
+                  onInspectionToggle={() => {
                     handleSubmitInspection(property);
                   }}
-                  cardData={[
-                    {
-                      header: "Property Type",
-                      value: property?.propertyType || "N/A",
-                    },
-                    {
-                      header: "Price",
-                      value: `₦${Number(
-                        property?.price || 0,
-                      ).toLocaleString()}`,
-                    },
-                    {
-                      header: "Bedrooms",
-                      value: property?.additionalFeatures.noOfBedrooms || "N/A",
-                    },
-                    {
-                      header: "Location",
-                      value: `${property?.location?.state || "N/A"}, ${
-                        property?.location?.localGovernment || "N/A"
-                      }`,
-                    },
-                    // {
-                    //   header: 'Documents',
-                    //   value: `<div>${property?.docOnProperty?.map(
-                    //     (item: { _id: string; docName: string }) =>
-                    //       `<span key={${item._id}>${item.docName}</span>`
-                    //   )}</div>`,
-                    // },
-                    {
-                      header: "Documents",
-                      value: (
-                        <div>
-                          {property?.docOnProperty?.map(
-                            (item: { _id: string; docName: string }) => (
-                              <span key={item._id} style={{ marginRight: 8 }}>
-                                {item.docName}
-                              </span>
-                            ),
-                          )}
-                        </div>
-                      ),
-                    },
-                  ]}
-                  key={idx}
+                  onPriceNegotiation={() => {
+                    // For home page, redirect to marketplace for price negotiation
+                    router.push(`/market-place`);
+                  }}
+                  onLOIUpload={() => {
+                    // For home page, redirect to marketplace for LOI upload
+                    router.push(`/market-place`);
+                  }}
+                  onRemoveNegotiation={() => {}}
+                  onRemoveLOI={() => {}}
+                  isSelected={isSelected}
+                  maxSelections={2}
+                  currentSelections={globalInspection.selectedCount}
+                  useGlobalInspection={true}
+                  sourceTab={buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy"}
+                  sourcePage="homepage"
+                  // Customize for home page usage
+                  showPriceNegotiation={false} // Hide price negotiation on home page
+                  showLOIUpload={false} // Hide LOI upload on home page
+                  className="mx-auto" // Center the cards
                 />
               );
             })

@@ -3,8 +3,7 @@
 "use client";
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
-import PropertyCard from "./cards/PropertyCard";
-import JVPropertyCard from "./cards/JVPropertyCard";
+import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import PriceNegotiationModal from "./modals/PriceNegotiationModal";
 import LOIUploadModal from "./modals/LOIUploadModal";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
@@ -62,50 +61,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
     return { index, property };
   });
 
-  const getPropertyCardData = (property: any) => {
-    if (tab === "jv") {
-      return [
-        { header: "Property Type", value: property.propertyType || "N/A" },
-        {
-          header: "Investment Amount",
-          value: `₦${Number(property.investmentAmount || property.price || 0).toLocaleString()}`,
-        },
-        { header: "Bedrooms", value: property.noOfBedrooms || "0" },
-        {
-          header: "Investment Type",
-          value: property.investmentType || "Joint Venture",
-        },
-        { header: "Expected ROI", value: property.expectedROI || "15-20%" },
-        {
-          header: "Location",
-          value: property.location
-            ? `${property.location.area || ""}, ${property.location.localGovernment || ""}, ${property.location.state || ""}`.replace(
-                /^,\s*|,\s*$/g,
-                "",
-              )
-            : "Location not specified",
-        },
-      ];
-    } else {
-      return [
-        { header: "Property Type", value: property.propertyType || "N/A" },
-        {
-          header: "Price",
-          value: `₦${Number(property.price || 0).toLocaleString()}`,
-        },
-        { header: "Bedrooms", value: property.noOfBedrooms || "0" },
-        {
-          header: "Location",
-          value: property.location
-            ? `${property.location.area || ""}, ${property.location.localGovernment || ""}, ${property.location.state || ""}`.replace(
-                /^,\s*|,\s*$/g,
-                "",
-              )
-            : "Location not specified",
-        },
-      ];
-    }
-  };
+
 
   const handlePriceNegotiation = (property: any) => {
     setPriceNegotiationModal({

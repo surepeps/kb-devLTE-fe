@@ -15,6 +15,7 @@ import { NotificationProvider } from '@/context/notification-context';
 import { ModalProvider } from '@/context/modalContext';
 import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
 import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
+import GlobalInspectionFAB from '@/components/common/GlobalInspectionFAB';
 
 const SHOW_COMING_SOON = false;
 
@@ -72,6 +73,7 @@ export default function RootLayout({
                           <HeaderFooterWrapper>
                             <Body>{children}</Body>
                           </HeaderFooterWrapper>
+                          <GlobalInspectionFAB />
                           <Toaster />
                         </body>
                       </html>

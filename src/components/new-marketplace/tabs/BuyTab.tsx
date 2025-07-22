@@ -17,7 +17,7 @@ const BuyTab = () => {
     addNegotiatedPrice,
     removeNegotiatedPrice,
     getNegotiatedPrice,
-    setIsAddForInspectionOpen,
+
   } = useNewMarketplace();
 
   // Modal states
@@ -29,7 +29,7 @@ const BuyTab = () => {
     property: null,
   });
 
-  // Fetch initial data when tab becomes active (only once)
+  // Fetch initial data when tab becomes active
   useEffect(() => {
     if (
       activeTab === "buy" &&
@@ -73,9 +73,7 @@ const BuyTab = () => {
     removeNegotiatedPrice("buy", propertyId);
   };
 
-  const openAddForInspection = () => {
-    setIsAddForInspectionOpen(true);
-  };
+
 
   return (
     <div className="space-y-6">
@@ -98,7 +96,6 @@ const BuyTab = () => {
         onRemoveNegotiation={handleRemoveNegotiation}
         selectedForInspection={buyTab.selectedForInspection}
         negotiatedPrices={buyTab.negotiatedPrices}
-        onOpenAddForInspection={openAddForInspection}
       />
 
       {/* Price Negotiation Modal */}

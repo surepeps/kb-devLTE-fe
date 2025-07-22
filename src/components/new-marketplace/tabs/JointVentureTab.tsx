@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import JointVentureSearch from "../search/JointVentureSearch";
-import JVPropertyGrid from "../JVPropertyGrid";
+import PropertyGrid from "../PropertyGrid";
 import LOIUploadModal from "../modals/LOIUploadModal";
 
 const JointVentureTab = () => {
@@ -17,7 +17,7 @@ const JointVentureTab = () => {
     addLOIDocument,
     removeLOIDocument,
     getLOIDocument,
-    setIsAddForInspectionOpen,
+
   } = useNewMarketplace();
 
   // Modal states
@@ -76,9 +76,7 @@ const JointVentureTab = () => {
     removeLOIDocument(propertyId);
   };
 
-  const openAddForInspection = () => {
-    setIsAddForInspectionOpen(true);
-  };
+
 
   return (
     <div className="space-y-6">
@@ -86,7 +84,7 @@ const JointVentureTab = () => {
       <JointVentureSearch />
 
       {/* Properties Grid */}
-      <JVPropertyGrid
+      <PropertyGrid
         tab="jv"
         properties={jvTab.properties}
         loading={jvTab.formikStatus === "pending"}
@@ -101,7 +99,6 @@ const JointVentureTab = () => {
         onRemoveLOI={handleRemoveLOI}
         selectedForInspection={jvTab.selectedForInspection}
         loiDocuments={jvTab.loiDocuments}
-        onOpenAddForInspection={openAddForInspection}
       />
 
       {/* LOI Upload Modal */}
