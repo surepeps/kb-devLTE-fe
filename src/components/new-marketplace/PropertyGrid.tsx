@@ -3,7 +3,7 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import PropertyCard from "./cards/PropertyCard";
+import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import Loading from "@/components/loading-component/loading";
