@@ -146,19 +146,23 @@ const SimpleMarketplace = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {properties.map((property) => (
-            <PropertyCard
+            <UniversalPropertyCard
               key={property._id}
-              tab={activeTab}
               property={property}
-              cardData={getPropertyCardData(property)}
+              cardData={createPropertyCardData(property, tabMapping[activeTab])}
               images={property.pictures || property.images || []}
               isPremium={property.isPremium || false}
               onPropertyClick={() => handlePropertyClick(property)}
               onInspectionToggle={() => {}}
               onPriceNegotiation={() => {}}
               onRemoveNegotiation={() => {}}
+              onLOIUpload={() => {}}
+              onRemoveLOI={() => {}}
               isSelected={false}
               negotiatedPrice={null}
+              loiDocument={null}
+              maxSelections={2}
+              currentSelections={0}
             />
           ))}
         </div>
