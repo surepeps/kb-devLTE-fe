@@ -961,9 +961,19 @@ export const NewMarketplaceProvider: React.FC<{
       tab: "buy" | "jv" | "rent" | "shortlet",
       searchParams?: SearchParams,
     ) => {
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current) {
+        console.log(`fetchTabData: Component unmounted, aborting for ${tab}`);
+        return;
+      }
 
-      console.log(`Fetching initial data for ${tab} tab`);
+      console.log(`=== fetchTabData: Starting initial data fetch for ${tab} tab ===`);
+      console.log(`fetchTabData: Current tab state:`, {
+        tab,
+        formikStatus: getCurrentTabState().formikStatus,
+        propertiesLength: getCurrentTabState().properties.length,
+        searchStatus: getCurrentTabState().searchStatus
+      });
+
       // Map tab to correct briefType for API
       const briefTypeMapping = {
         buy: "Outright Sales",
@@ -977,9 +987,10 @@ export const NewMarketplaceProvider: React.FC<{
         limit: itemsPerPage,
         ...searchParams,
       };
+      console.log(`fetchTabData: Using search params:`, defaultSearchParams);
       await searchTabProperties(tab, defaultSearchParams);
     },
-    [searchTabProperties, itemsPerPage],
+    [searchTabProperties, itemsPerPage, getCurrentTabState],
   );
 
   // Auto-fetch initial data on mount for active tab
