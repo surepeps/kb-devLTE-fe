@@ -119,10 +119,11 @@ export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string
 export const POST_REQUEST = async (
   url: string,
   data: unknown,
+  customHeaders?: HeadersInit,
   token?: string,
 ) => {
   try {
-    const headers: HeadersInit = {
+    const headers: HeadersInit = customHeaders || {
       "Content-Type": "application/json",
     };
 
@@ -130,10 +131,16 @@ export const POST_REQUEST = async (
       headers["Authorization"] = `Bearer ${token}`;
     }
 
+    // Handle FormData - don't set Content-Type for FormData as browser will set it with boundary
+    const isFormData = data instanceof FormData;
+    if (isFormData && headers["Content-Type"] === "multipart/form-data") {
+      delete headers["Content-Type"];
+    }
+
     const request = await fetch(url, {
       method: "POST",
       headers,
-      body: JSON.stringify(data),
+      body: isFormData ? data : JSON.stringify(data),
     });
 
     const response = await request.json();
