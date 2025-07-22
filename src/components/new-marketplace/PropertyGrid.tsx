@@ -139,8 +139,8 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     );
   }
 
-  // Empty state
-  if (searchStatus.couldNotFindAProperty || properties.length === 0) {
+  // Empty state - only show if search is complete and no properties found
+  if (searchStatus.status === "success" && (searchStatus.couldNotFindAProperty || properties.length === 0)) {
     return <EmptyState tab={tab} />;
   }
 
