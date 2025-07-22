@@ -310,15 +310,10 @@ export const GlobalPropertyActionsProvider: React.FC<{
           ];
         }
 
-        // Schedule storage save after state update
-        setTimeout(() => {
-          saveToStorage(selectedForInspection, negotiatedPrices, newDocuments);
-        }, 0);
-
         return newDocuments;
       });
     },
-    [selectedForInspection, negotiatedPrices, saveToStorage]
+    []
   );
 
   const removeLOIDocument = useCallback(
