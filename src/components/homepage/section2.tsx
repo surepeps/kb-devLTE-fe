@@ -269,9 +269,7 @@ const Section2 = () => {
               if (buttons.button4) propertyType = "Joint Venture";
 
               const cardData = createPropertyCardData(property, propertyType);
-              const isSelected = isSelectedForInspection(property._id);
-              const negotiatedPrice = getNegotiatedPrice(property._id);
-              const loiDocument = getLOIDocument(property._id);
+              const tab = buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy";
 
               // Property click handler
               const handlePropertyClick = () => {
@@ -284,46 +282,19 @@ const Section2 = () => {
                 }
               };
 
-              // Render appropriate card based on property type
-              if (buttons.button4) {
-                // Joint Venture Card
-                return (
-                  <GlobalJVPropertyCard
-                    key={idx}
-                    property={property}
-                    cardData={cardData}
-                    images={property?.pictures || []}
-                    isPremium={property?.isPremium || false}
-                    onPropertyClick={handlePropertyClick}
-                    onLOIUpload={() => handleLOIUpload(property)}
-                    onInspectionToggle={() => handleInspectionToggle(property)}
-                    onRemoveLOI={removeLOIDocument}
-                    isSelected={isSelected}
-                    loiDocument={loiDocument}
-                    className="mx-auto"
-                  />
-                );
-              } else {
-                // Standard Property Card (Buy/Rent)
-                const tab = buttons.button3 ? "rent" : "buy";
-                return (
-                  <GlobalPropertyCard
-                    key={idx}
-                    tab={tab}
-                    property={property}
-                    cardData={cardData}
-                    images={property?.pictures || []}
-                    isPremium={property?.isPremium || false}
-                    onPropertyClick={handlePropertyClick}
-                    onPriceNegotiation={() => handlePriceNegotiation(property)}
-                    onInspectionToggle={() => handleInspectionToggle(property)}
-                    onRemoveNegotiation={removeNegotiatedPrice}
-                    isSelected={isSelected}
-                    negotiatedPrice={negotiatedPrice}
-                    className="mx-auto"
-                  />
-                );
-              }
+              return (
+                <EnhancedGlobalPropertyCard
+                  key={idx}
+                  type={buttons.button4 ? "jv" : "standard"}
+                  tab={tab}
+                  property={property}
+                  cardData={cardData}
+                  images={property?.pictures || []}
+                  isPremium={property?.isPremium || false}
+                  onPropertyClick={handlePropertyClick}
+                  className="mx-auto"
+                />
+              );
             })
           ) : (
             <div className="w-[inherit] flex justify-center items-center">
