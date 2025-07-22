@@ -92,44 +92,31 @@ const Section2 = () => {
   };
 
   const handleSubmitInspection = (property: any) => {
-    if (buttons.button1) {
-      //Retrieve existing selectedBriefs from localStorage
-      const existingBriefs = JSON.parse(
-        localStorage.getItem("selectedBriefs") || "[]",
-      );
-
-      //check if the new property exists
-      const isPropertyExisting = existingBriefs.find(
-        (brief: any) => brief._id === property._id,
-      );
-
-      if (isPropertyExisting) {
-        //apply toast warning
-        toast.error("Property already selected");
-        return;
+    if (buttons.button1 || buttons.button2) {
+      // Use global inspection state
+      try {
+        const sourceTab = buttons.button1 ? "buy" : buttons.button2 ? "buy" : "rent";
+        globalInspection.addProperty(property, sourceTab, "homepage");
+        toast.success("Successfully added for inspection");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add property for inspection");
       }
-
-      //check if the properties selected has exceeded 3
-      if (existingBriefs.length >= 3) {
-        //apply toast warning
-        toast.error("Maximum properties selected");
-        return;
-      }
-
-      //Ensure it's an array and add the new property
-      const updatedBriefs = Array.isArray(existingBriefs)
-        ? [...existingBriefs, property]
-        : [property];
-
-      //Save back to localStorage
-      localStorage.setItem("selectedBriefs", JSON.stringify(updatedBriefs));
-      toast.success("Successfully added for inspection");
-    } else if (buttons.button2) {
-      //
-      toast.error("Feature not available yet");
     } else if (buttons.button3) {
-      //apply toast warning
-      toast.error("Feature not available yet");
+      // Rent/Lease functionality
+      try {
+        globalInspection.addProperty(property, "rent", "homepage");
+        toast.success("Successfully added for inspection");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add property for inspection");
+      }
+    } else if (buttons.button4) {
+      // Joint Venture functionality
+      try {
+        globalInspection.addProperty(property, "jv", "homepage");
+        toast.success("Successfully added for inspection");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to add property for inspection");
+      }
     }
   };
 
