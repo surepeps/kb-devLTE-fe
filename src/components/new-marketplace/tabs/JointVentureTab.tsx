@@ -17,7 +17,7 @@ const JointVentureTab = () => {
     addLOIDocument,
     removeLOIDocument,
     getLOIDocument,
-    setIsAddForInspectionOpen,
+
   } = useNewMarketplace();
 
   // Modal states
