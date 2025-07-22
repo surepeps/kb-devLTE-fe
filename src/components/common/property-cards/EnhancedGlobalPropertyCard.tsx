@@ -72,10 +72,16 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     });
   };
 
-  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number, strategy: string, reasoning: string) => {
+  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
     const originalPrice = property.price || property.rentalPrice || 0;
     addNegotiatedPrice(property._id, originalPrice, negotiatedPriceValue);
-    // Store additional metadata if needed
+
+    // Automatically add property to inspection when price is countered
+    if (!isSelectedForInspection(property._id)) {
+      const sourceTab = type === "jv" ? "jv" : tab;
+      toggleInspectionSelection(property, sourceTab, "auto-price-negotiation");
+    }
+
     setPriceNegotiationModal({ isOpen: false, property: null });
   };
 
@@ -90,9 +96,14 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     });
   };
 
-  const handleLOISubmit = (property: any, document: File, metadata: any) => {
-    addLOIDocument(property._id, document);
-    // Store additional metadata if needed
+  const handleLOISubmit = (property: any, document: File, documentUrl: string) => {
+    addLOIDocument(property._id, document, documentUrl);
+
+    // Automatically add property to inspection when LOI is submitted
+    if (!isSelectedForInspection(property._id)) {
+      toggleInspectionSelection(property, "jv", "auto-loi-submission");
+    }
+
     setLoiUploadModal({ isOpen: false, property: null });
   };
 
