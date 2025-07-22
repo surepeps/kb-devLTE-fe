@@ -379,8 +379,11 @@ const Section2 = () => {
                   onRemoveNegotiation={() => {}}
                   onRemoveLOI={() => {}}
                   isSelected={isSelected}
-                  maxSelections={3}
-                  currentSelections={existingBriefs.length}
+                  maxSelections={2}
+                  currentSelections={globalInspection.selectedCount}
+                  useGlobalInspection={true}
+                  sourceTab={buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy"}
+                  sourcePage="homepage"
                   // Customize for home page usage
                   showPriceNegotiation={false} // Hide price negotiation on home page
                   showLOIUpload={false} // Hide LOI upload on home page
