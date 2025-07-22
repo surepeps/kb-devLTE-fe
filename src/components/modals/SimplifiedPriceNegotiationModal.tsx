@@ -32,6 +32,20 @@ const SimplifiedPriceNegotiationModal: React.FC<SimplifiedPriceNegotiationModalP
   const [validationError, setValidationError] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   // Extract original price from property
   const originalPrice = property?.price || property?.rentalPrice || 0;
   const minimumPrice = Math.ceil(originalPrice * 0.8); // 80% minimum
