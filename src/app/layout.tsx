@@ -67,8 +67,6 @@ export default function RootLayout({
               <CreateBriefProvider>
                                 <SelectedBriefsProvider>
                   <NewMarketplaceProvider>
-                    <GlobalPropertyActionsProvider>
-                      <NegotiationContextWrapper>
                         <html lang="en">
                           <body
                             className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
@@ -76,12 +74,9 @@ export default function RootLayout({
                             <HeaderFooterWrapper>
                               <Body>{children}</Body>
                             </HeaderFooterWrapper>
-                            <GlobalPropertyActionsFAB />
                             <Toaster />
                           </body>
                         </html>
-                      </NegotiationContextWrapper>
-                    </GlobalPropertyActionsProvider>
                   </NewMarketplaceProvider>
                 </SelectedBriefsProvider>
               </CreateBriefProvider>
