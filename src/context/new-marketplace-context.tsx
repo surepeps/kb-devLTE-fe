@@ -1004,24 +1004,24 @@ export const NewMarketplaceProvider: React.FC<{
     [searchTabProperties, itemsPerPage, getCurrentTabState],
   );
 
-  // Temporarily disabled auto-fetch for debugging
-  // useEffect(() => {
-  //   const currentTabState = getCurrentTabState();
-  //   console.log(`=== Auto-fetch useEffect triggered ===`);
-  //   console.log(`Active tab: ${activeTab}`);
-  //   console.log(`Current tab state:`, {
-  //     formikStatus: currentTabState.formikStatus,
-  //     propertiesLength: currentTabState.properties.length,
-  //     searchStatus: currentTabState.searchStatus
-  //   });
+  // Auto-fetch initial data on mount for active tab
+  useEffect(() => {
+    const currentTabState = getCurrentTabState();
+    console.log(`=== Auto-fetch useEffect triggered ===`);
+    console.log(`Active tab: ${activeTab}`);
+    console.log(`Current tab state:`, {
+      formikStatus: currentTabState.formikStatus,
+      propertiesLength: currentTabState.properties.length,
+      searchStatus: currentTabState.searchStatus
+    });
 
-  //   if (currentTabState.formikStatus === "idle" && currentTabState.properties.length === 0) {
-  //     console.log(`=== TRIGGERING AUTO-FETCH for ${activeTab} tab ===`);
-  //     fetchTabData(activeTab);
-  //   } else {
-  //     console.log(`Auto-fetch skipped - conditions not met`);
-  //   }
-  // }, [activeTab, fetchTabData]);
+    if (currentTabState.formikStatus === "idle" && currentTabState.properties.length === 0) {
+      console.log(`=== TRIGGERING AUTO-FETCH for ${activeTab} tab ===`);
+      fetchTabData(activeTab);
+    } else {
+      console.log(`Auto-fetch skipped - conditions not met`);
+    }
+  }, [activeTab, fetchTabData]);
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {
