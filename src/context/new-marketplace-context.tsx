@@ -998,7 +998,7 @@ export const NewMarketplaceProvider: React.FC<{
       console.log(`Fetching data for ${activeTab}`);
       fetchTabData(activeTab);
     }
-  }, [activeTab]); // Only depend on activeTab to avoid loops
+  }, [activeTab, fetchTabData]); // Include fetchTabData but keep it minimal
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {
