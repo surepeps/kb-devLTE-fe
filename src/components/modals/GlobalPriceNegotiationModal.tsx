@@ -68,11 +68,10 @@ const GlobalPriceNegotiationModal: React.FC<GlobalPriceNegotiationModalProps> = 
     }).format(price);
   };
 
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
-      <motion.div
+      {isOpen && (
+        <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -161,6 +160,7 @@ const GlobalPriceNegotiationModal: React.FC<GlobalPriceNegotiationModalProps> = 
           </div>
         </motion.div>
       </motion.div>
+      )}
     </AnimatePresence>
   );
 };
