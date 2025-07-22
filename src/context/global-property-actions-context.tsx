@@ -96,11 +96,11 @@ export const GlobalPropertyActionsProvider: React.FC<{
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Sync state to localStorage whenever any state changes (but not on initial load)
-  useEffect(() => {
-    if (isInitialized) {
-      saveToStorage(selectedForInspection, negotiatedPrices, loiDocuments);
-    }
-  }, [selectedForInspection, negotiatedPrices, loiDocuments, isInitialized]);
+  // useEffect(() => {
+  //   if (isInitialized) {
+  //     saveToStorage(selectedForInspection, negotiatedPrices, loiDocuments);
+  //   }
+  // }, [selectedForInspection, negotiatedPrices, loiDocuments, isInitialized]);
 
   // Load state from localStorage on mount
   useEffect(() => {
