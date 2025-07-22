@@ -388,13 +388,11 @@ const Section2 = () => {
       </div>
 
       {/* Modals */}
-      {console.log("Modal states:", { showPriceModal, showLOIModal, selectedProperty: selectedProperty?._id })}
       {showPriceModal && selectedProperty && (
         <GlobalPriceNegotiationModal
           isOpen={showPriceModal}
           property={selectedProperty}
           onClose={() => {
-            console.log("Closing price modal");
             setShowPriceModal(false);
             setSelectedProperty(null);
           }}
@@ -408,7 +406,6 @@ const Section2 = () => {
           isOpen={showLOIModal}
           property={selectedProperty}
           onClose={() => {
-            console.log("Closing LOI modal");
             setShowLOIModal(false);
             setSelectedProperty(null);
           }}
