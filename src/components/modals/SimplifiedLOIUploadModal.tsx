@@ -47,6 +47,20 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const handleFileSelect = useCallback(async (file: File) => {
     // Validate file type (PDF, DOC, DOCX)
     const allowedTypes = [
