@@ -178,13 +178,11 @@ const Section2 = () => {
   };
 
   const handlePriceNegotiation = (property: any) => {
-    console.log("Price negotiation clicked for property:", property._id);
     setSelectedProperty(property);
     setShowPriceModal(true);
   };
 
   const handleLOIUpload = (property: any) => {
-    console.log("LOI upload clicked for property:", property._id);
     setSelectedProperty(property);
     setShowLOIModal(true);
   };
