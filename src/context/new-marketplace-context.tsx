@@ -982,18 +982,23 @@ export const NewMarketplaceProvider: React.FC<{
 
   // Auto-fetch initial data on mount for active tab
   useEffect(() => {
-    // Get current state based on active tab directly
+    console.log(`Auto-fetch effect for tab: ${activeTab}`);
+
+    // Always try to fetch for active tab if no data
     const currentState = activeTab === "buy" ? buyTab :
                         activeTab === "jv" ? jvTab :
                         activeTab === "rent" ? rentTab : shortletTab;
 
-    console.log(`Auto-fetch check: tab=${activeTab}, status=${currentState.formikStatus}, properties=${currentState.properties.length}`);
+    console.log(`Current state for ${activeTab}:`, {
+      status: currentState.formikStatus,
+      propertiesCount: currentState.properties.length
+    });
 
     if (currentState.formikStatus === "idle" && currentState.properties.length === 0) {
-      console.log(`Triggering fetchTabData for ${activeTab}`);
+      console.log(`Fetching data for ${activeTab}`);
       fetchTabData(activeTab);
     }
-  }, [activeTab, buyTab.formikStatus, buyTab.properties.length, jvTab.formikStatus, jvTab.properties.length, rentTab.formikStatus, rentTab.properties.length, shortletTab.formikStatus, shortletTab.properties.length, fetchTabData]);
+  }, [activeTab]); // Only depend on activeTab to avoid loops
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {
