@@ -350,65 +350,57 @@ const Section2 = () => {
             </div>
           ) : properties.length !== 0 ? (
             properties?.map((property: any, idx: number) => {
+              // Determine property type for card data generation
+              let propertyType = "Outright Sales";
+              if (buttons.button3) propertyType = "Rent";
+              if (buttons.button4) propertyType = "Joint Venture";
+
+              const cardData = createPropertyCardData(property, propertyType);
+
+              // Check if property is selected for inspection
+              const existingBriefs = JSON.parse(
+                localStorage.getItem("selectedBriefs") || "[]",
+              );
+              const isSelected = existingBriefs.some(
+                (brief: any) => brief._id === property._id,
+              );
+
               return (
-                <Card
-                  isAddForInspectionModalOpened={isAddForInspectionModalOpened}
-                  images={property?.pictures}
-                  isPremium={property?.isPremium}
-                  onCardPageClick={() => {
+                <UniversalPropertyCard
+                  key={idx}
+                  property={property}
+                  cardData={cardData}
+                  images={property?.pictures || []}
+                  isPremium={property?.isPremium || false}
+                  onPropertyClick={() => {
                     if (buttons.button1) {
-                      return router.push(`/property/${"Buy"}/${property?._id}`);
+                      router.push(`/property/buy/${property?._id}`);
                     } else if (buttons.button3) {
-                      return router.push(`property/${"Rent"}/${property?._id}`);
+                      router.push(`/property/rent/${property?._id}`);
+                    } else if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
                     }
                   }}
-                  onClick={() => {
+                  onInspectionToggle={() => {
                     handleSubmitInspection(property);
                   }}
-                  cardData={[
-                    {
-                      header: "Property Type",
-                      value: property?.propertyType || "N/A",
-                    },
-                    {
-                      header: "Price",
-                      value: `₦${Number(
-                        property?.price || 0,
-                      ).toLocaleString()}`,
-                    },
-                    {
-                      header: "Bedrooms",
-                      value: property?.additionalFeatures.noOfBedrooms || "N/A",
-                    },
-                    {
-                      header: "Location",
-                      value: `${property?.location?.state || "N/A"}, ${
-                        property?.location?.localGovernment || "N/A"
-                      }`,
-                    },
-                    // {
-                    //   header: 'Documents',
-                    //   value: `<div>${property?.docOnProperty?.map(
-                    //     (item: { _id: string; docName: string }) =>
-                    //       `<span key={${item._id}>${item.docName}</span>`
-                    //   )}</div>`,
-                    // },
-                    {
-                      header: "Documents",
-                      value: (
-                        <div>
-                          {property?.docOnProperty?.map(
-                            (item: { _id: string; docName: string }) => (
-                              <span key={item._id} style={{ marginRight: 8 }}>
-                                {item.docName}
-                              </span>
-                            ),
-                          )}
-                        </div>
-                      ),
-                    },
-                  ]}
-                  key={idx}
+                  onPriceNegotiation={() => {
+                    // For home page, redirect to marketplace for price negotiation
+                    router.push(`/market-place`);
+                  }}
+                  onLOIUpload={() => {
+                    // For home page, redirect to marketplace for LOI upload
+                    router.push(`/market-place`);
+                  }}
+                  onRemoveNegotiation={() => {}}
+                  onRemoveLOI={() => {}}
+                  isSelected={isSelected}
+                  maxSelections={3}
+                  currentSelections={existingBriefs.length}
+                  // Customize for home page usage
+                  showPriceNegotiation={false} // Hide price negotiation on home page
+                  showLOIUpload={false} // Hide LOI upload on home page
+                  className="mx-auto" // Center the cards
                 />
               );
             })
