@@ -17,8 +17,6 @@ const NewMarketPlace = () => {
   const {
     activeTab,
     setActiveTab,
-    isAddForInspectionOpen,
-    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const [hasError, setHasError] = useState(false);
