@@ -750,7 +750,6 @@ export const NewMarketplaceProvider: React.FC<{
         }, 30000);
 
         const response = await GET_REQUEST(apiUrl);
-        console.log(`${tab} tab API response:`, response);
 
         clearTimeout(timeoutId);
 
@@ -760,7 +759,6 @@ export const NewMarketplaceProvider: React.FC<{
         if (response?.error || response?.success === false) {
           const errorMessage =
             response?.message || response?.error || "Failed to fetch data";
-          console.error(`${tab} tab API Error:`, errorMessage);
 
           setTabError(tab, errorMessage);
           setTabStatus(tab, "failed");
@@ -775,13 +773,7 @@ export const NewMarketplaceProvider: React.FC<{
         const responseData = response?.data || [];
         const pagination = response?.pagination || {};
 
-        console.log(`${tab} tab response data:`, responseData);
-        console.log(`${tab} tab pagination:`, pagination);
-        console.log(`=== UPDATING ${tab} TAB STATE ===`);
-
         // Update all states at once to avoid multiple re-renders
-        console.log(`Setting ${responseData.length} properties for ${tab} tab`);
-
         updateTabState(tab, (state) => ({
           ...state,
           properties: responseData,
@@ -795,10 +787,6 @@ export const NewMarketplaceProvider: React.FC<{
             couldNotFindAProperty: responseData.length === 0,
           },
         }));
-
-        console.log(
-          `=== COMPLETED: Successfully loaded ${responseData.length} properties for ${tab} tab ===`,
-        );
       } catch (err: any) {
         console.error(
           `${tab} tab search error (attempt ${retryCount + 1}):`,
