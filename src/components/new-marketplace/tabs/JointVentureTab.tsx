@@ -86,7 +86,7 @@ const JointVentureTab = () => {
       <JointVentureSearch />
 
       {/* Properties Grid */}
-      <JVPropertyGrid
+      <PropertyGrid
         tab="jv"
         properties={jvTab.properties}
         loading={jvTab.formikStatus === "pending"}
