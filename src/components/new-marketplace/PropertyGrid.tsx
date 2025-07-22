@@ -3,7 +3,7 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import Loading from "@/components/loading-component/loading";
@@ -25,14 +25,7 @@ interface PropertyGridProps {
   totalPages: number;
   totalItems: number;
   onPropertyClick: (property: any) => void;
-  onInspectionToggle: (property: any) => void;
-  onPriceNegotiation?: (property: any) => void;
-  onRemoveNegotiation?: (propertyId: string) => void;
-  onLOIUpload?: (property: any) => void;
-  onRemoveLOI?: (propertyId: string) => void;
-  selectedForInspection: any[];
-  negotiatedPrices?: any[];
-  loiDocuments?: any[];
+  // Note: Inspection and action functionalities removed as per requirements
 
 }
 
@@ -46,14 +39,6 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   totalPages,
   totalItems,
   onPropertyClick,
-  onInspectionToggle,
-  onPriceNegotiation = () => {},
-  onRemoveNegotiation = () => {},
-  onLOIUpload = () => {},
-  onRemoveLOI = () => {},
-  selectedForInspection,
-  negotiatedPrices = [],
-  loiDocuments = [],
 }) => {
   const isMobile = IsMobile();
   const { setTabPage } = useNewMarketplace();
@@ -101,9 +86,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     return <EmptyState tab={tab} />;
   }
 
-  // Selected properties indicator
-  const selectedCount = selectedForInspection.length;
-  const hasSelectedProperties = selectedCount > 0;
+  // Note: Selected properties functionality removed as per requirements
 
   // Check if we're in demo mode (properties have demo IDs)
   const isDemoMode =
@@ -131,15 +114,6 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
           <AnimatePresence>
             {properties.map((property, index) => {
               const cardData = createPropertyCardData(property, tab === "jv" ? "Joint Venture" : undefined);
-              const isSelected = selectedForInspection.some(
-                (item) => item.propertyId === property._id,
-              );
-              const negotiatedPrice = negotiatedPrices.find(
-                (price) => price.propertyId === property._id,
-              );
-              const loiDocument = loiDocuments.find(
-                (doc) => doc.propertyId === property._id,
-              );
 
               return (
                 <motion.div
@@ -150,26 +124,24 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   className="w-full"
                 >
-                  <UniversalPropertyCard
-                    property={property}
-                    cardData={cardData}
-                    images={property.pictures || property.images || []}
-                    isPremium={property.isPremium || false}
-                    onPropertyClick={() => onPropertyClick(property)}
-                    onInspectionToggle={() => onInspectionToggle(property)}
-                    onPriceNegotiation={() => onPriceNegotiation?.(property)}
-                    onRemoveNegotiation={onRemoveNegotiation}
-                    onLOIUpload={() => onLOIUpload?.(property)}
-                    onRemoveLOI={onRemoveLOI}
-                    isSelected={isSelected}
-                    negotiatedPrice={negotiatedPrice}
-                    loiDocument={loiDocument}
-                    maxSelections={2}
-                    currentSelections={selectedForInspection.length}
-                    useGlobalInspection={true}
-                    sourceTab={tab}
-                    sourcePage="marketplace"
-                  />
+                  {tab === "jv" ? (
+                    <GlobalJVPropertyCard
+                      property={property}
+                      cardData={cardData}
+                      images={property.pictures || property.images || []}
+                      isPremium={property.isPremium || false}
+                      onPropertyClick={() => onPropertyClick(property)}
+                    />
+                  ) : (
+                    <GlobalPropertyCard
+                      tab={tab}
+                      property={property}
+                      cardData={cardData}
+                      images={property.pictures || property.images || []}
+                      isPremium={property.isPremium || false}
+                      onPropertyClick={() => onPropertyClick(property)}
+                    />
+                  )}
                 </motion.div>
               );
             })}
