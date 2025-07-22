@@ -1,7 +1,8 @@
 /** @format */
 
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 export interface InspectionProperty {
   propertyId: string;
@@ -22,20 +23,25 @@ export interface LOIDocument {
   documentUrl?: string;
 }
 
-const STORAGE_KEY = "globalInspectionState";
-
-interface GlobalInspectionState {
-  selectedProperties: InspectionProperty[];
-  negotiatedPrices: NegotiatedPrice[];
-  loiDocuments: LOIDocument[];
-}
-
 export const useGlobalInspectionState = () => {
-  const [state, setState] = useState<GlobalInspectionState>({
-    selectedProperties: [],
-    negotiatedPrices: [],
-    loiDocuments: [],
-  });
+  const {
+    selectedForInspection,
+    negotiatedPrices,
+    loiDocuments,
+    toggleInspectionSelection,
+    removeFromInspection,
+    clearInspectionSelection,
+    isSelectedForInspection,
+    canSelectMoreForInspection,
+    addNegotiatedPrice,
+    removeNegotiatedPrice,
+    getNegotiatedPrice,
+    addLOIDocument,
+    removeLOIDocument,
+    getLOIDocument,
+    hasSelectedProperties,
+    selectedCount,
+  } = useGlobalPropertyActions();
 
   // Load state from localStorage on mount
   useEffect(() => {
