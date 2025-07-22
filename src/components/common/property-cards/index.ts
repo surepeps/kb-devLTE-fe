@@ -14,5 +14,8 @@ export type { UniversalPropertyCardProps } from './UniversalPropertyCard';
 export { default as GlobalPropertyCard } from './GlobalPropertyCard';
 export { default as GlobalJVPropertyCard } from './GlobalJVPropertyCard';
 
+// Export enhanced global component (with button functionality and modals)
+export { default as EnhancedGlobalPropertyCard } from './EnhancedGlobalPropertyCard';
+
 // Re-export for backward compatibility
 export { default as PropertyCard } from './UniversalPropertyCard';
