@@ -7,39 +7,6 @@ import SimpleMarketplace from "./SimpleMarketplace";
 
 const NewMarketPlace = () => {
   const router = useRouter();
-  const {
-    activeTab,
-    setActiveTab,
-    isAddForInspectionOpen,
-    setIsAddForInspectionOpen,
-  } = useNewMarketplace();
-
-  const [hasError, setHasError] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-
-  // Track initial loading state
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false);
-    }, 1000); // Give time for components to initialize
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "buy":
-        return <BuyTab />;
-      case "jv":
-        return <JointVentureTab />;
-      case "rent":
-        return <RentTab />;
-      case "shortlet":
-        return <ShortletTab />;
-      default:
-        return <BuyTab />;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#EEF1F1] relative">
