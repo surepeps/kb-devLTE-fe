@@ -150,6 +150,62 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
             })}
           </div>
 
+          {/* Action Buttons */}
+          {(onLOIUpload || onInspectionToggle) && (
+            <div className="flex flex-col gap-2 pt-2">
+              {/* Submit LOI Button */}
+              {onLOIUpload && (
+                hasLOIDocument ? (
+                  <div className="min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
+                    <span className="text-xs">LOI Document Uploaded</span>
+                    {onRemoveLOI && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemoveLOI(property._id);
+                        }}
+                        className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
+                        title="Clear LOI document"
+                      >
+                        <X size={14} className="text-white" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <Button
+                    value="Submit LOI"
+                    type="button"
+                    onClick={onLOIUpload}
+                    className="min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors"
+                  />
+                )
+              )}
+
+              {/* Select for Inspection Button */}
+              {onInspectionToggle && (
+                <button
+                  onClick={onInspectionToggle}
+                  disabled={false}
+                  className={`min-h-[40px] py-[8px] px-[16px] ${
+                    isSelected
+                      ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
+                      : "bg-[#8DDB90] hover:bg-[#76c77a]"
+                  } text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
+                  type="button"
+                >
+                  {isSelected ? (
+                    <>
+                      <span>Selected</span>
+                      <X size={14} className="text-white" />
+                    </>
+                  ) : (
+                    "Select for Inspection"
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Location and View Details */}
           <div className="flex justify-between items-center mt-auto">
             <div className="flex gap-[5px] flex-1 min-w-0">
@@ -186,61 +242,7 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        {(onLOIUpload || onInspectionToggle) && (
-          <div className="flex flex-col gap-2 mt-auto pt-4">
-            {/* Submit LOI Button */}
-            {onLOIUpload && (
-              hasLOIDocument ? (
-                <div className="min-h-[50px] py-[12px] px-[24px] bg-[#FF9800] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between rounded">
-                  <span className="text-xs">LOI Document Uploaded</span>
-                  {onRemoveLOI && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemoveLOI(property._id);
-                      }}
-                      className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
-                      title="Clear LOI document"
-                    >
-                      <X size={16} className="text-white" />
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <Button
-                  value="Submit LOI"
-                  type="button"
-                  onClick={onLOIUpload}
-                  className="min-h-[50px] py-[12px] px-[24px] bg-[#FF9800] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#F57C00] transition-colors"
-                />
-              )
-            )}
 
-            {/* Select for Inspection Button */}
-            {onInspectionToggle && (
-              <button
-                onClick={onInspectionToggle}
-                disabled={false}
-                className={`min-h-[50px] py-[12px] px-[24px] ${
-                  isSelected
-                    ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
-                    : "bg-[#8DDB90] hover:bg-[#76c77a]"
-                } text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
-                type="button"
-              >
-                {isSelected ? (
-                  <>
-                    <span>Selected</span>
-                    <X size={16} className="text-white" />
-                  </>
-                ) : (
-                  "Select for Inspection"
-                )}
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </motion.div>
   );
