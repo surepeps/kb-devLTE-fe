@@ -15,7 +15,6 @@ const JointVentureSearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
-    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
@@ -212,8 +211,8 @@ const JointVentureSearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={jvTab.formikStatus === "pending"}
-          selectedCount={jvTab.selectedForInspection.length}
-          onOpenInspection={() => setIsAddForInspectionOpen(true)}
+          selectedCount={0}
+          onOpenInspection={() => {}}
         />
       </div>
 
