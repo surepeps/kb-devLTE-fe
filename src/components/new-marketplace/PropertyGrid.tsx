@@ -54,7 +54,6 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   selectedForInspection,
   negotiatedPrices = [],
   loiDocuments = [],
-  onOpenAddForInspection,
 }) => {
   const isMobile = IsMobile();
   const { setTabPage } = useNewMarketplace();
