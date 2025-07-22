@@ -222,8 +222,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
               )}
 
               {/* Select for Inspection Button */}
-              {onInspectionToggle && (
-                <button
+              <button
                   onClick={onInspectionToggle}
                   disabled={false}
                   className={`min-h-[40px] py-[8px] px-[16px] ${
@@ -242,7 +241,6 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                     "Select for Inspection"
                   )}
                 </button>
-              )}
             </div>
           </div>
         </div>
