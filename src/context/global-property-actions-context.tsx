@@ -92,27 +92,6 @@ export const GlobalPropertyActionsProvider: React.FC<{
   );
   const [loiDocuments, setLoiDocuments] = useState<LOIDocument[]>([]);
 
-  // Save state to localStorage (memoized to prevent recreation)
-  const saveToStorage = useCallback(
-    (
-      inspections: InspectionProperty[],
-      prices: NegotiatedPrice[],
-      documents: LOIDocument[]
-    ) => {
-      try {
-        const state: StorageState = {
-          selectedForInspection: inspections,
-          negotiatedPrices: prices,
-          loiDocuments: documents,
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (error) {
-        console.error("Failed to save global property actions state:", error);
-      }
-    },
-    []
-  );
-
   // Load state from localStorage on mount only
   useEffect(() => {
     try {
@@ -143,6 +122,25 @@ export const GlobalPropertyActionsProvider: React.FC<{
     }
   }, []);
 
+  // Save to localStorage function
+  const saveToStorage = useCallback(() => {
+    try {
+      const state: StorageState = {
+        selectedForInspection,
+        negotiatedPrices,
+        loiDocuments,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error("Failed to save global property actions state:", error);
+    }
+  }, [selectedForInspection, negotiatedPrices, loiDocuments]);
+
+  // Save to storage whenever state changes
+  useEffect(() => {
+    saveToStorage();
+  }, [saveToStorage]);
+
   // Inspection selection methods
   const toggleInspectionSelection = useCallback(
     (
@@ -157,83 +155,43 @@ export const GlobalPropertyActionsProvider: React.FC<{
           (item) => item.propertyId === propertyId
         );
 
-        let newSelection: InspectionProperty[];
-        let toastMessage = "";
-        let toastType: "success" | "error" = "success";
-
         if (isAlreadySelected) {
-          newSelection = current.filter(
-            (item) => item.propertyId !== propertyId
-          );
-          toastMessage = "Property removed from inspection";
+          setTimeout(() => toast.success("Property removed from inspection"), 0);
+          return current.filter((item) => item.propertyId !== propertyId);
         } else {
           if (current.length >= 2) {
-            toastMessage = "Maximum of 2 properties can be selected for inspection";
-            toastType = "error";
-            // Show toast and return current state without changes
-            setTimeout(() => toast.error(toastMessage), 0);
+            setTimeout(() => toast.error("Maximum of 2 properties can be selected for inspection"), 0);
             return current;
           }
 
-          newSelection = [
+          setTimeout(() => toast.success("Property selected for inspection"), 0);
+          return [
             ...current,
             { propertyId, property, sourceTab, sourcePage },
           ];
-          toastMessage = "Property selected for inspection";
         }
-
-        // Schedule toast notification to run after state update
-        setTimeout(() => {
-          if (toastType === "success") {
-            toast.success(toastMessage);
-          }
-        }, 0);
-
-        // Save to storage manually since we removed the auto-sync useEffect
-        setTimeout(() => {
-          saveToStorage(newSelection, negotiatedPrices, loiDocuments);
-        }, 0);
-
-        return newSelection;
       });
     },
-    [negotiatedPrices, loiDocuments, saveToStorage]
+    []
   );
 
-  const removeFromInspection = useCallback(
-    (propertyId: string) => {
-      setSelectedForInspection((current) => {
-        const newSelection = current.filter(
-          (item) => item.propertyId !== propertyId
-        );
-
-        // Save to storage
-        setTimeout(() => {
-          saveToStorage(newSelection, negotiatedPrices, loiDocuments);
-        }, 0);
-
-        return newSelection;
-      });
-
-      // Also remove associated negotiated prices and LOI documents
-      setNegotiatedPrices((current) => current.filter(
-        (price) => price.propertyId !== propertyId
-      ));
-      setLoiDocuments((current) => current.filter(
-        (doc) => doc.propertyId !== propertyId
-      ));
-    },
-    [negotiatedPrices, loiDocuments, saveToStorage]
-  );
+  const removeFromInspection = useCallback((propertyId: string) => {
+    setSelectedForInspection((current) =>
+      current.filter((item) => item.propertyId !== propertyId)
+    );
+    setNegotiatedPrices((current) =>
+      current.filter((price) => price.propertyId !== propertyId)
+    );
+    setLoiDocuments((current) =>
+      current.filter((doc) => doc.propertyId !== propertyId)
+    );
+  }, []);
 
   const clearInspectionSelection = useCallback(() => {
     setSelectedForInspection([]);
     setNegotiatedPrices([]);
     setLoiDocuments([]);
-    setTimeout(() => {
-      saveToStorage([], [], []);
-    }, 0);
-  }, [saveToStorage]);
+  }, []);
 
   const isSelectedForInspection = useCallback(
     (propertyId: string): boolean => {
@@ -256,47 +214,30 @@ export const GlobalPropertyActionsProvider: React.FC<{
           (p) => p.propertyId === propertyId
         );
 
-        let newPrices: NegotiatedPrice[];
         if (existingIndex >= 0) {
-          newPrices = [...current];
+          const newPrices = [...current];
           newPrices[existingIndex] = {
             propertyId,
             originalPrice,
             negotiatedPrice,
           };
+          return newPrices;
         } else {
-          newPrices = [
+          return [
             ...current,
             { propertyId, originalPrice, negotiatedPrice },
           ];
         }
-
-        // Save to storage manually
-        setTimeout(() => {
-          saveToStorage(selectedForInspection, newPrices, loiDocuments);
-        }, 0);
-
-        return newPrices;
       });
     },
-    [selectedForInspection, loiDocuments, saveToStorage]
+    []
   );
 
-  const removeNegotiatedPrice = useCallback(
-    (propertyId: string) => {
-      setNegotiatedPrices((current) => {
-        const newPrices = current.filter((p) => p.propertyId !== propertyId);
-
-        // Save to storage manually
-        setTimeout(() => {
-          saveToStorage(selectedForInspection, newPrices, loiDocuments);
-        }, 0);
-
-        return newPrices;
-      });
-    },
-    [selectedForInspection, loiDocuments, saveToStorage]
-  );
+  const removeNegotiatedPrice = useCallback((propertyId: string) => {
+    setNegotiatedPrices((current) =>
+      current.filter((p) => p.propertyId !== propertyId)
+    );
+  }, []);
 
   const getNegotiatedPrice = useCallback(
     (propertyId: string): NegotiatedPrice | null => {
@@ -315,45 +256,26 @@ export const GlobalPropertyActionsProvider: React.FC<{
           (doc) => doc.propertyId === propertyId
         );
 
-        let newDocuments: LOIDocument[];
         if (existingIndex >= 0) {
-          newDocuments = [...current];
+          const newDocuments = [...current];
           newDocuments[existingIndex] = { propertyId, document, documentUrl };
+          return newDocuments;
         } else {
-          newDocuments = [
+          return [
             ...current,
             { propertyId, document, documentUrl },
           ];
         }
-
-        // Save to storage manually
-        setTimeout(() => {
-          saveToStorage(selectedForInspection, negotiatedPrices, newDocuments);
-        }, 0);
-
-        return newDocuments;
       });
     },
-    [selectedForInspection, negotiatedPrices, saveToStorage]
+    []
   );
 
-  const removeLOIDocument = useCallback(
-    (propertyId: string) => {
-      setLoiDocuments((current) => {
-        const newDocuments = current.filter(
-          (doc) => doc.propertyId !== propertyId
-        );
-
-        // Save to storage manually
-        setTimeout(() => {
-          saveToStorage(selectedForInspection, negotiatedPrices, newDocuments);
-        }, 0);
-
-        return newDocuments;
-      });
-    },
-    [selectedForInspection, negotiatedPrices, saveToStorage]
-  );
+  const removeLOIDocument = useCallback((propertyId: string) => {
+    setLoiDocuments((current) =>
+      current.filter((doc) => doc.propertyId !== propertyId)
+    );
+  }, []);
 
   const getLOIDocument = useCallback(
     (propertyId: string): LOIDocument | null => {
