@@ -46,6 +46,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
   className = "",
 }) => {
   const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -150,10 +151,58 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
             })}
           </div>
 
-          {/* Action Buttons */}
-          {(onPriceNegotiation || onInspectionToggle) && (
-            
-          )}
+          {/* Action Buttons - Always show */}
+          <div className="flex flex-col gap-2 pt-2">
+            {/* Price Negotiation Button */}
+            {hasNegotiatedPrice ? (
+              <div className="min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
+                <span className="text-xs">
+                  New Offer: ₦
+                  {Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}
+                </span>
+                {onRemoveNegotiation && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveNegotiation(property._id);
+                    }}
+                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
+                    title="Clear negotiated price"
+                  >
+                    <X size={14} className="text-white" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <Button
+                value="Price Negotiation"
+                type="button"
+                onClick={onPriceNegotiation || (() => {})}
+                className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+              />
+            )}
+
+            {/* Select for Inspection Button */}
+            <button
+              onClick={onInspectionToggle || (() => {})}
+              disabled={false}
+              className={`min-h-[40px] py-[8px] px-[16px] ${
+                isSelected
+                  ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
+                  : "bg-[#8DDB90] hover:bg-[#76c77a]"
+              } text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
+              type="button"
+            >
+              {isSelected ? (
+                <>
+                  <span>Selected</span>
+                  <X size={14} className="text-white" />
+                </>
+              ) : (
+                "Select for Inspection"
+              )}
+            </button>
+          </div>
 
           {/* Location and View Details */}
           <div className="flex justify-between items-center mt-auto">
@@ -179,73 +228,15 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
               })}
             </div>
 
-            {onPropertyClick && (
-              <button
-                type="button"
-                onClick={onPropertyClick}
-                className="text-xs font-semibold text-[#0B423D] underline flex-shrink-0 ml-2"
-              >
-                View Details
-              </button>
-            )}
-
-            <div className="flex flex-col gap-2 pt-2">
-              {/* Price Negotiation Button */}
-              {onPriceNegotiation && (
-                hasNegotiatedPrice ? (
-                  <div className="min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
-                    <span className="text-xs">
-                      New Offer: ₦
-                      {Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}
-                    </span>
-                    {onRemoveNegotiation && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRemoveNegotiation(property._id);
-                        }}
-                        className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
-                        title="Clear negotiated price"
-                      >
-                        <X size={14} className="text-white" />
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <Button
-                    value="Price Negotiation"
-                    type="button"
-                    onClick={onPriceNegotiation}
-                    className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
-                  />
-                )
-              )}
-
-              {/* Select for Inspection Button */}
-              <button
-                  onClick={onInspectionToggle}
-                  disabled={false}
-                  className={`min-h-[40px] py-[8px] px-[16px] ${
-                    isSelected
-                      ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
-                      : "bg-[#8DDB90] hover:bg-[#76c77a]"
-                  } text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
-                  type="button"
-                >
-                  {isSelected ? (
-                    <>
-                      <span>Selected</span>
-                      <X size={14} className="text-white" />
-                    </>
-                  ) : (
-                    "Select for Inspection"
-                  )}
-                </button>
-            </div>
+            <button
+              type="button"
+              onClick={onPropertyClick || (() => {})}
+              className="text-xs font-semibold text-[#0B423D] underline flex-shrink-0 ml-2"
+            >
+              View Details
+            </button>
           </div>
         </div>
-
-
       </div>
     </motion.div>
   );
