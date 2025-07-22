@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { URLS } from '@/utils/URLS';
 import { GET_REQUEST } from '@/utils/requests';
-import PropertyCard from './cards/PropertyCard';
+import { UniversalPropertyCard, createPropertyCardData } from '@/components/common/property-cards';
 
 interface Property {
   _id: string;
