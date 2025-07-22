@@ -89,13 +89,20 @@ export const GET_REQUEST = async (
   }
 };
 
-export const DELETE_REQUEST = async (url: string, token?: string) => {
+export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string) => {
   try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const request = await fetch(url, {
-      method: "DELETE", // Added the DELETE method
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      method: "DELETE",
+      headers,
+      body: data ? JSON.stringify(data) : undefined,
     });
     const response = await request.json();
     return response;
