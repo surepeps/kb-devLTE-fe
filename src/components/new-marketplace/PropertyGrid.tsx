@@ -111,6 +111,14 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     );
   };
 
+  // Debug current state
+  console.log(`PropertyGrid [${tab}] state:`, {
+    loading,
+    searchStatus,
+    propertiesLength: properties.length,
+    error
+  });
+
   // Loading state - check both loading prop and search status
   if (loading || searchStatus.status === "pending") {
     return (
