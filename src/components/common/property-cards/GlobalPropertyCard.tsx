@@ -9,6 +9,8 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import markerSVG from "@/svgs/marker.svg";
 import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "@/components/new-marketplace/ImageSwiper";
+import Button from "@/components/general-components/button";
+import { X } from "lucide-react";
 
 interface GlobalPropertyCardProps {
   tab: "buy" | "rent" | "shortlet";
@@ -17,6 +19,15 @@ interface GlobalPropertyCardProps {
   images: any[];
   isPremium: boolean;
   onPropertyClick?: () => void;
+  onPriceNegotiation?: () => void;
+  onInspectionToggle?: () => void;
+  onRemoveNegotiation?: (propertyId: string) => void;
+  isSelected?: boolean;
+  negotiatedPrice?: {
+    propertyId: string;
+    originalPrice: number;
+    negotiatedPrice: number;
+  } | null;
   className?: string;
 }
 
@@ -27,8 +38,14 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
   images,
   isPremium,
   onPropertyClick,
+  onPriceNegotiation,
+  onInspectionToggle,
+  onRemoveNegotiation,
+  isSelected = false,
+  negotiatedPrice,
   className = "",
 }) => {
+  const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -36,7 +53,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
       transition={{ delay: 0.2, duration: 0.5 }}
       exit={{ opacity: 0, y: 20 }}
       viewport={{ once: true }}
-      className={`w-full max-w-[320px] sm:max-w-[280px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[300px] sm:min-h-[280px] rounded-md shrink-0 bg-white border-[1px] p-3 gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col mx-auto ${className}`}
+      className={`w-full max-w-[320px] sm:max-w-[280px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[420px] sm:min-h-[400px] rounded-md shrink-0 bg-white border-[1px] p-3 gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col mx-auto ${className}`}
     >
       <div className="flex flex-col gap-[5px] w-full flex-grow">
         {/* Image Section */}
@@ -76,9 +93,37 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
             {cardData.map((item, idx) => {
               if (item.header === "Price") {
                 return (
-                  <h2 key={idx} className="text-lg font-semibold text-[#000000]">
-                    {item.value}
-                  </h2>
+                  <div key={idx} className="flex items-center gap-2">
+                    {hasNegotiatedPrice ? (
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-md font-semibold text-[#8DDB90]">
+                          ₦
+                          {Number(
+                            negotiatedPrice!.negotiatedPrice,
+                          ).toLocaleString()}
+                        </h2>
+                        {onRemoveNegotiation && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRemoveNegotiation(property._id);
+                            }}
+                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                            title="Clear negotiated price"
+                          >
+                            <X size={16} className="text-[#5A5D63]" />
+                          </button>
+                        )}
+                        <span className="text-sm text-[#5A5D63] line-through">
+                          {item.value}
+                        </span>
+                      </div>
+                    ) : (
+                      <h2 className="text-lg font-semibold text-[#000000]">
+                        {item.value}
+                      </h2>
+                    )}
+                  </div>
                 );
               }
             })}
@@ -140,6 +185,65 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
             )}
           </div>
         </div>
+
+        {/* Action Buttons */}
+        {(onPriceNegotiation || onInspectionToggle) && (
+          <div className="flex flex-col gap-2 mt-auto pt-4">
+            {/* Price Negotiation Button */}
+            {onPriceNegotiation && (
+              hasNegotiatedPrice ? (
+                <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between rounded">
+                  <span className="text-xs">
+                    New Offer: ₦
+                    {Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}
+                  </span>
+                  {onRemoveNegotiation && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveNegotiation(property._id);
+                      }}
+                      className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
+                      title="Clear negotiated price"
+                    >
+                      <X size={16} className="text-white" />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <Button
+                  value="Price Negotiation"
+                  type="button"
+                  onClick={onPriceNegotiation}
+                  className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#1565C0] transition-colors"
+                />
+              )
+            )}
+
+            {/* Select for Inspection Button */}
+            {onInspectionToggle && (
+              <button
+                onClick={onInspectionToggle}
+                disabled={false}
+                className={`min-h-[50px] py-[12px] px-[24px] ${
+                  isSelected
+                    ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
+                    : "bg-[#8DDB90] hover:bg-[#76c77a]"
+                } text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
+                type="button"
+              >
+                {isSelected ? (
+                  <>
+                    <span>Selected</span>
+                    <X size={16} className="text-white" />
+                  </>
+                ) : (
+                  "Select for Inspection"
+                )}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );
