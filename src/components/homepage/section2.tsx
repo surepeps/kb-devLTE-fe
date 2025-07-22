@@ -41,6 +41,7 @@ const Section2 = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const globalInspection = useGlobalInspectionState();
 
   const fetchAllRentProperties = async () => {
     setIsLoading(true);
