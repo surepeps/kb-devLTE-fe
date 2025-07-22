@@ -92,6 +92,11 @@ export const GlobalPropertyActionsProvider: React.FC<{
   );
   const [loiDocuments, setLoiDocuments] = useState<LOIDocument[]>([]);
 
+  // Sync state to localStorage whenever any state changes
+  useEffect(() => {
+    saveToStorage(selectedForInspection, negotiatedPrices, loiDocuments);
+  }, [selectedForInspection, negotiatedPrices, loiDocuments, saveToStorage]);
+
   // Load state from localStorage on mount
   useEffect(() => {
     try {
