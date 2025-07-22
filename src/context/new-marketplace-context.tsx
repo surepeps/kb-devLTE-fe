@@ -764,19 +764,29 @@ export const NewMarketplaceProvider: React.FC<{
         const pagination = response?.pagination || {};
 
         // Update all states at once to avoid multiple re-renders
-        updateTabState(tab, (state) => ({
-          ...state,
-          properties: responseData,
-          totalPages: pagination.totalPages || 1,
-          totalItems: pagination.total || responseData.length,
-          currentPage: pagination.currentPage || searchParams.page || state.currentPage,
-          formikStatus: "success",
-          errMessage: "",
-          searchStatus: {
-            status: "success",
-            couldNotFindAProperty: responseData.length === 0,
-          },
-        }));
+        console.log(`Updating ${tab} tab state with ${responseData.length} properties`);
+        updateTabState(tab, (state) => {
+          const newState = {
+            ...state,
+            properties: responseData,
+            totalPages: pagination.totalPages || 1,
+            totalItems: pagination.total || responseData.length,
+            currentPage: pagination.currentPage || searchParams.page || state.currentPage,
+            formikStatus: "success" as const,
+            errMessage: "",
+            searchStatus: {
+              status: "success" as const,
+              couldNotFindAProperty: responseData.length === 0,
+            },
+          };
+          console.log(`State updated for ${tab}:`, {
+            prevStatus: state.formikStatus,
+            newStatus: newState.formikStatus,
+            prevProperties: state.properties.length,
+            newProperties: newState.properties.length
+          });
+          return newState;
+        });
       } catch (err: any) {
         console.error(
           `${tab} tab search error (attempt ${retryCount + 1}):`,
