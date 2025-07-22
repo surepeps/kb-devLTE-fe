@@ -6,7 +6,6 @@ import { useNewMarketplace } from "@/context/new-marketplace-context";
 import BuyPropertySearch from "../search/BuyPropertySearch";
 import PropertyGrid from "../PropertyGrid";
 import PriceNegotiationModal from "../modals/PriceNegotiationModal";
-import DebugMarketplace from "../DebugMarketplace";
 
 const BuyTab = () => {
   const {
