@@ -39,15 +39,22 @@ export const useGlobalInspectionState = () => {
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
-      try {
+    try {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState && savedState.trim()) {
         const parsedState = JSON.parse(savedState);
-        setState(parsedState);
-      } catch (error) {
-        console.error("Failed to parse global inspection state:", error);
-        localStorage.removeItem(STORAGE_KEY);
+        // Validate the parsed state structure
+        if (parsedState && typeof parsedState === 'object') {
+          setState({
+            selectedProperties: Array.isArray(parsedState.selectedProperties) ? parsedState.selectedProperties : [],
+            negotiatedPrices: Array.isArray(parsedState.negotiatedPrices) ? parsedState.negotiatedPrices : [],
+            loiDocuments: Array.isArray(parsedState.loiDocuments) ? parsedState.loiDocuments : [],
+          });
+        }
       }
+    } catch (error) {
+      console.error("Failed to parse global inspection state:", error);
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
 
