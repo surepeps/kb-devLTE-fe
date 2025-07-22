@@ -9,7 +9,7 @@ import BuyTab from "./tabs/BuyTab";
 import JointVentureTab from "./tabs/JointVentureTab";
 import RentTab from "./tabs/RentTab";
 import ShortletTab from "./tabs/ShortletTab";
-import AddForInspection from "./AddForInspection";
+
 import StandardPreloader from "./StandardPreloader";
 
 const NewMarketPlace = () => {
