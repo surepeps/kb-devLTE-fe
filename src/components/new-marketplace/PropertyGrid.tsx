@@ -47,10 +47,13 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   totalItems,
   onPropertyClick,
   onInspectionToggle,
-  onPriceNegotiation,
-  onRemoveNegotiation,
+  onPriceNegotiation = () => {},
+  onRemoveNegotiation = () => {},
+  onLOIUpload = () => {},
+  onRemoveLOI = () => {},
   selectedForInspection,
-  negotiatedPrices,
+  negotiatedPrices = [],
+  loiDocuments = [],
   onOpenAddForInspection,
 }) => {
   const isMobile = IsMobile();
