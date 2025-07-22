@@ -92,10 +92,15 @@ export const GlobalPropertyActionsProvider: React.FC<{
   );
   const [loiDocuments, setLoiDocuments] = useState<LOIDocument[]>([]);
 
-  // Sync state to localStorage whenever any state changes
+  // Track if initial load is complete
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Sync state to localStorage whenever any state changes (but not on initial load)
   useEffect(() => {
-    saveToStorage(selectedForInspection, negotiatedPrices, loiDocuments);
-  }, [selectedForInspection, negotiatedPrices, loiDocuments]);
+    if (isInitialized) {
+      saveToStorage(selectedForInspection, negotiatedPrices, loiDocuments);
+    }
+  }, [selectedForInspection, negotiatedPrices, loiDocuments, isInitialized]);
 
   // Load state from localStorage on mount
   useEffect(() => {
