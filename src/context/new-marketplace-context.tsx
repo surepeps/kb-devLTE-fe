@@ -725,6 +725,7 @@ export const NewMarketplaceProvider: React.FC<{
 
         const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
         console.log(`Fetching ${tab} tab data from:`, apiUrl);
+        console.log(`Search parameters:`, searchParams);
 
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
