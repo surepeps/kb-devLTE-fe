@@ -10,5 +10,9 @@ export type { JVPropertyCardProps } from './JVPropertyCard';
 export { default as UniversalPropertyCard, createPropertyCardData } from './UniversalPropertyCard';
 export type { UniversalPropertyCardProps } from './UniversalPropertyCard';
 
+// Export new global components (without button functionality)
+export { default as GlobalPropertyCard } from './GlobalPropertyCard';
+export { default as GlobalJVPropertyCard } from './GlobalJVPropertyCard';
+
 // Re-export for backward compatibility
 export { default as PropertyCard } from './UniversalPropertyCard';
