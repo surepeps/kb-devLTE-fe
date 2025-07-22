@@ -202,30 +202,28 @@ export const GlobalPropertyActionsProvider: React.FC<{
 
   const removeFromInspection = useCallback(
     (propertyId: string) => {
-      // Calculate new states outside of setState
-      const newSelection = selectedForInspection.filter(
-        (item) => item.propertyId !== propertyId
-      );
-      
-      // Also remove associated negotiated prices and LOI documents
-      const newPrices = negotiatedPrices.filter(
-        (price) => price.propertyId !== propertyId
-      );
-      const newDocuments = loiDocuments.filter(
-        (doc) => doc.propertyId !== propertyId
-      );
+      setSelectedForInspection((current) => {
+        const newSelection = current.filter(
+          (item) => item.propertyId !== propertyId
+        );
 
-      // Update all states
-      setSelectedForInspection(newSelection);
-      setNegotiatedPrices(newPrices);
-      setLoiDocuments(newDocuments);
-      
-      // Save to storage
-      setTimeout(() => {
-        saveToStorage(newSelection, newPrices, newDocuments);
-      }, 0);
+        // Save to storage
+        setTimeout(() => {
+          saveToStorage(newSelection, negotiatedPrices, loiDocuments);
+        }, 0);
+
+        return newSelection;
+      });
+
+      // Also remove associated negotiated prices and LOI documents
+      setNegotiatedPrices((current) => current.filter(
+        (price) => price.propertyId !== propertyId
+      ));
+      setLoiDocuments((current) => current.filter(
+        (doc) => doc.propertyId !== propertyId
+      ));
     },
-    [selectedForInspection, negotiatedPrices, loiDocuments, saveToStorage]
+    [negotiatedPrices, loiDocuments, saveToStorage]
   );
 
   const clearInspectionSelection = useCallback(() => {
