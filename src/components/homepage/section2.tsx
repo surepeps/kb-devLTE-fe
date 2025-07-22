@@ -35,8 +35,7 @@ const Section2 = () => {
   const housesRef = useRef<HTMLDivElement>(null);
 
   const areHousesVisible = useInView(housesRef, { once: true });
-  const [isAddForInspectionModalOpened, setIsAddForInspectionModalOpened] =
-    useState<boolean>(false);
+
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
