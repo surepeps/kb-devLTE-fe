@@ -129,6 +129,8 @@ export const GlobalPropertyActionsProvider: React.FC<{
     } catch (error) {
       console.error("Failed to parse global property actions state:", error);
       localStorage.removeItem(STORAGE_KEY);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
