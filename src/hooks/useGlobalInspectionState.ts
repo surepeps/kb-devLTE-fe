@@ -53,8 +53,12 @@ export const useGlobalInspectionState = () => {
         }
       }
     } catch (error) {
-      console.error("Failed to parse global inspection state:", error);
+      console.error("Failed to parse global inspection state, clearing localStorage:", error);
       localStorage.removeItem(STORAGE_KEY);
+      // Also clear other potentially corrupted inspection-related storage
+      localStorage.removeItem('selectedBriefs');
+      localStorage.removeItem('inspectionSelection');
+      localStorage.removeItem('marketplaceState');
     }
   }, []);
 
