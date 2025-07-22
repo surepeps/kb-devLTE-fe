@@ -346,13 +346,8 @@ const Section2 = () => {
 
               const cardData = createPropertyCardData(property, propertyType);
 
-              // Check if property is selected for inspection
-              const existingBriefs = JSON.parse(
-                localStorage.getItem("selectedBriefs") || "[]",
-              );
-              const isSelected = existingBriefs.some(
-                (brief: any) => brief._id === property._id,
-              );
+              // Check if property is selected for inspection using global state
+              const isSelected = globalInspection.isPropertySelected(property._id);
 
               return (
                 <UniversalPropertyCard
