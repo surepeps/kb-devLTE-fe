@@ -46,6 +46,11 @@ export interface UniversalPropertyCardProps {
   
   // Property type override (if you want to force a specific card type)
   forceCardType?: "standard" | "jv";
+
+  // Global inspection integration
+  useGlobalInspection?: boolean;
+  sourceTab?: "buy" | "jv" | "rent" | "shortlet";
+  sourcePage?: string;
 }
 
 /**
