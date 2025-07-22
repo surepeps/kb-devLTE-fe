@@ -612,6 +612,10 @@ export const NewMarketplaceProvider: React.FC<{
 
       setTabStatus(tab, "pending");
       setTabError(tab, "");
+      setTabSearchStatus(tab, {
+        status: "pending",
+        couldNotFindAProperty: false,
+      });
 
       try {
         // Check network connectivity first
