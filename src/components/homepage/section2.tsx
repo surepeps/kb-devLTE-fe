@@ -3,8 +3,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
-import GlobalPropertyCard from "@/components/common/property-cards/GlobalPropertyCard";
-import GlobalJVPropertyCard from "@/components/common/property-cards/GlobalJVPropertyCard";
+import { EnhancedGlobalPropertyCard } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
