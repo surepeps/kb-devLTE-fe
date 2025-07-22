@@ -612,6 +612,10 @@ export const NewMarketplaceProvider: React.FC<{
 
       setTabStatus(tab, "pending");
       setTabError(tab, "");
+      setTabSearchStatus(tab, {
+        status: "pending",
+        couldNotFindAProperty: false,
+      });
 
       try {
         // Check network connectivity first
@@ -720,7 +724,6 @@ export const NewMarketplaceProvider: React.FC<{
         }
 
         const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
-        console.log(`Fetching ${tab} tab data from:`, apiUrl);
 
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
@@ -735,7 +738,6 @@ export const NewMarketplaceProvider: React.FC<{
         }, 30000);
 
         const response = await GET_REQUEST(apiUrl);
-        console.log(`${tab} tab API response:`, response);
 
         clearTimeout(timeoutId);
 
@@ -745,7 +747,6 @@ export const NewMarketplaceProvider: React.FC<{
         if (response?.error || response?.success === false) {
           const errorMessage =
             response?.message || response?.error || "Failed to fetch data";
-          console.error(`${tab} tab API Error:`, errorMessage);
 
           setTabError(tab, errorMessage);
           setTabStatus(tab, "failed");
@@ -760,33 +761,20 @@ export const NewMarketplaceProvider: React.FC<{
         const responseData = response?.data || [];
         const pagination = response?.pagination || {};
 
-        console.log(`${tab} tab response data:`, responseData);
-        console.log(`${tab} tab pagination:`, pagination);
-
-        // Update tab properties and pagination
-        setTabProperties(tab, responseData);
-        setTabPagination(
-          tab,
-          pagination.totalPages || 1,
-          pagination.total || responseData.length,
-        );
-        setTabPage(
-          tab,
-          pagination.currentPage ||
-            searchParams.page ||
-            currentTabState.currentPage,
-        );
-
-        setTabSearchStatus(tab, {
-          status: "success",
-          couldNotFindAProperty: responseData.length === 0,
-        });
-
-        setTabStatus(tab, "success");
-
-        console.log(
-          `Successfully loaded ${responseData.length} properties for ${tab} tab. Page ${pagination.currentPage} of ${pagination.totalPages}`,
-        );
+        // Update all states at once to avoid multiple re-renders
+        updateTabState(tab, (state) => ({
+          ...state,
+          properties: responseData,
+          totalPages: pagination.totalPages || 1,
+          totalItems: pagination.total || responseData.length,
+          currentPage: pagination.currentPage || searchParams.page || state.currentPage,
+          formikStatus: "success" as const,
+          errMessage: "",
+          searchStatus: {
+            status: "success" as const,
+            couldNotFindAProperty: responseData.length === 0,
+          },
+        }));
       } catch (err: any) {
         console.error(
           `${tab} tab search error (attempt ${retryCount + 1}):`,
@@ -956,9 +944,11 @@ export const NewMarketplaceProvider: React.FC<{
       tab: "buy" | "jv" | "rent" | "shortlet",
       searchParams?: SearchParams,
     ) => {
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current) {
+        console.log(`fetchTabData: Component unmounted, aborting for ${tab}`);
+        return;
+      }
 
-      console.log(`Fetching initial data for ${tab} tab`);
       // Map tab to correct briefType for API
       const briefTypeMapping = {
         buy: "Outright Sales",
@@ -972,19 +962,24 @@ export const NewMarketplaceProvider: React.FC<{
         limit: itemsPerPage,
         ...searchParams,
       };
+
       await searchTabProperties(tab, defaultSearchParams);
     },
     [searchTabProperties, itemsPerPage],
   );
 
-  // Auto-fetch initial data on mount for active tab
-  useEffect(() => {
-    const currentTabState = getCurrentTabState();
-    if (currentTabState.formikStatus === "idle" && currentTabState.properties.length === 0) {
-      console.log(`Auto-fetching initial data for ${activeTab} tab`);
-      fetchTabData(activeTab);
-    }
-  }, [activeTab, fetchTabData, getCurrentTabState]);
+  // Disable auto-fetch to avoid complexity - let components handle their own fetching
+  // useEffect(() => {
+  //   console.log(`Auto-fetch effect for tab: ${activeTab}`);
+
+  //   const currentState = activeTab === "buy" ? buyTab :
+  //                       activeTab === "jv" ? jvTab :
+  //                       activeTab === "rent" ? rentTab : shortletTab;
+
+  //   if (currentState.formikStatus === "idle" && currentState.properties.length === 0) {
+  //     fetchTabData(activeTab);
+  //   }
+  // }, [activeTab, fetchTabData]);
 
   // Reset all tabs
   const resetAllTabs = useCallback(() => {

@@ -1,57 +1,69 @@
 "use client";
+import { useState } from "react";
+import { URLS } from "@/utils/URLS";
+import { GET_REQUEST } from "@/utils/requests";
 
-import React from "react";
+export default function TestArea() {
+  const [response, setResponse] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
 
-export default function TestAreaFix() {
-  // Test the area data type fix
-  const testAreaString = "Ogba-Ijaiye";
-  const testAreaObject = { value: "Ogba-Ijaiye", label: "Ogba-Ijaiye" };
+  const testAPI = async () => {
+    setLoading(true);
+    setError("");
+    setResponse(null);
 
-  // This should now work correctly - area should be string type
-  const handleAreaSubmission = (area: string) => {
-    console.log("Area submitted:", area);
-    console.log("Area type:", typeof area);
+    try {
+      console.log("Testing API connectivity...");
+      console.log("BASE URL:", URLS.BASE);
+      
+      const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?briefType=Outright%20Sales&page=1&limit=12`;
+      console.log("Full API URL:", apiUrl);
+      
+      const result = await GET_REQUEST(apiUrl);
+      console.log("API Response:", result);
+      
+      setResponse(result);
+    } catch (err: any) {
+      console.error("API Test Error:", err);
+      setError(err.message || "Unknown error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Area Field Fix Test</h1>
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold">
-            Test 1: String Area (Should work)
-          </h2>
-          <button
-            onClick={() => handleAreaSubmission(testAreaString)}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Submit String Area: {testAreaString}
-          </button>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold">
-            Test 2: Object Area Value (Should extract value)
-          </h2>
-          <button
-            onClick={() => handleAreaSubmission(testAreaObject.value)}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Submit Object Area Value: {testAreaObject.value}
-          </button>
-        </div>
-
-        <div className="mt-8 p-4 bg-gray-100 rounded">
-          <h3 className="font-semibold">Fixed Issues:</h3>
-          <ul className="list-disc list-inside mt-2 space-y-1">
-            <li>✅ Area field now stores string values instead of objects</li>
-            <li>✅ LGA dropdown shows consistently for alignment</li>
-            <li>✅ Manual entry allowed for LGA when not found</li>
-            <li>✅ Manual entry allowed for area when not found</li>
-            <li>✅ Validation schema handles string area type</li>
-          </ul>
-        </div>
+      <h1 className="text-2xl font-bold mb-4">API Test Area</h1>
+      
+      <div className="mb-4">
+        <p><strong>BASE URL:</strong> {URLS.BASE}</p>
+        <p><strong>Fetch Briefs Endpoint:</strong> {URLS.fetchBriefs}</p>
       </div>
+
+      <button
+        onClick={testAPI}
+        disabled={loading}
+        className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+      >
+        {loading ? "Testing..." : "Test API"}
+      </button>
+
+      {error && (
+        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <h3 className="font-bold">Error:</h3>
+          <p>{error}</p>
+        </div>
+      )}
+
+      {response && (
+        <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          <h3 className="font-bold">Success Response:</h3>
+          <pre className="text-sm overflow-auto max-h-64">
+            {JSON.stringify(response, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
