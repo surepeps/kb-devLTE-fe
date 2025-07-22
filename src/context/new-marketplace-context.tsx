@@ -275,21 +275,9 @@ export const NewMarketplaceProvider: React.FC<{
       tab: "buy" | "jv" | "rent" | "shortlet",
       updater: (state: TabState) => TabState,
     ) => {
-      console.log(`updateTabState called for ${tab} tab`);
       switch (tab) {
         case "buy":
-          setBuyTab((prevState) => {
-            const newState = updater(prevState);
-            console.log(`BuyTab state updated:`, {
-              prevProperties: prevState.properties.length,
-              newProperties: newState.properties.length,
-              prevStatus: prevState.formikStatus,
-              newStatus: newState.formikStatus,
-              prevSearchStatus: prevState.searchStatus.status,
-              newSearchStatus: newState.searchStatus.status
-            });
-            return newState;
-          });
+          setBuyTab(updater);
           break;
         case "jv":
           setJvTab(updater);
