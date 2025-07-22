@@ -3,14 +3,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useNewMarketplace } from "@/context/new-marketplace-context";
-import MarketplaceTabs from "./MarketplaceTabs";
-import BuyTab from "./tabs/BuyTab";
-import JointVentureTab from "./tabs/JointVentureTab";
-import RentTab from "./tabs/RentTab";
-import ShortletTab from "./tabs/ShortletTab";
-import AddForInspection from "./AddForInspection";
-import StandardPreloader from "./StandardPreloader";
+import SimpleMarketplace from "./SimpleMarketplace";
 
 const NewMarketPlace = () => {
   const router = useRouter();
