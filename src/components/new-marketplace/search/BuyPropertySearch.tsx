@@ -17,7 +17,6 @@ const BuyPropertySearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
-    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
@@ -233,8 +232,8 @@ const BuyPropertySearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={buyTab.formikStatus === "pending"}
-          selectedCount={buyTab.selectedForInspection.length}
-          onOpenInspection={() => setIsAddForInspectionOpen(true)}
+          selectedCount={0}
+          onOpenInspection={() => {}}
         />
       </div>
 
