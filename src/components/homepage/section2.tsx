@@ -58,9 +58,6 @@ const Section2 = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [selectedMarketPlace, setSelectedMarketPlace] = useState("Buy a property");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showPriceModal, setShowPriceModal] = useState(false);
-  const [showLOIModal, setShowLOIModal] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState<any>(null);
   const housesRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
