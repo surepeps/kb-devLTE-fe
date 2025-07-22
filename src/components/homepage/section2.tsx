@@ -7,9 +7,7 @@ import { EnhancedGlobalPropertyCard } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
-import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
-import GlobalPriceNegotiationModal from "@/components/modals/GlobalPriceNegotiationModal";
-import GlobalLOIUploadModal from "@/components/modals/GlobalLOIUploadModal";
+
 import "ldrs/react/Trio.css";
 import { Trio } from "ldrs/react";
 import { epilogue } from "@/styles/font";
