@@ -72,9 +72,10 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     });
   };
 
-  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
+  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number, strategy: string, reasoning: string) => {
     const originalPrice = property.price || property.rentalPrice || 0;
     addNegotiatedPrice(property._id, originalPrice, negotiatedPriceValue);
+    // Store additional metadata if needed
     setPriceNegotiationModal({ isOpen: false, property: null });
   };
 
@@ -89,8 +90,9 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     });
   };
 
-  const handleLOISubmit = (property: any, document: File, documentUrl?: string) => {
-    addLOIDocument(property._id, document, documentUrl);
+  const handleLOISubmit = (property: any, document: File, metadata: any) => {
+    addLOIDocument(property._id, document);
+    // Store additional metadata if needed
     setLoiUploadModal({ isOpen: false, property: null });
   };
 
