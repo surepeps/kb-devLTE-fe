@@ -280,7 +280,12 @@ export const GlobalPropertyActionsProvider: React.FC<{
     (propertyId: string) => {
       setNegotiatedPrices((current) => {
         const newPrices = current.filter((p) => p.propertyId !== propertyId);
-        saveToStorage(selectedForInspection, newPrices, loiDocuments);
+
+        // Schedule storage save after state update
+        setTimeout(() => {
+          saveToStorage(selectedForInspection, newPrices, loiDocuments);
+        }, 0);
+
         return newPrices;
       });
     },
