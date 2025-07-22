@@ -111,12 +111,12 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     );
   };
 
-  // Loading state
-  if (loading) {
+  // Loading state - check both loading prop and search status
+  if (loading || searchStatus.status === "pending") {
     return (
       <StandardPreloader
         isVisible={true}
-        message="Loading properties..."
+        message={searchStatus.status === "pending" ? "Searching properties..." : "Loading properties..."}
         overlay={false}
       />
     );
