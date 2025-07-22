@@ -95,7 +95,7 @@ export const GlobalPropertyActionsProvider: React.FC<{
   // Sync state to localStorage whenever any state changes
   useEffect(() => {
     saveToStorage(selectedForInspection, negotiatedPrices, loiDocuments);
-  }, [selectedForInspection, negotiatedPrices, loiDocuments, saveToStorage]);
+  }, [selectedForInspection, negotiatedPrices, loiDocuments]);
 
   // Load state from localStorage on mount
   useEffect(() => {
