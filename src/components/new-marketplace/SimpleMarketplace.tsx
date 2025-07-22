@@ -70,22 +70,7 @@ const SimpleMarketplace = () => {
     fetchProperties(activeTab);
   }, [activeTab]);
 
-  const getPropertyCardData = (property: Property) => {
-    return [
-      { header: "Property Type", value: property.propertyType || "N/A" },
-      { header: "Price", value: `₦${Number(property.price || 0).toLocaleString()}` },
-      { header: "Bedrooms", value: property.additionalFeatures?.noOfBedrooms || property.noOfBedrooms || "0" },
-      { header: "Bathrooms", value: property.additionalFeatures?.noOfBathrooms || property.noOfBathrooms || "0" },
-      { header: "Toilets", value: property.additionalFeatures?.noOfToilets || property.noOfToilets || "0" },
-      { header: "CarParks", value: property.additionalFeatures?.noOfCarParks || property.noOfCarParks || "0" },
-      {
-        header: "Location",
-        value: property.location
-          ? `${property.location.area || ""}, ${property.location.localGovernment || ""}, ${property.location.state || ""}`.replace(/^,\s*|,\s*$/g, "")
-          : "Location not specified",
-      },
-    ];
-  };
+
 
   const handlePropertyClick = (property: Property) => {
     window.open(`/property/${activeTab}/${property._id}`, "_blank");
