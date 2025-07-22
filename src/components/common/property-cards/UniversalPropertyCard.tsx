@@ -181,12 +181,16 @@ const UniversalPropertyCard: React.FC<UniversalPropertyCardProps> = (props) => {
       ...commonProps,
       property,
       cardData,
-      onLOIUpload,
-      onRemoveLOI,
-      loiDocument: props.loiDocument,
+      onInspectionToggle: handleInspectionToggle,
+      onLOIUpload: handleLOIUpload,
+      onRemoveLOI: handleRemoveLOI,
+      isSelected,
+      loiDocument,
       showLOIUpload: props.showLOIUpload,
+      currentSelections,
+      maxSelections,
     };
-    
+
     return <JVPropertyCard {...jvProps} />;
   }
 
@@ -195,10 +199,14 @@ const UniversalPropertyCard: React.FC<UniversalPropertyCardProps> = (props) => {
     ...commonProps,
     property,
     cardData,
-    onPriceNegotiation,
-    onRemoveNegotiation,
-    negotiatedPrice: props.negotiatedPrice,
+    onInspectionToggle: handleInspectionToggle,
+    onPriceNegotiation: handlePriceNegotiation,
+    onRemoveNegotiation: handleRemoveNegotiation,
+    isSelected,
+    negotiatedPrice,
     showPriceNegotiation: props.showPriceNegotiation,
+    currentSelections,
+    maxSelections,
   };
 
   return <StandardPropertyCard {...standardProps} />;
