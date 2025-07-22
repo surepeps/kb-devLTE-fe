@@ -20,6 +20,8 @@ import axios from "axios";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import { waitForInitialization } from "@/utils/appInit";
+import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
+import toast from "react-hot-toast";
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
