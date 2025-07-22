@@ -119,7 +119,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
 
         {/* LOI Upload Modal */}
         {loiUploadModal.isOpen && (
-          <GlobalLOIUploadModal
+          <AdvancedLOIUploadModal
             isOpen={loiUploadModal.isOpen}
             property={loiUploadModal.property}
             onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
