@@ -100,7 +100,7 @@ const BuyTab = () => {
     <div className="space-y-6">
       {/* Debug Section - Remove in production */}
       <div className="bg-yellow-50 p-4 rounded border">
-        <h4 className="font-bold text-sm mb-2">Debug Info:</h4>
+        <h4 className="font-bold text-sm mb-2">Context Debug Info:</h4>
         <p className="text-xs">Status: {buyTab.formikStatus}</p>
         <p className="text-xs">Properties: {buyTab.properties.length}</p>
         <p className="text-xs">Search Status: {buyTab.searchStatus.status}</p>
@@ -111,6 +111,9 @@ const BuyTab = () => {
           Force Fetch
         </button>
       </div>
+
+      {/* Direct API Test */}
+      <DebugMarketplace />
 
       {/* Search and Filters */}
       <BuyPropertySearch />
