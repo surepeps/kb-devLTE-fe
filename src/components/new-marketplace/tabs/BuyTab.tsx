@@ -77,16 +77,6 @@ const BuyTab = () => {
     setIsAddForInspectionOpen(true);
   };
 
-  const handleManualFetch = async () => {
-    console.log('Manual fetch triggered');
-    try {
-      await fetchTabData("buy");
-      console.log('Manual fetch completed');
-    } catch (error) {
-      console.error('Manual fetch error:', error);
-    }
-  };
-
   return (
     <div className="space-y-6">
       {/* Temporary Debug Panel */}
