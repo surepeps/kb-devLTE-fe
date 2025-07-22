@@ -85,6 +85,16 @@ const BuyTab = () => {
     setIsAddForInspectionOpen(true);
   };
 
+  // Debug function to manually trigger API call
+  const debugFetch = async () => {
+    console.log("=== DEBUG: Manual fetch triggered ===");
+    try {
+      await fetchTabData("buy");
+    } catch (error) {
+      console.error("Debug fetch error:", error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
