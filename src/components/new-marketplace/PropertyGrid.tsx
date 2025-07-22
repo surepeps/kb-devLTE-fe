@@ -13,7 +13,7 @@ import { IsMobile } from "@/hooks/isMobile";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 
 interface PropertyGridProps {
-  tab: "buy" | "rent" | "shortlet";
+  tab: "buy" | "rent" | "shortlet" | "jv";
   properties: any[];
   loading: boolean;
   error: string;
@@ -26,10 +26,13 @@ interface PropertyGridProps {
   totalItems: number;
   onPropertyClick: (property: any) => void;
   onInspectionToggle: (property: any) => void;
-  onPriceNegotiation: (property: any) => void;
-  onRemoveNegotiation: (propertyId: string) => void;
+  onPriceNegotiation?: (property: any) => void;
+  onRemoveNegotiation?: (propertyId: string) => void;
+  onLOIUpload?: (property: any) => void;
+  onRemoveLOI?: (propertyId: string) => void;
   selectedForInspection: any[];
-  negotiatedPrices: any[];
+  negotiatedPrices?: any[];
+  loiDocuments?: any[];
   onOpenAddForInspection: () => void;
 }
 
