@@ -283,15 +283,18 @@ const Section2 = () => {
               };
 
               return (
-                <EnhancedGlobalPropertyCard
+                <UniversalPropertyCard
                   key={idx}
-                  type={buttons.button4 ? "jv" : "standard"}
-                  tab={tab}
                   property={property}
                   cardData={cardData}
                   images={property?.pictures || []}
                   isPremium={property?.isPremium || false}
                   onPropertyClick={handlePropertyClick}
+                  maxSelections={2}
+                  currentSelections={0}
+                  useGlobalInspection={false}
+                  sourceTab={buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy"}
+                  sourcePage="homepage"
                   className="mx-auto"
                 />
               );
