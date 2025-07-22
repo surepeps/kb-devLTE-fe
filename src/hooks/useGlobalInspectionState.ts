@@ -43,212 +43,48 @@ export const useGlobalInspectionState = () => {
     selectedCount,
   } = useGlobalPropertyActions();
 
-  // Load state from localStorage on mount
-  useEffect(() => {
-    try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState && savedState.trim()) {
-        const parsedState = JSON.parse(savedState);
-        // Validate the parsed state structure
-        if (parsedState && typeof parsedState === 'object') {
-          setState({
-            selectedProperties: Array.isArray(parsedState.selectedProperties) ? parsedState.selectedProperties : [],
-            negotiatedPrices: Array.isArray(parsedState.negotiatedPrices) ? parsedState.negotiatedPrices : [],
-            loiDocuments: Array.isArray(parsedState.loiDocuments) ? parsedState.loiDocuments : [],
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Failed to parse global inspection state, clearing localStorage:", error);
-      localStorage.removeItem(STORAGE_KEY);
-      // Also clear other potentially corrupted inspection-related storage
-      localStorage.removeItem('selectedBriefs');
-      localStorage.removeItem('inspectionSelection');
-      localStorage.removeItem('marketplaceState');
-    }
-  }, []);
-
-  // Save state to localStorage whenever it changes
-  const saveState = useCallback((newState: GlobalInspectionState) => {
-    setState(newState);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-  }, []);
-
-  // Add property to inspection
+  // Add property to inspection (wrapper around global context)
   const addProperty = useCallback((
     property: any,
     sourceTab?: "buy" | "jv" | "rent" | "shortlet",
     sourcePage?: string
   ) => {
-    const propertyId = property._id;
-    
-    setState(currentState => {
-      // Check if already selected
-      if (currentState.selectedProperties.some(p => p.propertyId === propertyId)) {
-        return currentState;
-      }
+    toggleInspectionSelection(property, sourceTab, sourcePage);
+  }, [toggleInspectionSelection]);
 
-      // Check max limit (2 properties)
-      if (currentState.selectedProperties.length >= 2) {
-        throw new Error("Maximum of 2 properties can be selected for inspection");
-      }
-
-      const newState = {
-        ...currentState,
-        selectedProperties: [
-          ...currentState.selectedProperties,
-          {
-            propertyId,
-            property,
-            sourceTab,
-            sourcePage,
-          },
-        ],
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
-  // Remove property from inspection
+  // Remove property from inspection (wrapper around global context)
   const removeProperty = useCallback((propertyId: string) => {
-    setState(currentState => {
-      const newState = {
-        ...currentState,
-        selectedProperties: currentState.selectedProperties.filter(
-          p => p.propertyId !== propertyId
-        ),
-        // Also remove associated negotiated prices and LOI documents
-        negotiatedPrices: currentState.negotiatedPrices.filter(
-          p => p.propertyId !== propertyId
-        ),
-        loiDocuments: currentState.loiDocuments.filter(
-          d => d.propertyId !== propertyId
-        ),
-      };
+    removeFromInspection(propertyId);
+  }, [removeFromInspection]);
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
-  // Toggle property selection
+  // Toggle property selection (wrapper around global context)
   const toggleProperty = useCallback((
     property: any,
     sourceTab?: "buy" | "jv" | "rent" | "shortlet",
     sourcePage?: string
   ) => {
-    const propertyId = property._id;
-    const isSelected = state.selectedProperties.some(p => p.propertyId === propertyId);
+    toggleInspectionSelection(property, sourceTab, sourcePage);
+  }, [toggleInspectionSelection]);
 
-    if (isSelected) {
-      removeProperty(propertyId);
-    } else {
-      try {
-        addProperty(property, sourceTab, sourcePage);
-      } catch (error) {
-        throw error;
-      }
-    }
-  }, [state.selectedProperties, addProperty, removeProperty]);
-
-  // Check if property is selected
+  // Check if property is selected (wrapper around global context)
   const isPropertySelected = useCallback((propertyId: string) => {
-    return state.selectedProperties.some(p => p.propertyId === propertyId);
-  }, [state.selectedProperties]);
+    return isSelectedForInspection(propertyId);
+  }, [isSelectedForInspection]);
 
-  // Add negotiated price
-  const addNegotiatedPrice = useCallback((
-    propertyId: string,
-    originalPrice: number,
-    negotiatedPrice: number
-  ) => {
-    setState(currentState => {
-      const newState = {
-        ...currentState,
-        negotiatedPrices: [
-          ...currentState.negotiatedPrices.filter(p => p.propertyId !== propertyId),
-          { propertyId, originalPrice, negotiatedPrice },
-        ],
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
-  // Remove negotiated price
+  // Remove negotiated price (wrapper around global context)
   const clearNegotiatedPrice = useCallback((propertyId: string) => {
-    setState(currentState => {
-      const newState = {
-        ...currentState,
-        negotiatedPrices: currentState.negotiatedPrices.filter(
-          p => p.propertyId !== propertyId
-        ),
-      };
+    removeNegotiatedPrice(propertyId);
+  }, [removeNegotiatedPrice]);
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
-  // Get negotiated price for property
-  const getNegotiatedPrice = useCallback((propertyId: string) => {
-    return state.negotiatedPrices.find(p => p.propertyId === propertyId) || null;
-  }, [state.negotiatedPrices]);
-
-  // Add LOI document
-  const addLOIDocument = useCallback((
-    propertyId: string,
-    document: File,
-    documentUrl?: string
-  ) => {
-    setState(currentState => {
-      const newState = {
-        ...currentState,
-        loiDocuments: [
-          ...currentState.loiDocuments.filter(d => d.propertyId !== propertyId),
-          { propertyId, document, documentUrl },
-        ],
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
-  // Remove LOI document
+  // Remove LOI document (wrapper around global context)
   const clearLOIDocument = useCallback((propertyId: string) => {
-    setState(currentState => {
-      const newState = {
-        ...currentState,
-        loiDocuments: currentState.loiDocuments.filter(
-          d => d.propertyId !== propertyId
-        ),
-      };
+    removeLOIDocument(propertyId);
+  }, [removeLOIDocument]);
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
-
-  // Get LOI document for property
-  const getLOIDocument = useCallback((propertyId: string) => {
-    return state.loiDocuments.find(d => d.propertyId === propertyId) || null;
-  }, [state.loiDocuments]);
-
-  // Clear all selections
+  // Clear all selections (wrapper around global context)
   const clearAllSelections = useCallback(() => {
-    const newState = {
-      selectedProperties: [],
-      negotiatedPrices: [],
-      loiDocuments: [],
-    };
-
-    setState(newState);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
-  }, []);
+    clearInspectionSelection();
+  }, [clearInspectionSelection]);
 
   // Get property type for display
   const getPropertyType = useCallback((property: any) => {
