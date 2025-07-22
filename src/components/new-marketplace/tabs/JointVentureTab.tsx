@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import JointVentureSearch from "../search/JointVentureSearch";
-import JVPropertyGrid from "../JVPropertyGrid";
+import PropertyGrid from "../PropertyGrid";
 import LOIUploadModal from "../modals/LOIUploadModal";
 
 const JointVentureTab = () => {
