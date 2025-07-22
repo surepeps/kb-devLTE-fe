@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
 import arrowIcon from "@/svgs/arrowIcon.svg";
-import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import toast from "react-hot-toast";
 import imgSample from "@/assets/assets.png";
@@ -340,24 +340,10 @@ const Section2 = () => {
               // Check if property is selected for inspection
               const isSelected = isSelectedForInspection(property._id);
 
-              return buttons.button4 ? (
-                <GlobalJVPropertyCard
+              return (
+                <EnhancedGlobalPropertyCard
                   key={idx}
-                  property={property}
-                  cardData={cardData}
-                  images={property?.pictures || []}
-                  isPremium={property?.isPremium || false}
-                  onPropertyClick={() => {
-                    router.push(`/property/jv/${property?._id}`);
-                  }}
-                  onLOIUpload={() => handleLOIUpload(property)}
-                  onInspectionToggle={() => handleSubmitInspection(property)}
-                  isSelected={isSelected}
-                  className="mx-auto"
-                />
-              ) : (
-                <GlobalPropertyCard
-                  key={idx}
+                  type={buttons.button4 ? "jv" : "standard"}
                   tab={buttons.button3 ? "rent" : "buy"}
                   property={property}
                   cardData={cardData}
@@ -368,11 +354,10 @@ const Section2 = () => {
                       router.push(`/property/buy/${property?._id}`);
                     } else if (buttons.button3) {
                       router.push(`/property/rent/${property?._id}`);
+                    } else if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
                     }
                   }}
-                  onPriceNegotiation={() => handlePriceNegotiation(property)}
-                  onInspectionToggle={() => handleSubmitInspection(property)}
-                  isSelected={isSelected}
                   className="mx-auto"
                 />
               );
