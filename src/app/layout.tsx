@@ -14,6 +14,7 @@ import Countdown from './coming-soon-modal/page';
 import { NotificationProvider } from '@/context/notification-context';
 import { ModalProvider } from '@/context/modalContext';
 import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
+import { GlobalPropertyActionsProvider } from '@/context/global-property-actions-context';
 import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
 import GlobalInspectionFAB from '@/components/common/GlobalInspectionFAB';
 
