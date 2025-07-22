@@ -125,46 +125,6 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
             </div>
           </div>
         )}
-        {/* Selected Properties Bar - Mobile */}
-        {isMobile && hasSelectedProperties && (
-          <div className="fixed bottom-0 left-0 right-0 bg-[#09391C] text-white p-4 z-50">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">
-                {selectedCount} propert{selectedCount === 1 ? "y" : "ies"}{" "}
-                selected
-              </span>
-              <button
-                onClick={onOpenAddForInspection}
-                className="bg-[#8DDB90] text-white px-4 py-2 rounded-lg text-sm font-semibold"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Selected Properties Bar - Desktop */}
-        {!isMobile && hasSelectedProperties && (
-          <div className="bg-[#E4EFE7] border border-[#8DDB90] rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <span className="text-[#09391C] font-semibold">
-                  {selectedCount} propert{selectedCount === 1 ? "y" : "ies"}{" "}
-                  selected for inspection
-                </span>
-                <span className="text-[#5A5D63] text-sm">
-                  (Maximum 2 properties allowed)
-                </span>
-              </div>
-              <button
-                onClick={onOpenAddForInspection}
-                className="bg-[#8DDB90] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#76c77a] transition-colors"
-              >
-                Continue to Inspection
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 xl:gap-4 justify-items-center px-2 lg:px-2">
