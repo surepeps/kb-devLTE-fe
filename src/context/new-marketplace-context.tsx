@@ -183,8 +183,6 @@ export const NewMarketplaceProvider: React.FC<{
     createInitialTabState,
   );
 
-  // Add for inspection modal
-  const [isAddForInspectionOpen, setIsAddForInspectionOpen] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
   // Get current tab state
@@ -266,226 +264,7 @@ export const NewMarketplaceProvider: React.FC<{
     [updateTabState],
   );
 
-  // Inspection selection methods
-  const toggleInspectionSelection = useCallback(
-    (tab: "buy" | "jv" | "rent" | "shortlet", property: any) => {
-      const propertyId = property._id;
-
-      updateTabState(tab, (state) => {
-        const isAlreadySelected = state.selectedForInspection.some(
-          (item) => item.propertyId === propertyId,
-        );
-
-        if (isAlreadySelected) {
-          return {
-            ...state,
-            selectedForInspection: state.selectedForInspection.filter(
-              (item) => item.propertyId !== propertyId,
-            ),
-          };
-        } else {
-          if (state.selectedForInspection.length >= 2) {
-            setTimeout(() => {
-              toast.error(
-                "Maximum of 2 properties can be selected for inspection",
-              );
-            }, 0);
-            return state;
-          }
-
-          setTimeout(() => {
-            toast.success("Property selected for inspection");
-          }, 0);
-
-          return {
-            ...state,
-            selectedForInspection: [
-              ...state.selectedForInspection,
-              { propertyId, property },
-            ],
-          };
-        }
-      });
-    },
-    [updateTabState],
-  );
-
-  const removeFromInspection = useCallback(
-    (tab: "buy" | "jv" | "rent" | "shortlet", propertyId: string) => {
-      updateTabState(tab, (state) => {
-        // Remove from inspection selection
-        const updatedSelection = state.selectedForInspection.filter(
-          (item) => item.propertyId !== propertyId,
-        );
-
-        // Also clear associated negotiated prices and LOI documents
-        const updatedNegotiatedPrices = state.negotiatedPrices.filter(
-          (price) => price.propertyId !== propertyId,
-        );
-
-        const updatedLoiDocuments = state.loiDocuments.filter(
-          (doc) => doc.propertyId !== propertyId,
-        );
-
-        return {
-          ...state,
-          selectedForInspection: updatedSelection,
-          negotiatedPrices: updatedNegotiatedPrices,
-          loiDocuments: updatedLoiDocuments,
-        };
-      });
-    },
-    [updateTabState],
-  );
-
-  const clearInspectionSelection = useCallback(
-    (tab: "buy" | "jv" | "rent" | "shortlet") => {
-      updateTabState(tab, (state) => ({
-        ...state,
-        selectedForInspection: [],
-      }));
-    },
-    [updateTabState],
-  );
-
-  const isSelectedForInspection = useCallback(
-    (tab: "buy" | "jv" | "rent" | "shortlet", propertyId: string): boolean => {
-      const tabState =
-        tab === "buy"
-          ? buyTab
-          : tab === "jv"
-            ? jvTab
-            : tab === "rent"
-              ? rentTab
-              : shortletTab;
-      return tabState.selectedForInspection.some(
-        (item) => item.propertyId === propertyId,
-      );
-    },
-    [buyTab, jvTab, rentTab, shortletTab],
-  );
-
-  const canSelectMoreForInspection = useCallback(
-    (tab: "buy" | "jv" | "rent" | "shortlet"): boolean => {
-      const tabState =
-        tab === "buy"
-          ? buyTab
-          : tab === "jv"
-            ? jvTab
-            : tab === "rent"
-              ? rentTab
-              : shortletTab;
-      return tabState.selectedForInspection.length < 2;
-    },
-    [buyTab, jvTab, rentTab, shortletTab],
-  );
-
-  // Price negotiation methods (for buy, rent and shortlet tabs)
-  const addNegotiatedPrice = useCallback(
-    (
-      tab: "buy" | "rent" | "shortlet",
-      propertyId: string,
-      originalPrice: number,
-      negotiatedPrice: number,
-    ) => {
-      updateTabState(tab, (state) => {
-        const existingIndex = state.negotiatedPrices.findIndex(
-          (p) => p.propertyId === propertyId,
-        );
-
-        let updatedPrices;
-        if (existingIndex >= 0) {
-          updatedPrices = [...state.negotiatedPrices];
-          updatedPrices[existingIndex] = {
-            propertyId,
-            originalPrice,
-            negotiatedPrice,
-          };
-        } else {
-          updatedPrices = [
-            ...state.negotiatedPrices,
-            { propertyId, originalPrice, negotiatedPrice },
-          ];
-        }
-
-        return { ...state, negotiatedPrices: updatedPrices };
-      });
-    },
-    [updateTabState],
-  );
-
-  const removeNegotiatedPrice = useCallback(
-    (tab: "buy" | "rent" | "shortlet", propertyId: string) => {
-      updateTabState(tab, (state) => ({
-        ...state,
-        negotiatedPrices: state.negotiatedPrices.filter(
-          (p) => p.propertyId !== propertyId,
-        ),
-      }));
-    },
-    [updateTabState],
-  );
-
-  const getNegotiatedPrice = useCallback(
-    (
-      tab: "buy" | "rent" | "shortlet",
-      propertyId: string,
-    ): NegotiatedPrice | null => {
-      const tabState =
-        tab === "buy" ? buyTab : tab === "rent" ? rentTab : shortletTab;
-      return (
-        tabState.negotiatedPrices.find((p) => p.propertyId === propertyId) ||
-        null
-      );
-    },
-    [buyTab, rentTab, shortletTab],
-  );
-
-  // LOI document methods (for JV tab)
-  const addLOIDocument = useCallback(
-    (propertyId: string, document: File, documentUrl?: string) => {
-      updateTabState("jv", (state) => {
-        const existingIndex = state.loiDocuments.findIndex(
-          (doc) => doc.propertyId === propertyId,
-        );
-
-        let updatedDocs;
-        if (existingIndex >= 0) {
-          updatedDocs = [...state.loiDocuments];
-          updatedDocs[existingIndex] = { propertyId, document, documentUrl };
-        } else {
-          updatedDocs = [
-            ...state.loiDocuments,
-            { propertyId, document, documentUrl },
-          ];
-        }
-
-        return { ...state, loiDocuments: updatedDocs };
-      });
-    },
-    [updateTabState],
-  );
-
-  const removeLOIDocument = useCallback(
-    (propertyId: string) => {
-      updateTabState("jv", (state) => ({
-        ...state,
-        loiDocuments: state.loiDocuments.filter(
-          (doc) => doc.propertyId !== propertyId,
-        ),
-      }));
-    },
-    [updateTabState],
-  );
-
-  const getLOIDocument = useCallback(
-    (propertyId: string): LOIDocument | null => {
-      return (
-        jvTab.loiDocuments.find((doc) => doc.propertyId === propertyId) || null
-      );
-    },
-    [jvTab],
-  );
+  // Note: Inspection selection methods removed as per requirements
 
   // Filter management
   const setTabFilter = useCallback(
@@ -946,23 +725,6 @@ export const NewMarketplaceProvider: React.FC<{
       setTabError,
       setTabSearchStatus,
 
-      // Inspection selection
-      toggleInspectionSelection,
-      removeFromInspection,
-      clearInspectionSelection,
-      isSelectedForInspection,
-      canSelectMoreForInspection,
-
-      // Price negotiation
-      addNegotiatedPrice,
-      removeNegotiatedPrice,
-      getNegotiatedPrice,
-
-      // LOI documents
-      addLOIDocument,
-      removeLOIDocument,
-      getLOIDocument,
-
       // Filter management
       setTabFilter,
       clearTabFilters,
@@ -975,9 +737,7 @@ export const NewMarketplaceProvider: React.FC<{
       fetchTabData,
       searchTabProperties,
 
-      // Add for inspection modal
-      isAddForInspectionOpen,
-      setIsAddForInspectionOpen,
+      // Note: Add for inspection modal removed
 
       // Items per page
       itemsPerPage,
@@ -998,25 +758,12 @@ export const NewMarketplaceProvider: React.FC<{
       setTabStatus,
       setTabError,
       setTabSearchStatus,
-      toggleInspectionSelection,
-      removeFromInspection,
-      clearInspectionSelection,
-      isSelectedForInspection,
-      canSelectMoreForInspection,
-      addNegotiatedPrice,
-      removeNegotiatedPrice,
-      getNegotiatedPrice,
-      addLOIDocument,
-      removeLOIDocument,
-      getLOIDocument,
       setTabFilter,
       clearTabFilters,
       setTabPage,
       setTabPagination,
       fetchTabData,
       searchTabProperties,
-      isAddForInspectionOpen,
-      setIsAddForInspectionOpen,
       itemsPerPage,
       setItemsPerPage,
       resetAllTabs,
