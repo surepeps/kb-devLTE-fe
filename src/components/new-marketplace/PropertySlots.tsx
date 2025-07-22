@@ -3,8 +3,7 @@
 "use client";
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
-import PropertyCard from "./cards/PropertyCard";
-import JVPropertyCard from "./cards/JVPropertyCard";
+import { UniversalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import PriceNegotiationModal from "./modals/PriceNegotiationModal";
 import LOIUploadModal from "./modals/LOIUploadModal";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
