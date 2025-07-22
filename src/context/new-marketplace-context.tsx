@@ -973,7 +973,9 @@ export const NewMarketplaceProvider: React.FC<{
   // Auto-fetch initial data on mount for active tab
   useEffect(() => {
     const currentTabState = getCurrentTabState();
+    console.log(`Auto-fetch check: tab=${activeTab}, status=${currentTabState.formikStatus}, properties=${currentTabState.properties.length}`);
     if (currentTabState.formikStatus === "idle" && currentTabState.properties.length === 0) {
+      console.log(`Triggering fetchTabData for ${activeTab}`);
       fetchTabData(activeTab);
     }
   }, [activeTab, fetchTabData]);
