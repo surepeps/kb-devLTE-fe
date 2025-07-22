@@ -150,7 +150,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
 
       {/* Price Negotiation Modal */}
       {priceNegotiationModal.isOpen && (
-        <GlobalPriceNegotiationModal
+        <AdvancedPriceNegotiationModal
           isOpen={priceNegotiationModal.isOpen}
           property={priceNegotiationModal.property}
           onClose={() =>
