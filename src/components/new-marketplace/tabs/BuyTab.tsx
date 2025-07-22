@@ -17,7 +17,7 @@ const BuyTab = () => {
     addNegotiatedPrice,
     removeNegotiatedPrice,
     getNegotiatedPrice,
-    setIsAddForInspectionOpen,
+
   } = useNewMarketplace();
 
   // Modal states
