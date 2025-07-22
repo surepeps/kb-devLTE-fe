@@ -629,8 +629,19 @@ export const NewMarketplaceProvider: React.FC<{
         const { URLS } = await import("@/utils/URLS");
         const { GET_REQUEST } = await import("@/utils/requests");
 
+        // Debug environment variables
+        console.log("Environment check:", {
+          NODE_ENV: process.env.NODE_ENV,
+          NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+          URLS_BASE: URLS.BASE
+        });
+
         // Validate URL construction
         if (!URLS.BASE || URLS.BASE.includes("undefined")) {
+          console.error("API URL validation failed:", {
+            BASE: URLS.BASE,
+            env: process.env.NEXT_PUBLIC_API_URL
+          });
           throw new Error(
             "API URL is not properly configured. Please contact support.",
           );
