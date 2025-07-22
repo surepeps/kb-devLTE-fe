@@ -998,12 +998,6 @@ export const NewMarketplaceProvider: React.FC<{
       }
 
       console.log(`=== fetchTabData: Starting initial data fetch for ${tab} tab ===`);
-      console.log(`fetchTabData: Current tab state:`, {
-        tab,
-        formikStatus: getCurrentTabState().formikStatus,
-        propertiesLength: getCurrentTabState().properties.length,
-        searchStatus: getCurrentTabState().searchStatus
-      });
 
       // Map tab to correct briefType for API
       const briefTypeMapping = {
@@ -1019,9 +1013,15 @@ export const NewMarketplaceProvider: React.FC<{
         ...searchParams,
       };
       console.log(`fetchTabData: Using search params:`, defaultSearchParams);
-      await searchTabProperties(tab, defaultSearchParams);
+
+      try {
+        await searchTabProperties(tab, defaultSearchParams);
+        console.log(`fetchTabData: Completed for ${tab} tab`);
+      } catch (error) {
+        console.error(`fetchTabData: Error for ${tab} tab:`, error);
+      }
     },
-    [searchTabProperties, itemsPerPage, getCurrentTabState],
+    [searchTabProperties, itemsPerPage],
   );
 
   // Auto-fetch initial data on mount for active tab
