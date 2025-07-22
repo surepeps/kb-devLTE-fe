@@ -99,7 +99,6 @@ const JointVentureTab = () => {
         onRemoveLOI={handleRemoveLOI}
         selectedForInspection={jvTab.selectedForInspection}
         loiDocuments={jvTab.loiDocuments}
-        onOpenAddForInspection={openAddForInspection}
       />
 
       {/* LOI Upload Modal */}
