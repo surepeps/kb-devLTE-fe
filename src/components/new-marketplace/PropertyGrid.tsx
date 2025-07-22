@@ -124,15 +124,24 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   className="w-full"
                 >
-                  <EnhancedGlobalPropertyCard
-                    type={tab === "jv" ? "jv" : "standard"}
-                    tab={tab}
-                    property={property}
-                    cardData={cardData}
-                    images={property.pictures || property.images || []}
-                    isPremium={property.isPremium || false}
-                    onPropertyClick={() => onPropertyClick(property)}
-                  />
+                  {tab === "jv" ? (
+                    <GlobalJVPropertyCard
+                      property={property}
+                      cardData={cardData}
+                      images={property.pictures || property.images || []}
+                      isPremium={property.isPremium || false}
+                      onPropertyClick={() => onPropertyClick(property)}
+                    />
+                  ) : (
+                    <GlobalPropertyCard
+                      tab={tab}
+                      property={property}
+                      cardData={cardData}
+                      images={property.pictures || property.images || []}
+                      isPremium={property.isPremium || false}
+                      onPropertyClick={() => onPropertyClick(property)}
+                    />
+                  )}
                 </motion.div>
               );
             })}
