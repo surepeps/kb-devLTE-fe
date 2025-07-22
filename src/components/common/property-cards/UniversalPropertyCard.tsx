@@ -61,16 +61,96 @@ export interface UniversalPropertyCardProps {
  * For "Outright Sales", "Rent", "Shortlet": Uses StandardPropertyCard
  */
 const UniversalPropertyCard: React.FC<UniversalPropertyCardProps> = (props) => {
+  const pathname = usePathname();
+  const globalInspection = useGlobalInspectionState();
+
   const {
     property,
     cardData,
     forceCardType,
+    useGlobalInspection = true, // Default to true for global integration
+    sourceTab,
+    sourcePage = pathname,
     onPriceNegotiation = () => {},
     onRemoveNegotiation = () => {},
     onLOIUpload = () => {},
     onRemoveLOI = () => {},
+    isSelected: propIsSelected,
+    onInspectionToggle: propOnInspectionToggle,
+    currentSelections: propCurrentSelections,
+    maxSelections: propMaxSelections = 2,
     ...commonProps
   } = props;
+
+  // Use global inspection state if enabled, otherwise use props
+  const isSelected = useGlobalInspection
+    ? globalInspection.isPropertySelected(property._id)
+    : propIsSelected || false;
+
+  const currentSelections = useGlobalInspection
+    ? globalInspection.selectedCount
+    : propCurrentSelections || 0;
+
+  const maxSelections = propMaxSelections;
+
+  const handleInspectionToggle = () => {
+    if (useGlobalInspection) {
+      try {
+        globalInspection.toggleProperty(property, sourceTab, sourcePage);
+
+        if (!isSelected) {
+          toast.success("Property added for inspection");
+        } else {
+          toast.success("Property removed from inspection");
+        }
+      } catch (error: any) {
+        toast.error(error.message || "Failed to update inspection selection");
+      }
+    } else {
+      propOnInspectionToggle?.();
+    }
+  };
+
+  const handlePriceNegotiation = () => {
+    if (useGlobalInspection) {
+      // Handle global price negotiation if needed
+      onPriceNegotiation();
+    } else {
+      onPriceNegotiation();
+    }
+  };
+
+  const handleRemoveNegotiation = (propertyId: string) => {
+    if (useGlobalInspection) {
+      globalInspection.clearNegotiatedPrice(propertyId);
+    }
+    onRemoveNegotiation(propertyId);
+  };
+
+  const handleLOIUpload = () => {
+    if (useGlobalInspection) {
+      // Handle global LOI upload if needed
+      onLOIUpload();
+    } else {
+      onLOIUpload();
+    }
+  };
+
+  const handleRemoveLOI = (propertyId: string) => {
+    if (useGlobalInspection) {
+      globalInspection.clearLOIDocument(propertyId);
+    }
+    onRemoveLOI(propertyId);
+  };
+
+  // Get negotiated price and LOI document from global state if using global inspection
+  const negotiatedPrice = useGlobalInspection
+    ? globalInspection.getNegotiatedPrice(property._id)
+    : props.negotiatedPrice;
+
+  const loiDocument = useGlobalInspection
+    ? globalInspection.getLOIDocument(property._id)
+    : props.loiDocument;
 
   // Determine card type based on property
   const getCardType = (): "standard" | "jv" => {
