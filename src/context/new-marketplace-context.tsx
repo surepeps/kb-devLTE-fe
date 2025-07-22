@@ -778,14 +778,20 @@ export const NewMarketplaceProvider: React.FC<{
 
         console.log(`${tab} tab response data:`, responseData);
         console.log(`${tab} tab pagination:`, pagination);
+        console.log(`=== UPDATING ${tab} TAB STATE ===`);
 
-        // Update tab properties and pagination
+        // Update states in the correct order
+        console.log(`Setting ${responseData.length} properties for ${tab} tab`);
         setTabProperties(tab, responseData);
+
+        console.log(`Setting pagination for ${tab} tab`);
         setTabPagination(
           tab,
           pagination.totalPages || 1,
           pagination.total || responseData.length,
         );
+
+        console.log(`Setting page for ${tab} tab`);
         setTabPage(
           tab,
           pagination.currentPage ||
@@ -793,15 +799,17 @@ export const NewMarketplaceProvider: React.FC<{
             currentTabState.currentPage,
         );
 
+        console.log(`Setting search status to success for ${tab} tab`);
         setTabSearchStatus(tab, {
           status: "success",
           couldNotFindAProperty: responseData.length === 0,
         });
 
+        console.log(`Setting tab status to success for ${tab} tab`);
         setTabStatus(tab, "success");
 
         console.log(
-          `Successfully loaded ${responseData.length} properties for ${tab} tab. Page ${pagination.currentPage} of ${pagination.totalPages}`,
+          `=== COMPLETED: Successfully loaded ${responseData.length} properties for ${tab} tab ===`,
         );
       } catch (err: any) {
         console.error(
