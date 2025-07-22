@@ -220,7 +220,7 @@ export const GlobalPropertyActionsProvider: React.FC<{
       setNegotiatedPrices(newPrices);
       setLoiDocuments(newDocuments);
     },
-    [selectedForInspection, negotiatedPrices, loiDocuments, saveToStorage]
+    [selectedForInspection, negotiatedPrices, loiDocuments]
   );
 
   const clearInspectionSelection = useCallback(() => {
