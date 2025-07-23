@@ -405,7 +405,7 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
                 </button>
                 <Button
                   value={isSubmitting ? "Submitting..." : existingDocument ? "Update LOI" : "Submit LOI"}
-                  disabled={isSubmitting || !uploadedFileUrl}
+                  isDisabled={isSubmitting || !uploadedFileUrl}
                   onClick={handleSubmit}
                   className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed font-medium py-3 px-6 rounded-lg transition-all"
                 />
