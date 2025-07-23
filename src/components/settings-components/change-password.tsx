@@ -37,6 +37,7 @@ const ChangePassword = () => {
             oldPassword: formik.values.currentPassword,
             newPassword: formik.values.newPassword,
           },
+          undefined,
           Cookies.get('token')
         );
         console.log(response);
