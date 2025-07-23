@@ -351,9 +351,8 @@ const ContinueInspectionPage = () => {
                 loiDocuments={loiDocuments}
                 onBack={() => setCurrentStep("datetime")}
                 onComplete={() => {
-                  // Clear all selections and redirect
-                  clearAllSelections();
-                  router.push("/market-place");
+                  // Show success modal instead of immediate redirect
+                  setShowSuccessModal(true);
                 }}
               />
             </motion.div>
