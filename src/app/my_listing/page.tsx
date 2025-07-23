@@ -39,7 +39,7 @@ const page = () => {
             Cookies.get('token')
           );
           console.log('Fetched briefs:', response);
-          setBriefs(response || []);
+          setBriefs(response?.data || []);
         } catch (err) {
           console.error('Error fetching briefs:', err);
           setBriefs([]);
