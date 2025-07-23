@@ -11,11 +11,12 @@ import markerSVG from "@/svgs/marker.svg";
 import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "../../new-marketplace/ImageSwiper";
 import Button from "../../general-components/button";
+import { Property, PropertyImage } from "@/types/property.types";
 
 export interface StandardPropertyCardProps {
-  property: any;
+  property: Property;
   cardData: { header: string; value: string }[];
-  images: any[];
+  images: PropertyImage[];
   isPremium: boolean;
   onPropertyClick: () => void;
   onInspectionToggle: () => void;

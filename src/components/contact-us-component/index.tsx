@@ -1,24 +1,37 @@
 /** @format */
 
 "use client";
-import React, { ChangeEvent, FormEvent, FormEventHandler } from "react";
-import Input from "../general-components/Input";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { URLS } from "@/utils/URLS";
 import { contactUsData } from "@/data";
 import Image, { StaticImageData } from "next/image";
-import ContactUnit from "../contact_unit";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import ContactSuccessModal from "../modals/ContactSuccessModal";
+import { motion } from "framer-motion";
+import { MapPin, Phone, Mail, MessageCircle, Send, Loader2 } from "lucide-react";
 
-const ContactUs = () => {
-  const [status, setStatus] = React.useState<
-    "idle" | "pending" | "success" | "failed"
-  >("idle");
-  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+  phoneNumber: string;
+  subject: string;
+}
+
+interface ContactItem {
+  value: string;
+  icon: StaticImageData;
+  type: string;
+}
+
+const ContactUs: React.FC = () => {
+  const [status, setStatus] = useState<"idle" | "pending" | "success" | "failed">("idle");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(2, "Name must be at least 2 characters")
@@ -37,7 +50,8 @@ const ContactUs = () => {
       .max(15, "Phone number must be at most 15 digits"),
     subject: Yup.string().required("Subject is required"),
   });
-  const formik = useFormik({
+
+  const formik = useFormik<ContactFormData>({
     initialValues: {
       name: "",
       email: "",
@@ -72,159 +86,306 @@ const ContactUs = () => {
       }
     },
   });
+
+  const getIconForContact = (type: string) => {
+    switch (type) {
+      case 'mail':
+        return <Mail className="w-6 h-6 text-[#8DDB90]" />;
+      case 'call':
+        return <Phone className="w-6 h-6 text-[#8DDB90]" />;
+      case 'social_media':
+        return <MessageCircle className="w-6 h-6 text-[#8DDB90]" />;
+      default:
+        return <MapPin className="w-6 h-6 text-[#8DDB90]" />;
+    }
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
+  const contactVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut", delay: 0.2 } }
+  };
+
   return (
-    <div className="w-full flex items-center justify-center">
-      <div className="container flex flex-col justify-center items-center gap-[30px] md:gap-[60px] pb-[60px] pt-[20px] lg:py-[40px] px-[17px]">
-        <div className="flex flex-col justify-center items-center">
-          <h2 className="md:text-4xl text-3xl font-display text-center font-semibold text-[#09391C]">
-            Let&apos;s{" "}
-            <span className="md:text-4xl text-3xl font-display font-semibold text-[#8DDB90]">
-              chat
-            </span>
-            , reach out to us
-          </h2>
-          <p className="text-base md:text-xl font-normal text-[#5A5D63] text-center md:mx-[250px] md:px-[0px] mt-3">
-            Have questions or feedback? We are here to help. Send us a message
-            and we will respond within 24 hours.
-          </p>
-        </div>
-        <form
-          onSubmit={formik.handleSubmit}
-          className="w-full flex lg:flex-row flex-col gap-[40px] items-center justify-center"
+    <div className="min-h-screen bg-gradient-to-br from-[#F6FFF7] via-white to-[#F0FDF4] py-20">
+      <div className="container mx-auto px-4 lg:px-6">
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
         >
-          <div className="w-full md:w-[561px] flex flex-col gap-[40px]">
-            <div className="w-full grid grid-cols-2 gap-x-[15px] md:gap-x-[45px] gap-y-[20px]">
-              <Input
-                name="name"
-                label="Name"
-                type="text"
-                id="name"
-                formik={formik}
-                placeholder="Enter your name"
-                value={formik.values.name}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
+          <h1 className="text-5xl lg:text-6xl font-display font-bold text-[#09391C] mb-6">
+            Get in{" "}
+            <span className="text-[#8DDB90] relative">
+              Touch
+              <motion.div 
+                className="absolute -bottom-2 left-0 w-full h-1 bg-[#8DDB90] rounded-full"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
               />
-              <Input
-                name="phoneNumber"
-                label="Phone Number"
-                type="number"
-                id="phoneNumber"
-                formik={formik}
-                placeholder="Enter your phone number"
-                value={formik.values.phoneNumber}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-              />
-              <Input
-                name="email"
-                label="Email"
-                type="email"
-                id="email"
-                formik={formik}
-                placeholder="Enter your email"
-                value={formik.values.email}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-              />
-              <Input
-                name="subject"
-                label="Subject"
-                type="text"
-                id="subject"
-                formik={formik}
-                placeholder="Enter message subject"
-                value={formik.values.subject}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-              />
-              <label
-                htmlFor="message"
-                className="flex flex-col gap-[5px] w-full col-span-2"
-              >
-                <span className="text-base text-[#1E1E1E] font-medium">
-                  Tell us the issue
-                </span>
-                <textarea
-                  name="message"
-                  id="message"
-                  value={formik.values.message}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  className="h-[93px] w-full border-[1px] border-[#D6DDEB] rounded-[4px] py-[16px] px-[12px] bg-[#FAFAFA] placeholder:text-[#A8ADB7] text-black text-base focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 resize-none"
-                  placeholder="Tell us the issue"
-                ></textarea>
-                {(formik?.errors?.message || formik?.touched.message) && (
-                  <span className="text-red-600 text-xs">
-                    {formik?.errors?.message}
-                  </span>
-                )}
-              </label>
-            </div>
-            <button
-              className="h-[49px] md:h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF] disabled:opacity-50 disabled:cursor-not-allowed"
-              type="submit"
-              disabled={status === 'pending'}
-            >
-              {status === 'pending' ? 'Sending...' : 'Submit'}
-            </button>
-          </div>
-          <div className="w-full md:w-[589px] bg-[#FFFFFF] rounded-[4px] p-[15px] md:p-[40px] flex items-center justify-center shadow-md">
-            <div className="w-full h-full flex flex-col gap-[20px] md:gap-[30px]">
-              <h2 className="text-[28px] font-bold leading-[40.4px] text-[#0B0D0C] text-center">
-                Our Contact
+            </span>
+          </h1>
+          <p className="text-xl text-[#5A5D63] max-w-3xl mx-auto leading-relaxed">
+            We're here to help you with all your real estate needs. Send us a message
+            and we'll respond within 24 hours.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-16 max-w-7xl mx-auto">
+          {/* Contact Form */}
+          <motion.div
+            variants={formVariants}
+            initial="hidden"
+            animate="visible"
+            className="bg-white rounded-3xl shadow-2xl p-8 lg:p-12 border border-[#E5E7EB]"
+          >
+            <div className="mb-8">
+              <h2 className="text-3xl font-display font-bold text-[#09391C] mb-4">
+                Send us a Message
               </h2>
-              <div className="flex flex-col gap-[20px]">
-                {contactUsData.map(
-                  (
-                    item: {
-                      value: string;
-                      icon: StaticImageData;
-                      type: string;
-                    },
-                    idx: number,
-                  ) => {
-                    if (idx < 2) {
-                      return <ContactUnit key={idx} {...item} />;
-                    }
-                    return (
-                      <div
-                        key={idx}
-                        className="h-[66px] md:h-[90px] w-full flex items-center justify-between bg-[#F6FFF7] px-[15px]"
-                      >
-                        <div className="flex items-center gap-[20px]">
-                          <div className="flex items-center gap-[20px] bg-white justify-center md:w-[60px] md:h-[60px] w-[46px] h-[46px] rounded-full">
-                            <Image
-                              key={idx}
-                              src={item.icon}
-                              width={1000}
-                              height={1000}
-                              alt=""
-                              className="w-[24px] h-[24px]"
-                            />
-                          </div>
-                          <h3 className="md:text-[18px] font-semibold md:leading-[28px] text-base leading-[25px] text-[#000000]">
-                            {item.value}
-                          </h3>
-                        </div>
-                        {/**button */}
-                        <Link
-                          href={"https://wa.me/+2348132108659"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-[#8DDB90] h-[30px] md:h-[50px] w-[84px] md:w-[155px] text-xs md:text-base text-white font-bold flex items-center justify-center"
-                          type="button"
-                        >
-                          Chat with us
-                        </Link>
-                      </div>
-                    );
-                  },
+              <p className="text-[#6B7280]">
+                Fill out the form below and we'll get back to you as soon as possible.
+              </p>
+            </div>
+
+            <form onSubmit={formik.handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="block text-sm font-semibold text-[#374151]">
+                    Full Name *
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter your full name"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                      formik.errors.name && formik.touched.name
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-[#D1D5DB] focus:border-[#8DDB90]"
+                    } bg-[#F9FAFB] focus:bg-white`}
+                  />
+                  {formik.errors.name && formik.touched.name && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.name}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="phoneNumber" className="block text-sm font-semibold text-[#374151]">
+                    Phone Number
+                  </label>
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    value={formik.values.phoneNumber}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter your phone number"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                      formik.errors.phoneNumber && formik.touched.phoneNumber
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-[#D1D5DB] focus:border-[#8DDB90]"
+                    } bg-[#F9FAFB] focus:bg-white`}
+                  />
+                  {formik.errors.phoneNumber && formik.touched.phoneNumber && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.phoneNumber}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="block text-sm font-semibold text-[#374151]">
+                    Email Address *
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter your email address"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                      formik.errors.email && formik.touched.email
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-[#D1D5DB] focus:border-[#8DDB90]"
+                    } bg-[#F9FAFB] focus:bg-white`}
+                  />
+                  {formik.errors.email && formik.touched.email && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.email}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="subject" className="block text-sm font-semibold text-[#374151]">
+                    Subject *
+                  </label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    value={formik.values.subject}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="Enter message subject"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                      formik.errors.subject && formik.touched.subject
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-[#D1D5DB] focus:border-[#8DDB90]"
+                    } bg-[#F9FAFB] focus:bg-white`}
+                  />
+                  {formik.errors.subject && formik.touched.subject && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.subject}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="message" className="block text-sm font-semibold text-[#374151]">
+                  Your Message *
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={6}
+                  value={formik.values.message}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Tell us how we can help you..."
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 resize-none ${
+                    formik.errors.message && formik.touched.message
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-[#D1D5DB] focus:border-[#8DDB90]"
+                  } bg-[#F9FAFB] focus:bg-white`}
+                />
+                {formik.errors.message && formik.touched.message && (
+                  <p className="text-red-500 text-sm mt-1">{formik.errors.message}</p>
                 )}
               </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={status === 'pending'}
+                className="w-full bg-gradient-to-r from-[#8DDB90] to-[#6DB573] text-white font-bold py-4 px-8 rounded-xl hover:from-[#7BC97F] hover:to-[#5BA560] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg"
+              >
+                {status === 'pending' ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Send Message
+                  </>
+                )}
+              </motion.button>
+            </form>
+          </motion.div>
+
+          {/* Contact Information */}
+          <motion.div
+            variants={contactVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+          >
+            <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-12 border border-[#E5E7EB]">
+              <div className="mb-8">
+                <h2 className="text-3xl font-display font-bold text-[#09391C] mb-4">
+                  Contact Information
+                </h2>
+                <p className="text-[#6B7280]">
+                  Reach out to us directly through any of the channels below.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {contactUsData.map((item: ContactItem, idx: number) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * idx + 0.5 }}
+                    className="group p-6 rounded-2xl bg-gradient-to-r from-[#F6FFF7] to-[#F0FDF4] hover:from-[#8DDB90] hover:to-[#6DB573] transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          {getIconForContact(item.type)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-[#6B7280] group-hover:text-white/80 transition-colors">
+                            {item.type === 'mail' ? 'Email Address' : 
+                             item.type === 'call' ? 'Phone Number' : 'WhatsApp'}
+                          </p>
+                          <p className="text-lg font-semibold text-[#09391C] group-hover:text-white transition-colors">
+                            {item.value}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {item.type === 'social_media' && (
+                        <Link
+                          href="https://wa.me/+2348132108659"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-[#8DDB90] group-hover:bg-white text-white group-hover:text-[#8DDB90] font-bold py-3 px-6 rounded-full transition-all duration-300 text-sm"
+                        >
+                          Chat Now
+                        </Link>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        </form>
+
+            {/* Additional Information Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="bg-gradient-to-br from-[#09391C] to-[#0F4A2A] rounded-3xl shadow-2xl p-8 lg:p-12 text-white"
+            >
+              <h3 className="text-2xl font-display font-bold mb-4">
+                Why Choose Khabi-Teq?
+              </h3>
+              <ul className="space-y-3 text-white/90">
+                <li className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
+                  Expert real estate consultation
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
+                  24/7 customer support
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
+                  Verified property listings
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
+                  Transparent transactions
+                </li>
+              </ul>
+            </motion.div>
+          </motion.div>
+        </div>
 
         {/* Success Modal */}
         <ContactSuccessModal

@@ -1,5 +1,5 @@
 /** @format */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import { faArrowLeft, faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +16,7 @@ import React, {
 import Select, { components, MenuListProps } from "react-select";
 //import { useCallback } from 'react';
 import customStyles from "@/styles/inputStyle";
+import { FormikInstance } from "@/types/form.types";
 
 interface Option {
   value: string;
@@ -60,7 +61,7 @@ interface InputProps {
   isDisabled?: boolean;
   minNumber?: number;
   maxNumber?: number;
-  formik?: any;
+  formik?: FormikInstance;
   stateOptions?: Option[];
   lgasOptions?: Option[];
   idTypeOptions?: Option[];
@@ -293,10 +294,10 @@ const Input: FC<InputProps> = memo(
                   />
                 )}
               </div>
-              {((formik?.errors?.[name] && formik?.touched?.[name]) ||
+              {((formik?.errors?.[name as keyof typeof formik.errors] && formik?.touched?.[name as keyof typeof formik.touched]) ||
                 (error && touched)) && (
                 <span className="text-red-600 text-xs">
-                  {error || formik?.errors?.[name]}
+                  {error || formik?.errors?.[name as keyof typeof formik.errors]}
                 </span>
               )}
             </div>
