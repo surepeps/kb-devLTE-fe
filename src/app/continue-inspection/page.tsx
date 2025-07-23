@@ -168,6 +168,27 @@ const ContinueInspectionPage = () => {
     }
   };
 
+  const getMarketType = (property: any): string => {
+    if (!property) return "buy";
+
+    switch(property.briefType) {
+      case "Joint Venture":
+        return "jv";
+      case "Rent":
+        return "rent";
+      case "Shortlet":
+        return "shortlet";
+      case "Outright Sales":
+      default:
+        return "buy";
+    }
+  };
+
+  const handlePropertyClick = (property: any) => {
+    const marketType = getMarketType(property);
+    router.push(`/property/${marketType}/${property._id}`);
+  };
+
   // Success modal handlers
   const handleRequestAgain = () => {
     setShowSuccessModal(false);
@@ -312,6 +333,7 @@ const ContinueInspectionPage = () => {
                 onClearNegotiatedPrice={handleClearNegotiatedPrice}
                 onClearLOIDocument={handleClearLOIDocument}
                 onAddProperty={() => router.push("/market-place")}
+                onPropertyClick={handlePropertyClick}
                 negotiatedPrices={negotiatedPrices}
                 loiDocuments={loiDocuments}
               />
