@@ -17,24 +17,23 @@ import {
 } from "@/data/comprehensive-post-property-config";
 import "react-phone-number-input/style.css";
 import "@/styles/phone-input.css";
+import { PropertyFormData, StepProps } from "@/types/post-property.types";
 
-interface StepProps {
-  // No props needed
-}
+
 
 const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
   const { errors, touched, setFieldTouched, setFieldValue } =
-    useFormikContext<any>();
+    useFormikContext<PropertyFormData>();
 
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
     const fieldValue = fieldName.includes(".")
       ? fieldName
           .split(".")
-          .reduce((obj: any, key: string) => obj?.[key], propertyData)
-      : (propertyData as any)[fieldName];
+          .reduce((obj: Record<string, unknown>, key: string) => obj?.[key] as Record<string, unknown>, propertyData as Record<string, unknown>)
+      : (propertyData as Record<string, unknown>)[fieldName];
     const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
     const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
@@ -57,10 +56,15 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     return "border-[#C7CAD0]";
   };
 
-  const handleFieldChange = async (fieldName: string, value: any) => {
-    setFieldTouched(fieldName, true);
-    setFieldValue(fieldName, value);
-    updatePropertyData(fieldName as any, value);
+  const handleFieldChange = async <K extends keyof PropertyFormData>(
+    fieldName: K | string,
+    value: K extends keyof PropertyFormData ? PropertyFormData[K] : unknown
+  ) => {
+    setFieldTouched(fieldName as string, true);
+    setFieldValue(fieldName as string, value);
+    if (typeof fieldName === 'string' && fieldName in propertyData) {
+      updatePropertyData(fieldName as K, value as PropertyFormData[K]);
+    }
   };
 
   // Initialize contact info with user data
