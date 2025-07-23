@@ -129,7 +129,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
         />
 
         {/* LOI Upload Modal */}
-        {/* {loiUploadModal.isOpen && (
+        {loiUploadModal.isOpen && (
           <SimplifiedLOIUploadModal
             isOpen={loiUploadModal.isOpen}
             property={loiUploadModal.property}
@@ -137,7 +137,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
             onSubmit={handleLOISubmit}
             existingDocument={getLOIDocument(loiUploadModal.property?._id)}
           />
-        )} */}
+        )}
       </>
     );
   }
