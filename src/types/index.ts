@@ -1,16 +1,12 @@
 /** @format */
 
 // Export all type definitions for easy importing
-export * from './api.types';
-export * from './contact.types';
-export * from './form.types';
-export * from './post-property.types';
-export * from './property.types';
-export * from './search.types';
-
-// Re-export commonly used types from existing files
-export type { LocationState, LocationLGA } from './location';
-export type { PropertyTypeKey, BriefTypeKey } from './property.types';
+export * from "./api.types";
+export * from "./contact.types";
+export * from "./form.types";
+export * from "./post-property.types";
+export * from "./property.types";
+export * from "./search.types";
 
 // Navigation and UI types
 export interface NavigationItem {
@@ -21,7 +17,7 @@ export interface NavigationItem {
 }
 
 export interface SocialLink {
-  image: import('next/image').StaticImageData;
+  image: import("next/image").StaticImageData;
   url: string;
 }
 
@@ -58,8 +54,8 @@ export type StringOrNumber = string | number;
 export type ID = string;
 
 // Status types
-export type Status = 'idle' | 'loading' | 'success' | 'error';
-export type RequestStatus = 'pending' | 'fulfilled' | 'rejected';
+export type Status = "idle" | "loading" | "success" | "error";
+export type RequestStatus = "pending" | "fulfilled" | "rejected";
 
 // Generic response wrapper
 export interface ApiResponseWrapper<T = unknown> {
@@ -103,18 +99,18 @@ export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   closable?: boolean;
 }
 
 export interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "link";
+  size?: "sm" | "md" | "lg";
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   className?: string;
   children: React.ReactNode;
 }
@@ -144,7 +140,7 @@ export interface FileUpload {
 export interface MediaItem {
   id: string;
   url: string;
-  type: 'image' | 'video' | 'document';
+  type: "image" | "video" | "document";
   filename: string;
   size: number;
   mimeType: string;
@@ -152,8 +148,17 @@ export interface MediaItem {
 }
 
 // Search and filter utility types
-export type SortDirection = 'asc' | 'desc';
-export type FilterOperator = 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'contains';
+export type SortDirection = "asc" | "desc";
+export type FilterOperator =
+  | "eq"
+  | "ne"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "in"
+  | "nin"
+  | "contains";
 
 export interface SortOption {
   field: string;
