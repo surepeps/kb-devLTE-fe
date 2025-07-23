@@ -429,7 +429,7 @@ const AdvancedPriceNegotiationModal: React.FC<AdvancedPriceNegotiationModalProps
                 <Button
                   type="submit"
                   value={isSubmitting ? "Submitting..." : existingNegotiation ? "Update Offer" : "Submit Offer"}
-                  disabled={isSubmitting || !negotiatedPrice}
+                  isDisabled={isSubmitting || !negotiatedPrice}
                   onClick={handleSubmit}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed font-medium py-3 px-6 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                 />
