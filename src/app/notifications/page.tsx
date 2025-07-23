@@ -114,6 +114,7 @@ const NotificationsPage: React.FC = () => {
       const response = await PUT_REQUEST(
         `${URLS.BASE}/user/notifications/${notificationId}/unread`,
         {},
+        {},
         Cookies.get("token") || "",
       );
 
