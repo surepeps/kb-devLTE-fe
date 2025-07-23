@@ -107,7 +107,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                 type={tab === "jv" ? "jv" : "standard"}
                 tab={tab === "jv" ? "buy" : tab}
                 property={property.property}
-                cardData={getPropertyCardData(property.property)}
+                cardData={createPropertyCardData(property.property, tab === "jv" ? "Joint Venture" : undefined)}
                 images={
                   property.property?.pictures ||
                   property.property?.images ||
