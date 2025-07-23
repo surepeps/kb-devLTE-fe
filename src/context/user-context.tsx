@@ -48,7 +48,7 @@ export interface User {
     companyName: string;
     companyRegNumber: string;
   };
-} 
+}
 
 interface UserContextType {
   user: User | null;
@@ -74,7 +74,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const getUser = async () => {
-    const url = URLS.BASE + URLS.user + URLS.userProfile;
+    const url = URLS.BASE + URLS.userProfile;
     const token = Cookies.get("token");
 
     setIsLoading(true);
