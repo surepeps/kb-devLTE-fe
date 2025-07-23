@@ -11,6 +11,8 @@ import React, {
   useRef,
 } from "react";
 import toast from "react-hot-toast";
+import { URLS } from "@/utils/URLS";
+import { GET_REQUEST } from "@/utils/requests";
 
 // Types - Simplified to focus on property data and search
 
