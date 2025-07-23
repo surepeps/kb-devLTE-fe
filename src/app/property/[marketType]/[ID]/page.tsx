@@ -733,7 +733,7 @@ const ProductDetailsPage = () => {
             {/* Tenant Criteria */}
             {details.tenantCriteria.length > 0 && (
               <FeatureList
-                features={details.tenantCriteria.map((c) => c.criteria)}
+                features={details.tenantCriteria.map((c) => typeof c === 'string' ? c : c.criteria || c)}
                 title="Tenant Requirements"
               />
             )}
