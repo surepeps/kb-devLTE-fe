@@ -37,10 +37,10 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
     await POST_REQUEST(url, { requestId: id, isAvailable }, undefined, Cookies.get('token'))
       .then((result) => {
         if (result.success) {
-          toast.success(result.message);
+          toast.success(result.message || "Success");
           setAvailabilityStatus((prev) => ({ ...prev, [id]: isAvailable }));
         } else {
-          toast.error(result.error);
+          toast.error(result.error || "Error occurred");
         }
       })
       .catch((err) => {
