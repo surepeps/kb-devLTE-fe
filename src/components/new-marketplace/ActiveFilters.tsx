@@ -66,10 +66,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Bedrooms
-  if (filters.bedrooms) {
+  if ('bedrooms' in filters && filters.bedrooms) {
     activeFilters.push({
       key: "bedrooms",
       label: `Bedrooms: ${filters.bedrooms}`,
+      value: filters.bedrooms,
     });
   }
 
