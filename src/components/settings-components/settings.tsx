@@ -7,7 +7,7 @@ import axios from 'axios';
 import { URLS } from '@/utils/URLS';
 import Cookies from 'js-cookie';
 import { usePageContext } from '@/context/page-context';
-import { userDetailsProperties } from '@/types';
+import { userDetailsProperties } from '@/types/index';
 import Loading from '../loading-component/loading';
 import { UserAgentDataProps } from '@/types/agent_data_props';
 
