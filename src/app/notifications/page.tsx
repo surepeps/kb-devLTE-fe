@@ -205,6 +205,7 @@ const NotificationsPage: React.FC = () => {
       await PUT_REQUEST(
         `${URLS.BASE}/user/notifications/mark-all-read`,
         {},
+        {},
         Cookies.get("token") || "",
       );
     } catch (error) {
