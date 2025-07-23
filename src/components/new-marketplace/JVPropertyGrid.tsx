@@ -195,7 +195,7 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className="w-full"
             >
-              <JVPropertyCard
+              <GlobalJVPropertyCard
                 property={property}
                 cardData={getJVPropertyCardData(property)}
                 images={property.pictures || property.images || []}
