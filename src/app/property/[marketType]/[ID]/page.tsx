@@ -587,10 +587,11 @@ const ProductDetailsPage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
             >
-              <ActionButtons 
-                details={details} 
+              <ActionButtons
+                details={details}
                 onInspection={handleInspection}
                 onNegotiation={handleNegotiation}
+                isSelected={isSelectedForInspection(details._id)}
               />
             </motion.div>
 
