@@ -149,6 +149,7 @@ const NotificationsPage: React.FC = () => {
       await PUT_REQUEST(
         `${URLS.BASE}/user/notifications/${notificationId}`,
         { deleted: true },
+        {},
         Cookies.get("token") || "",
       );
     } catch (error) {
