@@ -370,7 +370,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
         </div>
 
         {/* Budget Summary */}
-        {(minPrice || maxPrice) && (
+        {(minPrice || maxPrice) ? (
           <motion.div
             className="bg-emerald-50 border border-emerald-200 rounded-lg p-4"
             initial={{ opacity: 0, y: 20 }}
@@ -399,7 +399,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
               )}
             </div>
           </motion.div>
-        )}
+        ): null}
 
         {/* Budget Tips */}
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
