@@ -632,6 +632,15 @@ const ProductDetailsPage = () => {
               <PropertyInfoCard details={details} />
             </motion.div>
 
+            {/* Documents */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <DocumentsList documents={details.docOnProperty} />
+            </motion.div>
+
             {/* Selected Briefs */}
             {Array.from(selectedBriefs).length > 0 && (
               <motion.div
