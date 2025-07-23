@@ -455,10 +455,10 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     const formData = new FormData();
     formData.append("file", file);
 
-    const response: UploadResponse = await POST_REQUEST(
+    const response = await POST_REQUEST(
       `${URLS.BASE + URLS.uploadImg}`,
       formData,
-    );
+    ) as ApiResponse<{ url: string }>;
 
     if (response?.success) {
       return response.data.url;
