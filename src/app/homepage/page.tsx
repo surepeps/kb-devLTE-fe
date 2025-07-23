@@ -75,33 +75,39 @@ const Homepage = ({
         `?access_token=${searchParams?.get("access_token")}`;
 
       (async () => {
-        await GET_REQUEST(url).then((response: VerifiedUser) => {
-          if ((response as unknown as { id: string; token: string }).id) {
-            Cookies.set(
-              "token",
-              (response as unknown as { token: string }).token,
-            );
+        try {
+          const response = await GET_REQUEST(url);
 
-            const user = response as unknown as {
-              id: string;
-              email: string;
-              password: string;
-              lastName: string;
-              firstName: string;
-              phoneNumber: string;
-              accountApproved: boolean;
-              userType: "Agent" | "Landowners";
-            };
+          // Type guard to check if response is a valid VerifiedUser
+          if (response && typeof response === 'object' && 'id' in response && 'token' in response) {
+            const userResponse = response as VerifiedUser;
 
-            setUser(user);
-            if (user.userType === "Landowners") {
-              router.push("/auth/login");
-            }
-            if (user.userType === "Agent") {
-              router.push("/agent/onboard");
+            if (userResponse.id && userResponse.token) {
+              Cookies.set("token", userResponse.token);
+
+              const user = {
+                id: userResponse.id,
+                email: userResponse.email,
+                password: userResponse.password,
+                lastName: userResponse.lastName,
+                firstName: userResponse.firstName,
+                phoneNumber: userResponse.phoneNumber,
+                accountApproved: userResponse.accountApproved,
+                userType: userResponse.userType as "Agent" | "Landowners",
+              };
+
+              setUser(user);
+              if (user.userType === "Landowners") {
+                router.push("/auth/login");
+              }
+              if (user.userType === "Agent") {
+                router.push("/agent/onboard");
+              }
             }
           }
-        });
+        } catch (error) {
+          console.error("Error verifying email:", error);
+        }
       })();
     }
   }, [router, searchParams, setUser]);

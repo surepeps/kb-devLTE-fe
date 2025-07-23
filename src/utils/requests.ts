@@ -1,10 +1,17 @@
 /** @format */
 
-export const GET_REQUEST = async (
+interface ApiResponse<T = any> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: string;
+}
+
+export const GET_REQUEST = async <T = any>(
   url: string,
   token?: string,
   retryCount = 0,
-): Promise<any> => {
+): Promise<ApiResponse<T>> => {
   try {
     // Check if URL is valid
     if (!url || url.includes("undefined")) {
@@ -89,7 +96,7 @@ export const GET_REQUEST = async (
   }
 };
 
-export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string) => {
+export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token?: string): Promise<ApiResponse<T>> => {
   try {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -116,12 +123,12 @@ export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string
   }
 };
 
-export const POST_REQUEST = async (
+export const POST_REQUEST = async <T = any>(
   url: string,
   data: unknown,
   customHeaders?: Record<string, string>,
   token?: string,
-) => {
+): Promise<ApiResponse<T>> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
@@ -156,11 +163,11 @@ export const POST_REQUEST = async (
 };
 
 
-export const POST_REQUEST_FILE_UPLOAD = async (
+export const POST_REQUEST_FILE_UPLOAD = async <T = any>(
   url: string,
   data: FormData,
   token?: string,
-) => {
+): Promise<ApiResponse<T>> => {
   try {
     const request = await fetch(url, {
       method: "POST",
@@ -181,12 +188,12 @@ export const POST_REQUEST_FILE_UPLOAD = async (
   }
 };
 
-export const PUT_REQUEST = async (
+export const PUT_REQUEST = async <T = any>(
   url: string,
   data: unknown,
   customHeaders?: Record<string, string>,
   token?: string,
-) => {
+): Promise<ApiResponse<T>> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",

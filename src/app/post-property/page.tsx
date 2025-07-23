@@ -45,7 +45,7 @@ import {
 } from "@/utils/validation/post-property-validation";
 
 // Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
-const getValidationSchema = (currentStep: number, propertyData: any) => {
+const getValidationSchema = (currentStep: number, propertyData: Record<string, unknown>) => {
   switch (currentStep) {
     case 0:
       return Yup.object({

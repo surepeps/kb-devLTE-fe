@@ -2,7 +2,7 @@
 
 import { benefitData, HighlightData } from '@/data';
 import React, { FC } from 'react';
-import HighlightUnit from '../hightlight-unit';
+import HighlightUnit from '../highlight-unit';
 
 interface Section3Props {
   heading: string;

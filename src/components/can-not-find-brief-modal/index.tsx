@@ -1,9 +1,10 @@
 /** @format */
 
 import React, { FC, Fragment, MouseEvent } from 'react';
+import { FormikProps } from 'formik';
 
 type ModalProps = {
-  formik: any;
+  formik: FormikProps<any>;
   header?: string;
   footer?: string;
   submitPreference: (event: MouseEvent<HTMLButtonElement>) => void;
