@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Rectangle.png";
 import { Swiper, SwiperSlide } from "swiper/react";
