@@ -15,7 +15,7 @@ import React, {
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
-
+ 
 export interface User {
   accountApproved: boolean;
   _id?: string;
@@ -92,8 +92,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await GET_REQUEST(url, token);
 
-      if (response?.success && response?.data?._id) {
-        setUserState(response.data); // ✅ correctly set user
+      if (response?.success && response?.data?.user.id) {
+        setUserState(response.data.user); // ✅ correctly set user
       } else if (
         typeof response?.message === "string" &&
         (response.message.toLowerCase().includes("unauthorized") ||

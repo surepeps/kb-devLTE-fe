@@ -59,11 +59,11 @@ const Login: FC = () => {
     password: Yup.string().required("Password is required"),
   });
 
-  const handleAuthSuccess = useCallback((response: any) => {   
-    const userPayload = response.user;
+  const handleAuthSuccess = useCallback((response: any) => {  
+    const userPayload = response.data.user;
 
     sessionStorage.setItem("user", JSON.stringify(userPayload));
-    Cookies.set("token", response.token);
+    Cookies.set("token", response.data.token);
     setUser(userPayload);
 
     setOverlayVisible(true);
@@ -98,9 +98,6 @@ const Login: FC = () => {
         const response = await toast.promise(
           (async () => {
             const res = await POST_REQUEST(url, values);
-            if (!res || res?.error || !res?.data?.user?.id) {
-              throw new Error(res?.message || res?.error || "Sign In failed");
-            }
             return res;
           })(),
           {
