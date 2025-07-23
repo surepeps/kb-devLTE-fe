@@ -59,6 +59,40 @@ const isJVProperty = (property: any): boolean => {
   return false;
 };
 
+// Wrapper component for property cards in inspection view
+const InspectionPropertyCard: React.FC<{
+  property: any;
+  tab: "buy" | "jv" | "rent" | "shortlet";
+  onRemove: (propertyId: string) => void;
+}> = ({ property, tab, onRemove }) => {
+  const { removeFromInspection } = useGlobalPropertyActions();
+
+  const handleInspectionToggle = () => {
+    // In inspection view, clicking the inspection button should remove the property
+    onRemove(property._id || property.id);
+  };
+
+  return (
+    <EnhancedGlobalPropertyCard
+      type={isJVProperty(property) ? "jv" : "standard"}
+      tab={tab === "jv" ? "buy" : tab}
+      property={property}
+      cardData={createPropertyCardData(
+        property,
+        isJVProperty(property) ? "Joint Venture" : undefined
+      )}
+      images={
+        property?.pictures ||
+        property?.images ||
+        []
+      }
+      isPremium={property?.isPremium || false}
+      onPropertyClick={() => {}} // Disabled in inspection view
+      className="max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px]"
+    />
+  );
+};
+
 const PropertySlots: React.FC<PropertySlotsProps> = ({
   selectedProperties,
   maxSlots,
