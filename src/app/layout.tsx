@@ -18,6 +18,7 @@ import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
 import { GlobalPropertyActionsProvider } from '@/context/global-property-actions-context';
 import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
 import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsFAB';
+import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 
 const SHOW_COMING_SOON = false;
 
