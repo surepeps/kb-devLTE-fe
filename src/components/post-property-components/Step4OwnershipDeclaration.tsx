@@ -63,7 +63,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     setFieldTouched(fieldName as string, true);
     setFieldValue(fieldName as string, value);
     if (typeof fieldName === 'string' && fieldName in propertyData) {
-      updatePropertyData(fieldName as K, value as PropertyFormData[K]);
+      updatePropertyData(fieldName as any, value);
     }
   };
 
