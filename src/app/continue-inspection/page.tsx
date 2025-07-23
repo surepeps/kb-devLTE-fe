@@ -33,6 +33,9 @@ const ContinueInspectionPage = () => {
     "selection" | "datetime" | "payment"
   >("selection");
 
+  // Success modal state
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   // Store inspection details between steps
   const [inspectionDetails, setInspectionDetails] = useState<{
     date: string;
