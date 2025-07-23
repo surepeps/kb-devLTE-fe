@@ -155,7 +155,7 @@ const ContinueInspectionPage = () => {
     }, {} as Record<string, number>);
 
     const dominantType = Object.entries(typeCount).sort(([,a], [,b]) => b - a)[0]?.[0];
-    
+
     switch (dominantType) {
       case "Joint Venture":
         return "jv";
@@ -166,6 +166,25 @@ const ContinueInspectionPage = () => {
       default:
         return "buy";
     }
+  };
+
+  // Success modal handlers
+  const handleRequestAgain = () => {
+    setShowSuccessModal(false);
+    clearAllSelections();
+    router.push("/market-place");
+  };
+
+  const handleWaitForReply = () => {
+    setShowSuccessModal(false);
+    clearAllSelections();
+    router.push("/");
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    clearAllSelections();
+    router.push("/");
   };
 
   if (!initialLoad && selectedProperties.length === 0) {
