@@ -84,8 +84,8 @@ export default function LandlordDashboard() {
         Cookies.get("token"),
       );
 
-      if (response?.success && response.dashboard) {
-        setDashboardData(response.dashboard);
+      if (response?.success && response.data?.dashboard) {
+        setDashboardData(response.data.dashboard);
       } else {
         toast.error("Failed to load dashboard data");
         setDashboardData(null);
