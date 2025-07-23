@@ -123,12 +123,12 @@ export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string
   }
 };
 
-export const POST_REQUEST = async (
+export const POST_REQUEST = async <T = any>(
   url: string,
   data: unknown,
   customHeaders?: Record<string, string>,
   token?: string,
-) => {
+): Promise<ApiResponse<T>> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
