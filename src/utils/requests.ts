@@ -91,7 +91,7 @@ export const GET_REQUEST = async (
 
 export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string) => {
   try {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
 
