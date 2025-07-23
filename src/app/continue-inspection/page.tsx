@@ -333,6 +333,7 @@ const ContinueInspectionPage = () => {
                 onClearNegotiatedPrice={handleClearNegotiatedPrice}
                 onClearLOIDocument={handleClearLOIDocument}
                 onAddProperty={() => router.push("/market-place")}
+                onPropertyClick={handlePropertyClick}
                 negotiatedPrices={negotiatedPrices}
                 loiDocuments={loiDocuments}
               />
