@@ -261,7 +261,7 @@ const StepProgressIndicator = memo(
     currentStep,
     onStepClick,
   }: {
-    steps: any[];
+    steps: { label: string; icon: string }[];
     currentStep: number;
     onStepClick: (index: number) => void;
   }) => (
