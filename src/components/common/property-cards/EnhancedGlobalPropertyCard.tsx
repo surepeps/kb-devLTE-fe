@@ -28,6 +28,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   images,
   isPremium,
   onPropertyClick,
+  onInspectionToggle: customInspectionToggle,
   className = "",
 }) => {
   const {
