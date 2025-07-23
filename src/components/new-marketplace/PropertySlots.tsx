@@ -119,7 +119,13 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                     []
                   }
                   isPremium={property.property?.isPremium || false}
+                  isSelected={true} // Property is selected for inspection
+                  loiDocument={getLOIDocument(property.propertyId)}
                   onPropertyClick={() => {}} // Disabled in inspection view
+                  onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
+                  onLOIUpload={() => {}} // Could add LOI upload functionality
+                  onUpdateLOI={() => {}} // Could add LOI update functionality
+                  onRemoveLOI={() => onClearLOIDocument && onClearLOIDocument(property.propertyId)}
                 />
               ) : (
                 <GlobalPropertyCard
