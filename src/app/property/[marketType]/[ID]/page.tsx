@@ -4,7 +4,32 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, MapPin, Calendar, Share2, Heart, Phone, Mail, Star, Bed, Bath, Car, Maximize, CheckCircle, ExternalLink, Camera, ArrowLeft, ArrowRight, X, Eye, Clock, Home, User, FileText, Shield } from "lucide-react";
+import {
+  ChevronLeft,
+  MapPin,
+  Calendar,
+  Share2,
+  Heart,
+  Phone,
+  Mail,
+  Star,
+  Bed,
+  Bath,
+  Car,
+  Maximize,
+  CheckCircle,
+  ExternalLink,
+  Camera,
+  ArrowLeft,
+  ArrowRight,
+  X,
+  Eye,
+  Clock,
+  Home,
+  User,
+  FileText,
+  Shield,
+} from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -40,29 +65,34 @@ interface PropertyDetails {
   };
   additionalFeatures: {
     additionalFeatures: string[];
-    noOfBedrooms?: number;
-    noOfBathrooms?: number;
-    noOfToilets?: number;
-    noOfCarParks?: number;
+    noOfBedrooms: number;
+    noOfBathrooms: number;
+    noOfToilets: number;
+    noOfCarParks: number;
   };
   features: string[];
-  tenantCriteria: { _id: string; criteria: string }[];
+  tenantCriteria: string[];
   areYouTheOwner: boolean;
-  isAvailable: boolean | string;
-  isApproved?: boolean;
-  isRejected?: boolean;
+  isAvailable: boolean;
+  isApproved: boolean;
+  isRejected: boolean;
   isPreference?: boolean;
-  isPremium?: boolean;
+  isPremium: boolean;
   pictures: string[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   owner: string;
-  docOnProperty: { isProvided: boolean; _id: string; docName: string }[];
-  briefType?: string;
-  propertyCondition?: string;
-  noOfCarParks?: number;
-  noOfBathrooms?: number;
-  noOfToilets?: number;
+  docOnProperty: {
+    docName: string;
+    isProvided: boolean;
+  }[];
+  briefType: string;
+  propertyCondition: string;
+  noOfCarParks: number;
+  noOfBathrooms: number;
+  noOfToilets: number;
+  description: string;
+  addtionalInfo?: string;
 }
 
 // Image Gallery Component
@@ -85,10 +115,13 @@ const ImageGallery = ({ images }: { images: string[] }) => {
       <div className="relative group">
         <Swiper
           modules={[Navigation, Pagination, Thumbs, Autoplay]}
-          thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+          thumbs={{
+            swiper:
+              thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+          }}
           navigation={{
-            nextEl: '.swiper-button-next-custom',
-            prevEl: '.swiper-button-prev-custom',
+            nextEl: ".swiper-button-next-custom",
+            prevEl: ".swiper-button-prev-custom",
           }}
           pagination={{ clickable: true }}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
@@ -114,7 +147,7 @@ const ImageGallery = ({ images }: { images: string[] }) => {
               </button>
             </SwiperSlide>
           ))}
-          
+
           {/* Custom Navigation Buttons */}
           <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
             <ArrowLeft className="w-5 h-5" />
@@ -141,9 +174,13 @@ const ImageGallery = ({ images }: { images: string[] }) => {
         >
           {validImages.map((image, index) => (
             <SwiperSlide key={index} className="cursor-pointer">
-              <div className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-300 ${
-                index === activeIndex ? 'ring-2 ring-blue-500 opacity-100' : 'opacity-70 hover:opacity-100'
-              }`}>
+              <div
+                className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-300 ${
+                  index === activeIndex
+                    ? "ring-2 ring-blue-500 opacity-100"
+                    : "opacity-70 hover:opacity-100"
+                }`}
+              >
                 <Image
                   src={image}
                   alt={`Thumbnail ${index + 1}`}
@@ -206,17 +243,21 @@ const PropertyStats = ({ details }: { details: PropertyDetails }) => {
     {
       icon: <Bath className="w-5 h-5" />,
       label: "Bathrooms",
-      value: details.additionalFeatures?.noOfBathrooms || details.noOfBathrooms || 0,
+      value:
+        details.additionalFeatures?.noOfBathrooms || details.noOfBathrooms || 0,
     },
     {
       icon: <Car className="w-5 h-5" />,
       label: "Parking",
-      value: details.additionalFeatures?.noOfCarParks || details.noOfCarParks || 0,
+      value:
+        details.additionalFeatures?.noOfCarParks || details.noOfCarParks || 0,
     },
     {
       icon: <Maximize className="w-5 h-5" />,
       label: "Land Size",
-      value: details.landSize?.size ? `${details.landSize.size} ${details.landSize.measurementType || ''}` : 'N/A',
+      value: details.landSize?.size
+        ? `${details.landSize.size} ${details.landSize.measurementType || ""}`
+        : "N/A",
     },
   ];
 
@@ -242,7 +283,13 @@ const PropertyStats = ({ details }: { details: PropertyDetails }) => {
 };
 
 // Feature List Component
-const FeatureList = ({ features, title }: { features: string[]; title: string }) => {
+const FeatureList = ({
+  features,
+  title,
+}: {
+  features: string[];
+  title: string;
+}) => {
   if (!features.length) return null;
 
   return (
@@ -270,25 +317,56 @@ const FeatureList = ({ features, title }: { features: string[]; title: string })
 // Property Info Card Component
 const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
   const infoItems = [
-    { label: "Property Type", value: details.propertyType, icon: <Home className="w-4 h-4" /> },
-    { label: "Listing Type", value: details.briefType || "Standard", icon: <FileText className="w-4 h-4" /> },
-    { label: "Condition", value: details.propertyCondition || "Good", icon: <Shield className="w-4 h-4" /> },
-    { label: "Owner", value: details.areYouTheOwner ? "Owner" : "Agent", icon: <User className="w-4 h-4" /> },
-    { label: "Date Listed", value: new Date(details.createdAt).toLocaleDateString(), icon: <Calendar className="w-4 h-4" /> },
-    { label: "Last Updated", value: new Date(details.updatedAt).toLocaleDateString(), icon: <Clock className="w-4 h-4" /> },
+    {
+      label: "Property Type",
+      value: details.propertyType,
+      icon: <Home className="w-4 h-4" />,
+    },
+    {
+      label: "Listing Type",
+      value: details.briefType || "Standard",
+      icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      label: "Condition",
+      value: details.propertyCondition || "Good",
+      icon: <Shield className="w-4 h-4" />,
+    },
+    {
+      label: "Owner",
+      value: details.areYouTheOwner ? "Owner" : "Agent",
+      icon: <User className="w-4 h-4" />,
+    },
+    {
+      label: "Date Listed",
+      value: new Date(details.createdAt).toLocaleDateString(),
+      icon: <Calendar className="w-4 h-4" />,
+    },
+    {
+      label: "Last Updated",
+      value: new Date(details.updatedAt).toLocaleDateString(),
+      icon: <Clock className="w-4 h-4" />,
+    },
   ];
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Information</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Property Information
+      </h3>
       <div className="space-y-4">
         {infoItems.map((item, index) => (
-          <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+          <div
+            key={index}
+            className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
+          >
             <div className="flex items-center text-gray-600">
               {item.icon}
               <span className="ml-2 text-sm">{item.label}</span>
             </div>
-            <span className="text-sm font-medium text-gray-900">{item.value}</span>
+            <span className="text-sm font-medium text-gray-900">
+              {item.value}
+            </span>
           </div>
         ))}
       </div>
@@ -297,7 +375,11 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
 };
 
 // Documents Component
-const DocumentsList = ({ documents }: { documents: PropertyDetails['docOnProperty'] }) => {
+const DocumentsList = ({
+  documents,
+}: {
+  documents: PropertyDetails["docOnProperty"];
+}) => {
   if (!documents || documents.length === 0) return null;
 
   return (
@@ -308,14 +390,21 @@ const DocumentsList = ({ documents }: { documents: PropertyDetails['docOnPropert
       </h3>
       <div className="space-y-3">
         {documents.map((doc, index) => (
-          <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-            <span className="text-sm font-medium text-gray-900">{doc.docName}</span>
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              doc.isProvided
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
-            }`}>
-              {doc.isProvided ? 'Available' : 'Not Available'}
+          <div
+            key={index}
+            className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg"
+          >
+            <span className="text-sm font-medium text-gray-900">
+              {doc.docName}
+            </span>
+            <span
+              className={`text-xs px-2 py-1 rounded-full ${
+                doc.isProvided
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
+              {doc.isProvided ? "Available" : "Not Available"}
             </span>
           </div>
         ))}
@@ -325,7 +414,12 @@ const DocumentsList = ({ documents }: { documents: PropertyDetails['docOnPropert
 };
 
 // Action Buttons Component
-const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
+const ActionButtons = ({
+  details,
+  onInspection,
+  onNegotiation,
+  isSelected,
+}: {
   details: PropertyDetails;
   onInspection: () => void;
   onNegotiation: () => void;
@@ -338,12 +432,16 @@ const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
       {/* Price */}
       <div className="text-center md:text-left">
         <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          ₦{details.price ? Number(details.price).toLocaleString() : 'Contact for price'}
+          ₦
+          {details.price
+            ? Number(details.price).toLocaleString()
+            : "Contact for price"}
         </div>
         <div className="flex items-center justify-center md:justify-start text-gray-600">
           <MapPin className="w-4 h-4 mr-1" />
           <span className="text-sm">
-            {details.location.area}, {details.location.localGovernment}, {details.location.state}
+            {details.location.area}, {details.location.localGovernment},{" "}
+            {details.location.state}
           </span>
         </div>
       </div>
@@ -374,10 +472,10 @@ const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
       <div className="flex gap-3">
         <button
           onClick={() => setIsLiked(!isLiked)}
-          className={`flex-1 border-2 ${isLiked ? 'border-red-500 text-red-500' : 'border-gray-300 text-gray-600'} hover:border-red-500 hover:text-red-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center`}
+          className={`flex-1 border-2 ${isLiked ? "border-red-500 text-red-500" : "border-gray-300 text-gray-600"} hover:border-red-500 hover:text-red-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center`}
         >
-          <Heart className={`w-5 h-5 mr-2 ${isLiked ? 'fill-current' : ''}`} />
-          {isLiked ? 'Saved' : 'Save'}
+          <Heart className={`w-5 h-5 mr-2 ${isLiked ? "fill-current" : ""}`} />
+          {isLiked ? "Saved" : "Save"}
         </button>
         <button className="flex-1 border-2 border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center">
           <Share2 className="w-5 h-5 mr-2" />
@@ -387,12 +485,14 @@ const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
 
       {/* Status Badge */}
       <div className="flex justify-center md:justify-start">
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-          details.isAvailable 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-red-100 text-red-800'
-        }`}>
-          {details.isAvailable ? 'Available' : 'Not Available'}
+        <span
+          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+            details.isAvailable
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {details.isAvailable ? "Available" : "Not Available"}
         </span>
       </div>
     </div>
@@ -405,9 +505,11 @@ const ProductDetailsPage = () => {
   const [details, setDetails] = useState<PropertyDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
-  const { setPropertySelectedForInspection, setIsComingFromPriceNeg } = usePageContext();
+  const { setPropertySelectedForInspection, setIsComingFromPriceNeg } =
+    usePageContext();
   const { selectedBriefs } = useSelectedBriefs();
-  const { toggleInspectionSelection, isSelectedForInspection } = useGlobalPropertyActions();
+  const { toggleInspectionSelection, isSelectedForInspection } =
+    useGlobalPropertyActions();
 
   const marketType = params?.marketType ?? "";
   const id = params?.ID ?? "";
@@ -436,11 +538,15 @@ const ProductDetailsPage = () => {
             _id: propertyData._id,
             propertyId: propertyData._id,
             price: propertyData.price,
-            propertyType: propertyData.typeOfBuilding || propertyData.propertyType,
+            propertyType:
+              propertyData.typeOfBuilding || propertyData.propertyType,
             bedRoom: propertyData.additionalFeatures?.noOfBedroom || 0,
             propertyStatus: propertyData.propertyCondition || "",
             location: propertyData.location,
-            landSize: propertyData.landSize || { measurementType: "", size: null },
+            landSize: propertyData.landSize || {
+              measurementType: "",
+              size: null,
+            },
             additionalFeatures: {
               additionalFeatures: propertyData.features || [],
               noOfBedrooms: propertyData.additionalFeatures?.noOfBedroom || 0,
@@ -451,22 +557,28 @@ const ProductDetailsPage = () => {
             features: propertyData.features || [],
             tenantCriteria: propertyData.tenantCriteria || [],
             areYouTheOwner: propertyData.areYouTheOwner ?? false,
-            isAvailable: propertyData.isAvailable === "yes" || propertyData.isAvailable === true,
+            isAvailable:
+              propertyData.isAvailable === "yes" ||
+              propertyData.isAvailable === true,
             isApproved: propertyData.isApproved ?? false,
             isRejected: propertyData.isRejected ?? false,
             isPreference: propertyData.isPreference ?? false,
             isPremium: propertyData.isPremium ?? false,
-            pictures: propertyData.pictures && propertyData.pictures.length > 0
-              ? propertyData.pictures
-              : [sampleImage.src],
+            pictures:
+              propertyData.pictures && propertyData.pictures.length > 0
+                ? propertyData.pictures
+                : [sampleImage.src],
             createdAt: propertyData.createdAt,
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
             docOnProperty: propertyData.docOnProperty || [],
-            briefType: propertyData.briefType || (
-              propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
-              propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown"
-            ),
+            briefType:
+              propertyData.briefType ||
+              (propertyData.propertyCategory === "for_sale"
+                ? "Outright Sales"
+                : propertyData.propertyCategory === "for_rent"
+                  ? "Rent"
+                  : "Unknown"),
             propertyCondition: propertyData.propertyCondition || "",
             noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
             noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
@@ -478,7 +590,9 @@ const ProductDetailsPage = () => {
 
           // Handle similar properties from the new response
           if (response.data.data.similarProperties) {
-            setSimilarProperties(response.data.data.similarProperties.slice(0, 3));
+            setSimilarProperties(
+              response.data.data.similarProperties.slice(0, 3),
+            );
           }
         }
       } catch (error) {
@@ -513,8 +627,12 @@ const ProductDetailsPage = () => {
   const handleInspection = () => {
     if (details) {
       // Determine the tab based on property category
-      const sourceTab = details.briefType === "Joint Venture" ? "jv" :
-                       details.briefType === "Rent" ? "rent" : "buy";
+      const sourceTab =
+        details.briefType === "Joint Venture"
+          ? "jv"
+          : details.briefType === "Rent"
+            ? "rent"
+            : "buy";
 
       toggleInspectionSelection(details, sourceTab, "property-details");
 
@@ -543,8 +661,12 @@ const ProductDetailsPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Property Not Found</h2>
-          <p className="text-gray-600 mb-4">The property you're looking for doesn't exist.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Property Not Found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The property you're looking for doesn't exist.
+          </p>
           <button
             onClick={() => router.back()}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -570,7 +692,9 @@ const ProductDetailsPage = () => {
               <span className="font-medium">Back</span>
             </button>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">ID: {details.owner.slice(-8)}</span>
+              <span className="text-sm text-gray-500">
+                ID: {details.owner.slice(-8)}
+              </span>
             </div>
           </div>
         </div>
@@ -600,14 +724,17 @@ const ProductDetailsPage = () => {
 
             {/* Property Features */}
             {details.features.length > 0 && (
-              <FeatureList features={details.features} title="Property Features" />
+              <FeatureList
+                features={details.features}
+                title="Property Features"
+              />
             )}
 
             {/* Tenant Criteria */}
             {details.tenantCriteria.length > 0 && (
-              <FeatureList 
-                features={details.tenantCriteria.map(c => c.criteria)} 
-                title="Tenant Requirements" 
+              <FeatureList
+                features={details.tenantCriteria.map((c) => c.criteria)}
+                title="Tenant Requirements"
               />
             )}
 
@@ -619,7 +746,9 @@ const ProductDetailsPage = () => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="bg-white border border-gray-200 rounded-xl p-6"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Description</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Property Description
+                </h3>
                 <div className="prose prose-gray max-w-none">
                   <p className="text-gray-700 text-sm leading-relaxed">
                     {(details as any).description}
@@ -635,11 +764,15 @@ const ProductDetailsPage = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-white border border-gray-200 rounded-xl p-6"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Additional Information
+              </h3>
               <div className="prose prose-gray max-w-none">
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  This property is managed by Khabi-Teq Realty. All transactions are secure and verified.
-                  For more information about this property, please contact us directly or schedule an inspection.
+                  This property is managed by Khabi-Teq Realty. All transactions
+                  are secure and verified. For more information about this
+                  property, please contact us directly or schedule an
+                  inspection.
                 </p>
                 {(details as any).addtionalInfo && (
                   <p className="text-gray-700 text-sm leading-relaxed mt-3">
@@ -693,10 +826,14 @@ const ProductDetailsPage = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Selected Briefs</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Selected Briefs
+                </h3>
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
                   <p className="text-orange-800 font-medium">
-                    {Array.from(selectedBriefs).length} brief{Array.from(selectedBriefs).length !== 1 ? 's' : ''} selected
+                    {Array.from(selectedBriefs).length} brief
+                    {Array.from(selectedBriefs).length !== 1 ? "s" : ""}{" "}
+                    selected
                   </p>
                   <button className="mt-2 text-orange-600 hover:text-orange-700 text-sm font-medium">
                     View Details
@@ -713,12 +850,16 @@ const ProductDetailsPage = () => {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Similar Properties</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Similar Properties
+                </h3>
                 <div className="space-y-4">
                   {similarProperties.slice(0, 2).map((property, index) => (
                     <div
                       key={index}
-                      onClick={() => router.push(`/property/Rent/${property._id}`)}
+                      onClick={() =>
+                        router.push(`/property/Rent/${property._id}`)
+                      }
                       className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                     >
                       <div className="flex space-x-3">
@@ -736,10 +877,14 @@ const ProductDetailsPage = () => {
                             {property.propertyType}
                           </p>
                           <p className="text-xs text-gray-500 mb-1">
-                            {property.location.state}, {property.location.localGovernment}
+                            {property.location.state},{" "}
+                            {property.location.localGovernment}
                           </p>
                           <p className="text-sm font-semibold text-green-600">
-                            ₦{Number(property.rentalPrice || property.price || 0).toLocaleString()}
+                            ₦
+                            {Number(
+                              property.rentalPrice || property.price || 0,
+                            ).toLocaleString()}
                           </p>
                         </div>
                       </div>

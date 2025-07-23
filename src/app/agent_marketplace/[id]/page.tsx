@@ -474,7 +474,7 @@ const BriefDetailPage = () => {
       };
 
       await toast.promise(
-        POST_REQUEST(url, payload, token).then((response) => {
+        POST_REQUEST(url, payload).then((response) => {
           if ((response as any).owner) {
             toast.success("Property submitted successfully");
             setAreInputsDisabled(false);
