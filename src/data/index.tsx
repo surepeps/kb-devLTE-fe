@@ -1,6 +1,7 @@
 /** @format */
 
 import { StaticImageData } from 'next/image';
+import { ContactInfo } from '@/types/contact.types';
 import facebookIcon from '@/svgs/facebook.svg';
 import instagramIcon from '@/svgs/instagram.svg';
 import twitterIcon from '@/svgs/twitter.svg';
@@ -408,11 +409,7 @@ export const clientData: { name: string; text: string; starsRated: number }[] =
   ];
 
 //Contact Us data
-export const contactUsData: {
-  value: string;
-  icon: StaticImageData;
-  type: string;
-}[] = [
+export const contactUsData: ContactInfo[] = [
   {
     value: 'info@Khabireqrealty.com',
     icon: envelopeIcon,
