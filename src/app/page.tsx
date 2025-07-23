@@ -3,7 +3,7 @@
 'use client';
 
 import { Fragment } from 'react';
-import '../styles/stylish.modules.css';
+import '@/styles/stylish.modules.css';
 import Homepage from '@/app/homepage/page';
 
 export default function Home() {
