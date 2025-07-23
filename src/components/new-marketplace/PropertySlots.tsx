@@ -104,7 +104,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
           {property ? (
             <div className="relative w-full flex justify-end">
               {tab === "jv" ? (
-                <JVPropertyCard
+                <GlobalJVPropertyCard
                   property={property.property}
                   cardData={getPropertyCardData(property.property)}
                   images={
@@ -123,7 +123,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   )}
                 />
               ) : (
-                <PropertyCard
+                <GlobalPropertyCard
                   tab={tab}
                   property={property.property}
                   cardData={getPropertyCardData(property.property)}
