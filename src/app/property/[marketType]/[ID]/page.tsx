@@ -435,12 +435,14 @@ const ProductDetailsPage = () => {
         // Try each endpoint until one works
         for (const endpoint of endpoints) {
           try {
+            console.log(`Trying endpoint: ${endpoint}`);
             response = await axios.get(endpoint);
             if (response.status === 200 && response.data) {
+              console.log(`Successfully fetched property from: ${endpoint}`);
               break;
             }
           } catch (endpointError) {
-            console.log(`Failed to fetch from ${endpoint}:`, endpointError);
+            console.log(`Failed to fetch from ${endpoint}:`, endpointError.response?.status || endpointError.message);
             // Continue to next endpoint
           }
         }
