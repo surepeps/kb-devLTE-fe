@@ -1,10 +1,17 @@
 /** @format */
 
-export const GET_REQUEST = async (
+interface ApiResponse<T = any> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: string;
+}
+
+export const GET_REQUEST = async <T = any>(
   url: string,
   token?: string,
   retryCount = 0,
-): Promise<any> => {
+): Promise<ApiResponse<T>> => {
   try {
     // Check if URL is valid
     if (!url || url.includes("undefined")) {
