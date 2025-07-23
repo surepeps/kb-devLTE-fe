@@ -59,6 +59,11 @@ interface TabState {
     localGovernment: string;
     area?: string;
   } | null;
+
+  // Inspection and negotiation state
+  selectedForInspection?: any[];
+  negotiatedPrices?: any[];
+  loiDocuments?: any[];
   priceRange: {
     min: number;
     max: number;
