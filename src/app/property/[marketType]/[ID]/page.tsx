@@ -604,7 +604,7 @@ const ProductDetailsPage = () => {
 
           if (status === 404) {
             toast.error("Property not found");
-          } else if (status >= 500) {
+          } else if (status && status >= 500) {
             toast.error("Server error. Please try again later.");
           } else {
             toast.error(`Failed to load property details: ${message}`);
