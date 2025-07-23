@@ -318,7 +318,7 @@ const StepProgressIndicator = memo(
                   )}
                 </div>
                 <span className="text-sm font-medium hidden sm:block">
-                  {step.title}
+                  {(step as any).title || step.label}
                 </span>
               </motion.div>
               {index < steps.length - 1 && (
