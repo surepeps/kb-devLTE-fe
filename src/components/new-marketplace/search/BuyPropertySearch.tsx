@@ -9,6 +9,7 @@ import {
 } from "@/context/new-marketplace-context";
 import SearchFilters from "./SearchFilters";
 import { IsMobile } from "@/hooks/isMobile";
+import { BuyPropertyFilters, FilterUpdateFunction } from "@/types/search.types";
 
 const BuyPropertySearch = () => {
   const {
@@ -23,22 +24,22 @@ const BuyPropertySearch = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter states with better initialization
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<BuyPropertyFilters>({
     selectedState: "",
     selectedLGA: "",
     selectedArea: "",
     locationDisplay: "",
     priceRange: { min: 0, max: 0 },
-    documentTypes: [] as string[],
-    usageOptions: [] as string[],
-    bedrooms: undefined as number | undefined,
-    bathrooms: undefined as number | undefined,
+    documentTypes: [],
+    usageOptions: [],
+    bedrooms: undefined,
+    bathrooms: undefined,
     landSize: {
       type: "plot",
-      size: undefined as number | undefined,
+      size: undefined,
     },
-    desiredFeatures: [] as string[],
-    tenantCriteria: [] as string[],
+    desiredFeatures: [],
+    tenantCriteria: [],
     homeCondition: "",
   });
 
