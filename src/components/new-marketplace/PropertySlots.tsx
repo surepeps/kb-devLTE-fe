@@ -17,6 +17,28 @@ interface PropertySlotsProps {
   loiDocuments?: any[];
 }
 
+// Helper function to determine if a property is a Joint Venture property
+const isJVProperty = (property: any): boolean => {
+  if (!property) return false;
+
+  // Check briefType first
+  if (property.briefType === "Joint Venture" || property.briefType === "jv") {
+    return true;
+  }
+
+  // Check propertyType for Land or Commercial (which are typically JV)
+  if (property.propertyType === "Land" || property.propertyType === "Commercial") {
+    return true;
+  }
+
+  // Check propertyCategory as fallback
+  if (property.propertyCategory === "Land" || property.propertyCategory === "Commercial") {
+    return true;
+  }
+
+  return false;
+};
+
 const PropertySlots: React.FC<PropertySlotsProps> = ({
   selectedProperties,
   maxSlots,
