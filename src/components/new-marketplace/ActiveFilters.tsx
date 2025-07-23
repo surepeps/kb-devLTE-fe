@@ -52,11 +52,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Usage Options
-  if (filters.usageOptions && filters.usageOptions.length > 0) {
+  if ('usageOptions' in filters && filters.usageOptions && filters.usageOptions.length > 0) {
     const validOptions = filters.usageOptions.filter(
-      (option) => option !== "All",
+      (option: any) => option !== "All",
     );
-    validOptions.forEach((option) => {
+    validOptions.forEach((option: any) => {
       activeFilters.push({
         key: "usageOptions",
         label: `Type: ${option}`,
