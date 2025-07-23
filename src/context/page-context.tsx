@@ -145,7 +145,7 @@ export const PageContextProvider = ({
    * Property selected for inspection from the property detailss page
    */
   const [propertySelectedForInspection, setPropertySelectedForInspection] =
-    useState<PropertyProps | undefined>(undefined);
+    useState<Property | undefined>(undefined);
 
   /**
    * ismodalforInspection Opened
