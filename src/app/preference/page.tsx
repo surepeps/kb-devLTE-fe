@@ -900,7 +900,7 @@ const PreferenceFormContent: React.FC = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           <StepProgressIndicator
-            steps={state.steps}
+            steps={state.steps as { label: string; icon: string }[]}
             currentStep={state.currentStep}
             onStepClick={handleStepClick}
           />
