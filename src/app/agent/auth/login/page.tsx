@@ -94,26 +94,26 @@ const Login = () => {
             POST_REQUEST(url, payload).then((response) => {
               // console.log('response from signin', response);
               const user = {
-                firstName: response?.user?.firstName,
-                lastName: response?.user?.lastName,
-                phoneNumber: response?.user?.phoneNumber,
-                email: response?.user?.email,
-                id: response?.user?.id,
+                firstName: response?.data?.user?.firstName,
+                lastName: response?.data?.user?.lastName,
+                phoneNumber: response?.data?.user?.phoneNumber,
+                email: response?.data?.user?.email,
+                id: response?.data?.user?.id,
               };
               sessionStorage.setItem('user', JSON.stringify(user));
 
-              if ((response as any)?.user?._id) {
-                if (response.user.accountApproved === false) {
+              if ((response as any)?.data?.user?._id) {
+                if (response.data.user.accountApproved === false) {
                   router.push('/agent/under-review');
-                } else if (!response.user.phoneNumber) {
+                } else if (!response.data.user.phoneNumber) {
                   router.push('/agent/onboard');
                 } else {
                   router.push('/agent/under-review');
                 }
 
                 toast.success('Sign in successful');
-                Cookies.set('token', (response as any).token);
-                setUser((response as any).user);
+                Cookies.set('token', (response as any).data.token);
+                setUser((response as any).data.user);
 
                 return 'Sign in successful';
               } else {
@@ -145,7 +145,7 @@ const Login = () => {
 
       await POST_REQUEST(url, { code: codeResponse.code }).then(
         async (response) => {
-          if (response.id) {
+          if (response.data?.id) {
             toast.success('Sign in successful');
             Cookies.set(
               'token',
@@ -173,9 +173,9 @@ const Login = () => {
             //   router.push('/agent/briefs');
             // }
 
-            if (response.accountApproved === false) {
+            if (response.data?.accountApproved === false) {
               router.push('/agent/under-review');
-            } else if (!response.phoneNumber) {
+            } else if (!response.data?.phoneNumber) {
               router.push('/agent/onboard');
             } else {
               router.push('/agent/briefs');
