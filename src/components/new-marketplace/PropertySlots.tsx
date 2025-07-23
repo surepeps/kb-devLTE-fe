@@ -43,19 +43,31 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         >
           {property ? (
             <div className="relative w-full flex justify-end">
-              <EnhancedGlobalPropertyCard
-                type={tab === "jv" ? "jv" : "standard"}
-                tab={tab === "jv" ? "buy" : tab}
-                property={property.property}
-                cardData={createPropertyCardData(property.property, tab === "jv" ? "Joint Venture" : undefined)}
-                images={
-                  property.property?.pictures ||
-                  property.property?.images ||
-                  []
-                }
-                isPremium={property.property?.isPremium || false}
-                onPropertyClick={() => {}} // Disabled in inspection view
-              />
+              {tab === "jv" ? (
+                <GlobalJVPropertyCard
+                  property={property.property}
+                  cardData={createPropertyCardData(property.property, "Joint Venture")}
+                  images={
+                    property.property?.pictures ||
+                    property.property?.images ||
+                    []
+                  }
+                  isPremium={property.property?.isPremium || false}
+                  onPropertyClick={() => {}} // Disabled in inspection view
+                />
+              ) : (
+                <GlobalPropertyCard
+                  property={property.property}
+                  cardData={createPropertyCardData(property.property)}
+                  images={
+                    property.property?.pictures ||
+                    property.property?.images ||
+                    []
+                  }
+                  isPremium={property.property?.isPremium || false}
+                  onPropertyClick={() => {}} // Disabled in inspection view
+                />
+              )}
               {/* Remove Button Overlay */}
               <button
                 onClick={() => onRemove(property.propertyId)}
