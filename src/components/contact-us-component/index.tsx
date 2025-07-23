@@ -47,21 +47,29 @@ const ContactUs = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
-      // setStatus('pending');
-      // try {
-      //   const response = await axios.post(URLS.BASE);
-      //   if (response.status === 200) {
-      //     setStatus('success');
-      //     formik.resetForm();
-      //     setTimeout(() => {
-      //       setStatus('idle');
-      //     }, 2000);
-      //   }
-      // } catch (error) {
-      //   console.log(error);
-      //   setStatus('failed');
-      // }
+      setStatus('pending');
+      try {
+        const payload = {
+          name: values.name,
+          email: values.email,
+          subject: values.subject,
+          message: values.message,
+          ...(values.phoneNumber && { phoneNumber: values.phoneNumber }),
+        };
+
+        const response = await axios.post(`${URLS.BASE}/contact-us/submit`, payload);
+
+        if (response.status === 200 || response.status === 201) {
+          setStatus('success');
+          formik.resetForm();
+          setShowSuccessModal(true);
+          toast.success("Message sent successfully!");
+        }
+      } catch (error) {
+        console.error('Contact form error:', error);
+        setStatus('failed');
+        toast.error("Failed to send message. Please try again.");
+      }
     },
   });
   return (
