@@ -188,12 +188,12 @@ export const POST_REQUEST_FILE_UPLOAD = async (
   }
 };
 
-export const PUT_REQUEST = async (
+export const PUT_REQUEST = async <T = any>(
   url: string,
   data: unknown,
   customHeaders?: Record<string, string>,
   token?: string,
-) => {
+): Promise<ApiResponse<T>> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
