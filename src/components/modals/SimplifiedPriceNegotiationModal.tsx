@@ -386,7 +386,7 @@ const SimplifiedPriceNegotiationModal: React.FC<SimplifiedPriceNegotiationModalP
                 <Button
                   type="submit"
                   value={isSubmitting ? "Negotiating..." : existingNegotiation ? "Update Offer" : "Negotiate"}
-                  disabled={isSubmitting || !negotiatedPrice || !isValidPrice()}
+                  isDisabled={isSubmitting || !negotiatedPrice || !isValidPrice()}
                   onClick={handleSubmit}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed font-medium py-3 px-6 rounded-lg transition-all"
                 />

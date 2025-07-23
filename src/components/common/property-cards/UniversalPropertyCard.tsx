@@ -96,7 +96,7 @@ const UniversalPropertyCard: React.FC<UniversalPropertyCardProps> = (props) => {
   const handleInspectionToggle = () => {
     if (useGlobalInspection) {
       try {
-        globalInspection.toggleProperty(property, sourceTab, sourcePage);
+        globalInspection.toggleProperty(property, sourceTab, sourcePage || undefined);
 
         if (!isSelected) {
           toast.success("Property added for inspection");

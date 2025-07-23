@@ -57,6 +57,7 @@ const OnUpgradeNotification = () => {
         const res = await POST_REQUEST(
           URLS.BASE + URLS.upgradeAccount,
           payload,
+          undefined,
           Cookies.get('token')
         );
         if (res.success) {

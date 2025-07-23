@@ -91,7 +91,7 @@ export const GET_REQUEST = async (
 
 export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string) => {
   try {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
 
@@ -119,11 +119,11 @@ export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string
 export const POST_REQUEST = async (
   url: string,
   data: unknown,
-  customHeaders?: HeadersInit,
+  customHeaders?: Record<string, string>,
   token?: string,
 ) => {
   try {
-    const headers: HeadersInit = customHeaders || {
+    const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
     };
 
@@ -184,15 +184,21 @@ export const POST_REQUEST_FILE_UPLOAD = async (
 export const PUT_REQUEST = async (
   url: string,
   data: unknown,
+  customHeaders?: Record<string, string>,
   token?: string,
 ) => {
   try {
+    const headers: Record<string, string> = customHeaders || {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const request = await fetch(url, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(data),
     });
     const response = await request.json();

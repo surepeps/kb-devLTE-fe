@@ -49,9 +49,9 @@ const ContactUs = () => {
       if (propertyRefSelectedBriefs.length !== 0) {
         console.log(propertyRefSelectedBriefs);
 
-        const payloads = propertyRefSelectedBriefs.map((propertyData) => {
+        const payloads = propertyRefSelectedBriefs.map((propertyData: any) => {
           const filteredPropertyData = propertyData.docOnProperty.map(
-            ({ docName }) => {
+            ({ docName }: { docName: string }) => {
               return { docName, isProvided: true };
             }
           );
@@ -83,13 +83,13 @@ const ContactUs = () => {
         try {
           // Send all requests in parallel
           const responses = await Promise.all(
-            payloads.map((payload) =>
+            payloads.map((payload: any) =>
               axios.post(URLS.BASE + '/properties/buy/request/new', payload)
             )
           );
 
           // Check if all requests were successful
-          if (responses.every((response) => response.status === 201)) {
+          if (responses.every((response: any) => response.status === 201)) {
             toast.success('All preferences submitted successfully');
             console.log(responses);
             setRentPage({
