@@ -5,7 +5,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
 import Image from "next/image";
-import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
 import toast from "react-hot-toast";
 import { URLS } from "@/utils/URLS";
