@@ -3,7 +3,22 @@
 // Export all type definitions for easy importing
 export * from "./api.types";
 export * from "./contact.types";
-export * from "./form.types";
+export {
+  FormikInstance,
+  InputType,
+  BaseInputProps,
+  TextInputProps,
+  NumberInputProps,
+  TextareaProps,
+  SelectInputProps,
+  CheckboxInputProps,
+  RadioInputProps,
+  FileInputProps,
+  InputProps,
+  FormStepProps,
+  MultiStepFormProps,
+  FieldArrayHelpers
+} from "./form.types";
 export * from "./post-property.types";
 export * from "./property.types";
 export * from "./search.types";
