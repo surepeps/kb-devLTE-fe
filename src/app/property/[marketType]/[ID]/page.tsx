@@ -495,7 +495,21 @@ const ProductDetailsPage = () => {
         }
       } catch (error) {
         console.error("Error fetching property details:", error);
-        toast.error("Failed to load property details");
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          console.error(`API Error ${status}:`, message);
+
+          if (status === 404) {
+            toast.error("Property not found");
+          } else if (status >= 500) {
+            toast.error("Server error. Please try again later.");
+          } else {
+            toast.error(`Failed to load property details: ${message}`);
+          }
+        } else {
+          toast.error("Failed to load property details");
+        }
       } finally {
         setLoading(false);
       }
