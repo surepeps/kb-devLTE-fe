@@ -84,8 +84,8 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Document Types
-  if (filters.documentTypes && filters.documentTypes.length > 0) {
-    filters.documentTypes.forEach((doc) => {
+  if ('documentTypes' in filters && filters.documentTypes && filters.documentTypes.length > 0) {
+    filters.documentTypes.forEach((doc: any) => {
       // Shorten document names for display
       const shortDoc = doc.length > 20 ? doc.substring(0, 20) + "..." : doc;
       activeFilters.push({
