@@ -25,8 +25,8 @@ const EmailVerification = () => {
 					const response = await GET_REQUEST(url);
 					console.log("response from email verification", response);
 
-					if (response && response.token) {
-						Cookies.set("token", response.token);
+					if (response && response.data?.token) {
+						Cookies.set("token", response.data.token);
 						setUser(response);
 
 						// Redirect based on user type
