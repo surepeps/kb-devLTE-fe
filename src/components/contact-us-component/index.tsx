@@ -127,53 +127,17 @@ const ContactUs = () => {
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
               />
-              {/* <Input
-                name='category'
-                label='Category'
-                type='text'
-                id='category'
+              <Input
+                name="subject"
+                label="Subject"
+                type="text"
+                id="subject"
                 formik={formik}
-                placeholder='Enter your category'
-                value={formik.values.category}
+                placeholder="Enter message subject"
+                value={formik.values.subject}
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-              /> */}
-              <label htmlFor="category" className="flex flex-col gap-[5px]">
-                <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
-                  Category
-                </span>
-                <select
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]"
-                  name="category"
-                  id="category"
-                  title="category"
-                >
-                  {[
-                    "Login",
-                    "Register",
-                    "Listing",
-                    "Agent",
-                    "Marketplace",
-                    "Promotion",
-                    "Referral",
-                    "Payment",
-                    "Subscription",
-                    "Inspection",
-                    "Negotiation",
-                  ].map((item: string, idx: number) => (
-                    <option key={idx} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                {(formik?.errors?.category || formik?.touched?.category) && (
-                  <span className="text-red-600 text-xs">
-                    {formik?.errors?.category}
-                  </span>
-                )}
-              </label>
+              />
               <label
                 htmlFor="message"
                 className="flex flex-col gap-[5px] w-full col-span-2"
