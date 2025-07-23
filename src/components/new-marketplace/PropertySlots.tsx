@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 interface PropertySlotsProps {
   selectedProperties: any[];
