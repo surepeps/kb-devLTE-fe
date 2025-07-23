@@ -610,7 +610,7 @@ const PostProperty = () => {
           {/* Main Content with Formik */}
           <Formik
             initialValues={propertyData}
-            validationSchema={getValidationSchema(currentStep, propertyData)}
+            validationSchema={getValidationSchema(currentStep, propertyData as Record<string, unknown>)}
             onSubmit={() => {}}
             enableReinitialize
           >
