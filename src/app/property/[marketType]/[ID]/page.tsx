@@ -457,16 +457,26 @@ const ProductDetailsPage = () => {
 
   const handleInspection = () => {
     if (details) {
-      setPropertySelectedForInspection(details);
-      toast.success("Property selected for inspection");
+      // Determine the tab based on property category
+      const sourceTab = details.briefType === "Joint Venture" ? "jv" :
+                       details.briefType === "Rent" ? "rent" : "buy";
+
+      toggleInspectionSelection(details, sourceTab, "property-details");
+
+      // Check if now selected for inspection
+      if (isSelectedForInspection(details._id)) {
+        toast.success("Property added to inspection");
+      } else {
+        toast.success("Property removed from inspection");
+      }
     }
   };
 
   const handleNegotiation = () => {
     if (details) {
-      setPropertySelectedForInspection(details);
-      setIsComingFromPriceNeg(true);
-      toast.success("Starting price negotiation");
+      // This would open the price negotiation modal
+      // For now, we'll just show a message
+      toast.success("Price negotiation feature coming soon!");
     }
   };
 
