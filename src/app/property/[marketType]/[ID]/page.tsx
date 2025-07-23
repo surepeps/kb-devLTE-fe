@@ -297,10 +297,11 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
 };
 
 // Action Buttons Component
-const ActionButtons = ({ details, onInspection, onNegotiation }: { 
-  details: PropertyDetails; 
-  onInspection: () => void; 
-  onNegotiation: () => void; 
+const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
+  details: PropertyDetails;
+  onInspection: () => void;
+  onNegotiation: () => void;
+  isSelected: boolean;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
 
