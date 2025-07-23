@@ -119,11 +119,11 @@ export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string
 export const POST_REQUEST = async (
   url: string,
   data: unknown,
-  customHeaders?: HeadersInit,
+  customHeaders?: Record<string, string>,
   token?: string,
 ) => {
   try {
-    const headers: HeadersInit = customHeaders || {
+    const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
     };
 
