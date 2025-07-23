@@ -296,6 +296,34 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
   );
 };
 
+// Documents Component
+const DocumentsList = ({ documents }: { documents: PropertyDetails['docOnProperty'] }) => {
+  if (!documents || documents.length === 0) return null;
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <FileText className="w-5 h-5 mr-2" />
+        Available Documents
+      </h3>
+      <div className="space-y-3">
+        {documents.map((doc, index) => (
+          <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium text-gray-900">{doc.docName}</span>
+            <span className={`text-xs px-2 py-1 rounded-full ${
+              doc.isProvided
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {doc.isProvided ? 'Available' : 'Not Available'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // Action Buttons Component
 const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
   details: PropertyDetails;
