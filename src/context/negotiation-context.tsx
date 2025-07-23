@@ -438,8 +438,10 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: "SET_ERROR", payload: null });
 
       try {
-        const requestFn = method === "PUT" ? PUT_REQUEST : POST_REQUEST;
-        const response = await requestFn(url, payload, Cookies.get("token"));
+        const token = Cookies.get("token");
+        const response = method === "PUT"
+          ? await PUT_REQUEST(url, payload, undefined, token)
+          : await POST_REQUEST(url, payload, undefined, token);
 
         if (response.success) {
           // Use batch update for better performance
