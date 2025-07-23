@@ -416,10 +416,43 @@ const ProductDetailsPage = () => {
     const fetchPropertyDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${URLS.BASE}/properties/${id}/getOne`);
+        let response;
 
-        if (response.status === 200 && response.data.success) {
-          const propertyData = response.data.data;
+        // Try different endpoint patterns based on market type
+        const endpoints = [
+          // Specialized endpoints based on market type
+          ...(marketType === "rent" || marketType === "Rent"
+            ? [`${URLS.BASE}/properties/rents/rent/${id}`]
+            : []
+          ),
+          // General property endpoint
+          `${URLS.BASE}${URLS.getOneProperty}${id}`,
+          // Alternative endpoint patterns
+          `${URLS.BASE}/get-property/${id}`,
+          `${URLS.BASE}/properties/${id}`,
+        ];
+
+        // Try each endpoint until one works
+        for (const endpoint of endpoints) {
+          try {
+            console.log(`Trying endpoint: ${endpoint}`);
+            response = await axios.get(endpoint);
+            if (response.status === 200 && response.data) {
+              console.log(`Successfully fetched property from: ${endpoint}`);
+              break;
+            }
+          } catch (endpointError) {
+            console.log(`Failed to fetch from ${endpoint}:`, endpointError.response?.status || endpointError.message);
+            // Continue to next endpoint
+          }
+        }
+
+        if (!response || !response.data) {
+          throw new Error("Property not found");
+        }
+
+        // Handle different response structures
+        if (propertyData) {
           setDetails({
             _id: propertyData._id,
             propertyId: propertyData._id,
@@ -464,7 +497,21 @@ const ProductDetailsPage = () => {
         }
       } catch (error) {
         console.error("Error fetching property details:", error);
-        toast.error("Failed to load property details");
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          const message = error.response?.data?.message || error.message;
+          console.error(`API Error ${status}:`, message);
+
+          if (status === 404) {
+            toast.error("Property not found");
+          } else if (status >= 500) {
+            toast.error("Server error. Please try again later.");
+          } else {
+            toast.error(`Failed to load property details: ${message}`);
+          }
+        } else {
+          toast.error("Failed to load property details");
+        }
       } finally {
         setLoading(false);
       }

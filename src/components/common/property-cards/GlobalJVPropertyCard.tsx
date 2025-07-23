@@ -19,6 +19,7 @@ interface GlobalJVPropertyCardProps {
   isPremium: boolean;
   onPropertyClick?: () => void;
   onLOIUpload?: () => void;
+  onUpdateLOI?: () => void;
   onInspectionToggle?: () => void;
   onRemoveLOI?: (propertyId: string) => void;
   isSelected?: boolean;
@@ -37,6 +38,7 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   isPremium,
   onPropertyClick,
   onLOIUpload,
+  onUpdateLOI,
   onInspectionToggle,
   onRemoveLOI,
   isSelected = false,
@@ -186,7 +188,27 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
           {/* Action Buttons - Always show */}
           <div className="flex flex-col gap-2 pt-2 mt-auto">
             {/* Submit LOI Button */}
-            {hasLOIDocument ? (
+            {hasLOIDocument && isSelected ? (
+              <div className="flex gap-2">
+                <Button
+                  value="Update LOI"
+                  type="button"
+                  onClick={onUpdateLOI || onLOIUpload || (() => {})}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors"
+                />
+                <Button
+                  value="Clear"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onRemoveLOI) {
+                      onRemoveLOI(property._id);
+                    }
+                  }}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
+                />
+              </div>
+            ) : hasLOIDocument ? (
               <div className="min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
                 <span className="text-xs">LOI Document Uploaded</span>
                 {onRemoveLOI && (

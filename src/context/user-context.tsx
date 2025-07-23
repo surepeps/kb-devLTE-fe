@@ -74,7 +74,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const getUser = async () => {
-    const url = URLS.BASE + URLS.userProfile;
     const token = Cookies.get("token");
 
     setIsLoading(true);
@@ -87,6 +86,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
       return;
     }
+
+    const url = URLS.BASE + URLS.userProfile;
 
     try {
       const response = await GET_REQUEST(url, token);
