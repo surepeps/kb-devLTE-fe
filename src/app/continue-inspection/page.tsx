@@ -12,6 +12,7 @@ import DateTimeSelection from "@/components/new-marketplace/DateTimeSelection";
 import PaymentUpload from "@/components/new-marketplace/PaymentUpload";
 import Button from "@/components/general-components/button";
 import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
+import InspectionSuccessModal from "@/components/modals/InspectionSuccessModal";
 
 const ContinueInspectionPage = () => {
   const router = useRouter();
