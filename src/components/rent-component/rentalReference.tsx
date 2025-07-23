@@ -1,6 +1,6 @@
 /** @format */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use clients';
+'use client';
 import React, {
   Fragment,
   MouseEvent,
