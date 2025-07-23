@@ -18,6 +18,7 @@ const ContactUs = () => {
   const [status, setStatus] = React.useState<
     "idle" | "pending" | "success" | "failed"
   >("idle");
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(2, "Name must be at least 2 characters")
