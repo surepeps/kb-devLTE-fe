@@ -339,12 +339,12 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
     },
     {
       label: "Date Listed",
-      value: new Date(details.createdAt).toLocaleDateString(),
+      value: details.createdAt ? new Date(details.createdAt).toLocaleDateString() : "N/A",
       icon: <Calendar className="w-4 h-4" />,
     },
     {
       label: "Last Updated",
-      value: new Date(details.updatedAt).toLocaleDateString(),
+      value: details.updatedAt ? new Date(details.updatedAt).toLocaleDateString() : "N/A",
       icon: <Clock className="w-4 h-4" />,
     },
   ];
