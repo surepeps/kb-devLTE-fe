@@ -418,40 +418,19 @@ const ProductDetailsPage = () => {
         setLoading(true);
         let response;
 
-        // Try different endpoint patterns based on market type
-        const endpoints = [
-          // Specialized endpoints based on market type
-          ...(marketType === "rent" || marketType === "Rent"
-            ? [`${URLS.BASE}/properties/rents/rent/${id}`]
-            : []
-          ),
-          // General property endpoint
-          `${URLS.BASE}${URLS.getOneProperty}${id}`,
-          // Alternative endpoint patterns
-          `${URLS.BASE}/get-property/${id}`,
-          `${URLS.BASE}/properties/${id}`,
-        ];
+        // Use the new endpoint format
+        const apiUrl = `${URLS.BASE}/properties/${id}/getOne`;
+        console.log(`Fetching property from: ${apiUrl}`);
 
-        // Try each endpoint until one works
-        for (const endpoint of endpoints) {
-          try {
-            console.log(`Trying endpoint: ${endpoint}`);
-            response = await axios.get(endpoint);
-            if (response.status === 200 && response.data) {
-              console.log(`Successfully fetched property from: ${endpoint}`);
-              break;
-            }
-          } catch (endpointError) {
-            console.log(`Failed to fetch from ${endpoint}:`, endpointError.response?.status || endpointError.message);
-            // Continue to next endpoint
-          }
-        }
+        response = await axios.get(apiUrl);
 
-        if (!response || !response.data) {
+        if (!response || !response.data || !response.data.success) {
           throw new Error("Property not found");
         }
 
-        // Handle different response structures
+        // Handle the new response structure: response.data.data.property
+        const propertyData = response.data.data.property;
+
         if (propertyData) {
           setDetails({
             _id: propertyData._id,
@@ -472,11 +451,11 @@ const ProductDetailsPage = () => {
             features: propertyData.features || [],
             tenantCriteria: propertyData.tenantCriteria || [],
             areYouTheOwner: propertyData.areYouTheOwner ?? false,
-            isAvailable: propertyData.isAvailable,
+            isAvailable: propertyData.isAvailable === "yes" || propertyData.isAvailable === true,
             isApproved: propertyData.isApproved ?? false,
             isRejected: propertyData.isRejected ?? false,
-            isPreference: false,
-            isPremium: false,
+            isPreference: propertyData.isPreference ?? false,
+            isPremium: propertyData.isPremium ?? false,
             pictures: propertyData.pictures && propertyData.pictures.length > 0
               ? propertyData.pictures
               : [sampleImage.src],
@@ -484,8 +463,10 @@ const ProductDetailsPage = () => {
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
             docOnProperty: propertyData.docOnProperty || [],
-            briefType: propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
-                      propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown",
+            briefType: propertyData.briefType || (
+              propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
+              propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown"
+            ),
             propertyCondition: propertyData.propertyCondition || "",
             noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
             noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
@@ -494,6 +475,11 @@ const ProductDetailsPage = () => {
             description: propertyData.description,
             addtionalInfo: propertyData.addtionalInfo,
           } as any);
+
+          // Handle similar properties from the new response
+          if (response.data.data.similarProperties) {
+            setSimilarProperties(response.data.data.similarProperties.slice(0, 3));
+          }
         }
       } catch (error) {
         console.error("Error fetching property details:", error);
@@ -522,21 +508,7 @@ const ProductDetailsPage = () => {
     }
   }, [id]);
 
-  // Fetch similar properties
-  useEffect(() => {
-    const fetchSimilarProperties = async () => {
-      try {
-        const response = await axios.get(`${URLS.BASE}/properties/rents/all`);
-        if (response.status === 200) {
-          setSimilarProperties(response.data.data.slice(0, 3));
-        }
-      } catch (error) {
-        console.error("Error fetching similar properties:", error);
-      }
-    };
-
-    fetchSimilarProperties();
-  }, []);
+  // Similar properties are now fetched with the main property data
 
   const handleInspection = () => {
     if (details) {
