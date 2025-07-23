@@ -130,26 +130,31 @@ const SimpleMarketplace = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {properties.map((property) => (
-            <UniversalPropertyCard
-              key={property._id}
-              property={property}
-              cardData={createPropertyCardData(property, tabMapping[activeTab])}
-              images={property.pictures || property.images || []}
-              isPremium={property.isPremium || false}
-              onPropertyClick={() => handlePropertyClick(property)}
-              onInspectionToggle={() => {}}
-              onPriceNegotiation={() => {}}
-              onRemoveNegotiation={() => {}}
-              onLOIUpload={() => {}}
-              onRemoveLOI={() => {}}
-              isSelected={false}
-              negotiatedPrice={null}
-              loiDocument={null}
-              maxSelections={2}
-              currentSelections={0}
-            />
-          ))}
+          {properties.map((property) => {
+            const cardData = createPropertyCardData(property, tabMapping[activeTab]);
+            const isJVProperty = activeTab === 'jv';
+
+            return isJVProperty ? (
+              <GlobalJVPropertyCard
+                key={property._id}
+                property={property}
+                cardData={cardData}
+                images={property.pictures || property.images || []}
+                isPremium={property.isPremium || false}
+                onPropertyClick={() => handlePropertyClick(property)}
+              />
+            ) : (
+              <GlobalPropertyCard
+                key={property._id}
+                tab={activeTab as "buy" | "rent" | "shortlet"}
+                property={property}
+                cardData={cardData}
+                images={property.pictures || property.images || []}
+                isPremium={property.isPremium || false}
+                onPropertyClick={() => handlePropertyClick(property)}
+              />
+            );
+          })}
         </div>
       )}
     </div>
