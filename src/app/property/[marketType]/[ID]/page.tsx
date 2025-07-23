@@ -374,6 +374,7 @@ const ProductDetailsPage = () => {
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
   const { setPropertySelectedForInspection, setIsComingFromPriceNeg } = usePageContext();
   const { selectedBriefs } = useSelectedBriefs();
+  const { toggleInspectionSelection, isSelectedForInspection } = useGlobalPropertyActions();
 
   const marketType = params?.marketType ?? "";
   const id = params?.ID ?? "";
