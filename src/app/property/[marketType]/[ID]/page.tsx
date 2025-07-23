@@ -457,7 +457,10 @@ const ProductDetailsPage = () => {
             noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
             noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
             noOfToilets: propertyData.additionalFeatures?.noOfToilet || 0,
-          });
+            // Add additional fields from new API
+            description: propertyData.description,
+            addtionalInfo: propertyData.addtionalInfo,
+          } as any);
         }
       } catch (error) {
         console.error("Error fetching property details:", error);
