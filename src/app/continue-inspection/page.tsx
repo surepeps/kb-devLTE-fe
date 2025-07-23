@@ -12,6 +12,7 @@ import DateTimeSelection from "@/components/new-marketplace/DateTimeSelection";
 import PaymentUpload from "@/components/new-marketplace/PaymentUpload";
 import Button from "@/components/general-components/button";
 import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
+import InspectionSuccessModal from "@/components/modals/InspectionSuccessModal";
 
 const ContinueInspectionPage = () => {
   const router = useRouter();
@@ -32,6 +33,9 @@ const ContinueInspectionPage = () => {
     "selection" | "datetime" | "payment"
   >("selection");
 
+  // Success modal state
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   // Store inspection details between steps
   const [inspectionDetails, setInspectionDetails] = useState<{
     date: string;
@@ -51,12 +55,23 @@ const ContinueInspectionPage = () => {
     },
   });
 
-  // Redirect if no properties selected
+  // Track if we started with properties to avoid immediate redirect
+  const [initialLoad, setInitialLoad] = useState(true);
+
   useEffect(() => {
-    if (selectedProperties.length === 0) {
-      router.push("/market-place");
+    setInitialLoad(false);
+  }, []);
+
+  // Only redirect if we started with no properties or they were all removed after initial load
+  useEffect(() => {
+    if (!initialLoad && selectedProperties.length === 0) {
+      // Add a small delay to prevent immediate redirect during navigation
+      const timer = setTimeout(() => {
+        router.push("/market-place");
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [selectedProperties.length, router]);
+  }, [selectedProperties.length, router, initialLoad]);
 
   // Calculate inspection fee
   const inspectionFee = useMemo(() => {
@@ -140,7 +155,7 @@ const ContinueInspectionPage = () => {
     }, {} as Record<string, number>);
 
     const dominantType = Object.entries(typeCount).sort(([,a], [,b]) => b - a)[0]?.[0];
-    
+
     switch (dominantType) {
       case "Joint Venture":
         return "jv";
@@ -153,7 +168,26 @@ const ContinueInspectionPage = () => {
     }
   };
 
-  if (selectedProperties.length === 0) {
+  // Success modal handlers
+  const handleRequestAgain = () => {
+    setShowSuccessModal(false);
+    clearAllSelections();
+    router.push("/market-place");
+  };
+
+  const handleWaitForReply = () => {
+    setShowSuccessModal(false);
+    clearAllSelections();
+    router.push("/");
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    clearAllSelections();
+    router.push("/");
+  };
+
+  if (!initialLoad && selectedProperties.length === 0) {
     return (
       <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center">
         <div className="text-center">
@@ -336,15 +370,22 @@ const ContinueInspectionPage = () => {
                 loiDocuments={loiDocuments}
                 onBack={() => setCurrentStep("datetime")}
                 onComplete={() => {
-                  // Clear all selections and redirect
-                  clearAllSelections();
-                  router.push("/market-place");
+                  // Show success modal instead of immediate redirect
+                  setShowSuccessModal(true);
                 }}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Success Modal */}
+      <InspectionSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        onRequestAgain={handleRequestAgain}
+        onWaitForReply={handleWaitForReply}
+      />
     </div>
   );
 };

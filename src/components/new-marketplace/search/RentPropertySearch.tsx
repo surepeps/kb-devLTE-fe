@@ -17,7 +17,6 @@ const RentPropertySearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
-    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
@@ -218,8 +217,8 @@ const RentPropertySearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={rentTab.formikStatus === "pending"}
-          selectedCount={rentTab.selectedForInspection.length}
-          onOpenInspection={() => setIsAddForInspectionOpen(true)}
+          selectedCount={0}
+          onOpenInspection={() => {}}
         />
       </div>
 

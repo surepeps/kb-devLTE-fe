@@ -1,21 +1,21 @@
 /** @format */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Button from "@/components/general-components/button";
+import Image from "next/image";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { motion, useInView } from "framer-motion";
+import toast from "react-hot-toast";
 import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
-
 import "ldrs/react/Trio.css";
 import { Trio } from "ldrs/react";
 import { epilogue } from "@/styles/font";
 import { shuffleArray } from "@/utils/shuffleArray";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
-
-// Using imported createPropertyCardData function
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
@@ -26,14 +26,13 @@ const Section2 = () => {
   });
   const { setCardData } = usePageContext();
   const [properties, setProperties] = useState<any[]>([]);
-  const [selectedMarketPlace, setSelectedMarketPlace] = useState("Buy a property");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedMarketPlace, setSelectedMarketPlace] =
+    useState("Buy a property");
   const housesRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   const areHousesVisible = useInView(housesRef, { once: true });
-
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const getBriefType = (marketPlace: string) => {
     switch (marketPlace) {
@@ -66,7 +65,7 @@ const Section2 = () => {
       URLS.fetchBriefs
     }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
-    const fetchData = async () => {
+    const fetchData = async (retryCount = 0) => {
       setIsLoading(true);
       try {
         // Check if BASE URL is available
@@ -130,8 +129,6 @@ const Section2 = () => {
   const handleShowMoreClick = () => {
     window.location.href = "/market-place";
   };
-
-
 
   return (
     <section className="flex justify-center items-center bg-[#8DDB901A] pb-[30px]">
@@ -219,7 +216,6 @@ const Section2 = () => {
             }`}
           />
         </motion.div>
-
         <motion.div
           ref={housesRef}
           initial={{ opacity: 0, x: 20 }}
@@ -239,18 +235,6 @@ const Section2 = () => {
               if (buttons.button4) propertyType = "Joint Venture";
 
               const cardData = createPropertyCardData(property, propertyType);
-              const tab = buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy";
-
-              // Property click handler
-              const handlePropertyClick = () => {
-                if (buttons.button1 || buttons.button2) {
-                  router.push(`/property/buy/${property?._id}`);
-                } else if (buttons.button3) {
-                  router.push(`/property/rent/${property?._id}`);
-                } else if (buttons.button4) {
-                  router.push(`/property/jv/${property?._id}`);
-                }
-              };
 
               // Determine if this is a JV property based on the property type or button state
               const isJVProperty = property?.briefType === "Joint Venture" || buttons.button4;
@@ -264,7 +248,15 @@ const Section2 = () => {
                   cardData={cardData}
                   images={property?.pictures || []}
                   isPremium={property?.isPremium || false}
-                  onPropertyClick={handlePropertyClick}
+                  onPropertyClick={() => {
+                    if (buttons.button1) {
+                      router.push(`/property/buy/${property?._id}`);
+                    } else if (buttons.button3) {
+                      router.push(`/property/rent/${property?._id}`);
+                    } else if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
+                    }
+                  }}
                   className="mx-auto"
                 />
               );
@@ -279,7 +271,6 @@ const Section2 = () => {
             </div>
           )}
         </motion.div>
-        
         <div className="flex justify-center items-center mt-6">
           <button
             onClick={handleShowMoreClick}
@@ -292,8 +283,6 @@ const Section2 = () => {
           </button>
         </div>
       </div>
-
-
     </section>
   );
 };

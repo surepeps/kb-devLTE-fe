@@ -3,7 +3,7 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import JVPropertyCard from "./cards/JVPropertyCard";
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import Pagination from "./Pagination";
 import EmptyState from "./EmptyState";
 import Loading from "@/components/loading-component/loading";
@@ -195,21 +195,14 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className="w-full"
             >
-              <JVPropertyCard
+              <EnhancedGlobalPropertyCard
+                type="jv"
+                tab="buy"
                 property={property}
                 cardData={getJVPropertyCardData(property)}
                 images={property.pictures || property.images || []}
                 isPremium={property.isPremium || false}
                 onPropertyClick={() => onPropertyClick(property)}
-                onInspectionToggle={() => onInspectionToggle(property)}
-                onLOIUpload={() => onLOIUpload(property)}
-                onRemoveLOI={onRemoveLOI}
-                isSelected={selectedForInspection.some(
-                  (item) => item.propertyId === property._id,
-                )}
-                loiDocument={loiDocuments.find(
-                  (doc) => doc.propertyId === property._id,
-                )}
               />
             </motion.div>
           ))}

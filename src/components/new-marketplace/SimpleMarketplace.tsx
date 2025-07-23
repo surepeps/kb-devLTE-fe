@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { URLS } from '@/utils/URLS';
 import { GET_REQUEST } from '@/utils/requests';
-import { UniversalPropertyCard, createPropertyCardData } from '@/components/common/property-cards';
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from '@/components/common/property-cards';
 
 interface Property {
   _id: string;
@@ -130,26 +130,23 @@ const SimpleMarketplace = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {properties.map((property) => (
-            <UniversalPropertyCard
-              key={property._id}
-              property={property}
-              cardData={createPropertyCardData(property, tabMapping[activeTab])}
-              images={property.pictures || property.images || []}
-              isPremium={property.isPremium || false}
-              onPropertyClick={() => handlePropertyClick(property)}
-              onInspectionToggle={() => {}}
-              onPriceNegotiation={() => {}}
-              onRemoveNegotiation={() => {}}
-              onLOIUpload={() => {}}
-              onRemoveLOI={() => {}}
-              isSelected={false}
-              negotiatedPrice={null}
-              loiDocument={null}
-              maxSelections={2}
-              currentSelections={0}
-            />
-          ))}
+          {properties.map((property) => {
+            const cardData = createPropertyCardData(property, tabMapping[activeTab]);
+            const isJVProperty = activeTab === 'jv';
+
+            return (
+              <EnhancedGlobalPropertyCard
+                key={property._id}
+                type={isJVProperty ? "jv" : "standard"}
+                tab={isJVProperty ? "buy" : activeTab as "buy" | "rent" | "shortlet"}
+                property={property}
+                cardData={cardData}
+                images={property.pictures || property.images || []}
+                isPremium={property.isPremium || false}
+                onPropertyClick={() => handlePropertyClick(property)}
+              />
+            );
+          })}
         </div>
       )}
     </div>
