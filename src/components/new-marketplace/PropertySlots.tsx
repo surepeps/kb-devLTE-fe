@@ -85,6 +85,16 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   loiDocuments = [],
 }) => {
 
+  // Helper function to find negotiated price for a property
+  const getNegotiatedPrice = (propertyId: string) => {
+    return negotiatedPrices.find(np => np.propertyId === propertyId) || null;
+  };
+
+  // Helper function to find LOI document for a property
+  const getLOIDocument = (propertyId: string) => {
+    return loiDocuments.find(loi => loi.propertyId === propertyId) || null;
+  };
+
   const slots = Array.from({ length: maxSlots }, (_, index) => {
     const property = selectedProperties[index];
     return { index, property };
