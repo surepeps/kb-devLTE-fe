@@ -416,7 +416,15 @@ const ProductDetailsPage = () => {
     const fetchPropertyDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${URLS.BASE}/properties/${id}/getOne`);
+        // Try different endpoint patterns based on market type
+        let apiUrl = `${URLS.BASE}${URLS.getOneProperty}${id}`;
+
+        // For specific market types, use specialized endpoints
+        if (marketType === "rent" || marketType === "Rent") {
+          apiUrl = `${URLS.BASE}/properties/rents/rent/${id}`;
+        }
+
+        const response = await axios.get(apiUrl);
 
         if (response.status === 200 && response.data.success) {
           const propertyData = response.data.data;
