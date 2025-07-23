@@ -353,43 +353,24 @@ const Section2 = () => {
               const negotiatedPrice = getNegotiatedPrice(property._id);
               const loiDocument = getLOIDocument(property._id);
 
-              return buttons.button4 ? (
-                <GlobalJVPropertyCard
+              return (
+                <EnhancedGlobalPropertyCard
                   key={idx}
-                  property={property}
-                  cardData={cardData}
-                  images={property?.pictures || []}
-                  isPremium={property?.isPremium || false}
-                  onPropertyClick={() => {
-                    router.push(`/property/jv/${property?._id}`);
-                  }}
-                  onLOIUpload={() => handleLOIUpload(property)}
-                  onInspectionToggle={() => handleSubmitInspection(property)}
-                  onRemoveLOI={handleRemoveLOI}
-                  isSelected={isSelected}
-                  loiDocument={loiDocument}
-                  className="mx-auto"
-                />
-              ) : (
-                <GlobalPropertyCard
-                  key={idx}
+                  type={buttons.button4 ? "jv" : "standard"}
                   tab={buttons.button3 ? "rent" : "buy"}
                   property={property}
                   cardData={cardData}
                   images={property?.pictures || []}
                   isPremium={property?.isPremium || false}
                   onPropertyClick={() => {
-                    if (buttons.button1) {
+                    if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
+                    } else if (buttons.button1) {
                       router.push(`/property/buy/${property?._id}`);
                     } else if (buttons.button3) {
                       router.push(`/property/rent/${property?._id}`);
                     }
                   }}
-                  onPriceNegotiation={() => handlePriceNegotiation(property)}
-                  onInspectionToggle={() => handleSubmitInspection(property)}
-                  onRemoveNegotiation={handleRemoveNegotiation}
-                  isSelected={isSelected}
-                  negotiatedPrice={negotiatedPrice}
                   className="mx-auto"
                 />
               );
