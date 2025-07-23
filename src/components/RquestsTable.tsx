@@ -34,7 +34,7 @@ const RequestsTable: FC<TableProps> = ({ data }) => {
   const handleAvailability = async (id: string, isAvailable: boolean) => {
     const url = URLS.BASE + URLS.agent + URLS.confirmAvailability;
 
-    await POST_REQUEST(url, { requestId: id, isAvailable }, Cookies.get('token'))
+    await POST_REQUEST(url, { requestId: id, isAvailable }, undefined, Cookies.get('token'))
       .then((result) => {
         if (result.success) {
           toast.success(result.message);
