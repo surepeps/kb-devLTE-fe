@@ -16,6 +16,7 @@ interface EnhancedGlobalPropertyCardProps {
   images: any[];
   isPremium: boolean;
   onPropertyClick?: () => void;
+  onInspectionToggle?: () => void; // Optional override for inspection toggle
   className?: string;
 }
 
