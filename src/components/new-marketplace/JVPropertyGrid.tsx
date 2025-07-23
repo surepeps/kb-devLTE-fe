@@ -195,21 +195,14 @@ const JVPropertyGrid: React.FC<JVPropertyGridProps> = ({
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className="w-full"
             >
-              <GlobalJVPropertyCard
+              <EnhancedGlobalPropertyCard
+                type="jv"
+                tab="buy"
                 property={property}
                 cardData={getJVPropertyCardData(property)}
                 images={property.pictures || property.images || []}
                 isPremium={property.isPremium || false}
                 onPropertyClick={() => onPropertyClick(property)}
-                onInspectionToggle={() => onInspectionToggle(property)}
-                onLOIUpload={() => onLOIUpload(property)}
-                onRemoveLOI={onRemoveLOI}
-                isSelected={selectedForInspection.some(
-                  (item) => item.propertyId === property._id,
-                )}
-                loiDocument={loiDocuments.find(
-                  (doc) => doc.propertyId === property._id,
-                )}
               />
             </motion.div>
           ))}
