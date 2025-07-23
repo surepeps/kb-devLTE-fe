@@ -51,12 +51,23 @@ const ContinueInspectionPage = () => {
     },
   });
 
-  // Redirect if no properties selected
+  // Track if we started with properties to avoid immediate redirect
+  const [initialLoad, setInitialLoad] = useState(true);
+
   useEffect(() => {
-    if (selectedProperties.length === 0) {
-      router.push("/market-place");
+    setInitialLoad(false);
+  }, []);
+
+  // Only redirect if we started with no properties or they were all removed after initial load
+  useEffect(() => {
+    if (!initialLoad && selectedProperties.length === 0) {
+      // Add a small delay to prevent immediate redirect during navigation
+      const timer = setTimeout(() => {
+        router.push("/market-place");
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [selectedProperties.length, router]);
+  }, [selectedProperties.length, router, initialLoad]);
 
   // Calculate inspection fee
   const inspectionFee = useMemo(() => {
