@@ -35,7 +35,7 @@ const EmailVerification = () => {
 								"Email verified successfully! Redirecting to your dashboard..."
 							);
 							router.push("/dashboard");
-						} else if (response.userType === "Agent") {
+						} else if (response.data?.userType === "Agent") {
 							toast.success(
 								"Email verified successfully! Please complete your profile."
 							);
