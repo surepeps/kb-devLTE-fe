@@ -757,6 +757,19 @@ export const NewMarketplaceProvider: React.FC<{
 
       // Note: Add for inspection modal removed
 
+      // Inspection and negotiation methods (placeholder implementations)
+      setIsAddForInspectionOpen: () => {},
+      removeFromInspection: () => {},
+      clearInspectionSelection: () => {},
+      removeNegotiatedPrice: () => {},
+      removeLOIDocument: () => {},
+      addNegotiatedPrice: () => {},
+      getNegotiatedPrice: () => null,
+      addLOIDocument: () => {},
+      getLOIDocument: () => null,
+      toggleInspectionSelection: () => {},
+      isSelectedForInspection: () => false,
+
       // Items per page
       itemsPerPage,
       setItemsPerPage,
