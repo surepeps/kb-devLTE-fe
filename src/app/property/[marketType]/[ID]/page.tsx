@@ -475,6 +475,11 @@ const ProductDetailsPage = () => {
             description: propertyData.description,
             addtionalInfo: propertyData.addtionalInfo,
           } as any);
+
+          // Handle similar properties from the new response
+          if (response.data.data.similarProperties) {
+            setSimilarProperties(response.data.data.similarProperties.slice(0, 3));
+          }
         }
       } catch (error) {
         console.error("Error fetching property details:", error);
