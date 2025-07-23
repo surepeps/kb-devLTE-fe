@@ -72,7 +72,7 @@ const getValidationSchema = (currentStep: number, propertyData: Record<string, u
 
     case 2:
       // Only validate step 2 specific fields
-      return step2ValidationSchema(propertyData.propertyType);
+      return step2ValidationSchema(propertyData.propertyType as string);
 
     case 3:
       // No validation needed - handled by component
