@@ -79,6 +79,7 @@ export default function RootLayout({
                             </HeaderFooterWrapper>
                             <GlobalPropertyActionsFAB />
                             <Toaster />
+                            <ChunkErrorHandler />
                           </body>
                         </html>
                       </NegotiationContextWrapper>
