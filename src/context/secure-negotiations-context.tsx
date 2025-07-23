@@ -335,9 +335,9 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: "SET_FORM_STATUS", payload: "pending" });
 
       try {
-        const response: InspectionDetailsResponse = await GET_REQUEST(
+        const response = await GET_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
-        );
+        ) as ApiResponse<InspectionDetails>;
 
         if (response?.success) {
           const details = response.data;
