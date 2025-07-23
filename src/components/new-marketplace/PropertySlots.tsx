@@ -15,6 +15,7 @@ interface PropertySlotsProps {
   onClearNegotiatedPrice?: (propertyId: string) => void;
   onClearLOIDocument?: (propertyId: string) => void;
   onAddProperty: () => void;
+  onPropertyClick?: (property: any) => void;
   negotiatedPrices?: any[];
   loiDocuments?: any[];
 }
