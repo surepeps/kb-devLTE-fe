@@ -156,6 +156,14 @@ export const GlobalPropertyActionsProvider: React.FC<{
         );
 
         if (isAlreadySelected) {
+          // Clear associated price negotiation and LOI document when removing from inspection
+          setNegotiatedPrices((prices) =>
+            prices.filter((price) => price.propertyId !== propertyId)
+          );
+          setLoiDocuments((docs) =>
+            docs.filter((doc) => doc.propertyId !== propertyId)
+          );
+
           setTimeout(() => toast.success("Property removed from inspection"), 0);
           return current.filter((item) => item.propertyId !== propertyId);
         } else {
