@@ -43,7 +43,7 @@ const ContactUs = () => {
       email: "",
       message: "",
       phoneNumber: "",
-      category: "",
+      subject: "",
     },
     validationSchema,
     onSubmit: async (values) => {
