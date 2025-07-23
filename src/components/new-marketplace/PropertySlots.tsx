@@ -3,9 +3,7 @@
 "use client";
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
-import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
-import PriceNegotiationModal from "@/components/new-marketplace/modals/PriceNegotiationModal";
-import LOIUploadModal from "@/components/new-marketplace/modals/LOIUploadModal";
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
 
 interface PropertySlotsProps {
