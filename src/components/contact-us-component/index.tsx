@@ -34,9 +34,8 @@ const ContactUs = () => {
     phoneNumber: Yup.string()
       .matches(/^[0-9]+$/, "Phone number must be digits only")
       .min(10, "Phone number must be at least 10 digits")
-      .max(15, "Phone number must be at most 15 digits")
-      .required("Phone number is required"),
-    category: Yup.string().required("Category is required"),
+      .max(15, "Phone number must be at most 15 digits"),
+    subject: Yup.string().required("Subject is required"),
   });
   const formik = useFormik({
     initialValues: {
