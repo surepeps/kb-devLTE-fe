@@ -11,12 +11,13 @@ import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "@/components/new-marketplace/ImageSwiper";
 import Button from "@/components/general-components/button";
 import { X } from "lucide-react";
+import { Property, PropertyImage } from "@/types/property.types";
 
 interface GlobalPropertyCardProps {
   tab: "buy" | "rent" | "shortlet";
-  property: any;
+  property: Property;
   cardData: { header: string; value: string }[];
-  images: any[];
+  images: PropertyImage[];
   isPremium: boolean;
   onPropertyClick?: () => void;
   onPriceNegotiation?: () => void;
