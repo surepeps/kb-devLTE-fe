@@ -65,7 +65,8 @@ const InspectionPropertyCard: React.FC<{
   property: any;
   tab: "buy" | "jv" | "rent" | "shortlet";
   onRemove: () => void;
-}> = ({ property, tab, onRemove }) => {
+  onPropertyClick?: (property: any) => void;
+}> = ({ property, tab, onRemove, onPropertyClick }) => {
   return (
     <EnhancedGlobalPropertyCard
       type={isJVProperty(property) ? "jv" : "standard"}
@@ -81,7 +82,7 @@ const InspectionPropertyCard: React.FC<{
         []
       }
       isPremium={property?.isPremium || false}
-      onPropertyClick={() => {}} // Disabled in inspection view
+      onPropertyClick={() => onPropertyClick?.(property)}
       onInspectionToggle={onRemove} // Custom handler for inspection removal
       className="max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px]"
     />
