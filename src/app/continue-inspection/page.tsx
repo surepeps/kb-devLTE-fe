@@ -378,6 +378,14 @@ const ContinueInspectionPage = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Success Modal */}
+      <InspectionSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        onRequestAgain={handleRequestAgain}
+        onWaitForReply={handleWaitForReply}
+      />
     </div>
   );
 };
