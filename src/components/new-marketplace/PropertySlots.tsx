@@ -129,6 +129,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                 />
               ) : (
                 <GlobalPropertyCard
+                  tab={tab === "jv" ? "buy" : tab}
                   property={property.property}
                   cardData={createPropertyCardData(property.property)}
                   images={
@@ -137,7 +138,13 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                     []
                   }
                   isPremium={property.property?.isPremium || false}
+                  isSelected={true} // Property is selected for inspection
+                  negotiatedPrice={getNegotiatedPrice(property.propertyId)}
                   onPropertyClick={() => {}} // Disabled in inspection view
+                  onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
+                  onPriceNegotiation={() => {}} // Could add price negotiation functionality
+                  onEditPrice={() => {}} // Could add price edit functionality
+                  onRemoveNegotiation={() => onClearNegotiatedPrice && onClearNegotiatedPrice(property.propertyId)}
                 />
               )}
               {/* Remove Button Overlay */}
