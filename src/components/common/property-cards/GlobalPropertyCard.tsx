@@ -151,8 +151,41 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
             })}
           </div>
 
+          {/* Location and View Details - Moved above buttons */}
+          <div className="flex justify-between items-center pt-2">
+            <div className="flex gap-[5px] flex-1 min-w-0">
+              <Image
+                src={markerSVG}
+                width={16}
+                height={16}
+                alt="marker"
+                className="w-[16px] h-[16px] flex-shrink-0"
+              />
+              {cardData.map((item, idx) => {
+                if (item.header === "Location") {
+                  return (
+                    <h2
+                      key={idx}
+                      className="text-xs font-normal text-[#000000] truncate"
+                    >
+                      {item.value}
+                    </h2>
+                  );
+                }
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={onPropertyClick || (() => {})}
+              className="text-xs font-semibold text-[#0B423D] underline flex-shrink-0 ml-2"
+            >
+              View Details
+            </button>
+          </div>
+
           {/* Action Buttons - Always show */}
-          <div className="flex flex-col gap-2 pt-2">
+          <div className="flex flex-col gap-2 pt-2 mt-auto">
             {/* Price Negotiation Button */}
             {hasNegotiatedPrice ? (
               <div className="min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
@@ -201,39 +234,6 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
               ) : (
                 "Select for Inspection"
               )}
-            </button>
-          </div>
-
-          {/* Location and View Details */}
-          <div className="flex justify-between items-center mt-auto">
-            <div className="flex gap-[5px] flex-1 min-w-0">
-              <Image
-                src={markerSVG}
-                width={16}
-                height={16}
-                alt="marker"
-                className="w-[16px] h-[16px] flex-shrink-0"
-              />
-              {cardData.map((item, idx) => {
-                if (item.header === "Location") {
-                  return (
-                    <h2
-                      key={idx}
-                      className="text-xs font-normal text-[#000000] truncate"
-                    >
-                      {item.value}
-                    </h2>
-                  );
-                }
-              })}
-            </div>
-
-            <button
-              type="button"
-              onClick={onPropertyClick || (() => {})}
-              className="text-xs font-semibold text-[#0B423D] underline flex-shrink-0 ml-2"
-            >
-              View Details
             </button>
           </div>
         </div>
