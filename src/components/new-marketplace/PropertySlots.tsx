@@ -163,8 +163,8 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   loiDocument={getLOIDocument(property.propertyId)}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
-                  onLOIUpload={() => {}} // Could add LOI upload functionality
-                  onUpdateLOI={() => {}} // Could add LOI update functionality
+                  onLOIUpload={() => handleLOIUpload(property.property)} // Open LOI upload modal
+                  onUpdateLOI={() => handleLOIUpload(property.property)} // Open LOI update modal
                   onRemoveLOI={() => onClearLOIDocument && onClearLOIDocument(property.propertyId)}
                 />
               ) : (
