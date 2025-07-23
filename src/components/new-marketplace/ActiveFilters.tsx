@@ -132,10 +132,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Home Condition (for rent tab)
-  if (filters.homeCondition) {
+  if ('homeCondition' in filters && filters.homeCondition) {
     activeFilters.push({
       key: "homeCondition",
       label: `Condition: ${filters.homeCondition}`,
+      value: filters.homeCondition,
     });
   }
 
