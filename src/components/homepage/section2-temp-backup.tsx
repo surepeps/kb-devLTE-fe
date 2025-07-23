@@ -236,8 +236,11 @@ const Section2 = () => {
 
               const cardData = createPropertyCardData(property, propertyType);
 
-              return (
-                <UniversalPropertyCard
+              // Determine if this is a JV property based on the property type or button state
+              const isJVProperty = property?.briefType === "Joint Venture" || buttons.button4;
+
+              return isJVProperty ? (
+                <GlobalJVPropertyCard
                   key={idx}
                   property={property}
                   cardData={cardData}
@@ -252,11 +255,25 @@ const Section2 = () => {
                       router.push(`/property/jv/${property?._id}`);
                     }
                   }}
-                  maxSelections={2}
-                  currentSelections={0}
-                  useGlobalInspection={false}
-                  sourceTab={buttons.button4 ? "jv" : buttons.button3 ? "rent" : "buy"}
-                  sourcePage="homepage"
+                  className="mx-auto"
+                />
+              ) : (
+                <GlobalPropertyCard
+                  key={idx}
+                  tab={buttons.button3 ? "rent" : buttons.button2 ? "shortlet" : "buy"}
+                  property={property}
+                  cardData={cardData}
+                  images={property?.pictures || []}
+                  isPremium={property?.isPremium || false}
+                  onPropertyClick={() => {
+                    if (buttons.button1) {
+                      router.push(`/property/buy/${property?._id}`);
+                    } else if (buttons.button3) {
+                      router.push(`/property/rent/${property?._id}`);
+                    } else if (buttons.button4) {
+                      router.push(`/property/jv/${property?._id}`);
+                    }
+                  }}
                   className="mx-auto"
                 />
               );
