@@ -162,10 +162,11 @@ const ContactUs = () => {
               </label>
             </div>
             <button
-              className="h-[49px] md:h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF]"
+              className="h-[49px] md:h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF] disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
+              disabled={status === 'pending'}
             >
-              Submit
+              {status === 'pending' ? 'Sending...' : 'Submit'}
             </button>
           </div>
           <div className="w-full md:w-[589px] bg-[#FFFFFF] rounded-[4px] p-[15px] md:p-[40px] flex items-center justify-center shadow-md">
