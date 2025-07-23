@@ -424,7 +424,7 @@ const PreferenceFormContent: React.FC = () => {
       if (obj !== null && typeof obj === "object") {
         const cleaned: Record<string, unknown> = {};
         Object.keys(obj).forEach((key) => {
-          const value = cleanObject(obj[key]);
+          const value = cleanObject((obj as Record<string, any>)[key]);
           if (
             value !== null &&
             value !== undefined &&
