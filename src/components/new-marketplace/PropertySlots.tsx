@@ -70,56 +70,6 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   loiDocuments = [],
 }) => {
 
-  // Global inspection state for modal submissions
-  const { addNegotiatedPrice, addLOIDocument } = useGlobalInspectionState();
-
-  // Modal state management
-  const [priceNegotiationModal, setPriceNegotiationModal] = useState({
-    isOpen: false,
-    property: null,
-  });
-
-  const [loiUploadModal, setLoiUploadModal] = useState({
-    isOpen: false,
-    property: null,
-  });
-
-  // Helper function to find negotiated price for a property
-  const getNegotiatedPrice = (propertyId: string) => {
-    return negotiatedPrices.find(np => np.propertyId === propertyId) || null;
-  };
-
-  // Helper function to find LOI document for a property
-  const getLOIDocument = (propertyId: string) => {
-    return loiDocuments.find(loi => loi.propertyId === propertyId) || null;
-  };
-
-  // Modal handlers
-  const handlePriceNegotiation = (property: any) => {
-    setPriceNegotiationModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleLOIUpload = (property: any) => {
-    setLoiUploadModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
-    const originalPrice = property.price || property.rentalPrice || 0;
-    addNegotiatedPrice(property._id || property.id, originalPrice, negotiatedPriceValue);
-    setPriceNegotiationModal({ isOpen: false, property: null });
-  };
-
-  const handleLOISubmit = (property: any, document: File, documentUrl: string) => {
-    addLOIDocument(property._id || property.id, document, documentUrl);
-    setLoiUploadModal({ isOpen: false, property: null });
-  };
-
   const slots = Array.from({ length: maxSlots }, (_, index) => {
     const property = selectedProperties[index];
     return { index, property };
