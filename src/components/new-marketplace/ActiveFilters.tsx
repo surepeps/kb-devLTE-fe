@@ -184,7 +184,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
             >
               <span className="truncate">{filter.label}</span>
               <button
-                onClick={() => onRemoveFilter(filter.key, filter.value)}
+                onClick={() => onRemoveFilter(filter.key, Array.isArray(filter.value) ? filter.value[0] : filter.value)}
                 className="ml-1 hover:bg-white hover:bg-opacity-20 rounded-full p-0.5 transition-colors flex-shrink-0"
               >
                 <X size={12} />
