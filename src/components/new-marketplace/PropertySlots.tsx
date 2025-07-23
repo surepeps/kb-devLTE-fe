@@ -120,6 +120,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                 property={property.property}
                 tab={tab}
                 onRemove={() => onRemove(property.propertyId)}
+                onPropertyClick={onPropertyClick}
               />
               {/* Remove Button Overlay */}
               <button
