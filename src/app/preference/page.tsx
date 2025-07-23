@@ -415,14 +415,14 @@ const PreferenceFormContent: React.FC = () => {
     };
 
     // Helper function to remove empty/null/undefined values
-    const cleanObject = (obj: any): any => {
+    const cleanObject = (obj: unknown): unknown => {
       if (Array.isArray(obj)) {
         return obj
           .filter((item) => item !== null && item !== undefined && item !== "")
           .map(cleanObject);
       }
       if (obj !== null && typeof obj === "object") {
-        const cleaned: any = {};
+        const cleaned: Record<string, unknown> = {};
         Object.keys(obj).forEach((key) => {
           const value = cleanObject(obj[key]);
           if (
