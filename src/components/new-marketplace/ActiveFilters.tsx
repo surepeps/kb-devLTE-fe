@@ -119,8 +119,8 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Tenant Criteria (for rent tab)
-  if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
-    filters.tenantCriteria.forEach((criteria) => {
+  if ('tenantCriteria' in filters && filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+    filters.tenantCriteria.forEach((criteria: any) => {
       const shortCriteria =
         criteria.length > 15 ? criteria.substring(0, 15) + "..." : criteria;
       activeFilters.push({
