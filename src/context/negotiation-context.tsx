@@ -214,6 +214,15 @@ interface NegotiationActions {
 interface NegotiationContextType {
   state: NegotiationState;
   actions: NegotiationActions;
+
+  // Legacy properties for compatibility
+  priceCounterCount?: number;
+  loiCounterCount?: number;
+  counterLimits?: CounterLimits;
+  details?: any;
+  negotiationType?: NegotiationType;
+  getRemainingPriceCounters?: () => number | null;
+  getRemainingLoiCounters?: () => number | null;
 }
 
 // Helper function to create counter tracking
