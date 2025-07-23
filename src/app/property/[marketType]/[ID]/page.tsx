@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Rectangle.png";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -295,11 +296,40 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
   );
 };
 
+// Documents Component
+const DocumentsList = ({ documents }: { documents: PropertyDetails['docOnProperty'] }) => {
+  if (!documents || documents.length === 0) return null;
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <FileText className="w-5 h-5 mr-2" />
+        Available Documents
+      </h3>
+      <div className="space-y-3">
+        {documents.map((doc, index) => (
+          <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium text-gray-900">{doc.docName}</span>
+            <span className={`text-xs px-2 py-1 rounded-full ${
+              doc.isProvided
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {doc.isProvided ? 'Available' : 'Not Available'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // Action Buttons Component
-const ActionButtons = ({ details, onInspection, onNegotiation }: { 
-  details: PropertyDetails; 
-  onInspection: () => void; 
-  onNegotiation: () => void; 
+const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
+  details: PropertyDetails;
+  onInspection: () => void;
+  onNegotiation: () => void;
+  isSelected: boolean;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -322,10 +352,14 @@ const ActionButtons = ({ details, onInspection, onNegotiation }: {
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={onInspection}
-          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center"
+          className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center ${
+            isSelected
+              ? "bg-red-600 hover:bg-red-700 text-white"
+              : "bg-green-600 hover:bg-green-700 text-white"
+          }`}
         >
           <Eye className="w-5 h-5 mr-2" />
-          Schedule Inspection
+          {isSelected ? "Remove from Inspection" : "Add to Inspection"}
         </button>
         <button
           onClick={onNegotiation}
@@ -373,6 +407,7 @@ const ProductDetailsPage = () => {
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
   const { setPropertySelectedForInspection, setIsComingFromPriceNeg } = usePageContext();
   const { selectedBriefs } = useSelectedBriefs();
+  const { toggleInspectionSelection, isSelectedForInspection } = useGlobalPropertyActions();
 
   const marketType = params?.marketType ?? "";
   const id = params?.ID ?? "";
@@ -381,47 +416,51 @@ const ProductDetailsPage = () => {
     const fetchPropertyDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${URLS.BASE}${URLS.getOneProperty}${id}`);
-        
-        if (response.status === 200) {
-          const propertyData = response.data;
+        const response = await axios.get(`${URLS.BASE}/properties/${id}/getOne`);
+
+        if (response.status === 200 && response.data.success) {
+          const propertyData = response.data.data;
           setDetails({
             _id: propertyData._id,
             propertyId: propertyData._id,
             price: propertyData.price,
-            propertyType: propertyData.propertyType,
-            bedRoom: propertyData.bedRoom || propertyData.noOfBedrooms || 0,
+            propertyType: propertyData.typeOfBuilding || propertyData.propertyType,
+            bedRoom: propertyData.additionalFeatures?.noOfBedroom || 0,
             propertyStatus: propertyData.propertyCondition || "",
             location: propertyData.location,
             landSize: propertyData.landSize || { measurementType: "", size: null },
             additionalFeatures: {
-              additionalFeatures: propertyData.additionalFeatures?.additionalFeatures || [],
-              noOfBedrooms: propertyData.additionalFeatures?.noOfBedrooms || 0,
-              noOfBathrooms: propertyData.additionalFeatures?.noOfBathrooms || 0,
-              noOfToilets: propertyData.additionalFeatures?.noOfToilets || 0,
-              noOfCarParks: propertyData.additionalFeatures?.noOfCarParks || 0,
+              additionalFeatures: propertyData.features || [],
+              noOfBedrooms: propertyData.additionalFeatures?.noOfBedroom || 0,
+              noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
+              noOfToilets: propertyData.additionalFeatures?.noOfToilet || 0,
+              noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
             },
             features: propertyData.features || [],
             tenantCriteria: propertyData.tenantCriteria || [],
             areYouTheOwner: propertyData.areYouTheOwner ?? false,
-            isAvailable: propertyData.isAvailable === "yes" || propertyData.isAvailable === true,
+            isAvailable: propertyData.isAvailable,
             isApproved: propertyData.isApproved ?? false,
             isRejected: propertyData.isRejected ?? false,
-            isPreference: propertyData.isPreference ?? false,
-            isPremium: propertyData.isPremium ?? false,
-            pictures: propertyData.pictures && propertyData.pictures.length > 0 
-              ? propertyData.pictures 
+            isPreference: false,
+            isPremium: false,
+            pictures: propertyData.pictures && propertyData.pictures.length > 0
+              ? propertyData.pictures
               : [sampleImage.src],
             createdAt: propertyData.createdAt,
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
             docOnProperty: propertyData.docOnProperty || [],
-            briefType: propertyData.briefType || "",
+            briefType: propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
+                      propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown",
             propertyCondition: propertyData.propertyCondition || "",
-            noOfCarParks: propertyData.noOfCarParks || 0,
-            noOfBathrooms: propertyData.noOfBathrooms || 0,
-            noOfToilets: propertyData.noOfToilets || 0,
-          });
+            noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
+            noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
+            noOfToilets: propertyData.additionalFeatures?.noOfToilet || 0,
+            // Add additional fields from new API
+            description: propertyData.description,
+            addtionalInfo: propertyData.addtionalInfo,
+          } as any);
         }
       } catch (error) {
         console.error("Error fetching property details:", error);
@@ -454,16 +493,26 @@ const ProductDetailsPage = () => {
 
   const handleInspection = () => {
     if (details) {
-      setPropertySelectedForInspection(details);
-      toast.success("Property selected for inspection");
+      // Determine the tab based on property category
+      const sourceTab = details.briefType === "Joint Venture" ? "jv" :
+                       details.briefType === "Rent" ? "rent" : "buy";
+
+      toggleInspectionSelection(details, sourceTab, "property-details");
+
+      // Check if now selected for inspection
+      if (isSelectedForInspection(details._id)) {
+        toast.success("Property added to inspection");
+      } else {
+        toast.success("Property removed from inspection");
+      }
     }
   };
 
   const handleNegotiation = () => {
     if (details) {
-      setPropertySelectedForInspection(details);
-      setIsComingFromPriceNeg(true);
-      toast.success("Starting price negotiation");
+      // This would open the price negotiation modal
+      // For now, we'll just show a message
+      toast.success("Price negotiation feature coming soon!");
     }
   };
 
@@ -543,19 +592,41 @@ const ProductDetailsPage = () => {
               />
             )}
 
+            {/* Property Description */}
+            {(details as any).description && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white border border-gray-200 rounded-xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Description</h3>
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {(details as any).description}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
             {/* Additional Information */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-white border border-gray-200 rounded-xl p-6"
             >
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
               <div className="prose prose-gray max-w-none">
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  This property is managed by Khabi-Teq Realty. All transactions are secure and verified. 
+                  This property is managed by Khabi-Teq Realty. All transactions are secure and verified.
                   For more information about this property, please contact us directly or schedule an inspection.
                 </p>
+                {(details as any).addtionalInfo && (
+                  <p className="text-gray-700 text-sm leading-relaxed mt-3">
+                    {(details as any).addtionalInfo}
+                  </p>
+                )}
               </div>
             </motion.div>
           </div>
@@ -569,10 +640,11 @@ const ProductDetailsPage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
             >
-              <ActionButtons 
-                details={details} 
+              <ActionButtons
+                details={details}
                 onInspection={handleInspection}
                 onNegotiation={handleNegotiation}
+                isSelected={isSelectedForInspection(details._id)}
               />
             </motion.div>
 
@@ -583,6 +655,15 @@ const ProductDetailsPage = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               <PropertyInfoCard details={details} />
+            </motion.div>
+
+            {/* Documents */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <DocumentsList documents={details.docOnProperty} />
             </motion.div>
 
             {/* Selected Briefs */}

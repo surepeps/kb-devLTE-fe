@@ -17,7 +17,6 @@ const ShortletPropertySearch = () => {
     setTabFilter,
     clearTabFilters,
     activeTab,
-    setIsAddForInspectionOpen,
   } = useNewMarketplace();
 
   const isMobile = IsMobile();
@@ -247,8 +246,8 @@ const ShortletPropertySearch = () => {
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={shortletTab.formikStatus === "pending"}
-          selectedCount={shortletTab.selectedForInspection.length}
-          onOpenInspection={() => setIsAddForInspectionOpen(true)}
+          selectedCount={0}
+          onOpenInspection={() => {}}
         />
       </div>
 

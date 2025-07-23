@@ -45,8 +45,30 @@ export const GET_REQUEST = async (
       };
     }
 
-    const response = await request.json();
-    return response;
+    // Check if response has content before parsing JSON
+    const text = await request.text();
+    if (!text) {
+      console.warn("Empty response received from:", url);
+      return {
+        error: "Empty response",
+        success: false,
+        message: "Server returned empty response.",
+        data: [],
+      };
+    }
+
+    try {
+      const response = JSON.parse(text);
+      return response;
+    } catch (parseError) {
+      console.error("JSON parse error for response from:", url, "Response text:", text);
+      return {
+        error: "Invalid JSON response",
+        success: false,
+        message: "Server returned invalid data format.",
+        data: [],
+      };
+    }
   } catch (error: unknown) {
     const errorMsg = (error as Error).message || "Network error";
     console.error("GET_REQUEST error:", errorMsg);
@@ -67,13 +89,20 @@ export const GET_REQUEST = async (
   }
 };
 
-export const DELETE_REQUEST = async (url: string, token?: string) => {
+export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string) => {
   try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const request = await fetch(url, {
-      method: "DELETE", // Added the DELETE method
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      method: "DELETE",
+      headers,
+      body: data ? JSON.stringify(data) : undefined,
     });
     const response = await request.json();
     return response;
@@ -90,10 +119,11 @@ export const DELETE_REQUEST = async (url: string, token?: string) => {
 export const POST_REQUEST = async (
   url: string,
   data: unknown,
+  customHeaders?: HeadersInit,
   token?: string,
 ) => {
   try {
-    const headers: HeadersInit = {
+    const headers: HeadersInit = customHeaders || {
       "Content-Type": "application/json",
     };
 
@@ -101,10 +131,16 @@ export const POST_REQUEST = async (
       headers["Authorization"] = `Bearer ${token}`;
     }
 
+    // Handle FormData - don't set Content-Type for FormData as browser will set it with boundary
+    const isFormData = data instanceof FormData;
+    if (isFormData && headers["Content-Type"] === "multipart/form-data") {
+      delete headers["Content-Type"];
+    }
+
     const request = await fetch(url, {
       method: "POST",
       headers,
-      body: JSON.stringify(data),
+      body: isFormData ? data : JSON.stringify(data),
     });
 
     const response = await request.json();

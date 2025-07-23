@@ -11,11 +11,14 @@ import { contactUsData } from "@/data";
 import Image, { StaticImageData } from "next/image";
 import ContactUnit from "../contact_unit";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import ContactSuccessModal from "../modals/ContactSuccessModal";
 
 const ContactUs = () => {
   const [status, setStatus] = React.useState<
     "idle" | "pending" | "success" | "failed"
   >("idle");
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(2, "Name must be at least 2 characters")
@@ -31,9 +34,8 @@ const ContactUs = () => {
     phoneNumber: Yup.string()
       .matches(/^[0-9]+$/, "Phone number must be digits only")
       .min(10, "Phone number must be at least 10 digits")
-      .max(15, "Phone number must be at most 15 digits")
-      .required("Phone number is required"),
-    category: Yup.string().required("Category is required"),
+      .max(15, "Phone number must be at most 15 digits"),
+    subject: Yup.string().required("Subject is required"),
   });
   const formik = useFormik({
     initialValues: {
@@ -41,25 +43,33 @@ const ContactUs = () => {
       email: "",
       message: "",
       phoneNumber: "",
-      category: "",
+      subject: "",
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
-      // setStatus('pending');
-      // try {
-      //   const response = await axios.post(URLS.BASE);
-      //   if (response.status === 200) {
-      //     setStatus('success');
-      //     formik.resetForm();
-      //     setTimeout(() => {
-      //       setStatus('idle');
-      //     }, 2000);
-      //   }
-      // } catch (error) {
-      //   console.log(error);
-      //   setStatus('failed');
-      // }
+      setStatus('pending');
+      try {
+        const payload = {
+          name: values.name,
+          email: values.email,
+          subject: values.subject,
+          message: values.message,
+          ...(values.phoneNumber && { phoneNumber: values.phoneNumber }),
+        };
+
+        const response = await axios.post(`${URLS.BASE}/contact-us/submit`, payload);
+
+        if (response.status === 200 || response.status === 201) {
+          setStatus('success');
+          formik.resetForm();
+          setShowSuccessModal(true);
+          toast.success("Message sent successfully!");
+        }
+      } catch (error) {
+        console.error('Contact form error:', error);
+        setStatus('failed');
+        toast.error("Failed to send message. Please try again.");
+      }
     },
   });
   return (
@@ -117,53 +127,17 @@ const ContactUs = () => {
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
               />
-              {/* <Input
-                name='category'
-                label='Category'
-                type='text'
-                id='category'
+              <Input
+                name="subject"
+                label="Subject"
+                type="text"
+                id="subject"
                 formik={formik}
-                placeholder='Enter your category'
-                value={formik.values.category}
+                placeholder="Enter message subject"
+                value={formik.values.subject}
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-              /> */}
-              <label htmlFor="category" className="flex flex-col gap-[5px]">
-                <span className="text-base leading-[25.6px] font-medium text-[#1E1E1E]">
-                  Category
-                </span>
-                <select
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  className="w-full outline-none min-h-[50px] border-[1px] py-[12px] px-[16px] bg-white disabled:bg-[#F] border-[#D6DDEB] placeholder:text-[#A8ADB7] disabled:text-[#847F7F] text-black text-base leading-[25.6px] disabled:cursor-not-allowed focus:outline-[1.5px] focus:outline-[#14b8a6] focus:outline-offset-0 rounded-[5px]"
-                  name="category"
-                  id="category"
-                  title="category"
-                >
-                  {[
-                    "Login",
-                    "Register",
-                    "Listing",
-                    "Agent",
-                    "Marketplace",
-                    "Promotion",
-                    "Referral",
-                    "Payment",
-                    "Subscription",
-                    "Inspection",
-                    "Negotiation",
-                  ].map((item: string, idx: number) => (
-                    <option key={idx} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                {(formik?.errors?.category || formik?.touched?.category) && (
-                  <span className="text-red-600 text-xs">
-                    {formik?.errors?.category}
-                  </span>
-                )}
-              </label>
+              />
               <label
                 htmlFor="message"
                 className="flex flex-col gap-[5px] w-full col-span-2"
@@ -188,10 +162,11 @@ const ContactUs = () => {
               </label>
             </div>
             <button
-              className="h-[49px] md:h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF]"
+              className="h-[49px] md:h-[66px] bg-[#8DDB90] flex items-center justify-center font-bold text-xl text-[#FFFFFF] disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
+              disabled={status === 'pending'}
             >
-              Submit
+              {status === 'pending' ? 'Sending...' : 'Submit'}
             </button>
           </div>
           <div className="w-full md:w-[589px] bg-[#FFFFFF] rounded-[4px] p-[15px] md:p-[40px] flex items-center justify-center shadow-md">
@@ -250,6 +225,15 @@ const ContactUs = () => {
             </div>
           </div>
         </form>
+
+        {/* Success Modal */}
+        <ContactSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => {
+            setShowSuccessModal(false);
+            setStatus('idle');
+          }}
+        />
       </div>
     </div>
   );
