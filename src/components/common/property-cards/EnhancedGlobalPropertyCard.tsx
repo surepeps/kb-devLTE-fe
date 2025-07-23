@@ -160,7 +160,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
       />
 
       {/* Price Negotiation Modal */}
-      {/* {priceNegotiationModal.isOpen && (
+      {priceNegotiationModal.isOpen && (
         <SimplifiedPriceNegotiationModal
           isOpen={priceNegotiationModal.isOpen}
           property={priceNegotiationModal.property}
@@ -172,7 +172,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
             priceNegotiationModal.property?._id
           )}
         />
-      )} */}
+      )}
     </>
   );
 };
