@@ -460,7 +460,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       formData,
     ) as ApiResponse<{ url: string }>;
 
-    if (response?.success) {
+    if (response?.success && response.data) {
       return response.data.url;
     }
     throw new Error("Failed to upload file");
