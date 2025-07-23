@@ -88,6 +88,9 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   loiDocuments = [],
 }) => {
 
+  // Global inspection state for modal submissions
+  const { addNegotiatedPrice, addLOIDocument } = useGlobalInspectionState();
+
   // Modal state management
   const [priceNegotiationModal, setPriceNegotiationModal] = useState({
     isOpen: false,
