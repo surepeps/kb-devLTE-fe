@@ -51,7 +51,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   ) => {
     setFieldTouched(fieldName as string, true);
     setFieldValue(fieldName as string, value);
-    updatePropertyData(fieldName, value);
+    updatePropertyData(fieldName as any, value);
   };
 
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
