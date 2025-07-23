@@ -451,11 +451,11 @@ const ProductDetailsPage = () => {
             features: propertyData.features || [],
             tenantCriteria: propertyData.tenantCriteria || [],
             areYouTheOwner: propertyData.areYouTheOwner ?? false,
-            isAvailable: propertyData.isAvailable,
+            isAvailable: propertyData.isAvailable === "yes" || propertyData.isAvailable === true,
             isApproved: propertyData.isApproved ?? false,
             isRejected: propertyData.isRejected ?? false,
-            isPreference: false,
-            isPremium: false,
+            isPreference: propertyData.isPreference ?? false,
+            isPremium: propertyData.isPremium ?? false,
             pictures: propertyData.pictures && propertyData.pictures.length > 0
               ? propertyData.pictures
               : [sampleImage.src],
@@ -463,8 +463,10 @@ const ProductDetailsPage = () => {
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
             docOnProperty: propertyData.docOnProperty || [],
-            briefType: propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
-                      propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown",
+            briefType: propertyData.briefType || (
+              propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
+              propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown"
+            ),
             propertyCondition: propertyData.propertyCondition || "",
             noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
             noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
