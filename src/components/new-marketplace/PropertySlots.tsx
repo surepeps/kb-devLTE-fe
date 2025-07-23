@@ -84,44 +84,23 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         >
           {property ? (
             <div className="relative w-full flex justify-end">
-              {isJVProperty(property.property) ? (
-                <GlobalJVPropertyCard
-                  property={property.property}
-                  cardData={createPropertyCardData(property.property, "Joint Venture")}
-                  images={
-                    property.property?.pictures ||
-                    property.property?.images ||
-                    []
-                  }
-                  isPremium={property.property?.isPremium || false}
-                  isSelected={true} // Property is selected for inspection
-                  loiDocument={getLOIDocument(property.propertyId)}
-                  onPropertyClick={() => {}} // Disabled in inspection view
-                  onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
-                  onLOIUpload={() => handleLOIUpload(property.property)} // Open LOI upload modal
-                  onUpdateLOI={() => handleLOIUpload(property.property)} // Open LOI update modal
-                  onRemoveLOI={() => onClearLOIDocument && onClearLOIDocument(property.propertyId)}
-                />
-              ) : (
-                <GlobalPropertyCard
-                  tab={tab === "jv" ? "buy" : tab}
-                  property={property.property}
-                  cardData={createPropertyCardData(property.property)}
-                  images={
-                    property.property?.pictures ||
-                    property.property?.images ||
-                    []
-                  }
-                  isPremium={property.property?.isPremium || false}
-                  isSelected={true} // Property is selected for inspection
-                  negotiatedPrice={getNegotiatedPrice(property.propertyId)}
-                  onPropertyClick={() => {}} // Disabled in inspection view
-                  onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
-                  onPriceNegotiation={() => handlePriceNegotiation(property.property)} // Open price negotiation modal
-                  onEditPrice={() => handlePriceNegotiation(property.property)} // Open price edit modal
-                  onRemoveNegotiation={() => onClearNegotiatedPrice && onClearNegotiatedPrice(property.propertyId)}
-                />
-              )}
+              <EnhancedGlobalPropertyCard
+                type={isJVProperty(property.property) ? "jv" : "standard"}
+                tab={tab === "jv" ? "buy" : tab}
+                property={property.property}
+                cardData={createPropertyCardData(
+                  property.property,
+                  isJVProperty(property.property) ? "Joint Venture" : undefined
+                )}
+                images={
+                  property.property?.pictures ||
+                  property.property?.images ||
+                  []
+                }
+                isPremium={property.property?.isPremium || false}
+                onPropertyClick={() => {}} // Disabled in inspection view
+                className="max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px]"
+              />
               {/* Remove Button Overlay */}
               <button
                 onClick={() => onRemove(property.propertyId)}
