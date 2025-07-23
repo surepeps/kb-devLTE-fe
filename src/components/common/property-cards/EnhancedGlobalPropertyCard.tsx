@@ -63,8 +63,12 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   const loiDocument = type === "jv" ? getLOIDocument(property._id) : null;
 
   const handleInspectionToggle = () => {
-    const sourceTab = type === "jv" ? "jv" : tab;
-    toggleInspectionSelection(property, sourceTab, "global");
+    if (customInspectionToggle) {
+      customInspectionToggle();
+    } else {
+      const sourceTab = type === "jv" ? "jv" : tab;
+      toggleInspectionSelection(property, sourceTab, "global");
+    }
   };
 
   const handlePriceNegotiation = () => {
