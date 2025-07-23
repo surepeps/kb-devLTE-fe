@@ -547,10 +547,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
         inspectionDateStatus:
           userPayload.inspectionDateStatus ?? state.inspectionDateStatus,
         userId: state.currentUserId || "", // Get from state
-        userType: state.currentUserType || "", // Get from state
-        // Include counter tracking information
-        priceCounterCount: state.counterTracking.priceCounterCount,
-        loiCounterCount: state.counterTracking.loiCounterCount,
+        userType: state.currentUserType || "", 
         ...additionalDefaults,
         ...userPayload,
       } as T;

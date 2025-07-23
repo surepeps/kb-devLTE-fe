@@ -3,7 +3,8 @@
 // Export all type definitions for easy importing
 export * from "./api.types";
 export * from "./contact.types";
-export {
+
+export type {
   FormikInstance,
   InputType,
   BaseInputProps,
@@ -17,8 +18,9 @@ export {
   InputProps,
   FormStepProps,
   MultiStepFormProps,
-  FieldArrayHelpers
+  FieldArrayHelpers,
 } from "./form.types";
+
 export * from "./post-property.types";
 export * from "./property.types";
 export * from "./search.types";

@@ -266,6 +266,7 @@ const EnhancedEditBriefModal: React.FC<EnhancedEditBriefModalProps> = ({
       const response = await PUT_REQUEST(
         `${URLS.BASE}/user/briefs/${brief._id}`,
         payload,
+        undefined,
         Cookies.get("token"),
       );
 
