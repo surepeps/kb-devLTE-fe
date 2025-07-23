@@ -1,12 +1,9 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Plus } from "lucide-react";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
-import PriceNegotiationModal from "./modals/PriceNegotiationModal";
-import LOIUploadModal from "./modals/LOIUploadModal";
-import { useNewMarketplace } from "@/context/new-marketplace-context";
 
 interface PropertySlotsProps {
   selectedProperties: any[];
@@ -31,68 +28,11 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   negotiatedPrices = [],
   loiDocuments = [],
 }) => {
-  const {
-    addNegotiatedPrice,
-    getNegotiatedPrice,
-    addLOIDocument,
-    getLOIDocument,
-    toggleInspectionSelection,
-    isSelectedForInspection,
-  } = useNewMarketplace();
-
-  const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
-    isOpen: boolean;
-    property: any;
-  }>({
-    isOpen: false,
-    property: null,
-  });
-
-  const [loiUploadModal, setLoiUploadModal] = useState<{
-    isOpen: boolean;
-    property: any;
-  }>({
-    isOpen: false,
-    property: null,
-  });
 
   const slots = Array.from({ length: maxSlots }, (_, index) => {
     const property = selectedProperties[index];
     return { index, property };
   });
-
-
-
-  const handlePriceNegotiation = (property: any) => {
-    setPriceNegotiationModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleNegotiationSubmit = (property: any, negotiatedPrice: number) => {
-    const originalPrice = property.price || 0;
-    if (tab === "buy" || tab === "rent") {
-      addNegotiatedPrice(tab, property._id, originalPrice, negotiatedPrice);
-    }
-    setPriceNegotiationModal({ isOpen: false, property: null });
-  };
-
-  const handleLOIUpload = (property: any) => {
-    setLoiUploadModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleLOISubmit = (
-    property: any,
-    document: File,
-    documentUrl?: string,
-  ) => {
-    addLOIDocument(property._id, document, documentUrl);
-    setLoiUploadModal({ isOpen: false, property: null });
-  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -146,32 +86,6 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         </div>
       ))}
 
-      {/* Price Negotiation Modal */}
-      {priceNegotiationModal.isOpen && (tab === "buy" || tab === "rent") && (
-        <PriceNegotiationModal
-          isOpen={priceNegotiationModal.isOpen}
-          property={priceNegotiationModal.property}
-          onClose={() =>
-            setPriceNegotiationModal({ isOpen: false, property: null })
-          }
-          onSubmit={handleNegotiationSubmit}
-          existingNegotiation={getNegotiatedPrice(
-            tab as "buy" | "rent",
-            priceNegotiationModal.property?._id,
-          )}
-        />
-      )}
-
-      {/* LOI Upload Modal */}
-      {loiUploadModal.isOpen && tab === "jv" && (
-        <LOIUploadModal
-          isOpen={loiUploadModal.isOpen}
-          property={loiUploadModal.property}
-          onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
-          onSubmit={handleLOISubmit}
-          existingDocument={getLOIDocument(loiUploadModal.property?._id)}
-        />
-      )}
     </div>
   );
 };

@@ -3,8 +3,9 @@
 interface ApiResponse<T = any> {
   success: boolean;
   message?: string;
-  data?: T;
+  data?: T | null;
   error?: string;
+  pagination?: T | null;
 }
 
 export const GET_REQUEST = async <T = any>(
@@ -20,7 +21,7 @@ export const GET_REQUEST = async <T = any>(
         error: "Invalid API URL",
         success: false,
         message: "API configuration is missing.",
-        data: [],
+        data: null,
       };
     }
 
@@ -48,7 +49,7 @@ export const GET_REQUEST = async <T = any>(
         error: errorMessage,
         success: false,
         message: "Failed to fetch data from server.",
-        data: [],
+        data: null,
       };
     }
 
@@ -60,7 +61,7 @@ export const GET_REQUEST = async <T = any>(
         error: "Empty response",
         success: false,
         message: "Server returned empty response.",
-        data: [],
+        data: null,
       };
     }
 
@@ -73,7 +74,7 @@ export const GET_REQUEST = async <T = any>(
         error: "Invalid JSON response",
         success: false,
         message: "Server returned invalid data format.",
-        data: [],
+        data: null,
       };
     }
   } catch (error: unknown) {
@@ -91,7 +92,7 @@ export const GET_REQUEST = async <T = any>(
       error: errorMsg,
       success: false,
       message: "Unable to connect to server. Please check your connection.",
-      data: [],
+      data: null,
     };
   }
 };

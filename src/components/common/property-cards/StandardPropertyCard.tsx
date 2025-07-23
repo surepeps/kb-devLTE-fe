@@ -206,7 +206,9 @@ const StandardPropertyCard: React.FC<StandardPropertyCardProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onRemoveNegotiation(property._id);
+                      if (property._id) {
+                        onRemoveNegotiation(property._id);
+                      }
                     }}
                     className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
                     title="Clear negotiated price"

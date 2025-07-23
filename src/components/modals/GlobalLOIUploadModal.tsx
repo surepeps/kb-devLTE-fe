@@ -237,7 +237,7 @@ const GlobalLOIUploadModal: React.FC<GlobalLOIUploadModalProps> = ({
                   onClick={onClose}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  Cancel
+                  Cancel 2354
                 </button>
                 <Button
                   type="submit"

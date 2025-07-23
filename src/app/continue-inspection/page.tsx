@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
-import { IsMobile } from "@/hooks/isMobile";
+import { IsMobile } from "@/hooks/isMobile"; 
 import PropertySlots from "@/components/new-marketplace/PropertySlots";
 import DateTimeSelection from "@/components/new-marketplace/DateTimeSelection";
 import PaymentUpload from "@/components/new-marketplace/PaymentUpload";

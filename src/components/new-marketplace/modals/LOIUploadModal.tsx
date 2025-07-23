@@ -28,6 +28,13 @@ interface LOIUploadModalProps {
   } | null;
 }
 
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+
 const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
   isOpen,
   property,
@@ -78,12 +85,11 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
     const formData = new FormData();
     formData.append("file", file);
 
-    // FIXED: Use upload-file endpoint for documents instead of upload-image
     const url = `${URLS.BASE}${URLS.uploadFile}`;
 
     try {
-      const data = await toast.promise(
-        POST_REQUEST_FILE_UPLOAD(url, formData),
+      const response = await toast.promise(
+        POST_REQUEST_FILE_UPLOAD(url, formData) as Promise<ApiResponse<{ url?: string; imageUrl?: string }>>,
         {
           loading: "Uploading document...",
           success: "Document uploaded successfully",
@@ -91,8 +97,7 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
         },
       );
 
-      // Handle different response formats for document uploads
-      const uploadedUrl = data.url || data.data?.url || data.imageUrl;
+      const uploadedUrl = response.data?.url || response.data?.imageUrl;
 
       if (!uploadedUrl) {
         throw new Error("No URL in server response");

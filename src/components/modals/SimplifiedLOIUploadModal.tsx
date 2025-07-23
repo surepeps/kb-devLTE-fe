@@ -239,7 +239,7 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Investment Amount</p>
+                    <p className="text-sm text-gray-600 mb-1">Property Amount</p>
                     <p className="font-medium text-gray-900">
                       {property?.investmentAmount 
                         ? formatPrice(property.investmentAmount) 
@@ -254,8 +254,8 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
                       Location
                     </p>
                     <p className="font-medium text-gray-900">
-                      {property?.state && property?.lga 
-                        ? `${property.state}, ${property.lga}` 
+                      {property?.location?.state && property?.location?.lga 
+                        ? `${property.location.state}, ${property.location?.lga}` 
                         : "Location not specified"}
                     </p>
                   </div>
@@ -385,7 +385,7 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
                         <p className="font-medium mb-1">File Requirements:</p>
                         <ul className="list-disc list-inside space-y-1">
                           <li>Format: PDF, DOC, or DOCX</li>
-                          <li>Maximum size: 10MB</li>
+                          <li>Maximum size: 5MB</li>
                           <li>Document will be uploaded immediately upon selection</li>
                         </ul>
                       </div>

@@ -213,7 +213,7 @@ const Overview = () => {
             message: "Failed to get data",
           });
         }
-        const data = response;
+        const data = response.data;
 
         if (!data?.properties) {
           console.error("Invalid response structure:", data);

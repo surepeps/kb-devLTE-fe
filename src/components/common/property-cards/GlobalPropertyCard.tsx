@@ -204,7 +204,9 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onRemoveNegotiation) {
-                      onRemoveNegotiation(property._id);
+                      if (property._id) {
+                        onRemoveNegotiation(property._id);
+                      }
                     }
                   }}
                   className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
@@ -220,7 +222,9 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onRemoveNegotiation(property._id);
+                      if (property._id) {
+                        onRemoveNegotiation(property._id);
+                      }
                     }}
                     className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
                     title="Clear negotiated price"

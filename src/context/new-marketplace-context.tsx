@@ -112,12 +112,6 @@ interface NewMarketplaceContextType {
   clearInspectionSelection?: () => void;
   removeNegotiatedPrice?: (propertyId: string) => void;
   removeLOIDocument?: (propertyId: string) => void;
-  addNegotiatedPrice?: (propertyId: string, price: any) => void;
-  getNegotiatedPrice?: (propertyId: string) => any;
-  addLOIDocument?: (propertyId: string, document: any) => void;
-  getLOIDocument?: (propertyId: string) => any;
-  toggleInspectionSelection?: (property: any) => void;
-  isSelectedForInspection?: (propertyId: string) => boolean;
 
   // Filter management
   setTabFilter: (
@@ -763,12 +757,6 @@ export const NewMarketplaceProvider: React.FC<{
       clearInspectionSelection: () => {},
       removeNegotiatedPrice: () => {},
       removeLOIDocument: () => {},
-      addNegotiatedPrice: () => {},
-      getNegotiatedPrice: () => null,
-      addLOIDocument: () => {},
-      getLOIDocument: () => null,
-      toggleInspectionSelection: () => {},
-      isSelectedForInspection: () => false,
 
       // Items per page
       itemsPerPage,

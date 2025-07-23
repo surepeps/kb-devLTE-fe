@@ -71,8 +71,8 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         Cookies.get("token"),
       );
 
-      if (response?.success && response?.url) {
-        return response.url;
+      if (response?.success && response?.data.url) {
+        return response.data.url;
       }
       throw new Error(response?.message || "Upload failed");
     } catch (error) {
