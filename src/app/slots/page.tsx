@@ -40,7 +40,7 @@ const SlotsPage = () => {
 		const fetchSlots = async () => {
 			const url = URLS.BASE + URLS.allAvailableSLots;
 			const data = await GET_REQUEST(url);
-			setSlots(data.slots);
+			setSlots(data.data?.slots || []);
 		};
 		fetchSlots();
 	}, []);

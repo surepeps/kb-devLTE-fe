@@ -424,8 +424,8 @@ const BriefDetailPage = () => {
           formData.append("file", image as File);
           const uploadUrl = URLS.BASE + URLS.uploadImg;
           const response = await POST_REQUEST_FILE_UPLOAD(uploadUrl, formData);
-          if (response?.url) {
-            uploadedImageUrls.push(response.url);
+          if (response?.data?.url) {
+            uploadedImageUrls.push(response.data.url);
           }
         } else if (typeof image === "string" && image.startsWith("http")) {
           uploadedImageUrls.push(image);

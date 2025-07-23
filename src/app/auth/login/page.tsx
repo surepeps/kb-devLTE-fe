@@ -98,7 +98,7 @@ const Login: FC = () => {
         const response = await toast.promise(
           (async () => {
             const res = await POST_REQUEST(url, values);
-            if (!res || res?.error || !res?.user?.id) {
+            if (!res || res?.error || !res?.data?.user?.id) {
               throw new Error(res?.message || res?.error || "Sign In failed");
             }
             return res;
@@ -129,7 +129,7 @@ const Login: FC = () => {
         const url = URLS.BASE + URLS.authGoogle;
         const response = await POST_REQUEST(url, { idToken: codeResponse.code });
 
-        if (response.user?.id) {
+        if (response.data?.user?.id) {
           toast.success("Sign in successful");
           handleAuthSuccess(response);
         } else {
@@ -185,7 +185,7 @@ const Login: FC = () => {
                   };
 
                   const result = await POST_REQUEST(url, payload);
-                  if (result.user?.id) {
+                  if (result.data?.user?.id) {
                     toast.success("Sign in successful");
                     handleAuthSuccess(result);
                   } else {

@@ -254,7 +254,8 @@ const EditBriefPage = () => {
       const response = await PUT_REQUEST(
         `${URLS.BASE}/user/briefs/${briefId}`,
         payload,
-        Cookies.get("token"),
+        {},
+        Cookies.get("token") || "",
       );
 
       if (response && response.success !== false) {

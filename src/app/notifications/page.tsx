@@ -61,7 +61,7 @@ const NotificationsPage: React.FC = () => {
       // Use pagination with 5 notifications per page as specified
       const response = await GET_REQUEST(
         `${URLS.BASE}/user/notifications?limit=5&page=${currentPage}`,
-        Cookies.get("token"),
+        Cookies.get("token") || "",
       );
 
       if (response?.success && response?.data) {
@@ -114,7 +114,8 @@ const NotificationsPage: React.FC = () => {
       const response = await PUT_REQUEST(
         `${URLS.BASE}/user/notifications/${notificationId}/unread`,
         {},
-        Cookies.get("token"),
+        {},
+        Cookies.get("token") || "",
       );
 
       if (response?.success) {
@@ -148,7 +149,8 @@ const NotificationsPage: React.FC = () => {
       await PUT_REQUEST(
         `${URLS.BASE}/user/notifications/${notificationId}`,
         { deleted: true },
-        Cookies.get("token"),
+        {},
+        Cookies.get("token") || "",
       );
     } catch (error) {
       console.error("Error deleting notification:", error);
@@ -173,7 +175,8 @@ const NotificationsPage: React.FC = () => {
         await PUT_REQUEST(
           `${URLS.BASE}/user/notifications/${id}`,
           { deleted: true },
-          Cookies.get("token"),
+          {},
+          Cookies.get("token") || "",
         );
       }
     } catch (error) {
@@ -202,7 +205,8 @@ const NotificationsPage: React.FC = () => {
       await PUT_REQUEST(
         `${URLS.BASE}/user/notifications/mark-all-read`,
         {},
-        Cookies.get("token"),
+        {},
+        Cookies.get("token") || "",
       );
     } catch (error) {
       console.error("Error marking all as read:", error);
