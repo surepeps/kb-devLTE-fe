@@ -103,48 +103,19 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         >
           {property ? (
             <div className="relative w-full flex justify-end">
-              {tab === "jv" ? (
-                <GlobalJVPropertyCard
-                  property={property.property}
-                  cardData={getPropertyCardData(property.property)}
-                  images={
-                    property.property?.pictures ||
-                    property.property?.images ||
-                    []
-                  }
-                  isPremium={property.property?.isPremium || false}
-                  onPropertyClick={() => {}} // Disabled in inspection view
-                  onInspectionToggle={() => onRemove(property.propertyId)}
-                  onLOIUpload={() => handleLOIUpload(property.property)}
-                  onRemoveLOI={onClearLOIDocument || (() => {})}
-                  isSelected={true}
-                  loiDocument={loiDocuments.find(
-                    (doc) => doc.propertyId === property.propertyId,
-                  )}
-                />
-              ) : (
-                <GlobalPropertyCard
-                  tab={tab}
-                  property={property.property}
-                  cardData={getPropertyCardData(property.property)}
-                  images={
-                    property.property?.pictures ||
-                    property.property?.images ||
-                    []
-                  }
-                  isPremium={property.property?.isPremium || false}
-                  onPropertyClick={() => {}} // Disabled in inspection view
-                  onInspectionToggle={() => onRemove(property.propertyId)}
-                  onPriceNegotiation={() =>
-                    handlePriceNegotiation(property.property)
-                  }
-                  onRemoveNegotiation={onClearNegotiatedPrice || (() => {})}
-                  isSelected={true}
-                  negotiatedPrice={negotiatedPrices.find(
-                    (price) => price.propertyId === property.propertyId,
-                  )}
-                />
-              )}
+              <EnhancedGlobalPropertyCard
+                type={tab === "jv" ? "jv" : "standard"}
+                tab={tab === "jv" ? "buy" : tab}
+                property={property.property}
+                cardData={getPropertyCardData(property.property)}
+                images={
+                  property.property?.pictures ||
+                  property.property?.images ||
+                  []
+                }
+                isPremium={property.property?.isPremium || false}
+                onPropertyClick={() => {}} // Disabled in inspection view
+              />
               {/* Remove Button Overlay */}
               <button
                 onClick={() => onRemove(property.propertyId)}
