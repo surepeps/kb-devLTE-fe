@@ -1094,6 +1094,14 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
     () => ({
       state,
       actions,
+      // Legacy properties for compatibility
+      priceCounterCount: state.counterTracking?.priceCounterCount || 0,
+      loiCounterCount: state.counterTracking?.loiCounterCount || 0,
+      counterLimits: state.counterLimits,
+      details: state.details,
+      negotiationType: state.negotiationType,
+      getRemainingPriceCounters: () => state.counterTracking?.getRemainingCounters('price') || 0,
+      getRemainingLoiCounters: () => state.counterTracking?.getRemainingCounters('loi') || 0,
     }),
     [state, actions],
   );
