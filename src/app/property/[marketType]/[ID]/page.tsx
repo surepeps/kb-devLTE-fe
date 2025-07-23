@@ -324,10 +324,14 @@ const ActionButtons = ({ details, onInspection, onNegotiation, isSelected }: {
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={onInspection}
-          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center"
+          className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center ${
+            isSelected
+              ? "bg-red-600 hover:bg-red-700 text-white"
+              : "bg-green-600 hover:bg-green-700 text-white"
+          }`}
         >
           <Eye className="w-5 h-5 mr-2" />
-          Schedule Inspection
+          {isSelected ? "Remove from Inspection" : "Add to Inspection"}
         </button>
         <button
           onClick={onNegotiation}
