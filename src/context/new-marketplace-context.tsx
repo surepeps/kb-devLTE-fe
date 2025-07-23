@@ -352,9 +352,7 @@ export const NewMarketplaceProvider: React.FC<{
           );
         }
 
-        // Import utilities dynamically
-        const { URLS } = await import("@/utils/URLS");
-        const { GET_REQUEST } = await import("@/utils/requests");
+        // Use static imports (already imported at top of file)
 
         // Validate URL construction
         if (!URLS.BASE || URLS.BASE.includes("undefined")) {
