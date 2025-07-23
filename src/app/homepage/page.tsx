@@ -79,8 +79,8 @@ const Homepage = ({
           const response = await GET_REQUEST(url);
 
           // Type guard to check if response is a valid VerifiedUser
-          if (response && typeof response === 'object' && 'id' in response && 'token' in response) {
-            const userResponse = response as VerifiedUser;
+          if (response?.data && typeof response.data === 'object' && 'id' in response.data && 'token' in response.data) {
+            const userResponse = response.data as VerifiedUser;
 
             if (userResponse.id && userResponse.token) {
               Cookies.set("token", userResponse.token);
