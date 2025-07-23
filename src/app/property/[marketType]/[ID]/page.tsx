@@ -381,46 +381,47 @@ const ProductDetailsPage = () => {
     const fetchPropertyDetails = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${URLS.BASE}${URLS.getOneProperty}${id}`);
-        
-        if (response.status === 200) {
-          const propertyData = response.data;
+        const response = await axios.get(`${URLS.BASE}/properties/${id}/getOne`);
+
+        if (response.status === 200 && response.data.success) {
+          const propertyData = response.data.data;
           setDetails({
             _id: propertyData._id,
             propertyId: propertyData._id,
             price: propertyData.price,
-            propertyType: propertyData.propertyType,
-            bedRoom: propertyData.bedRoom || propertyData.noOfBedrooms || 0,
+            propertyType: propertyData.typeOfBuilding || propertyData.propertyType,
+            bedRoom: propertyData.additionalFeatures?.noOfBedroom || 0,
             propertyStatus: propertyData.propertyCondition || "",
             location: propertyData.location,
             landSize: propertyData.landSize || { measurementType: "", size: null },
             additionalFeatures: {
-              additionalFeatures: propertyData.additionalFeatures?.additionalFeatures || [],
-              noOfBedrooms: propertyData.additionalFeatures?.noOfBedrooms || 0,
-              noOfBathrooms: propertyData.additionalFeatures?.noOfBathrooms || 0,
-              noOfToilets: propertyData.additionalFeatures?.noOfToilets || 0,
-              noOfCarParks: propertyData.additionalFeatures?.noOfCarParks || 0,
+              additionalFeatures: propertyData.features || [],
+              noOfBedrooms: propertyData.additionalFeatures?.noOfBedroom || 0,
+              noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
+              noOfToilets: propertyData.additionalFeatures?.noOfToilet || 0,
+              noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
             },
             features: propertyData.features || [],
             tenantCriteria: propertyData.tenantCriteria || [],
             areYouTheOwner: propertyData.areYouTheOwner ?? false,
-            isAvailable: propertyData.isAvailable === "yes" || propertyData.isAvailable === true,
+            isAvailable: propertyData.isAvailable,
             isApproved: propertyData.isApproved ?? false,
             isRejected: propertyData.isRejected ?? false,
-            isPreference: propertyData.isPreference ?? false,
-            isPremium: propertyData.isPremium ?? false,
-            pictures: propertyData.pictures && propertyData.pictures.length > 0 
-              ? propertyData.pictures 
+            isPreference: false,
+            isPremium: false,
+            pictures: propertyData.pictures && propertyData.pictures.length > 0
+              ? propertyData.pictures
               : [sampleImage.src],
             createdAt: propertyData.createdAt,
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
             docOnProperty: propertyData.docOnProperty || [],
-            briefType: propertyData.briefType || "",
+            briefType: propertyData.propertyCategory === "for_sale" ? "Outright Sales" :
+                      propertyData.propertyCategory === "for_rent" ? "Rent" : "Unknown",
             propertyCondition: propertyData.propertyCondition || "",
-            noOfCarParks: propertyData.noOfCarParks || 0,
-            noOfBathrooms: propertyData.noOfBathrooms || 0,
-            noOfToilets: propertyData.noOfToilets || 0,
+            noOfCarParks: propertyData.additionalFeatures?.noOfCarPark || 0,
+            noOfBathrooms: propertyData.additionalFeatures?.noOfBathroom || 0,
+            noOfToilets: propertyData.additionalFeatures?.noOfToilet || 0,
           });
         }
       } catch (error) {
