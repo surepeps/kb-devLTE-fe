@@ -20,6 +20,7 @@ interface GlobalPropertyCardProps {
   isPremium: boolean;
   onPropertyClick?: () => void;
   onPriceNegotiation?: () => void;
+  onEditPrice?: () => void;
   onInspectionToggle?: () => void;
   onRemoveNegotiation?: (propertyId: string) => void;
   isSelected?: boolean;
@@ -39,6 +40,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
   isPremium,
   onPropertyClick,
   onPriceNegotiation,
+  onEditPrice,
   onInspectionToggle,
   onRemoveNegotiation,
   isSelected = false,
@@ -98,7 +100,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                     {hasNegotiatedPrice ? (
                       <div className="flex items-center gap-2">
                         <h2 className="text-md font-semibold text-[#8DDB90]">
-                          ₦
+                          ��
                           {Number(
                             negotiatedPrice!.negotiatedPrice,
                           ).toLocaleString()}
@@ -187,7 +189,27 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
           {/* Action Buttons - Always show */}
           <div className="flex flex-col gap-2 pt-2 mt-auto">
             {/* Price Negotiation Button */}
-            {hasNegotiatedPrice ? (
+            {hasNegotiatedPrice && isSelected ? (
+              <div className="flex gap-2">
+                <Button
+                  value="Edit Price"
+                  type="button"
+                  onClick={onEditPrice || onPriceNegotiation || (() => {})}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                />
+                <Button
+                  value="Clear"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onRemoveNegotiation) {
+                      onRemoveNegotiation(property._id);
+                    }
+                  }}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
+                />
+              </div>
+            ) : hasNegotiatedPrice ? (
               <div className="min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
                 <span className="text-xs">
                   New Offer: ₦
