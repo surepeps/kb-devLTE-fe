@@ -164,7 +164,7 @@ const ContinueInspectionPage = () => {
     }
   };
 
-  if (selectedProperties.length === 0) {
+  if (!initialLoad && selectedProperties.length === 0) {
     return (
       <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center">
         <div className="text-center">
