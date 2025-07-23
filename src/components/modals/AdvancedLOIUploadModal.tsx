@@ -570,7 +570,7 @@ const AdvancedLOIUploadModal: React.FC<AdvancedLOIUploadModalProps> = ({
         <Button
           value={isSubmitting ? "Submitting..." : "Submit LOI"}
           onClick={handleSubmit}
-          disabled={isSubmitting}
+          isDisabled={isSubmitting}
           className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 disabled:from-gray-400 disabled:to-gray-400 py-2"
         />
       </div>
