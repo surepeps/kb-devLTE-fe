@@ -119,22 +119,10 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         >
           {property ? (
             <div className="relative w-full flex justify-end">
-              <EnhancedGlobalPropertyCard
-                type={isJVProperty(property.property) ? "jv" : "standard"}
-                tab={tab === "jv" ? "buy" : tab}
+              <InspectionPropertyCard
                 property={property.property}
-                cardData={createPropertyCardData(
-                  property.property,
-                  isJVProperty(property.property) ? "Joint Venture" : undefined
-                )}
-                images={
-                  property.property?.pictures ||
-                  property.property?.images ||
-                  []
-                }
-                isPremium={property.property?.isPremium || false}
-                onPropertyClick={() => {}} // Disabled in inspection view
-                className="max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px]"
+                tab={tab}
+                onRemove={() => onRemove(property.propertyId)}
               />
               {/* Remove Button Overlay */}
               <button
