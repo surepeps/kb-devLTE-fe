@@ -11,6 +11,8 @@ import { contactUsData } from "@/data";
 import Image, { StaticImageData } from "next/image";
 import ContactUnit from "../contact_unit";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import ContactSuccessModal from "../modals/ContactSuccessModal";
 
 const ContactUs = () => {
   const [status, setStatus] = React.useState<
