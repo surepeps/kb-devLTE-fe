@@ -48,7 +48,7 @@ const ChangePassword = () => {
           formik.values.newPassword = ''; // Clear newPassword field
         } else {
           setFormikStatus('failed');
-          toast.error(response.message);
+          toast.error(response.message || "Failed to change password");
         }
       } catch (err) {
         console.log(err);
