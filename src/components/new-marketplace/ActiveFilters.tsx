@@ -31,6 +31,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     activeFilters.push({
       key: "priceRange",
       label: `Price: ${filters.priceRange.display}`,
+      value: `${filters.priceRange.min}-${filters.priceRange.max}`,
     });
   }
 
