@@ -134,19 +134,11 @@ const SimpleMarketplace = () => {
             const cardData = createPropertyCardData(property, tabMapping[activeTab]);
             const isJVProperty = activeTab === 'jv';
 
-            return isJVProperty ? (
-              <GlobalJVPropertyCard
+            return (
+              <EnhancedGlobalPropertyCard
                 key={property._id}
-                property={property}
-                cardData={cardData}
-                images={property.pictures || property.images || []}
-                isPremium={property.isPremium || false}
-                onPropertyClick={() => handlePropertyClick(property)}
-              />
-            ) : (
-              <GlobalPropertyCard
-                key={property._id}
-                tab={activeTab as "buy" | "rent" | "shortlet"}
+                type={isJVProperty ? "jv" : "standard"}
+                tab={isJVProperty ? "buy" : activeTab as "buy" | "rent" | "shortlet"}
                 property={property}
                 cardData={cardData}
                 images={property.pictures || property.images || []}
