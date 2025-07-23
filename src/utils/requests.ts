@@ -96,7 +96,7 @@ export const GET_REQUEST = async <T = any>(
   }
 };
 
-export const DELETE_REQUEST = async (url: string, data?: unknown, token?: string) => {
+export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token?: string): Promise<ApiResponse<T>> => {
   try {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
