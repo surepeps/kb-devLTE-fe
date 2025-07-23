@@ -97,6 +97,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   onClearNegotiatedPrice,
   onClearLOIDocument,
   onAddProperty,
+  onPropertyClick,
   negotiatedPrices = [],
   loiDocuments = [],
 }) => {
