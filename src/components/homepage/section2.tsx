@@ -15,37 +15,7 @@ import { shuffleArray } from "@/utils/shuffleArray";
 import { GET_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 
-// Helper function to create card data based on property type
-const createPropertyCardData = (property: any, propertyType: string) => {
-  const cardData = [];
-
-  // Common fields
-  cardData.push({ header: "Property Type", value: property?.propertyType || "N/A" });
-  
-  if (propertyType === "Joint Venture") {
-    cardData.push({ 
-      header: "Investment Amount", 
-      value: property?.investmentAmount ? `₦${Number(property.investmentAmount).toLocaleString()}` : "N/A" 
-    });
-    cardData.push({ header: "Investment Type", value: property?.investmentType || "N/A" });
-    cardData.push({ header: "Expected ROI", value: property?.expectedROI || "N/A" });
-  } else {
-    const price = propertyType === "Rent" ? property?.rentalPrice : property?.price;
-    cardData.push({ 
-      header: "Price", 
-      value: price ? `₦${Number(price).toLocaleString()}` : "N/A" 
-    });
-  }
-
-  cardData.push({ header: "Bedrooms", value: property?.bedrooms || "N/A" });
-  cardData.push({ header: "Bathrooms", value: property?.bathrooms || "N/A" });
-  cardData.push({ 
-    header: "Location", 
-    value: `${property?.state || ""}, ${property?.lga || ""}`.replace(/^,\s*|,\s*$/g, '') || "N/A" 
-  });
-
-  return cardData;
-};
+// Using imported createPropertyCardData function
 
 const Section2 = () => {
   const [buttons, setButtons] = useState({
