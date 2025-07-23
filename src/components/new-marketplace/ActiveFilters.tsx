@@ -97,10 +97,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Land Size
-  if (filters.landSize && filters.landSize.size) {
+  if ('landSize' in filters && filters.landSize && filters.landSize.size) {
     activeFilters.push({
       key: "landSize",
       label: `Land: ${filters.landSize.size} ${filters.landSize.type}`,
+      value: `${filters.landSize.size} ${filters.landSize.type}`,
     });
   }
 
