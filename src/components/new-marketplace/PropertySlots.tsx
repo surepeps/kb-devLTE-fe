@@ -3,7 +3,7 @@
 "use client";
 import React from "react";
 import { Plus } from "lucide-react";
-import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 
 interface PropertySlotsProps {
   selectedProperties: any[];
