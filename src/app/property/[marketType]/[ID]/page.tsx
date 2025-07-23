@@ -589,19 +589,41 @@ const ProductDetailsPage = () => {
               />
             )}
 
+            {/* Property Description */}
+            {(details as any).description && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white border border-gray-200 rounded-xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Description</h3>
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {(details as any).description}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
             {/* Additional Information */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-white border border-gray-200 rounded-xl p-6"
             >
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
               <div className="prose prose-gray max-w-none">
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  This property is managed by Khabi-Teq Realty. All transactions are secure and verified. 
+                  This property is managed by Khabi-Teq Realty. All transactions are secure and verified.
                   For more information about this property, please contact us directly or schedule an inspection.
                 </p>
+                {(details as any).addtionalInfo && (
+                  <p className="text-gray-700 text-sm leading-relaxed mt-3">
+                    {(details as any).addtionalInfo}
+                  </p>
+                )}
               </div>
             </motion.div>
           </div>
