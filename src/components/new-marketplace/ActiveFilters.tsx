@@ -46,6 +46,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       activeFilters.push({
         key: "location",
         label: `Location: ${locationParts.join(", ")}`,
+        value: locationParts.join(", "),
       });
     }
   }
