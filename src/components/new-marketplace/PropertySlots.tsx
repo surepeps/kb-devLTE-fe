@@ -43,7 +43,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         >
           {property ? (
             <div className="relative w-full flex justify-end">
-              {tab === "jv" ? (
+              {isJVProperty(property.property) ? (
                 <GlobalJVPropertyCard
                   property={property.property}
                   cardData={createPropertyCardData(property.property, "Joint Venture")}
