@@ -23,7 +23,7 @@ import {
 interface SearchFiltersProps {
   tab: "buy" | "jv" | "rent" | "shortlet";
   filters: any;
-  onFilterChange: (key: string, value: any) => void;
+  onFilterChange: (key: string, value: any) => void | ((key: any, value: any) => void);
   onClearFilters: () => void;
   onSearch: () => void;
   loading: boolean;

@@ -1,9 +1,9 @@
 /** @format */
 
 "use client";
-import { BriefType, GlobalContextTypes } from "@/types";
+import { BriefType, GlobalContextTypes } from "@/types/index";
 import { UserAgentDataProps } from "@/types/agent_data_props";
-import { PropertyProps } from "@/types/property.types";
+import { PropertyCardProps } from "@/types/property.types";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { createContext, useContext, useState } from "react";
 import { string } from "yup";

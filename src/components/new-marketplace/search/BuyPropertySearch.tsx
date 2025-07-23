@@ -183,7 +183,7 @@ const BuyPropertySearch = () => {
       desiredFeatures: [],
       tenantCriteria: [],
       homeCondition: "",
-    };
+    } as BuyPropertyFilters;
 
     setFilters(clearedFilters);
     searchFormik.resetForm();

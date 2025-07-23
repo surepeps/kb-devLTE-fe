@@ -152,7 +152,7 @@ const GlobalPriceNegotiationModal: React.FC<GlobalPriceNegotiationModalProps> = 
                 <Button
                   type="submit"
                   value={isSubmitting ? "Submitting..." : existingNegotiation ? "Update Offer" : "Submit Offer"}
-                  disabled={isSubmitting || !negotiatedPrice}
+                  isDisabled={isSubmitting || !negotiatedPrice}
                   className="flex-1 bg-[#1976D2] text-white hover:bg-[#1565C0] disabled:bg-gray-300 disabled:cursor-not-allowed"
                 />
               </div>

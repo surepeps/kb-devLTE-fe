@@ -242,7 +242,7 @@ const GlobalLOIUploadModal: React.FC<GlobalLOIUploadModalProps> = ({
                 <Button
                   type="submit"
                   value={isSubmitting ? "Uploading..." : existingDocument ? "Update Document" : "Submit LOI"}
-                  disabled={isSubmitting || !selectedFile}
+                  isDisabled={isSubmitting || !selectedFile}
                   className="flex-1 bg-[#FF9800] text-white hover:bg-[#F57C00] disabled:bg-gray-300 disabled:cursor-not-allowed"
                 />
               </div>

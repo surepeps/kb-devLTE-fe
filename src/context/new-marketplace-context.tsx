@@ -59,6 +59,11 @@ interface TabState {
     localGovernment: string;
     area?: string;
   } | null;
+
+  // Inspection and negotiation state
+  selectedForInspection?: any[];
+  negotiatedPrices?: any[];
+  loiDocuments?: any[];
   priceRange: {
     min: number;
     max: number;
@@ -100,6 +105,19 @@ interface NewMarketplaceContextType {
   ) => void;
 
   // Note: Inspection selection and negotiation functionality removed as per requirements
+
+  // Inspection and negotiation methods (re-added for compatibility)
+  setIsAddForInspectionOpen?: (open: boolean) => void;
+  removeFromInspection?: (propertyId: string) => void;
+  clearInspectionSelection?: () => void;
+  removeNegotiatedPrice?: (propertyId: string) => void;
+  removeLOIDocument?: (propertyId: string) => void;
+  addNegotiatedPrice?: (propertyId: string, price: any) => void;
+  getNegotiatedPrice?: (propertyId: string) => any;
+  addLOIDocument?: (propertyId: string, document: any) => void;
+  getLOIDocument?: (propertyId: string) => any;
+  toggleInspectionSelection?: (property: any) => void;
+  isSelectedForInspection?: (propertyId: string) => boolean;
 
   // Filter management
   setTabFilter: (
@@ -738,6 +756,19 @@ export const NewMarketplaceProvider: React.FC<{
       searchTabProperties,
 
       // Note: Add for inspection modal removed
+
+      // Inspection and negotiation methods (placeholder implementations)
+      setIsAddForInspectionOpen: () => {},
+      removeFromInspection: () => {},
+      clearInspectionSelection: () => {},
+      removeNegotiatedPrice: () => {},
+      removeLOIDocument: () => {},
+      addNegotiatedPrice: () => {},
+      getNegotiatedPrice: () => null,
+      addLOIDocument: () => {},
+      getLOIDocument: () => null,
+      toggleInspectionSelection: () => {},
+      isSelectedForInspection: () => false,
 
       // Items per page
       itemsPerPage,

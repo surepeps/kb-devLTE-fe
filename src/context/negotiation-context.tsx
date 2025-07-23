@@ -214,6 +214,15 @@ interface NegotiationActions {
 interface NegotiationContextType {
   state: NegotiationState;
   actions: NegotiationActions;
+
+  // Legacy properties for compatibility
+  priceCounterCount?: number;
+  loiCounterCount?: number;
+  counterLimits?: CounterLimits;
+  details?: any;
+  negotiationType?: NegotiationType;
+  getRemainingPriceCounters?: () => number | null;
+  getRemainingLoiCounters?: () => number | null;
 }
 
 // Helper function to create counter tracking
@@ -438,8 +447,10 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: "SET_ERROR", payload: null });
 
       try {
-        const requestFn = method === "PUT" ? PUT_REQUEST : POST_REQUEST;
-        const response = await requestFn(url, payload, Cookies.get("token"));
+        const token = Cookies.get("token");
+        const response = method === "PUT"
+          ? await PUT_REQUEST(url, payload, undefined, token)
+          : await POST_REQUEST(url, payload, undefined, token);
 
         if (response.success) {
           // Use batch update for better performance
@@ -1083,6 +1094,14 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
     () => ({
       state,
       actions,
+      // Legacy properties for compatibility
+      priceCounterCount: state.counterTracking?.priceCounterCount || 0,
+      loiCounterCount: state.counterTracking?.loiCounterCount || 0,
+      counterLimits: state.counterLimits,
+      details: state.details,
+      negotiationType: state.negotiationType,
+      getRemainingPriceCounters: () => state.counterTracking?.getRemainingCounters('price') || 0,
+      getRemainingLoiCounters: () => state.counterTracking?.getRemainingCounters('loi') || 0,
     }),
     [state, actions],
   );

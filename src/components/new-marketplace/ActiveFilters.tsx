@@ -31,6 +31,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     activeFilters.push({
       key: "priceRange",
       label: `Price: ${filters.priceRange.display}`,
+      value: `${filters.priceRange.min}-${filters.priceRange.max}`,
     });
   }
 
@@ -45,16 +46,17 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       activeFilters.push({
         key: "location",
         label: `Location: ${locationParts.join(", ")}`,
+        value: locationParts.join(", "),
       });
     }
   }
 
   // Usage Options
-  if (filters.usageOptions && filters.usageOptions.length > 0) {
+  if ('usageOptions' in filters && filters.usageOptions && filters.usageOptions.length > 0) {
     const validOptions = filters.usageOptions.filter(
-      (option) => option !== "All",
+      (option: any) => option !== "All",
     );
-    validOptions.forEach((option) => {
+    validOptions.forEach((option: any) => {
       activeFilters.push({
         key: "usageOptions",
         label: `Type: ${option}`,
@@ -64,24 +66,26 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Bedrooms
-  if (filters.bedrooms) {
+  if ('bedrooms' in filters && filters.bedrooms) {
     activeFilters.push({
       key: "bedrooms",
       label: `Bedrooms: ${filters.bedrooms}`,
+      value: filters.bedrooms,
     });
   }
 
   // Bathrooms
-  if (filters.bathrooms) {
+  if ('bathrooms' in filters && filters.bathrooms) {
     activeFilters.push({
       key: "bathrooms",
       label: `Bathrooms: ${filters.bathrooms}`,
+      value: filters.bathrooms,
     });
   }
 
   // Document Types
-  if (filters.documentTypes && filters.documentTypes.length > 0) {
-    filters.documentTypes.forEach((doc) => {
+  if ('documentTypes' in filters && filters.documentTypes && filters.documentTypes.length > 0) {
+    filters.documentTypes.forEach((doc: any) => {
       // Shorten document names for display
       const shortDoc = doc.length > 20 ? doc.substring(0, 20) + "..." : doc;
       activeFilters.push({
@@ -93,10 +97,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Land Size
-  if (filters.landSize && filters.landSize.size) {
+  if ('landSize' in filters && filters.landSize && filters.landSize.size) {
     activeFilters.push({
       key: "landSize",
       label: `Land: ${filters.landSize.size} ${filters.landSize.type}`,
+      value: `${filters.landSize.size} ${filters.landSize.type}`,
     });
   }
 
@@ -114,8 +119,8 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Tenant Criteria (for rent tab)
-  if (filters.tenantCriteria && filters.tenantCriteria.length > 0) {
-    filters.tenantCriteria.forEach((criteria) => {
+  if ('tenantCriteria' in filters && filters.tenantCriteria && filters.tenantCriteria.length > 0) {
+    filters.tenantCriteria.forEach((criteria: any) => {
       const shortCriteria =
         criteria.length > 15 ? criteria.substring(0, 15) + "..." : criteria;
       activeFilters.push({
@@ -127,10 +132,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   // Home Condition (for rent tab)
-  if (filters.homeCondition) {
+  if ('homeCondition' in filters && filters.homeCondition) {
     activeFilters.push({
       key: "homeCondition",
       label: `Condition: ${filters.homeCondition}`,
+      value: filters.homeCondition,
     });
   }
 
@@ -178,7 +184,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
             >
               <span className="truncate">{filter.label}</span>
               <button
-                onClick={() => onRemoveFilter(filter.key, filter.value)}
+                onClick={() => onRemoveFilter(filter.key, Array.isArray(filter.value) ? filter.value[0] : filter.value)}
                 className="ml-1 hover:bg-white hover:bg-opacity-20 rounded-full p-0.5 transition-colors flex-shrink-0"
               >
                 <X size={12} />

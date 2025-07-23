@@ -51,7 +51,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   ) => {
     setFieldTouched(fieldName as string, true);
     setFieldValue(fieldName as string, value);
-    updatePropertyData(fieldName, value);
+    updatePropertyData(fieldName as any, value);
   };
 
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
@@ -107,7 +107,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const handlePriceChange = (value: string) => {
     // Store only numeric value for the payload, but display formatted
     const numericValue = cleanNumericInput(value);
-    handleFieldChange("price", numericValue);
+    handleFieldChange("price", String(numericValue));
   };
 
   useEffect(() => {

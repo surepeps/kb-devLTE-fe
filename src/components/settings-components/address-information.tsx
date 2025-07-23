@@ -203,7 +203,7 @@ const AddressInformation = () => {
             // isDisabled={areInputsDisabled}
           /> */}
           <ReactSelect
-            value={userDetails?.agentData?.regionOfOperation?.map((region) => ({
+            value={userDetails?.agentData?.regionOfOperation?.map((region: any) => ({
               label: region,
               value: region,
             }))}

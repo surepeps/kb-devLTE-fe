@@ -32,8 +32,8 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     const fieldValue = fieldName.includes(".")
       ? fieldName
           .split(".")
-          .reduce((obj: Record<string, unknown>, key: string) => obj?.[key] as Record<string, unknown>, propertyData as Record<string, unknown>)
-      : (propertyData as Record<string, unknown>)[fieldName];
+          .reduce((obj: Record<string, unknown>, key: string) => obj?.[key] as Record<string, unknown>, propertyData as any)
+      : (propertyData as any)[fieldName];
     const hasValue = fieldValue && fieldValue !== "" && fieldValue !== 0;
     const isValid = hasValue && (!touched[fieldName] || !errors[fieldName]);
 
@@ -63,7 +63,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     setFieldTouched(fieldName as string, true);
     setFieldValue(fieldName as string, value);
     if (typeof fieldName === 'string' && fieldName in propertyData) {
-      updatePropertyData(fieldName as K, value as PropertyFormData[K]);
+      updatePropertyData(fieldName as any, value);
     }
   };
 

@@ -364,6 +364,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
             location: {
               state: preferenceData.location?.state || "",
               lgas: preferenceData.location?.localGovernmentAreas || [],
+              areas: preferenceData.location?.areas || [],
               customLocation: preferenceData.location?.customLocation || "",
             },
             enhancedLocation: {

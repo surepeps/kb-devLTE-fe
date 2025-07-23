@@ -2,17 +2,18 @@
 
 export interface FormikInstance<T = Record<string, unknown>> {
   values: T;
-  errors: Partial<Record<keyof T, string>>;
-  touched: Partial<Record<keyof T, boolean>>;
+  errors: Partial<Record<keyof T, string>> | any;
+  touched: Partial<Record<keyof T, boolean>> | any;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   handleBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-  setFieldValue: (field: keyof T, value: unknown) => void;
-  setFieldError: (field: keyof T, message: string) => void;
-  setFieldTouched: (field: keyof T, touched?: boolean) => void;
+  setFieldValue: (field: keyof T | string, value: unknown) => void;
+  setFieldError: (field: keyof T | string, message: string) => void;
+  setFieldTouched: (field: keyof T | string, touched?: boolean) => void;
   resetForm: () => void;
   isSubmitting: boolean;
   isValid: boolean;
   submitForm: () => void;
+  [key: string]: any; // Allow additional properties from FormikProps
 }
 
 export interface SelectOption {

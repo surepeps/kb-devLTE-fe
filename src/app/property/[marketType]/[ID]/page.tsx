@@ -339,12 +339,12 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
     },
     {
       label: "Date Listed",
-      value: new Date(details.createdAt).toLocaleDateString(),
+      value: details.createdAt ? new Date(details.createdAt).toLocaleDateString() : "N/A",
       icon: <Calendar className="w-4 h-4" />,
     },
     {
       label: "Last Updated",
-      value: new Date(details.updatedAt).toLocaleDateString(),
+      value: details.updatedAt ? new Date(details.updatedAt).toLocaleDateString() : "N/A",
       icon: <Clock className="w-4 h-4" />,
     },
   ];
@@ -604,7 +604,7 @@ const ProductDetailsPage = () => {
 
           if (status === 404) {
             toast.error("Property not found");
-          } else if (status >= 500) {
+          } else if (status && status >= 500) {
             toast.error("Server error. Please try again later.");
           } else {
             toast.error(`Failed to load property details: ${message}`);
@@ -733,7 +733,7 @@ const ProductDetailsPage = () => {
             {/* Tenant Criteria */}
             {details.tenantCriteria.length > 0 && (
               <FeatureList
-                features={details.tenantCriteria.map((c) => c.criteria)}
+                features={details.tenantCriteria.map((c) => typeof c === 'string' ? c : c.criteria || c)}
                 title="Tenant Requirements"
               />
             )}

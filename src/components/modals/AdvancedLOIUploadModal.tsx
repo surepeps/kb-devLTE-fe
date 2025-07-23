@@ -477,7 +477,7 @@ const AdvancedLOIUploadModal: React.FC<AdvancedLOIUploadModalProps> = ({
         <Button
           value="Review & Continue"
           onClick={() => setCurrentStep("review")}
-          disabled={!loiMetadata.investmentAmount || !loiMetadata.contactPerson || !loiMetadata.email}
+          isDisabled={!loiMetadata.investmentAmount || !loiMetadata.contactPerson || !loiMetadata.email}
           className="flex-1 bg-orange-500 text-white hover:bg-orange-600 disabled:bg-gray-400 py-2"
         />
       </div>
@@ -570,7 +570,7 @@ const AdvancedLOIUploadModal: React.FC<AdvancedLOIUploadModalProps> = ({
         <Button
           value={isSubmitting ? "Submitting..." : "Submit LOI"}
           onClick={handleSubmit}
-          disabled={isSubmitting}
+          isDisabled={isSubmitting}
           className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 disabled:from-gray-400 disabled:to-gray-400 py-2"
         />
       </div>

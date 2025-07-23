@@ -60,7 +60,7 @@ const Upgrade = () => {
               {userDetails?.agentData?.meansOfId?.map(
                 (
                   item: { docImg: string[]; _id: string; name: string },
-                  index
+                  index: number
                 ) => (
                   <div key={item._id || index} className='mb-4'>
                     <p className='font-medium mb-2 capitalize'>{item.name}</p>

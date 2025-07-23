@@ -83,7 +83,7 @@ export const useNegotiationUtils = () => {
     }
 
     if (result.message && result.isLastChance) {
-      toast.warning(result.message);
+      toast.error(result.message);
     }
 
     return true;
