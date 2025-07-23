@@ -6,6 +6,8 @@ export const IsMobile = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const handleResize = () => {
       if (window.innerWidth <= 768) {
         setIsMobile(true);
