@@ -87,6 +87,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       const response = await POST_REQUEST(
         `${URLS.BASE}/delete-single-file`,
         { url },
+        undefined,
         Cookies.get("token"),
       );
 
