@@ -193,7 +193,10 @@ const BuyPropertySearch = () => {
     handleSearch(1);
   };
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter: FilterUpdateFunction<BuyPropertyFilters> = <K extends keyof BuyPropertyFilters>(
+    key: K,
+    value: BuyPropertyFilters[K]
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
