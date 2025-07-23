@@ -508,21 +508,7 @@ const ProductDetailsPage = () => {
     }
   }, [id]);
 
-  // Fetch similar properties
-  useEffect(() => {
-    const fetchSimilarProperties = async () => {
-      try {
-        const response = await axios.get(`${URLS.BASE}/properties/rents/all`);
-        if (response.status === 200) {
-          setSimilarProperties(response.data.data.slice(0, 3));
-        }
-      } catch (error) {
-        console.error("Error fetching similar properties:", error);
-      }
-    };
-
-    fetchSimilarProperties();
-  }, []);
+  // Similar properties are now fetched with the main property data
 
   const handleInspection = () => {
     if (details) {
