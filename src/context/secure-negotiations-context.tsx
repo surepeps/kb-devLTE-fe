@@ -13,6 +13,7 @@ import React, {
   useRef,
 } from "react";
 import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
+import { ApiResponse } from "@/types/api.types";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
