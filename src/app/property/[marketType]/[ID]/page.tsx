@@ -418,40 +418,19 @@ const ProductDetailsPage = () => {
         setLoading(true);
         let response;
 
-        // Try different endpoint patterns based on market type
-        const endpoints = [
-          // Specialized endpoints based on market type
-          ...(marketType === "rent" || marketType === "Rent"
-            ? [`${URLS.BASE}/properties/rents/rent/${id}`]
-            : []
-          ),
-          // General property endpoint
-          `${URLS.BASE}${URLS.getOneProperty}${id}`,
-          // Alternative endpoint patterns
-          `${URLS.BASE}/get-property/${id}`,
-          `${URLS.BASE}/properties/${id}`,
-        ];
+        // Use the new endpoint format
+        const apiUrl = `${URLS.BASE}/properties/${id}/getOne`;
+        console.log(`Fetching property from: ${apiUrl}`);
 
-        // Try each endpoint until one works
-        for (const endpoint of endpoints) {
-          try {
-            console.log(`Trying endpoint: ${endpoint}`);
-            response = await axios.get(endpoint);
-            if (response.status === 200 && response.data) {
-              console.log(`Successfully fetched property from: ${endpoint}`);
-              break;
-            }
-          } catch (endpointError) {
-            console.log(`Failed to fetch from ${endpoint}:`, endpointError.response?.status || endpointError.message);
-            // Continue to next endpoint
-          }
-        }
+        response = await axios.get(apiUrl);
 
-        if (!response || !response.data) {
+        if (!response || !response.data || !response.data.success) {
           throw new Error("Property not found");
         }
 
-        // Handle different response structures
+        // Handle the new response structure: response.data.data.property
+        const propertyData = response.data.data.property;
+
         if (propertyData) {
           setDetails({
             _id: propertyData._id,
