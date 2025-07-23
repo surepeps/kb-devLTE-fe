@@ -178,9 +178,9 @@ export default function MyInspectionRequestsPage() {
 
         if (response.success) {
           setInspections(response.data || []);
-          setTotalPages(response.meta?.totalPages || 1);
-          setTotalCount(response.meta?.total || 0);
-          setCurrentPage(response.meta?.page || 1);
+          setTotalPages(response.data?.meta?.totalPages || 1);
+          setTotalCount(response.data?.meta?.total || 0);
+          setCurrentPage(response.data?.meta?.page || 1);
 
           // Calculate metrics from the data
           calculateMetrics(response.data || []);

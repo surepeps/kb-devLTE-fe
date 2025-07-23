@@ -318,7 +318,7 @@ const StepProgressIndicator = memo(
                   )}
                 </div>
                 <span className="text-sm font-medium hidden sm:block">
-                  {step.title}
+                  {(step as any).title || step.label}
                 </span>
               </motion.div>
               {index < steps.length - 1 && (
@@ -424,7 +424,7 @@ const PreferenceFormContent: React.FC = () => {
       if (obj !== null && typeof obj === "object") {
         const cleaned: Record<string, unknown> = {};
         Object.keys(obj).forEach((key) => {
-          const value = cleanObject(obj[key]);
+          const value = cleanObject((obj as Record<string, any>)[key]);
           if (
             value !== null &&
             value !== undefined &&
@@ -900,7 +900,7 @@ const PreferenceFormContent: React.FC = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           <StepProgressIndicator
-            steps={state.steps}
+            steps={state.steps as unknown as { label: string; icon: string }[]}
             currentStep={state.currentStep}
             onStepClick={handleStepClick}
           />

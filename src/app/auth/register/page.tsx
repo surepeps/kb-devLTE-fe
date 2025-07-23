@@ -168,15 +168,15 @@ const Register = () => {
           userType: formik.values.userType,
         });
 
-        if (response?.user?.id) { // Check for user.id for success
-          Cookies.set("token", response.token);
-          setUser(response.user);
+        if (response?.data?.user?.id) { // Check for user.id for success
+          Cookies.set("token", response.data.token);
+          setUser(response.data.user);
 
-          localStorage.setItem("email", response.user?.email || ""); // Consistent access
+          localStorage.setItem("email", response.data.user?.email || ""); // Consistent access
 
           toast.success("Registration successful via Google!");
 
-          if (response.user?.userType === "Agent") {
+          if (response.data.user?.userType === "Agent") {
             // Agents go to onboard
             router.push("/agent/onboard");
           } else {
@@ -245,13 +245,13 @@ const Register = () => {
                   };
 
                   const result = await POST_REQUEST(url, payload);
-                  if (result.user?.id) { // Check for user.id for success
+                  if (result.data?.user?.id) { // Check for user.id for success
                     toast.success("Registration successful via Facebook!");
-                    Cookies.set("token", result.token);
-                    setUser(result.user);
-                    localStorage.setItem("email", result.user.email || "");
+                    Cookies.set("token", result.data.token);
+                    setUser(result.data.user);
+                    localStorage.setItem("email", result.data.user.email || "");
 
-                    if (result.user.userType === "Agent") {
+                    if (result.data.user.userType === "Agent") {
                       router.push("/agent/onboard");
                     } else {
                       router.push("/dashboard");

@@ -69,9 +69,9 @@ const AddForInspection = () => {
 
     if (selectedProperties.length === 2) {
       const [propertyA, propertyB] = selectedProperties;
-      const lgaA = propertyA.property?.location?.localGovernment;
-      const lgaB = propertyB.property?.location?.localGovernment;
-      const uniqueLGAs = new Set([lgaA, lgaB]);
+      const lgaA = propertyA.property?.location?.localGovernment || "";
+      const lgaB = propertyB.property?.location?.localGovernment || "";
+      const uniqueLGAs = new Set([lgaA, lgaB].filter(Boolean));
 
       return uniqueLGAs.size === 1 ? baseAmount : baseAmount + additionalAmount;
     }

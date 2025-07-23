@@ -154,7 +154,7 @@ const ContinueInspectionPage = () => {
       return acc;
     }, {} as Record<string, number>);
 
-    const dominantType = Object.entries(typeCount).sort(([,a], [,b]) => b - a)[0]?.[0];
+    const dominantType = Object.entries(typeCount).sort(([,a], [,b]) => (b as number) - (a as number))[0]?.[0];
 
     switch (dominantType) {
       case "Joint Venture":

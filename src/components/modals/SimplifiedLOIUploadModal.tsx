@@ -98,8 +98,8 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
         'Content-Type': 'multipart/form-data',
       });
 
-      if (response.url) {
-        setUploadedFileUrl(response.url);
+      if (response.data?.url) {
+        setUploadedFileUrl(response.data.url);
         setUploadError("");
       } else {
         setUploadError("Failed to upload file. Please try again.");
