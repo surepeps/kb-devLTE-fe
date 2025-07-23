@@ -14,9 +14,9 @@ const GlobalPropertyActionsFAB = () => {
   const { hasSelectedProperties, selectedCount } = useGlobalPropertyActions();
 
   // Don't show FAB on the continue-inspection page itself or other specific pages
-  const shouldHideFAB = pathname === "/continue-inspection" || 
-                        pathname.includes("/secure-buyer-response") ||
-                        pathname.includes("/secure-seller-response");
+  const shouldHideFAB = pathname === "/continue-inspection" ||
+                        (pathname && pathname.includes("/secure-buyer-response")) ||
+                        (pathname && pathname.includes("/secure-seller-response"));
 
   const handleFABClick = () => {
     router.push("/continue-inspection");
