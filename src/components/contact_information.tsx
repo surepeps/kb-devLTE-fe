@@ -49,9 +49,9 @@ const ContactUs = () => {
       if (propertyRefSelectedBriefs.length !== 0) {
         console.log(propertyRefSelectedBriefs);
 
-        const payloads = propertyRefSelectedBriefs.map((propertyData) => {
+        const payloads = propertyRefSelectedBriefs.map((propertyData: any) => {
           const filteredPropertyData = propertyData.docOnProperty.map(
-            ({ docName }) => {
+            ({ docName }: { docName: string }) => {
               return { docName, isProvided: true };
             }
           );
