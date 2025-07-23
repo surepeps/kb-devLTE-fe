@@ -184,15 +184,21 @@ export const POST_REQUEST_FILE_UPLOAD = async (
 export const PUT_REQUEST = async (
   url: string,
   data: unknown,
+  customHeaders?: Record<string, string>,
   token?: string,
 ) => {
   try {
+    const headers: Record<string, string> = customHeaders || {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const request = await fetch(url, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(data),
     });
     const response = await request.json();
