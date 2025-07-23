@@ -144,7 +144,7 @@ const ContactUs: React.FC = () => {
             variants={formVariants}
             initial="hidden"
             animate="visible"
-            className="bg-white rounded-3xl shadow-2xl p-8 lg:p-12 border border-[#E5E7EB]"
+            className="bg-white rounded-3xl p-8 lg:p-12 border border-[#E5E7EB]"
           >
             <div className="mb-8">
               <h2 className="text-3xl font-display font-bold text-[#09391C] mb-4">
@@ -304,7 +304,7 @@ const ContactUs: React.FC = () => {
             animate="visible"
             className="space-y-8"
           >
-            <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-12 border border-[#E5E7EB]">
+            <div className="bg-white rounded-3xl p-8 lg:p-12 border border-[#E5E7EB]">
               <div className="mb-8">
                 <h2 className="text-3xl font-display font-bold text-[#09391C] mb-4">
                   Contact Information
@@ -325,7 +325,7 @@ const ContactUs: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                           {getIconForContact(item.type)}
                         </div>
                         <div>
@@ -360,7 +360,7 @@ const ContactUs: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="bg-gradient-to-br from-[#09391C] to-[#0F4A2A] rounded-3xl shadow-2xl p-8 lg:p-12 text-white"
+              className="bg-gradient-to-br from-[#09391C] to-[#0F4A2A] rounded-3xl p-8 lg:p-12 text-white"
             >
               <h3 className="text-2xl font-display font-bold mb-4">
                 Why Choose Khabi-Teq?
