@@ -516,6 +516,7 @@ const PostProperty = () => {
       const response = await POST_REQUEST(
         `${URLS.BASE}${URLS.listNewProperty}`,
         payload,
+        undefined,
         Cookies.get("token"),
       );
 
