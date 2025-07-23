@@ -225,6 +225,15 @@ const ContactUs = () => {
             </div>
           </div>
         </form>
+
+        {/* Success Modal */}
+        <ContactSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => {
+            setShowSuccessModal(false);
+            setStatus('idle');
+          }}
+        />
       </div>
     </div>
   );
