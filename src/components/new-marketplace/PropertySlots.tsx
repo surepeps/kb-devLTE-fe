@@ -182,8 +182,8 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
                   negotiatedPrice={getNegotiatedPrice(property.propertyId)}
                   onPropertyClick={() => {}} // Disabled in inspection view
                   onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
-                  onPriceNegotiation={() => {}} // Could add price negotiation functionality
-                  onEditPrice={() => {}} // Could add price edit functionality
+                  onPriceNegotiation={() => handlePriceNegotiation(property.property)} // Open price negotiation modal
+                  onEditPrice={() => handlePriceNegotiation(property.property)} // Open price edit modal
                   onRemoveNegotiation={() => onClearNegotiatedPrice && onClearNegotiatedPrice(property.propertyId)}
                 />
               )}
