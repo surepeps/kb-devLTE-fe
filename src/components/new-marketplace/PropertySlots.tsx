@@ -21,21 +21,55 @@ interface PropertySlotsProps {
 const isJVProperty = (property: any): boolean => {
   if (!property) return false;
 
-  // Check briefType first
-  if (property.briefType === "Joint Venture" || property.briefType === "jv") {
+  // Debug logging to understand property structure
+  console.log("Property data for JV detection:", {
+    briefType: property.briefType,
+    propertyType: property.propertyType,
+    propertyCategory: property.propertyCategory,
+    category: property.category,
+    type: property.type,
+    title: property.title
+  });
+
+  // Check briefType first (most reliable)
+  if (property.briefType === "Joint Venture" ||
+      property.briefType === "jv" ||
+      property.briefType === "JV") {
+    console.log("✓ JV Property detected by briefType:", property.briefType);
+    return true;
+  }
+
+  // Check category field
+  if (property.category === "joint-venture" || property.category === "jv") {
+    console.log("✓ JV Property detected by category:", property.category);
     return true;
   }
 
   // Check propertyType for Land or Commercial (which are typically JV)
-  if (property.propertyType === "Land" || property.propertyType === "Commercial") {
+  if (property.propertyType === "Land" ||
+      property.propertyType === "Commercial" ||
+      property.propertyType === "land" ||
+      property.propertyType === "commercial") {
+    console.log("✓ JV Property detected by propertyType:", property.propertyType);
     return true;
   }
 
   // Check propertyCategory as fallback
-  if (property.propertyCategory === "Land" || property.propertyCategory === "Commercial") {
+  if (property.propertyCategory === "Land" ||
+      property.propertyCategory === "Commercial" ||
+      property.propertyCategory === "land" ||
+      property.propertyCategory === "commercial") {
+    console.log("✓ JV Property detected by propertyCategory:", property.propertyCategory);
     return true;
   }
 
+  // Check type field
+  if (property.type === "land" || property.type === "commercial") {
+    console.log("✓ JV Property detected by type:", property.type);
+    return true;
+  }
+
+  console.log("✗ Regular Property - using GlobalPropertyCard");
   return false;
 };
 
