@@ -87,6 +87,17 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   loiDocuments = [],
 }) => {
 
+  // Modal state management
+  const [priceNegotiationModal, setPriceNegotiationModal] = useState({
+    isOpen: false,
+    property: null,
+  });
+
+  const [loiUploadModal, setLoiUploadModal] = useState({
+    isOpen: false,
+    property: null,
+  });
+
   // Helper function to find negotiated price for a property
   const getNegotiatedPrice = (propertyId: string) => {
     return negotiatedPrices.find(np => np.propertyId === propertyId) || null;
@@ -95,6 +106,33 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   // Helper function to find LOI document for a property
   const getLOIDocument = (propertyId: string) => {
     return loiDocuments.find(loi => loi.propertyId === propertyId) || null;
+  };
+
+  // Modal handlers
+  const handlePriceNegotiation = (property: any) => {
+    setPriceNegotiationModal({
+      isOpen: true,
+      property,
+    });
+  };
+
+  const handleLOIUpload = (property: any) => {
+    setLoiUploadModal({
+      isOpen: true,
+      property,
+    });
+  };
+
+  const handleNegotiationSubmit = async (negotiationData: any) => {
+    // This should integrate with the existing negotiation submission logic
+    console.log("Price negotiation submitted:", negotiationData);
+    setPriceNegotiationModal({ isOpen: false, property: null });
+  };
+
+  const handleLOISubmit = async (loiData: any) => {
+    // This should integrate with the existing LOI submission logic
+    console.log("LOI submitted:", loiData);
+    setLoiUploadModal({ isOpen: false, property: null });
   };
 
   const slots = Array.from({ length: maxSlots }, (_, index) => {
