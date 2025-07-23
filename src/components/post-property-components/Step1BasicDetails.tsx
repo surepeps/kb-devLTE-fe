@@ -107,7 +107,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const handlePriceChange = (value: string) => {
     // Store only numeric value for the payload, but display formatted
     const numericValue = cleanNumericInput(value);
-    handleFieldChange("price", numericValue);
+    handleFieldChange("price", String(numericValue));
   };
 
   useEffect(() => {
