@@ -13,6 +13,7 @@ import React, {
   useRef,
 } from "react";
 import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
+import { ApiResponse } from "@/types/api.types";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import type {
@@ -335,9 +336,9 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: "SET_FORM_STATUS", payload: "pending" });
 
       try {
-        const response: InspectionDetailsResponse = await GET_REQUEST(
+        const response = await GET_REQUEST(
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
-        );
+        ) as ApiResponse<InspectionDetails>;
 
         if (response?.success) {
           const details = response.data;
@@ -455,12 +456,12 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     const formData = new FormData();
     formData.append("file", file);
 
-    const response: UploadResponse = await POST_REQUEST(
+    const response = await POST_REQUEST(
       `${URLS.BASE + URLS.uploadImg}`,
       formData,
-    );
+    ) as ApiResponse<{ url: string }>;
 
-    if (response?.success) {
+    if (response?.success && response.data) {
       return response.data.url;
     }
     throw new Error("Failed to upload file");

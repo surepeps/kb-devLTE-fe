@@ -11,6 +11,8 @@ import React, {
   useRef,
 } from "react";
 import toast from "react-hot-toast";
+import { URLS } from "@/utils/URLS";
+import { GET_REQUEST } from "@/utils/requests";
 
 // Types - Simplified to focus on property data and search
 
@@ -350,9 +352,7 @@ export const NewMarketplaceProvider: React.FC<{
           );
         }
 
-        // Import utilities dynamically
-        const { URLS } = await import("@/utils/URLS");
-        const { GET_REQUEST } = await import("@/utils/requests");
+        // Use static imports (already imported at top of file)
 
         // Validate URL construction
         if (!URLS.BASE || URLS.BASE.includes("undefined")) {
