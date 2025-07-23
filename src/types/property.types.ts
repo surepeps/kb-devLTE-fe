@@ -66,6 +66,7 @@ export interface PropertyPrice {
 
 export interface Property {
   id: string;
+  _id?: string; // For API compatibility
   title: string;
   description: string;
   type: 'residential' | 'commercial' | 'land' | 'apartment' | 'duplex' | 'bungalow' | 'penthouse' | 'studio';
