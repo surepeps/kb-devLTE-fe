@@ -4,23 +4,13 @@
 import React from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { PropertySearchFilters, ActiveFilter } from "@/types/search.types";
 
 interface ActiveFiltersProps {
-  filters: {
-    priceRange?: { min: number; max: number; display: string };
-    bedrooms?: number | string;
-    bathrooms?: number | string;
-    documentTypes?: string[];
-    usageOptions?: string[];
-    selectedState?: string;
-    selectedLGA?: string;
-    selectedArea?: string;
-    landSize?: { type: string; size?: number };
-    desiredFeatures?: string[];
-    tenantCriteria?: string[];
-    homeCondition?: string;
+  filters: Partial<PropertySearchFilters> & {
+    priceRange?: { min: number; max: number; display?: string };
   };
-  onRemoveFilter: (filterKey: string, value?: any) => void;
+  onRemoveFilter: (filterKey: string, value?: string | number) => void;
   onClearAll: () => void;
   onSubmitPreference?: () => void;
 }
@@ -31,7 +21,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   onClearAll,
   onSubmitPreference,
 }) => {
-  const activeFilters: Array<{ key: string; label: string; value?: any }> = [];
+  const activeFilters: ActiveFilter[] = [];
 
   // Price Range
   if (

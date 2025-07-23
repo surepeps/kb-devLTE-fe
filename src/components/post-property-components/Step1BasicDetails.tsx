@@ -23,6 +23,7 @@ import {
   getFieldsToClearOnCategoryChange,
 } from "@/data/comprehensive-post-property-config";
 import { formatCurrency } from "@/utils/validation/post-property-validation";
+import { PropertyFormData, StepProps } from "@/types/post-property.types";
 import {
   formatPriceForDisplay,
   extractNumericValue,
@@ -34,22 +35,23 @@ interface Option {
   label: string;
 }
 
-interface StepProps {
-  // No props needed as we'll use Formik validation internally
-}
+
 
 const Step1BasicDetails: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { errors, touched, setFieldTouched, setFieldValue } =
-    useFormikContext<any>();
+    useFormikContext<PropertyFormData>();
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
 
-  const handleFieldChange = async (fieldName: string, value: any) => {
-    setFieldTouched(fieldName, true);
-    setFieldValue(fieldName, value);
-    updatePropertyData(fieldName as any, value);
+  const handleFieldChange = async <K extends keyof PropertyFormData>(
+    fieldName: K,
+    value: PropertyFormData[K]
+  ) => {
+    setFieldTouched(fieldName as string, true);
+    setFieldValue(fieldName as string, value);
+    updatePropertyData(fieldName, value);
   };
 
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {

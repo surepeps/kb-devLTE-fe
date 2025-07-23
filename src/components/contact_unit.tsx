@@ -3,11 +3,9 @@
 import { archivo } from '@/styles/font';
 import Image, { StaticImageData } from 'next/image';
 import React, { useState, FC } from 'react';
+import { ContactUnitProps } from '@/types/contact.types';
 
-interface ContactUnitProps {
-  icon: StaticImageData;
-  value: string;
-}
+
 
 const ContactUnit: FC<ContactUnitProps> = ({ icon, value }) => {
   const [isCopied, setIsCopied] = useState<boolean>(false);
