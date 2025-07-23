@@ -127,15 +127,14 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
     });
   };
 
-  const handleNegotiationSubmit = async (negotiationData: any) => {
-    // This should integrate with the existing negotiation submission logic
-    console.log("Price negotiation submitted:", negotiationData);
+  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
+    const originalPrice = property.price || property.rentalPrice || 0;
+    addNegotiatedPrice(property._id || property.id, originalPrice, negotiatedPriceValue);
     setPriceNegotiationModal({ isOpen: false, property: null });
   };
 
-  const handleLOISubmit = async (loiData: any) => {
-    // This should integrate with the existing LOI submission logic
-    console.log("LOI submitted:", loiData);
+  const handleLOISubmit = (property: any, document: File, documentUrl: string) => {
+    addLOIDocument(property._id || property.id, document, documentUrl);
     setLoiUploadModal({ isOpen: false, property: null });
   };
 
