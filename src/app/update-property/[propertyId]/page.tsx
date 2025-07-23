@@ -284,10 +284,10 @@ const UpdateProperty = () => {
           
           // Transform API response to match the form structure
           const transformedData = {
-            propertyType: property.briefType === "Outright Sales" ? "sell" : 
+            propertyType: (property.briefType === "Outright Sales" ? "sell" :
                           property.briefType === "Rent" ? "rent" :
                           property.briefType === "Shortlet" ? "shortlet" :
-                          property.briefType === "Joint Venture" ? "jv" : "",
+                          property.briefType === "Joint Venture" ? "jv" : "sell") as "" | "rent" | "shortlet" | "jv" | "sell",
             propertyCategory: property.propertyCategory || "",
             propertyCondition: property.propertyCondition || "",
             typeOfBuilding: property.typeOfBuilding || "",
