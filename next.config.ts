@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
   },
   // Fix cross-origin warnings for dev environment
   allowedDevOrigins: [
+    "e7d15a9216da4885bec59cd01458be4a-6845b121add241b5a73be3ac1.fly.dev",
+    "*.fly.dev",
   ],
   // Disable turbopack for now to fix build issues
   // turbopack: {

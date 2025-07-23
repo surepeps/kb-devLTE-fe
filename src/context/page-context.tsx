@@ -1,9 +1,9 @@
 /** @format */
 
 "use client";
-import { BriefType, GlobalContextTypes } from "@/types/index";
+import { BriefType, GlobalContextTypes } from "@/types/index.tsx";
 import { UserAgentDataProps } from "@/types/agent_data_props";
-import { PropertyCardProps } from "@/types/property.types";
+import { PropertyCardProps, Property } from "@/types/property.types";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { createContext, useContext, useState } from "react";
 import { string } from "yup";
@@ -145,7 +145,7 @@ export const PageContextProvider = ({
    * Property selected for inspection from the property detailss page
    */
   const [propertySelectedForInspection, setPropertySelectedForInspection] =
-    useState<PropertyProps | undefined>(undefined);
+    useState<Property | undefined>(undefined);
 
   /**
    * ismodalforInspection Opened

@@ -1,9 +1,12 @@
 /** @format */
 
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "lucide-react";
-import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { GlobalPropertyCard, GlobalJVPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import PriceNegotiationModal from "@/components/new-marketplace/modals/PriceNegotiationModal";
+import LOIUploadModal from "@/components/new-marketplace/modals/LOIUploadModal";
+import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
 
 interface PropertySlotsProps {
   selectedProperties: any[];
@@ -17,6 +20,62 @@ interface PropertySlotsProps {
   loiDocuments?: any[];
 }
 
+// Helper function to determine if a property is a Joint Venture property
+const isJVProperty = (property: any): boolean => {
+  if (!property) return false;
+
+  // Debug logging to understand property structure
+  console.log("Property data for JV detection:", {
+    briefType: property.briefType,
+    propertyType: property.propertyType,
+    propertyCategory: property.propertyCategory,
+    category: property.category,
+    type: property.type,
+    title: property.title
+  });
+
+  // Check briefType first (most reliable)
+  if (property.briefType === "Joint Venture" ||
+      property.briefType === "jv" ||
+      property.briefType === "JV") {
+    console.log("✓ JV Property detected by briefType:", property.briefType);
+    return true;
+  }
+
+  // Check category field
+  if (property.category === "joint-venture" || property.category === "jv") {
+    console.log("✓ JV Property detected by category:", property.category);
+    return true;
+  }
+
+  // Check propertyType for Land or Commercial (which are typically JV)
+  if (property.propertyType === "Land" ||
+      property.propertyType === "Commercial" ||
+      property.propertyType === "land" ||
+      property.propertyType === "commercial") {
+    console.log("✓ JV Property detected by propertyType:", property.propertyType);
+    return true;
+  }
+
+  // Check propertyCategory as fallback
+  if (property.propertyCategory === "Land" ||
+      property.propertyCategory === "Commercial" ||
+      property.propertyCategory === "land" ||
+      property.propertyCategory === "commercial") {
+    console.log("✓ JV Property detected by propertyCategory:", property.propertyCategory);
+    return true;
+  }
+
+  // Check type field
+  if (property.type === "land" || property.type === "commercial") {
+    console.log("✓ JV Property detected by type:", property.type);
+    return true;
+  }
+
+  console.log("✗ Regular Property - using GlobalPropertyCard");
+  return false;
+};
+
 const PropertySlots: React.FC<PropertySlotsProps> = ({
   selectedProperties,
   maxSlots,
@@ -28,6 +87,56 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   negotiatedPrices = [],
   loiDocuments = [],
 }) => {
+
+  // Global inspection state for modal submissions
+  const { addNegotiatedPrice, addLOIDocument } = useGlobalInspectionState();
+
+  // Modal state management
+  const [priceNegotiationModal, setPriceNegotiationModal] = useState({
+    isOpen: false,
+    property: null,
+  });
+
+  const [loiUploadModal, setLoiUploadModal] = useState({
+    isOpen: false,
+    property: null,
+  });
+
+  // Helper function to find negotiated price for a property
+  const getNegotiatedPrice = (propertyId: string) => {
+    return negotiatedPrices.find(np => np.propertyId === propertyId) || null;
+  };
+
+  // Helper function to find LOI document for a property
+  const getLOIDocument = (propertyId: string) => {
+    return loiDocuments.find(loi => loi.propertyId === propertyId) || null;
+  };
+
+  // Modal handlers
+  const handlePriceNegotiation = (property: any) => {
+    setPriceNegotiationModal({
+      isOpen: true,
+      property,
+    });
+  };
+
+  const handleLOIUpload = (property: any) => {
+    setLoiUploadModal({
+      isOpen: true,
+      property,
+    });
+  };
+
+  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
+    const originalPrice = property.price || property.rentalPrice || 0;
+    addNegotiatedPrice(property._id || property.id, originalPrice, negotiatedPriceValue);
+    setPriceNegotiationModal({ isOpen: false, property: null });
+  };
+
+  const handleLOISubmit = (property: any, document: File, documentUrl: string) => {
+    addLOIDocument(property._id || property.id, document, documentUrl);
+    setLoiUploadModal({ isOpen: false, property: null });
+  };
 
   const slots = Array.from({ length: maxSlots }, (_, index) => {
     const property = selectedProperties[index];
@@ -43,19 +152,44 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         >
           {property ? (
             <div className="relative w-full flex justify-end">
-              <EnhancedGlobalPropertyCard
-                type={tab === "jv" ? "jv" : "standard"}
-                tab={tab === "jv" ? "buy" : tab}
-                property={property.property}
-                cardData={createPropertyCardData(property.property, tab === "jv" ? "Joint Venture" : undefined)}
-                images={
-                  property.property?.pictures ||
-                  property.property?.images ||
-                  []
-                }
-                isPremium={property.property?.isPremium || false}
-                onPropertyClick={() => {}} // Disabled in inspection view
-              />
+              {isJVProperty(property.property) ? (
+                <GlobalJVPropertyCard
+                  property={property.property}
+                  cardData={createPropertyCardData(property.property, "Joint Venture")}
+                  images={
+                    property.property?.pictures ||
+                    property.property?.images ||
+                    []
+                  }
+                  isPremium={property.property?.isPremium || false}
+                  isSelected={true} // Property is selected for inspection
+                  loiDocument={getLOIDocument(property.propertyId)}
+                  onPropertyClick={() => {}} // Disabled in inspection view
+                  onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
+                  onLOIUpload={() => handleLOIUpload(property.property)} // Open LOI upload modal
+                  onUpdateLOI={() => handleLOIUpload(property.property)} // Open LOI update modal
+                  onRemoveLOI={() => onClearLOIDocument && onClearLOIDocument(property.propertyId)}
+                />
+              ) : (
+                <GlobalPropertyCard
+                  tab={tab === "jv" ? "buy" : tab}
+                  property={property.property}
+                  cardData={createPropertyCardData(property.property)}
+                  images={
+                    property.property?.pictures ||
+                    property.property?.images ||
+                    []
+                  }
+                  isPremium={property.property?.isPremium || false}
+                  isSelected={true} // Property is selected for inspection
+                  negotiatedPrice={getNegotiatedPrice(property.propertyId)}
+                  onPropertyClick={() => {}} // Disabled in inspection view
+                  onInspectionToggle={() => onRemove(property.propertyId)} // Remove from inspection
+                  onPriceNegotiation={() => handlePriceNegotiation(property.property)} // Open price negotiation modal
+                  onEditPrice={() => handlePriceNegotiation(property.property)} // Open price edit modal
+                  onRemoveNegotiation={() => onClearNegotiatedPrice && onClearNegotiatedPrice(property.propertyId)}
+                />
+              )}
               {/* Remove Button Overlay */}
               <button
                 onClick={() => onRemove(property.propertyId)}
@@ -85,6 +219,30 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
           )}
         </div>
       ))}
+
+      {/* Price Negotiation Modal */}
+      {priceNegotiationModal.isOpen && (
+        <PriceNegotiationModal
+          property={priceNegotiationModal.property}
+          onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
+          onSubmit={handleNegotiationSubmit}
+          existingNegotiation={getNegotiatedPrice(
+            priceNegotiationModal.property?._id || priceNegotiationModal.property?.id
+          )}
+        />
+      )}
+
+      {/* LOI Upload Modal */}
+      {loiUploadModal.isOpen && (
+        <LOIUploadModal
+          property={loiUploadModal.property}
+          onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
+          onSubmit={handleLOISubmit}
+          existingDocument={getLOIDocument(
+            loiUploadModal.property?._id || loiUploadModal.property?.id
+          )}
+        />
+      )}
 
     </div>
   );
