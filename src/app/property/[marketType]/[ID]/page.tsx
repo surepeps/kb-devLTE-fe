@@ -450,10 +450,7 @@ const ProductDetailsPage = () => {
         }
 
         // Handle different response structures
-        const propertyData = response.data.success ? response.data.data : response.data;
-
         if (propertyData) {
-          const propertyData = response.data.data;
           setDetails({
             _id: propertyData._id,
             propertyId: propertyData._id,
