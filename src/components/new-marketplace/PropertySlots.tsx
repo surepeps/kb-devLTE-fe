@@ -217,6 +217,30 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
         </div>
       ))}
 
+      {/* Price Negotiation Modal */}
+      {priceNegotiationModal.isOpen && (
+        <PriceNegotiationModal
+          property={priceNegotiationModal.property}
+          onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
+          onSubmit={handleNegotiationSubmit}
+          existingNegotiation={getNegotiatedPrice(
+            priceNegotiationModal.property?._id || priceNegotiationModal.property?.id
+          )}
+        />
+      )}
+
+      {/* LOI Upload Modal */}
+      {loiUploadModal.isOpen && (
+        <LOIUploadModal
+          property={loiUploadModal.property}
+          onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
+          onSubmit={handleLOISubmit}
+          existingDocument={getLOIDocument(
+            loiUploadModal.property?._id || loiUploadModal.property?.id
+          )}
+        />
+      )}
+
     </div>
   );
 };
