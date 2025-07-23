@@ -27,10 +27,10 @@ const EmailVerification = () => {
 
 					if (response && response.data?.token) {
 						Cookies.set("token", response.data.token);
-						setUser(response);
+						setUser(response.data);
 
 						// Redirect based on user type
-						if (response.userType === "Landowners") {
+						if (response.data?.userType === "Landowners") {
 							toast.success(
 								"Email verified successfully! Redirecting to your dashboard..."
 							);
