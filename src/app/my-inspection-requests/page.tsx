@@ -900,10 +900,10 @@ export default function MyInspectionRequestsPage() {
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                          className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                             page === currentPage
-                              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
-                              : "text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
+                              ? "bg-[#8DDB90] text-white"
+                              : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
                           }`}
                         >
                           {page}
