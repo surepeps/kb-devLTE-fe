@@ -113,7 +113,7 @@ const Section2 = () => {
           `Successfully loaded ${sanitizedApproved.length} properties`,
         );
         setProperties(sanitizedApproved);
-        setCardData(approved);
+        setCardData(approved as any);
       } catch (err) {
         console.error("Failed to fetch properties:", err);
         setProperties([]);
