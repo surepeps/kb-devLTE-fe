@@ -340,24 +340,30 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
         ) as ApiResponse<InspectionDetails>;
 
-        if (response?.success) {
+        if (response?.success && response.data) {
           const details = response.data;
           dispatch({ type: "SET_DETAILS", payload: details });
           dispatch({ type: "SET_FORM_STATUS", payload: "success" });
 
           // Set inspection type, stage, and pending response from new API structure
-          dispatch({
-            type: "SET_INSPECTION_TYPE",
-            payload: details.inspectionType,
-          });
-          dispatch({ type: "SET_STAGE", payload: details.stage });
-          dispatch({
-            type: "SET_PENDING_RESPONSE_FROM",
-            payload: details.pendingResponseFrom,
-          });
+          if (details?.inspectionType) {
+            dispatch({
+              type: "SET_INSPECTION_TYPE",
+              payload: details.inspectionType,
+            });
+          }
+          if (details?.stage) {
+            dispatch({ type: "SET_STAGE", payload: details.stage });
+          }
+          if (details?.pendingResponseFrom) {
+            dispatch({
+              type: "SET_PENDING_RESPONSE_FROM",
+              payload: details.pendingResponseFrom,
+            });
+          }
 
           // Set created date
-          if (details.createdAt) {
+          if (details?.createdAt) {
             dispatch({
               type: "SET_CREATED_AT",
               payload: details.createdAt,
@@ -365,7 +371,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
           }
 
           // Check if inspection has expired (48 hours)
-          if (details.updatedAt) {
+          if (details?.updatedAt) {
             const updateTime = new Date(details.updatedAt).getTime();
             const now = new Date().getTime();
             const elapsed = now - updateTime;

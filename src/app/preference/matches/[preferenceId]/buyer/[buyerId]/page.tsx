@@ -154,7 +154,7 @@ const PreferenceMatchesPage: React.FC = () => {
 
   const renderProperty = (property: MatchedProperty, index: number) => {
     const cardData = generateCardData(property);
-    const images = property.image ? [property.image] : [];
+    const images = property.image ? [{ id: 'main', url: property.image, alt: property.title }] : [];
 
     // Create a property object compatible with GlobalPropertyCard
     const adaptedProperty = {

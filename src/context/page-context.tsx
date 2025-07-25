@@ -3,7 +3,7 @@
 "use client";
 import { BriefType, GlobalContextTypes } from "@/types/index.tsx";
 import { UserAgentDataProps } from "@/types/agent_data_props";
-import { PropertyCardProps, Property } from "@/types/property.types";
+import { Property } from "@/types/property.types";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { createContext, useContext, useState } from "react";
 import { string } from "yup";

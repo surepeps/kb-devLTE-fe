@@ -8,9 +8,10 @@ const API_URLS = [
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const path = params.path.join('/');
+  const resolvedParams = await params;
+  const path = resolvedParams.path.join('/');
   const { searchParams } = new URL(request.url);
   const queryString = searchParams.toString();
   const fullPath = queryString ? `${path}?${queryString}` : path;
@@ -59,9 +60,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const path = params.path.join('/');
+  const resolvedParams = await params;
+  const path = resolvedParams.path.join('/');
   const body = await request.text();
   const authHeader = request.headers.get('authorization');
 
