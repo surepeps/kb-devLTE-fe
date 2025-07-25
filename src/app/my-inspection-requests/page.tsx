@@ -444,22 +444,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-green-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
-                    <CheckCircle2 size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <CheckCircleIcon size={24} className="text-green-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.completedInspections}</p>
-                    <p className="text-sm text-slate-500">Completed</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Completed</p>
+                    <p className="text-2xl font-bold text-green-600">{stats.completedInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full"
-                    style={{ width: `${stats.totalInspections ? (stats.completedInspections / stats.totalInspections) * 100 : 0}%` }}
-                  ></div>
                 </div>
               </motion.div>
 
