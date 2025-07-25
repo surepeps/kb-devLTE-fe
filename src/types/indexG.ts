@@ -4,7 +4,7 @@
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { Property } from "./property.types";
 import { UserAgentDataProps } from "./agent_data_props";
-
+ 
 interface Option {
   value: string;
   label: string;
