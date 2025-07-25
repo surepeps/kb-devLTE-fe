@@ -8,9 +8,64 @@ import GlobalPropertyCard from '@/components/common/property-cards/GlobalPropert
 import GlobalJVPropertyCard from '@/components/common/property-cards/GlobalJVPropertyCard';
 import { ClipLoader } from 'react-spinners';
 
-interface MatchedProperty extends Property {
-  propertyType?: string;
-  marketType?: string;
+interface MatchDetails {
+  _id: string;
+  preference: {
+    _id: string;
+    title: string;
+    budget: number;
+    location: {
+      state: string;
+      localGovernment: string;
+      area: string;
+    };
+  };
+  buyer: {
+    _id: string;
+    fullName: string;
+    email: string;
+    userType: string;
+  };
+  status: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MatchedProperty {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  image: string;
+  status: string;
+  owner: {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+  };
+  bedrooms: number;
+  bathrooms: number;
+  toilets: number;
+  carParks: number;
+  isPremium: boolean;
+  createdAt: string;
+}
+
+interface MatchData {
+  matchDetails: MatchDetails;
+  matchedProperties: MatchedProperty[];
+}
+
+interface ApiResponse {
+  success: boolean;
+  data: MatchData[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    total: number;
+  };
 }
 
 const PreferenceMatchesPage: React.FC = () => {
@@ -18,9 +73,17 @@ const PreferenceMatchesPage: React.FC = () => {
   const preferenceId = params.preferenceId as string;
   const buyerId = params.buyerId as string;
 
-  const [matchedProperties, setMatchedProperties] = useState<MatchedProperty[]>([]);
+  const [matchData, setMatchData] = useState<MatchData[]>([]);
+  const [matchDetails, setMatchDetails] = useState<MatchDetails | null>(null);
+  const [allMatchedProperties, setAllMatchedProperties] = useState<MatchedProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<{
+    page: number;
+    limit: number;
+    totalPages: number;
+    total: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchMatchedProperties = async () => {
@@ -35,16 +98,36 @@ const PreferenceMatchesPage: React.FC = () => {
         const response = await axios.get(
           `/api/preferences/getMatchedProps/${buyerId}/${preferenceId}`
         );
-        
+
         if (response.data && response.data.success) {
-          setMatchedProperties(response.data.data || []);
+          const apiData: ApiResponse = response.data;
+          setMatchData(apiData.data || []);
+          setPagination(apiData.pagination);
+
+          // Extract the first match details for the header
+          if (apiData.data && apiData.data.length > 0) {
+            setMatchDetails(apiData.data[0].matchDetails);
+
+            // Flatten all matched properties from all matches
+            const allProperties = apiData.data.flatMap(match => match.matchedProperties);
+            setAllMatchedProperties(allProperties);
+          } else {
+            setMatchDetails(null);
+            setAllMatchedProperties([]);
+          }
         } else {
-          setMatchedProperties([]);
+          setMatchData([]);
+          setMatchDetails(null);
+          setAllMatchedProperties([]);
+          setPagination(null);
         }
       } catch (err: any) {
         console.error('Error fetching matched properties:', err);
         setError(err.response?.data?.message || 'Failed to fetch matched properties');
-        setMatchedProperties([]);
+        setMatchData([]);
+        setMatchDetails(null);
+        setAllMatchedProperties([]);
+        setPagination(null);
       } finally {
         setLoading(false);
       }
@@ -57,33 +140,50 @@ const PreferenceMatchesPage: React.FC = () => {
     return [
       { header: 'Price', value: property.price ? `₦${Number(property.price).toLocaleString()}` : 'Contact for price' },
       { header: 'Location', value: property.location || 'Location not specified' },
-      { header: 'Bedrooms', value: property.bedroom?.toString() || 'N/A' },
-      { header: 'Bathrooms', value: property.bathroom?.toString() || 'N/A' },
-      { header: 'Type', value: property.propertyType || property.type || 'Property' },
+      { header: 'Bedrooms', value: property.bedrooms?.toString() || 'N/A' },
+      { header: 'Bathrooms', value: property.bathrooms?.toString() || 'N/A' },
+      { header: 'Car Parks', value: property.carParks?.toString() || 'N/A' },
+      { header: 'Status', value: property.status || 'Available' },
     ];
   };
 
   const isJointVenture = (property: MatchedProperty) => {
-    return property.marketType === 'joint-venture' || 
-           property.propertyType?.toLowerCase().includes('joint') ||
-           property.type?.toLowerCase().includes('joint');
+    return property.title?.toLowerCase().includes('joint') ||
+           property.title?.toLowerCase().includes('venture');
   };
 
   const renderProperty = (property: MatchedProperty, index: number) => {
     const cardData = generateCardData(property);
-    const images = property.images || [];
-    
+    const images = property.image ? [property.image] : [];
+
+    // Create a property object compatible with GlobalPropertyCard
+    const adaptedProperty = {
+      _id: property.id,
+      title: property.title,
+      location: property.location,
+      price: property.price,
+      bedroom: property.bedrooms,
+      bathroom: property.bathrooms,
+      toilet: property.toilets,
+      carpark: property.carParks,
+      images: images,
+      isPremium: property.isPremium,
+      status: property.status,
+      owner: property.owner,
+      createdAt: property.createdAt
+    };
+
     if (isJointVenture(property)) {
       return (
         <GlobalJVPropertyCard
-          key={property._id || index}
-          property={property}
+          key={property.id || index}
+          property={adaptedProperty as any}
           cardData={cardData}
           images={images}
-          isPremium={false}
+          isPremium={property.isPremium}
           onPropertyClick={() => {
             // Handle property click navigation if needed
-            console.log('Property clicked:', property._id);
+            console.log('Property clicked:', property.id);
           }}
           className="h-full"
         />
@@ -92,15 +192,15 @@ const PreferenceMatchesPage: React.FC = () => {
 
     return (
       <GlobalPropertyCard
-        key={property._id || index}
+        key={property.id || index}
         tab="buy"
-        property={property}
+        property={adaptedProperty as any}
         cardData={cardData}
         images={images}
-        isPremium={false}
+        isPremium={property.isPremium}
         onPropertyClick={() => {
           // Handle property click navigation if needed
-          console.log('Property clicked:', property._id);
+          console.log('Property clicked:', property.id);
         }}
         className="h-full"
       />
@@ -146,13 +246,35 @@ const PreferenceMatchesPage: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Property Matches</h1>
-          <p className="text-gray-600">
-            Properties that match your preferences (Preference ID: {preferenceId})
-          </p>
+          {matchDetails ? (
+            <div className="space-y-2">
+              <p className="text-gray-600">
+                Properties matching: <span className="font-semibold">{matchDetails.preference.title}</span>
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                <span>Budget: ₦{Number(matchDetails.preference.budget).toLocaleString()}</span>
+                <span>Location: {matchDetails.preference.location.area}, {matchDetails.preference.location.localGovernment}, {matchDetails.preference.location.state}</span>
+                <span>Status: <span className={`px-2 py-1 rounded-full text-xs ${
+                  matchDetails.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  matchDetails.status === 'active' ? 'bg-green-100 text-green-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>{matchDetails.status}</span></span>
+              </div>
+              {matchDetails.notes && (
+                <p className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                  <span className="font-medium">Notes:</span> {matchDetails.notes}
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-gray-600">
+              Properties that match your preferences (Preference ID: {preferenceId})
+            </p>
+          )}
         </div>
 
         {/* Content */}
-        {matchedProperties.length === 0 ? (
+        {allMatchedProperties.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-gray-400 mb-4">
               <svg className="w-24 h-24 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,16 +289,26 @@ const PreferenceMatchesPage: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Results count */}
-            <div className="mb-6">
+            {/* Results count and pagination info */}
+            <div className="mb-6 flex justify-between items-center">
               <p className="text-gray-700">
-                Found <span className="font-semibold">{matchedProperties.length}</span> matching properties
+                Found <span className="font-semibold">{allMatchedProperties.length}</span> matching properties
+                {pagination && (
+                  <span className="text-sm text-gray-500 ml-2">
+                    (Page {pagination.page} of {pagination.totalPages}, {pagination.total} total)
+                  </span>
+                )}
               </p>
+              {matchData.length > 1 && (
+                <p className="text-sm text-blue-600">
+                  {matchData.length} preference matches found
+                </p>
+              )}
             </div>
 
             {/* Properties grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {matchedProperties.map((property, index) => renderProperty(property, index))}
+              {allMatchedProperties.map((property, index) => renderProperty(property, index))}
             </div>
           </>
         )}
