@@ -479,6 +479,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       inspectionType: InspectionType,
       inspectionDate?: string,
       inspectionTime?: string,
+      inspectionMode?: string,
     ): NegotiationPayload => {
       const payload: any = {
         action: "accept",
@@ -487,6 +488,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       if (inspectionDate) payload.inspectionDate = inspectionDate;
       if (inspectionTime) payload.inspectionTime = inspectionTime;
+      if (inspectionMode) payload.inspectionMode = inspectionMode;
 
       return payload;
     },
@@ -520,6 +522,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       documentUrl?: string,
       inspectionDate?: string,
       inspectionTime?: string,
+      inspectionMode?: string,
     ): NegotiationPayload => {
       const payload: any = {
         action: "counter",
@@ -536,6 +539,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       if (inspectionDate) payload.inspectionDate = inspectionDate;
       if (inspectionTime) payload.inspectionTime = inspectionTime;
+      if (inspectionMode) payload.inspectionMode = inspectionMode;
 
       return payload;
     },
@@ -547,6 +551,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       reason: string,
       inspectionDate?: string,
       inspectionTime?: string,
+      inspectionMode?: string,
     ): NegotiationPayload => {
       const payload: any = {
         action: "request_changes",
@@ -556,6 +561,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       if (inspectionDate) payload.inspectionDate = inspectionDate;
       if (inspectionTime) payload.inspectionTime = inspectionTime;
+      if (inspectionMode) payload.inspectionMode = inspectionMode;
 
       return payload;
     },

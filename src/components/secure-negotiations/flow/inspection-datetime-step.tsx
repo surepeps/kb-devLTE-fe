@@ -41,6 +41,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   const { details, loadingStates, inspectionId, inspectionType } = state;
   const [newDate, setNewDate] = useState(details?.inspectionDate || "");
   const [newTime, setNewTime] = useState(details?.inspectionTime || "");
+  const [newInspectionMode, setNewInspectionMode] = useState(details?.inspectionMode || "in_person");
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [showAllDays, setShowAllDays] = useState(false);
 
@@ -271,10 +272,12 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
     const timeToSelect =
       details?.inspectionTime || availableTimes[0]?.value || "";
+    const modeToSelect = details?.inspectionMode || "in_person";
 
     // Set the modal state to appropriate values
     setNewDate(dateToSelect);
     setNewTime(timeToSelect);
+    setNewInspectionMode(modeToSelect);
     setShowUpdateForm(true);
   };
 
@@ -301,6 +304,21 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   const currentTime = useMemo(() => {
     return details?.inspectionTime || newTime || availableTimes[0]?.value || "";
   }, [details?.inspectionTime, newTime, availableTimes]);
+
+  const currentInspectionMode = useMemo(() => {
+    return details?.inspectionMode || newInspectionMode || "in_person";
+  }, [details?.inspectionMode, newInspectionMode]);
+
+  const inspectionModeOptions = [
+    { value: "in_person", label: "In Person", icon: "👥" },
+    { value: "virtual", label: "Virtual", icon: "💻" },
+    { value: "developer_visit", label: "Developer Visit", icon: "🏗️" }
+  ];
+
+  const getInspectionModeDisplay = (mode: string) => {
+    const option = inspectionModeOptions.find(opt => opt.value === mode);
+    return option ? `${option.icon} ${option.label}` : mode;
+  };
 
   const propertyAddress = details?.propertyId?.location
     ? `${details.propertyId.location.area}, ${details.propertyId.location.localGovernment}, ${details.propertyId.location.state}`
@@ -338,6 +356,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               inspectionType!,
               currentDate,
               currentTime,
+              currentInspectionMode,
             );
             break;
           case "counter":
@@ -347,6 +366,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               undefined,
               currentDate,
               currentTime,
+              currentInspectionMode,
             );
             break;
           case "requestChanges":
@@ -354,6 +374,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               negotiationAction.changeRequest || "",
               currentDate,
               currentTime,
+              currentInspectionMode,
             );
             break;
         }
@@ -363,6 +384,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           inspectionType!,
           currentDate,
           currentTime,
+          currentInspectionMode,
         );
       }
 
@@ -385,7 +407,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         // We're coming from a negotiation action, include that in the payload
         switch (negotiationAction.type) {
           case "accept":
-            payload = createAcceptPayload(inspectionType!, newDate, newTime);
+            payload = createAcceptPayload(inspectionType!, newDate, newTime, newInspectionMode);
             break;
           case "counter":
             payload = createCounterPayload(
@@ -394,6 +416,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               undefined,
               newDate,
               newTime,
+              newInspectionMode,
             );
             break;
           case "requestChanges":
@@ -401,6 +424,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               negotiationAction.changeRequest || "",
               newDate,
               newTime,
+              newInspectionMode,
             );
             break;
         }
@@ -412,6 +436,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
           undefined,
           newDate,
           newTime,
+          newInspectionMode,
         );
       }
 
@@ -512,8 +537,21 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               </p>
             </div>
 
+            {/* Inspection Mode */}
+            <div className="p-4 bg-orange-50 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-lg">🔍</span>
+                <span className="font-medium text-orange-800">
+                  Inspection Mode
+                </span>
+              </div>
+              <p className="text-orange-700 font-semibold">
+                {getInspectionModeDisplay(currentInspectionMode)}
+              </p>
+            </div>
+
             {/* Location */}
-            <div className="p-4 bg-purple-50 rounded-lg md:col-span-2">
+            <div className="p-4 bg-purple-50 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <FiMapPin className="w-5 h-5 text-purple-600" />
                 <span className="font-medium text-purple-800">
@@ -697,6 +735,38 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                   </div>
                 </div>
 
+                {/* Inspection Mode Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Select Inspection Mode
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {inspectionModeOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setNewInspectionMode(option.value)}
+                        className={`p-4 text-left rounded-lg border transition-colors duration-200 ${
+                          newInspectionMode === option.value
+                            ? "border-[#09391C] bg-green-50 text-[#09391C]"
+                            : "border-[#C7CAD0] hover:border-[#09391C] hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{option.icon}</span>
+                          <div>
+                            <div className="font-medium">{option.label}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {option.value === "in_person" ? "Physical property visit" :
+                               option.value === "virtual" ? "Video call inspection" :
+                               "Developer-guided visit"}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Selected Summary */}
                 {newDate && newTime && (
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -708,6 +778,9 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     </p>
                     <p className="text-blue-700">
                       <strong>Time:</strong> {formatTime(newTime)}
+                    </p>
+                    <p className="text-blue-700">
+                      <strong>Mode:</strong> {getInspectionModeDisplay(newInspectionMode)}
                     </p>
                   </div>
                 )}
@@ -725,6 +798,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     disabled={
                       !newDate ||
                       !newTime ||
+                      !newInspectionMode ||
                       loadingStates.submitting ||
                       loadingStates.accepting ||
                       loadingStates.countering
