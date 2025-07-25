@@ -1080,11 +1080,11 @@ export default function MyInspectionRequestsPage() {
                 </div>
 
                 {/* Modal Actions */}
-                <div className="p-6 border-t border-slate-200 bg-slate-50">
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={() => setShowDetailModal(false)}
-                      className="px-6 py-2 text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-all duration-200"
+                      className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       Close
                     </button>
@@ -1096,7 +1096,7 @@ export default function MyInspectionRequestsPage() {
                             `/secure-seller-response/${selectedInspection.owner}/${selectedInspection.id}`
                           );
                         }}
-                        className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+                        className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
                       >
                         Respond to Request
                       </button>
