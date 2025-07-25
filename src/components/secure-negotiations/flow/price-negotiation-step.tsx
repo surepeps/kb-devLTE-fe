@@ -100,14 +100,9 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   };
 
   const handleReject = async () => {
-    try {
-      const payload = createRejectPayload("price");
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      setShowRejectModal(false);
-      onActionSelected("reject");
-    } catch (error) {
-      console.error("Failed to reject offer:", error);
-    }
+    // Don't submit immediately, proceed to next step (inspection)
+    setShowRejectModal(false);
+    onActionSelected("reject");
   };
 
   const formatCounterPrice = (value: string) => {
