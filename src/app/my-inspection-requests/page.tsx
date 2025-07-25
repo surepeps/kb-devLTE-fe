@@ -550,13 +550,13 @@ export default function MyInspectionRequestsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Mode
                     </label>
                     <select
                       value={filters.inspectionMode}
                       onChange={(e) => setFilters({ ...filters, inspectionMode: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                     >
                       <option value="">All Modes</option>
                       <option value="in_person">In Person</option>
