@@ -83,6 +83,14 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     return { amount: diff, percentage };
   };
 
+  const canCounter = () => {
+    return counterCount < 3;
+  };
+
+  const getRemainingCounters = () => {
+    return Math.max(0, 3 - counterCount);
+  };
+
   const isAboveAsk = currentOffer > propertyPrice;
   const difference = calculateDifference();
 
