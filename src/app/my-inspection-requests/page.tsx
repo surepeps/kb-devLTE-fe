@@ -372,10 +372,10 @@ export default function MyInspectionRequestsPage() {
 
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
               <div>
-                <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-display mb-3">
-                  Inspection Requests
+                <h1 className="text-3xl sm:text-4xl font-bold text-[#09391C] font-display mb-3">
+                  My Inspection Requests
                 </h1>
-                <p className="text-slate-600 text-lg">
+                <p className="text-[#5A5D63] text-lg">
                   Monitor and manage all your property inspection requests in one place
                 </p>
               </div>
