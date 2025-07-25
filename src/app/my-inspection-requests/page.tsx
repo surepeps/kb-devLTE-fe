@@ -761,7 +761,7 @@ export default function MyInspectionRequestsPage() {
                       {/* Price Information */}
                       {inspection.property?.price && (
                         <div className="mb-4">
-                          <p className="text-lg font-semibold text-emerald-600">
+                          <p className="text-lg font-semibold text-[#8DDB90]">
                             ₦{inspection.property.price.toLocaleString()}
                           </p>
                           {inspection.negotiationPrice > 0 && (
