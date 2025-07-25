@@ -25,6 +25,8 @@ import {
 interface Option {
   value: string;
   label: string;
+  __isScoped__?: boolean;
+  __lgaScope__?: string;
 }
 
 interface LGAAreaMapping {
@@ -218,6 +220,8 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
         return getAreasByStateLGA(selectedState.value, lgaName).map((area) => ({
           value: area,
           label: area,
+          __isScoped__: false,
+          __lgaScope__: lgaName,
         }));
       },
       [selectedState?.value],

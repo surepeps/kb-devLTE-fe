@@ -232,7 +232,7 @@ const BuyPropertySearch = () => {
         <SearchFilters
           tab="buy"
           filters={filters}
-          onFilterChange={updateFilter}
+          onFilterChange={updateFilter as (key: string, value: any) => void}
           onClearFilters={handleClearFilters}
           onSearch={handleSearch}
           loading={buyTab.formikStatus === "pending"}
