@@ -109,51 +109,51 @@ interface StatsResponse {
 const STATUS_CONFIG = {
   pending_transaction: {
     label: "Pending Transaction",
-    color: "bg-gradient-to-r from-amber-400 to-orange-500",
-    textColor: "text-amber-700",
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
+    color: "bg-[#8DDB90]",
+    textColor: "text-amber-800",
+    bgColor: "bg-yellow-100",
+    borderColor: "border-yellow-200",
     icon: Timer,
   },
   inspection_approved: {
     label: "Inspection Approved",
-    color: "bg-gradient-to-r from-green-400 to-emerald-500",
-    textColor: "text-green-700",
-    bgColor: "bg-green-50",
+    color: "bg-[#8DDB90]",
+    textColor: "text-green-800",
+    bgColor: "bg-green-100",
     borderColor: "border-green-200",
-    icon: CheckCircle2,
+    icon: CheckCircleIcon,
   },
   new: {
     label: "New Request",
-    color: "bg-gradient-to-r from-blue-400 to-indigo-500",
-    textColor: "text-blue-700",
-    bgColor: "bg-blue-50",
+    color: "bg-[#8DDB90]",
+    textColor: "text-blue-800",
+    bgColor: "bg-blue-100",
     borderColor: "border-blue-200",
-    icon: Package,
+    icon: AlertCircleIcon,
   },
   completed: {
     label: "Completed",
-    color: "bg-gradient-to-r from-purple-400 to-pink-500",
-    textColor: "text-purple-700",
-    bgColor: "bg-purple-50",
-    borderColor: "border-purple-200",
-    icon: Badge,
+    color: "bg-[#8DDB90]",
+    textColor: "text-blue-800",
+    bgColor: "bg-blue-100",
+    borderColor: "border-blue-200",
+    icon: CheckCircleIcon,
   },
   cancelled: {
     label: "Cancelled",
-    color: "bg-gradient-to-r from-red-400 to-rose-500",
-    textColor: "text-red-700",
-    bgColor: "bg-red-50",
+    color: "bg-[#8DDB90]",
+    textColor: "text-red-800",
+    bgColor: "bg-red-100",
     borderColor: "border-red-200",
-    icon: XCircle,
+    icon: XCircleIcon,
   },
   pending: {
     label: "Pending",
-    color: "bg-gradient-to-r from-yellow-400 to-amber-500",
-    textColor: "text-yellow-700",
-    bgColor: "bg-yellow-50",
+    color: "bg-[#8DDB90]",
+    textColor: "text-yellow-800",
+    bgColor: "bg-yellow-100",
     borderColor: "border-yellow-200",
-    icon: Clock4,
+    icon: AlertCircleIcon,
   },
 };
 
@@ -161,16 +161,16 @@ const TYPE_CONFIG = {
   price: {
     label: "Price Negotiation",
     icon: DollarSignIcon,
-    color: "bg-gradient-to-r from-emerald-400 to-teal-500",
-    bgColor: "bg-emerald-50",
-    textColor: "text-emerald-700",
+    color: "bg-[#8DDB90]",
+    bgColor: "bg-green-100",
+    textColor: "text-green-800",
   },
   LOI: {
     label: "Letter of Intent",
     icon: FileText,
-    color: "bg-gradient-to-r from-purple-400 to-violet-500",
-    bgColor: "bg-purple-50",
-    textColor: "text-purple-700",
+    color: "bg-[#8DDB90]",
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-800",
   },
 };
 
@@ -178,12 +178,12 @@ const MODE_CONFIG = {
   in_person: {
     label: "In Person",
     icon: Users,
-    color: "text-blue-600",
+    color: "text-[#09391C]",
   },
   virtual: {
     label: "Virtual",
     icon: Video,
-    color: "text-purple-600",
+    color: "text-[#8DDB90]",
   },
 };
 
@@ -356,14 +356,14 @@ export default function MyInspectionRequestsPage() {
 
   return (
     <AuthGuard requireAuth allowedUserTypes={["Landowners", "Agent"]}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-[#EEF1F1]">
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-all duration-200 hover:translate-x-1"
+                className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors"
               >
                 <ArrowLeftIcon size={20} />
                 Back to Dashboard
@@ -372,10 +372,10 @@ export default function MyInspectionRequestsPage() {
 
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
               <div>
-                <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-display mb-3">
-                  Inspection Requests
+                <h1 className="text-3xl sm:text-4xl font-bold text-[#09391C] font-display mb-3">
+                  My Inspection Requests
                 </h1>
-                <p className="text-slate-600 text-lg">
+                <p className="text-[#5A5D63] text-lg">
                   Monitor and manage all your property inspection requests in one place
                 </p>
               </div>
@@ -384,19 +384,19 @@ export default function MyInspectionRequestsPage() {
                 <button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-200 disabled:opacity-50 hover:border-slate-300"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   <RefreshIcon
-                    size={18}
+                    size={16}
                     className={isRefreshing ? "animate-spin" : ""}
                   />
                   {isRefreshing ? "Refreshing..." : "Refresh"}
                 </button>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
                 >
-                  <FilterIcon size={18} />
+                  <FilterIcon size={16} />
                   {showFilters ? "Hide Filters" : "Show Filters"}
                 </button>
               </div>
@@ -405,24 +405,21 @@ export default function MyInspectionRequestsPage() {
 
           {/* Stats Dashboard */}
           {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-indigo-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
-                    <Building size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Building size={24} className="text-blue-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.totalInspections}</p>
-                    <p className="text-sm text-slate-500">Total</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total</p>
+                    <p className="text-2xl font-bold text-[#09391C]">{stats.totalInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full w-full"></div>
                 </div>
               </motion.div>
 
@@ -430,22 +427,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-amber-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl">
-                    <Timer size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <AlertCircleIcon size={24} className="text-yellow-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.pendingInspections}</p>
-                    <p className="text-sm text-slate-500">Pending</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Pending</p>
+                    <p className="text-2xl font-bold text-yellow-600">{stats.pendingInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full"
-                    style={{ width: `${stats.totalInspections ? (stats.pendingInspections / stats.totalInspections) * 100 : 0}%` }}
-                  ></div>
                 </div>
               </motion.div>
 
@@ -453,22 +444,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-green-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
-                    <CheckCircle2 size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <CheckCircleIcon size={24} className="text-green-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.completedInspections}</p>
-                    <p className="text-sm text-slate-500">Completed</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Completed</p>
+                    <p className="text-2xl font-bold text-green-600">{stats.completedInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full"
-                    style={{ width: `${stats.totalInspections ? (stats.completedInspections / stats.totalInspections) * 100 : 0}%` }}
-                  ></div>
                 </div>
               </motion.div>
 
@@ -476,22 +461,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-red-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl">
-                    <XCircle size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <XCircleIcon size={24} className="text-red-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.cancelledInspections}</p>
-                    <p className="text-sm text-slate-500">Cancelled</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Cancelled</p>
+                    <p className="text-2xl font-bold text-red-600">{stats.cancelledInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-red-500 to-rose-500 h-2 rounded-full"
-                    style={{ width: `${stats.totalInspections ? (stats.cancelledInspections / stats.totalInspections) * 100 : 0}%` }}
-                  ></div>
                 </div>
               </motion.div>
 
@@ -499,19 +478,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-purple-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl">
-                    <Clock3 size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <ClockIcon size={24} className="text-purple-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.averageResponseTimeInHours.toFixed(1)}h</p>
-                    <p className="text-sm text-slate-500">Avg Response</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Avg Response</p>
+                    <p className="text-lg font-bold text-purple-600">{stats.averageResponseTimeInHours.toFixed(1)}h</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-purple-500 to-violet-500 h-2 rounded-full w-3/4"></div>
                 </div>
               </motion.div>
             </div>
@@ -524,16 +500,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 mb-8 overflow-hidden"
+                className="bg-white rounded-xl p-6 mb-6 border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-[#09391C] flex items-center gap-2">
                     <FilterIcon size={20} />
                     Advanced Filters
                   </h3>
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+                    className="text-sm text-[#5A5D63] hover:text-[#09391C] transition-colors"
                   >
                     Clear All
                   </button>
@@ -541,13 +517,13 @@ export default function MyInspectionRequestsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Status
                     </label>
                     <select
                       value={filters.status}
                       onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                     >
                       <option value="">All Status</option>
                       {Object.entries(STATUS_CONFIG).map(([key, config]) => (
@@ -559,13 +535,13 @@ export default function MyInspectionRequestsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Type
                     </label>
                     <select
                       value={filters.inspectionType}
                       onChange={(e) => setFilters({ ...filters, inspectionType: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                     >
                       <option value="">All Types</option>
                       <option value="price">Price Negotiation</option>
@@ -574,13 +550,13 @@ export default function MyInspectionRequestsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Mode
                     </label>
                     <select
                       value={filters.inspectionMode}
                       onChange={(e) => setFilters({ ...filters, inspectionMode: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                     >
                       <option value="">All Modes</option>
                       <option value="in_person">In Person</option>
@@ -589,13 +565,13 @@ export default function MyInspectionRequestsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Sort By
                     </label>
                     <select
                       value={filters.sortBy}
                       onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                     >
                       <option value="newest">Newest First</option>
                       <option value="oldest">Oldest First</option>
@@ -608,40 +584,40 @@ export default function MyInspectionRequestsPage() {
           </AnimatePresence>
 
           {/* Search and View Controls */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-8">
+          <div className="bg-white rounded-xl p-6 mb-6 border border-gray-100">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
                 <SearchIcon
                   size={20}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <input
                   type="text"
                   placeholder="Search by property title, type, or status..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-lg"
                 />
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
+                    className={`p-2 rounded-lg transition-colors ${
                       viewMode === "grid"
-                        ? "bg-white text-indigo-600"
-                        : "text-slate-500 hover:text-slate-700"
+                        ? "bg-white text-[#8DDB90]"
+                        : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
                     <GridIcon size={18} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
+                    className={`p-2 rounded-lg transition-colors ${
                       viewMode === "list"
-                        ? "bg-white text-indigo-600"
-                        : "text-slate-500 hover:text-slate-700"
+                        ? "bg-white text-[#8DDB90]"
+                        : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
                     <ListIcon size={18} />
@@ -650,7 +626,7 @@ export default function MyInspectionRequestsPage() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
+            <div className="flex justify-between items-center mt-4 text-sm text-[#5A5D63]">
               <div>
                 {filteredInspections.length} of {totalCount} inspections
                 {searchTerm && ` matching "${searchTerm}"`}
@@ -664,17 +640,15 @@ export default function MyInspectionRequestsPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white border border-slate-200 rounded-2xl p-12 text-center"
+              className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100"
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Building size={32} className="text-white" />
-              </div>
-              <h3 className="text-xl font-medium text-slate-600 mb-2">
+              <Building size={64} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-xl font-medium text-gray-600 mb-2">
                 {searchTerm || Object.values(filters).some((f) => f)
                   ? "No matching inspection requests found"
                   : "No inspection requests yet"}
               </h3>
-              <p className="text-slate-500 mb-6">
+              <p className="text-gray-500 mb-6">
                 {searchTerm || Object.values(filters).some((f) => f)
                   ? "Try adjusting your search criteria or filters"
                   : "Inspection requests will appear here when buyers request to inspect your properties"}
@@ -682,7 +656,7 @@ export default function MyInspectionRequestsPage() {
               {(searchTerm || Object.values(filters).some((f) => f)) && (
                 <button
                   onClick={clearFilters}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-medium transition-colors"
                 >
                   Clear All Filters
                 </button>
@@ -704,7 +678,7 @@ export default function MyInspectionRequestsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-300 transition-all duration-300 group ${
+                    className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${
                       viewMode === "list" ? "flex" : ""
                     }`}
                   >
@@ -744,10 +718,10 @@ export default function MyInspectionRequestsPage() {
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-xl font-semibold text-slate-800 mb-1 truncate">
+                          <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">
                             {inspection.property?.title || "Property Unavailable"}
                           </h3>
-                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
                             <MapPinIcon size={14} />
                             <span>Inspection Request</span>
                           </div>
@@ -787,7 +761,7 @@ export default function MyInspectionRequestsPage() {
                       {/* Price Information */}
                       {inspection.property?.price && (
                         <div className="mb-4">
-                          <p className="text-lg font-semibold text-emerald-600">
+                          <p className="text-lg font-semibold text-[#8DDB90]">
                             ₦{inspection.property.price.toLocaleString()}
                           </p>
                           {inspection.negotiationPrice > 0 && (
@@ -801,17 +775,17 @@ export default function MyInspectionRequestsPage() {
                       {/* Inspection Details */}
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
                             <CalendarIcon size={14} />
                             <span>Date & Time</span>
                           </div>
-                          <p className="text-sm font-medium text-slate-800">
+                          <p className="text-sm font-medium text-[#09391C]">
                             {new Date(inspection.inspectionDate).toLocaleDateString()}
                           </p>
-                          <p className="text-sm text-slate-600">{inspection.inspectionTime}</p>
+                          <p className="text-sm text-[#5A5D63]">{inspection.inspectionTime}</p>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
                             <TypeIcon size={14} />
                             <span>Type & Mode</span>
                           </div>
@@ -829,7 +803,7 @@ export default function MyInspectionRequestsPage() {
 
                       {/* Additional Info */}
                       <div className="flex items-center justify-between mb-4">
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-[#5A5D63]">
                           <span>Stage: </span>
                           <span className="font-medium capitalize">{inspection.stage}</span>
                         </div>
@@ -842,16 +816,16 @@ export default function MyInspectionRequestsPage() {
 
                       {/* Reason */}
                       {inspection.reason && (
-                        <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                          <p className="text-sm text-slate-700">{inspection.reason}</p>
+                        <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-sm text-[#5A5D63]">{inspection.reason}</p>
                         </div>
                       )}
 
                       {/* Actions */}
-                      <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-200">
+                      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
                         <button
                           onClick={() => handleViewDetails(inspection)}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 text-sm font-medium"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors text-sm font-medium"
                         >
                           <EyeIcon size={16} />
                           View Details
@@ -864,7 +838,7 @@ export default function MyInspectionRequestsPage() {
                                 `/secure-seller-response/${inspection.owner}/${inspection.id}`
                               )
                             }
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 text-sm font-medium"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                           >
                             <MessageSquareIcon size={16} />
                             Respond
@@ -876,7 +850,7 @@ export default function MyInspectionRequestsPage() {
                             onClick={() =>
                               router.push(`/property/buy/${inspection.property!.id}`)
                             }
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 transition-all duration-200 text-sm font-medium"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
                           >
                             <HomeIcon size={16} />
                             View Property
@@ -892,9 +866,9 @@ export default function MyInspectionRequestsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 mt-8">
+            <div className="bg-white border border-gray-100 rounded-xl p-6 mt-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-slate-700">
+                <div className="text-sm text-gray-700">
                   Showing {(currentPage - 1) * 10 + 1} to{" "}
                   {Math.min(currentPage * 10, totalCount)} of {totalCount} results
                 </div>
@@ -903,7 +877,7 @@ export default function MyInspectionRequestsPage() {
                   <button
                     onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeftIcon size={16} />
                     Previous
@@ -926,10 +900,10 @@ export default function MyInspectionRequestsPage() {
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                          className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                             page === currentPage
-                              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
-                              : "text-slate-600 bg-white border border-slate-300 hover:bg-slate-50"
+                              ? "bg-[#8DDB90] text-white"
+                              : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
                           }`}
                         >
                           {page}
@@ -941,7 +915,7 @@ export default function MyInspectionRequestsPage() {
                   <button
                     onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
                     <ChevronRightIcon size={16} />
@@ -965,16 +939,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+                className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
               >
-                <div className="p-6 border-b border-slate-200">
+                <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold text-slate-800">
+                    <h2 className="text-2xl font-semibold text-[#09391C]">
                       Inspection Request Details
                     </h2>
                     <button
                       onClick={() => setShowDetailModal(false)}
-                      className="text-slate-400 hover:text-slate-600 transition-colors"
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       <XIcon size={24} />
                     </button>
@@ -985,26 +959,26 @@ export default function MyInspectionRequestsPage() {
                   {/* Property Information */}
                   {selectedInspection.property && (
                     <div>
-                      <h3 className="font-semibold text-slate-800 mb-3 text-lg">
+                      <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
                         Property Information
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg">
                         <div>
-                          <span className="font-medium text-slate-600">Title:</span>
+                          <span className="font-medium text-gray-600">Title:</span>
                           <p className="mt-1">{selectedInspection.property.title}</p>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-600">Price:</span>
-                          <p className="mt-1 font-medium text-emerald-600">
+                          <span className="font-medium text-gray-600">Price:</span>
+                          <p className="mt-1 font-medium text-[#8DDB90]">
                             ₦{selectedInspection.property.price.toLocaleString()}
                           </p>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-600">Status:</span>
+                          <span className="font-medium text-gray-600">Status:</span>
                           <p className="mt-1 capitalize">{selectedInspection.property.status}</p>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-600">Type:</span>
+                          <span className="font-medium text-gray-600">Type:</span>
                           <p className="mt-1">{selectedInspection.property.briefType}</p>
                         </div>
                       </div>
@@ -1013,10 +987,10 @@ export default function MyInspectionRequestsPage() {
 
                   {/* Inspection Details */}
                   <div>
-                    <h3 className="font-semibold text-slate-800 mb-3 text-lg">
+                    <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
                       Inspection Details
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg">
                       <div>
                         <span className="font-medium text-slate-600">Date:</span>
                         <p className="mt-1">
@@ -1106,11 +1080,11 @@ export default function MyInspectionRequestsPage() {
                 </div>
 
                 {/* Modal Actions */}
-                <div className="p-6 border-t border-slate-200 bg-slate-50">
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={() => setShowDetailModal(false)}
-                      className="px-6 py-2 text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-all duration-200"
+                      className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       Close
                     </button>
@@ -1122,7 +1096,7 @@ export default function MyInspectionRequestsPage() {
                             `/secure-seller-response/${selectedInspection.owner}/${selectedInspection.id}`
                           );
                         }}
-                        className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+                        className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
                       >
                         Respond to Request
                       </button>
