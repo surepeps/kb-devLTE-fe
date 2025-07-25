@@ -18,7 +18,7 @@ interface PropertyDetailsProps {
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
-  const { propertyId, inspectionDate, inspectionTime, createdAt } =
+  const { propertyId, inspectionDate, inspectionTime, inspectionMode, createdAt } =
     propertyData;
   const [isExpanded, setIsExpanded] = useState(false);
 
