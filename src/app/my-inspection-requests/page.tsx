@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import AuthGuard from "@/components/common/AuthGuard";
-
+ 
 interface InspectionData {
   _id: string;
   propertyId: {

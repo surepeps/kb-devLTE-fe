@@ -65,7 +65,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       hasFetchedRef.current = true;
 
       const response = await GET_REQUEST(
-        `${URLS.BASE}/user/notifications?limit=20&page=1`,
+        `${URLS.BASE}/account/notifications?limit=20&page=1`,
         Cookies.get("token"),
       );
 
@@ -92,7 +92,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
       // Update server
       await fetch(
-        `${URLS.BASE}/user/notifications/${notificationId}/markRead`,
+        `${URLS.BASE}/account/notifications/${notificationId}/markRead`,
         {
           method: "PATCH",
           headers: {
@@ -114,7 +114,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       );
 
       // Update server
-      await fetch(`${URLS.BASE}/user/notifications/mark-all-read`, {
+      await fetch(`${URLS.BASE}/account/notifications/mark-all-read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

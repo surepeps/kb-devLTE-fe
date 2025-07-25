@@ -74,7 +74,7 @@ const Login: FC = () => {
         } else if (userPayload.accountApproved === false) {
           router.push("/agent/under-review");
         } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
-          router.push("/agent/dashboard");
+          router.push("/dashboard");
         }
       } else {
         router.push("/dashboard");
