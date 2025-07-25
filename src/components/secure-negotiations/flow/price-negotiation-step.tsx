@@ -154,6 +154,11 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   };
 
   const handleCounterSubmit = async () => {
+    if (!canCounter()) {
+      alert("You have reached the maximum number of counter negotiations (3)");
+      return;
+    }
+
     const counterAmount = parseFloat(counterPrice.replace(/[^\d.-]/g, ""));
     const validation = validateCounterPrice(counterAmount);
 
