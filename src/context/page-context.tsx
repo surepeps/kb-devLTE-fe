@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import { BriefType, GlobalContextTypes } from "@/types/index";
+import { BriefType, GlobalContextTypes } from "@/types/index.tsx";
 import { UserAgentDataProps } from "@/types/agent_data_props";
 import { Property } from "@/types/property.types";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
