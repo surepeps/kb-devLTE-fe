@@ -3,6 +3,7 @@
 This document outlines the complete payload structures for each preference type in the preference form feature, including all possible conditions and field variations.
 
 ## API Endpoint
+
 `POST /buyers/submit-preference`
 
 ## Common Base Structure
@@ -78,7 +79,7 @@ All preference payloads share these common fields:
     "measurementUnit": "plot|sqm|hectares",
     "documentTypes": [
       "deed-of-assignment",
-      "deed-of-ownership", 
+      "deed-of-ownership",
       "deed-of-conveyance",
       "survey-plan",
       "governors-consent",
@@ -142,8 +143,9 @@ All preference payloads share these common fields:
 ### Property Type Conditions for Buy:
 
 #### Residential Building Types:
+
 - bungalow
-- duplex-fully-detached  
+- duplex-fully-detached
 - duplex-semi-detached
 - block-of-flats
 - terrace
@@ -155,6 +157,7 @@ All preference payloads share these common fields:
 - townhouse
 
 #### Commercial Building Types:
+
 - warehouse
 - office-space
 - shop
@@ -171,6 +174,7 @@ All preference payloads share these common fields:
 #### Land (No building type required)
 
 #### Property Conditions:
+
 - **Residential**: new, renovated, old
 - **Commercial**: new, renovated, old
 
@@ -215,17 +219,13 @@ All preference payloads share these common fields:
       "receipt-of-payment",
       "landlord-consent"
     ],
-    "landConditions": [
-      "fenced",
-      "gated",
-      "corner-piece"
-    ]
+    "landConditions": ["fenced", "gated", "corner-piece"]
   },
   "features": {
     "baseFeatures": [
       "parking-space",
       "security",
-      "water-supply", 
+      "water-supply",
       "electricity",
       "good-road-access"
     ],
@@ -242,7 +242,7 @@ All preference payloads share these common fields:
   },
   "contactInfo": {
     "fullName": "Jane Smith",
-    "email": "jane.smith@example.com", 
+    "email": "jane.smith@example.com",
     "phoneNumber": "+2348087654321"
   },
   "nearbyLandmark": "Near Maryland Mall",
@@ -253,6 +253,7 @@ All preference payloads share these common fields:
 ### Property Type Conditions for Rent:
 
 #### Residential Building Types:
+
 - self-con
 - mini-flat
 - 1-bedroom-flat
@@ -263,18 +264,21 @@ All preference payloads share these common fields:
 - bungalow
 
 #### Commercial Building Types:
+
 - warehouse
 - office-space
 - shop
 - plaza
 
 #### Property Conditions:
+
 - **Residential**: new, good-condition, renovation
 - **Commercial**: new, good-condition, renovation
 
 #### Lease Terms:
+
 - 6 Months
-- 1 Year  
+- 1 Year
 - 2 Years
 - 3 Years
 
@@ -287,7 +291,7 @@ All preference payloads share these common fields:
 ```json
 {
   "preferenceType": "joint-venture",
-  "preferenceMode": "developer", 
+  "preferenceMode": "developer",
   "location": {
     "state": "Lagos",
     "localGovernmentAreas": ["Lekki", "Ajah"],
@@ -314,7 +318,7 @@ All preference payloads share these common fields:
     "budgetRange": "50000000",
     "documentTypes": [
       "deed-of-assignment",
-      "survey-plan", 
+      "survey-plan",
       "governors-consent",
       "certificate-of-occupancy",
       "building-approval"
@@ -367,6 +371,7 @@ All preference payloads share these common fields:
 ### Joint Venture Specific Conditions:
 
 #### JV Types:
+
 - Equity Split
 - Lease-to-Build
 - Development Partner
@@ -374,11 +379,13 @@ All preference payloads share these common fields:
 - Revenue Share
 
 #### Property Types:
+
 - land
 - old-building
 - structure-to-demolish
 
 #### Expected Structure Types:
+
 - mini-flats
 - luxury-duplexes
 - commercial-complex
@@ -389,6 +396,7 @@ All preference payloads share these common fields:
 - hotel-resort
 
 #### Timelines:
+
 - Ready Now
 - In 3 Months
 - Within 6 Months
@@ -397,6 +405,7 @@ All preference payloads share these common fields:
 - 2+ Years
 
 #### Property Conditions:
+
 - new
 - renovated
 - uncompleted
@@ -493,6 +502,7 @@ All preference payloads share these common fields:
 ### Shortlet Specific Conditions:
 
 #### Building Types:
+
 - studio
 - 1-bedroom-apartment
 - 2-bedroom-flat
@@ -503,6 +513,7 @@ All preference payloads share these common fields:
 - serviced-apartment
 
 #### Travel Types:
+
 - business
 - leisure
 - vacation
@@ -512,16 +523,19 @@ All preference payloads share these common fields:
 - relocation
 
 #### Property Conditions:
+
 - new
 - good-condition
 - luxury
 
 #### Cancellation Policies:
+
 - flexible
 - moderate
 - strict
 
 #### Check-in/Check-out Times:
+
 - 08:00 to 22:00 (in 1-hour increments)
 
 ---
@@ -529,6 +543,7 @@ All preference payloads share these common fields:
 ## Common Features Available Across All Preference Types
 
 ### Base Features:
+
 - parking-space
 - security
 - water-supply
@@ -543,6 +558,7 @@ All preference payloads share these common fields:
 - 24-7-electricity (for shortlet)
 
 ### Premium Features:
+
 - swimming-pool
 - gym
 - garden
@@ -563,6 +579,7 @@ All preference payloads share these common fields:
 ### Document Types by Preference:
 
 #### Buy/Joint Venture:
+
 - deed-of-assignment
 - deed-of-ownership
 - deed-of-conveyance
@@ -576,11 +593,13 @@ All preference payloads share these common fields:
 - excision
 
 #### Rent:
+
 - tenancy-agreement
 - receipt-of-payment
 - landlord-consent
 
 #### Shortlet:
+
 - Not applicable (no documents required)
 
 ---
@@ -588,6 +607,7 @@ All preference payloads share these common fields:
 ## API Response Format
 
 ### Success Response:
+
 ```json
 {
   "success": true,
@@ -601,6 +621,7 @@ All preference payloads share these common fields:
 ```
 
 ### Error Response:
+
 ```json
 {
   "success": false,
@@ -621,6 +642,7 @@ All preference payloads share these common fields:
 ### Required Fields by Preference Type:
 
 #### All Types:
+
 - preferenceType
 - preferenceMode
 - location.state
@@ -632,15 +654,18 @@ All preference payloads share these common fields:
 - contactInfo.phoneNumber
 
 #### Buy Specific:
+
 - propertyDetails.propertyType
 - propertyDetails.purpose
 
 #### Rent Specific:
+
 - propertyDetails.propertyType
 - propertyDetails.leaseTerm
 - propertyDetails.purpose
 
 #### Joint Venture Specific:
+
 - developmentDetails.minLandSize
 - developmentDetails.jvType
 - developmentDetails.propertyType
@@ -650,6 +675,7 @@ All preference payloads share these common fields:
 - contactInfo.contactPerson
 
 #### Shortlet Specific:
+
 - bookingDetails.propertyType
 - bookingDetails.numberOfGuests
 - bookingDetails.checkInDate
@@ -657,6 +683,7 @@ All preference payloads share these common fields:
 - bookingDetails.travelType
 
 ### Conditional Requirements:
+
 - If `propertyType` is not "land", then `buildingType` is required
 - If `propertyType` is "land", then `landSize` and `measurementUnit` are required
 - For shortlet: if `willingToPayExtra` is true, then budget fields for extra services are required
