@@ -58,19 +58,14 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     newLoiFile?: File,
     changeRequest?: string,
   ) => {
-    if (action === "reject") {
-      // End the flow for rejection - don't set negotiation action for reject
-      return;
-    }
-
     setNegotiationAction({
-      type: action as "accept" | "requestChanges",
+      type: action === "reject" ? "requestChanges" : action as "accept" | "requestChanges",
       loiFile: newLoiFile,
       changeRequest,
     });
 
-    // For requestChanges, proceed directly to inspection step
-    if (action === "requestChanges") {
+    // For reject or requestChanges, proceed directly to inspection step
+    if (action === "reject" || action === "requestChanges") {
       setCurrentStep("inspection");
     } else {
       // Move to price negotiation if available, otherwise inspection
