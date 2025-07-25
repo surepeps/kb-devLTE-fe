@@ -178,12 +178,12 @@ const MODE_CONFIG = {
   in_person: {
     label: "In Person",
     icon: Users,
-    color: "text-blue-600",
+    color: "text-[#09391C]",
   },
   virtual: {
     label: "Virtual",
     icon: Video,
-    color: "text-purple-600",
+    color: "text-[#8DDB90]",
   },
 };
 
