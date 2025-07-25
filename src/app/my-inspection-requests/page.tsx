@@ -868,7 +868,7 @@ export default function MyInspectionRequestsPage() {
           {totalPages > 1 && (
             <div className="bg-white border border-gray-100 rounded-xl p-6 mt-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-slate-700">
+                <div className="text-sm text-gray-700">
                   Showing {(currentPage - 1) * 10 + 1} to{" "}
                   {Math.min(currentPage * 10, totalCount)} of {totalCount} results
                 </div>
