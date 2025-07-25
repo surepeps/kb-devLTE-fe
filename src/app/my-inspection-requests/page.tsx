@@ -678,7 +678,7 @@ export default function MyInspectionRequestsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-300 transition-all duration-300 group ${
+                    className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${
                       viewMode === "list" ? "flex" : ""
                     }`}
                   >
