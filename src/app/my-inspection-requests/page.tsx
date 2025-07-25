@@ -718,7 +718,7 @@ export default function MyInspectionRequestsPage() {
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-xl font-semibold text-slate-800 mb-1 truncate">
+                          <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">
                             {inspection.property?.title || "Property Unavailable"}
                           </h3>
                           <div className="flex items-center gap-2 text-sm text-slate-600">
