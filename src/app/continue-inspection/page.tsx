@@ -40,6 +40,7 @@ const ContinueInspectionPage = () => {
   const [inspectionDetails, setInspectionDetails] = useState<{
     date: string;
     time: string;
+    inspectionMode: "in_person" | "virtual" | "developer_visit";
     buyerInfo: {
       fullName: string;
       email: string;
@@ -48,6 +49,7 @@ const ContinueInspectionPage = () => {
   }>({
     date: "",
     time: "",
+    inspectionMode: "in_person",
     buyerInfo: {
       fullName: "",
       email: "",
