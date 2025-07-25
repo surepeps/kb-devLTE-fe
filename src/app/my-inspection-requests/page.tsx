@@ -405,24 +405,21 @@ export default function MyInspectionRequestsPage() {
 
           {/* Stats Dashboard */}
           {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-indigo-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
-                    <Building size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Building size={24} className="text-blue-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.totalInspections}</p>
-                    <p className="text-sm text-slate-500">Total</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total</p>
+                    <p className="text-2xl font-bold text-[#09391C]">{stats.totalInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full w-full"></div>
                 </div>
               </motion.div>
 
