@@ -1,7 +1,7 @@
 /** @format */
 
 export const URLS = {
-  BASE: "/api/proxy",
+  BASE: `${process.env.NEXT_PUBLIC_API_URL}`,
   agent: "/agent",
   user: "/user",
   userProfile: "/account/profile",

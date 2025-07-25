@@ -62,7 +62,6 @@ const Login: FC = () => {
   const handleAuthSuccess = useCallback((response: any) => {  
     const userPayload = response.data.user;
 
-    sessionStorage.setItem("user", JSON.stringify(userPayload));
     Cookies.set("token", response.data.token);
     setUser(userPayload);
 
@@ -83,7 +82,7 @@ const Login: FC = () => {
       setOverlayVisible(false);
     }, 1500);
   }, [router, setUser]);
-
+ 
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -96,10 +95,7 @@ const Login: FC = () => {
         const url = URLS.BASE + URLS.authLogin;
 
         const response = await toast.promise(
-          (async () => {
-            const res = await POST_REQUEST(url, values);
-            return res;
-          })(),
+          POST_REQUEST(url, values),
           {
             loading: "Logging in...",
             success: "Login successful!",
