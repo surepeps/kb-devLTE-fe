@@ -384,19 +384,19 @@ export default function MyInspectionRequestsPage() {
                 <button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-200 disabled:opacity-50 hover:border-slate-300"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   <RefreshIcon
-                    size={18}
+                    size={16}
                     className={isRefreshing ? "animate-spin" : ""}
                   />
                   {isRefreshing ? "Refreshing..." : "Refresh"}
                 </button>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
                 >
-                  <FilterIcon size={18} />
+                  <FilterIcon size={16} />
                   {showFilters ? "Hide Filters" : "Show Filters"}
                 </button>
               </div>
