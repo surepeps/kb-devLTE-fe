@@ -601,23 +601,23 @@ export default function MyInspectionRequestsPage() {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
+                    className={`p-2 rounded-lg transition-colors ${
                       viewMode === "grid"
-                        ? "bg-white text-indigo-600"
-                        : "text-slate-500 hover:text-slate-700"
+                        ? "bg-white text-[#8DDB90]"
+                        : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
                     <GridIcon size={18} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
+                    className={`p-2 rounded-lg transition-colors ${
                       viewMode === "list"
-                        ? "bg-white text-indigo-600"
-                        : "text-slate-500 hover:text-slate-700"
+                        ? "bg-white text-[#8DDB90]"
+                        : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
                     <ListIcon size={18} />
