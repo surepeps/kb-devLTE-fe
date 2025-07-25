@@ -584,7 +584,7 @@ export default function MyInspectionRequestsPage() {
           </AnimatePresence>
 
           {/* Search and View Controls */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-8">
+          <div className="bg-white rounded-xl p-6 mb-6 border border-gray-100">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
                 <SearchIcon
