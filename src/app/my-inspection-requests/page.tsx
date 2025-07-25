@@ -84,17 +84,6 @@ interface InspectionData {
   updatedAt: string;
 }
 
-interface ApiResponse {
-  success: boolean;
-  data: InspectionData[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
-
 interface StatsResponse {
   success: boolean;
   data: {
@@ -311,11 +300,6 @@ export default function MyInspectionRequestsPage() {
     return true;
   });
 
-  // Handle view details
-  const handleViewDetails = useCallback((inspection: InspectionData) => {
-    setSelectedInspection(inspection);
-    setShowDetailModal(true);
-  }, []);
 
   // Get status config
   const getStatusConfig = (status: string) => {
@@ -823,15 +807,7 @@ export default function MyInspectionRequestsPage() {
 
                       {/* Actions */}
                       <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
-                        <button
-                          onClick={() => handleViewDetails(inspection)}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors text-sm font-medium"
-                        >
-                          <EyeIcon size={16} />
-                          View Details
-                        </button>
-
-                        {inspection.status === "new" && (
+                        {inspection.pendingResponseFrom === "seller" && (
                           <button
                             onClick={() =>
                               router.push(
@@ -926,187 +902,7 @@ export default function MyInspectionRequestsPage() {
           )}
         </div>
 
-        {/* Detail Modal */}
-        <AnimatePresence>
-          {showDetailModal && selectedInspection && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-            >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-              >
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold text-[#09391C]">
-                      Inspection Request Details
-                    </h2>
-                    <button
-                      onClick={() => setShowDetailModal(false)}
-                      className="text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <XIcon size={24} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-6">
-                  {/* Property Information */}
-                  {selectedInspection.property && (
-                    <div>
-                      <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
-                        Property Information
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                        <div>
-                          <span className="font-medium text-gray-600">Title:</span>
-                          <p className="mt-1">{selectedInspection.property.title}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600">Price:</span>
-                          <p className="mt-1 font-medium text-[#8DDB90]">
-                            ₦{selectedInspection.property.price.toLocaleString()}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600">Status:</span>
-                          <p className="mt-1 capitalize">{selectedInspection.property.status}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600">Type:</span>
-                          <p className="mt-1">{selectedInspection.property.briefType}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Inspection Details */}
-                  <div>
-                    <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
-                      Inspection Details
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                      <div>
-                        <span className="font-medium text-slate-600">Date:</span>
-                        <p className="mt-1">
-                          {new Date(selectedInspection.inspectionDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-600">Time:</span>
-                        <p className="mt-1">{selectedInspection.inspectionTime}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-600">Mode:</span>
-                        <p className="mt-1 capitalize">{selectedInspection.inspectionMode}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-600">Type:</span>
-                        <p className="mt-1">{selectedInspection.inspectionType}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-600">Status:</span>
-                        <p className="mt-1 capitalize">{selectedInspection.status}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-600">Stage:</span>
-                        <p className="mt-1 capitalize">{selectedInspection.stage}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Negotiation Information */}
-                  {selectedInspection.isNegotiating && (
-                    <div>
-                      <h3 className="font-semibold text-slate-800 mb-3 text-lg">
-                        Negotiation Details
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-blue-50 border border-blue-200 p-4 rounded-xl">
-                        {selectedInspection.negotiationPrice > 0 && (
-                          <div>
-                            <span className="font-medium text-blue-700">Offered Price:</span>
-                            <p className="mt-1 font-medium text-blue-900">
-                              ₦{selectedInspection.negotiationPrice.toLocaleString()}
-                            </p>
-                          </div>
-                        )}
-                        <div>
-                          <span className="font-medium text-blue-700">Counter Count:</span>
-                          <p className="mt-1">{selectedInspection.counterCount}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-blue-700">Pending Response From:</span>
-                          <p className="mt-1 capitalize">{selectedInspection.pendingResponseFrom}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Reason/Notes */}
-                  {selectedInspection.reason && (
-                    <div>
-                      <h3 className="font-semibold text-slate-800 mb-3 text-lg">
-                        Reason/Notes
-                      </h3>
-                      <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                        <p className="text-sm text-slate-700">{selectedInspection.reason}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Timeline */}
-                  <div>
-                    <h3 className="font-semibold text-slate-800 mb-3 text-lg">Timeline</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-slate-50 border border-slate-200 p-4 rounded-xl">
-                      <div>
-                        <span className="font-medium text-slate-600">Created:</span>
-                        <p className="mt-1">
-                          {new Date(selectedInspection.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-slate-600">Last Updated:</span>
-                        <p className="mt-1">
-                          {new Date(selectedInspection.updatedAt).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Modal Actions */}
-                <div className="p-6 border-t border-gray-200 bg-gray-50">
-                  <div className="flex justify-end gap-3">
-                    <button
-                      onClick={() => setShowDetailModal(false)}
-                      className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Close
-                    </button>
-                    {selectedInspection.status === "new" && (
-                      <button
-                        onClick={() => {
-                          setShowDetailModal(false);
-                          router.push(
-                            `/secure-seller-response/${selectedInspection.owner}/${selectedInspection.id}`
-                          );
-                        }}
-                        className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
-                      >
-                        Respond to Request
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+ 
       </div>
     </AuthGuard>
   );
