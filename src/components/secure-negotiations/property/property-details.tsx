@@ -39,6 +39,19 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
     });
   };
 
+  const getInspectionModeDisplay = (mode?: string) => {
+    switch (mode) {
+      case "in_person":
+        return { label: "In Person", icon: "🏠", description: "Physical inspection at property" };
+      case "virtual":
+        return { label: "Virtual", icon: "💻", description: "Online video inspection" };
+      case "developer_visit":
+        return { label: "Developer Visit", icon: "🏗️", description: "Visit developer's office" };
+      default:
+        return { label: "In Person", icon: "🏠", description: "Physical inspection at property" };
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
