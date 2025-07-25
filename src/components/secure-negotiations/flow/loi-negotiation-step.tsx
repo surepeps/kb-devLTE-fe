@@ -214,10 +214,20 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               ? "Please update your LOI based on the seller's feedback and resubmit."
               : "Your Letter of Intention is being reviewed by the seller."}
         </p>
-        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-          <p className="text-sm font-medium text-[#09391C]">
-            Inspection Type: LOI Negotiation
-          </p>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+            <p className="text-sm font-medium text-[#09391C]">
+              Inspection Type: LOI Negotiation
+            </p>
+          </div>
+          <div className="p-3 bg-[#FFF3E0] rounded-lg border border-[#FFB74D]">
+            <p className="text-sm font-medium text-[#E65100]">
+              Change Requests: {counterCount}/3 used
+            </p>
+            <p className="text-xs text-[#E65100] mt-1">
+              {getRemainingChanges()} requests remaining
+            </p>
+          </div>
         </div>
       </div>
 
