@@ -129,6 +129,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
       inspectionType: briefType == 'jv' ? 'LOI' : 'price',
       inspectionDate: inspectionDetails.date,
       inspectionTime: inspectionDetails.time,
+      inspectionMode: inspectionDetails.inspectionMode,
       requestedBy: inspectionDetails.buyerInfo,
       transaction: {
         fullName: transactionDetails.fullName,
