@@ -565,13 +565,13 @@ export default function MyInspectionRequestsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Sort By
                     </label>
                     <select
                       value={filters.sortBy}
                       onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                     >
                       <option value="newest">Newest First</option>
                       <option value="oldest">Oldest First</option>
