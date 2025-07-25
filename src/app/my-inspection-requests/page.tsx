@@ -461,22 +461,16 @@ export default function MyInspectionRequestsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-red-300 transition-all duration-300"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl">
-                    <XCircle size={24} className="text-white" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <XCircleIcon size={24} className="text-red-600" />
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-800">{stats.cancelledInspections}</p>
-                    <p className="text-sm text-slate-500">Cancelled</p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Cancelled</p>
+                    <p className="text-2xl font-bold text-red-600">{stats.cancelledInspections}</p>
                   </div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-red-500 to-rose-500 h-2 rounded-full"
-                    style={{ width: `${stats.totalInspections ? (stats.cancelledInspections / stats.totalInspections) * 100 : 0}%` }}
-                  ></div>
                 </div>
               </motion.div>
 
