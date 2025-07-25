@@ -165,7 +165,7 @@ export default function MyInspectionRequestsPage() {
       if (!showLoading) setIsRefreshing(true);
 
       try {
-        const url = `${URLS.BASE}/user/my-inspections/fetchAll?page=${page}&limit=10`;
+        const url = `${URLS.BASE}/account/my-inspections/fetchAll?page=${page}&limit=10`;
         const token = Cookies.get("token");
 
         if (!token) {

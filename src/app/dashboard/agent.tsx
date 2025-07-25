@@ -84,7 +84,7 @@ export default function AgentDashboard() {
       // Fetch agent briefs
       const briefsResponse = await GET_REQUEST(
         `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=100`,
-        Cookies.get("agentToken") || Cookies.get("token"),
+        Cookies.get("token"),
       );
 
       if (briefsResponse?.data) {
@@ -171,21 +171,21 @@ export default function AgentDashboard() {
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <Link
-              href="/agent/briefs"
+              href="/my-listings"
               className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <BriefcaseIcon size={20} />
               <span className="hidden sm:inline">View </span>Briefs
             </Link>
             <Link
-              href="/agent/inspection-requests"
+              href="/my-inspection-requests"
               className="bg-white hover:bg-gray-50 text-[#09391C] border border-[#8DDB90] px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <CalendarIcon size={20} />
-              <span className="hidden sm:inline">Inspection </span>Requests
+              <span className="hidden sm:inline">Inspection</span>Requests
             </Link>
             <Link
-              href="/agent_marketplace"
+              href="/agent-marketplace"
               className="bg-white hover:bg-gray-50 text-[#09391C] border border-gray-300 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <PlusIcon size={20} />
@@ -274,7 +274,7 @@ export default function AgentDashboard() {
                   Recent Briefs
                 </h2>
                 <Link
-                  href="/agent/briefs"
+                  href="/my-listings"
                   className="text-[#8DDB90] hover:text-[#7BC87F] font-medium"
                 >
                   View All
@@ -295,7 +295,7 @@ export default function AgentDashboard() {
                   Check the marketplace for new opportunities
                 </p>
                 <Link
-                  href="/agent_marketplace"
+                  href="/agent-marketplace"
                   className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
                 >
                   <PlusIcon size={16} />
@@ -374,7 +374,7 @@ export default function AgentDashboard() {
               </Link>
 
               <Link
-                href="/agent_marketplace"
+                href="/agent-marketplace"
                 className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-[#8DDB90] p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
                 <div className="p-2 bg-[#8DDB90] bg-opacity-10 rounded-lg">
@@ -389,7 +389,7 @@ export default function AgentDashboard() {
               </Link>
 
               <Link
-                href="/agent/inspection-requests"
+                href="/my-inspection-requests"
                 className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
                 <div className="p-2 bg-purple-500 bg-opacity-10 rounded-lg">
@@ -415,7 +415,7 @@ export default function AgentDashboard() {
               </Link>
 
               <Link
-                href="/agent/preferences"
+                href="/my-preferences"
                 className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
                 <div className="p-2 bg-green-500 bg-opacity-10 rounded-lg">

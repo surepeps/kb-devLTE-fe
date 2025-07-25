@@ -196,7 +196,7 @@ const BriefDetailPage = () => {
           } else {
             console.error("Buyer preference not found for ID:", briefId);
             toast.error("Buyer preference not found");
-            router.push("/agent_marketplace");
+            router.push("/agent-marketplace");
           }
         } else {
           console.error("Invalid API response structure:", data);
@@ -522,7 +522,7 @@ const BriefDetailPage = () => {
     router.back();
   };
   const redirectToMarketplace = () => {
-    router.push("/agent_marketplace");
+    router.push("/agent-marketplace");
   };
 
   const getFormTitle = () => {
@@ -558,7 +558,7 @@ const BriefDetailPage = () => {
             <button onClick={handleBackClick} className="hover:text-gray-900">
               <FontAwesomeIcon icon={faArrowLeft} className="w-5 h-5" />
             </button>
-            <Link href="/agent_marketplace" className="hover:text-gray-900">
+            <Link href="/agent-marketplace" className="hover:text-gray-900">
               Agent marketplace
             </Link>
             <span>•</span>
