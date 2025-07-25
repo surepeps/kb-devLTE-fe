@@ -68,16 +68,6 @@ interface InspectionData {
   letterOfIntention?: string | null;
   reason?: string;
   owner: string;
-  requestedBy: {
-    _id: string;
-    fullName: string;
-    email: string;
-  };
-  transaction: {
-    _id: string;
-    status: string;
-    amountPaid: number;
-  };
   pendingResponseFrom: "seller" | "buyer";
   stage: string;
   counterCount: number;
@@ -88,7 +78,7 @@ interface InspectionData {
 interface ApiResponse {
   success: boolean;
   data: InspectionData[];
-  meta: {
+  pagination: {
     total: number;
     page: number;
     limit: number;
@@ -157,7 +147,7 @@ export default function MyInspectionRequestsPage() {
     dateTo: "",
     priceRange: { min: "", max: "" },
   });
-
+ 
   // Fetch inspections from API
   const fetchInspections = useCallback(
     async (page = 1, showLoading = true) => {
@@ -210,10 +200,7 @@ export default function MyInspectionRequestsPage() {
       ).length,
       completedInspections: data.filter((item) => item.status === "completed")
         .length,
-      totalEarnings: data.reduce(
-        (sum, item) => sum + (item.transaction?.amountPaid || 0),
-        0,
-      ),
+      totalEarnings: 0,
       averageResponseTime: "2.3 hours", // This would come from backend calculation
     };
     setMetrics(metrics);
@@ -228,9 +215,6 @@ export default function MyInspectionRequestsPage() {
       filtered = filtered.filter(
         (inspection) =>
           inspection.propertyId.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          inspection.requestedBy.fullName
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
           inspection.propertyId.location.area
@@ -834,21 +818,6 @@ export default function MyInspectionRequestsPage() {
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-                            {/* Buyer Information */}
-                            <div>
-                              <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
-                                <UserIcon size={16} />
-                                Requested By
-                              </h4>
-                              <p className="text-sm text-[#5A5D63] mb-1 font-medium">
-                                {inspection.requestedBy.fullName}
-                              </p>
-                              <p className="text-xs text-gray-500 flex items-center gap-1">
-                                <MailIcon size={12} />
-                                {inspection.requestedBy.email}
-                              </p>
-                            </div>
-
                             {/* Inspection Schedule */}
                             <div>
                               <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
@@ -867,21 +836,6 @@ export default function MyInspectionRequestsPage() {
                               </p>
                             </div>
 
-                            {/* Transaction Info */}
-                            <div>
-                              <h4 className="text-sm font-medium text-[#09391C] mb-2 flex items-center gap-2">
-                                <DollarSignIcon size={16} />
-                                Transaction
-                              </h4>
-                              <p className="text-sm text-[#5A5D63] mb-1">
-                                ₦
-                                {inspection.transaction.amountPaid.toLocaleString()}{" "}
-                                paid
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Status: {inspection.transaction.status}
-                              </p>
-                            </div>
                           </div>
 
                           {/* Additional Details */}
@@ -932,7 +886,7 @@ export default function MyInspectionRequestsPage() {
                               <button
                                 onClick={() =>
                                   router.push(
-                                    `/secure-seller-response/${inspection.requestedBy._id}/${inspection._id}`,
+                                    `/secure-seller-response/${inspection.owner}/${inspection._id}`,
                                   )
                                 }
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
@@ -1139,27 +1093,6 @@ export default function MyInspectionRequestsPage() {
                   </div>
                 </div>
 
-                {/* Buyer Information */}
-                <div>
-                  <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
-                    Buyer Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
-                    <div>
-                      <span className="font-medium text-gray-600">Name:</span>
-                      <p className="mt-1">
-                        {selectedInspection.requestedBy.fullName}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">Email:</span>
-                      <p className="mt-1">
-                        {selectedInspection.requestedBy.email}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Negotiation Information */}
                 {selectedInspection.isNegotiating && (
                   <div>
@@ -1198,32 +1131,7 @@ export default function MyInspectionRequestsPage() {
                   </div>
                 )}
 
-                {/* Transaction Information */}
-                <div>
-                  <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
-                    Transaction Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
-                    <div>
-                      <span className="font-medium text-gray-600">
-                        Amount Paid:
-                      </span>
-                      <p className="mt-1 font-medium text-emerald-600">
-                        ₦
-                        {selectedInspection.transaction.amountPaid.toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">
-                        Transaction Status:
-                      </span>
-                      <p className="mt-1 capitalize">
-                        {selectedInspection.transaction.status}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
+                
                 {/* Reason/Notes */}
                 {selectedInspection.reason && (
                   <div>
@@ -1282,7 +1190,7 @@ export default function MyInspectionRequestsPage() {
                       onClick={() => {
                         setShowDetailModal(false);
                         router.push(
-                          `/secure-seller-response/${selectedInspection.requestedBy._id}/${selectedInspection._id}`,
+                          `/secure-seller-response/${selectedInspection.owner}/${selectedInspection._id}`,
                         );
                       }}
                       className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
