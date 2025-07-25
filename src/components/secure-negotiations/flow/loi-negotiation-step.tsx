@@ -312,8 +312,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
             {/* Request Changes Button */}
             <button
               onClick={() => setShowRequestChangesModal(true)}
-              disabled={loadingStates.submitting}
-              className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors duration-200"
+              disabled={loadingStates.submitting || !canRequestChanges()}
+              className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               <FiEdit3 className="w-5 h-5" />
               <span>Request Changes</span>
