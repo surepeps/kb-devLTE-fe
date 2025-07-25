@@ -503,13 +503,13 @@ export default function MyInspectionRequestsPage() {
                 className="bg-white rounded-xl p-6 mb-6 border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-[#09391C] flex items-center gap-2">
                     <FilterIcon size={20} />
                     Advanced Filters
                   </h3>
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+                    className="text-sm text-[#5A5D63] hover:text-[#09391C] transition-colors"
                   >
                     Clear All
                   </button>
