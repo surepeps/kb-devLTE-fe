@@ -137,11 +137,15 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
     // Remove local debouncing - now handled by context
 
     // Enhanced local state for LGA-area mapping
-    const [selectedState, setSelectedState] = useState<Option | null>(null);
-    const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
-    const [lgasWithAreas, setLgasWithAreas] = useState<LGAAreaMapping[]>([]);
-    const [customLocation, setCustomLocation] = useState("");
-    const [showCustomLocation, setShowCustomLocation] = useState(false);
+  const [selectedState, setSelectedState] = useState<Option | null>(null);
+  const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);
+  const [lgasWithAreas, setLgasWithAreas] = useState<LGAAreaMapping[]>([]);
+  const [customLocation, setCustomLocation] = useState("");
+  const [showCustomLocation, setShowCustomLocation] = useState(false);
+
+  // Refs for stable rendering
+  const lgaOrderRef = useRef<string[]>([]);
+  const stableSelectStylesRef = useRef(customSelectStyles);
 
     // Memoized options to prevent recreation
     const stateOptions = useMemo(
@@ -173,16 +177,37 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
       [selectedState?.value],
     );
 
-    // Get already selected areas for an LGA
-    const getSelectedAreasForLGA = useCallback(
-      (lgaName: string) => {
-        const lgaData = lgasWithAreas.find((item) => item.lgaName === lgaName);
-        return lgaData
-          ? lgaData.areas.map((area) => ({ value: area, label: area }))
-          : [];
-      },
-      [lgasWithAreas],
-    );
+    // Get already selected areas for an LGA - memoized with stable key
+  const getSelectedAreasForLGA = useCallback(
+    (lgaName: string) => {
+      const lgaData = lgasWithAreas.find((item) => item.lgaName === lgaName);
+      return lgaData
+        ? lgaData.areas.map((area, index) => ({
+            value: area,
+            label: area,
+            __isNew__: false // Stable indicator for react-select
+          }))
+        : [];
+    },
+    [lgasWithAreas],
+  );
+
+  // Stable LGA order to prevent re-ordering during renders
+  const stableLGAOrder = useMemo(() => {
+    const currentLGAs = selectedLGAs.map(lga => lga.value);
+    const existingOrder = lgaOrderRef.current;
+
+    // Maintain existing order and append new ones
+    const newOrder = existingOrder.filter(lga => currentLGAs.includes(lga));
+    currentLGAs.forEach(lga => {
+      if (!newOrder.includes(lga)) {
+        newOrder.push(lga);
+      }
+    });
+
+    lgaOrderRef.current = newOrder;
+    return newOrder;
+  }, [selectedLGAs]);
 
     // Initialize local state from context and reset when context resets
     useEffect(() => {
@@ -289,51 +314,64 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
     }, []);
 
     const handleLGAChange = useCallback(
-      (newValue: MultiValue<Option>) => {
-        const lgaArray = Array.from(newValue);
+    (newValue: MultiValue<Option>) => {
+      const lgaArray = Array.from(newValue);
 
-        // Limit to 3 LGAs maximum
-        if (lgaArray.length > 3) {
-          toast.error("Maximum 3 LGAs can be selected");
-          return;
-        }
+      // Limit to 3 LGAs maximum
+      if (lgaArray.length > 3) {
+        toast.error("Maximum 3 LGAs can be selected");
+        return;
+      }
 
-        setSelectedLGAs(lgaArray);
+      setSelectedLGAs(lgaArray);
 
-        // Update LGA-area mapping, preserving existing areas for unchanged LGAs
-        const newLgasWithAreas: LGAAreaMapping[] = lgaArray.map((lga) => {
-          const existingMapping = lgasWithAreas.find(
-            (item) => item.lgaName === lga.value,
-          );
-          return existingMapping || { lgaName: lga.value, areas: [] };
-        });
-
-        setLgasWithAreas(newLgasWithAreas);
-      },
-      [lgasWithAreas],
-    );
-
-    // Handle area selection for a specific LGA
-    const handleAreaChangeForLGA = useCallback(
-      (lgaName: string, newAreas: MultiValue<Option>) => {
-        const areaArray = Array.from(newAreas);
-
-        // Limit to 3 areas per LGA
-        if (areaArray.length > 3) {
-          toast.error(`Maximum 3 areas can be selected per LGA`);
-          return;
-        }
-
-        setLgasWithAreas((prev) =>
-          prev.map((item) =>
-            item.lgaName === lgaName
-              ? { ...item, areas: areaArray.map((area) => area.value) }
-              : item,
-          ),
+      // Update LGA-area mapping, preserving existing areas for unchanged LGAs
+      const newLgasWithAreas: LGAAreaMapping[] = lgaArray.map((lga) => {
+        const existingMapping = lgasWithAreas.find(
+          (item) => item.lgaName === lga.value,
         );
-      },
-      [],
-    );
+        return existingMapping || { lgaName: lga.value, areas: [] };
+      });
+
+      setLgasWithAreas(newLgasWithAreas);
+
+      // Update stable order
+      const newOrder = lgaArray.map(lga => lga.value);
+      lgaOrderRef.current = newOrder;
+    },
+    [lgasWithAreas],
+  );
+
+    // Handle area selection for a specific LGA - memoized to prevent re-renders
+  const handleAreaChangeForLGA = useCallback(
+    (lgaName: string, newAreas: MultiValue<Option>) => {
+      const areaArray = Array.from(newAreas);
+
+      // Limit to 3 areas per LGA
+      if (areaArray.length > 3) {
+        toast.error(`Maximum 3 areas can be selected per LGA`);
+        return;
+      }
+
+      setLgasWithAreas((prev) => {
+        const newState = prev.map((item) =>
+          item.lgaName === lgaName
+            ? { ...item, areas: areaArray.map((area) => area.value) }
+            : item,
+        );
+        return newState;
+      });
+    },
+    [],
+  );
+
+  // Memoized area change handler factory to prevent re-creation
+  const createAreaChangeHandler = useCallback(
+    (lgaName: string) => {
+      return (newAreas: MultiValue<Option>) => handleAreaChangeForLGA(lgaName, newAreas);
+    },
+    [handleAreaChangeForLGA],
+  );
 
     const handleCustomLocationChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -450,30 +488,23 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
 
               {/* Stable area selection layout */}
               <div className="space-y-4">
-                {selectedLGAs
-                  .sort((a, b) => {
-                    const aHasAreas =
-                      getSelectedAreasForLGA(a.value).length > 0;
-                    const bHasAreas =
-                      getSelectedAreasForLGA(b.value).length > 0;
-                    if (aHasAreas && !bHasAreas) return -1;
-                    if (!aHasAreas && bHasAreas) return 1;
-                    return a.label.localeCompare(b.label);
-                  })
-                  .map((lga, index) => {
-                    const selectedAreasForLGA = getSelectedAreasForLGA(
-                      lga.value,
-                    );
-                    const availableAreasForLGA = getAreasForLGA(lga.value);
+                {stableLGAOrder
+                  .filter(lgaValue => selectedLGAs.some(lga => lga.value === lgaValue))
+                  .map((lgaValue, index) => {
+                    const lga = selectedLGAs.find(l => l.value === lgaValue)!;
+                    const selectedAreasForLGA = getSelectedAreasForLGA(lgaValue);
+                    const availableAreasForLGA = getAreasForLGA(lgaValue);
                     const isAtLimit = selectedAreasForLGA.length >= 3;
+                    const areaChangeHandler = createAreaChangeHandler(lgaValue);
 
                     return (
                       <motion.div
-                        key={lga.value}
+                        key={`lga-${lgaValue}`} // Stable key
                         className="space-y-2"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.1 }}
+                        layout // Smooth layout changes
                       >
                         <label className="block text-sm font-medium text-gray-700">
                           {lga.label}
@@ -483,13 +514,12 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                         </label>
 
                         <CreatableSelect
+                          key={`areas-${lgaValue}-${selectedAreasForLGA.length}`} // Force re-render when areas count changes
                           isMulti
                           value={selectedAreasForLGA}
-                          onChange={(newAreas) =>
-                            handleAreaChangeForLGA(lga.value, newAreas)
-                          }
+                          onChange={areaChangeHandler}
                           options={availableAreasForLGA}
-                          styles={customSelectStyles}
+                          styles={stableSelectStylesRef.current}
                           placeholder={`Areas in ${lga.label}...`}
                           isSearchable={true}
                           isClearable={false}
@@ -505,6 +535,11 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                           }
                           menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
                           menuPosition="fixed"
+                          instanceId={`area-select-${lgaValue}`} // Unique instance ID
+                          maxMenuHeight={200}
+                          closeMenuOnSelect={false}
+                          hideSelectedOptions={false}
+                          blurInputOnSelect={false}
                         />
 
                         {isAtLimit && (
@@ -517,34 +552,12 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                   })}
               </div>
 
-              {/* Quick stats summary */}
+              {/* Quick stats summary - memoized to prevent re-renders */}
               {selectedLGAs.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg"
-                >
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span className="text-blue-700">
-                      <strong>{selectedLGAs.length}</strong> LGA
-                      {selectedLGAs.length !== 1 ? "s" : ""} selected
-                    </span>
-                    <span className="text-blue-600">
-                      <strong>
-                        {lgasWithAreas.reduce(
-                          (total, item) => total + item.areas.length,
-                          0,
-                        )}
-                      </strong>{" "}
-                      areas total
-                    </span>
-                  </div>
-                  <div className="text-xs text-blue-600">
-                    {selectedLGAs.length < 3 &&
-                      "Add more LGAs for broader search"}
-                    {selectedLGAs.length === 3 && "Maximum LGAs reached"}
-                  </div>
-                </motion.div>
+                <MemoizedStatsSummary
+                  lgaCount={selectedLGAs.length}
+                  totalAreas={lgasWithAreas.reduce((total, item) => total + item.areas.length, 0)}
+                />
               )}
             </motion.div>
           )}
@@ -697,5 +710,30 @@ const LGAAreaField = memo(
 );
 
 LGAAreaField.displayName = "LGAAreaField";
+
+// Memoized stats summary to prevent unnecessary re-renders
+const MemoizedStatsSummary = memo(({ lgaCount, totalAreas }: { lgaCount: number; totalAreas: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg"
+    layout
+  >
+    <div className="flex items-center space-x-4 text-sm">
+      <span className="text-blue-700">
+        <strong>{lgaCount}</strong> LGA{lgaCount !== 1 ? "s" : ""} selected
+      </span>
+      <span className="text-blue-600">
+        <strong>{totalAreas}</strong> areas total
+      </span>
+    </div>
+    <div className="text-xs text-blue-600">
+      {lgaCount < 3 && "Add more LGAs for broader search"}
+      {lgaCount === 3 && "Maximum LGAs reached"}
+    </div>
+  </motion.div>
+));
+
+MemoizedStatsSummary.displayName = "MemoizedStatsSummary";
 
 export default OptimizedLocationSelection;
