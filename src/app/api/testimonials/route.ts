@@ -1,46 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mock testimonials data as fallback
+// Comprehensive testimonials data as fallback
 const mockTestimonials = [
   {
     _id: '1',
     fullName: 'Sarah Johnson',
     occupation: 'Real Estate Investor',
     rating: 5,
-    message: 'KhabiTeq made finding my dream property so easy. The platform is intuitive and the agent support was exceptional.',
+    message: 'KhabiTeq revolutionized my property investment journey. The platform\'s advanced search filters and detailed property information helped me make informed decisions quickly.',
     status: 'approved',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+    updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     _id: '2',
     fullName: 'Michael Chen',
     occupation: 'Business Owner',
     rating: 5,
-    message: 'Excellent service! The property marketplace has great listings and the negotiation process was smooth.',
+    message: 'Outstanding service! The property marketplace has exceptional listings and the negotiation process was seamless. Found my office space in just two weeks.',
     status: 'approved',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(), // 45 days ago
+    updatedAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     _id: '3',
     fullName: 'Aisha Abiola',
     occupation: 'Software Engineer',
-    rating: 4,
-    message: 'Found my apartment quickly through KhabiTeq. The inspection booking feature saved me so much time.',
+    rating: 5,
+    message: 'The inspection booking system is brilliant! Saved me countless hours of coordination. The agent marketplace connected me with a professional who understood exactly what I needed.',
     status: 'approved',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days ago
+    updatedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     _id: '4',
     fullName: 'David Thompson',
     occupation: 'Entrepreneur',
     rating: 5,
-    message: 'The agent marketplace connected me with a fantastic real estate professional. Highly recommend!',
+    message: 'KhabiTeq\'s agent marketplace is a game-changer. Connected with a top-tier real estate professional who helped me navigate the complex Lagos property market with ease.',
     status: 'approved',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days ago
+    updatedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    _id: '5',
+    fullName: 'Folake Adebayo',
+    occupation: 'Marketing Director',
+    rating: 4,
+    message: 'Excellent platform for property search. The detailed filters and virtual tour options made remote house hunting possible. Customer support was very responsive.',
+    status: 'approved',
+    createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), // 20 days ago
+    updatedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    _id: '6',
+    fullName: 'Emmanuel Okoro',
+    occupation: 'IT Consultant',
+    rating: 5,
+    message: 'The user experience is top-notch. From property discovery to final negotiations, everything flows smoothly. The mobile app makes property hunting convenient.',
+    status: 'approved',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
+    updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
