@@ -85,6 +85,7 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
       type: action === "reject" ? "requestChanges" : action,
       counterPrice,
     });
+    // Always proceed to inspection section regardless of action
     setCurrentStep("inspection");
   };
 
