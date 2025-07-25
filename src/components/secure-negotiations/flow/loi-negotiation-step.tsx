@@ -99,6 +99,11 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   };
 
   const handleRequestChanges = async () => {
+    if (!canRequestChanges()) {
+      alert("You have reached the maximum number of LOI change requests (3)");
+      return;
+    }
+
     if (!changeRequest.trim()) {
       alert("Please enter your feedback for the changes");
       return;
