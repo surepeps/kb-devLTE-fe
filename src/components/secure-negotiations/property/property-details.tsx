@@ -146,7 +146,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               </h4>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
                 <div className="text-xs text-gray-600 mb-1">Date</div>
                 <div className="font-medium text-gray-800 text-sm">
@@ -158,6 +158,17 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 <div className="text-xs text-gray-600 mb-1">Time</div>
                 <div className="font-medium text-gray-800 text-sm">
                   {inspectionTime}
+                </div>
+              </div>
+
+              <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
+                <div className="text-xs text-gray-600 mb-1">Mode</div>
+                <div className="font-medium text-gray-800 text-sm flex items-center space-x-2">
+                  <span>{getInspectionModeDisplay(inspectionMode).icon}</span>
+                  <span>{getInspectionModeDisplay(inspectionMode).label}</span>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {getInspectionModeDisplay(inspectionMode).description}
                 </div>
               </div>
             </div>
