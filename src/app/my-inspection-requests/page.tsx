@@ -356,7 +356,7 @@ export default function MyInspectionRequestsPage() {
 
   return (
     <AuthGuard requireAuth allowedUserTypes={["Landowners", "Agent"]}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-[#EEF1F1]">
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-8">
           {/* Header */}
           <div className="mb-8">
