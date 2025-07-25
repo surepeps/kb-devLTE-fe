@@ -850,7 +850,7 @@ export default function MyInspectionRequestsPage() {
                             onClick={() =>
                               router.push(`/property/buy/${inspection.property!.id}`)
                             }
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 transition-all duration-200 text-sm font-medium"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
                           >
                             <HomeIcon size={16} />
                             View Property
