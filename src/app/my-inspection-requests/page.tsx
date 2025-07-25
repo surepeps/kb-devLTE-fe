@@ -987,10 +987,10 @@ export default function MyInspectionRequestsPage() {
 
                   {/* Inspection Details */}
                   <div>
-                    <h3 className="font-semibold text-slate-800 mb-3 text-lg">
+                    <h3 className="font-semibold text-[#09391C] mb-3 text-lg">
                       Inspection Details
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg">
                       <div>
                         <span className="font-medium text-slate-600">Date:</span>
                         <p className="mt-1">
