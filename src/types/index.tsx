@@ -2,7 +2,7 @@
 //import { useRouter } from 'next/router';
 
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
-import { PropertyProps } from "./property.types";
+import { Property } from "./property.types";
 import { UserAgentDataProps } from "./agent_data_props";
 
 interface Option {
@@ -136,9 +136,9 @@ export interface GlobalContextTypes {
   /**
    * Property selected for inspection from the property detailss page
    */
-  propertySelectedForInspection: PropertyProps | undefined;
+  propertySelectedForInspection: Property | undefined;
   setPropertySelectedForInspection: (
-    property: PropertyProps | undefined,
+    property: Property | undefined,
   ) => void;
 
   //add for inspection modal
