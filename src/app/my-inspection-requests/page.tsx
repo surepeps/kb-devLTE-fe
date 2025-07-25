@@ -721,7 +721,7 @@ export default function MyInspectionRequestsPage() {
                           <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">
                             {inspection.property?.title || "Property Unavailable"}
                           </h3>
-                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
                             <MapPinIcon size={14} />
                             <span>Inspection Request</span>
                           </div>
