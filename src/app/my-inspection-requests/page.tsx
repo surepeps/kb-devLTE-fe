@@ -161,16 +161,16 @@ const TYPE_CONFIG = {
   price: {
     label: "Price Negotiation",
     icon: DollarSignIcon,
-    color: "bg-gradient-to-r from-emerald-400 to-teal-500",
-    bgColor: "bg-emerald-50",
-    textColor: "text-emerald-700",
+    color: "bg-[#8DDB90]",
+    bgColor: "bg-green-100",
+    textColor: "text-green-800",
   },
   LOI: {
     label: "Letter of Intent",
     icon: FileText,
-    color: "bg-gradient-to-r from-purple-400 to-violet-500",
-    bgColor: "bg-purple-50",
-    textColor: "text-purple-700",
+    color: "bg-[#8DDB90]",
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-800",
   },
 };
 
