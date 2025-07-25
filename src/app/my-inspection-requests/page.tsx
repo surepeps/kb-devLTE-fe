@@ -866,7 +866,7 @@ export default function MyInspectionRequestsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 mt-8">
+            <div className="bg-white border border-gray-100 rounded-xl p-6 mt-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-slate-700">
                   Showing {(currentPage - 1) * 10 + 1} to{" "}
