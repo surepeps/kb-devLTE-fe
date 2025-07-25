@@ -38,6 +38,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     uploadFile,
   } = useSecureNegotiation();
   const { details, loadingStates, inspectionId, inspectionType } = state;
+  const counterCount = details?.counterCount || 0;
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
