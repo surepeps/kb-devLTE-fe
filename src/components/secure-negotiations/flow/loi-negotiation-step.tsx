@@ -88,14 +88,9 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   };
 
   const handleReject = async () => {
-    try {
-      const payload = createRejectPayload("LOI");
-      await submitNegotiationAction(inspectionId!, userType, payload);
-      setShowRejectModal(false);
-      onActionSelected("reject");
-    } catch (error) {
-      console.error("Failed to reject LOI:", error);
-    }
+    // Don't submit immediately, proceed to next step (inspection)
+    setShowRejectModal(false);
+    onActionSelected("reject");
   };
 
   const handleRequestChanges = async () => {
