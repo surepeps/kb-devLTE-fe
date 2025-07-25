@@ -775,14 +775,14 @@ export default function MyInspectionRequestsPage() {
                       {/* Inspection Details */}
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
                             <CalendarIcon size={14} />
                             <span>Date & Time</span>
                           </div>
-                          <p className="text-sm font-medium text-slate-800">
+                          <p className="text-sm font-medium text-[#09391C]">
                             {new Date(inspection.inspectionDate).toLocaleDateString()}
                           </p>
-                          <p className="text-sm text-slate-600">{inspection.inspectionTime}</p>
+                          <p className="text-sm text-[#5A5D63]">{inspection.inspectionTime}</p>
                         </div>
                         <div>
                           <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
