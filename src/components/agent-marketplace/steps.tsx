@@ -508,7 +508,7 @@ const Sell: React.FC<SellProps> = ({ briefId, onClose, buyerPreference }) => {
   const handleSuccessNo = () => {
     setShowSuccessModal(false);
     setTimeout(() => {
-      router.push("/agent_marketplace");
+      router.push("/agent-marketplace");
     }, 100);
   };
 

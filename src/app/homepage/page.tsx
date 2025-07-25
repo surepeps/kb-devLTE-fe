@@ -13,7 +13,7 @@ import { useLoading } from "@/hooks/useLoading";
 import HeroSection from "@/components/homepage/homepage_hero";
 import Section1 from "@/components/homepage/home_section1";
 import EmailVerification from "@/components/EmailVerification";
-import AgentMarket from "@/components/homepage/agent_marketplace";
+import AgentMarket from "@/components/homepage/agent-marketplace";
 import { useRouter, useSearchParams } from "next/navigation";
 import { URLS } from "@/utils/URLS";
 import { GET_REQUEST } from "@/utils/requests";

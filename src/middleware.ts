@@ -21,7 +21,7 @@ const publicRoutes = [
   "/auth/verification-sent",
   "/buy_page",
   "/rent_page",
-  "/agent_marketplace",
+  "/agent-marketplace",
   "/market-place",
   "/joint-ventures",
   "/joint_ventures",

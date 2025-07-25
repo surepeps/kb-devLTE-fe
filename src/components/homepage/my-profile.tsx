@@ -71,7 +71,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             icon: <LayoutDashboardIcon size={18} />,
             label: "Dashboard",
             action: () => {
-              router.push("/agent/dashboard");
+              router.push("/dashboard");
               closeUserProfileModal(false);
             },
           },
@@ -87,7 +87,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             icon: <Briefcase size={18} />,
             label: "Marketplace",
             action: () => {
-              router.push("/agent/agent-marketplace");
+              router.push("/agent-marketplace");
               closeUserProfileModal(false);
             },
           },
@@ -107,9 +107,9 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
       action: () => {
         if (userType === "Agent") {
           setSelectedNav(AgentNavData.SETTINGS);
-          router.push("/agent/settings");
+          router.push("/settings");
         } else {
-          router.push("/preference");
+          router.push("/my-preferences");
         }
         closeUserProfileModal(false);
       },

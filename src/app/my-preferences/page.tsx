@@ -1006,7 +1006,7 @@ export default function MyPreferencesPage() {
                                     </button>
                                     <button
                                       onClick={() => {
-                                        router.push(`/agent_marketplace?preference=${preference._id}`);
+                                        router.push(`/agent-marketplace?preference=${preference._id}`);
                                         setActiveDropdown(null);
                                       }}
                                       className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
@@ -1150,7 +1150,7 @@ export default function MyPreferencesPage() {
                             </button>
                             
                             <button
-                              onClick={() => router.push(`/agent_marketplace?preference=${preference._id}`)}
+                              onClick={() => router.push(`/agent-marketplace?preference=${preference._id}`)}
                               className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 text-sm font-medium"
                             >
                               <ExternalLinkIcon size={14} />

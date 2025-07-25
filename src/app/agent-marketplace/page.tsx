@@ -215,7 +215,7 @@ const AgentMarketplace = () => {
       {/* View More Button - Fixed Position */}
       <div className="bg-[#F7F7F9] py-4 text-center border-t border-gray-200">
         <button 
-          onClick={() => router.push(`/agent_marketplace/${property.id}`)}
+          onClick={() => router.push(`/agent-marketplace/${property.id}`)}
           className="text-black text-base font-medium underline hover:no-underline cursor-pointer"
         >
           View more
@@ -229,7 +229,7 @@ const AgentMarketplace = () => {
         </div> */}
         <div className="px-2">
           <button 
-            onClick={() => router.push(`/agent_marketplace/${property.id}`)}
+            onClick={() => router.push(`/agent-marketplace/${property.id}`)}
             className="bg-[#8DDB90] hover:bg-[#7BC97F] text-white py-3 text-base font-medium w-full rounded cursor-pointer"
           >
             Yes I have
