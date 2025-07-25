@@ -363,7 +363,7 @@ export default function MyInspectionRequestsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition-all duration-200 hover:translate-x-1"
+                className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors"
               >
                 <ArrowLeftIcon size={20} />
                 Back to Dashboard
