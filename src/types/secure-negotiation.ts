@@ -54,6 +54,7 @@ export interface InspectionDetails {
   propertyId: PropertyDetails;
   inspectionDate: string;
   inspectionTime: string;
+  inspectionMode?: "in_person" | "virtual" | "developer_visit";
   status: InspectionStatus;
   requestedBy: RequestedBy;
   transaction: string;
@@ -75,6 +76,7 @@ export interface InspectionDetails {
   propertyTitle?: string;
   propertyLocation?: string;
   agreementTerms?: string[];
+  counterCount?: number;
 }
 
 // API response structure

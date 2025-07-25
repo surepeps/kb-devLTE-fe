@@ -21,6 +21,7 @@ interface PaymentUploadProps {
   inspectionDetails: {
     date: string;
     time: string;
+    inspectionMode: "in_person" | "virtual" | "developer_visit";
     buyerInfo: {
       fullName: string;
       email: string;
@@ -128,6 +129,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
       inspectionType: briefType == 'jv' ? 'LOI' : 'price',
       inspectionDate: inspectionDetails.date,
       inspectionTime: inspectionDetails.time,
+      inspectionMode: inspectionDetails.inspectionMode,
       requestedBy: inspectionDetails.buyerInfo,
       transaction: {
         fullName: transactionDetails.fullName,

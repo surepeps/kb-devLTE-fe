@@ -53,6 +53,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const propertyPrice = details?.propertyId?.price || 0;
   const negotiationPrice = details?.negotiationPrice || 0;
   const sellerCounterOffer = details?.sellerCounterOffer || 0;
+  const counterCount = details?.counterCount || 0;
 
   // Determine current offer based on user type and available data
   const getCurrentOffer = () => {
@@ -80,6 +81,14 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     const percentage =
       propertyPrice > 0 ? ((diff / propertyPrice) * 100).toFixed(1) : "0";
     return { amount: diff, percentage };
+  };
+
+  const canCounter = () => {
+    return counterCount < 3;
+  };
+
+  const getRemainingCounters = () => {
+    return Math.max(0, 3 - counterCount);
   };
 
   const isAboveAsk = currentOffer > propertyPrice;
@@ -145,6 +154,11 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   };
 
   const handleCounterSubmit = async () => {
+    if (!canCounter()) {
+      alert("You have reached the maximum number of counter negotiations (3)");
+      return;
+    }
+
     const counterAmount = parseFloat(counterPrice.replace(/[^\d.-]/g, ""));
     const validation = validateCounterPrice(counterAmount);
 
@@ -188,10 +202,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           Review the offer and choose your response. You&apos;ll select
           inspection date/time on the next step.
         </p>
-        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-          <p className="text-sm font-medium text-[#09391C]">
-            Inspection Type: Price Negotiation
-          </p>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+            <p className="text-sm font-medium text-[#09391C]">
+              Inspection Type: Price Negotiation
+            </p>
+          </div>
+          <div className="p-3 bg-[#FFF3E0] rounded-lg border border-[#FFB74D]">
+            <p className="text-sm font-medium text-[#E65100]">
+              Counter Negotiations: {counterCount}/3 used
+            </p>
+            <p className="text-xs text-[#E65100] mt-1">
+              {getRemainingCounters()} negotiations remaining
+            </p>
+          </div>
         </div>
       </div>
 
@@ -278,7 +302,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           {/* Counter Offer Button */}
           <button
             onClick={() => setShowCounterModal(true)}
-            className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200"
+            disabled={!canCounter()}
+            className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             <FiDollarSign className="w-5 h-5" />
             <span>{userType === "buyer" ? "Negotiate" : "Counter Offer"}</span>
@@ -294,6 +319,21 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             <span>Reject Offer</span>
           </button>
         </div>
+
+        {/* Counter Limit Notice */}
+        {!canCounter() && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <FiAlertTriangle className="w-4 h-4 text-red-600" />
+              <p className="text-sm font-medium text-red-600">
+                Counter limit reached (3/3)
+              </p>
+            </div>
+            <p className="text-sm text-red-600 mt-1">
+              You have used all available counter negotiations. You can accept or reject the current offer.
+            </p>
+          </div>
+        )}
       </motion.div>
 
       {/* Counter Offer Modal */}
