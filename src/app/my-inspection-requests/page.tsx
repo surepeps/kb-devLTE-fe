@@ -822,7 +822,7 @@ export default function MyInspectionRequestsPage() {
                       )}
 
                       {/* Actions */}
-                      <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-200">
+                      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
                         <button
                           onClick={() => handleViewDetails(inspection)}
                           className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 text-sm font-medium"
