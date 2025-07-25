@@ -25,6 +25,8 @@ import {
 interface Option {
   value: string;
   label: string;
+  __isScoped__?: boolean;
+  __lgaScope__?: string;
 }
 
 interface LGAAreaMapping {
