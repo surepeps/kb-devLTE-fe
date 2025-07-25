@@ -441,16 +441,8 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                 </p>
               </div>
 
-              {/* Clean minimal area selection with dynamic layout */}
-              <div
-                className={`${
-                  selectedLGAs.length === 2
-                    ? "grid grid-cols-1 md:grid-cols-2 gap-4"
-                    : selectedLGAs.length === 3
-                      ? "space-y-4"
-                      : "space-y-4"
-                }`}
-              >
+              {/* Stable area selection layout */}
+              <div className="space-y-4">
                 {selectedLGAs
                   .sort((a, b) => {
                     const aHasAreas =
@@ -467,94 +459,6 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                     );
                     const availableAreasForLGA = getAreasForLGA(lga.value);
                     const isAtLimit = selectedAreasForLGA.length >= 3;
-
-                    // For 3 LGAs: first two side by side, third full width
-                    const shouldUseSpecialLayout = selectedLGAs.length === 3;
-                    const isFirstTwo = shouldUseSpecialLayout && index < 2;
-                    const isThird = shouldUseSpecialLayout && index === 2;
-
-                    const containerClass = shouldUseSpecialLayout
-                      ? isFirstTwo
-                        ? "grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full"
-                        : isThird
-                          ? "col-span-full"
-                          : ""
-                      : "";
-
-                    const itemClass =
-                      shouldUseSpecialLayout && isFirstTwo ? "" : "space-y-2";
-
-                    if (shouldUseSpecialLayout && index === 0) {
-                      // Render first two items together for 3 LGA layout
-                      return (
-                        <div key="first-two" className={containerClass}>
-                          {selectedLGAs.slice(0, 2).map((subLga, subIndex) => {
-                            const subSelectedAreas = getSelectedAreasForLGA(
-                              subLga.value,
-                            );
-                            const subAvailableAreas = getAreasForLGA(
-                              subLga.value,
-                            );
-                            const subIsAtLimit = subSelectedAreas.length >= 3;
-
-                            return (
-                              <motion.div
-                                key={subLga.value}
-                                className="space-y-2"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                  duration: 0.2,
-                                  delay: subIndex * 0.1,
-                                }}
-                              >
-                                <label className="block text-sm font-medium text-gray-700">
-                                  {subLga.label}
-                                  <span className="text-xs text-gray-500 ml-1">
-                                    ({subSelectedAreas.length}/3)
-                                  </span>
-                                </label>
-
-                                <CreatableSelect
-                                  isMulti
-                                  value={subSelectedAreas}
-                                  onChange={(newAreas) =>
-                                    handleAreaChangeForLGA(
-                                      subLga.value,
-                                      newAreas,
-                                    )
-                                  }
-                                  options={subAvailableAreas}
-                                  styles={customSelectStyles}
-                                  placeholder={`Areas in ${subLga.label}...`}
-                                  isSearchable={true}
-                                  isClearable={false}
-                                  formatCreateLabel={(inputValue) =>
-                                    `Add "${inputValue}"`
-                                  }
-                                  className="react-select-container"
-                                  classNamePrefix="react-select"
-                                  noOptionsMessage={() => "Type to add area"}
-                                  isValidNewOption={(inputValue) =>
-                                    inputValue.length > 0 &&
-                                    subSelectedAreas.length < 3
-                                  }
-                                />
-
-                                {subIsAtLimit && (
-                                  <p className="text-xs text-amber-600">
-                                    Maximum areas reached.
-                                  </p>
-                                )}
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      );
-                    } else if (shouldUseSpecialLayout && index < 2) {
-                      // Skip rendering items 0 and 1 individually since they're handled above
-                      return null;
-                    }
 
                     return (
                       <motion.div
