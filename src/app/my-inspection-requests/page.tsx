@@ -816,8 +816,8 @@ export default function MyInspectionRequestsPage() {
 
                       {/* Reason */}
                       {inspection.reason && (
-                        <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                          <p className="text-sm text-slate-700">{inspection.reason}</p>
+                        <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-sm text-[#5A5D63]">{inspection.reason}</p>
                         </div>
                       )}
 
