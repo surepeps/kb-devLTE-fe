@@ -592,8 +592,8 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                 </p>
               </div>
 
-              {/* Stable area selection layout with proper scoping */}
-              <div className="space-y-4">
+              {/* Stable area selection layout with proper scoping - 2 per row max */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {stableLGAOrder
                   .filter((lgaValue) =>
                     selectedLGAs.some((lga) => lga.value === lgaValue),
@@ -621,7 +621,7 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                       >
                         <div className="flex items-center justify-between">
                           <label className="block text-sm font-medium text-gray-700">
-                            ��� {lga.label}
+                            📍 {lga.label}
                             <span className="text-xs text-gray-500 ml-1">
                               ({selectedAreasForLGA.length}/3)
                             </span>
