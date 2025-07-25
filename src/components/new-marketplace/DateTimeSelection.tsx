@@ -12,6 +12,7 @@ interface DateTimeSelectionProps {
   onProceed: (data: {
     date: string;
     time: string;
+    inspectionMode: "in_person" | "virtual" | "developer_visit";
     buyerInfo: {
       fullName: string;
       email: string;
