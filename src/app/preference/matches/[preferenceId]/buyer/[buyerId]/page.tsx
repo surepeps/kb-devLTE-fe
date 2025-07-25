@@ -31,7 +31,7 @@ interface MatchDetails {
   createdAt: string;
   updatedAt: string;
 }
-
+ 
 interface MatchedProperty {
   id: string;
   title: string;

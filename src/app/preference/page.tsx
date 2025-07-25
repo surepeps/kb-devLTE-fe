@@ -721,7 +721,7 @@ const PreferenceFormContent: React.FC = () => {
         console.log("Generated Payload:", JSON.stringify(payload, null, 2));
       }
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/buyers/submit-preference`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/preferences/submit`;
 
       const response = await axios.post(url, payload);
 
