@@ -163,6 +163,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     onProceed({
       date: selectedDate,
       time: selectedTime,
+      inspectionMode,
       buyerInfo,
     });
   };
