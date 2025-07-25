@@ -500,7 +500,7 @@ export default function MyInspectionRequestsPage() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 mb-8 overflow-hidden"
+                className="bg-white rounded-xl p-6 mb-6 border border-gray-100 overflow-hidden"
               >
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
