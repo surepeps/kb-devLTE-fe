@@ -74,6 +74,14 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
   const letterOfIntention = details?.letterOfIntention || "";
 
+  const canRequestChanges = () => {
+    return counterCount < 3;
+  };
+
+  const getRemainingChanges = () => {
+    return Math.max(0, 3 - counterCount);
+  };
+
   const handleAccept = async () => {
     // Don't submit immediately, proceed to next step
     onActionSelected("accept");
