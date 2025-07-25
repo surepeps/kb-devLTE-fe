@@ -53,6 +53,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const propertyPrice = details?.propertyId?.price || 0;
   const negotiationPrice = details?.negotiationPrice || 0;
   const sellerCounterOffer = details?.sellerCounterOffer || 0;
+  const counterCount = details?.counterCount || 0;
 
   // Determine current offer based on user type and available data
   const getCurrentOffer = () => {
