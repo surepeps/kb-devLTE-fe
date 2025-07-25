@@ -964,21 +964,21 @@ export default function MyInspectionRequestsPage() {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg">
                         <div>
-                          <span className="font-medium text-slate-600">Title:</span>
+                          <span className="font-medium text-gray-600">Title:</span>
                           <p className="mt-1">{selectedInspection.property.title}</p>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-600">Price:</span>
-                          <p className="mt-1 font-medium text-emerald-600">
+                          <span className="font-medium text-gray-600">Price:</span>
+                          <p className="mt-1 font-medium text-[#8DDB90]">
                             ₦{selectedInspection.property.price.toLocaleString()}
                           </p>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-600">Status:</span>
+                          <span className="font-medium text-gray-600">Status:</span>
                           <p className="mt-1 capitalize">{selectedInspection.property.status}</p>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-600">Type:</span>
+                          <span className="font-medium text-gray-600">Type:</span>
                           <p className="mt-1">{selectedInspection.property.briefType}</p>
                         </div>
                       </div>
