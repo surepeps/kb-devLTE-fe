@@ -85,6 +85,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const [selectedDate, setSelectedDate] = useState(getInitialDate());
   const [selectedTime, setSelectedTime] = useState(getInitialTime());
+  const [inspectionMode, setInspectionMode] = useState<"in_person" | "virtual" | "developer_visit">("in_person");
 
   // Buyer information form state
   const [buyerInfo, setBuyerInfo] = useState({
