@@ -503,6 +503,8 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                             inputValue.length > 0 &&
                             selectedAreasForLGA.length < 3
                           }
+                          menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                          menuPosition="fixed"
                         />
 
                         {isAtLimit && (
