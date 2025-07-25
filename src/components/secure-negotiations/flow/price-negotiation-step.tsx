@@ -197,10 +197,20 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
           Review the offer and choose your response. You&apos;ll select
           inspection date/time on the next step.
         </p>
-        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-          <p className="text-sm font-medium text-[#09391C]">
-            Inspection Type: Price Negotiation
-          </p>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+            <p className="text-sm font-medium text-[#09391C]">
+              Inspection Type: Price Negotiation
+            </p>
+          </div>
+          <div className="p-3 bg-[#FFF3E0] rounded-lg border border-[#FFB74D]">
+            <p className="text-sm font-medium text-[#E65100]">
+              Counter Negotiations: {counterCount}/3 used
+            </p>
+            <p className="text-xs text-[#E65100] mt-1">
+              {getRemainingCounters()} negotiations remaining
+            </p>
+          </div>
         </div>
       </div>
 
