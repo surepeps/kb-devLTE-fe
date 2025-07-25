@@ -38,6 +38,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     uploadFile,
   } = useSecureNegotiation();
   const { details, loadingStates, inspectionId, inspectionType } = state;
+  const counterCount = details?.counterCount || 0;
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
@@ -73,6 +74,14 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
   const letterOfIntention = details?.letterOfIntention || "";
 
+  const canRequestChanges = () => {
+    return counterCount < 3;
+  };
+
+  const getRemainingChanges = () => {
+    return Math.max(0, 3 - counterCount);
+  };
+
   const handleAccept = async () => {
     // Don't submit immediately, proceed to next step
     onActionSelected("accept");
@@ -90,6 +99,11 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   };
 
   const handleRequestChanges = async () => {
+    if (!canRequestChanges()) {
+      alert("You have reached the maximum number of LOI change requests (3)");
+      return;
+    }
+
     if (!changeRequest.trim()) {
       alert("Please enter your feedback for the changes");
       return;
@@ -200,10 +214,20 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               ? "Please update your LOI based on the seller's feedback and resubmit."
               : "Your Letter of Intention is being reviewed by the seller."}
         </p>
-        <div className="mt-4 p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
-          <p className="text-sm font-medium text-[#09391C]">
-            Inspection Type: LOI Negotiation
-          </p>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
+            <p className="text-sm font-medium text-[#09391C]">
+              Inspection Type: LOI Negotiation
+            </p>
+          </div>
+          <div className="p-3 bg-[#FFF3E0] rounded-lg border border-[#FFB74D]">
+            <p className="text-sm font-medium text-[#E65100]">
+              Change Requests: {counterCount}/3 used
+            </p>
+            <p className="text-xs text-[#E65100] mt-1">
+              {getRemainingChanges()} requests remaining
+            </p>
+          </div>
         </div>
       </div>
 
@@ -288,8 +312,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
             {/* Request Changes Button */}
             <button
               onClick={() => setShowRequestChangesModal(true)}
-              disabled={loadingStates.submitting}
-              className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors duration-200"
+              disabled={loadingStates.submitting || !canRequestChanges()}
+              className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               <FiEdit3 className="w-5 h-5" />
               <span>Request Changes</span>
@@ -305,6 +329,21 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               <span>Reject LOI</span>
             </button>
           </div>
+
+          {/* Counter Limit Notice */}
+          {!canRequestChanges() && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <FiAlertTriangle className="w-4 h-4 text-red-600" />
+                <p className="text-sm font-medium text-red-600">
+                  Change request limit reached (3/3)
+                </p>
+              </div>
+              <p className="text-sm text-red-600 mt-1">
+                You have used all available LOI change requests. You can accept or reject the current LOI.
+              </p>
+            </div>
+          )}
         </motion.div>
       )}
 

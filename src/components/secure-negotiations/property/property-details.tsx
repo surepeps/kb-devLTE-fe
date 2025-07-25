@@ -18,7 +18,7 @@ interface PropertyDetailsProps {
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
-  const { propertyId, inspectionDate, inspectionTime, createdAt } =
+  const { propertyId, inspectionDate, inspectionTime, inspectionMode, createdAt } =
     propertyData;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -37,6 +37,19 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
       month: "long",
       day: "numeric",
     });
+  };
+
+  const getInspectionModeDisplay = (mode?: string) => {
+    switch (mode) {
+      case "in_person":
+        return { label: "In Person", icon: "🏠", description: "Physical inspection at property" };
+      case "virtual":
+        return { label: "Virtual", icon: "💻", description: "Online video inspection" };
+      case "developer_visit":
+        return { label: "Developer Visit", icon: "🏗️", description: "Visit developer's office" };
+      default:
+        return { label: "In Person", icon: "🏠", description: "Physical inspection at property" };
+    }
   };
 
   return (
@@ -133,7 +146,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               </h4>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
                 <div className="text-xs text-gray-600 mb-1">Date</div>
                 <div className="font-medium text-gray-800 text-sm">
@@ -145,6 +158,17 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 <div className="text-xs text-gray-600 mb-1">Time</div>
                 <div className="font-medium text-gray-800 text-sm">
                   {inspectionTime}
+                </div>
+              </div>
+
+              <div className="bg-[#EEF1F1] p-3 rounded-lg border border-[#C7CAD0]">
+                <div className="text-xs text-gray-600 mb-1">Mode</div>
+                <div className="font-medium text-gray-800 text-sm flex items-center space-x-2">
+                  <span>{getInspectionModeDisplay(inspectionMode).icon}</span>
+                  <span>{getInspectionModeDisplay(inspectionMode).label}</span>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {getInspectionModeDisplay(inspectionMode).description}
                 </div>
               </div>
             </div>
