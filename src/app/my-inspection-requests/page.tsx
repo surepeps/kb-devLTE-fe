@@ -941,14 +941,14 @@ export default function MyInspectionRequestsPage() {
                 exit={{ scale: 0.95, opacity: 0 }}
                 className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
               >
-                <div className="p-6 border-b border-slate-200">
+                <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold text-slate-800">
+                    <h2 className="text-2xl font-semibold text-[#09391C]">
                       Inspection Request Details
                     </h2>
                     <button
                       onClick={() => setShowDetailModal(false)}
-                      className="text-slate-400 hover:text-slate-600 transition-colors"
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       <XIcon size={24} />
                     </button>
