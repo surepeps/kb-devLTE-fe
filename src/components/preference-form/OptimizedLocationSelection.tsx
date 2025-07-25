@@ -463,7 +463,7 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                     return (
                       <motion.div
                         key={lga.value}
-                        className={itemClass}
+                        className="space-y-2"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.1 }}
