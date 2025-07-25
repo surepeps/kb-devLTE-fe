@@ -129,7 +129,7 @@ export const POST_REQUEST = async <T = any>(
   data: unknown,
   customHeaders?: Record<string, string>,
   token?: string,
-): Promise<ApiResponse<T>> => {
+): Promise<T> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
@@ -139,7 +139,6 @@ export const POST_REQUEST = async <T = any>(
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    // Handle FormData - don't set Content-Type for FormData as browser will set it with boundary
     const isFormData = data instanceof FormData;
     if (isFormData && headers["Content-Type"] === "multipart/form-data") {
       delete headers["Content-Type"];
@@ -152,14 +151,16 @@ export const POST_REQUEST = async <T = any>(
     });
 
     const response = await request.json();
+
+    if (!request.ok) {
+      // Throw error so toast.promise handles it properly
+      throw new Error(response?.error || response?.message || "Request failed");
+    }
+
     return response;
   } catch (error: unknown) {
     console.error("POST_REQUEST error:", error);
-    return {
-      error: (error as Error).message || "Unknown error",
-      success: false,
-      message: "An error occurred, please try again.",
-    };
+    throw error; // Important: throw so formik/toast can catch it
   }
 };
 

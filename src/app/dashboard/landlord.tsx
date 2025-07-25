@@ -115,7 +115,7 @@ export default function LandlordDashboard() {
       color: "bg-gradient-to-r from-blue-500 to-blue-600",
       textColor: "text-blue-600",
       bgColor: "bg-blue-50",
-      change: "+12%",
+      change: "",
       changeType: "increase",
     },
     {
@@ -125,7 +125,7 @@ export default function LandlordDashboard() {
       color: "bg-gradient-to-r from-green-500 to-green-600",
       textColor: "text-green-600",
       bgColor: "bg-green-50",
-      change: "+8%",
+      change: "",
       changeType: "increase",
     },
     {
@@ -135,7 +135,7 @@ export default function LandlordDashboard() {
       color: "bg-gradient-to-r from-purple-500 to-purple-600",
       textColor: "text-purple-600",
       bgColor: "bg-purple-50",
-      change: "+24%",
+      change: "",
       changeType: "increase",
     },
     {
@@ -145,7 +145,7 @@ export default function LandlordDashboard() {
       color: "bg-gradient-to-r from-orange-500 to-orange-600",
       textColor: "text-orange-600",
       bgColor: "bg-orange-50",
-      change: "+5%",
+      change: "",
       changeType: "increase",
     },
   ];
@@ -172,7 +172,7 @@ export default function LandlordDashboard() {
     {
       title: "Inspection Requests",
       description: "Manage property inspections",
-      href: "/landlord-inspection-requests",
+      href: "/my-inspection-requests",
       icon: CalendarIcon,
       color: "bg-gradient-to-r from-purple-500 to-purple-600",
       textColor: "text-purple-600",
@@ -257,17 +257,6 @@ export default function LandlordDashboard() {
                 <div className="flex items-center justify-between mb-4">
                   <div className={`p-3 rounded-lg ${card.bgColor}`}>
                     <IconComponent size={24} className={card.textColor} />
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        card.changeType === "increase"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {card.change}
-                    </span>
                   </div>
                 </div>
                 <div>
