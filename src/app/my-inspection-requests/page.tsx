@@ -640,17 +640,15 @@ export default function MyInspectionRequestsPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white border border-slate-200 rounded-2xl p-12 text-center"
+              className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100"
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Building size={32} className="text-white" />
-              </div>
-              <h3 className="text-xl font-medium text-slate-600 mb-2">
+              <Building size={64} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-xl font-medium text-gray-600 mb-2">
                 {searchTerm || Object.values(filters).some((f) => f)
                   ? "No matching inspection requests found"
                   : "No inspection requests yet"}
               </h3>
-              <p className="text-slate-500 mb-6">
+              <p className="text-gray-500 mb-6">
                 {searchTerm || Object.values(filters).some((f) => f)
                   ? "Try adjusting your search criteria or filters"
                   : "Inspection requests will appear here when buyers request to inspect your properties"}
@@ -658,7 +656,7 @@ export default function MyInspectionRequestsPage() {
               {(searchTerm || Object.values(filters).some((f) => f)) && (
                 <button
                   onClick={clearFilters}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200"
+                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-medium transition-colors"
                 >
                   Clear All Filters
                 </button>
