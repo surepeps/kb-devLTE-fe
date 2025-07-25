@@ -803,7 +803,7 @@ export default function MyInspectionRequestsPage() {
 
                       {/* Additional Info */}
                       <div className="flex items-center justify-between mb-4">
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-[#5A5D63]">
                           <span>Stage: </span>
                           <span className="font-medium capitalize">{inspection.stage}</span>
                         </div>
