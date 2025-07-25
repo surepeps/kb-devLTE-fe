@@ -54,7 +54,7 @@ const ClientTestimonials = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(`${URLS.BASE}/testimonials`, {
+      const response = await fetch(`/api/testimonials`, {
         signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
