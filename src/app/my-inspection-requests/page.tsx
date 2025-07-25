@@ -785,7 +785,7 @@ export default function MyInspectionRequestsPage() {
                           <p className="text-sm text-[#5A5D63]">{inspection.inspectionTime}</p>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                          <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
                             <TypeIcon size={14} />
                             <span>Type & Mode</span>
                           </div>
