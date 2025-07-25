@@ -1,6 +1,7 @@
 /** @format */
 
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,13 +16,14 @@ import {
   ArrowLeft,
   Search,
 } from "lucide-react";
-import { GET_REQUEST, PUT_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, PUT_REQUEST, DELETE_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
 import Loading from "@/components/loading-component/loading";
+import NotificationCardSkeleton from "@/components/loading-component/NotificationCardSkeleton";
 
 interface Notification {
   _id: string;
@@ -37,13 +39,14 @@ interface Notification {
 const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false); // New state for load more loading
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
-    [],
-  );
+  const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const router = useRouter();
   const { user } = useUserContext();
 
@@ -52,67 +55,69 @@ const NotificationsPage: React.FC = () => {
       router.push("/auth/login");
       return;
     }
-    fetchNotifications();
+    fetchNotifications(1, true);
   }, [user]);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (page: number = currentPage, reset: boolean = false) => {
     try {
-      setLoading(true);
-      // Use pagination with 5 notifications per page as specified
+      if (reset) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
       const response = await GET_REQUEST(
-        `${URLS.BASE}/user/notifications?limit=5&page=${currentPage}`,
+        `${URLS.BASE}/account/notifications?limit=5&withPagination=true&page=${page}`,
         Cookies.get("token") || "",
       );
 
       if (response?.success && response?.data) {
-        setNotifications(response.data);
-      } else {
-        // If API doesn't exist yet, show sample notifications
-        setNotifications(sampleNotifications);
+        if (reset) {
+          // Replace notifications (for initial load or refresh)
+          setNotifications(response.data);
+        } else {
+          // Append notifications (for load more)
+          setNotifications(prev => [...prev, ...response.data]);
+        }
+        setTotalPages(response.pagination.totalPages);
+        setCurrentPage(page);
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
-      // Show sample notifications as fallback
-      setNotifications(sampleNotifications);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   const markAsRead = async (notificationId: string) => {
+
     try {
-      // Optimistically update UI first
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif._id === notificationId ? { ...notif, isRead: true } : notif,
-        ),
-      );
-      toast.success("Marked as read");
-
-      // Use proper PATCH endpoint
-      const response = await fetch(
-        `${URLS.BASE}/user/notifications/${notificationId}/markRead`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        },
+      const response = await PUT_REQUEST(
+        `${URLS.BASE}/account/notifications/${notificationId}/markRead`,
+        {},
+        {},
+        Cookies.get("token") || "",
       );
 
-      if (!response.ok) {
-        console.error("Failed to mark notification as read on server");
+      if (response?.success) {
+        setNotifications((prev) =>
+          prev.map((notif) =>
+            notif._id === notificationId ? { ...notif, isRead: true } : notif,
+          ),
+        );
+        toast.success("Marked as read");
       }
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      console.error("Error marking notification as unread:", error);
+      toast.error("Error marking notification as unread");
     }
   };
 
   const markAsUnread = async (notificationId: string) => {
     try {
       const response = await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/${notificationId}/unread`,
+        `${URLS.BASE}/account/notifications/${notificationId}/markUnRead`,
         {},
         {},
         Cookies.get("token") || "",
@@ -140,18 +145,18 @@ const NotificationsPage: React.FC = () => {
 
   const deleteNotification = async (notificationId: string) => {
     try {
+      // Attempt API call
+      await DELETE_REQUEST(
+        `${URLS.BASE}/account/notifications/${notificationId}/delete`,
+        {},
+        Cookies.get("token"),
+      );
+
       setNotifications((prev) =>
         prev.filter((notif) => notif._id !== notificationId),
       );
-      toast.success("Notification deleted");
 
-      // Attempt API call
-      await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/${notificationId}`,
-        { deleted: true },
-        {},
-        Cookies.get("token") || "",
-      );
+      toast.success("Notification deleted");
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
@@ -164,21 +169,19 @@ const NotificationsPage: React.FC = () => {
     }
 
     try {
+      await DELETE_REQUEST(
+        `${URLS.BASE}/account/notifications/bulkDelete`,
+        { notificationIds: selectedNotifications },
+        Cookies.get("token") || "",
+      );
+
       setNotifications((prev) =>
         prev.filter((notif) => !selectedNotifications.includes(notif._id)),
       );
-      setSelectedNotifications([]);
-      toast.success(`${selectedNotifications.length} notifications deleted`);
 
-      // Attempt API calls
-      for (const id of selectedNotifications) {
-        await PUT_REQUEST(
-          `${URLS.BASE}/user/notifications/${id}`,
-          { deleted: true },
-          {},
-          Cookies.get("token") || "",
-        );
-      }
+      setSelectedNotifications([]);
+
+      toast.success(`${selectedNotifications.length} notifications deleted`);
     } catch (error) {
       console.error("Error deleting notifications:", error);
     }
@@ -203,7 +206,7 @@ const NotificationsPage: React.FC = () => {
 
       // Attempt API call
       await PUT_REQUEST(
-        `${URLS.BASE}/user/notifications/mark-all-read`,
+        `${URLS.BASE}/account/notifications/markAllRead`,
         {},
         {},
         Cookies.get("token") || "",
@@ -249,6 +252,12 @@ const NotificationsPage: React.FC = () => {
       setSelectedNotifications((prev) =>
         prev.filter((id) => id !== notificationId),
       );
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages && !loadingMore) {
+      fetchNotifications(currentPage + 1, false);
     }
   };
 
@@ -399,7 +408,7 @@ const NotificationsPage: React.FC = () => {
 
         {/* Notifications List */}
         <div className="space-y-3">
-          {filteredNotifications.length === 0 ? (
+          {filteredNotifications.length === 0 && !loadingMore ? (
             <div className="bg-white rounded-xl shadow-sm p-8 text-center">
               <Bell size={48} className="text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-500 mb-2">
@@ -414,26 +423,40 @@ const NotificationsPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            filteredNotifications.map((notification) => (
-              <NotificationCard
-                key={notification._id}
-                notification={notification}
-                isSelected={selectedNotifications.includes(notification._id)}
-                onSelect={(checked) =>
-                  handleSelectNotification(notification._id, checked)
-                }
-                onMarkAsRead={() => markAsRead(notification._id)}
-                onMarkAsUnread={() => markAsUnread(notification._id)}
-                onDelete={() => deleteNotification(notification._id)}
-              />
-            ))
+            <>
+              {filteredNotifications.map((notification) => (
+                <NotificationCard
+                  key={notification._id}
+                  notification={notification}
+                  isSelected={selectedNotifications.includes(notification._id)}
+                  onSelect={(checked) =>
+                    handleSelectNotification(notification._id, checked)
+                  }
+                  onMarkAsRead={() => markAsRead(notification._id)}
+                  onMarkAsUnread={() => markAsUnread(notification._id)}
+                  onDelete={() => deleteNotification(notification._id)}
+                />
+              ))}
+              
+              {/* Show skeleton when loading more */}
+              {loadingMore && (
+                <>
+                  <NotificationCardSkeleton />
+                  <NotificationCardSkeleton />
+                  <NotificationCardSkeleton />
+                </>
+              )}
+            </>
           )}
         </div>
 
-        {/* Load more button (for future pagination) */}
-        {filteredNotifications.length > 0 && (
+        {/* Load more button */}
+        {currentPage < totalPages && !loadingMore && (
           <div className="text-center mt-8">
-            <button className="px-6 py-3 border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white rounded-lg transition-colors font-medium">
+            <button 
+              onClick={handleLoadMore}
+              className="px-6 py-3 border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white rounded-lg transition-colors font-medium"
+            >
               Load more notifications
             </button>
           </div>
@@ -595,64 +618,5 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     </motion.div>
   );
 };
-
-// Sample notifications for fallback when API is not available
-const sampleNotifications: Notification[] = [
-  {
-    _id: "1",
-    title: "Property View Alert",
-    message:
-      "A user viewed your 3-bedroom apartment listing in Victoria Island. This could be a potential buyer interested in your property.",
-    type: "info",
-    isRead: false,
-    createdAt: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
-    relatedId: "prop_123",
-  },
-  {
-    _id: "2",
-    title: "Brief Approved",
-    message:
-      "Congratulations! Your commercial property brief has been approved and is now live on the marketplace.",
-    type: "success",
-    isRead: false,
-    createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-  },
-  {
-    _id: "3",
-    title: "Price Update Reminder",
-    message:
-      "Consider updating the price for your Lekki property to attract more buyers. The current market trend suggests a slight adjustment.",
-    type: "warning",
-    isRead: true,
-    createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-  },
-  {
-    _id: "4",
-    title: "New Inquiry Received",
-    message:
-      "Someone is interested in your joint venture opportunity in Abuja. They have requested more details about the project.",
-    type: "info",
-    isRead: true,
-    createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-  },
-  {
-    _id: "5",
-    title: "Document Verification Required",
-    message:
-      "Please upload the required property documents to complete your listing verification process.",
-    type: "warning",
-    isRead: false,
-    createdAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-  },
-  {
-    _id: "6",
-    title: "Payment Confirmation",
-    message:
-      "Your premium listing payment has been confirmed. Your property will be featured for the next 30 days.",
-    type: "success",
-    isRead: true,
-    createdAt: new Date(Date.now() - 432000000).toISOString(), // 5 days ago
-  },
-];
 
 export default NotificationsPage;

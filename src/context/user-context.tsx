@@ -15,7 +15,7 @@ import React, {
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
- 
+  
 export interface User {
   accountApproved: boolean;
   _id?: string;

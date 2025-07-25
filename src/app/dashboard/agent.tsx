@@ -19,42 +19,53 @@ import {
   Star as StarIcon,
   Plus as PlusIcon,
   Calendar as CalendarIcon,
+  Eye,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
 interface Brief {
   _id: string;
-  propertyType: string;
+  briefType: string;
   location: {
     state: string;
     localGovernment: string;
     area: string;
   };
+  pictures: string[];
   price: number;
   createdAt: string;
-  status: "active" | "assigned" | "completed";
+  status: "pending";
 }
 
 interface DashboardStats {
   totalBriefs: number;
-  activeBriefs: number;
-  completedDeals: number;
-  totalCommission: number;
-  monthlyCommission: number;
+  totalActiveBriefs: number;
+  totalInactiveBriefs: number;
+  totalViews: number;
+  totalInspectionRequests: number;
+  totalCompletedInspectionRequests: number;
+  newPendingBriefs: Brief[]; // This should hold the recent briefs
   averageRating: number;
+  completedDeals: number;
+  totalCommission: number; // Added based on usage in statCards
 }
+
 
 export default function AgentDashboard() {
   const router = useRouter();
   const { user } = useUserContext();
-  const [briefs, setBriefs] = useState<Brief[]>([]);
+  // Briefs state will now be directly from stats.newPendingBriefs for "Recent Briefs" section
   const [stats, setStats] = useState<DashboardStats>({
     totalBriefs: 0,
-    activeBriefs: 0,
+    totalActiveBriefs: 0,
+    totalInactiveBriefs: 0,
     completedDeals: 0,
+    totalViews: 0,
+    totalInspectionRequests: 0,
+    totalCompletedInspectionRequests: 0,
+    newPendingBriefs: [],
+    averageRating: 0,
     totalCommission: 0,
-    monthlyCommission: 0,
-    averageRating: 4.5,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,32 +92,18 @@ export default function AgentDashboard() {
     try {
       setIsLoading(true);
 
-      // Fetch agent briefs
-      const briefsResponse = await GET_REQUEST(
-        `${URLS.BASE}${URLS.fetchBriefs}?page=1&limit=100`,
+      // Assuming there's a single dashboard endpoint that returns all these stats
+      // Replace URLS.fetchDashboardStats with your actual dashboard stats endpoint
+      const dashboardResponse = await GET_REQUEST(
+        `${URLS.BASE}${URLS.fetchDashboardStats}`, // This URL needs to be defined in URLS.ts
         Cookies.get("token"),
       );
 
-      if (briefsResponse?.data) {
-        const agentBriefs = briefsResponse.data;
-        setBriefs(agentBriefs);
-
-        // Calculate stats
-        const totalBriefs = agentBriefs.length;
-        const activeBriefs = agentBriefs.filter(
-          (b: Brief) => b.status === "active",
-        ).length;
-        const completedDeals = agentBriefs.filter(
-          (b: Brief) => b.status === "completed",
-        ).length;
-
+      if (dashboardResponse?.data) {
         setStats({
-          totalBriefs,
-          activeBriefs,
-          completedDeals,
-          totalCommission: completedDeals * 500000, // Mock calculation
-          monthlyCommission: 1500000, // Mock data
-          averageRating: 4.5,
+          ...dashboardResponse.data,
+          // Ensure newPendingBriefs is an array, default to empty if not present
+          newPendingBriefs: dashboardResponse.data.newPendingBriefs || [],
         });
       }
     } catch (error) {
@@ -135,7 +132,7 @@ export default function AgentDashboard() {
     },
     {
       title: "Active Briefs",
-      value: stats.activeBriefs,
+      value: stats.totalActiveBriefs, // Changed to totalActiveBriefs from stats
       icon: TrendingUpIcon,
       color: "bg-green-500",
       textColor: "text-green-600",
@@ -148,9 +145,9 @@ export default function AgentDashboard() {
       textColor: "text-yellow-600",
     },
     {
-      title: "Total Commission",
-      value: `₦${stats.totalCommission.toLocaleString()}`,
-      icon: DollarSignIcon,
+      title: "Total Views",
+      value: `${stats.totalViews}`,
+      icon: Eye,
       color: "bg-purple-500",
       textColor: "text-purple-600",
     },
@@ -199,10 +196,10 @@ export default function AgentDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-[#8DDB90] mb-2">
-                ₦{stats.monthlyCommission.toLocaleString()}
+                ₦{stats.totalCommission.toLocaleString()}
               </div>
               <p className="text-sm sm:text-base text-[#5A5D63]">
-                This Month&apos;s Commission
+                Total Commission
               </p>
             </div>
             <div className="text-center">
@@ -221,8 +218,10 @@ export default function AgentDashboard() {
             </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-2">
-                {Math.round((stats.completedDeals / stats.totalBriefs) * 100) ||
-                  0}
+                {/* Ensure totalBriefs is not zero to avoid division by zero */}
+                {stats.totalBriefs > 0
+                  ? Math.round((stats.completedDeals / stats.totalBriefs) * 100)
+                  : 0}
                 %
               </div>
               <p className="text-sm sm:text-base text-[#5A5D63]">
@@ -282,7 +281,7 @@ export default function AgentDashboard() {
               </div>
             </div>
 
-            {briefs.length === 0 ? (
+            {stats.newPendingBriefs.length === 0 ? (
               <div className="p-8 text-center">
                 <BriefcaseIcon
                   size={32}
@@ -292,19 +291,19 @@ export default function AgentDashboard() {
                   No Briefs Available
                 </h3>
                 <p className="text-sm text-gray-500 mb-4">
-                  Check the marketplace for new opportunities
+                  Create new brief / Listing
                 </p>
                 <Link
-                  href="/agent-marketplace"
+                  href="/post-property"
                   className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-colors text-sm"
                 >
                   <PlusIcon size={16} />
-                  Browse Marketplace
+                  Post Brief
                 </Link>
               </div>
             ) : (
               <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-                {briefs.slice(0, 5).map((brief, index) => (
+                {stats.newPendingBriefs.slice(0, 5).map((brief, index) => (
                   <motion.div
                     key={brief._id}
                     initial={{ opacity: 0, x: -20 }}
@@ -319,8 +318,8 @@ export default function AgentDashboard() {
                         </div>
                         <div>
                           <h3 className="font-medium text-[#09391C] capitalize text-sm">
-                            {brief.propertyType}
-                          </h3>
+                            {brief.briefType}
+                          </h3> {/* Changed from propertyType to briefType as per Brief interface */}
                           <div className="flex items-center gap-1 text-xs text-[#5A5D63]">
                             <MapPinIcon size={10} />
                             {brief.location.area}
@@ -331,16 +330,8 @@ export default function AgentDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <span
-                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                            brief.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : brief.status === "assigned"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {brief.status}
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          Pending Review
                         </span>
                       </div>
                     </div>
@@ -358,7 +349,7 @@ export default function AgentDashboard() {
               </h2>
             </div>
             <div className="p-4 sm:p-6 space-y-4">
-                            <Link
+              <Link
                 href="/post-property"
                 className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >

@@ -57,6 +57,7 @@ export const URLS = {
   submitBuyerPreference: "/buyers/submit-preference",
   postProperty: "/properties/new",
 
+  fetchDashboardStats: "/account/dashboard",
   authLogin: "/auth/login",
   authRegister: "/auth/register",
   authGoogle: "/auth/googleAuth",

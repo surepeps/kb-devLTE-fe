@@ -164,7 +164,6 @@ export const POST_REQUEST = async <T = any>(
   }
 };
 
-
 export const POST_REQUEST_FILE_UPLOAD = async <T = any>(
   url: string,
   data: FormData,
