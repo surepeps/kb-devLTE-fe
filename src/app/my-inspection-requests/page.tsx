@@ -626,7 +626,7 @@ export default function MyInspectionRequestsPage() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center mt-4 text-sm text-slate-600">
+            <div className="flex justify-between items-center mt-4 text-sm text-[#5A5D63]">
               <div>
                 {filteredInspections.length} of {totalCount} inspections
                 {searchTerm && ` matching "${searchTerm}"`}
