@@ -592,8 +592,12 @@ const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
                 </p>
               </div>
 
-              {/* Stable area selection layout with proper scoping - 2 per row max */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Dynamic area selection layout based on LGA count */}
+              <div className={`grid gap-4 ${
+                selectedLGAs.length === 1
+                  ? "grid-cols-1"
+                  : "grid-cols-1 lg:grid-cols-2"
+              }`}>
                 {stableLGAOrder
                   .filter((lgaValue) =>
                     selectedLGAs.some((lga) => lga.value === lgaValue),
