@@ -151,7 +151,6 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   return (
     <>
       <GlobalPropertyCard
-        tab={tab}
         property={property}
         cardData={cardData}
         images={images}

@@ -14,16 +14,32 @@ import {
   FiX,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
+import toast from "react-hot-toast";
 
 interface InspectionDateTimeStepProps {
   userType: "seller" | "buyer";
   negotiationAction?: {
-    type: "accept" | "counter" | "requestChanges";
+    type: "accept" | "counter" | "reject";
     counterPrice?: number;
     loiFile?: File;
-    changeRequest?: string;
+    rejectReason?: string;
   } | null;
 }
+
+export interface InspectionModeOption {
+  value: "in_person" | "virtual";
+  label: string;
+  icon: string;
+}
+
+const actionLabelMap: Record<
+  "accept" | "counter" | "reject",
+  string
+> = {
+  accept: "Accept",
+  counter: "Counter",
+  reject: "Reject",
+};
 
 const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
   userType,
@@ -34,7 +50,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     submitNegotiationAction,
     createAcceptPayload,
     createCounterPayload,
-    createRequestChangesPayload,
+    createRejectPayload,
     uploadFile,
   } = useSecureNegotiation();
 
@@ -94,7 +110,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     display: string;
     isPassed?: boolean;
   }
-
+  
   // Generate available times (8 AM to 6 PM, hourly only)
   const availableTimes = useMemo(() => {
     const times: TimeObj[] = [];
@@ -309,10 +325,9 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
     return details?.inspectionMode || newInspectionMode || "in_person";
   }, [details?.inspectionMode, newInspectionMode]);
 
-  const inspectionModeOptions = [
+  const inspectionModeOptions: InspectionModeOption[] = [
     { value: "in_person", label: "In Person", icon: "👥" },
     { value: "virtual", label: "Virtual", icon: "💻" },
-    { value: "developer_visit", label: "Developer Visit", icon: "🏗️" }
   ];
 
   const getInspectionModeDisplay = (mode: string) => {
@@ -341,7 +356,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const handleConfirmDateTime = async () => {
     if (!currentDate || !currentTime) {
-      console.error("Date or time not selected");
+      toast.error("Date or time not selected")
       return;
     }
 
@@ -359,19 +374,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
               currentInspectionMode,
             );
             break;
+          case "reject":
+            payload = createRejectPayload(
+              inspectionType!,
+              negotiationAction.rejectReason,
+              newDate,
+              newTime,
+              newInspectionMode,
+            );
+            break;
           case "counter":
             payload = createCounterPayload(
               inspectionType!,
               negotiationAction.counterPrice,
-              undefined,
-              currentDate,
-              currentTime,
-              currentInspectionMode,
-            );
-            break;
-          case "requestChanges":
-            payload = createRequestChangesPayload(
-              negotiationAction.changeRequest || "",
               currentDate,
               currentTime,
               currentInspectionMode,
@@ -388,7 +403,14 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         );
       }
 
-      await submitNegotiationAction(inspectionId!, userType, payload);
+      const response = await submitNegotiationAction(inspectionId!, userType, payload);
+
+      if (response.success) {
+        toast.success(response.message)
+      }else{
+        toast.error(response.error)
+      }
+
     } catch (error) {
       console.error("Failed to confirm inspection date/time:", error);
     }
@@ -396,7 +418,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
 
   const handleUpdateDateTime = async () => {
     if (!newDate || !newTime) {
-      console.error("New date or time not selected");
+      toast.error("Date or time not selected")
       return;
     }
 
@@ -407,21 +429,26 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         // We're coming from a negotiation action, include that in the payload
         switch (negotiationAction.type) {
           case "accept":
-            payload = createAcceptPayload(inspectionType!, newDate, newTime, newInspectionMode);
+            payload = createAcceptPayload(
+              inspectionType!, 
+              newDate, 
+              newTime, 
+              newInspectionMode
+            );
             break;
-          case "counter":
-            payload = createCounterPayload(
+          case "reject":
+            payload = createRejectPayload(
               inspectionType!,
-              negotiationAction.counterPrice,
-              undefined,
+              negotiationAction.rejectReason,
               newDate,
               newTime,
               newInspectionMode,
             );
             break;
-          case "requestChanges":
-            payload = createRequestChangesPayload(
-              negotiationAction.changeRequest || "",
+          case "counter":
+            payload = createCounterPayload(
+              inspectionType!,
+              negotiationAction.counterPrice,
               newDate,
               newTime,
               newInspectionMode,
@@ -433,15 +460,19 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
         payload = createCounterPayload(
           inspectionType!,
           undefined,
-          undefined,
           newDate,
           newTime,
           newInspectionMode,
         );
       }
+      const response = await submitNegotiationAction(inspectionId!, userType, payload);
 
-      await submitNegotiationAction(inspectionId!, userType, payload);
-
+      if (response.success) {
+        toast.success(response.message)
+      }else{
+        toast.error(response.error)
+      }
+      
       setShowUpdateForm(false);
     } catch (error) {
       console.error("Failed to update inspection date/time:", error);
@@ -616,7 +647,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
       {/* Update Schedule Modal - FIXED: Full backdrop overlay */}
       {showUpdateForm && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 -top-6 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
           onClick={() => setShowUpdateForm(false)}
         >
           <motion.div
@@ -774,6 +805,9 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                       New Schedule Summary
                     </h4>
                     <p className="text-blue-700">
+                      <strong>Response Type:</strong> {negotiationAction ? actionLabelMap[negotiationAction.type] : null}
+                    </p>
+                    <p className="text-blue-700">
                       <strong>Date:</strong> {formatDate(newDate)}
                     </p>
                     <p className="text-blue-700">
@@ -806,7 +840,7 @@ const InspectionDateTimeStep: React.FC<InspectionDateTimeStepProps> = ({
                     className="flex-1 py-3 px-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
                   >
                     {negotiationAction
-                      ? `Update & ${negotiationAction.type === "accept" ? "Accept" : negotiationAction.type === "counter" ? "Counter" : "Submit"}`
+                      ? `Update & ${actionLabelMap[negotiationAction.type]}`
                       : "Update Schedule"}
                   </button>
                 </div>

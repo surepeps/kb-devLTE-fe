@@ -8,19 +8,17 @@ import {
   FiDownload,
   FiCheckCircle,
   FiXCircle,
-  FiEdit3,
   FiAlertTriangle,
-  FiUpload,
+  FiClock,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
-import DocumentUpload from "../DocumentUpload";
+import toast from "react-hot-toast";
 
 interface LOINegotiationStepProps {
   userType: "seller" | "buyer";
   onActionSelected: (
-    action: "accept" | "reject" | "requestChanges",
-    newLoiFile?: File,
-    changeRequest?: string,
+    action: "accept" | "reject",
+    rejectReason?: string,
   ) => void;
 }
 
@@ -34,22 +32,18 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     createAcceptPayload,
     createRejectPayload,
     createCounterPayload,
-    createRequestChangesPayload,
     uploadFile,
   } = useSecureNegotiation();
   const { details, loadingStates, inspectionId, inspectionType } = state;
   const counterCount = details?.counterCount || 0;
 
   const [showRejectModal, setShowRejectModal] = useState(false);
-  const [showRequestChangesModal, setShowRequestChangesModal] = useState(false);
-  const [changeRequest, setChangeRequest] = useState("");
-  const [newLoiFile, setNewLoiFile] = useState<File | null>(null);
-  const [uploadedDocumentUrl, setUploadedDocumentUrl] = useState<string>("");
+  const [rejectReason, setRejectReason] = useState("");
   const [isReuploadMode, setIsReuploadMode] = useState(false);
 
   // Prevent background scroll when modals are open
   useEffect(() => {
-    if (showRejectModal || showRequestChangesModal) {
+    if (showRejectModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -58,10 +52,9 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [showRejectModal, showRequestChangesModal]);
+  }, [showRejectModal]);
 
   // Check if changes were requested and user is buyer
-  // Note: In the new API structure, we would check the stage and other indicators
   const hasRequestedChanges =
     details?.stage === "negotiation" &&
     details?.pendingResponseFrom === "buyer";
@@ -83,57 +76,22 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
   };
 
   const handleAccept = async () => {
-    // Don't submit immediately, proceed to next step
+    if (userType !== "seller") {
+      toast.error("Only sellers are allowed to perform this action");
+      return;
+    }
     onActionSelected("accept");
   };
 
   const handleReject = async () => {
-    // Don't submit immediately, proceed to next step (inspection)
+    if (userType !== "seller") {
+      toast.error("Only sellers are allowed to perform this action");
+      return;
+    }
+
     setShowRejectModal(false);
-    onActionSelected("reject");
-  };
-
-  const handleRequestChanges = async () => {
-    if (!canRequestChanges()) {
-      alert("You have reached the maximum number of LOI change requests (3)");
-      return;
-    }
-
-    if (!changeRequest.trim()) {
-      alert("Please enter your feedback for the changes");
-      return;
-    }
-
-    // Pass the change request to proceed to next step
-    setShowRequestChangesModal(false);
-    onActionSelected("requestChanges", undefined, changeRequest);
-    setChangeRequest("");
-  };
-
-  const handleFileUpload = async (file: File): Promise<string> => {
-    setNewLoiFile(file);
-    // Upload the file using the context method
-    const url = await uploadFile(file);
-    return url;
-  };
-
-  const handleUploadComplete = (url: string) => {
-    setUploadedDocumentUrl(url);
-  };
-
-  const handleUploadError = (error: string) => {
-    console.error("Upload error:", error);
-    alert(error);
-  };
-
-  const handleReuploadSubmit = async () => {
-    if (!newLoiFile || !uploadedDocumentUrl) {
-      alert("Please upload a new LOI file");
-      return;
-    }
-
-    // Pass the file and URL to the next step
-    onActionSelected("accept", newLoiFile);
+    onActionSelected("reject", rejectReason);
+    setRejectReason("");
   };
 
   const downloadLOI = () => {
@@ -147,7 +105,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
       document.body.removeChild(element);
     } catch (error) {
       console.error("Download failed:", error);
-      alert("Failed to download document. Please try again.");
+      toast.error("Failed to download document. Please try again.");
     }
   };
 
@@ -177,6 +135,14 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
     }
   };
 
+  // Helper function to get appropriate message for buyers
+  const getBuyerStatusMessage = () => {
+    if (isBuyerWithRequestedChanges) {
+      return "Please update your LOI based on the seller's feedback and resubmit.";
+    }
+    return "Your Letter of Intention has been submitted and is awaiting the seller's review. You will be notified once they make a decision.";
+  };
+
   return (
     <div className="space-y-6">
       {/* Loading Overlay */}
@@ -204,10 +170,8 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </h2>
         <p className="text-gray-600">
           {userType === "seller"
-            ? "Review the buyer's Letter of Intention. You can accept, request changes, or reject."
-            : isBuyerWithRequestedChanges
-              ? "Please update your LOI based on the seller's feedback and resubmit."
-              : "Your Letter of Intention is being reviewed by the seller."}
+            ? "Review the buyer's Letter of Intention. You can accept or reject this proposal."
+            : getBuyerStatusMessage()}
         </p>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="p-3 bg-[#EEF1F1] rounded-lg border border-[#C7CAD0]">
@@ -215,14 +179,26 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               Inspection Type: LOI Negotiation
             </p>
           </div>
-          <div className="p-3 bg-[#FFF3E0] rounded-lg border border-[#FFB74D]">
-            <p className="text-sm font-medium text-[#E65100]">
-              Change Requests: {counterCount}/3 used
-            </p>
-            <p className="text-xs text-[#E65100] mt-1">
-              {getRemainingChanges()} requests remaining
-            </p>
-          </div>
+          {userType === "seller" && (
+            <div className="p-3 bg-[#FFF3E0] rounded-lg border border-[#FFB74D]">
+              <p className="text-sm font-medium text-[#E65100]">
+                Change Requests: {counterCount}/3 used
+              </p>
+              <p className="text-xs text-[#E65100] mt-1">
+                {getRemainingChanges()} requests remaining
+              </p>
+            </div>
+          )}
+          {userType === "buyer" && (
+            <div className="p-3 bg-[#E3F2FD] rounded-lg border border-[#2196F3]">
+              <div className="flex items-center space-x-2">
+                <FiClock className="w-4 h-4 text-[#1976D2]" />
+                <p className="text-sm font-medium text-[#1976D2]">
+                  Status: Under Review
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -281,7 +257,27 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </div>
       </motion.div>
 
-      {/* Action Buttons for Seller - Only 3 buttons as per requirements */}
+      {/* Buyer Status Card - Only shown to buyers when not in reupload mode */}
+      {userType === "buyer" && !isReuploadMode && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-blue-50 rounded-lg p-6 border border-blue-200"
+        >
+          <div className="flex items-center space-x-3 mb-3">
+            <FiClock className="w-5 h-5 text-blue-600" />
+            <h4 className="font-medium text-blue-800">
+              Awaiting Seller Response
+            </h4>
+          </div>
+          <p className="text-blue-700 text-sm">
+            Your Letter of Intention has been submitted successfully. The seller will review your proposal and respond with either acceptance or rejection. You will receive a notification once they make their decision.
+          </p>
+        </motion.div>
+      )}
+
+      {/* Action Buttons for Seller ONLY */}
       {userType === "seller" && !isReuploadMode && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -293,7 +289,7 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
             Choose Your Response
           </h4>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Accept Button */}
             <button
               onClick={handleAccept}
@@ -302,16 +298,6 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
             >
               <FiCheckCircle className="w-5 h-5" />
               <span>Accept LOI</span>
-            </button>
-
-            {/* Request Changes Button */}
-            <button
-              onClick={() => setShowRequestChangesModal(true)}
-              disabled={loadingStates.submitting || !canRequestChanges()}
-              className="flex items-center justify-center space-x-2 p-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              <FiEdit3 className="w-5 h-5" />
-              <span>Request Changes</span>
             </button>
 
             {/* Reject Button */}
@@ -342,49 +328,9 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
         </motion.div>
       )}
 
-      {/* Reupload Section for Buyer */}
-      {isBuyerWithRequestedChanges && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg p-6 border border-[#C7CAD0]"
-        >
-          <h4 className="font-medium text-[#09391C] mb-4">
-            Update Your Letter of Intention
-          </h4>
-
-          <div className="space-y-6">
-            <DocumentUpload
-              onFileUpload={handleFileUpload}
-              onUploadComplete={handleUploadComplete}
-              onError={handleUploadError}
-              acceptedTypes={[".docx", ".doc", ".pdf"]}
-              maxSizeInMB={10}
-              label="Upload Updated LOI Document"
-              description="Drag and drop your updated LOI document here, or click to browse"
-              required={true}
-            />
-
-            <button
-              onClick={handleReuploadSubmit}
-              disabled={!uploadedDocumentUrl || loadingStates.accepting}
-              className="w-full flex items-center justify-center space-x-2 p-4 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
-            >
-              <FiUpload className="w-5 h-5" />
-              <span>
-                {loadingStates.accepting
-                  ? "Submitting..."
-                  : "Submit Updated LOI"}
-              </span>
-            </button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Reject Confirmation Modal */}
-      {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {/* Reject Confirmation Modal - Only accessible by sellers */}
+      {showRejectModal && userType === "seller" && (
+        <div className="fixed inset-0 -top-6 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -399,52 +345,19 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
               </div>
 
               <p className="text-gray-600 mb-6">
-                Are you sure you want to reject this Letter of Intention? This
-                will terminate the joint venture negotiation process.
+                Are you sure you want to reject this Letter of Intention?
+                You can still continue with the inspection process after rejecting this joint venture negotiation.
               </p>
-
-              <div className="flex space-x-4">
-                <button
-                  onClick={handleReject}
-                  disabled={loadingStates.rejecting}
-                  className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
-                >
-                  {loadingStates.rejecting ? "Rejecting..." : "Yes, Reject"}
-                </button>
-                <button
-                  onClick={() => setShowRejectModal(false)}
-                  className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Request Changes Modal */}
-      {showRequestChangesModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full border border-[#C7CAD0]"
-          >
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-                Request Changes to LOI
-              </h3>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Feedback for Changes
+                    Feedback for Rejecting (Optional)
                   </label>
                   <textarea
-                    value={changeRequest}
-                    onChange={(e) => setChangeRequest(e.target.value)}
-                    placeholder="Describe the changes you'd like to see in the LOI..."
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="State the reason for rejecting LOI..."
                     rows={4}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent resize-none"
                   />
@@ -452,18 +365,16 @@ const LOINegotiationStep: React.FC<LOINegotiationStepProps> = ({
 
                 <div className="flex space-x-4">
                   <button
-                    onClick={handleRequestChanges}
-                    disabled={!changeRequest.trim() || loadingStates.submitting}
-                    className="flex-1 py-3 bg-[#09391C] text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors duration-200"
+                    onClick={handleReject}
+                    disabled={loadingStates.rejecting}
+                    className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
                   >
-                    {loadingStates.submitting
-                      ? "Submitting..."
-                      : "Continue to Inspection"}
+                    {loadingStates.rejecting ? "Rejecting..." : "Yes, Reject"}
                   </button>
                   <button
                     onClick={() => {
-                      setShowRequestChangesModal(false);
-                      setChangeRequest("");
+                      setShowRejectModal(false);
+                      setRejectReason("");
                     }}
                     className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
                   >

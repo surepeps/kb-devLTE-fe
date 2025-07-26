@@ -10,15 +10,17 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import StandardPreloader from "@/components/new-marketplace/StandardPreloader";
+import toast from "react-hot-toast";
 
 interface PriceNegotiationStepProps {
   userType: "seller" | "buyer";
   onActionSelected: (
     action: "accept" | "counter" | "reject",
     counterPrice?: number,
+    rejectReason?: string,
   ) => void;
 }
-
+ 
 const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   userType,
   onActionSelected,
@@ -33,6 +35,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
   const { details, loadingStates, inspectionId, inspectionType } = state;
   const [counterPrice, setCounterPrice] = useState<string>("");
+  const [rejectReason, setRejectReason] = useState<string>("");
   const [showCounterModal, setShowCounterModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
 
@@ -89,7 +92,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
   const getRemainingCounters = () => {
     return Math.max(0, 3 - counterCount);
-  };
+  }; 
 
   const isAboveAsk = currentOffer > propertyPrice;
   const difference = calculateDifference();
@@ -102,7 +105,8 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
   const handleReject = async () => {
     // Don't submit immediately, proceed to next step (inspection)
     setShowRejectModal(false);
-    onActionSelected("reject");
+    onActionSelected("reject", undefined, rejectReason);
+    setRejectReason("")
   };
 
   const formatCounterPrice = (value: string) => {
@@ -150,7 +154,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
   const handleCounterSubmit = async () => {
     if (!canCounter()) {
-      alert("You have reached the maximum number of counter negotiations (3)");
+      toast.error("You have reached the maximum number of counter negotiations (3)")
       return;
     }
 
@@ -158,7 +162,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
     const validation = validateCounterPrice(counterAmount);
 
     if (!validation.isValid) {
-      alert(validation.message);
+      toast.error(validation.message)
       return;
     }
 
@@ -242,7 +246,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             }`}
           >
             <div className="text-sm text-gray-600 mb-1">
-              {userType === "seller" ? "Buyer&apos;s Offer" : "Current Offer"}
+              {userType === "seller" ? "Buyer's Offer" : "Current Offer"}
             </div>
             <div
               className={`text-2xl font-bold ${
@@ -254,20 +258,6 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
             <div className="text-sm text-gray-600 mt-1">
               {isAboveAsk ? "+" : "-"}
               {difference.percentage}% from original
-            </div>
-          </div>
-        </div>
-
-        {/* Difference Summary */}
-        <div className="mt-4 p-4 bg-white rounded-lg border border-[#C7CAD0]">
-          <div className="text-center">
-            <div className="text-sm text-gray-600 mb-1">
-              {isAboveAsk
-                ? "Above original price by"
-                : "Below original price by"}
-            </div>
-            <div className="text-xl font-semibold text-[#09391C]">
-              {formatCurrency(difference.amount)}
             </div>
           </div>
         </div>
@@ -333,7 +323,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
       {/* Counter Offer Modal */}
       {showCounterModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 -top-6 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -399,7 +389,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
                       <div className="p-2 bg-yellow-50 border border-yellow-200 rounded">
                         <p className="text-xs text-yellow-700">
                           <span className="font-medium">Note:</span> Minimum
-                          offer allowed is 80% of seller's price:{" "}
+                          offer allowed is 80% of seller&spos;s price:{" "}
                           {formatCurrency(propertyPrice * 0.8)}
                         </p>
                       </div>
@@ -439,7 +429,7 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
 
       {/* Reject Confirmation Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 -top-6 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -454,24 +444,43 @@ const PriceNegotiationStep: React.FC<PriceNegotiationStepProps> = ({
               </div>
 
               <p className="text-gray-600 mb-6">
-                Are you sure you want to reject this offer? This will terminate
-                the negotiation and inspection process.
+                Are you sure you want to reject this offer?
+                This will end the current negotiation, but you can still proceed with the inspection process.
               </p>
 
-              <div className="flex space-x-4">
-                <button
-                  onClick={handleReject}
-                  disabled={loadingStates.rejecting}
-                  className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
-                >
-                  {loadingStates.rejecting ? "Rejecting..." : "Yes, Reject"}
-                </button>
-                <button
-                  onClick={() => setShowRejectModal(false)}
-                  className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
-                >
-                  Cancel
-                </button>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Feedback for Rejecting (Optional)
+                  </label>
+                  <textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="state the reason for rejecting this price offer..."
+                    rows={4}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#09391C] focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleReject}
+                    disabled={loadingStates.rejecting}
+                    className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+                  >
+                    {loadingStates.rejecting ? "Rejecting..." : "Yes, Reject"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowRejectModal(false);
+                      setRejectReason("");
+                    }}
+                    className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                
               </div>
             </div>
           </motion.div>

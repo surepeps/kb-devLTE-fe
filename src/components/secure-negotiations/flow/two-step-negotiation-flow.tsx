@@ -21,10 +21,11 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
     "loi" | "price" | "inspection"
   >("loi");
   const [negotiationAction, setNegotiationAction] = useState<{
-    type: "accept" | "counter" | "requestChanges";
+    type: "accept" | "counter" | "reject";
     counterPrice?: number;
     loiFile?: File;
     changeRequest?: string;
+    rejectReason?: string;
   } | null>(null);
 
   // Determine which steps are needed based on inspectionType
@@ -54,36 +55,26 @@ const TwoStepNegotiationFlow: React.FC<TwoStepNegotiationFlowProps> = ({
   }, [hasLOI, hasPriceNegotiation, stage]);
 
   const handleLOIComplete = (
-    action: "accept" | "reject" | "requestChanges",
-    newLoiFile?: File,
-    changeRequest?: string,
+    action: "accept" | "reject",
+    rejectReason?: string,
   ) => {
     setNegotiationAction({
-      type: action === "reject" ? "requestChanges" : action as "accept" | "requestChanges",
-      loiFile: newLoiFile,
-      changeRequest,
+      type: action,
+      rejectReason
     });
 
-    // For reject or requestChanges, proceed directly to inspection step
-    if (action === "reject" || action === "requestChanges") {
-      setCurrentStep("inspection");
-    } else {
-      // Move to price negotiation if available, otherwise inspection
-      if (hasPriceNegotiation) {
-        setCurrentStep("price");
-      } else {
-        setCurrentStep("inspection");
-      }
-    }
+    setCurrentStep("inspection");
   };
 
   const handlePriceNegotiationComplete = (
     action: "accept" | "counter" | "reject",
     counterPrice?: number,
+    rejectReason?: string,
   ) => {
     setNegotiationAction({
-      type: action === "reject" ? "requestChanges" : action,
+      type: action,
       counterPrice,
+      rejectReason,
     });
     // Always proceed to inspection section regardless of action
     setCurrentStep("inspection");

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Button from "@/components/general-components/button";
 import { POST_REQUEST, DELETE_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
 
 interface SimplifiedLOIUploadModalProps {
   isOpen: boolean;
@@ -29,7 +30,7 @@ interface SimplifiedLOIUploadModalProps {
     document: File | null;
     documentUrl?: string;
   } | null;
-}
+} 
 
 const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
   isOpen,
@@ -94,14 +95,15 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
       formData.append('file', file);
       formData.append('for', 'property-file');
 
-      const response = await POST_REQUEST('/upload-single-file', formData, {
+      const uploadSingleFileUrl = URLS.BASE + '/upload-single-file';
+      const response = await POST_REQUEST(uploadSingleFileUrl, formData, {
         'Content-Type': 'multipart/form-data',
       });
 
-      if (response.data?.url) {
-        setUploadedFileUrl(response.data.url);
+      if (response.success) {
+        setUploadedFileUrl(response.url);
         setUploadError("");
-      } else {
+      }else{
         setUploadError("Failed to upload file. Please try again.");
       }
     } catch (error) {

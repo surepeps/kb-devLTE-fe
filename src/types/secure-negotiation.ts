@@ -54,7 +54,7 @@ export interface InspectionDetails {
   propertyId: PropertyDetails;
   inspectionDate: string;
   inspectionTime: string;
-  inspectionMode?: "in_person" | "virtual" | "developer_visit";
+  inspectionMode?: "in_person" | "virtual";
   status: InspectionStatus;
   requestedBy: RequestedBy;
   transaction: string;
@@ -95,63 +95,17 @@ export interface AccessValidationResponse {
 
 // Base payload for all actions
 export interface BasePayload {
-  action: "accept" | "reject" | "counter" | "request_changes";
+  action: "accept" | "reject" | "counter";
   inspectionType: InspectionType;
   inspectionDate?: string;
   inspectionTime?: string;
-  reason?: string;
   rejectionReason?: string;
-}
-
-// Price negotiation payloads
-export interface AcceptPricePayload extends BasePayload {
-  action: "accept";
-  inspectionType: "price";
-}
-
-export interface RejectPricePayload extends BasePayload {
-  action: "reject";
-  inspectionType: "price";
-}
-
-export interface CounterPricePayload extends BasePayload {
-  action: "counter";
-  inspectionType: "price";
-  counterPrice: number;
-}
-
-// LOI negotiation payloads
-export interface AcceptLOIPayload extends BasePayload {
-  action: "accept";
-  inspectionType: "LOI";
-}
-
-export interface RejectLOIPayload extends BasePayload {
-  action: "reject";
-  inspectionType: "LOI";
-}
-
-export interface RequestChangesLOIPayload extends BasePayload {
-  action: "request_changes";
-  inspectionType: "LOI";
-  reason: string;
-}
-
-export interface CounterLOIPayload extends BasePayload {
-  action: "counter";
-  inspectionType: "LOI";
-  documentUrl: string;
+  counterPrice?: number;
+  inspectionMode?: "in_person" | "virtual";
 }
 
 // Union type for all possible payloads
-export type NegotiationPayload =
-  | AcceptPricePayload
-  | RejectPricePayload
-  | CounterPricePayload
-  | AcceptLOIPayload
-  | RejectLOIPayload
-  | RequestChangesLOIPayload
-  | CounterLOIPayload;
+export type NegotiationPayload = BasePayload
 
 // Upload response for LOI documents
 export interface UploadResponse {

@@ -14,7 +14,6 @@ import { X } from "lucide-react";
 import { Property, PropertyImage } from "@/types/property.types";
 
 interface GlobalPropertyCardProps {
-  tab: "buy" | "rent" | "shortlet";
   property: Property;
   cardData: { header: string; value: string }[];
   images: PropertyImage[];
@@ -34,7 +33,6 @@ interface GlobalPropertyCardProps {
 }
 
 const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
-  tab,
   property,
   cardData,
   images,

@@ -261,22 +261,21 @@ interface SecureNegotiationContextType {
     inspectionType: InspectionType,
     inspectionDate?: string,
     inspectionTime?: string,
+    inspectionMode?: string,
   ) => NegotiationPayload;
   createRejectPayload: (
     inspectionType: InspectionType,
     reason?: string,
+    inspectionDate?: string,
+    inspectionTime?: string,
+    inspectionMode?: string,
   ) => NegotiationPayload;
   createCounterPayload: (
     inspectionType: InspectionType,
     counterPrice?: number,
-    documentUrl?: string,
     inspectionDate?: string,
     inspectionTime?: string,
-  ) => NegotiationPayload;
-  createRequestChangesPayload: (
-    reason: string,
-    inspectionDate?: string,
-    inspectionTime?: string,
+    inspectionMode?: string,
   ) => NegotiationPayload;
 
   // File upload method
@@ -496,19 +495,23 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const createRejectPayload = useCallback(
-    (inspectionType: InspectionType, reason?: string): NegotiationPayload => {
+    (
+      inspectionType: InspectionType, 
+      reason?: string,
+      inspectionDate?: string,
+      inspectionTime?: string,
+      inspectionMode?: string,
+    ): NegotiationPayload => {
       const payload: any = {
         action: "reject",
         inspectionType,
       };
 
-      if (reason) {
-        if (inspectionType === "LOI") {
-          payload.rejectionReason = reason;
-        } else {
-          payload.reason = reason;
-        }
-      }
+      payload.rejectionReason = reason;
+
+      if (inspectionDate) payload.inspectionDate = inspectionDate;
+      if (inspectionTime) payload.inspectionTime = inspectionTime;
+      if (inspectionMode) payload.inspectionMode = inspectionMode;
 
       return payload;
     },
@@ -519,7 +522,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     (
       inspectionType: InspectionType,
       counterPrice?: number,
-      documentUrl?: string,
       inspectionDate?: string,
       inspectionTime?: string,
       inspectionMode?: string,
@@ -533,10 +535,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
         payload.counterPrice = counterPrice;
       }
 
-      if (inspectionType === "LOI" && documentUrl) {
-        payload.documentUrl = documentUrl;
-      }
-
       if (inspectionDate) payload.inspectionDate = inspectionDate;
       if (inspectionTime) payload.inspectionTime = inspectionTime;
       if (inspectionMode) payload.inspectionMode = inspectionMode;
@@ -546,27 +544,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
-  const createRequestChangesPayload = useCallback(
-    (
-      reason: string,
-      inspectionDate?: string,
-      inspectionTime?: string,
-      inspectionMode?: string,
-    ): NegotiationPayload => {
-      const payload: any = {
-        action: "request_changes",
-        inspectionType: "LOI",
-        reason,
-      };
-
-      if (inspectionDate) payload.inspectionDate = inspectionDate;
-      if (inspectionTime) payload.inspectionTime = inspectionTime;
-      if (inspectionMode) payload.inspectionMode = inspectionMode;
-
-      return payload;
-    },
-    [],
-  );
 
   // Main unified negotiation action method
   const submitNegotiationAction = useCallback(
@@ -632,12 +609,11 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
   const canNegotiate = useCallback(
     (userType: "seller" | "buyer") => {
       return (
-        state.stage === "negotiation" &&
         state.pendingResponseFrom === userType &&
         !state.isExpired
       );
     },
-    [state.stage, state.pendingResponseFrom, state.isExpired],
+    [state.pendingResponseFrom, state.isExpired],
   );
 
   // Reopen inspection method (keeping for backward compatibility)
@@ -704,7 +680,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       createAcceptPayload,
       createRejectPayload,
       createCounterPayload,
-      createRequestChangesPayload,
       uploadFile,
       isUserTurn,
       canNegotiate,
@@ -728,7 +703,6 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
       createAcceptPayload,
       createRejectPayload,
       createCounterPayload,
-      createRequestChangesPayload,
       uploadFile,
       isUserTurn,
       canNegotiate,
