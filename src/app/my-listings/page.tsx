@@ -331,7 +331,7 @@ const MyListingPage = () => {
     if (viewMode === "list") {
       return "grid grid-cols-1 gap-4";
     }
-    return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6";
+    return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr";
   };
 
   return (
@@ -526,6 +526,7 @@ const MyListingPage = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.05 }}
+                    className="h-full"
                   >
                     <MyListingPropertyCard
                       property={property}
