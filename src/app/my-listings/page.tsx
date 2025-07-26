@@ -15,74 +15,16 @@ import MyListingPropertyCard from "@/components/mylisting/MyListingPropertyCard"
 import Pagination from "@/components/mylisting/Pagination";
 import DeleteConfirmationModal from "@/components/mylisting/delete-confirmation-modal";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Property,
+  PaginationData,
+  SearchFilters,
+  PropertiesApiResponse,
+  StatusUpdatePayload
+} from "@/types/my-listings.types";
+import "@/styles/my-listings.css";
 
-interface Property {
-  _id: string;
-  propertyType: string;
-  propertyCategory: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  landSize: {
-    measurementType: string;
-    size: number;
-  };
-  docOnProperty: Array<{
-    docName: string;
-    isProvided: boolean;
-  }>;
-  owner: {
-    _id: string;
-    fullName: string;
-    email: string;
-  };
-  areYouTheOwner: boolean;
-  features: string[];
-  tenantCriteria: string[];
-  additionalFeatures: {
-    noOfBedroom?: number;
-    noOfBathroom?: number;
-    noOfToilet?: number;
-    noOfCarPark?: number;
-  };
-  description: string;
-  isTenanted: string;
-  isAvailable: boolean;
-  status: string;
-  briefType: string;
-  isPremium: boolean;
-  isApproved: boolean;
-  isRejected: boolean;
-  isDeleted: boolean;
-  createdByRole: string;
-  createdAt: string;
-  updatedAt: string;
-  pictures?: string[];
-}
 
-interface SearchFilters {
-  page?: number;
-  limit?: number;
-  status?: string;
-  propertyType?: string;
-  propertyCategory?: string;
-  state?: string;
-  localGovernment?: string;
-  area?: string;
-  priceMin?: number;
-  priceMax?: number;
-  isApproved?: boolean;
-}
-
-interface PaginationData {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
 
 const MyListingPage = () => {
   const { user } = useUserContext();
@@ -171,7 +113,7 @@ const MyListingPage = () => {
       setHasActiveFilters(filtersApplied);
 
       const url = `${URLS.BASE}/account/properties/fetchAll?${queryParams.toString()}`;
-      const response = await GET_REQUEST(url, Cookies.get("token"));
+      const response: PropertiesApiResponse = await GET_REQUEST(url, Cookies.get("token"));
 
       if (response?.success) {
         const propertiesData = response.data || [];
@@ -232,8 +174,21 @@ const MyListingPage = () => {
     setShowDeleteModal(true);
   };
 
-  const handleEditProperty = (property: Property) => {
-    router.push(`/update-property/${property._id}`);
+  const handleEditProperty = async (property: Property) => {
+    try {
+      // First get the property details using the new endpoint
+      const url = `${URLS.BASE}/account/properties/${property._id}/getOne`;
+      const response = await GET_REQUEST(url, Cookies.get("token"));
+
+      if (response?.success) {
+        router.push(`/update-property/${property._id}`);
+      } else {
+        toast.error("Failed to load property details for editing");
+      }
+    } catch (error) {
+      console.error("Error loading property for edit:", error);
+      toast.error("Failed to load property details");
+    }
   };
 
   const handleViewProperty = (property: Property) => {
@@ -248,10 +203,14 @@ const MyListingPage = () => {
 
   const handleChangeStatus = async (property: Property) => {
     try {
-      const url = `${URLS.BASE}/account/properties/${property._id}/status`;
+      const url = `${URLS.BASE}/account/properties/${property._id}/updateStatus`;
+      const payload: StatusUpdatePayload = {
+        status: !property.isAvailable ? "available" : "unavailable",
+        reason: "Status updated from my listings"
+      };
       const response = await PUT_REQUEST(
         url,
-        { isAvailable: !property.isAvailable },
+        payload,
         Cookies.get("token")
       );
 
@@ -273,7 +232,7 @@ const MyListingPage = () => {
     if (!selectedProperty) return;
 
     try {
-      const url = `${URLS.BASE}/account/properties/${selectedProperty._id}`;
+      const url = `${URLS.BASE}/account/properties/${selectedProperty._id}/delete`;
       const response = await DELETE_REQUEST(url, Cookies.get("token"));
 
       if (response?.success) {
@@ -313,7 +272,7 @@ const MyListingPage = () => {
     if (viewMode === "list") {
       return "grid grid-cols-1 gap-4";
     }
-    return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6";
+    return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr";
   };
 
   return (
@@ -508,6 +467,7 @@ const MyListingPage = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.05 }}
+                    className="h-full"
                   >
                     <MyListingPropertyCard
                       property={property}
