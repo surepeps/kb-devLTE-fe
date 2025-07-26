@@ -140,7 +140,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       updatePropertyData("area", "");
     }
   }, [propertyData.state]);
-
+ 
   useEffect(() => {
     if (propertyData.state && propertyData.lga) {
       // Get areas for selected state and LGA
@@ -326,7 +326,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
             </div>
           </div>
         )}
-
+ 
         {/* Shortlet Duration (for shortlet only) */}
         {shouldShowField(
           "shortletDuration",

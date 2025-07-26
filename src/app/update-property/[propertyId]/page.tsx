@@ -288,10 +288,10 @@ const UpdateProperty = () => {
                           property.briefType === "Rent" ? "rent" :
                           property.briefType === "Shortlet" ? "shortlet" :
                           property.briefType === "Joint Venture" ? "jv" : "sell") as "" | "rent" | "shortlet" | "jv" | "sell",
-            propertyCategory: property.propertyCategory || "",
-            propertyCondition: property.propertyCondition || "",
-            typeOfBuilding: property.typeOfBuilding || "",
-            rentalType: property.rentalType || "",
+            propertyCategory: (property.propertyType || "").replace(/^./, (c: string) => c.toUpperCase()),
+            propertyCondition: (property.propertyCondition || "").replace(/^./, (c: string) => c.toUpperCase()),
+            typeOfBuilding: property.typeOfBuilding || property.buildingType,
+            rentalType: (property.rentalType || "").replace(/^./, (c: string) => c.toUpperCase()),
             leaseHold: property.leaseHold || "",
             holdDuration: property.holdDuration || "",
             shortletDuration: property.shortletDuration || "",
@@ -316,7 +316,7 @@ const UpdateProperty = () => {
             documents: property.docOnProperty?.map((doc: any) => doc.docName) || [],
             features: property.features || [],
             tenantCriteria: property.tenantCriteria || [],
-            rentalConditions: property.rentalConditions || [],
+            rentalConditions: property.tenantCriteria || [],
             employmentType: property.employmentType || "",
             tenantGenderPreference: property.tenantGenderPreference || "",
             jvConditions: property.jvConditions || [],
@@ -353,7 +353,8 @@ const UpdateProperty = () => {
               parties: false,
               otherRules: "",
             },
-            videos: [],
+            // pictures: property.pictures || [],
+            videos: property.videos || [],
           };
 
           // Update property data

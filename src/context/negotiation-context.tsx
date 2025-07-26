@@ -449,7 +449,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
       try {
         const token = Cookies.get("token");
         const response = method === "PUT"
-          ? await PUT_REQUEST(url, payload, undefined, token)
+          ? await PUT_REQUEST(url, payload, token)
           : await POST_REQUEST(url, payload, undefined, token);
 
         if (response.success) {

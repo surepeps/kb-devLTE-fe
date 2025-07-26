@@ -96,7 +96,6 @@ const NotificationsPage: React.FC = () => {
       const response = await PUT_REQUEST(
         `${URLS.BASE}/account/notifications/${notificationId}/markRead`,
         {},
-        {},
         Cookies.get("token") || "",
       );
 
@@ -118,7 +117,6 @@ const NotificationsPage: React.FC = () => {
     try {
       const response = await PUT_REQUEST(
         `${URLS.BASE}/account/notifications/${notificationId}/markUnRead`,
-        {},
         {},
         Cookies.get("token") || "",
       );
@@ -207,7 +205,6 @@ const NotificationsPage: React.FC = () => {
       // Attempt API call
       await PUT_REQUEST(
         `${URLS.BASE}/account/notifications/markAllRead`,
-        {},
         {},
         Cookies.get("token") || "",
       );
