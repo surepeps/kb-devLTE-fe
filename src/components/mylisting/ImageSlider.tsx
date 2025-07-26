@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Building } from "lucide-react";
 
 interface ImageSliderProps {
@@ -16,32 +16,84 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   className = "",
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   const hasImages = images && images.length > 0;
   const hasMultipleImages = hasImages && images.length > 1;
 
-  const goToPrevious = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (hasMultipleImages) {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === 0 ? images.length - 1 : prevIndex - 1,
-      );
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && hasMultipleImages) {
+      goToNext();
+    }
+    if (isRightSwipe && hasMultipleImages) {
+      goToPrevious();
     }
   };
 
-  const goToNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (hasMultipleImages) {
+  const goToPrevious = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (hasMultipleImages && !isTransitioning) {
+      setIsTransitioning(true);
+      setCurrentIndex((prevIndex) =>
+        prevIndex === 0 ? images.length - 1 : prevIndex - 1,
+      );
+      setTimeout(() => setIsTransitioning(false), 300);
+    }
+  };
+
+  const goToNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (hasMultipleImages && !isTransitioning) {
+      setIsTransitioning(true);
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1 ? 0 : prevIndex + 1,
       );
+      setTimeout(() => setIsTransitioning(false), 300);
     }
   };
 
   const goToSlide = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentIndex(index);
+    if (!isTransitioning) {
+      setIsTransitioning(true);
+      setCurrentIndex(index);
+      setTimeout(() => setIsTransitioning(false), 300);
+    }
   };
+
+  // Auto-advance slides (optional)
+  useEffect(() => {
+    if (!hasMultipleImages) return;
+
+    const interval = setInterval(() => {
+      if (!isTransitioning) {
+        goToNext();
+      }
+    }, 5000); // Auto-advance every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [hasMultipleImages, isTransitioning]);
 
   if (!hasImages) {
     return (
@@ -59,12 +111,24 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   }
 
   return (
-    <div className={`relative overflow-hidden group ${className}`}>
+    <div
+      className={`relative overflow-hidden group ${className}`}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Main Image */}
       <img
+        ref={imageRef}
         src={images[currentIndex]}
         alt={`${propertyType} - Image ${currentIndex + 1}`}
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+          isTransitioning ? 'opacity-90' : 'opacity-100'
+        }`}
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.src = '/placeholder-property.svg';
+        }}
       />
 
       {/* Overlay Gradient */}
@@ -75,7 +139,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
+            disabled={isTransitioning}
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-black/80 hover:scale-110 z-10 disabled:opacity-50 disabled:cursor-not-allowed"
             type="button"
           >
             <ChevronLeft size={16} />
@@ -83,7 +148,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
 
           <button
             onClick={goToNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
+            disabled={isTransitioning}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-black/80 hover:scale-110 z-10 disabled:opacity-50 disabled:cursor-not-allowed"
             type="button"
           >
             <ChevronRight size={16} />
