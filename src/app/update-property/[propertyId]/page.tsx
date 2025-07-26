@@ -272,7 +272,7 @@ const UpdateProperty = () => {
         setIsInitialLoading(true);
         setLoadingError(null);
 
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/get-property/${propertyId}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/account/properties/${propertyId}/getOne`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,
@@ -644,8 +644,8 @@ const UpdateProperty = () => {
       };
 
       // 5. Submit to API
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/update-property/${propertyId}`;
-      const response = await axios.put(url, payload, {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/account/properties/${propertyId}/edit`;
+      const response = await axios.patch(url, payload, {
         headers: {
           Authorization: `Bearer ${Cookies.get("token")}`,
           'Content-Type': 'application/json',
@@ -654,7 +654,7 @@ const UpdateProperty = () => {
 
       if (response && (response as any).status === 200 && (response as any).data.success) {
         toast.success("Property updated successfully!");
-        setShowSuccessModal(true);
+        router.push("/my-listings");
       } else {
         const errorMessage =
           (response as any)?.data?.message || "Failed to update property";

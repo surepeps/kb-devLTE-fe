@@ -2,15 +2,15 @@
 
 "use client";
 import React, { useState } from "react";
-import { 
-  MapPin, 
-  Bed, 
-  Bath, 
-  Car, 
-  MoreVertical, 
-  Eye, 
-  Edit, 
-  Trash2, 
+import {
+  MapPin,
+  Bed,
+  Bath,
+  Car,
+  MoreVertical,
+  Eye,
+  Edit,
+  Trash2,
   ToggleLeft,
   ToggleRight,
   Calendar,
@@ -22,53 +22,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-
-interface Property {
-  _id: string;
-  propertyType: string;
-  propertyCategory: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  landSize: {
-    measurementType: string;
-    size: number;
-  };
-  docOnProperty: Array<{
-    docName: string;
-    isProvided: boolean;
-  }>;
-  owner: {
-    _id: string;
-    fullName: string;
-    email: string;
-  };
-  areYouTheOwner: boolean;
-  features: string[];
-  tenantCriteria: string[];
-  additionalFeatures: {
-    noOfBedroom?: number;
-    noOfBathroom?: number;
-    noOfToilet?: number;
-    noOfCarPark?: number;
-  };
-  description: string;
-  isTenanted: string;
-  isAvailable: boolean;
-  status: string;
-  briefType: string;
-  isPremium: boolean;
-  isApproved: boolean;
-  isRejected: boolean;
-  isDeleted: boolean;
-  createdByRole: string;
-  createdAt: string;
-  updatedAt: string;
-  pictures?: string[];
-}
+import { Property } from "@/types/my-listings.types";
 
 interface MyListingPropertyCardProps {
   property: Property;
@@ -155,10 +109,10 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-lg transition-all duration-300"
+      className="property-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-lg transition-all duration-300 h-full flex flex-col"
     >
       {/* Image Section */}
-      <div className="relative h-48 bg-gray-100">
+      <div className="image-slider relative h-48 bg-gray-100">
         {images.length > 0 && (
           <>
             <Image
@@ -176,28 +130,42 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
             {images.length > 1 && (
               <>
                 <button
-                  onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevImage();
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="15,18 9,12 15,6"></polyline>
                   </svg>
                 </button>
                 <button
-                  onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextImage();
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="9,18 15,12 9,6"></polyline>
                   </svg>
                 </button>
-                
+
+                {/* Image Counter */}
+                <div className="absolute top-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium">
+                  {currentImageIndex + 1}/{images.length}
+                </div>
+
                 {/* Image Dots */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                   {images.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentImageIndex(index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentImageIndex(index);
+                      }}
                       className={`w-2 h-2 rounded-full transition-colors ${
                         index === currentImageIndex ? "bg-white" : "bg-white/50"
                       }`}
@@ -296,7 +264,7 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
       </div>
 
       {/* Content Section */}
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         {/* Property Type & Brief Type */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -395,11 +363,13 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
         </div>
 
         {/* Description */}
-        {property.description && (
-          <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-            {property.description}
-          </p>
-        )}
+        <div className="mt-auto pt-2">
+          {property.description && (
+            <p className="text-sm text-gray-600 line-clamp-2">
+              {property.description}
+            </p>
+          )}
+        </div>
       </div>
     </motion.div>
   );
