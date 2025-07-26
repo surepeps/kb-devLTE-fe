@@ -168,16 +168,21 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       }));
       setAreaOptions(areas);
 
-      // Only reset area when LGA changes manually (not during initial load)
-      // Check if we're in an initial load state where area already has a value
-      const isInitialLoad = propertyData.area;
+      // Only reset area when LGA actually changes (not during initial mount/auto-population)
+      const lgaChanged = previousLga.current &&
+        (!previousLga.current || previousLga.current.value !== propertyData.lga.value);
 
-      if (!isInitialLoad) {
+      if (lgaChanged && !isInitialMount.current) {
         updatePropertyData("area", "");
       }
+
+      previousLga.current = propertyData.lga;
     } else {
       setAreaOptions([]);
-      updatePropertyData("area", "");
+      if (!isInitialMount.current) {
+        updatePropertyData("area", "");
+      }
+      previousLga.current = null;
     }
   }, [propertyData.state, propertyData.lga]);
 
