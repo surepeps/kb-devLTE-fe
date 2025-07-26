@@ -2,15 +2,15 @@
 
 "use client";
 import React, { useState } from "react";
-import { 
-  MapPin, 
-  Bed, 
-  Bath, 
-  Car, 
-  MoreVertical, 
-  Eye, 
-  Edit, 
-  Trash2, 
+import {
+  MapPin,
+  Bed,
+  Bath,
+  Car,
+  MoreVertical,
+  Eye,
+  Edit,
+  Trash2,
   ToggleLeft,
   ToggleRight,
   Calendar,
@@ -22,53 +22,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-
-interface Property {
-  _id: string;
-  propertyType: string;
-  propertyCategory: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  landSize: {
-    measurementType: string;
-    size: number;
-  };
-  docOnProperty: Array<{
-    docName: string;
-    isProvided: boolean;
-  }>;
-  owner: {
-    _id: string;
-    fullName: string;
-    email: string;
-  };
-  areYouTheOwner: boolean;
-  features: string[];
-  tenantCriteria: string[];
-  additionalFeatures: {
-    noOfBedroom?: number;
-    noOfBathroom?: number;
-    noOfToilet?: number;
-    noOfCarPark?: number;
-  };
-  description: string;
-  isTenanted: string;
-  isAvailable: boolean;
-  status: string;
-  briefType: string;
-  isPremium: boolean;
-  isApproved: boolean;
-  isRejected: boolean;
-  isDeleted: boolean;
-  createdByRole: string;
-  createdAt: string;
-  updatedAt: string;
-  pictures?: string[];
-}
+import { Property } from "@/types/my-listings.types";
 
 interface MyListingPropertyCardProps {
   property: Property;
