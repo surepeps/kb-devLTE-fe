@@ -40,7 +40,6 @@ const MyListingPage = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [hasActiveFilters, setHasActiveFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const router = useRouter();
 
   const [currentFilters, setCurrentFilters] = useState<SearchFilters>({
@@ -113,7 +112,7 @@ const MyListingPage = () => {
       setHasActiveFilters(filtersApplied);
 
       const url = `${URLS.BASE}/account/properties/fetchAll?${queryParams.toString()}`;
-      const response: PropertiesApiResponse = await GET_REQUEST(url, Cookies.get("token"));
+      const response = await GET_REQUEST(url, Cookies.get("token"));
 
       if (response?.success) {
         const propertiesData = response.data || [];
@@ -175,20 +174,7 @@ const MyListingPage = () => {
   };
 
   const handleEditProperty = async (property: Property) => {
-    try {
-      // First get the property details using the new endpoint
-      const url = `${URLS.BASE}/account/properties/${property._id}/getOne`;
-      const response = await GET_REQUEST(url, Cookies.get("token"));
-
-      if (response?.success) {
-        router.push(`/update-property/${property._id}`);
-      } else {
-        toast.error("Failed to load property details for editing");
-      }
-    } catch (error) {
-      console.error("Error loading property for edit:", error);
-      toast.error("Failed to load property details");
-    }
+      router.push(`/update-property/${property._id}`);
   };
 
   const handleViewProperty = (property: Property) => {
@@ -267,14 +253,6 @@ const MyListingPage = () => {
 
   const stats = getApprovalStats();
 
-  // Determine grid classes based on screen size
-  const getGridClasses = () => {
-    if (viewMode === "list") {
-      return "grid grid-cols-1 gap-4";
-    }
-    return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr";
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
@@ -295,28 +273,6 @@ const MyListingPage = () => {
               <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
                 My Property Listings
               </h1>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-[#8DDB90] text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <Grid size={16} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "list"
-                      ? "bg-[#8DDB90] text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <List size={16} />
-                </button>
-              </div>
             </div>
             <p className="text-gray-600 text-sm sm:text-base">
               Manage and view all your property listings
@@ -457,7 +413,7 @@ const MyListingPage = () => {
             )}
 
             {/* Properties Grid */}
-            <div className={`${getGridClasses()} mb-8`}>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr mb-8`}>
               <AnimatePresence mode="popLayout">
                 {properties.map((property, index) => (
                   <motion.div

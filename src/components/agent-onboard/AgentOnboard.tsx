@@ -333,7 +333,6 @@ const AgentOnboard: React.FC = () => {
         PUT_REQUEST(
           URLS.BASE + URLS.agentOnboarding,
           payload,
-          {},
           Cookies.get("token") || "",
         ).then((response) => {
           if (response.success) {
