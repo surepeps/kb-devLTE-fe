@@ -61,6 +61,8 @@ interface Property {
   createdAt: string;
   updatedAt: string;
   pictures?: string[];
+  videos?: string[];
+  __v?: number;
 }
 
 interface SearchFilters {
@@ -232,8 +234,21 @@ const MyListingPage = () => {
     setShowDeleteModal(true);
   };
 
-  const handleEditProperty = (property: Property) => {
-    router.push(`/update-property/${property._id}`);
+  const handleEditProperty = async (property: Property) => {
+    try {
+      // First get the property details using the new endpoint
+      const url = `${URLS.BASE}/account/properties/${property._id}/getOne`;
+      const response = await GET_REQUEST(url, Cookies.get("token"));
+
+      if (response?.success) {
+        router.push(`/update-property/${property._id}`);
+      } else {
+        toast.error("Failed to load property details for editing");
+      }
+    } catch (error) {
+      console.error("Error loading property for edit:", error);
+      toast.error("Failed to load property details");
+    }
   };
 
   const handleViewProperty = (property: Property) => {
@@ -248,10 +263,13 @@ const MyListingPage = () => {
 
   const handleChangeStatus = async (property: Property) => {
     try {
-      const url = `${URLS.BASE}/account/properties/${property._id}/status`;
+      const url = `${URLS.BASE}/account/properties/${property._id}/updateStatus`;
       const response = await PUT_REQUEST(
         url,
-        { isAvailable: !property.isAvailable },
+        {
+          status: !property.isAvailable ? "available" : "unavailable",
+          reason: "Status updated from my listings"
+        },
         Cookies.get("token")
       );
 
@@ -273,7 +291,7 @@ const MyListingPage = () => {
     if (!selectedProperty) return;
 
     try {
-      const url = `${URLS.BASE}/account/properties/${selectedProperty._id}`;
+      const url = `${URLS.BASE}/account/properties/${selectedProperty._id}/delete`;
       const response = await DELETE_REQUEST(url, Cookies.get("token"));
 
       if (response?.success) {
