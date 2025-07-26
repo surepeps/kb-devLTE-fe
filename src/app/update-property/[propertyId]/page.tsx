@@ -654,7 +654,7 @@ const UpdateProperty = () => {
 
       if (response && (response as any).status === 200 && (response as any).data.success) {
         toast.success("Property updated successfully!");
-        setShowSuccessModal(true);
+        router.push("/my-listings");
       } else {
         const errorMessage =
           (response as any)?.data?.message || "Failed to update property";
