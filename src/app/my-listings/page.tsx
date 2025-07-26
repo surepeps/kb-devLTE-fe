@@ -15,76 +15,15 @@ import MyListingPropertyCard from "@/components/mylisting/MyListingPropertyCard"
 import Pagination from "@/components/mylisting/Pagination";
 import DeleteConfirmationModal from "@/components/mylisting/delete-confirmation-modal";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Property,
+  PaginationData,
+  SearchFilters,
+  PropertiesApiResponse,
+  StatusUpdatePayload
+} from "@/types/my-listings.types";
 
-interface Property {
-  _id: string;
-  propertyType: string;
-  propertyCategory: string;
-  price: number;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
-  };
-  landSize: {
-    measurementType: string;
-    size: number;
-  };
-  docOnProperty: Array<{
-    docName: string;
-    isProvided: boolean;
-  }>;
-  owner: {
-    _id: string;
-    fullName: string;
-    email: string;
-  };
-  areYouTheOwner: boolean;
-  features: string[];
-  tenantCriteria: string[];
-  additionalFeatures: {
-    noOfBedroom?: number;
-    noOfBathroom?: number;
-    noOfToilet?: number;
-    noOfCarPark?: number;
-  };
-  description: string;
-  isTenanted: string;
-  isAvailable: boolean;
-  status: string;
-  briefType: string;
-  isPremium: boolean;
-  isApproved: boolean;
-  isRejected: boolean;
-  isDeleted: boolean;
-  createdByRole: string;
-  createdAt: string;
-  updatedAt: string;
-  pictures?: string[];
-  videos?: string[];
-  __v?: number;
-}
 
-interface SearchFilters {
-  page?: number;
-  limit?: number;
-  status?: string;
-  propertyType?: string;
-  propertyCategory?: string;
-  state?: string;
-  localGovernment?: string;
-  area?: string;
-  priceMin?: number;
-  priceMax?: number;
-  isApproved?: boolean;
-}
-
-interface PaginationData {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
 
 const MyListingPage = () => {
   const { user } = useUserContext();
@@ -173,7 +112,7 @@ const MyListingPage = () => {
       setHasActiveFilters(filtersApplied);
 
       const url = `${URLS.BASE}/account/properties/fetchAll?${queryParams.toString()}`;
-      const response = await GET_REQUEST(url, Cookies.get("token"));
+      const response: PropertiesApiResponse = await GET_REQUEST(url, Cookies.get("token"));
 
       if (response?.success) {
         const propertiesData = response.data || [];
@@ -264,12 +203,13 @@ const MyListingPage = () => {
   const handleChangeStatus = async (property: Property) => {
     try {
       const url = `${URLS.BASE}/account/properties/${property._id}/updateStatus`;
+      const payload: StatusUpdatePayload = {
+        status: !property.isAvailable ? "available" : "unavailable",
+        reason: "Status updated from my listings"
+      };
       const response = await PUT_REQUEST(
         url,
-        {
-          status: !property.isAvailable ? "available" : "unavailable",
-          reason: "Status updated from my listings"
-        },
+        payload,
         Cookies.get("token")
       );
 
