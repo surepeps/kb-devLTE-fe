@@ -130,9 +130,14 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       );
       setLgaOptions(lgas);
 
-      // Reset LGA and area when state changes
-      updatePropertyData("lga", null);
-      updatePropertyData("area", "");
+      // Only reset LGA and area when state changes manually (not during initial load)
+      // Check if we're in an initial load state where LGA and area already have values
+      const isInitialLoad = propertyData.lga && propertyData.area;
+
+      if (!isInitialLoad) {
+        updatePropertyData("lga", null);
+        updatePropertyData("area", "");
+      }
     } else {
       setLgaOptions([]);
       setAreaOptions([]);
