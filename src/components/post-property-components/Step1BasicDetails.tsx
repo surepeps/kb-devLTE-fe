@@ -45,6 +45,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
 
+  // Track initial mount and state/lga changes to prevent unwanted resets during auto-population
+  const isInitialMount = useRef(true);
+  const previousState = useRef(propertyData.state);
+  const previousLga = useRef(propertyData.lga);
+
   const handleFieldChange = async <K extends keyof PropertyFormData>(
     fieldName: K,
     value: PropertyFormData[K]
