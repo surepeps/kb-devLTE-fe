@@ -112,7 +112,7 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
       className="property-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group hover:shadow-lg transition-all duration-300 h-full flex flex-col"
     >
       {/* Image Section */}
-      <div className="relative h-48 bg-gray-100">
+      <div className="image-slider relative h-48 bg-gray-100">
         {images.length > 0 && (
           <>
             <Image
