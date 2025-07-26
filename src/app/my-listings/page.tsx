@@ -22,6 +22,7 @@ import {
   PropertiesApiResponse,
   StatusUpdatePayload
 } from "@/types/my-listings.types";
+import "@/styles/my-listings.css";
 
 
 
