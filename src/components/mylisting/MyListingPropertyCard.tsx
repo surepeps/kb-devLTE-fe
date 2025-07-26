@@ -133,7 +133,7 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
     if (property.pictures && property.pictures.length > 0) {
       return property.pictures;
     }
-    return ["/placeholder-property.jpg"]; // fallback image
+    return ["/placeholder-property.svg"]; // fallback image
   };
 
   const images = getPropertyImages();
