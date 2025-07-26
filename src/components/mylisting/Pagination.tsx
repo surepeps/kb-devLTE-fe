@@ -56,16 +56,23 @@ const Pagination: React.FC<PaginationProps> = ({
   const visiblePages = getVisiblePages();
 
   return (
-    <div className="flex items-center justify-center space-x-2">
-      {/* Previous Button */}
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={disabled || currentPage === 1}
-        className="flex items-center px-3 py-2 text-sm font-medium text-[#5A5D63] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-[#09391C] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#5A5D63] transition-colors"
-      >
-        <ChevronLeft size={16} className="mr-1" />
-        Previous
-      </button>
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+      {/* Page info for mobile */}
+      <div className="sm:hidden text-sm text-gray-600">
+        Page {currentPage} of {totalPages}
+      </div>
+
+      <div className="flex items-center space-x-2">
+        {/* Previous Button */}
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={disabled || currentPage === 1}
+          className="flex items-center px-3 py-2 text-sm font-medium text-[#5A5D63] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-[#09391C] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#5A5D63] transition-colors"
+        >
+          <ChevronLeft size={16} className="mr-1" />
+          <span className="hidden sm:inline">Previous</span>
+          <span className="sm:hidden">Prev</span>
+        </button>
 
       {/* Page Numbers */}
       <div className="flex items-center space-x-1">
@@ -101,15 +108,36 @@ const Pagination: React.FC<PaginationProps> = ({
         })}
       </div>
 
-      {/* Next Button */}
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={disabled || currentPage === totalPages}
-        className="flex items-center px-3 py-2 text-sm font-medium text-[#5A5D63] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-[#09391C] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#5A5D63] transition-colors"
-      >
-        Next
-        <ChevronRight size={16} className="ml-1" />
-      </button>
+        {/* Next Button */}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={disabled || currentPage === totalPages}
+          className="flex items-center px-3 py-2 text-sm font-medium text-[#5A5D63] bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-[#09391C] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#5A5D63] transition-colors"
+        >
+          <span className="hidden sm:inline">Next</span>
+          <span className="sm:hidden">Next</span>
+          <ChevronRight size={16} className="ml-1" />
+        </button>
+      </div>
+
+      {/* Quick navigation for desktop */}
+      {totalPages > 5 && (
+        <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-600">
+          <span>Go to:</span>
+          <select
+            value={currentPage}
+            onChange={(e) => onPageChange(Number(e.target.value))}
+            disabled={disabled}
+            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+          >
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <option key={page} value={page}>
+                Page {page}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 };
