@@ -122,6 +122,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       label: state,
     }));
     setStateOptions(states);
+
+    // After initial mount, set isInitialMount to false
+    const timer = setTimeout(() => {
+      isInitialMount.current = false;
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
