@@ -122,12 +122,32 @@ const Login: FC = () => {
         const url = URLS.BASE + URLS.authGoogle;
         const response = await POST_REQUEST(url, { idToken: codeResponse.code });
 
-        if (response.data?.user?.id) {
-          toast.success("Sign in successful");
-          handleAuthSuccess(response);
+        if (response.success) {
+          Cookies.set("token", response.data.token);
+          setUser(response.data.user);
+
+          toast.success("Authentication successful via Google!");
+
+          const userPayload = response.data.user;
+
+          if (userPayload.userType === "Agent") {
+            if (!userPayload.agentData?.agentType) {
+              router.push("/agent/onboard");
+            } else if (userPayload.accountApproved === false) {
+              router.push("/agent/under-review");
+            } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
+              router.push("/dashboard");
+            }
+          } else {
+            router.push("/dashboard");
+          }
+
+        } else if (response.error) {
+          toast.error(response.error);
         } else {
-          toast.error(response.error || "Google sign-in failed.");
+            toast.error("Google authentication failed. Please try again.");
         }
+
       } catch (error) {
         console.error("Google login error:", error);
         toast.error("Google sign-in failed, please try again!");
@@ -178,12 +198,33 @@ const Login: FC = () => {
                   };
 
                   const result = await POST_REQUEST(url, payload);
-                  if (result.data?.user?.id) {
-                    toast.success("Sign in successful");
-                    handleAuthSuccess(result);
+                  
+                  if (result.success) {
+                    Cookies.set("token", result.data.token);
+                    setUser(result.data.user);
+
+                    toast.success("Authentication successful via Facebook!");
+
+                    const userPayload = result.data.user;
+
+                    if (userPayload.userType === "Agent") {
+                      if (!userPayload.agentData?.agentType) {
+                        router.push("/agent/onboard");
+                      } else if (userPayload.accountApproved === false) {
+                        router.push("/agent/under-review");
+                      } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
+                        router.push("/dashboard");
+                      }
+                    } else {
+                      router.push("/dashboard");
+                    }
+
+                  } else if (response.error) {
+                    toast.error(response.error);
                   } else {
-                    toast.error(result.error || "Facebook login failed");
+                      toast.error("Facebook authentication failed. Please try again.");
                   }
+                  
                 } catch (error) {
                   console.error("Facebook login API error:", error);
                   toast.error("Facebook login failed, please try again!");

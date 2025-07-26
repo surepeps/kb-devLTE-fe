@@ -168,26 +168,33 @@ const Register = () => {
           userType: formik.values.userType,
         });
 
-        if (response?.data?.user?.id) { // Check for user.id for success
+        if (response.success) {
           Cookies.set("token", response.data.token);
           setUser(response.data.user);
 
-          localStorage.setItem("email", response.data.user?.email || ""); // Consistent access
+          toast.success("Authentication successful via Google!");
 
-          toast.success("Registration successful via Google!");
+          const userPayload = response.data.user;
 
-          if (response.data.user?.userType === "Agent") {
-            // Agents go to onboard
-            router.push("/agent/onboard");
+          if (userPayload.userType === "Agent") {
+            if (!userPayload.agentData?.agentType) {
+              router.push("/agent/onboard");
+            } else if (userPayload.accountApproved === false) {
+              router.push("/agent/under-review");
+            } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
+              router.push("/dashboard");
+            }
           } else {
-            // Landlords go to dashboard
             router.push("/dashboard");
           }
+
         } else if (response.error) {
           toast.error(response.error);
         } else {
-            toast.error("Google registration failed. Please try again.");
+            toast.error("Google authentication failed. Please try again.");
         }
+
+
       } catch (error: any) {
         console.error("Google signup error:", error);
         toast.error(error.message || "Google registration failed!");
@@ -245,19 +252,31 @@ const Register = () => {
                   };
 
                   const result = await POST_REQUEST(url, payload);
-                  if (result.data?.user?.id) { // Check for user.id for success
-                    toast.success("Registration successful via Facebook!");
+
+                  if (result.success) {
                     Cookies.set("token", result.data.token);
                     setUser(result.data.user);
-                    localStorage.setItem("email", result.data.user.email || "");
 
-                    if (result.data.user.userType === "Agent") {
-                      router.push("/agent/onboard");
+                    toast.success("Authentication successful via Facebook!");
+
+                    const userPayload = result.data.user;
+
+                    if (userPayload.userType === "Agent") {
+                      if (!userPayload.agentData?.agentType) {
+                        router.push("/agent/onboard");
+                      } else if (userPayload.accountApproved === false) {
+                        router.push("/agent/under-review");
+                      } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
+                        router.push("/dashboard");
+                      }
                     } else {
                       router.push("/dashboard");
                     }
+
+                  } else if (response.error) {
+                    toast.error(response.error);
                   } else {
-                    toast.error(result.error || "Facebook registration failed.");
+                      toast.error("Facebook authentication failed. Please try again.");
                   }
                 } catch (error: any) {
                   console.error("Facebook signup error:", error);
