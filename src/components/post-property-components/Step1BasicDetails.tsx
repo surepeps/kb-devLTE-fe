@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import ReactSelect from "react-select";
 import CreatableSelect from "react-select/creatable";
@@ -44,6 +44,11 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
   const [stateOptions, setStateOptions] = useState<Option[]>([]);
   const [lgaOptions, setLgaOptions] = useState<Option[]>([]);
   const [areaOptions, setAreaOptions] = useState<Option[]>([]);
+
+  // Track initial mount and state/lga changes to prevent unwanted resets during auto-population
+  const isInitialMount = useRef(true);
+  const previousState = useRef(propertyData.state);
+  const previousLga = useRef(propertyData.lga);
 
   const handleFieldChange = async <K extends keyof PropertyFormData>(
     fieldName: K,
@@ -117,6 +122,13 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       label: state,
     }));
     setStateOptions(states);
+
+    // After initial mount, set isInitialMount to false
+    const timer = setTimeout(() => {
+      isInitialMount.current = false;
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -130,14 +142,24 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       );
       setLgaOptions(lgas);
 
-      // Reset LGA and area when state changes
-      updatePropertyData("lga", null);
-      updatePropertyData("area", "");
+      // Only reset LGA and area when state actually changes (not during initial mount/auto-population)
+      const stateChanged = previousState.current &&
+        (!previousState.current || previousState.current.value !== propertyData.state.value);
+
+      if (stateChanged && !isInitialMount.current) {
+        updatePropertyData("lga", null);
+        updatePropertyData("area", "");
+      }
+
+      previousState.current = propertyData.state;
     } else {
       setLgaOptions([]);
       setAreaOptions([]);
-      updatePropertyData("lga", null);
-      updatePropertyData("area", "");
+      if (!isInitialMount.current) {
+        updatePropertyData("lga", null);
+        updatePropertyData("area", "");
+      }
+      previousState.current = null;
     }
   }, [propertyData.state]);
  
@@ -153,11 +175,21 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
       }));
       setAreaOptions(areas);
 
-      // Reset area when LGA changes
-      updatePropertyData("area", "");
+      // Only reset area when LGA actually changes (not during initial mount/auto-population)
+      const lgaChanged = previousLga.current &&
+        (!previousLga.current || previousLga.current.value !== propertyData.lga.value);
+
+      if (lgaChanged && !isInitialMount.current) {
+        updatePropertyData("area", "");
+      }
+
+      previousLga.current = propertyData.lga;
     } else {
       setAreaOptions([]);
-      updatePropertyData("area", "");
+      if (!isInitialMount.current) {
+        updatePropertyData("area", "");
+      }
+      previousLga.current = null;
     }
   }, [propertyData.state, propertyData.lga]);
 
