@@ -168,7 +168,7 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
               className="object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "/placeholder-property.jpg";
+                target.src = "/placeholder-property.svg";
               }}
             />
             
