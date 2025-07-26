@@ -92,7 +92,7 @@ const VerifyAccountComponent: React.FC = () => {
         animate="animate"
         exit="exit"
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center"
+        className="max-w-md w-full bg-white rounded-2xl shadow-md p-8 text-center"
       >
         {/* Status Icon */}
         <motion.div
