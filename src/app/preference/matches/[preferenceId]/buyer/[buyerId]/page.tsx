@@ -193,7 +193,6 @@ const PreferenceMatchesPage: React.FC = () => {
     return (
       <GlobalPropertyCard
         key={property.id || index}
-        tab="buy"
         property={adaptedProperty as any}
         cardData={cardData}
         images={images}
@@ -283,7 +282,7 @@ const PreferenceMatchesPage: React.FC = () => {
             </div>
             <h2 className="text-2xl font-semibold text-gray-900 mb-2">No matches found</h2>
             <p className="text-gray-600 max-w-md mx-auto">
-              We couldn't find any properties that match your current preferences. 
+              We couldn&apos;t find any properties that match your current preferences. 
               Try adjusting your criteria or check back later for new listings.
             </p>
           </div>

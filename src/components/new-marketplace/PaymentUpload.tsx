@@ -14,14 +14,15 @@ import Button from "@/components/general-components/button";
 import toast from "react-hot-toast";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
-
+import { POST_REQUEST } from "@/utils/requests";
+ 
 interface PaymentUploadProps {
   selectedProperties: any[];
   inspectionFee: number;
   inspectionDetails: {
     date: string;
     time: string;
-    inspectionMode: "in_person" | "virtual" | "developer_visit";
+    inspectionMode: "in_person" | "virtual";
     buyerInfo: {
       fullName: string;
       email: string;
@@ -113,66 +114,36 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
   };
 
   const buildInspectionPayload = () => {
-    // Get brief type mapping
-    const briefTypeMapping = {
-      buy: "Outright Sales",
-      rent: "Rent",
-      shortlet: "Shortlet",
-      jv: "Joint Venture",
-    };
+    const payload = selectedProperties.map((property) => {
+      const negotiatedPrice = negotiatedPrices.find(
+        (price) => price.propertyId === property.propertyId,
+      );
 
-    const briefType = briefTypeMapping[activeTab];
+      const loiDoc = loiDocuments.find(
+        (doc) => doc.propertyId === property.propertyId,
+      );
 
-    // Base payload
-    const payload: any = {
-      briefType,
-      inspectionType: briefType == 'jv' ? 'LOI' : 'price',
-      inspectionDate: inspectionDetails.date,
-      inspectionTime: inspectionDetails.time,
-      inspectionMode: inspectionDetails.inspectionMode,
+      return {
+        propertyId: property.propertyId,
+        inspectionType: property.sourceTab === "jv" ? "LOI" : "price",
+        negotiationPrice: negotiatedPrice?.negotiatedPrice || undefined,
+        letterOfIntention: loiDoc?.documentUrl || undefined,
+      };
+    });
+
+    return {
       requestedBy: inspectionDetails.buyerInfo,
+      inspectionDetails: {
+        inspectionDate: inspectionDetails.date,
+        inspectionTime: inspectionDetails.time,
+        inspectionMode: inspectionDetails.inspectionMode,
+      },
       transaction: {
         fullName: transactionDetails.fullName,
         transactionReceipt: uploadedReceiptUrl,
       },
+      properties: payload
     };
-
-    // Build properties array based on tab type
-    if (activeTab === "jv") {
-      // Joint Venture - include LOI documents
-      payload.properties = selectedProperties.map((property) => {
-        const loiDoc = loiDocuments.find(
-          (doc) => doc.propertyId === property.propertyId,
-        );
-        const propertyData: any = {
-          propertyId: property.propertyId,
-        };
-
-        if (loiDoc?.documentUrl) {
-          propertyData.letterOfIntention = loiDoc.documentUrl;
-        }
-
-        return propertyData;
-      });
-    } else {
-      // Buy/Rent/Shortlet - include negotiated prices
-      payload.properties = selectedProperties.map((property) => {
-        const negotiatedPrice = negotiatedPrices.find(
-          (price) => price.propertyId === property.propertyId,
-        );
-        const propertyData: any = {
-          propertyId: property.propertyId,
-        };
-
-        if (negotiatedPrice?.negotiatedPrice) {
-          propertyData.negotiationPrice = negotiatedPrice.negotiatedPrice;
-        }
-
-        return propertyData;
-      });
-    }
-
-    return payload;
   };
 
   const handleFileSelect = async (file: File) => {
@@ -267,29 +238,18 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
     try {
       const payload = buildInspectionPayload();
 
-      const response = await fetch(URLS.BASE + URLS.requestInspection, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Cookies.get("token")}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await POST_REQUEST(URLS.BASE + URLS.requestInspection, payload);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || "Failed to submit inspection request",
-        );
+      if (response.success) {
+        toast.success("Inspection request submitted successfully!");
+
+        setTimeout(() => {
+          onComplete();
+        }, 1000);
+      }else{
+        toast.error("Failed to submit request. Please try again.");
       }
-
-      const result = await response.json();
-      toast.success("Inspection request submitted successfully!");
-
-      // Wait a moment for user to see the success message
-      setTimeout(() => {
-        onComplete();
-      }, 1500);
+      
     } catch (error) {
       console.error("Submission error:", error);
       toast.error(

@@ -14,7 +14,7 @@ interface SecureBuyerResponseIndexProps {
   userId: string;
   inspectionId: string;
 }
-
+ 
 const SecureBuyerResponseIndex: React.FC<SecureBuyerResponseIndexProps> = ({
   userId,
   inspectionId,

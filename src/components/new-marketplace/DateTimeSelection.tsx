@@ -12,7 +12,7 @@ interface DateTimeSelectionProps {
   onProceed: (data: {
     date: string;
     time: string;
-    inspectionMode: "in_person" | "virtual" | "developer_visit";
+    inspectionMode: "in_person" | "virtual";
     buyerInfo: {
       fullName: string;
       email: string;
@@ -85,7 +85,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const [selectedDate, setSelectedDate] = useState(getInitialDate());
   const [selectedTime, setSelectedTime] = useState(getInitialTime());
-  const [inspectionMode, setInspectionMode] = useState<"in_person" | "virtual" | "developer_visit">("in_person");
+  const [inspectionMode, setInspectionMode] = useState<"in_person" | "virtual">("in_person");
 
   // Buyer information form state
   const [buyerInfo, setBuyerInfo] = useState({
@@ -313,22 +313,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             </div>
           </button>
 
-          <button
-            onClick={() => setInspectionMode("developer_visit")}
-            className={`p-4 rounded-lg border-2 transition-colors text-sm font-medium ${
-              inspectionMode === "developer_visit"
-                ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C]"
-                : "border-gray-200 hover:border-[#8DDB90] text-[#24272C]"
-            }`}
-          >
-            <div className="text-center">
-              <div className="text-lg mb-2">🏗️</div>
-              <div className="font-semibold">Developer Visit</div>
-              <div className="text-xs text-gray-600 mt-1">
-                Visit the developer's office
-              </div>
-            </div>
-          </button>
         </div>
       </div>
 
