@@ -86,72 +86,72 @@ const Register = () => {
   });
 
   const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-      firstName: "",
-      lastName: "",
-      phone: "",
-      confirmPassword: "",
-      userType: "",
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      setIsDisabled(true);
-      try {
-        const url = URLS.BASE + URLS.authRegister;
-        const { phone, confirmPassword, ...payload } = values; // Destructure confirmPassword
-        await toast.promise(
-          POST_REQUEST(url, {
+  initialValues: {
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    confirmPassword: "",
+    userType: "",
+  },
+  validationSchema,
+  onSubmit: async (values) => {
+    setIsDisabled(true);
+    try {
+      const url = URLS.BASE + URLS.authRegister;
+
+      await toast.promise(
+        (async () => {
+          const { phone, confirmPassword, ...payload } = values;
+
+          const response = await POST_REQUEST(url, {
             ...payload,
             phoneNumber: String(values.phone),
             userType: values.userType,
-          }).then((response) => {
-            if ((response as any).success) {
+          });
 
-              localStorage.setItem(
-                "fullname",
-                `${formik.values.firstName} ${formik.values.lastName}`,
+          if (response.success) {
+            localStorage.setItem(
+              "fullname",
+              `${formik.values.firstName} ${formik.values.lastName}`
+            );
+            localStorage.setItem("email", `${formik.values.email}`);
+
+            setIsSuccess(true);
+            formik.resetForm();
+            setAgreed(false);
+
+            setOverlayVisible(true);
+            setTimeout(() => {
+              setOverlayVisible(false);
+              toast.custom(
+                <CustomToast
+                  title="Registration successful"
+                  subtitle="A verification email has been sent to your email. Please verify your email to continue."
+                />
               );
-              localStorage.setItem("email", `${formik.values.email}`);
-              
-              setIsSuccess(true);
-              formik.resetForm();
-              setAgreed(false);
+              router.push("/auth/verification-sent");
+            }, 2000);
 
-              setOverlayVisible(true);
-              setTimeout(() => {
-                setOverlayVisible(false);
-                toast.custom(
-                  <CustomToast
-                    title="Registration successful"
-                    subtitle="A verification email has been sent to your email. Please verify your email to continue."
-                  />,
-                );
-                router.push("/auth/verification-sent");
-              }, 2000);
-
-              return "Registration successful";
-            } else {
-              const errorMessage =
-                (response as any).error || "Registration failed";
-              toast.error(errorMessage);
-              setIsDisabled(false);
-              setIsSuccess(false);
-              throw new Error(errorMessage);
-            }
-          }),
-          {
-            loading: "Signing up...",
-          },
-        );
-      } catch (error) {
-        console.error("Registration error:", error); // Use console.error for errors
-        setIsDisabled(false);
-        setIsSuccess(false);
-      }
-    },
-  });
+            return "Registration successful";
+          } else {
+            throw new Error(response.error || "Registration failed");
+          }
+        })(),
+        {
+          loading: "Signing up...",
+          success: "Registration successful",
+          error: (err) => err.message || "Registration failed",
+        }
+      );
+    } catch (error) {
+      console.error("Registration error:", error);
+      setIsDisabled(false);
+      setIsSuccess(false);
+    }
+  },
+});
 
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
