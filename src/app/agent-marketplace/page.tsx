@@ -255,13 +255,8 @@ const AgentMarketplace = () => {
   };
 
   const handleIHaveIt = (preferenceId: string) => {
-    if (!user) {
-      // Store the intended destination for redirect after login
-      sessionStorage.setItem('redirectAfterLogin', `/post-property-by-preference?preferenceId=${preferenceId}`);
-      router.push('/auth/login');
-    } else {
-      router.push(`/post-property-by-preference?preferenceId=${preferenceId}`);
-    }
+    // Always go to preference details page first, regardless of auth status
+    router.push(`/agent-marketplace/${preferenceId}`);
   };
 
   const formatPrice = (price: number, currency: string = 'NGN') => {
