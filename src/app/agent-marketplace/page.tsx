@@ -325,110 +325,134 @@ const AgentMarketplace = () => {
   };
 
   const PreferenceCard = ({ preference }: { preference: Preference }) => (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col h-full">
-      {/* Property Details Table */}
-      <div className="bg-[#F7F7F9] flex-1">
-        <table className="w-full border-collapse h-full">
-          <tbody>
-            <tr className="border-b border-gray-200">
-              <td className="py-3 px-4 text-gray-500 text-sm font-normal w-1/2">Type</td>
-              <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                {preference.preferenceType === 'buy' ? 'Buy' : 
-                 preference.preferenceType === 'rent' ? 'Rent' : 
-                 preference.preferenceType === 'shortlet' ? 'Shortlet' : 
+    <div className="group relative bg-gradient-to-br from-white via-gray-50/30 to-white rounded-2xl border-2 border-gray-100 hover:border-[#8DDB90]/30 overflow-hidden flex flex-col h-full transition-all duration-300 hover:transform hover:scale-[1.02]">
+      {/* Status Badge */}
+      <div className="absolute top-4 right-4 z-10">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-medium rounded-full">
+          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+          Active
+        </div>
+      </div>
+
+      {/* Property Type Header */}
+      <div className="relative bg-gradient-to-r from-[#8DDB90]/10 via-[#8DDB90]/5 to-transparent px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#8DDB90] to-[#7BC97F] rounded-xl flex items-center justify-center">
+              <span className="text-white text-sm font-bold">
+                {preference.preferenceType === 'buy' ? 'B' :
+                 preference.preferenceType === 'rent' ? 'R' :
+                 preference.preferenceType === 'shortlet' ? 'S' :
+                 preference.preferenceType?.[0]?.toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <h3 className="text-[#09391C] font-semibold text-base">
+                {preference.preferenceType === 'buy' ? 'Buy Property' :
+                 preference.preferenceType === 'rent' ? 'Rent Property' :
+                 preference.preferenceType === 'shortlet' ? 'Shortlet Property' :
                  preference.preferenceType}
-              </td>
-            </tr>
-            
-            <tr className="border-b border-gray-200">
-              <td className="py-3 px-4 text-gray-500 text-sm font-normal">
-                <FontAwesomeIcon icon={faMapMarkerAlt} className="w-3 h-3 mr-1" />
-                Location
-              </td>
-              <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                {formatLocation(preference.location)}
-              </td>
-            </tr>
-
-            {preference.propertyDetails?.minBedrooms && (
-              <tr className="border-b border-gray-200">
-                <td className="py-3 px-4 text-gray-500 text-sm font-normal">
-                  <FontAwesomeIcon icon={faBed} className="w-3 h-3 mr-1" />
-                  Bedrooms
-                </td>
-                <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                  {preference.propertyDetails.minBedrooms}+
-                </td>
-              </tr>
-            )}
-
-            {preference.bookingDetails?.minBedrooms && (
-              <tr className="border-b border-gray-200">
-                <td className="py-3 px-4 text-gray-500 text-sm font-normal">
-                  <FontAwesomeIcon icon={faBed} className="w-3 h-3 mr-1" />
-                  Bedrooms
-                </td>
-                <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                  {preference.bookingDetails.minBedrooms}+
-                </td>
-              </tr>
-            )}
-            
-            <tr className="border-b border-gray-200">
-              <td className="py-3 px-4 text-gray-500 text-sm font-normal">
-                <FontAwesomeIcon icon={faTag} className="w-3 h-3 mr-1" />
-                Budget
-              </td>
-              <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
-              </td>
-            </tr>
-
-            {preference.propertyDetails?.documentTypes && preference.propertyDetails.documentTypes.length > 0 && (
-              <tr className="border-b border-gray-200">
-                <td className="py-3 px-4 text-gray-500 text-sm font-normal">
-                  <FontAwesomeIcon icon={faFileAlt} className="w-3 h-3 mr-1" />
-                  Documents
-                </td>
-                <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                  {preference.propertyDetails.documentTypes.slice(0, 2).join(', ')}
-                  {preference.propertyDetails.documentTypes.length > 2 && '...'}
-                </td>
-              </tr>
-            )}
-
-            {preference.propertyDetails?.propertyCondition && (
-              <tr>
-                <td className="py-3 px-4 text-gray-500 text-sm font-normal">Condition</td>
-                <td className="py-3 px-4 text-black text-sm font-bold text-right">
-                  {preference.propertyDetails.propertyCondition}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              </h3>
+              <p className="text-gray-500 text-xs">Buyer Preference</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* View More Button */}
-      <div className="bg-[#F7F7F9] py-4 text-center border-t border-gray-200">
-        <button 
-          onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
-          className="text-black text-sm font-medium underline hover:no-underline cursor-pointer"
-        >
-          View more
-        </button>
+      {/* Property Details - Modern Card Style */}
+      <div className="flex-1 p-6 space-y-4">
+        {/* Location */}
+        <div className="flex items-start gap-3 p-3 bg-gray-50/50 rounded-xl border border-gray-100">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <FontAwesomeIcon icon={faMapMarkerAlt} className="w-3.5 h-3.5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-gray-600 text-xs font-medium mb-1">Location</p>
+            <p className="text-[#09391C] text-sm font-semibold leading-tight">{formatLocation(preference.location)}</p>
+          </div>
+        </div>
+
+        {/* Budget */}
+        <div className="flex items-start gap-3 p-3 bg-green-50/50 rounded-xl border border-green-100">
+          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <FontAwesomeIcon icon={faTag} className="w-3.5 h-3.5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-gray-600 text-xs font-medium mb-1">Budget Range</p>
+            <p className="text-[#09391C] text-sm font-semibold">
+              {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
+            </p>
+          </div>
+        </div>
+
+        {/* Bedrooms */}
+        {(preference.propertyDetails?.minBedrooms || preference.bookingDetails?.minBedrooms) && (
+          <div className="flex items-start gap-3 p-3 bg-purple-50/50 rounded-xl border border-purple-100">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <FontAwesomeIcon icon={faBed} className="w-3.5 h-3.5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-600 text-xs font-medium mb-1">Bedrooms</p>
+              <p className="text-[#09391C] text-sm font-semibold">
+                {preference.propertyDetails?.minBedrooms || preference.bookingDetails?.minBedrooms}+ Bedrooms
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Documents */}
+        {preference.propertyDetails?.documentTypes && preference.propertyDetails.documentTypes.length > 0 && (
+          <div className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
+            <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <FontAwesomeIcon icon={faFileAlt} className="w-3.5 h-3.5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-600 text-xs font-medium mb-1">Required Documents</p>
+              <p className="text-[#09391C] text-sm font-semibold">
+                {preference.propertyDetails.documentTypes.slice(0, 2).join(', ')}
+                {preference.propertyDetails.documentTypes.length > 2 && '...'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Property Condition */}
+        {preference.propertyDetails?.propertyCondition && (
+          <div className="flex items-start gap-3 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-white text-xs font-bold">✓</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-600 text-xs font-medium mb-1">Condition</p>
+              <p className="text-[#09391C] text-sm font-semibold capitalize">{preference.propertyDetails.propertyCondition}</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Action Button */}
-      <div className="bg-white py-6 text-center">
-        <div className="px-4">
-          <button 
-            onClick={() => handleIHaveIt(preference.preferenceId)}
-            className="bg-[#8DDB90] hover:bg-[#7BC97F] text-white py-3 text-sm font-medium w-full rounded cursor-pointer transition-colors"
+      {/* Actions Footer */}
+      <div className="p-6 pt-0 space-y-3">
+        {/* View More Link */}
+        <div className="text-center">
+          <button
+            onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
+            className="text-gray-600 hover:text-[#09391C] text-sm font-medium inline-flex items-center gap-2 group transition-colors"
           >
-            I have it
+            <span>View Full Details</span>
+            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
+
+        {/* Primary Action Button */}
+        <button
+          onClick={() => handleIHaveIt(preference.preferenceId)}
+          className="w-full bg-gradient-to-r from-[#8DDB90] to-[#7BC97F] hover:from-[#7BC97F] hover:to-[#6AB86E] text-white py-3.5 text-sm font-semibold rounded-xl transition-all duration-300 hover:transform hover:scale-[1.02] flex items-center justify-center gap-2"
+        >
+          <span>🎯</span>
+          <span>I Have This Property</span>
+        </button>
       </div>
     </div>
   );
