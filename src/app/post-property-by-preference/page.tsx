@@ -1058,7 +1058,7 @@ const PostPropertyByPreference = () => {
           />
 
           {/* Success Modal */}
-          <SuccessModal
+          <PreferenceSuccessModal
             isOpen={showSuccessModal}
             onClose={() => setShowSuccessModal(false)}
             propertyData={{
@@ -1066,6 +1066,8 @@ const PostPropertyByPreference = () => {
               price: propertyData.price,
               location: `${propertyData.area}, ${propertyData.lga?.label}, ${propertyData.state?.label}`
             }}
+            preferenceId={preferenceId || ''}
+            buyerName={preference?.buyer?.fullName}
           />
         </div>
       </div>
