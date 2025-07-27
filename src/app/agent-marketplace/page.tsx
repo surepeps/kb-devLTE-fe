@@ -417,6 +417,32 @@ const AgentMarketplace = () => {
     </div>
   );
 
+  // Critical error boundary
+  if (criticalError) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <h2 className="text-xl font-semibold text-red-600 mb-4">Application Error</h2>
+          <p className="text-gray-600 mb-4">{criticalError}</p>
+          <div className="space-y-2">
+            <button
+              onClick={() => window.location.reload()}
+              className="block w-full px-4 py-2 bg-[#8DDB90] text-white rounded hover:bg-[#7BC97F] transition-colors"
+            >
+              Reload Page
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="block w-full px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+            >
+              Go Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Early return for initial loading state
   if (!hasInitialized && isLoading) {
     return (
@@ -426,8 +452,8 @@ const AgentMarketplace = () => {
     );
   }
 
-  // Error boundary for critical errors
-  if (error && error.includes('Configuration error')) {
+  // Error boundary for configuration errors
+  if (error && (error.includes('Configuration error') || error.includes('API base URL'))) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
