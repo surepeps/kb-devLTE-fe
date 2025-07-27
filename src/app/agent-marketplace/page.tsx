@@ -950,8 +950,13 @@ const AgentMarketplace = () => {
 
         {/* Display pagination info */}
         {totalItems > 0 && (
-          <div className="text-center mt-4 text-gray-600">
-            Showing {Math.min(limit, preferences.length)} of {totalItems} preferences (Page {currentPage} of {totalPages})
+          <div className="text-center mt-4 text-gray-600 text-sm md:text-base px-4">
+            <span className="hidden md:inline">
+              Showing {Math.min(limit, preferences.length)} of {totalItems} preferences (Page {currentPage} of {totalPages})
+            </span>
+            <span className="md:hidden">
+              {Math.min(limit, preferences.length)} of {totalItems} • Page {currentPage}/{totalPages}
+            </span>
           </div>
         )}
       </div>
