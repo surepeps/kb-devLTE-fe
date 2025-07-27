@@ -524,15 +524,15 @@ const AgentMarketplace = () => {
 
           <div className="relative z-10">
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90]/10 rounded-full text-[#09391C] text-sm font-medium mb-4">
+            <div className="text-center mb-6 md:mb-8">
+              <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-[#8DDB90]/10 rounded-full text-[#09391C] text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <div className="w-2 h-2 bg-[#8DDB90] rounded-full animate-pulse"></div>
                 Hot Opportunities
               </div>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-[#09391C] mb-3">
+              <h2 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-[#09391C] mb-2 md:mb-3">
                 🎯 Buyers Just Got Matched!
               </h2>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              <p className="text-gray-600 text-sm md:text-lg max-w-2xl mx-auto px-2">
                 Fresh opportunities waiting for the right properties.
                 <span className="text-[#8DDB90] font-semibold"> Submit now to get featured</span> and connect with serious buyers.
               </p>
