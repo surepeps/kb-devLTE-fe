@@ -231,17 +231,63 @@ const AgentMarketplace = () => {
 
   const formatLocation = (location: Location) => {
     if (!location) return 'N/A';
-    
+
     let locationStr = location.state || '';
-    
+
     if (location.lgasWithAreas && location.lgasWithAreas.length > 0) {
       const lgas = location.lgasWithAreas.map(lga => lga.lgaName).join(', ');
       locationStr += lgas ? `, ${lgas}` : '';
     } else if (location.localGovernmentAreas && location.localGovernmentAreas.length > 0) {
       locationStr += `, ${location.localGovernmentAreas.join(', ')}`;
     }
-    
+
     return locationStr.replace(/^,\s*/, '') || 'N/A';
+  };
+
+  // Get matched properties with fallback data
+  const getMatchedProperties = () => {
+    // First try to get recently matched preferences from current data
+    const recentMatches = preferences.slice(0, 4).map((pref, index) => ({
+      id: pref.preferenceId || `recent-${index}`,
+      type: pref.preferenceType === 'buy' ? 'Buy' :
+            pref.preferenceType === 'rent' ? 'Rent' :
+            pref.preferenceType === 'shortlet' ? 'Shortlet' :
+            pref.preferenceType,
+      location: formatLocation(pref.location),
+      status: 'Active'
+    }));
+
+    if (recentMatches.length > 0) {
+      return recentMatches;
+    }
+
+    // Fallback data if no API data is available
+    return [
+      {
+        id: 'match1',
+        type: 'Buy',
+        location: 'Lagos, Ikeja',
+        status: 'Active'
+      },
+      {
+        id: 'match2',
+        type: 'Rent',
+        location: 'Abuja, Wuse',
+        status: 'Active'
+      },
+      {
+        id: 'match3',
+        type: 'Shortlet',
+        location: 'Lagos, Victoria Island',
+        status: 'Active'
+      },
+      {
+        id: 'match4',
+        type: 'Buy',
+        location: 'Port Harcourt, GRA',
+        status: 'Active'
+      }
+    ];
   };
 
   const PreferenceCard = ({ preference }: { preference: Preference }) => (
