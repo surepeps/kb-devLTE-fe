@@ -403,6 +403,33 @@ const AgentMarketplace = () => {
     </div>
   );
 
+  // Early return for initial loading state
+  if (!hasInitialized && isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  // Error boundary for critical errors
+  if (error && error.includes('Configuration error')) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <h2 className="text-xl font-semibold text-red-600 mb-4">Configuration Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-[#8DDB90] text-white rounded hover:bg-[#7BC97F] transition-colors"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
