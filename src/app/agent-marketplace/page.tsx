@@ -557,47 +557,7 @@ const AgentMarketplace = () => {
               </p>
             </div>
 
-            {/* Matched Properties Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {getMatchedProperties().map((property, idx) => (
-                <div
-                  key={property.id || `matched-${idx}`}
-                  className="group relative bg-white rounded-xl border-2 border-[#8DDB90]/20 hover:border-[#8DDB90]/40 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg overflow-hidden"
-                >
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
-                  {/* Status badge */}
-                  <div className="absolute top-3 right-3 z-10">
-                    <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs rounded-full">
-                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-                      Active
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center bg-[#F7F7F9] p-3 rounded-lg">
-                        <span className="text-gray-500 text-sm font-medium">Type</span>
-                        <span className="text-[#09391C] text-sm font-bold">{property.type}</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-[#F7F7F9] p-3 rounded-lg">
-                        <span className="text-gray-500 text-sm font-medium">Location</span>
-                        <span className="text-[#09391C] text-sm font-bold">{property.location}</span>
-                      </div>
-                    </div>
-
-                    {/* Action indicator */}
-                    <div className="mt-4 text-center">
-                      <div className="inline-flex items-center gap-2 text-green-600 text-sm font-medium">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="group-hover:text-green-700 transition-colors">Ready to Match</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* Call to Action */}
             <div className="text-center">
