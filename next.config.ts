@@ -45,7 +45,7 @@ const nextConfig: NextConfig = {
   // turbopack: {
   //   // Turbopack is now stable, moved from experimental
   // },
-  // Add webpack configuration to prevent memory issues
+  // Add minimal webpack configuration
   webpack: (config, { isServer }) => {
     // Prevent client/server mismatch issues
     if (!isServer) {
@@ -56,21 +56,6 @@ const nextConfig: NextConfig = {
         os: false,
       };
     }
-
-    // Optimize bundle splitting
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-        },
-      },
-    };
 
     return config;
   },
