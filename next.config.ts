@@ -7,6 +7,24 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    // Ignore build errors to prevent clientReferenceManifest issues
+    ignoreBuildErrors: false,
+  },
+  // Optimize for faster compilation and prevent memory issues
+  experimental: {
+    optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
+    // Reduce bundle size
+    optimizeCss: true,
+  },
+  // Production optimization
+  swcMinify: true,
+  // Improve memory usage
+  modularizeImports: {
+    'react-icons': {
+      transform: 'react-icons/{{member}}',
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -37,6 +55,35 @@ const nextConfig: NextConfig = {
   // turbopack: {
   //   // Turbopack is now stable, moved from experimental
   // },
+  // Add webpack configuration to prevent memory issues
+  webpack: (config, { isServer }) => {
+    // Prevent client/server mismatch issues
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+      };
+    }
+
+    // Optimize bundle splitting
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      },
+    };
+
+    return config;
+  },
 };
 
 export default nextConfig;
