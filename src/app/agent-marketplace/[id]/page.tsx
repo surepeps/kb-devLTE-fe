@@ -140,7 +140,7 @@ const PreferenceDetailPage = () => {
     fetchPreferenceDetails();
   }, [preferenceId]);
 
-  const handleIHaveIt = () => {
+  const handleSubmitBrief = () => {
     if (!user) {
       sessionStorage.setItem('redirectAfterLogin', `/post-property-by-preference?preferenceId=${preferenceId}`);
       router.push('/auth/login');
