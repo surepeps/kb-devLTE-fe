@@ -174,7 +174,22 @@ const AgentMarketplace = () => {
         }
       } catch (error) {
         console.error('Error fetching buyer preferences:', error);
-        setError(`Failed to load buyer preferences: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+        // Provide more specific error messages
+        let errorMessage = 'Failed to load buyer preferences';
+        if (error instanceof Error) {
+          if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Network error: Unable to connect to server. Please check your internet connection.';
+          } else if (error.message.includes('Authentication')) {
+            errorMessage = 'Authentication error: Please log in again.';
+          } else if (error.message.includes('API base URL')) {
+            errorMessage = 'Configuration error: API endpoint not available.';
+          } else {
+            errorMessage = `Error: ${error.message}`;
+          }
+        }
+
+        setError(errorMessage);
         setPreferences([]);
         setTotalPages(0);
         setTotalItems(0);
@@ -184,8 +199,11 @@ const AgentMarketplace = () => {
       }
     };
 
-    fetchApprovedPreferences();
-  }, [currentPage, limit, searchTerm, documentType, propertyCondition, preferenceMode]);
+    // Only fetch if we have the basic requirements
+    if (typeof window !== 'undefined') {
+      fetchApprovedPreferences();
+    }
+  }, [currentPage, searchTerm, documentType, propertyCondition, preferenceMode]);
 
   const handleSearch = () => {
     setCurrentPage(1);
