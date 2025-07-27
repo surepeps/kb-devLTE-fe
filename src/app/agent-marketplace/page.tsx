@@ -765,8 +765,79 @@ const AgentMarketplace = () => {
               <PreferenceCard key={preference.preferenceId || idx} preference={preference} />
             ))
           ) : (
-            <div className="col-span-full text-center py-8">
-              <p className="text-gray-600">No preferences found</p>
+            <div className="col-span-full">
+              <div className="max-w-2xl mx-auto text-center py-16 px-6">
+                {/* Illustration */}
+                <div className="relative mb-8">
+                  <div className="w-32 h-32 md:w-40 md:h-40 mx-auto bg-gradient-to-br from-[#8DDB90]/20 to-[#8DDB90]/10 rounded-full flex items-center justify-center">
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-[#8DDB90]/30 to-[#8DDB90]/20 rounded-full flex items-center justify-center">
+                      <svg className="w-10 h-10 md:w-12 md:h-12 text-[#8DDB90]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Floating elements */}
+                  <div className="absolute top-0 left-1/4 w-3 h-3 bg-[#8DDB90] rounded-full opacity-30 animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                  <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-[#09391C] rounded-full opacity-40 animate-bounce" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute bottom-1/4 left-1/3 w-4 h-4 bg-[#8DDB90] rounded-full opacity-20 animate-bounce" style={{animationDelay: '1.5s'}}></div>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-4">
+                  <h3 className="text-xl md:text-2xl font-display font-bold text-[#09391C]">
+                    No Buyer Preferences Found
+                  </h3>
+                  <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                    We couldn't find any approved buyer preferences matching your current filters.
+                    This could be because buyers are still reviewing requirements or there aren't any active preferences in your selected criteria.
+                  </p>
+
+                  {/* Suggestions */}
+                  <div className="bg-[#8DDB90]/5 rounded-xl p-6 mt-6 border border-[#8DDB90]/20">
+                    <h4 className="font-semibold text-[#09391C] mb-3 text-sm md:text-base">Try these suggestions:</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
+                      <div className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-gray-700 text-xs md:text-sm">Clear your current filters and try again</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-gray-700 text-xs md:text-sm">Search in different locations</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-gray-700 text-xs md:text-sm">Try different property types</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-gray-700 text-xs md:text-sm">Check back later for new preferences</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+                    <button
+                      onClick={() => {
+                        setSearchTerm('');
+                        setPreferenceMode('');
+                        setDocumentType('');
+                        setPropertyCondition('');
+                        setCurrentPage(1);
+                      }}
+                      className="px-6 py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white font-medium rounded-lg transition-colors text-sm md:text-base"
+                    >
+                      Clear All Filters
+                    </button>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors text-sm md:text-base"
+                    >
+                      Refresh Page
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
