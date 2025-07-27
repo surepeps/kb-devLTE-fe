@@ -112,7 +112,7 @@ interface Features {
 }
 
 interface Preference {
-  id: string;
+  preferenceId: string;
   preferenceMode: string;
   preferenceType: string;
   location: Location;
@@ -382,11 +382,11 @@ const PostPropertyByPreference = () => {
         const token = Cookies.get('token');
         const url = `${URLS.BASE}/preferences/${preferenceId}/getOne`;
         
-        const response = await GET_REQUEST<PreferenceApiResponse>(url, token);
+        const response = await GET_REQUEST(url, token);
 
         if (response?.success && response?.data) {
           const pref: Preference = {
-            id: response.data._id || response.data.id,
+            preferenceId: response.data.preferenceId || response.data.preferenceId,
             preferenceMode: response.data.preferenceMode,
             preferenceType: response.data.preferenceType,
             location: response.data.location,
@@ -938,7 +938,7 @@ const PostPropertyByPreference = () => {
             <div className="bg-white rounded-xl border-l-4 border-[#8DDB90] p-4 mb-6 md:mb-8 max-w-4xl mx-auto">
               <div className="flex items-start space-x-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-[#09391C] mb-2">Buyer's Requirements</h3>
+                  <h3 className="text-lg font-semibold text-[#09391C] mb-2">Buyer&apos;s Requirements</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div>
                       <span className="text-gray-600">Type:</span>
