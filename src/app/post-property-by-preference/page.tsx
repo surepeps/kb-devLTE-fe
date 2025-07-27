@@ -369,11 +369,11 @@ const PostPropertyByPreference = () => {
         const response = await GET_REQUEST<PreferenceApiResponse>(url, token);
 
         if (response?.success && response?.data) {
-          const pref = response.data;
+          const pref = response.data as Preference;
           setPreference(pref);
 
           // Auto-populate the form based on preference data
-          const updatedData: any = {};
+          const updatedData: Record<string, any> = {};
 
           // Set property type based on preference type
           if (pref.preferenceType === 'buy') {
@@ -385,7 +385,7 @@ const PostPropertyByPreference = () => {
           }
 
           // Set location data
-          if (pref.location.state) {
+          if (pref.location?.state) {
             updatedData.state = {
               value: pref.location.state,
               label: pref.location.state
@@ -393,7 +393,7 @@ const PostPropertyByPreference = () => {
           }
 
           // Set LGA from the first available LGA
-          if (pref.location.lgasWithAreas && pref.location.lgasWithAreas.length > 0) {
+          if (pref.location?.lgasWithAreas && pref.location.lgasWithAreas.length > 0) {
             const firstLga = pref.location.lgasWithAreas[0];
             updatedData.lga = {
               value: firstLga.lgaName,
@@ -404,7 +404,7 @@ const PostPropertyByPreference = () => {
             if (firstLga.areas && firstLga.areas.length > 0) {
               updatedData.area = firstLga.areas[0];
             }
-          } else if (pref.location.localGovernmentAreas && pref.location.localGovernmentAreas.length > 0) {
+          } else if (pref.location?.localGovernmentAreas && pref.location.localGovernmentAreas.length > 0) {
             updatedData.lga = {
               value: pref.location.localGovernmentAreas[0],
               label: pref.location.localGovernmentAreas[0]
@@ -412,7 +412,7 @@ const PostPropertyByPreference = () => {
           }
 
           // Set budget information - use the average of min and max
-          if (pref.budget.minPrice && pref.budget.maxPrice) {
+          if (pref.budget?.minPrice && pref.budget?.maxPrice) {
             const averagePrice = Math.round((pref.budget.minPrice + pref.budget.maxPrice) / 2);
             updatedData.price = averagePrice.toString();
           }
@@ -491,7 +491,9 @@ const PostPropertyByPreference = () => {
 
           // Apply all updates to the context
           Object.keys(updatedData).forEach(key => {
-            updatePropertyData(key, updatedData[key]);
+            if (key in updatedData) {
+              updatePropertyData(key as keyof typeof updatedData, updatedData[key]);
+            }
           });
 
           toast.success('Preference details loaded and form auto-populated!');
