@@ -846,9 +846,10 @@ const AgentMarketplace = () => {
                 setCurrentPage((p) => Math.max(1, p - 1));
               }}
               disabled={currentPage === 1 || isPaginationLoading}
-              className="px-4 py-2 rounded border bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+              className="px-2 md:px-4 py-2 rounded border bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-sm md:text-base"
             >
-              Previous
+              <span className="hidden md:inline">Previous</span>
+              <span className="md:hidden">Prev</span>
             </button>
             
             {/* Page numbers */}
