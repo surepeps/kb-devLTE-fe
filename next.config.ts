@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    // Ignore build errors to prevent clientReferenceManifest issues
+    ignoreBuildErrors: false,
+  },
+  // Optimize for faster compilation and prevent memory issues
+  experimental: {
+    optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
+  },
   images: {
     remotePatterns: [
       {
@@ -37,6 +45,20 @@ const nextConfig: NextConfig = {
   // turbopack: {
   //   // Turbopack is now stable, moved from experimental
   // },
+  // Add minimal webpack configuration
+  webpack: (config, { isServer }) => {
+    // Prevent client/server mismatch issues
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+      };
+    }
+
+    return config;
+  },
 };
 
 export default nextConfig;
