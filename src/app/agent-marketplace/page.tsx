@@ -50,7 +50,7 @@ const AgentMarketplace = () => {
         // Add more filters as needed (budgetMin, budgetMax, features, propertyType, propertyCondition, noOfBedrooms, noOfBathrooms)
         // Example: if you add more filter states, append them here
 
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/agent/all-preferences?${params.toString()}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/all-preferences?${params.toString()}`;
         console.log('Fetching from URL:', url);
 
         const response = await fetch(url, {
@@ -267,7 +267,7 @@ const AgentMarketplace = () => {
     return [
       {
         id: 'match1',
-        type: 'Joint venture(VJ)',
+        type: 'Joint venture(JV)',
         location: 'Lagos, Ikeja',
         status: 'Matched'
       },
@@ -279,7 +279,7 @@ const AgentMarketplace = () => {
       },
       {
         id: 'match3',
-        type: 'Joint venture(VJ)',
+        type: 'Shortlet',
         location: 'Lagos, Ikeja',
         status: 'Matched'
       },
