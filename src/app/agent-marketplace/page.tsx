@@ -501,7 +501,7 @@ const AgentMarketplace = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1400px] mx-auto px-4 py-8">
+      <div className="max-w-[1400px] mx-auto px-2 md:px-4 py-6 md:py-8">
         {/* Title Section */}
         <div className="text-center mb-6 md:mb-8 px-4">
           <h1 className="font-display text-2xl md:text-4xl font-extrabold text-[#09391C] mb-2">Agent Marketplace</h1>
