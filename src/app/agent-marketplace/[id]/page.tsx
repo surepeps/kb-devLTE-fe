@@ -475,7 +475,7 @@ const PreferenceDetailPage = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Buyer Information */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-[#09391C] mb-4">Buyer Information</h2>
