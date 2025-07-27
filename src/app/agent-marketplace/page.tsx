@@ -131,8 +131,9 @@ const AgentMarketplace = () => {
       setError(null);
       try {
         // Check if URLS.BASE is available
-        if (!URLS.BASE || URLS.BASE.includes('undefined')) {
-          throw new Error('API base URL is not configured properly');
+        if (!URLS.BASE || URLS.BASE.includes('undefined') || URLS.BASE === 'undefined') {
+          console.error('NEXT_PUBLIC_API_URL environment variable is not set');
+          throw new Error('API base URL is not configured properly. Please check environment configuration.');
         }
 
         // Build query params from filters
