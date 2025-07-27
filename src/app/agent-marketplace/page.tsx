@@ -115,6 +115,7 @@ const AgentMarketplace = () => {
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
