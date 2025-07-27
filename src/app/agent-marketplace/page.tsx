@@ -600,72 +600,148 @@ const AgentMarketplace = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-wrap gap-4 mb-8 justify-center">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Enter state, lga, city..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-4 pr-10 py-3 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-            <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" />
-          </div>
+        <div className="mb-8">
+          {/* Mobile-first responsive filters */}
+          <div className="flex flex-col gap-4 md:hidden">
+            {/* Search input - full width on mobile */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Enter state, lga, city..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" />
+            </div>
 
-          <div className="relative">
-            <select
-              value={preferenceMode}
-              onChange={(e) => setPreferenceMode(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+            {/* Filter selects - 2 columns on mobile */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="relative">
+                <select
+                  value={preferenceMode}
+                  onChange={(e) => setPreferenceMode(e.target.value)}
+                  className="w-full appearance-none px-3 py-3 pr-8 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                >
+                  <option value="">Mode</option>
+                  <option value="buy">Buyer</option>
+                  <option value="tenant">Tenant</option>
+                  <option value="developer">Developer</option>
+                  <option value="shortlet">Shortlet</option>
+                </select>
+                <FontAwesomeIcon icon={faChevronDown} className="absolute right-2 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={documentType}
+                  onChange={(e) => setDocumentType(e.target.value)}
+                  className="w-full appearance-none px-3 py-3 pr-8 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                >
+                  <option value="">Document</option>
+                  <option value="certificate-of-occupancy">C of O</option>
+                  <option value="deed-of-assignment">Deed of Assignment</option>
+                  <option value="deed-of-ownership">Deed of Ownership</option>
+                  <option value="deed-of-conveyance">Deed of Conveyance</option>
+                  <option value="land-certificate">Land Certificate</option>
+                  <option value="governor-consent">Governor Consent</option>
+                </select>
+                <FontAwesomeIcon icon={faChevronDown} className="absolute right-2 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+
+              <div className="relative col-span-2">
+                <select
+                  value={propertyCondition}
+                  onChange={(e) => setPropertyCondition(e.target.value)}
+                  className="w-full appearance-none px-3 py-3 pr-8 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                >
+                  <option value="">Property Condition</option>
+                  <option value="new">New</option>
+                  <option value="renovated">Renovated</option>
+                  <option value="old">Old</option>
+                  <option value="under-construction">Under Construction</option>
+                </select>
+                <FontAwesomeIcon icon={faChevronDown} className="absolute right-2 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Search button - full width on mobile */}
+            <button
+              onClick={handleSearch}
+              className="w-full py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white rounded-lg font-medium transition-colors"
             >
-              <option value="">Preference Mode</option>
-              <option value="buy">Buyer</option>
-              <option value="tenant">Tenant</option>
-              <option value="developer">Developer</option>
-              <option value="shortlet">Shortlet</option>
-            </select>
-            <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+              Search Properties
+            </button>
           </div>
 
-          <div className="relative">
-            <select
-              value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          {/* Desktop filters - hidden on mobile */}
+          <div className="hidden md:flex flex-wrap gap-4 justify-center">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Enter state, lga, city..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-4 pr-10 py-3 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" />
+            </div>
+
+            <div className="relative">
+              <select
+                value={preferenceMode}
+                onChange={(e) => setPreferenceMode(e.target.value)}
+                className="appearance-none px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Preference Mode</option>
+                <option value="buy">Buyer</option>
+                <option value="tenant">Tenant</option>
+                <option value="developer">Developer</option>
+                <option value="shortlet">Shortlet</option>
+              </select>
+              <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
+
+            <div className="relative">
+              <select
+                value={documentType}
+                onChange={(e) => setDocumentType(e.target.value)}
+                className="appearance-none px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Document Type</option>
+                <option value="certificate-of-occupancy">Certificate of Occupancy</option>
+                <option value="deed-of-assignment">Deed of Assignment</option>
+                <option value="deed-of-ownership">Deed of Ownership</option>
+                <option value="deed-of-conveyance">Deed of Conveyance</option>
+                <option value="land-certificate">Land Certificate</option>
+                <option value="governor-consent">Governor Consent</option>
+                <option value="registered-deed-of-conveyance">Registered Deed of Conveyance</option>
+              </select>
+              <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
+
+            <div className="relative">
+              <select
+                value={propertyCondition}
+                onChange={(e) => setPropertyCondition(e.target.value)}
+                className="appearance-none px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Property Condition</option>
+                <option value="new">New</option>
+                <option value="renovated">Renovated</option>
+                <option value="old">Old</option>
+                <option value="under-construction">Under Construction</option>
+              </select>
+              <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
+
+            <button
+              onClick={handleSearch}
+              className="px-8 py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white rounded-lg font-medium transition-colors"
             >
-              <option value="">Document Type</option>
-              <option value="certificate-of-occupancy">Certificate of Occupancy</option>
-              <option value="deed-of-assignment">Deed of Assignment</option>
-              <option value="deed-of-ownership">Deed of Ownership</option>
-              <option value="deed-of-conveyance">Deed of Conveyance</option>
-              <option value="land-certificate">Land Certificate</option>
-              <option value="governor-consent">Governor Consent</option>
-              <option value="registered-deed-of-conveyance">Registered Deed of Conveyance</option>
-            </select>
-            <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+              Search
+            </button>
           </div>
-
-          <div className="relative">
-            <select
-              value={propertyCondition}
-              onChange={(e) => setPropertyCondition(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Property Condition</option>
-              <option value="new">New</option>
-              <option value="renovated">Renovated</option>
-              <option value="old">Old</option>
-              <option value="under-construction">Under Construction</option>
-            </select>
-            <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
-          </div>
-
-          <button 
-            onClick={handleSearch}
-            className="px-8 py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white rounded-lg font-medium transition-colors"
-          >
-            Search
-          </button>
         </div>
 
         {/* Properties Grid */}
