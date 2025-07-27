@@ -544,15 +544,49 @@ const PreferenceDetailPage = () => {
             {/* Action Button */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-[#09391C] mb-4">Ready to Help?</h2>
-              <button 
-                onClick={handleIHaveIt}
-                className="w-full bg-[#8DDB90] hover:bg-[#7BC97F] text-white py-3 px-4 rounded-lg font-medium transition-colors"
+
+              {/* Property match confirmation */}
+              <div className="bg-[#8DDB90]/5 rounded-lg p-4 mb-4 border border-[#8DDB90]/20">
+                <div className="flex items-start gap-3">
+                  <div className="w-5 h-5 bg-[#8DDB90] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-[#09391C] text-sm mb-1">Perfect Match Found?</h3>
+                    <p className="text-gray-600 text-xs">
+                      Do you have a property that matches this buyer's requirements? Submit your brief to connect directly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={handleSubmitBrief}
+                className="w-full bg-[#8DDB90] hover:bg-[#7BC97F] text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
               >
-                I have a matching property
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Submit Brief
               </button>
-              <p className="text-sm text-gray-600 mt-2 text-center">
-                Click to submit your property for this buyer
+
+              <p className="text-sm text-gray-600 mt-3 text-center">
+                {!user ? (
+                  <>You'll be asked to <span className="font-medium text-[#8DDB90]">log in</span> before submitting your property</>
+                ) : (
+                  <>Submit your matching property details for this buyer preference</>
+                )}
               </p>
+
+              {/* Additional info */}
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Response Time:</span>
+                  <span className="text-[#09391C] font-medium">Usually within 24hrs</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
