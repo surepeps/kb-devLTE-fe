@@ -14,16 +14,6 @@ const nextConfig: NextConfig = {
   // Optimize for faster compilation and prevent memory issues
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
-    // Reduce bundle size
-    optimizeCss: true,
-  },
-  // Production optimization
-  swcMinify: true,
-  // Improve memory usage
-  modularizeImports: {
-    'react-icons': {
-      transform: 'react-icons/{{member}}',
-    },
   },
   images: {
     remotePatterns: [
