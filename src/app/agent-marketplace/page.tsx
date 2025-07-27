@@ -281,133 +281,140 @@ const AgentMarketplace = () => {
 
 
   const PreferenceCard = ({ preference }: { preference: Preference }) => (
-    <div className="group relative bg-gradient-to-br from-white via-gray-50/30 to-white rounded-2xl border-2 border-gray-100 hover:border-[#8DDB90]/30 overflow-hidden flex flex-col h-full transition-all duration-300 hover:transform hover:scale-[1.02]">
-      {/* Status Badge */}
-      <div className="absolute top-4 right-4 z-10">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-medium rounded-full">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-          Active
+    <div className="group relative bg-white border border-gray-200/80 hover:border-gray-300 rounded-lg overflow-hidden flex flex-col h-full transition-all duration-500 hover:translate-y-[-2px]">
+      {/* Animated Top Border */}
+      <div className="absolute top-0 left-0 w-0 h-[2px] bg-[#8DDB90] group-hover:w-full transition-all duration-700 ease-out"></div>
+
+      {/* Status Indicator */}
+      <div className="absolute top-3 right-3 z-10">
+        <div className="relative">
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full animate-ping opacity-75"></div>
         </div>
       </div>
 
-      {/* Property Type Header */}
-      <div className="relative bg-gradient-to-r from-[#8DDB90]/10 via-[#8DDB90]/5 to-transparent px-6 py-4 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#8DDB90] to-[#7BC97F] rounded-xl flex items-center justify-center">
-              <span className="text-white text-sm font-bold">
-                {preference.preferenceType === 'buy' ? 'B' :
-                 preference.preferenceType === 'rent' ? 'R' :
-                 preference.preferenceType === 'shortlet' ? 'S' :
-                 preference.preferenceType?.[0]?.toUpperCase()}
+      {/* Header */}
+      <div className="relative px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          {/* Type Icon */}
+          <div className="relative w-12 h-12 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center group-hover:bg-gray-100 transition-colors duration-300">
+            <div className="text-gray-700 font-bold text-base">
+              {preference.preferenceType === 'buy' ? '🏠' :
+               preference.preferenceType === 'rent' ? '🏘️' :
+               preference.preferenceType === 'shortlet' ? '🏖️' : '🏢'}
+            </div>
+            {/* Hover animation circle */}
+            <div className="absolute inset-0 rounded-lg border-2 border-[#8DDB90] opacity-0 group-hover:opacity-100 scale-110 group-hover:scale-100 transition-all duration-300"></div>
+          </div>
+
+          <div className="flex-1">
+            <h3 className="text-gray-900 font-semibold text-sm mb-1 group-hover:text-[#09391C] transition-colors">
+              {preference.preferenceType === 'buy' ? 'Property Purchase' :
+               preference.preferenceType === 'rent' ? 'Property Rental' :
+               preference.preferenceType === 'shortlet' ? 'Short-term Stay' :
+               preference.preferenceType}
+            </h3>
+            <div className="flex items-center gap-1">
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <span className="text-gray-500 text-xs">Active Request</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 p-5">
+        {/* Key Details Grid */}
+        <div className="space-y-3">
+          {/* Location */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-50 group-hover:border-gray-100 transition-colors">
+            <div className="flex items-center gap-2">
+              <FontAwesomeIcon icon={faMapMarkerAlt} className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-600 text-xs font-medium">Location</span>
+            </div>
+            <span className="text-gray-900 text-sm font-medium text-right max-w-[60%] truncate">
+              {formatLocation(preference.location)}
+            </span>
+          </div>
+
+          {/* Budget */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-50 group-hover:border-gray-100 transition-colors">
+            <div className="flex items-center gap-2">
+              <FontAwesomeIcon icon={faTag} className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-600 text-xs font-medium">Budget</span>
+            </div>
+            <span className="text-gray-900 text-sm font-medium">
+              {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
+            </span>
+          </div>
+
+          {/* Bedrooms */}
+          {(preference.propertyDetails?.minBedrooms || preference.bookingDetails?.minBedrooms) && (
+            <div className="flex items-center justify-between py-2 border-b border-gray-50 group-hover:border-gray-100 transition-colors">
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faBed} className="w-3 h-3 text-gray-400" />
+                <span className="text-gray-600 text-xs font-medium">Bedrooms</span>
+              </div>
+              <span className="text-gray-900 text-sm font-medium">
+                {preference.propertyDetails?.minBedrooms || preference.bookingDetails?.minBedrooms}+ BR
               </span>
             </div>
-            <div>
-              <h3 className="text-[#09391C] font-semibold text-base">
-                {preference.preferenceType === 'buy' ? 'Buy Property' :
-                 preference.preferenceType === 'rent' ? 'Rent Property' :
-                 preference.preferenceType === 'shortlet' ? 'Shortlet Property' :
-                 preference.preferenceType}
-              </h3>
-              <p className="text-gray-500 text-xs">Buyer Preference</p>
+          )}
+
+          {/* Documents */}
+          {preference.propertyDetails?.documentTypes && preference.propertyDetails.documentTypes.length > 0 && (
+            <div className="flex items-center justify-between py-2 border-b border-gray-50 group-hover:border-gray-100 transition-colors">
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faFileAlt} className="w-3 h-3 text-gray-400" />
+                <span className="text-gray-600 text-xs font-medium">Documents</span>
+              </div>
+              <span className="text-gray-900 text-sm font-medium text-right max-w-[60%] truncate">
+                {preference.propertyDetails.documentTypes.slice(0, 1).join(', ')}
+                {preference.propertyDetails.documentTypes.length > 1 && `+${preference.propertyDetails.documentTypes.length - 1}`}
+              </span>
             </div>
-          </div>
+          )}
+
+          {/* Property Condition */}
+          {preference.propertyDetails?.propertyCondition && (
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 text-xs">✓</span>
+                <span className="text-gray-600 text-xs font-medium">Condition</span>
+              </div>
+              <span className="text-gray-900 text-sm font-medium capitalize">
+                {preference.propertyDetails.propertyCondition}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Property Details - Modern Card Style */}
-      <div className="flex-1 p-6 space-y-4">
-        {/* Location */}
-        <div className="flex items-start gap-3 p-3 bg-gray-50/50 rounded-xl border border-gray-100">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-            <FontAwesomeIcon icon={faMapMarkerAlt} className="w-3.5 h-3.5 text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-gray-600 text-xs font-medium mb-1">Location</p>
-            <p className="text-[#09391C] text-sm font-semibold leading-tight">{formatLocation(preference.location)}</p>
-          </div>
-        </div>
+      {/* Footer Actions */}
+      <div className="p-5 pt-0 space-y-3 border-t border-gray-50">
+        {/* View Details */}
+        <button
+          onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
+          className="w-full text-gray-600 hover:text-gray-900 text-xs font-medium py-2 flex items-center justify-center gap-1 group/btn transition-colors"
+        >
+          <span>View Details</span>
+          <svg className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
 
-        {/* Budget */}
-        <div className="flex items-start gap-3 p-3 bg-green-50/50 rounded-xl border border-green-100">
-          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-            <FontAwesomeIcon icon={faTag} className="w-3.5 h-3.5 text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-gray-600 text-xs font-medium mb-1">Budget Range</p>
-            <p className="text-[#09391C] text-sm font-semibold">
-              {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
-            </p>
-          </div>
-        </div>
-
-        {/* Bedrooms */}
-        {(preference.propertyDetails?.minBedrooms || preference.bookingDetails?.minBedrooms) && (
-          <div className="flex items-start gap-3 p-3 bg-purple-50/50 rounded-xl border border-purple-100">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <FontAwesomeIcon icon={faBed} className="w-3.5 h-3.5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-gray-600 text-xs font-medium mb-1">Bedrooms</p>
-              <p className="text-[#09391C] text-sm font-semibold">
-                {preference.propertyDetails?.minBedrooms || preference.bookingDetails?.minBedrooms}+ Bedrooms
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Documents */}
-        {preference.propertyDetails?.documentTypes && preference.propertyDetails.documentTypes.length > 0 && (
-          <div className="flex items-start gap-3 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
-            <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <FontAwesomeIcon icon={faFileAlt} className="w-3.5 h-3.5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-gray-600 text-xs font-medium mb-1">Required Documents</p>
-              <p className="text-[#09391C] text-sm font-semibold">
-                {preference.propertyDetails.documentTypes.slice(0, 2).join(', ')}
-                {preference.propertyDetails.documentTypes.length > 2 && '...'}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Property Condition */}
-        {preference.propertyDetails?.propertyCondition && (
-          <div className="flex items-start gap-3 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-white text-xs font-bold">✓</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-gray-600 text-xs font-medium mb-1">Condition</p>
-              <p className="text-[#09391C] text-sm font-semibold capitalize">{preference.propertyDetails.propertyCondition}</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Actions Footer */}
-      <div className="p-6 pt-0 space-y-3">
-        {/* View More Link */}
-        <div className="text-center">
-          <button
-            onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
-            className="text-gray-600 hover:text-[#09391C] text-sm font-medium inline-flex items-center gap-2 group transition-colors"
-          >
-            <span>View Full Details</span>
-            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Primary Action Button */}
+        {/* Primary Action */}
         <button
           onClick={() => handleIHaveIt(preference.preferenceId)}
-          className="w-full bg-gradient-to-r from-[#8DDB90] to-[#7BC97F] hover:from-[#7BC97F] hover:to-[#6AB86E] text-white py-3.5 text-sm font-semibold rounded-xl transition-all duration-300 hover:transform hover:scale-[1.02] flex items-center justify-center gap-2"
+          className="relative w-full bg-gray-900 hover:bg-black text-white py-3 text-sm font-medium rounded transition-all duration-300 overflow-hidden group/action"
         >
-          <span>🎯</span>
-          <span>I Have This Property</span>
+          {/* Button content */}
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            <span>I Have This Property</span>
+          </span>
+
+          {/* Hover effect */}
+          <div className="absolute inset-0 bg-[#8DDB90] transform scale-x-0 group-hover/action:scale-x-100 transition-transform duration-300 origin-left"></div>
         </button>
       </div>
     </div>
