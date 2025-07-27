@@ -839,7 +839,7 @@ const AgentMarketplace = () => {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-8">
+          <div className="flex justify-center items-center gap-1 md:gap-2 mt-6 md:mt-8 flex-wrap px-4">
             <button
               onClick={() => {
                 setIsPaginationLoading(true);
