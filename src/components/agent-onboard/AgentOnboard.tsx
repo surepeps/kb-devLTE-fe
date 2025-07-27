@@ -331,7 +331,7 @@ const AgentOnboard: React.FC = () => {
     try {
       await toast.promise(
         PUT_REQUEST(
-          URLS.BASE + URLS.agentOnboarding,
+          URLS.BASE + URLS.accountSettingsBaseUrl + '/onBoard',
           payload,
           Cookies.get("token") || "",
         ).then((response) => {

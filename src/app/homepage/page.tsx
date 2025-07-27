@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { Fragment, Suspense, useEffect } from "react";
+import React, { Fragment, Suspense} from "react";
 import Loading from "@/components/loading-component/loading";
 import Section2 from "@/components/homepage/home_section2";
 import SeeWhatOthers from "@/components/homepage/section2";
@@ -12,19 +12,12 @@ import { useLoading } from "@/hooks/useLoading";
 import HeroSection from "@/components/homepage/homepage_hero";
 import Section1 from "@/components/homepage/home_section1";
 import EmailVerification from "@/components/EmailVerification";
-import { useRouter, useSearchParams } from "next/navigation";
-import { URLS } from "@/utils/URLS";
-import { GET_REQUEST } from "@/utils/requests";
-import Cookies from "js-cookie";
-import { useUserContext } from "@/context/user-context";
 import HowItWorksSection from "@/components/homepage/how-it-works-section";
 import ConnectBuyersSection from "@/components/homepage/connect-buyers-section";
 import ClientTestimonials from "@/components/homepage/client-testimonials";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Countdown from "../coming-soon-modal/page";
-import Agent from "../agent/page";
 
 /**
  * @Homepage - A function that returns the web homepage
@@ -50,65 +43,6 @@ const Homepage = ({
 }: { isComingSoon?: boolean } = {}) => {
   //Simulating the loading page
   const isLoading = useLoading();
-
-  const searchParams = useSearchParams();
-
-  /**
-   * using the useRouter from the next/navigation to simulate between pages
-   */
-  const router = useRouter();
-
-  /**
-   * UserContextAPI to store users information that could be accessed
-   * globally in all the pages
-   */
-  const { setUser } = useUserContext();
-
-  useEffect(() => {
-    if (searchParams && searchParams?.get("access_token")) {
-      const url =
-        URLS.BASE +
-        URLS.user +
-        URLS.verifyEmail +
-        `?access_token=${searchParams?.get("access_token")}`;
-
-      (async () => {
-        try {
-          const response = await GET_REQUEST(url);
-
-          // Type guard to check if response is a valid VerifiedUser
-          if (response?.data && typeof response.data === 'object' && 'id' in response.data && 'token' in response.data) {
-            const userResponse = response.data as VerifiedUser;
-
-            if (userResponse.id && userResponse.token) {
-              Cookies.set("token", userResponse.token);
-
-              const user = {
-                id: userResponse.id,
-                email: userResponse.email,
-                password: userResponse.password,
-                lastName: userResponse.lastName,
-                firstName: userResponse.firstName,
-                phoneNumber: userResponse.phoneNumber,
-                accountApproved: userResponse.accountApproved,
-                userType: userResponse.userType as "Agent" | "Landowners",
-              };
-
-              setUser(user);
-              if (user.userType === "Landowners") {
-                router.push("/auth/login");
-              }
-              if (user.userType === "Agent") {
-                router.push("/agent/onboard");
-              }
-            }
-          }
-        } catch (error) {
-          console.error("Error verifying email:", error);
-        }
-      })();
-    }
-  }, [router, searchParams, setUser]);
 
   /**
    * if else statement to simulate the loading page for 3 secs then return the actual homepage

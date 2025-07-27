@@ -63,7 +63,7 @@ const Section2 = () => {
   useEffect(() => {
     const briefType = getBriefType(selectedMarketPlace);
     const url = `${URLS.BASE}${
-      URLS.fetchBriefs
+      URLS.propertyBaseUrl + "/all"
     }?page=1&limit=4&briefType=${encodeURIComponent(briefType)}`;
 
     const fetchData = async () => {

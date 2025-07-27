@@ -32,7 +32,7 @@ const ChangePassword = () => {
       setFormikStatus('pending');
       try {
         const response = await POST_REQUEST(
-          URLS.BASE + URLS.changePassword,
+          URLS.BASE + URLS.accountSettingsBaseUrl + "/changePassword",
           {
             oldPassword: formik.values.currentPassword,
             newPassword: formik.values.newPassword,

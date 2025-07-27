@@ -15,7 +15,7 @@ export default function DebugMarketplace() {
 
     try {
       console.log('=== Testing Direct API Call ===');
-      const url = `${URLS.BASE}${URLS.fetchBriefs}?briefType=Outright%20Sales&page=1&limit=12`;
+      const url = `${URLS.BASE}${URLS.propertyBaseUrl}/all?briefType=Outright%20Sales&page=1&limit=12`;
       console.log('URL:', url);
       
       const response = await GET_REQUEST(url);
@@ -42,7 +42,7 @@ export default function DebugMarketplace() {
       <div className="mb-4 text-sm">
         <p><strong>Status:</strong> {loading ? 'Loading...' : 'Idle'}</p>
         <p><strong>BASE URL:</strong> {URLS.BASE}</p>
-        <p><strong>Endpoint:</strong> {URLS.fetchBriefs}</p>
+        <p><strong>Endpoint:</strong> {URLS.propertyBaseUrl}/all</p>
       </div>
 
       <button 

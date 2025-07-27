@@ -297,7 +297,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     async (userId: string, inspectionId: string): Promise<boolean> => {
       try {
         const response = await GET_REQUEST(
-          `${URLS.BASE + URLS.validateInspectionAccess}/${userId}/${inspectionId}`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/validate-access/${userId}/${inspectionId}`,
         );
         const isValid = response?.success;
         dispatch({ type: "VALIDATE_ACCESS", payload: { isValid } });
@@ -336,7 +336,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
 
       try {
         const response = await GET_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${userId}/${inspectionId}/${userType}`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/inspection-details/${userId}/${inspectionId}/${userType}`,
         ) as ApiResponse<InspectionDetails>;
 
         if (response?.success && response.data) {
@@ -621,7 +621,7 @@ export const SecureNegotiationProvider: React.FC<{ children: ReactNode }> = ({
     if (state.userId && state.inspectionId && state.currentUserType) {
       try {
         const response = await PUT_REQUEST(
-          `${URLS.BASE + URLS.getOneInspection}/${state.inspectionId}/reopen`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/${state.inspectionId}/reOpen`,
           {
             userType: state.currentUserType,
           },

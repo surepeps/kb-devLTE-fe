@@ -28,7 +28,7 @@ const Settings = () => {
     setFormikStatus('pending');
     //console.log(Cookies.get('token'));
     try {
-      const response = await axios.get(URLS.BASE + URLS.userAccount, {
+      const response = await axios.get(URLS.BASE + URLS.accountSettingsBaseUrl, {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },

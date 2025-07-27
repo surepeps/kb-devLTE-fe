@@ -332,7 +332,7 @@ const Sell: React.FC<SellProps> = ({ briefId, onClose, buyerPreference }) => {
         if (image && typeof image !== "string") {
           const formData = new FormData();
           formData.append("file", image as File);
-          const uploadUrl = URLS.BASE + URLS.uploadImg;
+          const uploadUrl = URLS.BASE;
           const response = await POST_REQUEST_FILE_UPLOAD(uploadUrl, formData);
           if (response?.data?.url) {
             uploadedImageUrls.push(response.data.url);

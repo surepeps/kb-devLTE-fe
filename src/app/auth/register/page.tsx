@@ -241,7 +241,7 @@ const Register = () => {
               { fields: "name,email,first_name,last_name" },
               async (userInfo: any) => {
                 try {
-                  const url = URLS.BASE + URLS.user + URLS.facebookSignup;
+                  const url = URLS.BASE + URLS.authFacebook;
                   const payload = {
                     accessToken: response.authResponse.accessToken,
                     userID: response.authResponse.userID, // Note: Backend expects userID, ensure consistency

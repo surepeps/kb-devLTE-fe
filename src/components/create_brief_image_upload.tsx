@@ -35,7 +35,7 @@ const AttachFile = forwardRef<HTMLInputElement, any>((props: any, ref) => {
     const fromData = new FormData();
     fromData.append("file", file as Blob);
 
-    const url = URLS.BASE + URLS.uploadImg;
+    const url = URLS.BASE;
     await toast.promise(
       POST_REQUEST_FILE_UPLOAD(url, fromData).then((response) => {
         if ((response as unknown as { url: string }).url) {

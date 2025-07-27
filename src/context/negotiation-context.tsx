@@ -835,7 +835,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
           userPayload,
         );
         const responseData = await makeApiRequest<ApiSuccessResponse>(
-          `${URLS.BASE + URLS.getOneInspection}/${negotiationId}/accept-offer`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/${negotiationId}/accept-offer`,
           "PUT",
           payload,
           "accepting",
@@ -877,7 +877,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
           userPayload,
         );
         const responseData = await makeApiRequest<ApiSuccessResponse>(
-          `${URLS.BASE + URLS.getOneInspection}/${negotiationId}/reject-offer`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/${negotiationId}/reject-offer`,
           "PUT",
           payload,
           "rejecting",
@@ -948,7 +948,7 @@ export const NegotiationProvider: React.FC<{ children: ReactNode }> = ({
         }
 
         const responseData = await makeApiRequest<ApiSuccessResponse>(
-          `${URLS.BASE + URLS.getOneInspection}/${negotiationId}/counter-offer`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/${negotiationId}/counter-offer`,
           "POST",
           payload,
           "countering",
@@ -1140,7 +1140,7 @@ export const useNegotiationDataWithContext = (
 
       try {
         const response = await GET_REQUEST(
-          `${URLS.BASE + URLS.getOneNewInspection}/${potentialClientID}`,
+          `${URLS.BASE + URLS.inspectionBaseUrl}/${potentialClientID}`,
           Cookies.get("token"),
         );
 
