@@ -879,7 +879,7 @@ const AgentMarketplace = () => {
                     }
                   }}
                   disabled={isPaginationLoading}
-                  className={`px-3 py-2 rounded border ${currentPage === 1 ? 'bg-[#8DDB90] text-white' : 'bg-white hover:bg-gray-50'} disabled:opacity-50 transition-colors`}
+                  className={`px-2 md:px-3 py-2 rounded border ${currentPage === 1 ? 'bg-[#8DDB90] text-white' : 'bg-white hover:bg-gray-50'} disabled:opacity-50 transition-colors text-sm md:text-base`}
                 >
                   1
                 </button>
