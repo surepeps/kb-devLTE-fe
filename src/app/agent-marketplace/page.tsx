@@ -278,51 +278,7 @@ const AgentMarketplace = () => {
     return locationStr.replace(/^,\s*/, '') || 'N/A';
   };
 
-  // Get matched properties with fallback data
-  const getMatchedProperties = () => {
-    // First try to get recently matched preferences from current data
-    const recentMatches = preferences.slice(0, 4).map((pref, index) => ({
-      id: pref.preferenceId || `recent-${index}`,
-      type: pref.preferenceType === 'buy' ? 'Buy' :
-            pref.preferenceType === 'rent' ? 'Rent' :
-            pref.preferenceType === 'shortlet' ? 'Shortlet' :
-            pref.preferenceType,
-      location: formatLocation(pref.location),
-      status: 'Active'
-    }));
 
-    if (recentMatches.length > 0) {
-      return recentMatches;
-    }
-
-    // Fallback data if no API data is available
-    return [
-      {
-        id: 'match1',
-        type: 'Buy',
-        location: 'Lagos, Ikeja',
-        status: 'Active'
-      },
-      {
-        id: 'match2',
-        type: 'Rent',
-        location: 'Abuja, Wuse',
-        status: 'Active'
-      },
-      {
-        id: 'match3',
-        type: 'Shortlet',
-        location: 'Lagos, Victoria Island',
-        status: 'Active'
-      },
-      {
-        id: 'match4',
-        type: 'Buy',
-        location: 'Port Harcourt, GRA',
-        status: 'Active'
-      }
-    ];
-  };
 
   const PreferenceCard = ({ preference }: { preference: Preference }) => (
     <div className="group relative bg-gradient-to-br from-white via-gray-50/30 to-white rounded-2xl border-2 border-gray-100 hover:border-[#8DDB90]/30 overflow-hidden flex flex-col h-full transition-all duration-300 hover:transform hover:scale-[1.02]">
