@@ -582,16 +582,16 @@ const AgentMarketplace = () => {
 
             {/* Call to Action */}
             <div className="text-center">
-              <div className="inline-flex flex-col md:flex-row items-center gap-4 p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-[#8DDB90]/30">
-                <div className="flex-1 text-left">
-                  <h3 className="font-display text-lg font-semibold text-[#09391C] mb-1">
+              <div className="flex flex-col items-center gap-4 p-4 md:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-[#8DDB90]/30">
+                <div className="text-center md:text-left">
+                  <h3 className="font-display text-base md:text-lg font-semibold text-[#09391C] mb-1">
                     Don't Miss Out!
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-xs md:text-sm">
                     Be the first to submit matching properties and get premium visibility
                   </p>
                 </div>
-                <button className="px-6 py-3 bg-gradient-to-r from-[#8DDB90] to-[#7BC97F] hover:from-[#7BC97F] hover:to-[#6AB86E] text-white font-semibold rounded-lg transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap">
+                <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-[#8DDB90] to-[#7BC97F] hover:from-[#7BC97F] hover:to-[#6AB86E] text-white font-semibold rounded-lg transition-all duration-300 hover:transform hover:scale-105 text-sm md:text-base">
                   🚀 Submit Your Property
                 </button>
               </div>
