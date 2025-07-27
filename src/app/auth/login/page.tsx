@@ -140,6 +140,15 @@ const Login: FC = () => {
 
           const userPayload = response.data.user;
 
+          // Check for redirect URL in sessionStorage
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            router.push(redirectUrl);
+            return;
+          }
+
+          // Default redirect logic
           if (userPayload.userType === "Agent") {
             if (!userPayload.agentData?.agentType) {
               router.push("/agent/onboard");
