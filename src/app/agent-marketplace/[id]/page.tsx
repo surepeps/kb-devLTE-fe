@@ -122,11 +122,12 @@ const PreferenceDetailPage = () => {
         const token = Cookies.get('token');
         const url = `${URLS.BASE}/preferences/${preferenceId}/getOne`;
         
-        const response = await GET_REQUEST<ApiResponse>(url, token);
+        const response = await GET_REQUEST(url, token);
 
         if (response?.success && response?.data) {
           setPreference(response.data);
         } else {
+          toast.error("Failed to load preference details")
           setError(response?.message || 'Failed to load preference details');
         }
       } catch (error) {
@@ -476,70 +477,71 @@ const PreferenceDetailPage = () => {
 
           {/* Sidebar */}
           <div className="space-y-4 md:space-y-6">
-            {/* Buyer Information */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-[#09391C] mb-4">Buyer Information</h2>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <FontAwesomeIcon icon={faUser} className="w-4 h-4 text-gray-500" />
-                  <span className="font-medium">{preference.buyer.fullName}</span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-700">{preference.buyer.email}</span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <FontAwesomeIcon icon={faPhone} className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-700">{preference.buyer.phoneNumber}</span>
-                </div>
-              </div>
-            </div>
-
+         
             {/* Contact Information */}
-            {preference.contactInfo && (
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-[#09391C] mb-4">Contact Preferences</h2>
-                <div className="space-y-2">
-                  {preference.contactInfo.petsAllowed !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Pets Allowed:</span>
-                      <span className={`font-medium ${preference.contactInfo.petsAllowed ? 'text-green-600' : 'text-red-600'}`}>
-                        {preference.contactInfo.petsAllowed ? 'Yes' : 'No'}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {preference.contactInfo.smokingAllowed !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Smoking Allowed:</span>
-                      <span className={`font-medium ${preference.contactInfo.smokingAllowed ? 'text-green-600' : 'text-red-600'}`}>
-                        {preference.contactInfo.smokingAllowed ? 'Yes' : 'No'}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {preference.contactInfo.partiesAllowed !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Parties Allowed:</span>
-                      <span className={`font-medium ${preference.contactInfo.partiesAllowed ? 'text-green-600' : 'text-red-600'}`}>
-                        {preference.contactInfo.partiesAllowed ? 'Yes' : 'No'}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {preference.contactInfo.willingToPayExtra !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Willing to Pay Extra:</span>
-                      <span className={`font-medium ${preference.contactInfo.willingToPayExtra ? 'text-green-600' : 'text-red-600'}`}>
-                        {preference.contactInfo.willingToPayExtra ? 'Yes' : 'No'}
-                      </span>
-                    </div>
-                  )}
+            {preference.contactInfo &&
+              (preference.contactInfo.petsAllowed !== undefined ||
+                preference.contactInfo.smokingAllowed !== undefined ||
+                preference.contactInfo.partiesAllowed !== undefined ||
+                preference.contactInfo.willingToPayExtra !== undefined) && (
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h2 className="text-xl font-semibold text-[#09391C] mb-4">Preferences</h2>
+                  <div className="space-y-2">
+                    {preference.contactInfo.petsAllowed !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Pets Allowed:</span>
+                        <span
+                          className={`font-medium ${
+                            preference.contactInfo.petsAllowed ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {preference.contactInfo.petsAllowed ? "Yes" : "No"}
+                        </span>
+                      </div>
+                    )}
+
+                    {preference.contactInfo.smokingAllowed !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Smoking Allowed:</span>
+                        <span
+                          className={`font-medium ${
+                            preference.contactInfo.smokingAllowed ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {preference.contactInfo.smokingAllowed ? "Yes" : "No"}
+                        </span>
+                      </div>
+                    )}
+
+                    {preference.contactInfo.partiesAllowed !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Parties Allowed:</span>
+                        <span
+                          className={`font-medium ${
+                            preference.contactInfo.partiesAllowed ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {preference.contactInfo.partiesAllowed ? "Yes" : "No"}
+                        </span>
+                      </div>
+                    )}
+
+                    {preference.contactInfo.willingToPayExtra !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Willing to Pay Extra:</span>
+                        <span
+                          className={`font-medium ${
+                            preference.contactInfo.willingToPayExtra ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {preference.contactInfo.willingToPayExtra ? "Yes" : "No"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
 
             {/* Action Button */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">

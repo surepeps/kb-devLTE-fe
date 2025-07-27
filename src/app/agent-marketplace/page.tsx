@@ -187,7 +187,7 @@ const AgentMarketplace = () => {
           }
         }
 
-        const response = await GET_REQUEST<ApiResponse>(url, token);
+        const response = await GET_REQUEST(url, token);
 
         if (response?.success && response?.data && Array.isArray(response.data)) {
           setPreferences(response.data);
@@ -537,7 +537,7 @@ const AgentMarketplace = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {getMatchedProperties().map((property, idx) => (
                 <div
-                  key={property.id || property._id || `matched-${idx}`}
+                  key={property.id || `matched-${idx}`}
                   className="group relative bg-white rounded-xl border-2 border-[#8DDB90]/20 hover:border-[#8DDB90]/40 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg overflow-hidden"
                 >
                   {/* Shimmer effect */}
@@ -580,7 +580,7 @@ const AgentMarketplace = () => {
               <div className="flex flex-col items-center gap-4 p-4 md:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-[#8DDB90]/30">
                 <div className="text-center md:text-left">
                   <h3 className="font-display text-base md:text-lg font-semibold text-[#09391C] mb-1">
-                    Don't Miss Out!
+                    Don&apos;t Miss Out!
                   </h3>
                   <p className="text-gray-600 text-xs md:text-sm">
                     Be the first to submit matching properties and get premium visibility
@@ -783,8 +783,8 @@ const AgentMarketplace = () => {
                     No Buyer Preferences Found
                   </h3>
                   <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                    We couldn't find any approved buyer preferences matching your current filters.
-                    This could be because buyers are still reviewing requirements or there aren't any active preferences in your selected criteria.
+                    We couldn&apos;t find any approved buyer preferences matching your current filters.
+                    This could be because buyers are still reviewing requirements or there aren'&apos; any active preferences in your selected criteria.
                   </p>
 
                   {/* Suggestions */}
