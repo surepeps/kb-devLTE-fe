@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
+import type { PropertyData } from "@/context/post-property-context";
 import { getPostPropertyValidationSchema } from "@/utils/validation/post-property-validation";
 import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
@@ -130,7 +131,23 @@ interface Preference {
 interface PreferenceApiResponse {
   success: boolean;
   message: string;
-  data: Preference;
+  data: {
+    _id: string;
+    id: string;
+    preferenceMode: string;
+    preferenceType: string;
+    location: Location;
+    budget: Budget;
+    propertyDetails?: PropertyDetails;
+    bookingDetails?: BookingDetails;
+    features?: Features;
+    status: string;
+    createdAt: string;
+    buyer: Buyer;
+    contactInfo?: ContactInfo;
+    nearbyLandmark?: string;
+    additionalNotes?: string;
+  };
 }
 
 // Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
@@ -353,9 +370,8 @@ const PostPropertyByPreference = () => {
 
   const preferenceId = searchParams?.get('preferenceId');
 
-  // Fetch preference details and auto-populate form
-  useEffect(() => {
-    const fetchAndPopulatePreference = async () => {
+  // Memoize the fetch function to prevent re-renders
+  const fetchAndPopulatePreference = useCallback(async () => {
       if (!preferenceId) {
         setPreferenceError('Preference ID is required');
         setIsLoadingPreference(false);
@@ -369,7 +385,22 @@ const PostPropertyByPreference = () => {
         const response = await GET_REQUEST<PreferenceApiResponse>(url, token);
 
         if (response?.success && response?.data) {
-          const pref = response.data as Preference;
+          const pref: Preference = {
+            id: response.data._id || response.data.id,
+            preferenceMode: response.data.preferenceMode,
+            preferenceType: response.data.preferenceType,
+            location: response.data.location,
+            budget: response.data.budget,
+            propertyDetails: response.data.propertyDetails,
+            bookingDetails: response.data.bookingDetails,
+            features: response.data.features,
+            status: response.data.status,
+            createdAt: response.data.createdAt,
+            buyer: response.data.buyer,
+            contactInfo: response.data.contactInfo,
+            nearbyLandmark: response.data.nearbyLandmark,
+            additionalNotes: response.data.additionalNotes,
+          };
           setPreference(pref);
 
           // Auto-populate the form based on preference data
@@ -492,7 +523,7 @@ const PostPropertyByPreference = () => {
           // Apply all updates to the context
           Object.keys(updatedData).forEach(key => {
             if (key in updatedData) {
-              updatePropertyData(key as keyof typeof updatedData, updatedData[key]);
+              updatePropertyData(key as keyof PropertyData, updatedData[key]);
             }
           });
 
@@ -506,10 +537,12 @@ const PostPropertyByPreference = () => {
       } finally {
         setIsLoadingPreference(false);
       }
-    };
+  }, [preferenceId]);
 
+  // Fetch preference details and auto-populate form
+  useEffect(() => {
     fetchAndPopulatePreference();
-  }, [preferenceId, updatePropertyData]);
+  }, [fetchAndPopulatePreference]);
 
   useEffect(() => {
     if (!user) {
