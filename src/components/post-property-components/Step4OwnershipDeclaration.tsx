@@ -17,7 +17,7 @@ import {
 } from "@/data/comprehensive-post-property-config";
 import "react-phone-number-input/style.css";
 import "@/styles/phone-input.css";
-import { PropertyFormData, StepProps } from "@/types/post-property.types";
+import { StepProps } from "@/types/post-property.types";
 
 
 
@@ -25,7 +25,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { user } = useUserContext();
   const { errors, touched, setFieldTouched, setFieldValue } =
-    useFormikContext<PropertyFormData>();
+    useFormikContext<any>();
 
   const getFieldBorderClass = (fieldName: string, isRequired = false) => {
     const isInvalid = touched[fieldName] && errors[fieldName];
@@ -56,9 +56,9 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     return "border-[#C7CAD0]";
   };
 
-  const handleFieldChange = async <K extends keyof PropertyFormData>(
-    fieldName: K | string,
-    value: K extends keyof PropertyFormData ? PropertyFormData[K] : unknown
+  const handleFieldChange = async (
+    fieldName: string,
+    value: any
   ) => {
     setFieldTouched(fieldName as string, true);
     setFieldValue(fieldName as string, value);
@@ -281,7 +281,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   value="owner"
                   name="legalOwner"
                   variant="card"
-                                    title="Yes, I am the legal owner of this property"
+                  title="Yes, I am the legal owner of this property"
                   error={
                     propertyData.isLegalOwner === undefined ||
                     !!(touched.isLegalOwner && errors.isLegalOwner)
@@ -300,7 +300,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   value="authorized"
                   name="legalOwner"
                   variant="card"
-                                    title="I am authorized by the legal owner to list this property"
+                  title="I am authorized by the legal owner to list this property"
                   error={
                     propertyData.isLegalOwner === undefined ||
                     !!(touched.isLegalOwner && errors.isLegalOwner)
