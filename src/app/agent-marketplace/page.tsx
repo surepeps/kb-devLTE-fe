@@ -176,18 +176,8 @@ const AgentMarketplace = () => {
         if (propertyCondition) params.append('propertyCondition', propertyCondition);
 
         const url = `${URLS.BASE}/preferences/getApprovedForAgent?${params.toString()}`;
-        console.log('Fetching from URL:', url);
-
-        const token = Cookies.get('token');
-        if (!token) {
-          console.warn('No authentication token found');
-          // In development mode, proceed without token for testing
-          if (process.env.NODE_ENV !== 'development') {
-            throw new Error('Authentication token not found. Please log in.');
-          }
-        }
-
-        const response = await GET_REQUEST(url, token);
+       
+        const response = await GET_REQUEST(url);
 
         if (response?.success && response?.data && Array.isArray(response.data)) {
           setPreferences(response.data);
@@ -520,24 +510,6 @@ const AgentMarketplace = () => {
               </p>
             </div>
 
-
-
-            {/* Call to Action */}
-            <div className="text-center">
-              <div className="flex flex-col items-center gap-4 p-4 md:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-[#8DDB90]/30">
-                <div className="text-center md:text-left">
-                  <h3 className="font-display text-base md:text-lg font-semibold text-[#09391C] mb-1">
-                    Don&apos;t Miss Out!
-                  </h3>
-                  <p className="text-gray-600 text-xs md:text-sm">
-                    Be the first to submit matching properties and get premium visibility
-                  </p>
-                </div>
-                <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-[#8DDB90] to-[#7BC97F] hover:from-[#7BC97F] hover:to-[#6AB86E] text-white font-semibold rounded-lg transition-all duration-300 hover:transform hover:scale-105 text-sm md:text-base">
-                  🚀 Submit Your Property
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
