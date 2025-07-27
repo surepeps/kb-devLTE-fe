@@ -59,7 +59,7 @@ const Login: FC = () => {
     password: Yup.string().required("Password is required"),
   });
 
-  const handleAuthSuccess = useCallback((response: any) => {  
+  const handleAuthSuccess = useCallback((response: any) => {
     const userPayload = response.data.user;
 
     Cookies.set("token", response.data.token);
@@ -68,6 +68,16 @@ const Login: FC = () => {
     setOverlayVisible(true);
 
     setTimeout(() => {
+      // Check for redirect URL in sessionStorage
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        router.push(redirectUrl);
+        setOverlayVisible(false);
+        return;
+      }
+
+      // Default redirect logic
       if (userPayload.userType === "Agent") {
         if (!userPayload.agentData?.agentType) {
           router.push("/agent/onboard");
@@ -130,6 +140,15 @@ const Login: FC = () => {
 
           const userPayload = response.data.user;
 
+          // Check for redirect URL in sessionStorage
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            router.push(redirectUrl);
+            return;
+          }
+
+          // Default redirect logic
           if (userPayload.userType === "Agent") {
             if (!userPayload.agentData?.agentType) {
               router.push("/agent/onboard");
@@ -207,6 +226,15 @@ const Login: FC = () => {
 
                     const userPayload = result.data.user;
 
+                    // Check for redirect URL in sessionStorage
+                    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                    if (redirectUrl) {
+                      sessionStorage.removeItem('redirectAfterLogin');
+                      router.push(redirectUrl);
+                      return;
+                    }
+
+                    // Default redirect logic
                     if (userPayload.userType === "Agent") {
                       if (!userPayload.agentData?.agentType) {
                         router.push("/agent/onboard");
