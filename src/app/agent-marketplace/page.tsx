@@ -203,8 +203,11 @@ const AgentMarketplace = () => {
     // Only fetch if we have the basic requirements
     if (typeof window !== 'undefined') {
       fetchApprovedPreferences();
+      if (!hasInitialized) {
+        setHasInitialized(true);
+      }
     }
-  }, [currentPage, searchTerm, documentType, propertyCondition, preferenceMode]);
+  }, [currentPage, searchTerm, documentType, propertyCondition, preferenceMode, hasInitialized]);
 
   const handleSearch = () => {
     setCurrentPage(1);
