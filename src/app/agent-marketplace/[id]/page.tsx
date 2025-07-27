@@ -226,19 +226,19 @@ const PreferenceDetailPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
         {/* Title Section */}
-        <div className="text-center mb-8">
-          <h1 className="font-display text-3xl font-extrabold text-[#09391C] mb-2">
-            {preference.preferenceType === 'buy' ? 'Buy' : 
-             preference.preferenceType === 'rent' ? 'Rent' : 
-             preference.preferenceType === 'shortlet' ? 'Shortlet' : 
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="font-display text-xl md:text-3xl font-extrabold text-[#09391C] mb-2">
+            {preference.preferenceType === 'buy' ? 'Buy' :
+             preference.preferenceType === 'rent' ? 'Rent' :
+             preference.preferenceType === 'shortlet' ? 'Shortlet' :
              preference.preferenceType} Preference Details
           </h1>
-          <p className="text-gray-600">Complete buyer preference information</p>
+          <p className="text-gray-600 text-sm md:text-base">Complete buyer preference information</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Main Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Information */}
