@@ -1,8 +1,6 @@
 /** @format */
 
 // Comprehensive Post Property Form Configuration
-// Implements exact field names and conditions as specified in requirements
-
 export const BRIEF_TYPES = {
   SELL: "sell",
   RENT: "rent",
@@ -76,289 +74,281 @@ export const briefTypeConfig = {
 
 // Property Condition Options
 export const propertyConditionOptions = [
-  { value: "New", label: "New" },
-  { value: "Good Condition", label: "Good Condition" },
+  { value: "new", label: "New" },
+  { value: "good-condition", label: "Good Condition" },
+  { value: "old", label: "Old" },
 ];
 
 // Building Type Options - Updated to match specifications
 export const buildingTypeOptions = {
   residential: [
-    { value: "Bungalow", label: "Bungalow" },
-    { value: "Duplex", label: "Duplex" },
-    { value: "Detached", label: "Detached" },
-    { value: "Semi-Detached", label: "Semi-Detached" },
-    { value: "Block of Flats", label: "Block of Flats" },
-    { value: "Penthouse", label: "Penthouse" },
-    { value: "Terrace", label: "Terrace" },
+    { value: "bungalow", label: "Bungalow" },
+    { value: "duplex", label: "Duplex" },
+    { value: "detached", label: "Detached" },
+    { value: "semi-detached", label: "Semi-Detached" },
+    { value: "block-of-flats", label: "Block of Flats" },
+    { value: "penthouse", label: "Penthouse" },
+    { value: "terrace", label: "Terrace" },
   ],
   commercial: [
-    { value: "Offices", label: "Offices" },
-    { value: "Studio", label: "Studio" },
-    { value: "Retail Space", label: "Retail Space" },
-    { value: "Showroom", label: "Showroom" },
-    { value: "Warehouse", label: "Warehouse" },
-    { value: "Shopping Complex", label: "Shopping Complex" },
+    { value: "offices", label: "Offices" },
+    { value: "studio", label: "Studio" },
+    { value: "retail-space", label: "Retail Space" },
+    { value: "showroom", label: "Showroom" },
+    { value: "warehouse", label: "Warehouse" },
+    { value: "shopping-complex", label: "Shopping Complex" },
   ],
   shortlet: [
-    { value: "Apartment", label: "Apartment" },
-    { value: "Duplex", label: "Duplex" },
-    { value: "Studio", label: "Studio" },
-    { value: "Bungalow", label: "Bungalow" },
-    { value: "Penthouse", label: "Penthouse" },
+    { value: "apartment", label: "Apartment" },
+    { value: "duplex", label: "Duplex" },
+    { value: "studio", label: "Studio" },
+    { value: "bungalow", label: "Bungalow" },
+    { value: "penthouse", label: "Penthouse" },
   ],
 };
 
-// Document Types - Exact list from specifications
+
+// Document Types - Exact list from specifications (formatted with lowercase hyphenated values)
 export const documentOptions = [
-  { value: "Deed of Assignment", label: "Deed of Assignment" },
-  { value: "Deed of Ownership", label: "Deed of Ownership" },
-  { value: "Deed of Conveyance", label: "Deed of Conveyance" },
-  { value: "Survey Plan", label: "Survey Plan" },
-  { value: "Governor's Consent", label: "Governor's Consent" },
-  { value: "Certificate of Occupancy", label: "Certificate of Occupancy" },
-  { value: "Family Receipt", label: "Family Receipt" },
-  { value: "Contract of Sale", label: "Contract of Sale" },
-  { value: "Land Certificate", label: "Land Certificate" },
-  { value: "Gazette", label: "Gazette" },
-  { value: "Excision", label: "Excision" },
+  { value: "deed-of-assignment", label: "Deed of Assignment" },
+  { value: "deed-of-ownership", label: "Deed of Ownership" },
+  { value: "deed-of-conveyance", label: "Deed of Conveyance" },
+  { value: "survey-plan", label: "Survey Plan" },
+  { value: "governor's-consent", label: "Governor's Consent" },
+  { value: "certificate-of-occupancy", label: "Certificate of Occupancy" },
+  { value: "family-receipt", label: "Family Receipt" },
+  { value: "contract-of-sale", label: "Contract of Sale" },
+  { value: "land-certificate", label: "Land Certificate" },
+  { value: "gazette", label: "Gazette" },
+  { value: "excision", label: "Excision" },
 ];
 
-// Features & Amenities for Residential Properties - Exact list from specifications
+
+// Features & Amenities for Residential Properties - Formatted with lowercase hyphenated values
 export const residentialFeatures = [
-  { value: "Gym", label: "Gym" },
-  { value: "Kitchenette", label: "Kitchenette" },
-  { value: "Security Cameras", label: "Security Cameras" },
-  { value: "Swimming Pool", label: "Swimming Pool" },
-  { value: "Children's Playground", label: "Children's Playground" },
-  { value: "Rooftop Access", label: "Rooftop Access" },
-  { value: "Walk-In Closet", label: "Walk-In Closet" },
-  { value: "WiFi", label: "WiFi" },
-  { value: "Library", label: "Library" },
-  { value: "Home Office", label: "Home Office" },
-  { value: "Cinema Room", label: "Cinema Room" },
-  { value: "Bathtub", label: "Bathtub" },
-  { value: "Tennis Court", label: "Tennis Court" },
-  { value: "Garage", label: "Garage" },
-  { value: "Elevator", label: "Elevator" },
-  { value: "Staff Room", label: "Staff Room" },
-  { value: "Pantry", label: "Pantry" },
-  { value: "Electric Fencing", label: "Electric Fencing" },
-  { value: "Inverter", label: "Inverter" },
-  { value: "Built-In Cupboards", label: "Built-In Cupboards" },
-  { value: "Security Post", label: "Security Post" },
-  { value: "Access Gate", label: "Access Gate" },
-  { value: "Sea View", label: "Sea View" },
-  { value: "Air Conditioning", label: "Air Conditioning" },
-  { value: "Wheelchair Accessible", label: "Wheelchair Accessible" },
-  { value: "Garden", label: "Garden" },
-  { value: "Jacuzzi", label: "Jacuzzi" },
-  { value: "Open Floor Plan", label: "Open Floor Plan" },
+  { value: "gym", label: "Gym" },
+  { value: "kitchenette", label: "Kitchenette" },
+  { value: "security-cameras", label: "Security Cameras" },
+  { value: "swimming-pool", label: "Swimming Pool" },
+  { value: "childrens-playground", label: "Children's Playground" },
+  { value: "rooftop-access", label: "Rooftop Access" },
+  { value: "walk-in-closet", label: "Walk-In Closet" },
+  { value: "wifi", label: "WiFi" },
+  { value: "library", label: "Library" },
+  { value: "home-office", label: "Home Office" },
+  { value: "cinema-room", label: "Cinema Room" },
+  { value: "bathtub", label: "Bathtub" },
+  { value: "tennis-court", label: "Tennis Court" },
+  { value: "garage", label: "Garage" },
+  { value: "elevator", label: "Elevator" },
+  { value: "staff-room", label: "Staff Room" },
+  { value: "pantry", label: "Pantry" },
+  { value: "electric-fencing", label: "Electric Fencing" },
+  { value: "inverter", label: "Inverter" },
+  { value: "built-in-cupboards", label: "Built-In Cupboards" },
+  { value: "security-post", label: "Security Post" },
+  { value: "access-gate", label: "Access Gate" },
+  { value: "sea-view", label: "Sea View" },
+  { value: "air-conditioning", label: "Air Conditioning" },
+  { value: "wheelchair-accessible", label: "Wheelchair Accessible" },
+  { value: "garden", label: "Garden" },
+  { value: "jacuzzi", label: "Jacuzzi" },
+  { value: "open-floor-plan", label: "Open Floor Plan" },
 ];
 
-// Features for Land Properties - Exact list from specifications
+
+// Features for Land Properties - Formatted with lowercase hyphenated values
 export const landFeatures = [
-  { value: "Perimeter Fence", label: "Perimeter Fence" },
-  { value: "Electricity Nearby", label: "Electricity Nearby" },
-  { value: "Drainage System In Place", label: "Drainage System In Place" },
-  { value: "Water Supply Available", label: "Water Supply Available" },
-  { value: "Security Post or Nearby", label: "Security Post or Nearby" },
-  { value: "Estate Land (within a gated estate)", label: "Estate Land (within a gated estate)" },
-  { value: "Developed Neighborhood", label: "Developed Neighborhood" },
-  { value: "Developing Neighborhood", label: "Developing Neighborhood" },
-  { value: "High Foot Traffic Area", label: "High Foot Traffic Area" },
-  { value: "Close to Major Landmark / Expressway", label: "Close to Major Landmark / Expressway" },
+  { value: "perimeter-fence", label: "Perimeter Fence" },
+  { value: "electricity-nearby", label: "Electricity Nearby" },
+  { value: "drainage-system-in-place", label: "Drainage System In Place" },
+  { value: "water-supply-available", label: "Water Supply Available" },
+  { value: "security-post-or-nearby", label: "Security Post or Nearby" },
+  { value: "estate-land-within-a-gated-estate", label: "Estate Land (within a gated estate)" },
+  { value: "developed-neighborhood", label: "Developed Neighborhood" },
+  { value: "developing-neighborhood", label: "Developing Neighborhood" },
+  { value: "high-foot-traffic-area", label: "High Foot Traffic Area" },
+  { value: "close-to-major-landmark-or-expressway", label: "Close to Major Landmark / Expressway" },
 ];
 
-// Commercial Property Features - Organized by categories as in specifications
+
+// Commercial Property Features - Formatted with lowercase hyphenated values
 export const commercialFeatures = {
   structure: [
-    { value: "Open Floor Plan", label: "Open Floor Plan" },
-    { value: "Private Offices", label: "Private Offices" },
-    {
-      value: "Conference / Meeting Rooms",
-      label: "Conference / Meeting Rooms",
-    },
-    { value: "Reception Area", label: "Reception Area" },
-    { value: "Partitioned Spaces", label: "Partitioned Spaces" },
-    { value: "Elevator / Lift Access", label: "Elevator / Lift Access" },
-    { value: "Wheelchair Accessible", label: "Wheelchair Accessible" },
+    { value: "open-floor-plan", label: "Open Floor Plan" },
+    { value: "private-offices", label: "Private Offices" },
+    { value: "conference-meeting-rooms", label: "Conference / Meeting Rooms" },
+    { value: "reception-area", label: "Reception Area" },
+    { value: "partitioned-spaces", label: "Partitioned Spaces" },
+    { value: "elevator-lift-access", label: "Elevator / Lift Access" },
+    { value: "wheelchair-accessible", label: "Wheelchair Accessible" },
   ],
   utilities: [
-    {
-      value: "Industrial Power Connection",
-      label: "Industrial Power Connection",
-    },
-    { value: "Prepaid Electricity Meter", label: "Prepaid Electricity Meter" },
-    {
-      value: "Borehole / Constant Water Supply",
-      label: "Borehole / Constant Water Supply",
-    },
-    { value: "Air Conditioning", label: "Air Conditioning" },
+    { value: "industrial-power-connection", label: "Industrial Power Connection" },
+    { value: "prepaid-electricity-meter", label: "Prepaid Electricity Meter" },
+    { value: "borehole-constant-water-supply", label: "Borehole / Constant Water Supply" },
+    { value: "air-conditioning", label: "Air Conditioning" },
   ],
   security: [
-    { value: "Security Personnel Onsite", label: "Security Personnel Onsite" },
-    { value: "Gated Compound", label: "Gated Compound" },
-    { value: "CCTV Surveillance", label: "CCTV Surveillance" },
-    {
-      value: "Access Control / Smart Locks",
-      label: "Access Control / Smart Locks",
-    },
-    {
-      value: "Fire Safety Equipment (Alarms, Extinguishers)",
-      label: "Fire Safety Equipment (Alarms, Extinguishers)",
-    },
+    { value: "security-personnel-onsite", label: "Security Personnel Onsite" },
+    { value: "gated-compound", label: "Gated Compound" },
+    { value: "cctv-surveillance", label: "CCTV Surveillance" },
+    { value: "access-control-smart-locks", label: "Access Control / Smart Locks" },
+    { value: "fire-safety-equipment-alarms-extinguishers", label: "Fire Safety Equipment (Alarms, Extinguishers)" },
   ],
   parking: [
-    { value: "Dedicated Parking Spaces", label: "Dedicated Parking Spaces" },
-    { value: "Visitor Parking", label: "Visitor Parking" },
-    { value: "Modern Glass Facade", label: "Modern Glass Facade" },
-    { value: "Signage / Branding Space", label: "Signage / Branding Space" },
-    { value: "Rooftop / Terrace Area", label: "Rooftop / Terrace Area" },
-    {
-      value: "Located in Central Business District (CBD)",
-      label: "Located in Central Business District (CBD)",
-    },
+    { value: "dedicated-parking-spaces", label: "Dedicated Parking Spaces" },
+    { value: "visitor-parking", label: "Visitor Parking" },
+    { value: "modern-glass-facade", label: "Modern Glass Facade" },
+    { value: "signage-branding-space", label: "Signage / Branding Space" },
+    { value: "rooftop-terrace-area", label: "Rooftop / Terrace Area" },
+    { value: "located-in-central-business-district-cbd", label: "Located in Central Business District (CBD)" },
   ],
 };
+
 
 // Rental Conditions - Updated to match exact specifications
 export const rentalConditions = [
-  { value: "No Pets Allowed", label: "No Pets Allowed" },
-  { value: "Must Provide Credit Report", label: "Must Provide Credit Report" },
+  { value: "no-pets-allowed", label: "No Pets Allowed" },
+  { value: "must-provide-credit-report", label: "Must Provide Credit Report" },
   {
-    value: "Tenant Responsible for Basic Maintenance",
+    value: "tenant-responsible-for-basic-maintenance",
     label: "Tenant Responsible for Basic Maintenance",
   },
 ];
 
+
 // Employment Types - Exact list from specifications
 export const employmentTypes = [
-  { value: "Employee", label: "Employee" },
-  { value: "Self Employed", label: "Self Employed" },
-  { value: "Corporate Tenant", label: "Corporate Tenant" },
-  { value: "Individual Tenant", label: "Individual Tenant" },
+  { value: "employee", label: "Employee" },
+  { value: "self-employed", label: "Self Employed" },
+  { value: "corporate-tenant", label: "Corporate Tenant" },
+  { value: "individual-tenant", label: "Individual Tenant" },
 ];
+
 
 // Tenant Gender Preferences - Exact list from specifications
 export const tenantGenderPreferences = [
-  { value: "Male", label: "Male" },
-  { value: "Female", label: "Female" },
-  { value: "Both", label: "Both" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "both", label: "Both" },
 ];
+
 
 // JV Conditions - Exact list from specifications
 export const jvConditions = [
-  { value: "Proof of Fund", label: "Proof of Fund" },
-  { value: "Premium", label: "Premium" },
-  { value: "Installment Plan", label: "Installment Plan" },
-  { value: "None", label: "None" },
+  { value: "proof-of-fund", label: "Proof of Fund" },
+  { value: "premium", label: "Premium" },
+  { value: "installment-plan", label: "Installment Plan" },
+  { value: "none", label: "None" },
 ];
 
 // Tenancy Status Options - Updated to match specifications exactly
 export const tenancyStatusOptions = [
-  { value: "Yes", label: "Yes" },
-  { value: "No", label: "No" },
-  { value: "I live in it", label: "I live in it" },
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+  { value: "i-live-in-it", label: "I live in it" },
 ];
 
 // Shortlet Specific Options - Comprehensive list from specifications
 export const shortletOptions = {
   propertyTypes: [
-    { value: "Apartment", label: "Apartment" },
-    { value: "Duplex", label: "Duplex" },
-    { value: "Studio", label: "Studio" },
-    { value: "Bungalow", label: "Bungalow" },
-    { value: "Penthouse", label: "Penthouse" },
+    { value: "apartment", label: "Apartment" },
+    { value: "duplex", label: "Duplex" },
+    { value: "studio", label: "Studio" },
+    { value: "bungalow", label: "Bungalow" },
+    { value: "penthouse", label: "Penthouse" },
   ],
   cancellationPolicies: [
     {
-      value: "Flexible",
+      value: "flexible",
       label: "Flexible – Full refund 1 day before check-in",
     },
     {
-      value: "Moderate",
+      value: "moderate",
       label: "Moderate – Full refund 5 days before check-in",
     },
     {
-      value: "Strict",
+      value: "strict",
       label: "Strict – 50% refund up to 7 days before check-in",
     },
   ],
   amenities: {
     general: [
-      { value: "Air Conditioning", label: "Air Conditioning" },
-      { value: "Wi-Fi", label: "Wi-Fi" },
-      { value: "Smart TV", label: "Smart TV" },
-      { value: "DSTV", label: "DSTV" },
-      { value: "King Bed", label: "King Bed" },
-      { value: "Balcony", label: "Balcony" },
-      { value: "Work Desk", label: "Work Desk" },
-      { value: "Inverter", label: "Inverter" },
+      { value: "air-conditioning", label: "Air Conditioning" },
+      { value: "wi-fi", label: "Wi-Fi" },
+      { value: "smart-tv", label: "Smart TV" },
+      { value: "dstv", label: "DSTV" },
+      { value: "king-bed", label: "King Bed" },
+      { value: "balcony", label: "Balcony" },
+      { value: "work-desk", label: "Work Desk" },
+      { value: "inverter", label: "Inverter" },
     ],
     kitchen: [
-      { value: "Gas Cooker", label: "Gas Cooker" },
-      { value: "Refrigerator", label: "Refrigerator" },
-      { value: "Microwave", label: "Microwave" },
-      { value: "Coffee Maker", label: "Coffee Maker" },
-      { value: "Kitchen Utensils", label: "Kitchen Utensils" },
+      { value: "gas-cooker", label: "Gas Cooker" },
+      { value: "refrigerator", label: "Refrigerator" },
+      { value: "microwave", label: "Microwave" },
+      { value: "coffee-maker", label: "Coffee Maker" },
+      { value: "kitchen-utensils", label: "Kitchen Utensils" },
     ],
     bathroom: [
-      { value: "Ensuite", label: "Ensuite" },
-      { value: "Bathtub", label: "Bathtub" },
-      { value: "Water Heater", label: "Water Heater" },
-      { value: "Hair Dryer", label: "Hair Dryer" },
-      { value: "Towels", label: "Towels" },
-      { value: "Toiletries", label: "Toiletries" },
+      { value: "ensuite", label: "Ensuite" },
+      { value: "bathtub", label: "Bathtub" },
+      { value: "water-heater", label: "Water Heater" },
+      { value: "hair-dryer", label: "Hair Dryer" },
+      { value: "towels", label: "Towels" },
+      { value: "toiletries", label: "Toiletries" },
     ],
     leisure: [
-      { value: "Pool", label: "Pool" },
-      { value: "Gym", label: "Gym" },
-      { value: "Rooftop View", label: "Rooftop View" },
-      { value: "Lounge Area", label: "Lounge Area" },
+      { value: "pool", label: "Pool" },
+      { value: "gym", label: "Gym" },
+      { value: "rooftop-view", label: "Rooftop View" },
+      { value: "lounge-area", label: "Lounge Area" },
     ],
     transport: [
-      { value: "Free Parking", label: "Free Parking" },
-      { value: "Paid Parking", label: "Paid Parking" },
-      { value: "Car Hire", label: "Car Hire" },
-      { value: "Shuttle", label: "Shuttle" },
-      { value: "Elevator", label: "Elevator" },
+      { value: "free-parking", label: "Free Parking" },
+      { value: "paid-parking", label: "Paid Parking" },
+      { value: "car-hire", label: "Car Hire" },
+      { value: "shuttle", label: "Shuttle" },
+      { value: "elevator", label: "Elevator" },
     ],
     laundry: [
-      { value: "Washing Machine", label: "Washing Machine" },
-      { value: "Dryer", label: "Dryer" },
-      { value: "Ironing", label: "Ironing" },
+      { value: "washing-machine", label: "Washing Machine" },
+      { value: "dryer", label: "Dryer" },
+      { value: "ironing", label: "Ironing" },
     ],
     security: [
-      { value: "24/7 Security", label: "24/7 Security" },
-      { value: "CCTV", label: "CCTV" },
-      { value: "Gated Estate", label: "Gated Estate" },
-      { value: "Fire Extinguisher", label: "Fire Extinguisher" },
-      { value: "Smoke Detector", label: "Smoke Detector" },
+      { value: "24-7-security", label: "24/7 Security" },
+      { value: "cctv", label: "CCTV" },
+      { value: "gated-estate", label: "Gated Estate" },
+      { value: "fire-extinguisher", label: "Fire Extinguisher" },
+      { value: "smoke-detector", label: "Smoke Detector" },
     ],
     family: [
-      { value: "Baby Cot", label: "Baby Cot" },
-      { value: "Kids Playground", label: "Kids Playground" },
-      { value: "High Chair", label: "High Chair" },
+      { value: "baby-cot", label: "Baby Cot" },
+      { value: "kids-playground", label: "Kids Playground" },
+      { value: "high-chair", label: "High Chair" },
     ],
     accessibility: [
-      { value: "Wheelchair Access", label: "Wheelchair Access" },
-      { value: "Step-Free Entry", label: "Step-Free Entry" },
+      { value: "wheelchair-access", label: "Wheelchair Access" },
+      { value: "step-free-entry", label: "Step-Free Entry" },
     ],
     location: [
-      { value: "Sea View", label: "Sea View" },
-      { value: "Close to Mall", label: "Close to Mall" },
-      { value: "Airport Proximity", label: "Airport Proximity" },
-      { value: "Quiet Area", label: "Quiet Area" },
+      { value: "sea-view", label: "Sea View" },
+      { value: "close-to-mall", label: "Close to Mall" },
+      { value: "airport-proximity", label: "Airport Proximity" },
+      { value: "quiet-area", label: "Quiet Area" },
     ],
   },
 };
 
+
 // Payment methods for shortlet
 export const paymentMethods = [
-  { value: "Bank Transfer (NGN)", label: "Bank Transfer (NGN)" },
-  { value: "MTN Momo", label: "MTN Momo" },
-  { value: "Opay", label: "Opay" },
-  { value: "Other Mobile Money", label: "Other Mobile Money" },
+  { value: "bank-transfer-ngn", label: "Bank Transfer (NGN)" },
+  { value: "mtn-momo", label: "MTN Momo" },
+  { value: "opay", label: "Opay" },
+  { value: "other-mobile-money", label: "Other Mobile Money" },
 ];
 
 // Number options (for bedrooms, bathrooms, etc.)

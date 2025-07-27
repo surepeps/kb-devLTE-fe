@@ -128,28 +128,6 @@ interface Preference {
   additionalNotes?: string;
 }
 
-interface PreferenceApiResponse {
-  success: boolean;
-  message: string;
-  data: {
-    _id: string;
-    id: string;
-    preferenceMode: string;
-    preferenceType: string;
-    location: Location;
-    budget: Budget;
-    propertyDetails?: PropertyDetails;
-    bookingDetails?: BookingDetails;
-    features?: Features;
-    status: string;
-    createdAt: string;
-    buyer: Buyer;
-    contactInfo?: ContactInfo;
-    nearbyLandmark?: string;
-    additionalNotes?: string;
-  };
-}
-
 // Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
 const getValidationSchema = (currentStep: number, propertyData: Record<string, unknown>) => {
   switch (currentStep) {
@@ -402,7 +380,7 @@ const PostPropertyByPreference = () => {
             additionalNotes: response.data.additionalNotes,
           };
           setPreference(pref);
-
+ 
           // Auto-populate the form based on preference data
           const updatedData: Record<string, any> = {};
 
@@ -520,7 +498,7 @@ const PostPropertyByPreference = () => {
             updatedData.additionalInfo = `Nearby landmark: ${pref.nearbyLandmark}`;
           }
 
-          // Apply all updates to the context
+          // Apply all updates to the contextb 
           Object.keys(updatedData).forEach(key => {
             if (key in updatedData) {
               updatePropertyData(key as keyof PropertyData, updatedData[key]);
