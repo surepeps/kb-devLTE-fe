@@ -348,6 +348,92 @@ const AgentMarketplace = () => {
           <p className="text-gray-600">Connect with Serious Buyers—Submit Now.</p>
         </div>
 
+        {/* Featured Matched Buyers Section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#8DDB90]/10 via-[#8DDB90]/5 to-transparent rounded-2xl p-8 mb-12 border border-[#8DDB90]/20">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 left-0 w-32 h-32 bg-[#8DDB90] rounded-full -translate-x-16 -translate-y-16"></div>
+            <div className="absolute bottom-0 right-0 w-24 h-24 bg-[#09391C] rounded-full translate-x-12 translate-y-12"></div>
+            <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-[#8DDB90] rounded-full opacity-30"></div>
+          </div>
+
+          <div className="relative z-10">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90]/10 rounded-full text-[#09391C] text-sm font-medium mb-4">
+                <div className="w-2 h-2 bg-[#8DDB90] rounded-full animate-pulse"></div>
+                Hot Opportunities
+              </div>
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-[#09391C] mb-3">
+                🎯 Buyers Just Got Matched!
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Fresh opportunities waiting for the right properties.
+                <span className="text-[#8DDB90] font-semibold"> Submit now to get featured</span> and connect with serious buyers.
+              </p>
+            </div>
+
+            {/* Matched Properties Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {getMatchedProperties().map((property, idx) => (
+                <div
+                  key={property.id || property._id || `matched-${idx}`}
+                  className="group relative bg-white rounded-xl border-2 border-[#8DDB90]/20 hover:border-[#8DDB90]/40 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg overflow-hidden"
+                >
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                  {/* Status badge */}
+                  <div className="absolute top-3 right-3 z-10">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs rounded-full">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+                      Active
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center bg-[#F7F7F9] p-3 rounded-lg">
+                        <span className="text-gray-500 text-sm font-medium">Type</span>
+                        <span className="text-[#09391C] text-sm font-bold">{property.type}</span>
+                      </div>
+                      <div className="flex justify-between items-center bg-[#F7F7F9] p-3 rounded-lg">
+                        <span className="text-gray-500 text-sm font-medium">Location</span>
+                        <span className="text-[#09391C] text-sm font-bold">{property.location}</span>
+                      </div>
+                    </div>
+
+                    {/* Action indicator */}
+                    <div className="mt-4 text-center">
+                      <div className="inline-flex items-center gap-2 text-green-600 text-sm font-medium">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="group-hover:text-green-700 transition-colors">Ready to Match</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Call to Action */}
+            <div className="text-center">
+              <div className="inline-flex flex-col md:flex-row items-center gap-4 p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-[#8DDB90]/30">
+                <div className="flex-1 text-left">
+                  <h3 className="font-display text-lg font-semibold text-[#09391C] mb-1">
+                    Don't Miss Out!
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    Be the first to submit matching properties and get premium visibility
+                  </p>
+                </div>
+                <button className="px-6 py-3 bg-gradient-to-r from-[#8DDB90] to-[#7BC97F] hover:from-[#7BC97F] hover:to-[#6AB86E] text-white font-semibold rounded-lg transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap">
+                  🚀 Submit Your Property
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Search and Filters */}
         <div className="flex flex-wrap gap-4 mb-8 justify-center">
           <div className="relative">
