@@ -18,7 +18,7 @@ interface PropertyVideo {
   isUploading?: boolean;
 }
 
-interface PropertyData {
+export interface PropertyData {
   // Step 1: Brief Type Selection
   propertyType: "sell" | "rent" | "jv" | "shortlet" | "";
 
