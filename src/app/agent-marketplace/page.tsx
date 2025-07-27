@@ -129,6 +129,11 @@ const AgentMarketplace = () => {
       setIsLoading(true);
       setError(null);
       try {
+        // Check if URLS.BASE is available
+        if (!URLS.BASE || URLS.BASE.includes('undefined')) {
+          throw new Error('API base URL is not configured properly');
+        }
+
         // Build query params from filters
         const params = new URLSearchParams();
         params.append('page', String(currentPage));
@@ -142,6 +147,10 @@ const AgentMarketplace = () => {
         console.log('Fetching from URL:', url);
 
         const token = Cookies.get('token');
+        if (!token) {
+          throw new Error('Authentication token not found');
+        }
+
         const response = await GET_REQUEST<ApiResponse>(url, token);
 
         if (response?.success && response?.data && Array.isArray(response.data)) {
