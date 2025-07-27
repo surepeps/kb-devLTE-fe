@@ -514,7 +514,7 @@ const AgentMarketplace = () => {
         </div>
 
         {/* Featured Matched Buyers Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#8DDB90]/10 via-[#8DDB90]/5 to-transparent rounded-2xl p-8 mb-12 border border-[#8DDB90]/20">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#8DDB90]/10 via-[#8DDB90]/5 to-transparent rounded-xl md:rounded-2xl p-4 md:p-8 mb-8 md:mb-12 border border-[#8DDB90]/20 mx-2 md:mx-0">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-5">
             <div className="absolute top-0 left-0 w-32 h-32 bg-[#8DDB90] rounded-full -translate-x-16 -translate-y-16"></div>
