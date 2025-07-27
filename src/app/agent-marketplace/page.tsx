@@ -125,6 +125,27 @@ const AgentMarketplace = () => {
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const limit = 12; // Items per page
 
+  // Error boundary effect
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error caught:', event.error);
+      setCriticalError(`Application error: ${event.error?.message || 'Unknown error'}`);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      setCriticalError(`Network error: ${event.reason?.message || 'Request failed'}`);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
   // Fetch approved preferences from API
   useEffect(() => {
     const fetchApprovedPreferences = async () => {
