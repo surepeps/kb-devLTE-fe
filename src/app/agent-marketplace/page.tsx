@@ -508,9 +508,9 @@ const AgentMarketplace = () => {
       {/* Main Content */}
       <div className="max-w-[1400px] mx-auto px-4 py-8">
         {/* Title Section */}
-        <div className="text-center mb-8">
-          <h1 className="font-display text-4xl font-extrabold text-[#09391C] mb-2">Agent Marketplace</h1>
-          <p className="text-gray-600">Connect with Serious Buyers—Submit Now.</p>
+        <div className="text-center mb-6 md:mb-8 px-4">
+          <h1 className="font-display text-2xl md:text-4xl font-extrabold text-[#09391C] mb-2">Agent Marketplace</h1>
+          <p className="text-gray-600 text-sm md:text-base">Connect with Serious Buyers—Submit Now.</p>
         </div>
 
         {/* Featured Matched Buyers Section */}
