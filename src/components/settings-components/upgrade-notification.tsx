@@ -23,7 +23,7 @@ const UpgradeNotification = ({
     const getUserAccount = async () => {
       console.log('Processing...');
       try {
-        const response = await axios.get(URLS.BASE + URLS.userAccount, {
+        const response = await axios.get(URLS.BASE + URLS.accountSettingsBaseUrl + "/upgradeAccount", {
           headers: {
             Authorization: `Bearer ${Cookies.get('token')}`,
           },

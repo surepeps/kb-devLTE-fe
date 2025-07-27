@@ -47,7 +47,7 @@ const SimpleMarketplace = () => {
     
     try {
       const briefType = tabMapping[tab];
-      const url = `${URLS.BASE}${URLS.fetchBriefs}?briefType=${encodeURIComponent(briefType)}&page=1&limit=12`;
+      const url = `${URLS.BASE}${URLS.propertyBaseUrl}/all?briefType=${encodeURIComponent(briefType)}&page=1&limit=12`;
       console.log('Fetching from:', url);
       
       const response = await GET_REQUEST(url);

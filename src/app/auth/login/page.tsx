@@ -196,7 +196,7 @@ const Login: FC = () => {
       document.head.removeChild(script);
     };
   }, []);
-
+ 
   const handleFacebookLogin = () => {
     if (typeof window !== "undefined" && window.FB) {
       window.FB.login(
@@ -207,7 +207,7 @@ const Login: FC = () => {
               { fields: "name,email,first_name,last_name" },
               async (userInfo: any) => {
                 try {
-                  const url = URLS.BASE + URLS.user + URLS.facebookLogin;
+                  const url = URLS.BASE + URLS.authFacebook;
                   const payload = {
                     accessToken: response.authResponse.accessToken,
                     userID: response.authResponse.userID,

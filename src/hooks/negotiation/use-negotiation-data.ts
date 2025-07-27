@@ -33,7 +33,7 @@ export const useNegotiationData = (potentialClientID: string) => {
 
       try {
         const response = await GET_REQUEST(
-          `${URLS.BASE + URLS.getOneNewInspection}/${potentialClientID}`,
+          `${URLS.BASE + URLS.accountInspectionBaseUrl}/${potentialClientID}`,
           Cookies.get("token"),
         );
 

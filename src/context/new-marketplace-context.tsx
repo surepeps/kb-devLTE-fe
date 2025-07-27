@@ -448,7 +448,7 @@ export const NewMarketplaceProvider: React.FC<{
           queryParams.append("type", searchParams.propertyType.join(","));
         }
 
-        const apiUrl = `${URLS.BASE}${URLS.fetchBriefs}?${queryParams.toString()}`;
+        const apiUrl = `${URLS.BASE}${URLS.propertyBaseUrl}/all?${queryParams.toString()}`;
 
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {

@@ -16,8 +16,6 @@ const EmailVerification = () => {
 		if (searchParams?.get("access_token")) {
 			const url =
 				URLS.BASE +
-				URLS.user +
-				URLS.verifyEmail +
 				`?access_token=${searchParams?.get("access_token")}`;
 
 			(async () => {

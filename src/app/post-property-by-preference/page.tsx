@@ -528,13 +528,8 @@ const PostPropertyByPreference = () => {
       return;
     }
 
-    // Allow Landowners to access directly
-    if (user.userType === "Landowners") {
-      return;
-    }
-
-    // For Agents, the AgentAccessBarrier will handle the onboarding and approval checks
-    if (user.userType === "Agent") {
+    // Allow Landowners to access directly and Agents
+    if (user.userType === "Landowners" || user.userType === "Agent") {
       return;
     }
 
@@ -698,7 +693,7 @@ const PostPropertyByPreference = () => {
       else if (propertyData.propertyType === "rent") briefType = "Rent";
       else if (propertyData.propertyType === "shortlet") briefType = "Shortlet";
       else if (propertyData.propertyType === "jv") briefType = "Joint Venture";
-
+ 
       // 4. Prepare property payload
       const payload = {
         propertyType: propertyData.propertyType,
@@ -781,13 +776,13 @@ const PostPropertyByPreference = () => {
 
       // 5. Submit to API
       const response = await POST_REQUEST(
-        `${URLS.BASE}${URLS.listNewProperty}`,
+        `${URLS.BASE}${URLS.accountPropertyBaseUrl}/create`,
         payload,
         undefined,
         Cookies.get("token"),
       );
 
-            if (response && (response as any).success && (response as any).data) {
+      if (response && (response as any).success && (response as any).data) {
         toast.success("Property created successfully and matched to buyer preference!");
         resetForm();
         setShowSuccessModal(true);

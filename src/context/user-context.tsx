@@ -87,7 +87,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const url = URLS.BASE + URLS.userProfile;
+    const url = URLS.BASE + URLS.accountSettingsBaseUrl + "/profile";
 
     try {
       const response = await GET_REQUEST(url, token);
