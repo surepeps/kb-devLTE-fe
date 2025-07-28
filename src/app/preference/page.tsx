@@ -755,6 +755,13 @@ const PreferenceFormContent: React.FC = () => {
     // Reset form data immediately without confirmation
     dispatch({ type: "RESET_FORM" });
     goToStep(0);
+    // Scroll to top when starting new preference
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
   }, [dispatch, goToStep]);
 
   // Handle go to marketplace - memoized to prevent recreation
