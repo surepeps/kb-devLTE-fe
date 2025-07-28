@@ -20,6 +20,10 @@ import {
   Eye,
   Trash2,
   X,
+  Phone,
+  Mail,
+  Home,
+  MapIcon,
 } from "lucide-react";
 import { useUserContext } from "@/context/user-context";
 import { PUT_REQUEST } from "@/utils/requests";
@@ -48,7 +52,7 @@ interface FormValues {
   street: string;
   state: string;
   localGovtArea: string;
-  selectedRegion: string[]; // important for correct typing in multiselect
+  selectedRegion: string[];
   typeOfID: string;
   idNumber: string;
   companyName: string;
@@ -72,14 +76,14 @@ const SuccessModal: React.FC<{
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full mx-4 text-center"
+          className="bg-white rounded-2xl p-8 border border-gray-100 max-w-md w-full mx-4 text-center"
         >
           {/* Success Icon */}
           <div className="mb-6">
             <div className="w-20 h-20 bg-[#8DDB90]/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-[#8DDB90]" />
             </div>
-            <h3 className="text-2xl font-bold text-[#09391C] mb-2">
+            <h3 className="text-2xl font-bold text-[#09391C] mb-2 font-display">
               Application Submitted Successfully!
             </h3>
             <p className="text-[#5A5D63] mb-6">
@@ -89,7 +93,7 @@ const SuccessModal: React.FC<{
           </div>
 
           {/* Success Details */}
-          <div className="bg-[#8DDB90]/10 rounded-lg p-4 mb-6">
+          <div className="bg-[#8DDB90]/10 rounded-lg p-4 mb-6 border border-[#8DDB90]/20">
             <h4 className="text-sm font-semibold text-[#09391C] mb-2 flex items-center justify-center gap-2">
               <AlertCircle size={16} />
               What happens next?
@@ -102,7 +106,7 @@ const SuccessModal: React.FC<{
             </div>
           </div>
 
-          {/* Dashboard Button - Only way to close modal */}
+          {/* Dashboard Button */}
           <button
             onClick={onGoToDashboard}
             className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#8DDB90]/50 focus:ring-offset-2"
@@ -127,7 +131,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
       {Array.from({ length: totalSteps }, (_, index) => (
         <React.Fragment key={index}>
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
               index < currentStep
                 ? "bg-[#8DDB90] text-white"
                 : index === currentStep
@@ -135,11 +139,11 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
                   : "bg-gray-200 text-gray-500"
             }`}
           >
-            {index < currentStep ? <CheckCircle size={16} /> : index + 1}
+            {index < currentStep ? <CheckCircle size={18} /> : index + 1}
           </div>
           {index < totalSteps - 1 && (
             <div
-              className={`h-1 w-12 transition-all duration-300 ${
+              className={`h-1 w-16 transition-all duration-300 rounded-full ${
                 index < currentStep ? "bg-[#8DDB90]" : "bg-gray-200"
               }`}
             />
@@ -207,7 +211,6 @@ const AgentOnboard: React.FC = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // Handle submission
       await handleSubmit(values);
     },
   });
@@ -337,7 +340,6 @@ const AgentOnboard: React.FC = () => {
         ).then((response) => {
           if (response.success) {
             Cookies.set("token", (response as any).token);
-            // Show success modal instead of redirecting
             setShowSuccessModal(true);
             return "Application submitted successfully";
           } else {
@@ -440,14 +442,23 @@ const AgentOnboard: React.FC = () => {
       ...provided,
       border: "1px solid #D6DDEB",
       borderRadius: "8px",
-      padding: "4px",
+      padding: "8px",
       fontSize: "14px",
+      minHeight: "48px",
       "&:hover": {
         borderColor: "#8DDB90",
       },
       "&:focus": {
         borderColor: "#8DDB90",
-        boxShadow: "0 0 0 1px #8DDB90",
+        boxShadow: "0 0 0 2px rgba(141, 219, 144, 0.2)",
+      },
+    }),
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#8DDB90" : state.isFocused ? "#8DDB90/10" : "white",
+      color: state.isSelected ? "white" : "#09391C",
+      "&:hover": {
+        backgroundColor: "#8DDB90/10",
       },
     }),
   };
@@ -466,7 +477,7 @@ const AgentOnboard: React.FC = () => {
               Welcome to Khabi-teq Realty
             </h1>
           </div>
-          <div className="max-w-2xl mx-auto bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <div className="max-w-2xl mx-auto bg-white rounded-xl p-6 border border-gray-100">
             <p className="text-[#5A5D63] text-lg">
               🎉 <strong>Congratulations!</strong> You&apos;re one step away
               from joining our exclusive agent network.
@@ -487,7 +498,7 @@ const AgentOnboard: React.FC = () => {
           key={currentStep}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-lg p-6 mb-8 shadow-sm border border-gray-100"
+          className="bg-white rounded-xl p-6 mb-8 border border-gray-100"
         >
           <div className="flex items-center gap-4 mb-4">
             <div className="p-3 bg-[#8DDB90]/10 rounded-lg">
@@ -497,7 +508,7 @@ const AgentOnboard: React.FC = () => {
               })}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-[#09391C]">
+              <h2 className="text-xl font-semibold text-[#09391C] font-display">
                 {steps[currentStep].title}
               </h2>
               <p className="text-[#5A5D63]">{steps[currentStep].description}</p>
@@ -515,29 +526,32 @@ const AgentOnboard: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="bg-white rounded-lg p-6 shadow-sm border border-gray-100"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* Personal Details */}
                   <div>
-                    <h3 className="text-lg font-semibold text-[#09391C] mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-6 flex items-center gap-2 font-display">
                       <User size={20} />
                       Personal Details
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          First Name
+                          First Name <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          value={formik.values.firstName}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter your first name"
-                        />
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="text"
+                            name="firstName"
+                            value={formik.values.firstName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                            placeholder="Enter your first name"
+                          />
+                        </div>
                         {formik.touched.firstName &&
                           formik.errors.firstName && (
                             <p className="text-red-500 text-sm mt-1">
@@ -547,17 +561,20 @@ const AgentOnboard: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Last Name
+                          Last Name <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={formik.values.lastName}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter your last name"
-                        />
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="text"
+                            name="lastName"
+                            value={formik.values.lastName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                            placeholder="Enter your last name"
+                          />
+                        </div>
                         {formik.touched.lastName && formik.errors.lastName && (
                           <p className="text-red-500 text-sm mt-1">
                             {formik.errors.lastName}
@@ -566,17 +583,20 @@ const AgentOnboard: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Phone Number
+                          Phone Number <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="phoneNumber"
-                          value={formik.values.phoneNumber}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter your phone number"
-                        />
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="text"
+                            name="phoneNumber"
+                            value={formik.values.phoneNumber}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                            placeholder="Enter your phone number"
+                          />
+                        </div>
                         {formik.touched.phoneNumber &&
                           formik.errors.phoneNumber && (
                             <p className="text-red-500 text-sm mt-1">
@@ -588,58 +608,67 @@ const AgentOnboard: React.FC = () => {
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
                           Email Address
                         </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formik.values.email}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          disabled
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
-                          placeholder="Your email address"
-                        />
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="email"
+                            name="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            disabled
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                            placeholder="Your email address"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Address Information */}
                   <div>
-                    <h3 className="text-lg font-semibold text-[#09391C] mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-6 flex items-center gap-2 font-display">
                       <MapPin size={20} />
                       Address Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          House Number
+                          House Number <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="houseNumber"
-                          value={formik.values.houseNumber}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter house number"
-                        />
+                        <div className="relative">
+                          <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="text"
+                            name="houseNumber"
+                            value={formik.values.houseNumber}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                            placeholder="Enter house number"
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Street
+                          Street <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="street"
-                          value={formik.values.street}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter street name"
-                        />
+                        <div className="relative">
+                          <MapIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="text"
+                            name="street"
+                            value={formik.values.street}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                            placeholder="Enter street name"
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          State
+                          State <span className="text-red-500">*</span>
                         </label>
                         <ReactSelect
                           options={stateOptions}
@@ -652,7 +681,7 @@ const AgentOnboard: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Local Government Area
+                          Local Government Area <span className="text-red-500">*</span>
                         </label>
                         <ReactSelect
                           options={lgaOptions}
@@ -670,7 +699,7 @@ const AgentOnboard: React.FC = () => {
                   {/* Region of Operation */}
                   <div>
                     <label className="block text-sm font-medium text-[#09391C] mb-2">
-                      Region of Operation
+                      Region of Operation <span className="text-red-500">*</span>
                     </label>
                     <ReactSelect
                       isMulti
@@ -688,7 +717,7 @@ const AgentOnboard: React.FC = () => {
                       placeholder="Select regions where you operate"
                       isDisabled={!selectedState}
                     />
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-[#5A5D63] mt-2">
                       Select the areas where you plan to operate as an agent
                     </p>
                   </div>
@@ -703,12 +732,12 @@ const AgentOnboard: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="bg-white rounded-lg p-6 shadow-sm border border-gray-100"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* Agent Type */}
                   <div>
-                    <h3 className="text-lg font-semibold text-[#09391C] mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-6 flex items-center gap-2 font-display">
                       <Building size={20} />
                       Agent Type
                     </h3>
@@ -717,25 +746,29 @@ const AgentOnboard: React.FC = () => {
                         <div
                           key={type}
                           onClick={() => setSelectedAgentType(type)}
-                          className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                          className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${
                             selectedAgentType === type
                               ? "border-[#8DDB90] bg-[#8DDB90]/5"
-                              : "border-gray-200 hover:border-[#8DDB90]/50"
+                              : "border-gray-200 hover:border-[#8DDB90]/50 hover:bg-gray-50"
                           }`}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-4">
                             <div
-                              className={`w-4 h-4 rounded-full border-2 ${
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                                 selectedAgentType === type
                                   ? "border-[#8DDB90] bg-[#8DDB90]"
                                   : "border-gray-300"
                               }`}
-                            />
+                            >
+                              {selectedAgentType === type && (
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              )}
+                            </div>
                             <div>
-                              <h4 className="font-medium text-[#09391C]">
+                              <h4 className="font-semibold text-[#09391C]">
                                 {type} Agent
                               </h4>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-[#5A5D63]">
                                 {type === "Individual"
                                   ? "Operating as an individual"
                                   : "Operating as a company"}
@@ -750,37 +783,43 @@ const AgentOnboard: React.FC = () => {
                   {/* Company Details (if Company selected) */}
                   {selectedAgentType === "Company" && (
                     <div>
-                      <h4 className="text-md font-semibold text-[#09391C] mb-4">
+                      <h4 className="text-md font-semibold text-[#09391C] mb-4 font-display">
                         Company Details
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-sm font-medium text-[#09391C] mb-2">
-                            Company Name
+                            Company Name <span className="text-red-500">*</span>
                           </label>
-                          <input
-                            type="text"
-                            name="companyName"
-                            value={formik.values.companyName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                            placeholder="Enter company name"
-                          />
+                          <div className="relative">
+                            <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                            <input
+                              type="text"
+                              name="companyName"
+                              value={formik.values.companyName}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                              placeholder="Enter company name"
+                            />
+                          </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-[#09391C] mb-2">
-                            CAC Number
+                            CAC Number <span className="text-red-500">*</span>
                           </label>
-                          <input
-                            type="text"
-                            name="cacNumber"
-                            value={formik.values.cacNumber}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                            placeholder="Enter CAC number"
-                          />
+                          <div className="relative">
+                            <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                            <input
+                              type="text"
+                              name="cacNumber"
+                              value={formik.values.cacNumber}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                              placeholder="Enter CAC number"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -788,13 +827,13 @@ const AgentOnboard: React.FC = () => {
 
                   {/* ID Information */}
                   <div>
-                    <h4 className="text-md font-semibold text-[#09391C] mb-4">
+                    <h4 className="text-md font-semibold text-[#09391C] mb-4 font-display">
                       Government ID Information
                     </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          Type of Government ID
+                          Type of Government ID <span className="text-red-500">*</span>
                         </label>
                         <ReactSelect
                           options={idTypeOptions}
@@ -807,17 +846,20 @@ const AgentOnboard: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#09391C] mb-2">
-                          ID Number
+                          ID Number <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="idNumber"
-                          value={formik.values.idNumber}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          placeholder="Enter ID number"
-                        />
+                        <div className="relative">
+                          <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#5A5D63]" size={18} />
+                          <input
+                            type="text"
+                            name="idNumber"
+                            value={formik.values.idNumber}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent transition-colors"
+                            placeholder="Enter ID number"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -832,10 +874,10 @@ const AgentOnboard: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="bg-white rounded-lg p-6 shadow-sm border border-gray-100"
+                className="bg-white rounded-xl p-6 border border-gray-100"
               >
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-[#09391C] mb-4 flex items-center gap-2">
+                <div className="space-y-8">
+                  <h3 className="text-lg font-semibold text-[#09391C] mb-6 flex items-center gap-2 font-display">
                     <Upload size={20} />
                     Document Upload
                   </h3>
@@ -848,25 +890,25 @@ const AgentOnboard: React.FC = () => {
                       id="id-upload"
                     />
                     {idFileUrl && (
-                      <div className="mt-3 flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="mt-3 flex items-center justify-between p-4 bg-[#8DDB90]/5 rounded-lg border border-[#8DDB90]/20">
                         <div className="flex items-center gap-3">
-                          <CheckCircle size={16} className="text-green-500" />
-                          <span className="text-sm text-gray-700">
-                            ID document uploaded
+                          <CheckCircle size={20} className="text-[#8DDB90]" />
+                          <span className="text-sm text-[#09391C] font-medium">
+                            ID document uploaded successfully
                           </span>
                         </div>
                         <div className="flex gap-2">
                           <button
                             type="button"
                             onClick={() => setImageModalUrl(idFileUrl)}
-                            className="text-[#8DDB90] hover:text-[#7BC87F]"
+                            className="p-2 text-[#8DDB90] hover:text-[#7BC87F] hover:bg-[#8DDB90]/10 rounded-lg transition-colors"
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             type="button"
                             onClick={() => setIdFileUrl(null)}
-                            className="text-red-500 hover:text-red-700"
+                            className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -884,25 +926,25 @@ const AgentOnboard: React.FC = () => {
                         id="cac-upload"
                       />
                       {cacFileUrl && (
-                        <div className="mt-3 flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="mt-3 flex items-center justify-between p-4 bg-[#8DDB90]/5 rounded-lg border border-[#8DDB90]/20">
                           <div className="flex items-center gap-3">
-                            <CheckCircle size={16} className="text-green-500" />
-                            <span className="text-sm text-gray-700">
-                              CAC document uploaded
+                            <CheckCircle size={20} className="text-[#8DDB90]" />
+                            <span className="text-sm text-[#09391C] font-medium">
+                              CAC document uploaded successfully
                             </span>
                           </div>
                           <div className="flex gap-2">
                             <button
                               type="button"
                               onClick={() => setImageModalUrl(cacFileUrl)}
-                              className="text-[#8DDB90] hover:text-[#7BC87F]"
+                              className="p-2 text-[#8DDB90] hover:text-[#7BC87F] hover:bg-[#8DDB90]/10 rounded-lg transition-colors"
                             >
                               <Eye size={16} />
                             </button>
                             <button
                               type="button"
                               onClick={() => setCacFileUrl(null)}
-                              className="text-red-500 hover:text-red-700"
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -920,25 +962,25 @@ const AgentOnboard: React.FC = () => {
                       id="utility-bill-upload"
                     />
                     {utilityBillFileUrl && (
-                      <div className="mt-3 flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="mt-3 flex items-center justify-between p-4 bg-[#8DDB90]/5 rounded-lg border border-[#8DDB90]/20">
                         <div className="flex items-center gap-3">
-                          <CheckCircle size={16} className="text-green-500" />
-                          <span className="text-sm text-gray-700">
-                            Utility bill uploaded
+                          <CheckCircle size={20} className="text-[#8DDB90]" />
+                          <span className="text-sm text-[#09391C] font-medium">
+                            Utility bill uploaded successfully
                           </span>
                         </div>
                         <div className="flex gap-2">
                           <button
                             type="button"
                             onClick={() => setImageModalUrl(utilityBillFileUrl)}
-                            className="text-[#8DDB90] hover:text-[#7BC87F]"
+                            className="p-2 text-[#8DDB90] hover:text-[#7BC87F] hover:bg-[#8DDB90]/10 rounded-lg transition-colors"
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             type="button"
                             onClick={() => setUtilityBillFileUrl(null)}
-                            className="text-red-500 hover:text-red-700"
+                            className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -948,19 +990,29 @@ const AgentOnboard: React.FC = () => {
                   </div>
 
                   {/* Requirements checklist */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <h4 className="font-medium text-blue-900 mb-3 flex items-center gap-2">
                       <AlertCircle size={16} />
                       Document Requirements
                     </h4>
-                    <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• Government ID must be clear and readable</li>
+                    <ul className="text-sm text-blue-800 space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 mt-0.5">•</span>
+                        Government ID must be clear and readable
+                      </li>
                       {selectedAgentType === "Company" && (
-                        <li>• CAC certificate must be current and valid</li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-600 mt-0.5">•</span>
+                          CAC certificate must be current and valid
+                        </li>
                       )}
-                      <li>• Utility bill must be recent (within 3 months)</li>
-                      <li>
-                        • All documents must be in JPG, PNG, or PDF format
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 mt-0.5">•</span>
+                        Utility bill must be recent (within 3 months)
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 mt-0.5">•</span>
+                        All documents must be in JPG, PNG, or PDF format
                       </li>
                     </ul>
                   </div>
@@ -975,7 +1027,7 @@ const AgentOnboard: React.FC = () => {
               <button
                 type="button"
                 onClick={prevStep}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors border border-gray-200"
               >
                 <ArrowLeft size={16} />
                 Previous
@@ -988,7 +1040,7 @@ const AgentOnboard: React.FC = () => {
               <button
                 type="button"
                 onClick={nextStep}
-                className="flex items-center gap-2 px-6 py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8DDB90]/50 focus:ring-offset-2"
               >
                 Next
                 <ArrowRight size={16} />
@@ -997,7 +1049,7 @@ const AgentOnboard: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex items-center gap-2 px-6 py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-6 py-3 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#8DDB90]/50 focus:ring-offset-2"
               >
                 {submitting ? "Submitting..." : "Submit Application"}
                 <CheckCircle size={16} />
@@ -1008,10 +1060,10 @@ const AgentOnboard: React.FC = () => {
 
         {/* Image Modal */}
         {imageModalUrl && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div className="bg-white rounded-lg shadow-lg p-4 relative max-w-[90vw] max-h-[90vh] flex flex-col items-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-xl p-4 relative max-w-[90vw] max-h-[90vh] flex flex-col items-center border border-gray-200">
               <button
-                className="absolute top-2 right-2 text-gray-700 hover:text-red-500 text-2xl font-bold"
+                className="absolute top-2 right-2 text-gray-700 hover:text-red-500 p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setImageModalUrl(null)}
                 aria-label="Close"
               >
@@ -1020,7 +1072,7 @@ const AgentOnboard: React.FC = () => {
               <img
                 src={imageModalUrl}
                 alt="Preview"
-                className="max-w-full max-h-[70vh] rounded"
+                className="max-w-full max-h-[70vh] rounded-lg"
               />
             </div>
           </div>
