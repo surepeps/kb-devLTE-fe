@@ -38,14 +38,23 @@ const OptimizedStepWrapper: React.FC<OptimizedStepWrapperProps> = memo(
       }
     }, [isVisible]);
 
-    // Scroll to top of step on mobile when step changes
+    // Scroll to top when step changes (both mobile and desktop for consistency)
     useEffect(() => {
-      if (isVisible && isMobile && containerRef.current) {
+      if (isVisible) {
         const timer = setTimeout(() => {
-          containerRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
+          // On mobile, scroll to the container
+          if (isMobile && containerRef.current) {
+            containerRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          } else {
+            // On desktop, scroll to top of page
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }
         }, 100);
         return () => clearTimeout(timer);
       }
