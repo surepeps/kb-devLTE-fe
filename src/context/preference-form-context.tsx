@@ -664,6 +664,15 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     [state.formData, getMinBudgetForLocation],
   );
 
+  // Helper function to scroll to top
+  const scrollToTop = useCallback(() => {
+    // Scroll to top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   // Helper functions with memoization
   const goToStep = useCallback(
     (step: number) => {
@@ -676,9 +685,14 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
         // Trigger validation for the new step
         const currentErrors = validateStep(step);
         dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+
+        // Scroll to top after step change, especially important on mobile
+        setTimeout(() => {
+          scrollToTop();
+        }, 100);
       }
     },
-    [state.steps.length, state.currentStep, validateStep],
+    [state.steps.length, state.currentStep, validateStep, scrollToTop],
   );
 
   const goToNextStep = useCallback(() => {
@@ -688,8 +702,13 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       // Trigger validation for the new step
       const currentErrors = validateStep(nextStep);
       dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+
+      // Scroll to top after step change
+      setTimeout(() => {
+        scrollToTop();
+      }, 100);
     }
-  }, [state.currentStep, state.steps.length, validateStep]);
+  }, [state.currentStep, state.steps.length, validateStep, scrollToTop]);
 
   const goToPreviousStep = useCallback(() => {
     if (state.currentStep > 0) {
@@ -698,8 +717,13 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
       // Trigger validation for the new step
       const currentErrors = validateStep(prevStep);
       dispatch({ type: "SET_VALIDATION_ERRORS", payload: currentErrors });
+
+      // Scroll to top after step change
+      setTimeout(() => {
+        scrollToTop();
+      }, 100);
     }
-  }, [state.currentStep, validateStep]);
+  }, [state.currentStep, validateStep, scrollToTop]);
 
   // STABLE updateFormData function with centralized debouncing
   const updateFormData = useCallback(

@@ -356,6 +356,12 @@ const PreferenceFormContent: React.FC = () => {
       // Reset form data immediately without confirmation only when switching tabs
       dispatch({ type: "RESET_FORM" });
 
+      // Scroll to top immediately when changing preference type
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       // Use immediate updates for step changes
       setTimeout(() => {
         // Set the new preference type with immediate flag
@@ -749,6 +755,13 @@ const PreferenceFormContent: React.FC = () => {
     // Reset form data immediately without confirmation
     dispatch({ type: "RESET_FORM" });
     goToStep(0);
+    // Scroll to top when starting new preference
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
   }, [dispatch, goToStep]);
 
   // Handle go to marketplace - memoized to prevent recreation
@@ -807,6 +820,13 @@ const PreferenceFormContent: React.FC = () => {
   const handleStepClick = useCallback(
     (index: number) => {
       goToStep(index);
+      // Ensure scroll to top after step navigation
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }, 100);
     },
     [goToStep],
   );
@@ -991,6 +1011,11 @@ const PreferenceFormContent: React.FC = () => {
 
 // Main component with provider
 const NewPreferencePage: React.FC = () => {
+  // Ensure page starts at top on load, especially important on mobile
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <PreferenceFormProvider>
       <PreferenceFormContent />
