@@ -807,6 +807,13 @@ const PreferenceFormContent: React.FC = () => {
   const handleStepClick = useCallback(
     (index: number) => {
       goToStep(index);
+      // Ensure scroll to top after step navigation
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }, 100);
     },
     [goToStep],
   );
