@@ -991,6 +991,11 @@ const PreferenceFormContent: React.FC = () => {
 
 // Main component with provider
 const NewPreferencePage: React.FC = () => {
+  // Ensure page starts at top on load, especially important on mobile
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <PreferenceFormProvider>
       <PreferenceFormContent />
