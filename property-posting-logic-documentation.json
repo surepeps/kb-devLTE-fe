@@ -1,0 +1,969 @@
+{
+  "propertyPostingLogic": {
+    "formFields": {
+      "step0_propertyType": {
+        "field": "propertyType",
+        "type": "radio",
+        "required": true,
+        "options": ["sell", "rent", "jv", "shortlet"],
+        "validation": "Must be one of the defined brief types",
+        "description": "Primary property transaction type selection"
+      },
+      "step1_basicDetails": {
+        "propertyCategory": {
+          "field": "propertyCategory",
+          "type": "select",
+          "required": true,
+          "options": ["Residential", "Commercial", "Land", "Mixed Development"],
+          "conditional": "Available options depend on selected propertyType",
+          "validation": "Must match allowed categories for the selected brief type"
+        },
+        "propertyCondition": {
+          "field": "propertyCondition",
+          "type": "radio",
+          "required": "conditional",
+          "options": ["new", "good-condition", "old"],
+          "conditional": "Required for non-Land properties, NOT required for JV",
+          "validation": "Required when propertyCategory != 'Land' AND propertyType != 'jv'"
+        },
+        "typeOfBuilding": {
+          "field": "typeOfBuilding",
+          "type": "select",
+          "required": "conditional",
+          "options": {
+            "residential": ["bungalow", "duplex", "detached", "semi-detached", "block-of-flats", "penthouse", "terrace"],
+            "commercial": ["offices", "studio", "retail-space", "showroom", "warehouse", "shopping-complex"],
+            "shortlet": ["apartment", "duplex", "studio", "bungalow", "penthouse"]
+          },
+          "conditional": "Required for Residential/Commercial, NOT for Land or JV",
+          "validation": "Required when propertyCategory in ['Residential', 'Commercial'] AND propertyType != 'jv'"
+        },
+        "rentalType": {
+          "field": "rentalType",
+          "type": "radio",
+          "required": "conditional",
+          "options": ["Rent", "Lease"],
+          "conditional": "Only for rent propertyType",
+          "validation": "Required when propertyType == 'rent'"
+        },
+        "shortletDuration": {
+          "field": "shortletDuration",
+          "type": "radio",
+          "required": "conditional",
+          "options": ["Daily", "Weekly", "Monthly"],
+          "conditional": "Only for shortlet propertyType",
+          "validation": "Required when propertyType == 'shortlet'"
+        },
+        "price": {
+          "field": "price",
+          "type": "currency",
+          "required": true,
+          "validation": "Must be positive number, stored as numeric value",
+          "format": "Nigerian Naira (₦)",
+          "processing": "Input formatted as currency, stored as numeric value"
+        },
+        "leaseHold": {
+          "field": "leaseHold",
+          "type": "text",
+          "required": "conditional",
+          "conditional": "Required when rentalType == 'Lease'",
+          "validation": "Must be numeric value (years)",
+          "description": "Duration of lease in years"
+        },
+        "measurementType": {
+          "field": "measurementType",
+          "type": "select",
+          "required": "conditional",
+          "options": ["Plot", "Acres", "Square Meter"],
+          "conditional": "Required for all Sell, all JV, Commercial Rent, and all Land properties",
+          "validation": "Required when propertyType in ['sell', 'jv'] OR (propertyType == 'rent' AND propertyCategory == 'Commercial') OR propertyCategory == 'Land'"
+        },
+        "landSize": {
+          "field": "landSize",
+          "type": "text",
+          "required": "conditional",
+          "conditional": "Required for all Sell, all JV, Commercial Rent, and all Land properties",
+          "validation": "Must be numeric, depends on measurementType being selected first",
+          "format": "Numeric with commas for display"
+        },
+        "location": {
+          "state": {
+            "field": "state",
+            "type": "searchable_select",
+            "required": true,
+            "dataSource": "Nigerian states data",
+            "format": "{ value: string, label: string }"
+          },
+          "lga": {
+            "field": "lga",
+            "type": "creatable_select",
+            "required": true,
+            "dataSource": "LGAs by state, or user can create new",
+            "format": "{ value: string, label: string }",
+            "dependency": "state must be selected first"
+          },
+          "area": {
+            "field": "area",
+            "type": "creatable_select",
+            "required": true,
+            "dataSource": "Areas by state and LGA, or user can create new",
+            "dependency": "lga must be selected first"
+          }
+        },
+        "roomDetails": {
+          "bedrooms": {
+            "field": "bedrooms",
+            "type": "select",
+            "required": "conditional",
+            "options": "0-20",
+            "conditional": "Required for Residential/Commercial, NOT for Land or JV",
+            "validation": "Required when propertyCategory in ['Residential', 'Commercial'] AND propertyType != 'jv'"
+          },
+          "bathrooms": {
+            "field": "bathrooms",
+            "type": "select",
+            "required": false,
+            "options": "0-20",
+            "conditional": "Only for Residential/Commercial, NOT for Land or JV"
+          },
+          "toilets": {
+            "field": "toilets",
+            "type": "select",
+            "required": false,
+            "options": "0-20",
+            "conditional": "Only for Residential/Commercial, NOT for Land or JV"
+          },
+          "parkingSpaces": {
+            "field": "parkingSpaces",
+            "type": "select",
+            "required": false,
+            "options": "0-20",
+            "description": "Number of car parking spaces"
+          }
+        },
+        "shortletSpecific": {
+          "streetAddress": {
+            "field": "streetAddress",
+            "type": "text",
+            "required": "conditional",
+            "conditional": "Only for shortlet propertyType",
+            "validation": "Required when propertyType == 'shortlet'"
+          },
+          "maxGuests": {
+            "field": "maxGuests",
+            "type": "number",
+            "required": "conditional",
+            "conditional": "Only for shortlet propertyType",
+            "validation": "Required when propertyType == 'shortlet', min: 1, max: 50"
+          }
+        },
+        "description": {
+          "field": "description",
+          "type": "textarea",
+          "required": false,
+          "description": "Optional property description"
+        }
+      },
+      "step2_featuresConditions": {
+        "documents": {
+          "field": "documents",
+          "type": "multi_checkbox",
+          "required": "conditional",
+          "conditional": "Required for sell and jv propertyTypes",
+          "options": [
+            "deed-of-assignment", "deed-of-ownership", "deed-of-conveyance", 
+            "survey-plan", "governor's-consent", "certificate-of-occupancy", 
+            "family-receipt", "contract-of-sale", "land-certificate", 
+            "gazette", "excision"
+          ],
+          "validation": "At least one document required for sell/jv"
+        },
+        "features": {
+          "field": "features",
+          "type": "multi_checkbox",
+          "required": false,
+          "conditional": "NOT available for JV propertyType",
+          "options": {
+            "residential": [
+              "gym", "kitchenette", "security-cameras", "swimming-pool", 
+              "childrens-playground", "rooftop-access", "walk-in-closet", 
+              "wifi", "library", "home-office", "cinema-room", "bathtub", 
+              "tennis-court", "garage", "elevator", "staff-room", "pantry", 
+              "electric-fencing", "inverter", "built-in-cupboards", 
+              "security-post", "access-gate", "sea-view", "air-conditioning", 
+              "wheelchair-accessible", "garden", "jacuzzi", "open-floor-plan"
+            ],
+            "land": [
+              "perimeter-fence", "electricity-nearby", "drainage-system-in-place", 
+              "water-supply-available", "security-post-or-nearby", 
+              "estate-land-within-a-gated-estate", "developed-neighborhood", 
+              "developing-neighborhood", "high-foot-traffic-area", 
+              "close-to-major-landmark-or-expressway"
+            ],
+            "commercial": {
+              "structure": [
+                "open-floor-plan", "private-offices", "conference-meeting-rooms", 
+                "reception-area", "partitioned-spaces", "elevator-lift-access", 
+                "wheelchair-accessible"
+              ],
+              "utilities": [
+                "industrial-power-connection", "prepaid-electricity-meter", 
+                "borehole-constant-water-supply", "air-conditioning"
+              ],
+              "security": [
+                "security-personnel-onsite", "gated-compound", "cctv-surveillance", 
+                "access-control-smart-locks", "fire-safety-equipment-alarms-extinguishers"
+              ],
+              "parking": [
+                "dedicated-parking-spaces", "visitor-parking", "modern-glass-facade", 
+                "signage-branding-space", "rooftop-terrace-area", 
+                "located-in-central-business-district-cbd"
+              ]
+            },
+            "shortlet": {
+              "general": ["air-conditioning", "wi-fi", "smart-tv", "dstv", "king-bed", "balcony", "work-desk", "inverter"],
+              "kitchen": ["gas-cooker", "refrigerator", "microwave", "coffee-maker", "kitchen-utensils"],
+              "bathroom": ["ensuite", "bathtub", "water-heater", "hair-dryer", "towels", "toiletries"],
+              "leisure": ["pool", "gym", "rooftop-view", "lounge-area"],
+              "transport": ["free-parking", "paid-parking", "car-hire", "shuttle", "elevator"],
+              "laundry": ["washing-machine", "dryer", "ironing"],
+              "security": ["24-7-security", "cctv", "gated-estate", "fire-extinguisher", "smoke-detector"],
+              "family": ["baby-cot", "kids-playground", "high-chair"],
+              "accessibility": ["wheelchair-access", "step-free-entry"],
+              "location": ["sea-view", "close-to-mall", "airport-proximity", "quiet-area"]
+            }
+          }
+        },
+        "rentalConditions": {
+          "field": "rentalConditions",
+          "type": "multi_checkbox",
+          "required": false,
+          "conditional": "Only for rent propertyType, NOT for Land properties",
+          "options": [
+            "no-pets-allowed", "must-provide-credit-report", 
+            "tenant-responsible-for-basic-maintenance"
+          ]
+        },
+        "employmentType": {
+          "field": "employmentType",
+          "type": "radio",
+          "required": false,
+          "conditional": "Only for rent propertyType, NOT for Land properties",
+          "options": ["employee", "self-employed", "corporate-tenant", "individual-tenant"]
+        },
+        "tenantGenderPreference": {
+          "field": "tenantGenderPreference",
+          "type": "radio",
+          "required": false,
+          "conditional": "Only for rent propertyType, NOT for Land properties",
+          "options": ["male", "female", "both"]
+        },
+        "jvConditions": {
+          "field": "jvConditions",
+          "type": "multi_checkbox",
+          "required": "conditional",
+          "conditional": "Required for jv propertyType",
+          "options": ["proof-of-fund", "premium", "installment-plan", "none"],
+          "validation": "At least one condition required for JV"
+        },
+        "shortletDetails": {
+          "availability": {
+            "minStay": {
+              "field": "availability.minStay",
+              "type": "number",
+              "required": "conditional",
+              "conditional": "Required for shortlet propertyType",
+              "validation": "min: 1, required for shortlet"
+            },
+            "maxStay": {
+              "field": "availability.maxStay",
+              "type": "number",
+              "required": false,
+              "conditional": "Only for shortlet propertyType"
+            }
+          },
+          "pricing": {
+            "nightly": {
+              "field": "pricing.nightly",
+              "type": "currency",
+              "required": "conditional",
+              "conditional": "Required for shortlet propertyType",
+              "validation": "min: 1, required for shortlet"
+            },
+            "weeklyDiscount": {
+              "field": "pricing.weeklyDiscount",
+              "type": "number",
+              "required": false,
+              "validation": "min: 0, max: 100 (percentage)"
+            },
+            "monthlyDiscount": {
+              "field": "pricing.monthlyDiscount",
+              "type": "number",
+              "required": false,
+              "validation": "min: 0, max: 100 (percentage)"
+            },
+            "cleaningFee": {
+              "field": "pricing.cleaningFee",
+              "type": "currency",
+              "required": false
+            },
+            "securityDeposit": {
+              "field": "pricing.securityDeposit",
+              "type": "currency",
+              "required": false
+            },
+            "cancellationPolicy": {
+              "field": "pricing.cancellationPolicy",
+              "type": "radio",
+              "required": false,
+              "options": ["flexible", "moderate", "strict"],
+              "descriptions": {
+                "flexible": "Full refund 1 day before check-in",
+                "moderate": "Full refund 5 days before check-in",
+                "strict": "50% refund up to 7 days before check-in"
+              }
+            }
+          },
+          "houseRules": {
+            "checkIn": {
+              "field": "houseRules.checkIn",
+              "type": "time_selector",
+              "required": "conditional",
+              "conditional": "Required for shortlet propertyType",
+              "default": "15:00"
+            },
+            "checkOut": {
+              "field": "houseRules.checkOut",
+              "type": "time_selector",
+              "required": "conditional",
+              "conditional": "Required for shortlet propertyType",
+              "default": "11:00"
+            },
+            "smoking": {
+              "field": "houseRules.smoking",
+              "type": "checkbox",
+              "required": false,
+              "default": false
+            },
+            "pets": {
+              "field": "houseRules.pets",
+              "type": "checkbox",
+              "required": false,
+              "default": false
+            },
+            "parties": {
+              "field": "houseRules.parties",
+              "type": "checkbox",
+              "required": false,
+              "default": false
+            },
+            "otherRules": {
+              "field": "houseRules.otherRules",
+              "type": "textarea",
+              "required": false
+            }
+          }
+        },
+        "isTenanted": {
+          "field": "isTenanted",
+          "type": "radio",
+          "required": true,
+          "options": ["yes", "no", "i-live-in-it"],
+          "description": "Current tenancy status of the property"
+        },
+        "additionalInfo": {
+          "field": "additionalInfo",
+          "type": "textarea",
+          "required": false,
+          "description": "Additional property information"
+        }
+      },
+      "step3_imageUpload": {
+        "images": {
+          "field": "images",
+          "type": "file_upload",
+          "required": true,
+          "validation": {
+            "minRequired": 4,
+            "maxAllowed": 12,
+            "maxFileSize": "5MB",
+            "allowedFormats": ["JPG", "PNG", "WebP"],
+            "autoUpload": true
+          },
+          "description": "Property images with automatic upload"
+        },
+        "videos": {
+          "field": "videos",
+          "type": "file_upload",
+          "required": false,
+          "validation": {
+            "maxAllowed": 1,
+            "maxFileSize": "15MB",
+            "allowedFormats": ["MP4", "MOV", "AVI"],
+            "autoUpload": true
+          },
+          "description": "Optional property video"
+        }
+      },
+      "step4_ownershipDeclaration": {
+        "isLegalOwner": {
+          "field": "isLegalOwner",
+          "type": "radio",
+          "required": true,
+          "options": [true, false],
+          "labels": {
+            "true": "Yes, I am the legal owner of this property",
+            "false": "I am authorized by the legal owner to list this property"
+          }
+        },
+        "contactInfo": {
+          "firstName": {
+            "field": "contactInfo.firstName",
+            "type": "text",
+            "required": true,
+            "validation": "min: 2, max: 50, letters and spaces only",
+            "autoPopulate": "From user profile if available"
+          },
+          "lastName": {
+            "field": "contactInfo.lastName",
+            "type": "text",
+            "required": true,
+            "validation": "min: 2, max: 50, letters and spaces only",
+            "autoPopulate": "From user profile if available"
+          },
+          "email": {
+            "field": "contactInfo.email",
+            "type": "email",
+            "required": true,
+            "validation": "Valid email format",
+            "autoPopulate": "From user profile if available"
+          },
+          "phone": {
+            "field": "contactInfo.phone",
+            "type": "phone",
+            "required": true,
+            "validation": "Valid Nigerian phone number format",
+            "format": "International format with country code"
+          }
+        },
+        "ownershipDocuments": {
+          "field": "ownershipDocuments",
+          "type": "multi_checkbox",
+          "required": false,
+          "options": "Same as documents list",
+          "description": "Optional ownership documentation"
+        }
+      }
+    },
+    "dropdownValues": {
+      "propertyTypes": {
+        "sell": {
+          "label": "Sell Property (Outright Sale)",
+          "description": "I want to sell my property for an outright sale",
+          "icon": "🏡",
+          "allowedCategories": ["Residential", "Commercial", "Land"]
+        },
+        "rent": {
+          "label": "Rent",
+          "description": "I want to rent out my property to tenants",
+          "icon": "🔑",
+          "allowedCategories": ["Residential", "Commercial", "Land"]
+        },
+        "jv": {
+          "label": "Joint Venture (JV)",
+          "description": "I want to partner with investors for development",
+          "icon": "🤝",
+          "allowedCategories": ["Residential", "Commercial", "Land", "Mixed Development"]
+        },
+        "shortlet": {
+          "label": "Shortlet",
+          "description": "I want to list my property for short-term rental",
+          "icon": "📅",
+          "allowedCategories": ["Residential"]
+        }
+      },
+      "propertyCategories": ["Residential", "Commercial", "Land", "Mixed Development"],
+      "propertyConditions": [
+        {"value": "new", "label": "New"},
+        {"value": "good-condition", "label": "Good Condition"},
+        {"value": "old", "label": "Old"}
+      ],
+      "buildingTypes": {
+        "residential": ["bungalow", "duplex", "detached", "semi-detached", "block-of-flats", "penthouse", "terrace"],
+        "commercial": ["offices", "studio", "retail-space", "showroom", "warehouse", "shopping-complex"],
+        "shortlet": ["apartment", "duplex", "studio", "bungalow", "penthouse"]
+      },
+      "measurementTypes": ["Plot", "Acres", "Square Meter"],
+      "rentalTypes": ["Rent", "Lease"],
+      "shortletDurations": ["Daily", "Weekly", "Monthly"],
+      "numberOptions": "0-20 (generated dynamically)",
+      "tenancyStatus": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "i-live-in-it", "label": "I live in it"}
+      ],
+      "documents": [
+        "deed-of-assignment", "deed-of-ownership", "deed-of-conveyance",
+        "survey-plan", "governor's-consent", "certificate-of-occupancy",
+        "family-receipt", "contract-of-sale", "land-certificate",
+        "gazette", "excision"
+      ],
+      "jvConditions": ["proof-of-fund", "premium", "installment-plan", "none"],
+      "rentalConditions": [
+        "no-pets-allowed", "must-provide-credit-report",
+        "tenant-responsible-for-basic-maintenance"
+      ],
+      "employmentTypes": ["employee", "self-employed", "corporate-tenant", "individual-tenant"],
+      "tenantGenderPreferences": ["male", "female", "both"],
+      "cancellationPolicies": [
+        {"value": "flexible", "label": "Flexible – Full refund 1 day before check-in"},
+        {"value": "moderate", "label": "Moderate – Full refund 5 days before check-in"},
+        {"value": "strict", "label": "Strict – 50% refund up to 7 days before check-in"}
+      ]
+    },
+    "validationRules": {
+      "stepValidation": {
+        "step0": {
+          "required": ["propertyType"],
+          "logic": "propertyType must be selected"
+        },
+        "step1": {
+          "base_required": ["propertyCategory", "state", "lga", "area", "price"],
+          "conditional_required": {
+            "rent": {
+              "always": ["rentalType"],
+              "non_land": ["propertyCondition", "typeOfBuilding", "bedrooms"],
+              "commercial": ["measurementType", "landSize"],
+              "land_lease": {
+                "condition": "propertyCategory == 'Land' AND rentalType == 'Lease'",
+                "fields": ["leaseHold"]
+              }
+            },
+            "shortlet": {
+              "always": ["shortletDuration", "propertyCondition", "typeOfBuilding", "bedrooms", "streetAddress", "maxGuests"]
+            },
+            "jv": {
+              "always": ["measurementType", "landSize"],
+              "note": "JV NEVER requires propertyCondition, typeOfBuilding, or bedrooms"
+            },
+            "sell": {
+              "non_land": ["propertyCondition", "typeOfBuilding", "bedrooms"],
+              "always": ["measurementType", "landSize"]
+            },
+            "land_category": {
+              "condition": "propertyCategory == 'Land'",
+              "fields": ["measurementType", "landSize"]
+            }
+          }
+        },
+        "step2": {
+          "base_required": ["isTenanted"],
+          "conditional_required": {
+            "sell_jv_documents": {
+              "condition": "propertyType in ['sell', 'jv']",
+              "fields": ["documents"],
+              "validation": "At least one document required"
+            },
+            "jv_conditions": {
+              "condition": "propertyType == 'jv'",
+              "fields": ["jvConditions"],
+              "validation": "At least one JV condition required"
+            },
+            "shortlet_detailed": {
+              "condition": "propertyType == 'shortlet'",
+              "fields": ["availability.minStay", "pricing.nightly", "houseRules.checkIn", "houseRules.checkOut"],
+              "validation": "All shortlet pricing and rules required"
+            }
+          }
+        },
+        "step3": {
+          "required": ["images"],
+          "validation": "Minimum 4 valid images required"
+        },
+        "step4": {
+          "required": [
+            "contactInfo.firstName", "contactInfo.lastName", 
+            "contactInfo.email", "contactInfo.phone", "isLegalOwner"
+          ]
+        }
+      },
+      "fieldValidation": {
+        "price": {
+          "type": "positive_number",
+          "message": "Price must be a positive number"
+        },
+        "email": {
+          "type": "email_format",
+          "message": "Please enter a valid email address"
+        },
+        "phone": {
+          "type": "nigerian_phone",
+          "pattern": "^(\\+234|0)[789][01]\\d{8}$",
+          "message": "Please enter a valid Nigerian phone number"
+        },
+        "names": {
+          "type": "letters_spaces_only",
+          "pattern": "^[a-zA-Z\\s]+$",
+          "min": 2,
+          "max": 50
+        },
+        "landSize": {
+          "type": "positive_number",
+          "dependency": "measurementType must be selected first"
+        },
+        "maxGuests": {
+          "type": "number",
+          "min": 1,
+          "max": 50
+        },
+        "minStay": {
+          "type": "number",
+          "min": 1
+        },
+        "weeklyDiscount": {
+          "type": "percentage",
+          "min": 0,
+          "max": 100
+        },
+        "monthlyDiscount": {
+          "type": "percentage",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "conditionalDisplay": {
+        "propertyCondition": "propertyType != 'jv' AND propertyCategory != 'Land'",
+        "typeOfBuilding": "propertyType != 'jv' AND propertyCategory in ['Residential', 'Commercial']",
+        "bedrooms": "propertyType != 'jv' AND propertyCategory in ['Residential', 'Commercial']",
+        "bathrooms": "propertyType != 'jv' AND propertyCategory in ['Residential', 'Commercial']",
+        "toilets": "propertyType != 'jv' AND propertyCategory in ['Residential', 'Commercial']",
+        "landSize": "propertyType in ['sell', 'jv'] OR (propertyType == 'rent' AND propertyCategory == 'Commercial') OR propertyCategory == 'Land'",
+        "rentalType": "propertyType == 'rent'",
+        "leaseHold": "propertyType == 'rent' AND rentalType == 'Lease'",
+        "documents": "propertyType in ['sell', 'jv']",
+        "jvConditions": "propertyType == 'jv'",
+        "rentalConditions": "propertyType == 'rent' AND propertyCategory != 'Land'",
+        "employmentType": "propertyType == 'rent' AND propertyCategory != 'Land'",
+        "tenantGenderPreference": "propertyType == 'rent' AND propertyCategory != 'Land'",
+        "shortletFields": "propertyType == 'shortlet'",
+        "features": "propertyType != 'jv'"
+      }
+    },
+    "businessLogic": {
+      "priceNormalization": {
+        "input": "Formatted currency string with commas and currency symbol",
+        "processing": "Extract numeric value using cleanNumericInput() function",
+        "storage": "Store as numeric value without formatting",
+        "display": "Format with Nigerian Naira symbol and commas for display"
+      },
+      "featureSelection": {
+        "residential": "Standard residential features list",
+        "commercial": "Categorized into structure, utilities, security, parking",
+        "land": "Land-specific features",
+        "shortlet": "Comprehensive amenity categories (general, kitchen, bathroom, leisure, transport, laundry, security, family, accessibility, location)",
+        "jv": "Features NOT available for Joint Venture properties"
+      },
+      "imageHandling": {
+        "upload": "Automatic upload on file selection",
+        "validation": "File size (5MB max), format (JPG/PNG/WebP), minimum 4 required",
+        "storage": "URLs stored in database after successful upload",
+        "removal": "Server-side file deletion when image removed"
+      },
+      "videoHandling": {
+        "upload": "Automatic upload on file selection",
+        "validation": "File size (15MB max), format (MP4/MOV/AVI), maximum 1 allowed",
+        "storage": "URL stored in database after successful upload",
+        "optional": "Video upload is completely optional"
+      },
+      "locationHierarchy": {
+        "state": "Nigerian states from location data",
+        "lga": "LGAs filtered by state, creatable if not in list",
+        "area": "Areas filtered by state and LGA, creatable if not in list",
+        "resetLogic": "LGA resets when state changes, area resets when LGA changes"
+      },
+      "userTypeHandling": {
+        "landowner": "Regular property owners",
+        "agent": "Real estate agents with special access requirements",
+        "autoPopulation": "Contact info pre-filled from user profile",
+        "permissions": "Agents require onboarding and approval"
+      },
+      "commissionCalculation": {
+        "sell": {
+          "landowner": "10% of sale price",
+          "agent": "50% of agent's commission"
+        },
+        "rent": {
+          "landowner": "10% of rental deal value",
+          "agent": "No commission deducted by Khabiteq"
+        },
+        "jv": {
+          "landowner": "10% of transaction value",
+          "agent": "50% of agent's commission"
+        },
+        "shortlet": {
+          "landowner": "5% of transaction value",
+          "agent": "50% of agent's commission"
+        }
+      },
+      "fieldDependencies": {
+        "measurementType_landSize": "Land size field disabled until measurement type selected",
+        "state_lga": "LGA options filtered by selected state",
+        "lga_area": "Area options filtered by selected state and LGA",
+        "rentalType_leaseHold": "Lease hold field only shown when rental type is 'Lease'",
+        "propertyType_features": "Feature options change based on property type and category"
+      },
+      "formResetLogic": {
+        "propertyTypeChange": "Reset entire form except property type when brief type changes",
+        "propertyCategoryChange": "Reset fields after category while preserving type and category",
+        "fieldsToReset": [
+          "price", "state", "lga", "area", "streetAddress",
+          "propertyCondition", "typeOfBuilding", "bedrooms", "bathrooms", 
+          "toilets", "parkingSpaces", "maxGuests", "landSize", "measurementType",
+          "rentalType", "leaseHold", "shortletDuration", "availability", 
+          "pricing", "houseRules", "features", "documents", "jvConditions",
+          "rentalConditions", "employmentType", "tenantGenderPreference",
+          "isTenanted", "additionalInfo", "description"
+        ]
+      }
+    },
+    "workflowSteps": {
+      "step0": {
+        "title": "Property Type Selection",
+        "purpose": "Determine the transaction type",
+        "actions": [
+          "Select property type (sell/rent/jv/shortlet)",
+          "Reset form if type changes",
+          "Configure subsequent form fields based on selection"
+        ]
+      },
+      "step1": {
+        "title": "Basic Details",
+        "purpose": "Capture core property information",
+        "actions": [
+          "Select property category",
+          "Configure conditional fields based on type and category",
+          "Enter location details (state > LGA > area)",
+          "Set property condition and building type (if applicable)",
+          "Enter price and land size (if applicable)",
+          "Set room details (if applicable)",
+          "Add property description"
+        ]
+      },
+      "step2": {
+        "title": "Features & Conditions",
+        "purpose": "Specify property features and transaction conditions",
+        "actions": [
+          "Select property documents (sell/jv)",
+          "Choose features and amenities (except JV)",
+          "Set rental conditions (rent only)",
+          "Configure JV conditions (jv only)",
+          "Set shortlet details (shortlet only)",
+          "Specify tenancy status",
+          "Add additional information"
+        ]
+      },
+      "step3": {
+        "title": "Upload Images",
+        "purpose": "Add visual content for the property",
+        "actions": [
+          "Upload minimum 4 images (max 12)",
+          "Auto-upload to server on selection",
+          "Optional video upload (max 1)",
+          "Validate file sizes and formats",
+          "Allow image removal with server cleanup"
+        ]
+      },
+      "step4": {
+        "title": "Owner Declaration",
+        "purpose": "Verify ownership and capture contact details",
+        "actions": [
+          "Declare legal ownership status",
+          "Review commission agreement",
+          "Enter/verify contact information",
+          "Accept terms and conditions",
+          "Prepare for final submission"
+        ]
+      },
+      "step5": {
+        "title": "Property Summary",
+        "purpose": "Review all entered information",
+        "actions": [
+          "Display comprehensive property summary",
+          "Show commission rate and agreement",
+          "Allow editing of any section",
+          "Proceed to commission modal"
+        ]
+      },
+      "step6": {
+        "title": "Commission Agreement",
+        "purpose": "Final commission acceptance",
+        "actions": [
+          "Display commission agreement text",
+          "Show commission rate",
+          "Require explicit acceptance",
+          "Submit property to API"
+        ]
+      }
+    },
+    "apiPayload": {
+      "endpoint": "/account-property-base-url/create",
+      "method": "POST",
+      "structure": {
+        "propertyType": "string (sell/rent/jv/shortlet)",
+        "propertyCategory": "string",
+        "propertyCondition": "string",
+        "typeOfBuilding": "string",
+        "rentalType": "string",
+        "features": "array of strings",
+        "docOnProperty": "array of {docName: string, isProvided: boolean}",
+        "location": {
+          "state": "string",
+          "localGovernment": "string",
+          "area": "string",
+          "streetAddress": "string"
+        },
+        "price": "number (extracted from formatted string)",
+        "leaseHold": "string",
+        "shortletDuration": "string",
+        "owner": {
+          "fullName": "string (firstName + lastName)",
+          "phoneNumber": "string",
+          "email": "string"
+        },
+        "areYouTheOwner": "boolean",
+        "ownershipDocuments": "array of strings",
+        "landSize": {
+          "measurementType": "string",
+          "size": "string"
+        },
+        "briefType": "string (mapped from propertyType)",
+        "additionalFeatures": {
+          "noOfBedroom": "string",
+          "noOfBathroom": "string",
+          "noOfToilet": "string",
+          "noOfCarPark": "string",
+          "maxGuests": "string"
+        },
+        "tenantCriteria": "array of strings",
+        "jvConditions": "array of strings",
+        "description": "string",
+        "addtionalInfo": "string",
+        "pictures": "array of image URLs",
+        "videos": "array of video URLs",
+        "isTenanted": "string",
+        "holdDuration": "string",
+        "availability": {
+          "minStay": "number",
+          "maxStay": "number",
+          "calendar": "string"
+        },
+        "pricing": {
+          "nightly": "number",
+          "weeklyDiscount": "number",
+          "monthlyDiscount": "number",
+          "cleaningFee": "number",
+          "securityDeposit": "number",
+          "cancellationPolicy": "string"
+        },
+        "houseRules": {
+          "checkIn": "string",
+          "checkOut": "string",
+          "smoking": "boolean",
+          "pets": "boolean",
+          "parties": "boolean",
+          "otherRules": "string"
+        }
+      },
+      "transformations": {
+        "propertyType_to_briefType": {
+          "sell": "Outright Sales",
+          "rent": "Rent",
+          "shortlet": "Shortlet",
+          "jv": "Joint Venture"
+        },
+        "price_extraction": "Use extractNumericValue() to convert formatted price to number",
+        "documents_mapping": "Convert document array to {docName, isProvided: true} format",
+        "contact_concatenation": "Combine firstName and lastName for fullName",
+        "features_transformation": "Pass features array directly",
+        "location_mapping": "Extract values from state/lga objects"
+      }
+    },
+    "commissionRules": {
+      "landowner": {
+        "sell": 10,
+        "rent": 10,
+        "jv": 10,
+        "shortlet": 5
+      },
+      "agent": {
+        "sell": 50,
+        "rent": 0,
+        "jv": 50,
+        "shortlet": 50
+      },
+      "agreementText": {
+        "landowner": {
+          "sell": "I agree that Khabiteq Realty shall earn 10% of the total value generated from this transaction as commission when the deal is closed.",
+          "rent": "I agree that Khabiteq Realty shall earn 10% of the final rental deal value as commission when the deal is closed.",
+          "jv": "I agree that Khabiteq Realty shall earn 10% of the total value generated from this transaction as commission when the deal is closed.",
+          "shortlet": "I agree that Khabiteq Realty shall earn 5% of the total value generated from this transaction as commission when the deal is closed."
+        },
+        "agent": {
+          "sell": "I agree that Khabiteq Realty shall earn 50% of the total commission accrued to me when the deal is closed.",
+          "rent": "I understand that Khabiteq does not collect commission on agent rental deals.",
+          "jv": "I agree that Khabiteq Realty shall earn 50% of the total commission accrued to me when the deal is closed.",
+          "shortlet": "I agree that Khabiteq Realty shall earn 50% of the total commission accrued to me when the deal is closed."
+        }
+      }
+    },
+    "fileHandling": {
+      "imageUpload": {
+        "endpoint": "/upload-single-file",
+        "formData": {
+          "file": "File object",
+          "for": "property-image"
+        },
+        "validation": {
+          "maxSize": "5MB",
+          "formats": ["image/*"],
+          "minRequired": 4,
+          "maxAllowed": 12
+        },
+        "processing": "Automatic upload on selection, URL stored in state"
+      },
+      "videoUpload": {
+        "endpoint": "/upload-single-file", 
+        "formData": {
+          "file": "File object",
+          "for": "property-video"
+        },
+        "validation": {
+          "maxSize": "15MB",
+          "formats": ["video/*"],
+          "maxAllowed": 1
+        },
+        "processing": "Automatic upload on selection, URL stored in state"
+      },
+      "fileRemoval": {
+        "endpoint": "/delete-single-file",
+        "payload": {"url": "string"},
+        "trigger": "When user removes image/video from interface"
+      }
+    },
+    "accessControl": {
+      "userTypes": ["Landowners", "Agent"],
+      "requirements": {
+        "Landowners": "Direct access to property posting",
+        "Agent": {
+          "onboardingRequired": true,
+          "approvalRequired": true,
+          "message": "You must complete onboarding and be approved before you can post properties."
+        }
+      },
+      "restrictions": {
+        "unauthenticated": "Redirect to /auth/login",
+        "invalidUserType": "Redirect to /dashboard with error message"
+      }
+    }
+  }
+}
