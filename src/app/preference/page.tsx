@@ -356,6 +356,12 @@ const PreferenceFormContent: React.FC = () => {
       // Reset form data immediately without confirmation only when switching tabs
       dispatch({ type: "RESET_FORM" });
 
+      // Scroll to top immediately when changing preference type
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       // Use immediate updates for step changes
       setTimeout(() => {
         // Set the new preference type with immediate flag
