@@ -73,18 +73,8 @@ export default function ProfileSettingsPage() {
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
-    if (user.userType !== "Agent" && user.userType !== "Landowners") {
-      router.push("/");
-      return;
-    }
-
     fetchUserProfile();
-  }, [user, router]);
+  }, []);
 
   const fetchUserProfile = async () => {
     try {
@@ -306,7 +296,7 @@ export default function ProfileSettingsPage() {
   }
 
   const dashboardRoute =
-    user.userType === "Agent" ? "/agent/dashboard" : "/dashboard";
+    user.userType === "Agent" ? "/dashboard" : "/dashboard";
 
   return (
     <div className="min-h-screen bg-[#EEF1F1] py-8">

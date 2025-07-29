@@ -70,21 +70,6 @@ export default function AgentDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
-    if (user.userType !== "Agent") {
-      router.push("/");
-      return;
-    }
-
-    if (!user.accountApproved) {
-      router.push("/agent/under-review");
-      return;
-    }
-
     fetchDashboardData();
   }, [user, router]);
 

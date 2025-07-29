@@ -37,7 +37,7 @@ const EmailVerification = () => {
 							toast.success(
 								"Email verified successfully! Please complete your profile."
 							);
-							router.push("/agent/onboard");
+							router.push("/agent-onboard");
 						} else {
 							router.push("/auth/login");
 						}

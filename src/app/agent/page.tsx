@@ -32,9 +32,9 @@ const Agent = () => {
       return;
     } else if (user.userType === "Agent") {
       if (!user.accountApproved) {
-        router.push("/agent/under-review");
+        router.push("/agent-under-review");
       } else {
-        router.push("/agent/dashboard");
+        router.push("/dashboard");
       }
     } else if (user.userType === "Landowners") {
       router.push("/dashboard");

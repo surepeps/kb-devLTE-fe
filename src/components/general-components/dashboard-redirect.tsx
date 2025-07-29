@@ -24,7 +24,7 @@ const DashboardRedirect: React.FC<DashboardRedirectProps> = ({ children }) => {
       if (user.userType === "Landowners") {
         router.replace("/dashboard");
       } else if (user.userType === "Agent") {
-        router.replace("/agent/dashboard");
+        router.replace("/dashboard");
       }
     }
   }, [user, router]);

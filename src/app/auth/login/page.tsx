@@ -80,9 +80,9 @@ const Login: FC = () => {
       // Default redirect logic
       if (userPayload.userType === "Agent") {
         if (!userPayload.agentData?.agentType) {
-          router.push("/agent/onboard");
+          router.push("/agent-onboard");
         } else if (userPayload.accountApproved === false) {
-          router.push("/agent/under-review");
+          router.push("/agent-under-review");
         } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
           router.push("/dashboard");
         }
@@ -151,9 +151,9 @@ const Login: FC = () => {
           // Default redirect logic
           if (userPayload.userType === "Agent") {
             if (!userPayload.agentData?.agentType) {
-              router.push("/agent/onboard");
+              router.push("/agent-onboard");
             } else if (userPayload.accountApproved === false) {
-              router.push("/agent/under-review");
+              router.push("/agent-under-review");
             } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
               router.push("/dashboard");
             }
@@ -237,9 +237,9 @@ const Login: FC = () => {
                     // Default redirect logic
                     if (userPayload.userType === "Agent") {
                       if (!userPayload.agentData?.agentType) {
-                        router.push("/agent/onboard");
+                        router.push("/agent-onboard");
                       } else if (userPayload.accountApproved === false) {
-                        router.push("/agent/under-review");
+                        router.push("/agent-under-review");
                       } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
                         router.push("/dashboard");
                       }

@@ -59,16 +59,6 @@ export default function LandlordDashboard() {
   const [activeFilter, setActiveFilter] = useState("all");
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
-    if (user.userType !== "Landowners") {
-      router.push("/");
-      return;
-    }
-
     fetchDashboardData();
   }, [user, router]);
 

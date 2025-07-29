@@ -522,22 +522,6 @@ const PostPropertyByPreference = () => {
     fetchAndPopulatePreference();
   }, [fetchAndPopulatePreference]);
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
-    // Allow Landowners to access directly and Agents
-    if (user.userType === "Landowners" || user.userType === "Agent") {
-      return;
-    }
-
-    // User is neither landowner nor agent
-    toast.error("You need to be a landowner or agent to post properties");
-    router.push("/dashboard");
-  }, [user, router]);
-
   const steps = [
     {
       label: "Property Type",

@@ -100,8 +100,8 @@ const SuccessModal: React.FC<{
             </h4>
             <div className="text-sm text-[#5A5D63] space-y-1 text-left">
               <p>• Your application is now under review</p>
-              <p>• We'll verify your documents within 24-48 hours</p>
-              <p>• You'll receive an email notification once approved</p>
+              <p>• We&apos;ll verify your documents within 24-48 hours</p>
+              <p>• You&apos;ll receive an email notification once approved</p>
               <p>• Access to agent features will be activated upon approval</p>
             </div>
           </div>
@@ -280,7 +280,6 @@ const AgentOnboard: React.FC = () => {
     setSubmitting(true);
 
     const payload = {
-      token: Cookies.get("token"),
       address: {
         homeNo: values.houseNumber,
         street: values.street,
@@ -321,7 +320,7 @@ const AgentOnboard: React.FC = () => {
                 docImg: cacFileUrl ? [cacFileUrl] : [],
               },
               {
-                name: "govID",
+                name: values.typeOfID,
                 docImg: idFileUrl ? [idFileUrl] : [],
               },
               {
@@ -334,14 +333,13 @@ const AgentOnboard: React.FC = () => {
     try {
       await toast.promise(
         PUT_REQUEST(
-          URLS.BASE + URLS.accountSettingsBaseUrl + '/onBoard',
+          URLS.BASE + URLS.accountSettingsBaseUrl + '/complete-onboarding',
           payload,
-          Cookies.get("token") || "",
+          Cookies.get("token"),
         ).then((response) => {
           if (response.success) {
-            Cookies.set("token", (response as any).token);
             setShowSuccessModal(true);
-            return "Application submitted successfully";
+            return response.message;
           } else {
             throw new Error((response as any).error || "Submission failed");
           }
@@ -361,7 +359,7 @@ const AgentOnboard: React.FC = () => {
 
   const handleGoToDashboard = () => {
     setShowSuccessModal(false);
-    router.push("/agent/dashboard");
+    router.push("/dashboard");
   };
 
   const nextStep = () => {
