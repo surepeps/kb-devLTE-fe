@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
 import Loading from "@/components/loading-component/loading";
 import NotificationCardSkeleton from "@/components/loading-component/NotificationCardSkeleton";
+import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 
 interface Notification {
   _id: string;
@@ -51,12 +52,8 @@ const NotificationsPage: React.FC = () => {
   const { user } = useUserContext();
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
     fetchNotifications(1, true);
-  }, [user]);
+  }, []);
 
   const fetchNotifications = async (page: number = currentPage, reset: boolean = false) => {
     try {
@@ -275,191 +272,197 @@ const NotificationsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
-      <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={() => router.back()}
-              className="p-2 hover:bg-white rounded-lg transition-colors"
-              title="Go back"
-            >
-              <ArrowLeft size={20} className="text-[#5A5D63]" />
-            </button>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display">
-                Notifications
-              </h1>
-              <p className="text-[#5A5D63] text-sm md:text-base">
-                Stay updated with your property activities
-              </p>
+    <AgentAccessBarrier
+      requireOnboarding={true}
+      requireApproval={true}
+      customMessage="You must complete onboarding and be approved before you view notifications."
+    >
+      <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
+        <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+          {/* Header */}
+          <div className="mb-6 md:mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => router.back()}
+                className="p-2 hover:bg-white rounded-lg transition-colors"
+                title="Go back"
+              >
+                <ArrowLeft size={20} className="text-[#5A5D63]" />
+              </button>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display">
+                  Notifications
+                </h1>
+                <p className="text-[#5A5D63] text-sm md:text-base">
+                  Stay updated with your property activities
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Controls */}
-        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search
-                size={18}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Search notifications..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Filter */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowFilterMenu(!showFilterMenu)}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-                >
-                  <Filter size={16} />
-                  <span className="hidden sm:inline">Filter</span>
-                </button>
-                <AnimatePresence>
-                  {showFilterMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-10"
-                    >
-                      {["all", "unread", "read"].map((filterOption) => (
-                        <button
-                          key={filterOption}
-                          onClick={() => {
-                            setFilter(filterOption as typeof filter);
-                            setShowFilterMenu(false);
-                          }}
-                          className={`w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                            filter === filterOption
-                              ? "bg-[#8DDB90]/10 text-[#09391C]"
-                              : ""
-                          }`}
-                        >
-                          {filterOption === "all" &&
-                            `All (${notifications.length})`}
-                          {filterOption === "unread" &&
-                            `Unread (${unreadCount})`}
-                          {filterOption === "read" && `Read (${readCount})`}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          {/* Controls */}
+          <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <Search
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Search notifications..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                />
               </div>
 
-              {/* Mark all as read */}
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllAsRead}
-                  className="px-4 py-2.5 bg-[#8DDB90] hover:bg-[#7BC87F] text-white rounded-lg transition-colors text-sm"
-                >
-                  Mark all read
-                </button>
-              )}
+              {/* Actions */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Filter */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowFilterMenu(!showFilterMenu)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                  >
+                    <Filter size={16} />
+                    <span className="hidden sm:inline">Filter</span>
+                  </button>
+                  <AnimatePresence>
+                    {showFilterMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-10"
+                      >
+                        {["all", "unread", "read"].map((filterOption) => (
+                          <button
+                            key={filterOption}
+                            onClick={() => {
+                              setFilter(filterOption as typeof filter);
+                              setShowFilterMenu(false);
+                            }}
+                            className={`w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                              filter === filterOption
+                                ? "bg-[#8DDB90]/10 text-[#09391C]"
+                                : ""
+                            }`}
+                          >
+                            {filterOption === "all" &&
+                              `All (${notifications.length})`}
+                            {filterOption === "unread" &&
+                              `Unread (${unreadCount})`}
+                            {filterOption === "read" && `Read (${readCount})`}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              {/* Delete selected */}
-              {selectedNotifications.length > 0 && (
-                <button
-                  onClick={deleteSelectedNotifications}
-                  className="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm"
-                >
-                  Delete ({selectedNotifications.length})
-                </button>
-              )}
+                {/* Mark all as read */}
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="px-4 py-2.5 bg-[#8DDB90] hover:bg-[#7BC87F] text-white rounded-lg transition-colors text-sm"
+                  >
+                    Mark all read
+                  </button>
+                )}
+
+                {/* Delete selected */}
+                {selectedNotifications.length > 0 && (
+                  <button
+                    onClick={deleteSelectedNotifications}
+                    className="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm"
+                  >
+                    Delete ({selectedNotifications.length})
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Bulk actions */}
+            {filteredNotifications.length > 0 && (
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedNotifications.length ===
+                      filteredNotifications.length
+                    }
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="w-4 h-4 text-[#8DDB90] rounded focus:ring-[#8DDB90]"
+                  />
+                  <span className="text-sm text-gray-600">
+                    Select all ({filteredNotifications.length})
+                  </span>
+                </label>
+              </div>
+            )}
           </div>
 
-          {/* Bulk actions */}
-          {filteredNotifications.length > 0 && (
-            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={
-                    selectedNotifications.length ===
-                    filteredNotifications.length
-                  }
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="w-4 h-4 text-[#8DDB90] rounded focus:ring-[#8DDB90]"
-                />
-                <span className="text-sm text-gray-600">
-                  Select all ({filteredNotifications.length})
-                </span>
-              </label>
+          {/* Notifications List */}
+          <div className="space-y-3">
+            {filteredNotifications.length === 0 && !loadingMore ? (
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <Bell size={48} className="text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-500 mb-2">
+                  No notifications found
+                </h3>
+                <p className="text-gray-400">
+                  {searchTerm
+                    ? "Try adjusting your search terms"
+                    : filter === "unread"
+                      ? "You have no unread notifications"
+                      : "You don't have any notifications yet"}
+                </p>
+              </div>
+            ) : (
+              <>
+                {filteredNotifications.map((notification) => (
+                  <NotificationCard
+                    key={notification._id}
+                    notification={notification}
+                    isSelected={selectedNotifications.includes(notification._id)}
+                    onSelect={(checked) =>
+                      handleSelectNotification(notification._id, checked)
+                    }
+                    onMarkAsRead={() => markAsRead(notification._id)}
+                    onMarkAsUnread={() => markAsUnread(notification._id)}
+                    onDelete={() => deleteNotification(notification._id)}
+                  />
+                ))}
+                
+                {/* Show skeleton when loading more */}
+                {loadingMore && (
+                  <>
+                    <NotificationCardSkeleton />
+                    <NotificationCardSkeleton />
+                    <NotificationCardSkeleton />
+                  </>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Load more button */}
+          {currentPage < totalPages && !loadingMore && (
+            <div className="text-center mt-8">
+              <button 
+                onClick={handleLoadMore}
+                className="px-6 py-3 border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white rounded-lg transition-colors font-medium"
+              >
+                Load more notifications
+              </button>
             </div>
           )}
         </div>
-
-        {/* Notifications List */}
-        <div className="space-y-3">
-          {filteredNotifications.length === 0 && !loadingMore ? (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-              <Bell size={48} className="text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-500 mb-2">
-                No notifications found
-              </h3>
-              <p className="text-gray-400">
-                {searchTerm
-                  ? "Try adjusting your search terms"
-                  : filter === "unread"
-                    ? "You have no unread notifications"
-                    : "You don't have any notifications yet"}
-              </p>
-            </div>
-          ) : (
-            <>
-              {filteredNotifications.map((notification) => (
-                <NotificationCard
-                  key={notification._id}
-                  notification={notification}
-                  isSelected={selectedNotifications.includes(notification._id)}
-                  onSelect={(checked) =>
-                    handleSelectNotification(notification._id, checked)
-                  }
-                  onMarkAsRead={() => markAsRead(notification._id)}
-                  onMarkAsUnread={() => markAsUnread(notification._id)}
-                  onDelete={() => deleteNotification(notification._id)}
-                />
-              ))}
-              
-              {/* Show skeleton when loading more */}
-              {loadingMore && (
-                <>
-                  <NotificationCardSkeleton />
-                  <NotificationCardSkeleton />
-                  <NotificationCardSkeleton />
-                </>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Load more button */}
-        {currentPage < totalPages && !loadingMore && (
-          <div className="text-center mt-8">
-            <button 
-              onClick={handleLoadMore}
-              className="px-6 py-3 border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white rounded-lg transition-colors font-medium"
-            >
-              Load more notifications
-            </button>
-          </div>
-        )}
       </div>
-    </div>
+    </AgentAccessBarrier>
   );
 };
 

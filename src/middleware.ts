@@ -19,36 +19,31 @@ const publicRoutes = [
   "/auth/forgot-password/verify",
   "/auth/forgot-password/reset",
   "/auth/verification-sent",
-  "/buy_page",
-  "/rent_page",
   "/agent-marketplace",
   "/market-place",
-  "/joint-ventures",
-  "/joint_ventures",
   "/landlord",
   "/agent",
-  "/coming-soon-modal",
-  "/testing",
-  "/verify-email",
   "/referral",
-  "/slots",
-  "/seller-negotiation-inspection",
-  "/negotiation-inspection",
+  "/secure-seller-response",
+  "/secure-buyer-response",
+  "/continue-inspection"
 ];
 
-const agentProtectedRoutes = [
-  "/agent/dashboard",
-  "/agent/briefs",
-  "/agent/onboard",
-  "/agent/under-review",
-];
 
 const userProtectedRoutes = [
   "/dashboard",
   "/profile",
   "/my-listings",
-    "/post-property",
+  "/post-property",
   "/payment-details",
+  "/my-inspection-requests",
+  "/agent-onboard",
+  "/agent-under-review",
+  "/update-property",
+  "/post-property-by-preference",
+  "/profile-settings",
+  "/my-preferences",
+  "/notifications"
 ];
 
 export function middleware(request: NextRequest) {
@@ -84,19 +79,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protect agent routes
-  const isAgentProtectedRoute = agentProtectedRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + "/"),
-  );
-
-  if (isAgentProtectedRoute) {
-    if (!userToken) {
-      const loginUrl = new URL("/auth/login", request.url);
-      loginUrl.searchParams.set("from", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-    return NextResponse.next();
-  }
 
   // Protect user routes
   const isUserProtectedRoute = userProtectedRoutes.some(

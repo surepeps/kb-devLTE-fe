@@ -3,7 +3,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { ShieldX, Clock, User } from "lucide-react";
+import { Clock, User } from "lucide-react";
 import Link from "next/link";
 import { useUserContext } from "@/context/user-context";
 
@@ -27,67 +27,85 @@ const AgentAccessBarrier: React.FC<AgentAccessBarrierProps> = ({
     return <>{children}</>;
   }
 
-  // Check onboarding requirement
+  const Container = ({
+    icon,
+    title,
+    message,
+    actionLabel,
+    actionHref,
+    bgColor,
+    iconColor,
+  }: {
+    icon: React.ReactNode;
+    title: string;
+    message: string;
+    actionLabel: string;
+    actionHref: string;
+    bgColor: string;
+    iconColor: string;
+  }) => (
+    <div className="min-h-screen bg-[#F6F8F8] flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`rounded-xl border ${bgColor} border-gray-200 p-10 max-w-md w-full text-center`}
+      >
+        <div
+          className={`w-16 h-16 ${iconColor} rounded-full flex items-center justify-center mx-auto mb-6`}
+        >
+          {icon}
+        </div>
+        <h2 className="text-2xl font-semibold text-[#0C1E1B] mb-4">
+          {title}
+        </h2>
+        <p className="text-[#4F5B57] mb-6">{message}</p>
+        <Link
+          href={actionHref}
+          className="bg-[#0B572B] hover:bg-[#094C25] text-white px-6 py-3 rounded-lg font-medium transition-colors inline-block"
+        >
+          {actionLabel}
+        </Link>
+      </motion.div>
+    </div>
+  );
+
+  // 🧾 Block if onboarding not complete
   if (requireOnboarding && !user.agentData?.agentType) {
     return (
-      <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center"
-        >
-          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <User size={32} className="text-orange-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-[#09391C] mb-4">
-            Complete Your Onboarding
-          </h2>
-          <p className="text-[#5A5D63] mb-6">
-            {customMessage ||
-              "You need to complete your agent onboarding process before accessing this feature."}
-          </p>
-          <Link
-            href="/agent/onboard"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-block"
-          >
-            Complete Onboarding
-          </Link>
-        </motion.div>
-      </div>
+      <Container
+        icon={<User size={32} className="text-[#FF6B00]" />}
+        title="Complete Your Onboarding"
+        message={
+          customMessage ||
+          "You need to complete your agent onboarding process before accessing this feature."
+        }
+        actionLabel="Complete Onboarding"
+        actionHref="/agent-onboard"
+        bgColor="bg-white"
+        iconColor="bg-orange-50"
+      />
     );
   }
 
-  // Check approval requirement
+  // ⏳ Block if approval is pending
   if (requireApproval && user.accountApproved === false) {
     return (
-      <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center"
-        >
-          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Clock size={32} className="text-yellow-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-[#09391C] mb-4">
-            Approval Pending
-          </h2>
-          <p className="text-[#5A5D63] mb-6">
-            {customMessage ||
-              "Your agent application is currently under review. You'll be able to access this feature once approved."}
-          </p>
-          <Link
-            href="/agent/under-review"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-block"
-          >
-            Check Status
-          </Link>
-        </motion.div>
-      </div>
+      <Container
+        icon={<Clock size={32} className="text-[#D97706]" />}
+        title="Approval Pending"
+        message={
+          customMessage ||
+          "Your agent application is currently under review. You'll be able to access this feature once approved."
+        }
+        actionLabel="Check Status"
+        actionHref="/agent-under-review"
+        bgColor="bg-white"
+        iconColor="bg-yellow-50"
+      />
     );
   }
 
-  // All checks passed, render children
+  // ✅ All good
   return <>{children}</>;
 };
 

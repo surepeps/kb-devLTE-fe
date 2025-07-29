@@ -34,13 +34,13 @@ export const useAgentAccess = ({
 
     // Agent hasn't completed onboarding
     if (requireOnboarding && !user.agentData?.agentType) {
-      router.push("/agent/onboard");
+      router.push("/agent-onboard");
       return;
     }
 
     // Agent hasn't been approved yet
     if (requireApproval && user.accountApproved === false) {
-      router.push("/agent/under-review");
+      router.push("/agent-under-review");
       return;
     }
   }, [user, router, requireOnboarding, requireApproval, redirectTo]);

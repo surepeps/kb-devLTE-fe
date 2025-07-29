@@ -10,7 +10,7 @@ import {
   Video as VideoIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { POST_REQUEST_FILE_UPLOAD, POST_REQUEST } from "@/utils/requests";
+import { POST_REQUEST_FILE_UPLOAD, POST_REQUEST, DELETE_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 
@@ -65,14 +65,15 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     );
 
     try {
-      const response = await POST_REQUEST_FILE_UPLOAD(
-        `${URLS.BASE}/upload-single-file`,
+      const response = await POST_REQUEST(
+        `${URLS.BASE + URLS.uploadSingleImg}`,
         formData,
+        undefined,
         Cookies.get("token"),
       );
 
-      if (response?.success && response?.data.url) {
-        return response.data.url;
+      if (response?.success && response?.url) {
+        return response.url;
       }
       throw new Error(response?.message || "Upload failed");
     } catch (error) {
@@ -84,10 +85,9 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
   const removeFile = async (url: string) => {
     try {
-      const response = await POST_REQUEST(
-        `${URLS.BASE}/delete-single-file`,
+      const response = await DELETE_REQUEST(
+        `${URLS.BASE + URLS.deleteUploadedSingleImg}`,
         { url },
-        undefined,
         Cookies.get("token"),
       );
 
@@ -229,7 +229,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     if (!files || files.length === 0) return;
 
     const file = files[0]; // Only allow one video
-    const maxVideoSize = 15 * 1024 * 1024; // 15MB limit
+    const maxVideoSize = 20 * 1024 * 1024; // 20MB limit
 
     if (!file.type.startsWith("video/")) {
       toast.error("Please select a valid video file.");
@@ -237,7 +237,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     }
 
     if (file.size > maxVideoSize) {
-      toast.error("Video file is too large. Maximum size is 15MB.");
+      toast.error("Video file is too large. Maximum size is 20MB.");
       return;
     }
 

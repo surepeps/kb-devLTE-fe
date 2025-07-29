@@ -257,7 +257,7 @@ const AgentData = () => {
                 "token",
                 (response as unknown as { token: string }).token,
               );
-              router.push("/agent/under-review");
+              router.push("/agent-under-review");
               return "Agent data submitted successfully";
             } else {
               const errorMessage =

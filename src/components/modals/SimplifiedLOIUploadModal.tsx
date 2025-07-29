@@ -95,7 +95,7 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
       formData.append('file', file);
       formData.append('for', 'property-file');
 
-      const uploadSingleFileUrl = URLS.BASE + '/upload-single-file';
+      const uploadSingleFileUrl = URLS.BASE + URLS.uploadSingleImg;
       const response = await POST_REQUEST(uploadSingleFileUrl, formData, {
         'Content-Type': 'multipart/form-data',
       });
@@ -118,7 +118,7 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
     if (!uploadedFileUrl) return;
 
     try {
-      await DELETE_REQUEST('/delete-single-file', { fileUrl: uploadedFileUrl });
+      await DELETE_REQUEST('/delete-single-file', { url: uploadedFileUrl });
       setUploadedFileUrl("");
       setSelectedFile(null);
       setUploadError("");

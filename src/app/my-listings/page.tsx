@@ -23,6 +23,7 @@ import {
   StatusUpdatePayload
 } from "@/types/my-listings.types";
 import "@/styles/my-listings.css";
+import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 
 
 
@@ -254,216 +255,222 @@ const MyListingPage = () => {
   const stats = getApprovalStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
-      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 sm:mb-8 gap-4">
-          <div className="flex-1">
-            <nav className="text-sm text-gray-600 mb-4">
-              <button
-                onClick={() => router.push("/")}
-                className="hover:text-[#09391C] transition-colors"
-              >
-                Home
-              </button>
-              <span className="mx-2">›</span>
-              <span className="text-[#09391C] font-medium">My Listings</span>
-            </nav>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
-                My Property Listings
-              </h1>
-            </div>
-            <p className="text-gray-600 text-sm sm:text-base">
-              Manage and view all your property listings
-            </p>
-          </div>
-          
-          <Link
-            href="/post-property"
-            className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors text-sm sm:text-base w-full lg:w-auto shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Add New Property</span>
-            <span className="sm:hidden">Add Property</span>
-          </Link>
-        </div>
-
-        {/* Filter Component */}
-        <div className="mb-8">
-          <CollapsibleMyListingFilters
-            onSearch={handleSearch}
-            loading={searchLoading}
-          />
-        </div>
-
-        {/* Content */}
-        {properties.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Grid className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {hasActiveFilters ? "No properties found" : "No properties yet"}
-              </h3>
-              <p className="text-gray-600 mb-6">
-                {hasActiveFilters
-                  ? "Try adjusting your filters to find properties."
-                  : "Start by adding your first property listing."}
-              </p>
-              {hasActiveFilters ? (
+    <AgentAccessBarrier
+      requireOnboarding={true}
+      requireApproval={true}
+      customMessage="You must complete onboarding and be approved before you view posted properties."
+    >
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 sm:mb-8 gap-4">
+            <div className="flex-1">
+              <nav className="text-sm text-gray-600 mb-4">
                 <button
-                  onClick={handleClearFilters}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  onClick={() => router.push("/")}
+                  className="hover:text-[#09391C] transition-colors"
                 >
-                  Clear Filters
+                  Home
                 </button>
-              ) : (
-                <Link
-                  href="/post-property"
-                  className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-2 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
-                >
-                  <Plus size={16} />
-                  Add Your First Property
-                </Link>
-              )}
+                <span className="mx-2">›</span>
+                <span className="text-[#09391C] font-medium">My Listings</span>
+              </nav>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-[#09391C] font-display">
+                  My Property Listings
+                </h1>
+              </div>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Manage and view all your property listings
+              </p>
             </div>
+            
+            <Link
+              href="/post-property"
+              className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors text-sm sm:text-base w-full lg:w-auto shadow-sm"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="hidden sm:inline">Add New Property</span>
+              <span className="sm:hidden">Add Property</span>
+            </Link>
           </div>
-        ) : (
-          <>
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-1">
-                  {pagination.total}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  Total Properties
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-emerald-600 mb-1">
-                  {stats.approved}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  Approved
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-amber-600 mb-1">
-                  {stats.pending}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  Under Review
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-1">
-                  {stats.rejected}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  Rejected
-                </div>
-              </motion.div>
-            </div>
 
-            {/* Results Info */}
-            {hasActiveFilters && (
-              <div className="mb-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-blue-50 border border-blue-200 rounded-xl gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-                    <span className="text-sm text-blue-700 font-medium">
-                      Showing {properties.length} of {pagination.total} result
-                      {pagination.total !== 1 ? "s" : ""} (Page {pagination.page} of{" "}
-                      {pagination.totalPages})
-                    </span>
-                  </div>
+          {/* Filter Component */}
+          <div className="mb-8">
+            <CollapsibleMyListingFilters
+              onSearch={handleSearch}
+              loading={searchLoading}
+            />
+          </div>
+
+          {/* Content */}
+          {properties.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="max-w-md mx-auto">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Grid className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {hasActiveFilters ? "No properties found" : "No properties yet"}
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  {hasActiveFilters
+                    ? "Try adjusting your filters to find properties."
+                    : "Start by adding your first property listing."}
+                </p>
+                {hasActiveFilters ? (
                   <button
                     onClick={handleClearFilters}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium underline self-start sm:self-auto"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                   >
-                    Clear filters
+                    Clear Filters
                   </button>
-                </div>
-              </div>
-            )}
-
-            {/* Properties Grid */}
-            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr mb-8`}>
-              <AnimatePresence mode="popLayout">
-                {properties.map((property, index) => (
-                  <motion.div
-                    key={property._id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="h-full"
+                ) : (
+                  <Link
+                    href="/post-property"
+                    className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-2 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
                   >
-                    <MyListingPropertyCard
-                      property={property}
-                      onView={() => handleViewProperty(property)}
-                      onEdit={() => handleEditProperty(property)}
-                      onDelete={() => handleDeleteProperty(property)}
-                      onChangeStatus={() => handleChangeStatus(property)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="flex justify-center">
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  onPageChange={handlePageChange}
-                  disabled={searchLoading}
-                />
+                    <Plus size={16} />
+                    Add Your First Property
+                  </Link>
+                )}
               </div>
-            )}
-          </>
-        )}
+            </div>
+          ) : (
+            <>
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-1">
+                    {pagination.total}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Total Properties
+                  </div>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-emerald-600 mb-1">
+                    {stats.approved}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Approved
+                  </div>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-amber-600 mb-1">
+                    {stats.pending}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Under Review
+                  </div>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200"
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-1">
+                    {stats.rejected}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Rejected
+                  </div>
+                </motion.div>
+              </div>
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteModal && selectedProperty && (
-          <DeleteConfirmationModal
-            brief={selectedProperty as any}
-            onClose={() => {
-              setShowDeleteModal(false);
-              setSelectedProperty(null);
-            }}
-            onConfirm={confirmDelete}
-          />
-        )}
+              {/* Results Info */}
+              {hasActiveFilters && (
+                <div className="mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-blue-50 border border-blue-200 rounded-xl gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                      <span className="text-sm text-blue-700 font-medium">
+                        Showing {properties.length} of {pagination.total} result
+                        {pagination.total !== 1 ? "s" : ""} (Page {pagination.page} of{" "}
+                        {pagination.totalPages})
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleClearFilters}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium underline self-start sm:self-auto"
+                    >
+                      Clear filters
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Properties Grid */}
+              <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-fr mb-8`}>
+                <AnimatePresence mode="popLayout">
+                  {properties.map((property, index) => (
+                    <motion.div
+                      key={property._id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="h-full"
+                    >
+                      <MyListingPropertyCard
+                        property={property}
+                        onView={() => handleViewProperty(property)}
+                        onEdit={() => handleEditProperty(property)}
+                        onDelete={() => handleDeleteProperty(property)}
+                        onChangeStatus={() => handleChangeStatus(property)}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              {/* Pagination */}
+              {pagination.totalPages > 1 && (
+                <div className="flex justify-center">
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={handlePageChange}
+                    disabled={searchLoading}
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Delete Confirmation Modal */}
+          {showDeleteModal && selectedProperty && (
+            <DeleteConfirmationModal
+              brief={selectedProperty as any}
+              onClose={() => {
+                setShowDeleteModal(false);
+                setSelectedProperty(null);
+              }}
+              onConfirm={confirmDelete}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </AgentAccessBarrier>
   );
 };
 

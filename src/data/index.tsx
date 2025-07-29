@@ -124,7 +124,7 @@ export const agentnavData: {
   },
   {
     name: 'Agent',
-    url: '/agent/dashboard',
+    url: '/dashboard',
     isClicked: false,
   },
   {

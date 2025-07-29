@@ -79,11 +79,9 @@ export const GET_REQUEST = async <T = any>(
     }
   } catch (error: unknown) {
     const errorMsg = (error as Error).message || "Network error";
-    console.error("GET_REQUEST error:", errorMsg);
 
     // Retry once for network errors (not for AbortError)
     if (retryCount === 0 && (error as Error).name !== "AbortError") {
-      console.log("Retrying request...");
       await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
       return GET_REQUEST(url, token, 1);
     }

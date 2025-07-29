@@ -7,6 +7,9 @@ export const URLS = {
    * Upload Image
    */
   uploadImg: "/upload-image",
+  uploadSingleImg: "/upload-single-file",
+
+  deleteUploadedSingleImg: "/delete-single-file",
 
   /**
    * Upload file

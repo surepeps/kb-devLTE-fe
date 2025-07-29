@@ -2,15 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import { getPostPropertyValidationSchema } from "@/utils/validation/post-property-validation";
-import { useAgentAccess } from "@/hooks/useAgentAccess";
 import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
-import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
+import { POST_REQUEST } from "@/utils/requests";
 import { extractNumericValue } from "@/utils/price-helpers";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
@@ -21,7 +18,6 @@ import Stepper from "@/components/post-property-components/Stepper";
 import Step0PropertyTypeSelection from "@/components/post-property-components/Step0PropertyTypeSelection";
 import Step1BasicDetails from "@/components/post-property-components/Step1BasicDetails";
 import Step3ImageUpload from "@/components/post-property-components/Step3ImageUpload";
-import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
 import CommissionModal from "@/components/post-property-components/CommissionModal";
 import SuccessModal from "@/components/post-property-components/SuccessModal";
@@ -38,9 +34,7 @@ import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 // Import step-specific validation schemas
 import {
-  step1ValidationSchema,
   step2ValidationSchema,
-  step3ValidationSchema,
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
 
