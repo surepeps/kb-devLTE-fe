@@ -285,11 +285,6 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       // Clear failed upload and allow retry
       setVideos([]);
 
-      // Clear the file input to allow re-upload of same file
-      if (videoInputRef.current) {
-        videoInputRef.current.value = '';
-      }
-
       toast.error(`Failed to upload ${file.name}. Please try again.`);
     }
   };
