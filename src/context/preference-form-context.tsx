@@ -700,11 +700,11 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
           }
           break;
 
-        case 2: // Features step (optional)
+        case 3: // Features step (optional)
           // No required validations for features step
           break;
 
-        case 3: // Contact step
+        case 4: // Contact step
           if (formData.preferenceType === "joint-venture") {
             // Check for joint-venture specific contact fields
             const jvContactInfo = formData.contactInfo as any;
