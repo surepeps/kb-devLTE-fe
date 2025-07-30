@@ -1013,7 +1013,15 @@ const PreferenceFormContent: React.FC = () => {
 const NewPreferencePage: React.FC = () => {
   // Ensure page starts at top on load, especially important on mobile
   React.useEffect(() => {
+    // Immediate scroll to top on page load
     window.scrollTo(0, 0);
+
+    // Also scroll to top after a small delay to handle late-loading content
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
