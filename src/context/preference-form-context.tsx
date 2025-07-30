@@ -551,7 +551,119 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
           }
           break;
 
-        case 1: // Budget step
+        case 1: // Property details step
+          // Basic property fields validation
+          if (!formData.propertyDetails?.propertySubtype) {
+            errors.push({
+              field: "propertyDetails.propertySubtype",
+              message: "Property type is required",
+            });
+          }
+
+          if (!formData.propertyDetails?.measurementUnit) {
+            errors.push({
+              field: "propertyDetails.measurementUnit",
+              message: "Measurement unit is required",
+            });
+          }
+
+          if (!formData.propertyDetails?.landSize) {
+            errors.push({
+              field: "propertyDetails.landSize",
+              message: "Land size is required",
+            });
+          }
+
+          // Non-land property validations
+          if (formData.propertyDetails?.propertySubtype && formData.propertyDetails.propertySubtype !== "land") {
+            if (!formData.propertyDetails?.buildingType) {
+              errors.push({
+                field: "propertyDetails.buildingType",
+                message: "Building type is required",
+              });
+            }
+
+            if (!formData.propertyDetails?.propertyCondition) {
+              errors.push({
+                field: "propertyDetails.propertyCondition",
+                message: "Property condition is required",
+              });
+            }
+
+            // Residential specific validations
+            if (formData.propertyDetails.propertySubtype === "residential") {
+              if (!formData.propertyDetails?.bedrooms) {
+                errors.push({
+                  field: "propertyDetails.bedrooms",
+                  message: "Number of bedrooms is required",
+                });
+              }
+            }
+          }
+
+          // Document types for buy/joint-venture
+          if (
+            (formData.preferenceType === "buy" || formData.preferenceType === "joint-venture") &&
+            (!formData.propertyDetails?.documentTypes || formData.propertyDetails.documentTypes.length === 0)
+          ) {
+            errors.push({
+              field: "propertyDetails.documentTypes",
+              message: "At least one document type is required",
+            });
+          }
+
+          // Joint-venture land conditions
+          if (
+            formData.preferenceType === "joint-venture" &&
+            formData.propertyDetails?.propertySubtype === "land" &&
+            (!formData.propertyDetails?.landConditions || formData.propertyDetails.landConditions.length === 0)
+          ) {
+            errors.push({
+              field: "propertyDetails.landConditions",
+              message: "Land conditions are required",
+            });
+          }
+
+          // Shortlet specific validations
+          if (formData.preferenceType === "shortlet") {
+            if (!formData.propertyDetails?.propertyType) {
+              errors.push({
+                field: "propertyDetails.propertyType",
+                message: "Property type is required",
+              });
+            }
+
+            if (!formData.propertyDetails?.travelType) {
+              errors.push({
+                field: "propertyDetails.travelType",
+                message: "Travel type is required",
+              });
+            }
+
+            if (!formData.propertyDetails?.bedrooms) {
+              errors.push({
+                field: "propertyDetails.bedrooms",
+                message: "Number of bedrooms is required",
+              });
+            }
+
+            if (!formData.propertyDetails?.bathrooms) {
+              errors.push({
+                field: "propertyDetails.bathrooms",
+                message: "Number of bathrooms is required",
+              });
+            }
+
+            if (!formData.propertyDetails?.maxGuests) {
+              errors.push({
+                field: "propertyDetails.maxGuests",
+                message: "Maximum guests is required",
+              });
+            }
+          }
+          break;
+
+        case 2: // Budget step
           if (!formData.budget?.minPrice) {
             errors.push({
               field: "budget.minPrice",
