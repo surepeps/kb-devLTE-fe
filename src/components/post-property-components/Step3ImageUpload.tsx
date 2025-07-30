@@ -351,6 +351,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
       {/* Hidden file inputs */}
       <input
+        key={fileInputKey}
         ref={fileInputRef}
         type="file"
         multiple
@@ -359,6 +360,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         className="hidden"
       />
       <input
+        key={videoInputKey}
         ref={videoInputRef}
         type="file"
         accept="video/*"
