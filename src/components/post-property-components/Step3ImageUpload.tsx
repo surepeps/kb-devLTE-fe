@@ -243,6 +243,9 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   const handleVideoSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
+    // Force re-render of video input to allow re-selection of same files
+    setVideoInputKey(prev => prev + 1);
+
     const file = files[0]; // Only allow one video
     const maxVideoSize = 50 * 1024 * 1024; // Updated to 50MB limit as per guidelines
 
