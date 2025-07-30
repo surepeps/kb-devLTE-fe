@@ -47,6 +47,8 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   } = usePostPropertyContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const [fileInputKey, setFileInputKey] = React.useState(0);
+  const [videoInputKey, setVideoInputKey] = React.useState(0);
 
   // Get videos from propertyData or initialize empty array
   const videos: PropertyVideo[] = propertyData.videos || [];
