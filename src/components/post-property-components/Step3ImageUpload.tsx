@@ -108,10 +108,8 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   const handleFileSelect = async (files: FileList | null) => {
     if (!files) return;
 
-    // Clear the file input immediately to allow re-upload of same files
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    // Force re-render of file input to allow re-selection of same files
+    setFileInputKey(prev => prev + 1);
 
     const maxImages = 12;
     const currentValidImages = images.filter(
