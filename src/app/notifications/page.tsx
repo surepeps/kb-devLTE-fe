@@ -6,8 +6,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
-  Eye,
-  Trash2,
   Clock,
   CheckCircle,
   X,
@@ -24,7 +22,7 @@ import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
 import Loading from "@/components/loading-component/loading";
 import NotificationCardSkeleton from "@/components/loading-component/NotificationCardSkeleton";
-import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
+import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 interface Notification {
   _id: string;
@@ -272,10 +270,12 @@ const NotificationsPage: React.FC = () => {
   }
 
   return (
-    <AgentAccessBarrier
-      requireOnboarding={true}
-      requireApproval={true}
-      customMessage="You must complete onboarding and be approved before you view notifications."
+    <CombinedAuthGuard
+      requireAuth={true} // User must be logged in
+      allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
+      requireAgentOnboarding={true} // If an agent, require onboarding
+      requireAgentApproval={true} // If an agent, require approval
+      agentCustomMessage="You must complete onboarding and be approved before you view notifications."
     >
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">
@@ -462,7 +462,7 @@ const NotificationsPage: React.FC = () => {
           )}
         </div>
       </div>
-    </AgentAccessBarrier>
+    </CombinedAuthGuard>
   );
 };
 

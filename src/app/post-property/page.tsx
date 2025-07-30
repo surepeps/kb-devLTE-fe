@@ -6,7 +6,6 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
-import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST } from "@/utils/requests";
 import { extractNumericValue } from "@/utils/price-helpers";
 import { URLS } from "@/utils/URLS";
@@ -37,6 +36,7 @@ import {
   step2ValidationSchema,
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
+import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 // Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
 const getValidationSchema = (currentStep: number, propertyData: Record<string, unknown>) => {
@@ -563,10 +563,12 @@ const PostProperty = () => {
   }
 
   return (
-    <AgentAccessBarrier
-      requireOnboarding={true}
-      requireApproval={true}
-      customMessage="You must complete onboarding and be approved before you can post properties."
+    <CombinedAuthGuard
+      requireAuth={true} // User must be logged in
+      allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
+      requireAgentOnboarding={true} // If an agent, require onboarding
+      requireAgentApproval={true} // If an agent, require approval
+      agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
@@ -822,7 +824,7 @@ const PostProperty = () => {
           />
         </div>
       </div>
-    </AgentAccessBarrier>
+    </CombinedAuthGuard>
   );
 };
 

@@ -2,15 +2,11 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useUserContext } from "@/context/user-context";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import type { PropertyData } from "@/context/post-property-context";
-import { getPostPropertyValidationSchema } from "@/utils/validation/post-property-validation";
-import { useAgentAccess } from "@/hooks/useAgentAccess";
-import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
 import { POST_REQUEST, GET_REQUEST } from "@/utils/requests";
 import { extractNumericValue } from "@/utils/price-helpers";
 import { URLS } from "@/utils/URLS";
@@ -22,7 +18,6 @@ import Stepper from "@/components/post-property-components/Stepper";
 import Step0PropertyTypeSelection from "@/components/post-property-components/Step0PropertyTypeSelection";
 import Step1BasicDetails from "@/components/post-property-components/Step1BasicDetails";
 import Step3ImageUpload from "@/components/post-property-components/Step3ImageUpload";
-import PropertyPreview from "@/components/post-property-components/PropertyPreview";
 import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
 import CommissionModal from "@/components/post-property-components/CommissionModal";
 import PreferenceSuccessModal from "@/components/post-property-components/PreferenceSuccessModal";
@@ -39,11 +34,10 @@ import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 // Import step-specific validation schemas
 import {
-  step1ValidationSchema,
   step2ValidationSchema,
-  step3ValidationSchema,
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
+import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 // Preference interfaces
 interface Buyer {
@@ -852,10 +846,12 @@ const PostPropertyByPreference = () => {
   }
 
   return (
-    <AgentAccessBarrier
-      requireOnboarding={true}
-      requireApproval={true}
-      customMessage="You must complete onboarding and be approved before you can post properties."
+    <CombinedAuthGuard
+      requireAuth={true} // User must be logged in
+      allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
+      requireAgentOnboarding={true} // If an agent, require onboarding
+      requireAgentApproval={true} // If an agent, require approval
+      agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
@@ -1055,7 +1051,7 @@ const PostPropertyByPreference = () => {
           />
         </div>
       </div>
-    </AgentAccessBarrier>
+    </CombinedAuthGuard>
   );
 };
 
