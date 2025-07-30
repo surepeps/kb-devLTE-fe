@@ -8,9 +8,10 @@ import {
   X as XIcon,
   Image as ImageIcon,
   Video as VideoIcon,
+  Upload,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { POST_REQUEST_FILE_UPLOAD, POST_REQUEST, DELETE_REQUEST } from "@/utils/requests";
+import { POST_REQUEST, DELETE_REQUEST, POST_REQUEST_FILE_UPLOAD } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 
@@ -65,17 +66,18 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     );
 
     try {
-      const response = await POST_REQUEST(
+      const response = await POST_REQUEST_FILE_UPLOAD(
         `${URLS.BASE + URLS.uploadSingleImg}`,
         formData,
-        undefined,
         Cookies.get("token"),
       );
 
-      if (response?.success && response?.url) {
-        return response.url;
+      if (response?.success) {
+        return response.data.url;
       }
-      throw new Error(response?.message || "Upload failed");
+
+      toast.error(response?.message || "Upload failed")
+
     } catch (error) {
       console.error(`Error uploading ${type}:`, error);
       toast.error(`Failed to upload ${type}: ${file.name}`);
@@ -92,7 +94,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       );
 
       if (!response?.success) {
-        throw new Error(response?.message || "Delete failed");
+        toast.error(response?.message || "Delete failed");
       }
     } catch (error) {
       console.error("Error removing file:", error);
@@ -183,7 +185,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       if (imageData.file) {
         const url = await uploadFile(imageData.file, "image");
         if (url) {
-                    // Update the specific image with the URL and keep the current images state
+          // Update the specific image with the URL and keep the current images state
           const updatedImages = images.map((img: PropertyImage) =>
             img.id === imageData.id
               ? { ...img, url, isUploading: false }

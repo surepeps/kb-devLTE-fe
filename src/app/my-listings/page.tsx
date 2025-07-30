@@ -8,7 +8,7 @@ import { GET_REQUEST, PUT_REQUEST, DELETE_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading-component/loading";
 import toast from "react-hot-toast";
-import { Plus, Grid, List } from "lucide-react";
+import { Plus, Grid } from "lucide-react";
 import Link from "next/link";
 import CollapsibleMyListingFilters from "@/components/mylisting/filters/CollapsibleMyListingFilters";
 import MyListingPropertyCard from "@/components/mylisting/MyListingPropertyCard";
@@ -19,11 +19,10 @@ import {
   Property,
   PaginationData,
   SearchFilters,
-  PropertiesApiResponse,
   StatusUpdatePayload
 } from "@/types/my-listings.types";
 import "@/styles/my-listings.css";
-import AgentAccessBarrier from "@/components/general-components/AgentAccessBarrier";
+import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 
 
@@ -255,10 +254,12 @@ const MyListingPage = () => {
   const stats = getApprovalStats();
 
   return (
-    <AgentAccessBarrier
-      requireOnboarding={true}
-      requireApproval={true}
-      customMessage="You must complete onboarding and be approved before you view posted properties."
+    <CombinedAuthGuard
+      requireAuth={true} // User must be logged in
+      allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
+      requireAgentOnboarding={true} // If an agent, require onboarding
+      requireAgentApproval={true} // If an agent, require approval
+      agentCustomMessage="You must complete onboarding and be approved before you view posted properties."
     >
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
@@ -470,7 +471,7 @@ const MyListingPage = () => {
           )}
         </div>
       </div>
-    </AgentAccessBarrier>
+    </CombinedAuthGuard>
   );
 };
 

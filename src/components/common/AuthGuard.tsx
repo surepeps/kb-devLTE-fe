@@ -31,7 +31,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       </div>
     );
   }
-
+ 
   // 🔒 User not logged in but required
   if (requireAuth && !user) {
     if (typeof window !== "undefined") {
