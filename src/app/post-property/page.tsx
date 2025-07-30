@@ -395,8 +395,16 @@ const PostProperty = () => {
 
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+      // Scroll to top when moving to next step
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
     } else {
       setShowPropertySummary(true);
+      // Scroll to top when showing property summary
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
     }
   };
 
@@ -409,6 +417,11 @@ const PostProperty = () => {
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
+
+    // Scroll to top when navigating backwards
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 50);
   };
 
   const handleCommissionAccept = () => {
