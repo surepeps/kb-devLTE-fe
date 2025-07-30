@@ -76,11 +76,12 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         return response.data.url;
       }
 
-      toast.error(response?.message || "Upload failed")
+      // Log error details for debugging
+      console.error(`Upload failed for ${file.name}:`, response);
+      return null;
 
     } catch (error) {
       console.error(`Error uploading ${type}:`, error);
-      toast.error(`Failed to upload ${type}: ${file.name}`);
       return null;
     }
   };
@@ -104,6 +105,11 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
   const handleFileSelect = async (files: FileList | null) => {
     if (!files) return;
+
+    // Clear the file input immediately to allow re-upload of same files
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
 
     const maxImages = 12;
     const currentValidImages = images.filter(
@@ -180,26 +186,38 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
     setImages(updatedImages);
 
-    // Upload images
+    // Upload images with improved state management
     const uploadPromises = newImages.map(async (imageData, index) => {
       if (imageData.file) {
         const url = await uploadFile(imageData.file, "image");
         if (url) {
-          // Update the specific image with the URL and keep the current images state
-          const updatedImages = images.map((img: PropertyImage) =>
-            img.id === imageData.id
-              ? { ...img, url, isUploading: false }
-              : img,
+          // Update the specific image with the URL immediately
+          setImages(prevImages =>
+            prevImages.map((img: PropertyImage) =>
+              img.id === imageData.id
+                ? { ...img, url, isUploading: false }
+                : img,
+            )
           );
-          setImages(updatedImages);
+
+          // Show success toast for immediate feedback
+          toast.success(`Image uploaded successfully!`);
         } else {
-                    // Remove failed upload
-          const updatedImages = images.map((img: PropertyImage) =>
-            img.id === imageData.id
-              ? { file: null, preview: null, id: generateImageId() }
-              : img,
+          // Clear failed upload immediately and show error
+          setImages(prevImages =>
+            prevImages.map((img: PropertyImage) =>
+              img.id === imageData.id
+                ? { file: null, preview: null, id: generateImageId(), isUploading: false }
+                : img,
+            )
           );
-          setImages(updatedImages);
+
+          // Clear the file input to allow re-upload of same file
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+
+          toast.error(`Failed to upload ${imageData.file.name}. Please try again.`);
         }
       }
     });
@@ -231,7 +249,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     if (!files || files.length === 0) return;
 
     const file = files[0]; // Only allow one video
-    const maxVideoSize = 20 * 1024 * 1024; // 20MB limit
+    const maxVideoSize = 50 * 1024 * 1024; // Updated to 50MB limit as per guidelines
 
     if (!file.type.startsWith("video/")) {
       toast.error("Please select a valid video file.");
@@ -239,7 +257,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     }
 
     if (file.size > maxVideoSize) {
-      toast.error("Video file is too large. Maximum size is 20MB.");
+      toast.error("Video file is too large. Maximum size is 50MB.");
       return;
     }
 
@@ -256,15 +274,25 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       isUploading: true,
     };
 
+    // Immediately show the video with upload state
     setVideos([videoData]);
 
     // Upload video
     const url = await uploadFile(file, "video");
     if (url) {
+      // Update with successful upload
       setVideos([{ ...videoData, url, isUploading: false }]);
       toast.success("Video uploaded successfully!");
     } else {
+      // Clear failed upload and allow retry
       setVideos([]);
+
+      // Clear the file input to allow re-upload of same file
+      if (videoInputRef.current) {
+        videoInputRef.current.value = '';
+      }
+
+      toast.error(`Failed to upload ${file.name}. Please try again.`);
     }
   };
 
