@@ -212,11 +212,6 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
             )
           );
 
-          // Clear the file input to allow re-upload of same file
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-
           toast.error(`Failed to upload ${imageData.file.name}. Please try again.`);
         }
       }
