@@ -204,7 +204,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
           toast.success(`Image uploaded successfully!`);
         } else {
           // Clear failed upload immediately and show error
-          setImages(prevImages =>
+          setImages((prevImages: PropertyImage[]) =>
             prevImages.map((img: PropertyImage) =>
               img.id === imageData.id
                 ? { file: null, preview: null, id: generateImageId(), isUploading: false }
