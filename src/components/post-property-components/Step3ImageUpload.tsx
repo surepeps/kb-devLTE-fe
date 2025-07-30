@@ -47,6 +47,8 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   } = usePostPropertyContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const [fileInputKey, setFileInputKey] = React.useState(0);
+  const [videoInputKey, setVideoInputKey] = React.useState(0);
 
   // Get videos from propertyData or initialize empty array
   const videos: PropertyVideo[] = propertyData.videos || [];
@@ -106,10 +108,8 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   const handleFileSelect = async (files: FileList | null) => {
     if (!files) return;
 
-    // Clear the file input immediately to allow re-upload of same files
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    // Force re-render of file input to allow re-selection of same files
+    setFileInputKey(prev => prev + 1);
 
     const maxImages = 12;
     const currentValidImages = images.filter(
@@ -212,11 +212,6 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
             )
           );
 
-          // Clear the file input to allow re-upload of same file
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-
           toast.error(`Failed to upload ${imageData.file.name}. Please try again.`);
         }
       }
@@ -247,6 +242,9 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
   const handleVideoSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
+
+    // Force re-render of video input to allow re-selection of same files
+    setVideoInputKey(prev => prev + 1);
 
     const file = files[0]; // Only allow one video
     const maxVideoSize = 50 * 1024 * 1024; // Updated to 50MB limit as per guidelines
@@ -286,11 +284,6 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     } else {
       // Clear failed upload and allow retry
       setVideos([]);
-
-      // Clear the file input to allow re-upload of same file
-      if (videoInputRef.current) {
-        videoInputRef.current.value = '';
-      }
 
       toast.error(`Failed to upload ${file.name}. Please try again.`);
     }
@@ -358,6 +351,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
       {/* Hidden file inputs */}
       <input
+        key={fileInputKey}
         ref={fileInputRef}
         type="file"
         multiple
@@ -366,6 +360,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         className="hidden"
       />
       <input
+        key={videoInputKey}
         ref={videoInputRef}
         type="file"
         accept="video/*"
