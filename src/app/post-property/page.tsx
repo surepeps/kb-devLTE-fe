@@ -251,6 +251,19 @@ const PostProperty = () => {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  // Scroll to top on page load
+  useEffect(() => {
+    // Immediate scroll to top
+    window.scrollTo(0, 0);
+
+    // Also scroll smoothly after a delay for late-loading content
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (!user) {
       router.push("/auth/login");
