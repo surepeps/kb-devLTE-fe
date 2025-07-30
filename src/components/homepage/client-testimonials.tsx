@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { URLS } from "@/utils/URLS";
 import { waitForInitialization } from "@/utils/appInit";
-
+import { GET_REQUEST } from "@/utils/requests";
+ 
 interface Testimonial {
   _id: string;
   fullName: string;
@@ -28,10 +29,9 @@ const ClientTestimonials = () => {
     const initAndFetch = async () => {
       try {
         await waitForInitialization();
-        fetchTestimonials();
+        await fetchTestimonials();
       } catch (error) {
         console.error("Failed to initialize testimonials:", error);
-        setFallbackTestimonials();
         setLoading(false);
       }
     };
@@ -43,46 +43,23 @@ const ClientTestimonials = () => {
     try {
       setLoading(true);
 
-      // Check if API URL is available
-      if (!URLS.BASE || URLS.BASE.includes("undefined")) {
-        console.warn("API URL not configured, using fallback testimonials");
-        setFallbackTestimonials();
-        return;
-      }
-
       // Add timeout to prevent hanging requests
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(`/api/testimonials`, {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.data && Array.isArray(data.data)) {
-        const approvedTestimonials = data.data.filter(
-          (t: Testimonial) => t.status === "approved",
-        );
-        setTestimonials(approvedTestimonials);
-      } else {
+      const testyURL = URLS.BASE + URLS.testimonialsURL;
+      const response = await GET_REQUEST(testyURL);
+      if (response.success) {
+        setTestimonials(response.data);
+      }else{
         console.warn(
           "Invalid API response format, using fallback testimonials",
         );
-        setFallbackTestimonials();
       }
+     clearTimeout(timeoutId);
+
     } catch (error) {
       console.error("Error fetching testimonials:", error);
-
       // Retry once if it's a network error and we haven't retried yet
       if (retryCount === 0 && (error as Error).name !== "AbortError") {
         console.log("Retrying testimonials fetch...");
@@ -90,38 +67,9 @@ const ClientTestimonials = () => {
         return;
       }
 
-      // Always use fallback data on error
-      setFallbackTestimonials();
     } finally {
       setLoading(false);
     }
-  };
-
-  const setFallbackTestimonials = () => {
-    setTestimonials([
-      {
-        _id: "1",
-        fullName: "Michael .A",
-        occupation: "Business Owner",
-        rating: 5,
-        message:
-          "Khabi-teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
-        status: "approved",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        _id: "2",
-        fullName: "Tunde Ajayi",
-        occupation: "Software Engineer",
-        rating: 5,
-        message:
-          "Khabi-Teq made finding my dream home so easy! The process was seamless, and the team was incredibly supportive every step of the way",
-        status: "approved",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ]);
   };
 
   const scrollToIndex = (index: number) => {

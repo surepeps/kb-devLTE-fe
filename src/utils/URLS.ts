@@ -35,6 +35,11 @@ export const URLS = {
   requestInspection: "/inspections/request-inspection",
 
   /**
+   * Testimonials Url
+   */
+  testimonialsURL: "/testimonials",
+
+  /**
    * Secure Negotition Base Url
    */
   inspectionBaseUrl: "/inspections",
