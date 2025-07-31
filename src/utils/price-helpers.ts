@@ -28,26 +28,14 @@ export const formatPriceForDisplay = (value: string | number): string => {
  * @returns Clean numeric string without symbols or commas
  */
 export const extractNumericValue = (input: unknown): number => {
-  if (typeof input !== "string") return 0;
+  if (typeof input === "number") return input;
 
-  const sanitized = input.toLowerCase().replace(/,/g, "").replace(/₦|n/g, "").trim();
-  const match = sanitized.match(/^(\d+(\.\d+)?)([kmb])?$/i);
-
-  if (!match) return 0;
-
-  const num = parseFloat(match[1]);
-  const suffix = match[3]?.toLowerCase();
-
-  switch (suffix) {
-    case "k":
-      return num * 1_000;
-    case "m":
-      return num * 1_000_000;
-    case "b":
-      return num * 1_000_000_000;
-    default:
-      return num;
+  if (typeof input === "string") {
+    const numeric = parseFloat(input.replace(/[^0-9.]/g, ""));
+    return isNaN(numeric) ? 0 : numeric;
   }
+
+  return 0;
 };
 
 
