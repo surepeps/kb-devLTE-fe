@@ -272,16 +272,27 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     setVideos([videoData]);
 
     // Upload video
-    const url = await uploadFile(file, "video");
-    if (url) {
-      // Update with successful upload
-      setVideos([{ ...videoData, url, isUploading: false }]);
-      toast.success("Video uploaded successfully!");
-    } else {
-      // Clear failed upload and allow retry
+    try {
+      const url = await uploadFile(file, "video");
+      if (url) {
+        // Update with successful upload - keep preview for immediate display
+        const uploadedVideoData = {
+          ...videoData,
+          url,
+          isUploading: false
+        };
+        setVideos([uploadedVideoData]);
+        toast.success("Video uploaded successfully!");
+        console.log('Video uploaded successfully:', url);
+      } else {
+        // Clear failed upload and allow retry
+        setVideos([]);
+        toast.error(`Failed to upload ${file.name}. Please try again.`);
+      }
+    } catch (error) {
+      console.error('Video upload error:', error);
       setVideos([]);
-
-      toast.error(`Failed to upload ${file.name}. Please try again.`);
+      toast.error(`Error uploading ${file.name}. Please check your connection and try again.`);
     }
   };
 
