@@ -272,16 +272,27 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     setVideos([videoData]);
 
     // Upload video
-    const url = await uploadFile(file, "video");
-    if (url) {
-      // Update with successful upload
-      setVideos([{ ...videoData, url, isUploading: false }]);
-      toast.success("Video uploaded successfully!");
-    } else {
-      // Clear failed upload and allow retry
+    try {
+      const url = await uploadFile(file, "video");
+      if (url) {
+        // Update with successful upload - keep preview for immediate display
+        const uploadedVideoData = {
+          ...videoData,
+          url,
+          isUploading: false
+        };
+        setVideos([uploadedVideoData]);
+        toast.success("Video uploaded successfully!");
+        console.log('Video uploaded successfully:', url);
+      } else {
+        // Clear failed upload and allow retry
+        setVideos([]);
+        toast.error(`Failed to upload ${file.name}. Please try again.`);
+      }
+    } catch (error) {
+      console.error('Video upload error:', error);
       setVideos([]);
-
-      toast.error(`Failed to upload ${file.name}. Please try again.`);
+      toast.error(`Error uploading ${file.name}. Please check your connection and try again.`);
     }
   };
 
@@ -380,6 +391,19 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
                   src={image.url || image.preview || ""}
                   alt={`Property ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg"
+                  onLoad={() => {
+                    // Ensure image renders properly after upload
+                    if (image.url && !image.preview) {
+                      console.log('Image uploaded and displayed successfully:', image.url);
+                    }
+                  }}
+                  onError={(e) => {
+                    console.error('Error loading image:', image.url || image.preview);
+                    // Fallback to preview if URL fails
+                    if (image.url && image.preview) {
+                      (e.target as HTMLImageElement).src = image.preview;
+                    }
+                  }}
                 />
                 {image.isUploading && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
@@ -437,6 +461,16 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
                   className="w-full h-48 object-cover"
                   controls
                   preload="metadata"
+                  onLoadedData={() => {
+                    console.log('Video loaded successfully:', videos[0].url || videos[0].preview);
+                  }}
+                  onError={(e) => {
+                    console.error('Error loading video:', videos[0].url || videos[0].preview);
+                    if (videos[0].url && videos[0].preview) {
+                      // Fallback to preview if URL fails
+                      (e.target as HTMLVideoElement).src = videos[0].preview || "";
+                    }
+                  }}
                 />
 
                 {videos[0].isUploading && (
