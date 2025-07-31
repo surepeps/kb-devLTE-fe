@@ -66,6 +66,8 @@ const DocumentVerificationPage: React.FC = () => {
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails>({
     amountPaid: 0,
     receiptFile: null,
+    receiptUrl: '',
+    receiptUploadStatus: 'idle',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
