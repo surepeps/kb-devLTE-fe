@@ -48,7 +48,7 @@
         },
         "paymentInfo": {
           "amountPaid": 20000,
-          "receipt": "File object (payment receipt)"
+          "receipt": "https://storage.khabiteq.com/uploads/documents/2024/cert-occ-1234567890.pdf"
         },
         "documentsMetadata": [
           {
@@ -61,10 +61,6 @@
             "documentNumber": "SP/LAG/2024/005678",
             "uploadedUrl": "https://storage.khabiteq.com/uploads/documents/2024/survey-plan-0987654321.pdf"
           }
-        ],
-        "documents": [
-          "File object 1 (original document file)",
-          "File object 2 (original document file)"
         ]
       }
     },
