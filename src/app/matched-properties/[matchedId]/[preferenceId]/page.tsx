@@ -10,7 +10,7 @@ import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
-import EnhancedGlobalPropertyCard from "@/components/common/property-cards/EnhancedGlobalPropertyCard";
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 
 interface MatchDetails {
   _id: string;
