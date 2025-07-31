@@ -461,6 +461,16 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
                   className="w-full h-48 object-cover"
                   controls
                   preload="metadata"
+                  onLoadedData={() => {
+                    console.log('Video loaded successfully:', videos[0].url || videos[0].preview);
+                  }}
+                  onError={(e) => {
+                    console.error('Error loading video:', videos[0].url || videos[0].preview);
+                    if (videos[0].url && videos[0].preview) {
+                      // Fallback to preview if URL fails
+                      (e.target as HTMLVideoElement).src = videos[0].preview || "";
+                    }
+                  }}
                 />
 
                 {videos[0].isUploading && (
