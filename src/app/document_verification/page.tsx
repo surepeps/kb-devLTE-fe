@@ -72,6 +72,7 @@ const DocumentVerificationPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const fileInputRefs = useRef<{ [key in DocumentType]?: HTMLInputElement | null }>({});
+  const receiptInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
   const {
