@@ -441,7 +441,7 @@ const DocumentVerificationPage: React.FC = () => {
                 style={{ display: 'none' }}
                 ref={el => { fileInputRefs.current[document] = el; }}
                 onChange={e => handleFileChange(document, e.target.files)}
-                accept="application/pdf,image/*"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               />
               <div
                 className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
