@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar } from "lucide-react";
+import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 
