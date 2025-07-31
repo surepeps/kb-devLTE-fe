@@ -38,6 +38,8 @@ type ContactInfo = {
 type PaymentDetails = {
   amountPaid: number;
   receiptFile: File | null;
+  receiptUrl: string;
+  receiptUploadStatus: 'uploading' | 'success' | 'error' | 'idle';
 };
 
 const initialDocumentNumbers: DocumentNumbers = {
