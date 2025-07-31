@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
 
 interface PropertyImage {
   file: File | null;
@@ -113,7 +113,7 @@ interface PostPropertyContextType {
   currentStep: number;
   setCurrentStep: (step: number) => void;
   images: PropertyImage[];
-  setImages: (images: PropertyImage[]) => void;
+  setImages: Dispatch<SetStateAction<PropertyImage[]>>;
   propertyData: PropertyData;
   setPropertyData: (data: PropertyData) => void;
   updatePropertyData: (
