@@ -369,181 +369,260 @@ const DocumentVerificationPage: React.FC = () => {
   );
 
   const renderStep1 = () => (
-    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 1: Select & Upload Documents</h2>
-      
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Document Type
+    <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-3">Step 1: Select & Upload Documents</h2>
+        <p className="text-gray-600">Choose up to 2 documents for verification and upload them securely</p>
+      </div>
+
+      {/* Document Selection Grid */}
+      <div className="mb-8">
+        <label className="block text-lg font-semibold text-gray-800 mb-6 text-center">
+          Available Document Types
         </label>
-        
-        {/* Selected Documents Display */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {selectedDocuments.map((document) => (
-            <div
-              key={document}
-              className="flex items-center bg-gray-100 rounded-md px-3 py-2 text-sm"
-            >
-              <span className="mr-2">{getDocumentDisplayName(document)}</span>
-              <button
-                onClick={() => handleDocumentToggle(document)}
-                className="text-gray-500 hover:text-gray-700"
-                title={`Remove ${getDocumentDisplayName(document)}`}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {documentOptions.map((document) => {
+            const isSelected = selectedDocuments.includes(document);
+            const isUploaded = uploadedFiles[document]?.uploadStatus === 'success';
+            const isUploading = uploadedFiles[document]?.uploadStatus === 'uploading';
+            const hasError = uploadedFiles[document]?.uploadStatus === 'error';
+
+            return (
+              <div
+                key={document}
+                className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  isSelected
+                    ? isUploaded
+                      ? 'border-green-500 bg-green-50'
+                      : hasError
+                      ? 'border-red-500 bg-red-50'
+                      : isUploading
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-green-300 bg-green-25'
+                    : selectedDocuments.length >= 2
+                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                    : 'border-gray-300 bg-white hover:border-green-300 hover:bg-green-25'
+                }`}
+                onClick={() => {
+                  if (selectedDocuments.length < 2 || isSelected) {
+                    handleDocumentToggle(document);
+                  }
+                }}
               >
-                <X size={16} />
-              </button>
-            </div>
-          ))}
+                {/* Status Indicator */}
+                <div className="absolute top-3 right-3">
+                  {isSelected && (
+                    <>
+                      {isUploaded && <Check className="w-5 h-5 text-green-600" />}
+                      {isUploading && <Upload className="w-5 h-5 text-blue-600 animate-pulse" />}
+                      {hasError && <X className="w-5 h-5 text-red-600" />}
+                      {!uploadedFiles[document] && <div className="w-5 h-5 rounded-full border-2 border-green-600"></div>}
+                    </>
+                  )}
+                </div>
+
+                <div className="text-center">
+                  <FileIcon className={`w-8 h-8 mx-auto mb-3 ${
+                    isSelected ? 'text-green-600' : 'text-gray-400'
+                  }`} />
+                  <h3 className={`font-medium text-sm ${
+                    isSelected ? 'text-green-800' : 'text-gray-700'
+                  }`}>
+                    {getDocumentDisplayName(document)}
+                  </h3>
+                  {isSelected && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {isUploaded ? 'Uploaded' : isUploading ? 'Uploading...' : hasError ? 'Failed' : 'Selected'}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Document Selection Dropdown */}
-        {selectedDocuments.length < 2 && (
-          <div className="relative">
-            <select
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              onChange={(e) => {
-                const value = e.target.value as DocumentType;
-                if (value && !selectedDocuments.includes(value)) {
-                  handleDocumentToggle(value);
-                }
-                e.target.value = '';
-              }}
-              value=""
-            >
-              <option value="">Select all the documents you wish to verify</option>
-              {documentOptions
-                .filter(doc => !selectedDocuments.includes(doc))
-                .map((document) => (
-                  <option key={document} value={document}>
-                    {getDocumentDisplayName(document)}
-                  </option>
-                ))}
-            </select>
-          </div>
-        )}
+        {/* Selection Info */}
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Selected: {selectedDocuments.length}/2 documents
+            {selectedDocuments.length >= 2 && <span className="text-orange-600 ml-2">Maximum reached</span>}
+          </p>
+        </div>
       </div>
 
-      {/* Upload Documents Section */}
-      <div className="mb-6">
-        <h3 className="text-lg font-medium text-gray-800 mb-4">
-          Upload your document or enter the Document number
-        </h3>
+      {/* Upload and Details Section */}
+      {selectedDocuments.length > 0 && (
+        <div className="space-y-6">
+          <div className="border-t pt-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+              Upload Documents & Enter Details
+            </h3>
 
-        {selectedDocuments.map((document, index) => (
-          <div key={document} className="mb-6 p-4 border border-gray-200 rounded-lg">
-            {/* Document Upload */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload your {getDocumentDisplayName(document)}
-              </label>
-              <input
-                type="file"
-                style={{ display: 'none' }}
-                ref={el => { fileInputRefs.current[document] = el; }}
-                onChange={e => handleFileChange(document, e.target.files)}
-                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              />
-              <div
-                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-                  uploadedFiles[document]?.uploadStatus === 'success' 
-                    ? 'border-green-300 bg-green-50' 
-                    : uploadedFiles[document]?.uploadStatus === 'uploading'
-                    ? 'border-blue-300 bg-blue-50'
-                    : uploadedFiles[document]?.uploadStatus === 'error'
-                    ? 'border-red-300 bg-red-50'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-                onClick={() => handleUploadClick(document)}
-              >
-                {uploadedFiles[document]?.uploadStatus === 'uploading' ? (
-                  <>
-                    <Upload className="mx-auto h-8 w-8 text-blue-500 mb-2 animate-pulse" />
-                    <span className="text-blue-500 font-medium">Uploading...</span>
-                  </>
-                ) : uploadedFiles[document]?.uploadStatus === 'success' ? (
-                  <>
-                    <Check className="mx-auto h-8 w-8 text-green-500 mb-2" />
-                    <span className="text-green-500 font-medium">Upload Successful</span>
-                  </>
-                ) : uploadedFiles[document]?.uploadStatus === 'error' ? (
-                  <>
-                    <X className="mx-auto h-8 w-8 text-red-500 mb-2" />
-                    <span className="text-red-500 font-medium">Upload Failed - Click to retry</span>
-                  </>
-                ) : (
-                  <>
-                    <Paperclip className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                    <span className="text-green-500 font-medium">
-                      Attach document {selectedDocuments.length > 1 ? index + 1 : ''}
-                    </span>
-                  </>
-                )}
-              </div>
-              
-              {/* File Actions */}
-              {uploadedFiles[document] && uploadedFiles[document]?.uploadStatus === 'success' && (
-                <div className="mt-4 flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600 truncate">
-                    {uploadedFiles[document]?.file.name}
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handlePreviewFile(uploadedFiles[document]!.file)}
-                      className="p-2 text-blue-500 hover:bg-blue-100 rounded-md"
-                      title="Preview file"
-                    >
-                      <Eye size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDownloadFile(uploadedFiles[document]!.file)}
-                      className="p-2 text-green-500 hover:bg-green-100 rounded-md"
-                      title="Download file"
-                    >
-                      <Download size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleRemoveFile(document)}
-                      className="p-2 text-red-500 hover:bg-red-100 rounded-md"
-                      title="Remove file"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+            {selectedDocuments.map((document, index) => (
+              <div key={document} className="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-medium text-gray-800">
+                    {index + 1}. {getDocumentDisplayName(document)}
+                  </h4>
+                  <button
+                    onClick={() => handleDocumentToggle(document)}
+                    className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                    title={`Remove ${getDocumentDisplayName(document)}`}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* File Upload Section */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      📄 Upload Document File
+                    </label>
+                    <input
+                      type="file"
+                      style={{ display: 'none' }}
+                      ref={el => { fileInputRefs.current[document] = el; }}
+                      onChange={e => handleFileChange(document, e.target.files)}
+                      accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    />
+
+                    {!uploadedFiles[document] ? (
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-green-400 cursor-pointer transition-colors"
+                        onClick={() => handleUploadClick(document)}
+                      >
+                        <Paperclip className="mx-auto h-10 w-10 text-gray-400 mb-3" />
+                        <p className="text-gray-600 font-medium mb-1">Click to upload document</p>
+                        <p className="text-xs text-gray-500">Supports PDF, DOC, DOCX files only</p>
+                      </div>
+                    ) : (
+                      <div className={`border-2 rounded-lg p-6 text-center transition-colors ${
+                        uploadedFiles[document]?.uploadStatus === 'success'
+                          ? 'border-green-300 bg-green-50'
+                          : uploadedFiles[document]?.uploadStatus === 'uploading'
+                          ? 'border-blue-300 bg-blue-50'
+                          : 'border-red-300 bg-red-50'
+                      }`}>
+                        {uploadedFiles[document]?.uploadStatus === 'uploading' ? (
+                          <>
+                            <Upload className="mx-auto h-10 w-10 text-blue-500 mb-3 animate-pulse" />
+                            <p className="text-blue-600 font-medium">Uploading...</p>
+                            <p className="text-xs text-blue-500">Please wait while we process your file</p>
+                          </>
+                        ) : uploadedFiles[document]?.uploadStatus === 'success' ? (
+                          <>
+                            <Check className="mx-auto h-10 w-10 text-green-500 mb-3" />
+                            <p className="text-green-600 font-medium">Upload Successful!</p>
+                            <p className="text-xs text-green-600 truncate mb-3">
+                              {uploadedFiles[document]?.file.name}
+                            </p>
+                            <div className="flex justify-center space-x-2">
+                              <button
+                                onClick={() => handlePreviewFile(uploadedFiles[document]!.file)}
+                                className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"
+                              >
+                                <Eye size={12} className="inline mr-1" />
+                                Preview
+                              </button>
+                              <button
+                                onClick={() => handleDownloadFile(uploadedFiles[document]!.file)}
+                                className="px-3 py-1 text-xs bg-green-100 text-green-600 rounded-md hover:bg-green-200 transition-colors"
+                              >
+                                <Download size={12} className="inline mr-1" />
+                                Download
+                              </button>
+                              <button
+                                onClick={() => handleRemoveFile(document)}
+                                className="px-3 py-1 text-xs bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
+                              >
+                                <Trash2 size={12} className="inline mr-1" />
+                                Remove
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <X className="mx-auto h-10 w-10 text-red-500 mb-3" />
+                            <p className="text-red-600 font-medium">Upload Failed</p>
+                            <p className="text-xs text-red-500 mb-3">Click to try again</p>
+                            <button
+                              onClick={() => handleUploadClick(document)}
+                              className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors text-sm"
+                            >
+                              Retry Upload
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Document Number Section */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      🔢 Document Number (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter document number if available"
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                      value={documentNumbers[document]}
+                      onChange={(e) => handleDocumentNumberChange(document, e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      Providing the document number helps speed up verification
+                    </p>
                   </div>
                 </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Fee Information Card */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6 text-center">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Verification Fee</h3>
+              {selectedDocuments.length > 1 && (
+                <p className="text-sm text-blue-600 mb-3">
+                  💡 Fee increased for multiple document verification
+                </p>
               )}
+              <div className="text-3xl font-bold text-green-600 mb-2">
+                ₦{calculateFee().toLocaleString()}
+              </div>
+              <p className="text-gray-600 text-sm">
+                One-time fee for {selectedDocuments.length} document{selectedDocuments.length > 1 ? 's' : ''}
+              </p>
             </div>
 
-            {/* Document Number Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Enter {getDocumentDisplayName(document)} number
-              </label>
-              <input
-                type="text"
-                placeholder="Document number"
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                value={documentNumbers[document]}
-                onChange={(e) => handleDocumentNumberChange(document, e.target.value)}
-              />
+            <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
+              <div className="flex items-center">
+                <Check className="w-4 h-4 text-green-500 mr-1" />
+                Fast verification
+              </div>
+              <div className="flex items-center">
+                <Check className="w-4 h-4 text-green-500 mr-1" />
+                Secure process
+              </div>
+              <div className="flex items-center">
+                <Check className="w-4 h-4 text-green-500 mr-1" />
+                Expert review
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Fee Information */}
-      {selectedDocuments.length > 1 && (
-        <div className="text-center text-sm text-blue-600 mb-4">
-          The fee has increased because you selected two documents for verification.
         </div>
       )}
 
-      <div className="text-center mb-6">
-        <p className="text-red-500 font-medium">
-          Verify your documents for a one-time fee of{' '}
-          <span className="font-bold">₦{calculateFee().toLocaleString()}</span>
-          —fast and secure.
-        </p>
-      </div>
+      {/* Empty State */}
+      {selectedDocuments.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <FileIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <h3 className="text-lg font-medium mb-2">No Documents Selected</h3>
+          <p className="text-sm">Choose document types above to get started with verification</p>
+        </div>
+      )}
     </div>
   );
 
