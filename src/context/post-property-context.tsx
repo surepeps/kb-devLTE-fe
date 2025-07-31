@@ -313,7 +313,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
 
   const getUserCommissionRate = (): number => {
     // Import moved to top of file to avoid require() in component
-    
+    return 50; // Default commission rate - should be imported from config
   };
 
   const contextValue: PostPropertyContextType = {
