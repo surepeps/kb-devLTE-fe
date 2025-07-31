@@ -15,7 +15,7 @@ interface SuccessModalProps {
     location: string;
   };
   isUpdate?: boolean; // New prop to differentiate between create and update
-}
+} 
 
 const SuccessModal: React.FC<SuccessModalProps> = ({
   isOpen,
@@ -84,33 +84,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
           {/* Content */}
           <div className="p-6">
-            {propertyData && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-[#09391C] mb-3 text-center">
-                  Property Summary
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Type:</span>
-                    <span className="font-medium capitalize">
-                      {propertyData.propertyType}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Price:</span>
-                    <span className="font-medium text-[#8DDB90]">
-                      ₦{parseInt(propertyData.price).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Location:</span>
-                    <span className="font-medium">{propertyData.location}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-                        {/* What happens next */}
+         
+            {/* What happens next */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-800 mb-2">
                 What happens next?
@@ -145,7 +120,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
                 <Eye size={18} />
               </Button>
 
-                            {!isUpdate && (
+              {!isUpdate && (
                 <Button
                   type="button"
                   value="Create new brief"
