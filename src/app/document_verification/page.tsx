@@ -115,7 +115,18 @@ const DocumentVerificationPage: React.FC = () => {
     return selectedDocuments.length === 1 ? 20000 : 40000;
   };
 
+  const validateFileType = (file: File): boolean => {
+    const allowedExtensions = ['pdf', 'doc', 'docx'];
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    return allowedExtensions.includes(fileExtension || '');
+  };
+
   const uploadFile = async (file: File, document: DocumentType): Promise<string> => {
+    // Validate file type before upload
+    if (!validateFileType(file)) {
+      throw new Error('Invalid file type. Only PDF, DOC, and DOCX files are allowed.');
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('for', 'property-file');
@@ -127,7 +138,7 @@ const DocumentVerificationPage: React.FC = () => {
       });
 
       const result = await response.json();
-      
+
       if (response.ok && result.data?.url) {
         return result.data.url;
       } else {
