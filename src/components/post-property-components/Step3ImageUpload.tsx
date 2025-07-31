@@ -380,6 +380,19 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
                   src={image.url || image.preview || ""}
                   alt={`Property ${index + 1}`}
                   className="w-full h-full object-cover rounded-lg"
+                  onLoad={() => {
+                    // Ensure image renders properly after upload
+                    if (image.url && !image.preview) {
+                      console.log('Image uploaded and displayed successfully:', image.url);
+                    }
+                  }}
+                  onError={(e) => {
+                    console.error('Error loading image:', image.url || image.preview);
+                    // Fallback to preview if URL fails
+                    if (image.url && image.preview) {
+                      (e.target as HTMLImageElement).src = image.preview;
+                    }
+                  }}
                 />
                 {image.isUploading && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
