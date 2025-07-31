@@ -153,7 +153,20 @@ const DocumentVerificationPage: React.FC = () => {
   const handleFileChange = async (document: DocumentType, fileList: FileList | null) => {
     if (fileList && fileList[0]) {
       const file = fileList[0];
-      
+
+      // Validate file type first
+      if (!validateFileType(file)) {
+        toast.error(`Invalid file type for ${getDocumentDisplayName(document)}. Only PDF, DOC, and DOCX files are allowed.`);
+        return;
+      }
+
+      // Check file size (10MB limit)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        toast.error(`File too large. Maximum size is 10MB.`);
+        return;
+      }
+
       // Update state to show uploading
       setUploadedFiles(prev => ({
         ...prev,
@@ -166,7 +179,7 @@ const DocumentVerificationPage: React.FC = () => {
 
       try {
         const uploadedUrl = await uploadFile(file, document);
-        
+
         // Update state with successful upload
         setUploadedFiles(prev => ({
           ...prev,
@@ -177,7 +190,7 @@ const DocumentVerificationPage: React.FC = () => {
           }
         }));
 
-        toast.success(`${getDocumentDisplayName(document)} uploaded successfully`);
+        toast.success(`${getDocumentDisplayName(document)} uploaded successfully! ✅`);
       } catch (error) {
         // Update state with error
         setUploadedFiles(prev => ({
@@ -189,7 +202,8 @@ const DocumentVerificationPage: React.FC = () => {
           }
         }));
 
-        toast.error(`Failed to upload ${getDocumentDisplayName(document)}`);
+        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        toast.error(`Failed to upload ${getDocumentDisplayName(document)}: ${errorMessage}`);
       }
     }
   };
