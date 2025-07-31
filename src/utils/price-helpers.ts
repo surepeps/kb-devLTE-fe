@@ -27,14 +27,29 @@ export const formatPriceForDisplay = (value: string | number): string => {
  * @param formattedPrice - The formatted price string (e.g., "₦1,500,000")
  * @returns Clean numeric string without symbols or commas
  */
-export const extractNumericValue = (formattedPrice: unknown): string => {
-  if (typeof formattedPrice !== "string") {
-    return "";
-  }
+export const extractNumericValue = (input: unknown): number => {
+  if (typeof input !== "string") return 0;
 
-  // Remove all non-numeric characters
-  return formattedPrice.replace(/[^0-9]/g, "");
+  const sanitized = input.toLowerCase().replace(/,/g, "").replace(/₦|n/g, "").trim();
+  const match = sanitized.match(/^(\d+(\.\d+)?)([kmb])?$/i);
+
+  if (!match) return 0;
+
+  const num = parseFloat(match[1]);
+  const suffix = match[3]?.toLowerCase();
+
+  switch (suffix) {
+    case "k":
+      return num * 1_000;
+    case "m":
+      return num * 1_000_000;
+    case "b":
+      return num * 1_000_000_000;
+    default:
+      return num;
+  }
 };
+
 
 /**
  * Formats a number with commas but without currency symbol
