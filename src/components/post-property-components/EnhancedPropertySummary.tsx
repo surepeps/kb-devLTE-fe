@@ -22,10 +22,15 @@ const EnhancedPropertySummary: React.FC = () => {
   const commissionRate = getUserCommissionRate();
   const userType = getUserType();
 
-  const formatPrice = (price: string) => {
-    return price
-      ? `₦${parseInt(price.replace(/,/g, "")).toLocaleString()}`
-      : "Not specified";
+  const formatPrice = (price: string | number | undefined) => {
+    if (!price) return "Not specified";
+
+    const numericPrice =
+      typeof price === "string"
+        ? parseInt(price.replace(/,/g, ""))
+        : price;
+
+    return `₦${numericPrice.toLocaleString()}`;
   };
 
   const validImages = images.filter((img) => img.file !== null);
@@ -250,29 +255,6 @@ const EnhancedPropertySummary: React.FC = () => {
         </p>
       </div>
 
-      {/* Commission Info Banner */}
-      <div className="bg-[#E4EFE7] border border-[#8DDB90] rounded-lg p-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#8DDB90] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">
-                {commissionRate}%
-              </span>
-            </div>
-            <div>
-              <p className="text-[#09391C] font-medium">Commission Rate</p>
-              <p className="text-[#5A5D63] text-sm">
-                {commissionRate}% commission applies for{" "}
-                {userType === "agent" ? "agents" : "property owners"}
-              </p>
-            </div>
-          </div>
-          <span className="text-[#09391C] font-semibold">
-            {commissionRate}%
-          </span>
-        </div>
-      </div>
-
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Property Details */}
         <div className="lg:col-span-2 space-y-6">
@@ -380,7 +362,7 @@ const EnhancedPropertySummary: React.FC = () => {
         />
         <Button
           type="button"
-          value="Continue to Commission"
+          value="Continue to Post"
           onClick={handleProceedToCommission}
           className="px-8 py-3 bg-[#8DDB90] hover:bg-[#7BC87F] text-white transition-colors rounded-lg font-semibold"
         />

@@ -37,6 +37,7 @@ import {
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
+import AgreementModal from "@/components/post-property-components/AgreementModal";
 
 // Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
 const getValidationSchema = (currentStep: number, propertyData: Record<string, unknown>) => {
@@ -540,7 +541,7 @@ const PostProperty = () => {
         Cookies.get("token"),
       );
 
-            if (response && (response as any).success && (response as any).data) {
+      if (response.success) {
         toast.success("Property created successfully!");
         resetForm();
         setShowSuccessModal(true);
@@ -550,6 +551,7 @@ const PostProperty = () => {
         toast.error(errorMessage);
       }
     } catch (error) {
+      console.log(error, "form error")
       toast.error("An error occurred while submitting the property");
     } finally {
       setIsSubmitting(false);
@@ -721,23 +723,17 @@ const PostProperty = () => {
           </Formik>
 
           {/* Commission Modal */}
-          <CommissionModal
+          <AgreementModal
             open={showCommissionModal}
             onClose={() => setShowCommissionModal(false)}
-            onAccept={handleCommissionAccept}
-            commission={`${getUserCommissionRate()}%`}
-            userName={
-              `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`.trim() ||
-              user?.firstName ||
-              "User"
-            }
+            onAccept={() => {
+              setShowCommissionModal(false);
+              handleSubmit(); // your form submission or posting logic
+            }}
+            userName={user.firstName}
             userType={user?.userType === "Agent" ? "agent" : "landowner"}
-            briefType={
-              briefTypeConfig[
-                propertyData.propertyType as keyof typeof briefTypeConfig
-              ]?.label
-            }
           />
+
 
           {/* Debug Section - only show in development */}
           {process.env.NODE_ENV === "development" && (

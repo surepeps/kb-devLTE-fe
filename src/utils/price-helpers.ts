@@ -27,8 +27,10 @@ export const formatPriceForDisplay = (value: string | number): string => {
  * @param formattedPrice - The formatted price string (e.g., "₦1,500,000")
  * @returns Clean numeric string without symbols or commas
  */
-export const extractNumericValue = (formattedPrice: string): string => {
-  if (!formattedPrice) return "";
+export const extractNumericValue = (formattedPrice: unknown): string => {
+  if (typeof formattedPrice !== "string") {
+    return "";
+  }
 
   // Remove all non-numeric characters
   return formattedPrice.replace(/[^0-9]/g, "");

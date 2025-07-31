@@ -91,7 +91,7 @@ const CommissionModal: React.FC<CommissionModalProps> = ({
                     </p>
                   )}
                 </div>
-
+ 
                 <p className="text-[#1E1E1E] text-sm leading-relaxed italic">
                   {getCommissionText(briefType || "", userType, userName)}
                 </p>
