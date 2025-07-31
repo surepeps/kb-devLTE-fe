@@ -130,6 +130,8 @@ const MatchedPropertiesPage = () => {
   const [data, setData] = useState<MatchedPropertiesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [propertiesPerPage] = useState(8); // 2 rows of 4 properties each
 
   useEffect(() => {
     const fetchMatchedProperties = async () => {
