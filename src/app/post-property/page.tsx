@@ -18,7 +18,6 @@ import Step0PropertyTypeSelection from "@/components/post-property-components/St
 import Step1BasicDetails from "@/components/post-property-components/Step1BasicDetails";
 import Step3ImageUpload from "@/components/post-property-components/Step3ImageUpload";
 import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
-import CommissionModal from "@/components/post-property-components/CommissionModal";
 import SuccessModal from "@/components/post-property-components/SuccessModal";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
