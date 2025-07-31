@@ -7,7 +7,6 @@ import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Loading from "@/components/loading-component/loading";
-import { GlobalPropertyCard } from "@/components/common/property-cards";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -66,17 +65,6 @@ interface MatchedPropertiesData {
   matchedProperties: MatchedProperty[];
 }
 
-interface ApiResponse {
-  success: boolean;
-  data: MatchedPropertiesData;
-  pagination: {
-    page: number;
-    limit: number;
-    totalPages: number;
-    total: number;
-  };
-}
-
 const MatchedPropertiesPage = () => {
   const router = useRouter();
   const params = useParams();
@@ -90,10 +78,7 @@ const MatchedPropertiesPage = () => {
     const fetchMatchedProperties = async () => {
       try {
         setLoading(true);
-        const response = await GET_REQUEST(
-          `${URLS.BASE}/properties/${matchedId}/${preferenceId}/matches`,
-          Cookies.get("token")
-        );
+        const response = await GET_REQUEST(`${URLS.BASE}/properties/${matchedId}/${preferenceId}/matches`);
 
         if (response?.success) {
           setData(response.data);
@@ -353,29 +338,7 @@ const MatchedPropertiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
                 >
-                  <GlobalPropertyCard
-                    property={{
-                      _id: property._id,
-                      title: property.title,
-                      price: property.price,
-                      location: {
-                        state: property.location.state,
-                        lga: property.location.lga,
-                        area: property.location.area
-                      },
-                      bedrooms: property.bedroom,
-                      bathrooms: property.bathroom,
-                      propertyType: property.type,
-                      propertyCondition: property.homeCondition,
-                      features: property.desireFeatures,
-                      documents: [property.documentType],
-                      images: [],
-                      createdAt: new Date().toISOString(),
-                      updatedAt: new Date().toISOString()
-                    }}
-                    showActions={true}
-                    variant="marketplace"
-                  />
+                 {/* Display properties */}
                 </motion.div>
               ))}
             </div>
