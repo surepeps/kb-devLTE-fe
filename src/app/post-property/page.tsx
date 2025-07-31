@@ -550,7 +550,6 @@ const PostProperty = () => {
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error("Error submitting property:", error);
       toast.error("An error occurred while submitting the property");
     } finally {
       setIsSubmitting(false);

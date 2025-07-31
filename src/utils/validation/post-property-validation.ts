@@ -205,26 +205,11 @@ const jvPropertySchema = Yup.object({
       "Please select a valid property category",
     )
     .required(messages.required("Property category")),
-  propertyCondition: Yup.string().when("propertyCategory", {
-    is: (category: string) => category !== "Land",
-    then: (schema) => schema.required(messages.required("Property condition")),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  typeOfBuilding: Yup.string().when("propertyCategory", {
-    is: (category: string) =>
-      category === "Residential" || category === "Commercial",
-    then: (schema) => schema.required(messages.required("Building type")),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  bedrooms: Yup.number().when("propertyCategory", {
-    is: (category: string) =>
-      category === "Residential" || category === "Commercial",
-    then: (schema) =>
-      schema
-        .min(1, messages.min("Number of bedrooms", 1))
-        .required(messages.required("Number of bedrooms")),
-    otherwise: (schema) => schema.nullable(),
-  }),
+  // JV properties do not require property condition, building type, or bedrooms
+  // These fields are optional for all JV property categories
+  propertyCondition: Yup.string().nullable(),
+  typeOfBuilding: Yup.string().nullable(),
+  bedrooms: Yup.number().nullable(),
   measurementType: Yup.string().when("propertyCategory", {
     is: "Land",
     then: (schema) => schema.required(messages.required("Type of measurement")),
@@ -325,23 +310,20 @@ export const step1ValidationSchema = (propertyType: string) => {
         case "jv":
       return Yup.object({
         ...baseSchema,
-        propertyCondition: Yup.string().when("propertyCategory", {
-          is: (category: string) => category !== "Land",
+        // JV properties do not require property condition, building type, or bedrooms
+        propertyCondition: Yup.string().nullable(),
+        typeOfBuilding: Yup.string().nullable(),
+        bedrooms: Yup.number().nullable(),
+        measurementType: Yup.string().when("propertyCategory", {
+          is: "Land",
           then: (schema) => schema.required(),
           otherwise: (schema) => schema.nullable(),
         }),
-        typeOfBuilding: Yup.string().when("propertyCategory", {
-          is: (category: string) => category !== "Land",
+        landSize: Yup.string().when("propertyCategory", {
+          is: "Land",
           then: (schema) => schema.required(),
           otherwise: (schema) => schema.nullable(),
         }),
-        bedrooms: Yup.number().when("propertyCategory", {
-          is: (category: string) => category !== "Land",
-          then: (schema) => schema.min(1).required(),
-          otherwise: (schema) => schema.nullable(),
-        }),
-        measurementType: Yup.string().required(),
-        landSize: Yup.string().required(),
       });
 
     case "sell":
@@ -363,8 +345,16 @@ export const step1ValidationSchema = (propertyType: string) => {
           then: (schema) => schema.min(1).required(),
           otherwise: (schema) => schema.nullable(),
         }),
-        measurementType: Yup.string().required(),
-        landSize: Yup.string().required(),
+        measurementType: Yup.string().when("propertyCategory", {
+          is: "Land",
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
+        landSize: Yup.string().when("propertyCategory", {
+          is: "Land",
+          then: (schema) => schema.required(),
+          otherwise: (schema) => schema.nullable(),
+        }),
       });
   }
 };
