@@ -288,7 +288,7 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const validateStep3 = (): boolean => {
-    if (!paymentDetails.receiptFile) {
+    if (!paymentDetails.receiptFile || paymentDetails.receiptUploadStatus !== 'success') {
       toast.error('Please upload payment receipt');
       return false;
     }
