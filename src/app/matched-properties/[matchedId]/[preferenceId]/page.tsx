@@ -407,29 +407,8 @@ const MatchedPropertiesPage = () => {
                   isPremium: property.isPremium
                 };
 
-                // Create card data for the property
-                const cardData = [
-                  {
-                    header: "Property Type",
-                    value: property.propertyType || "Residential"
-                  },
-                  {
-                    header: "Price",
-                    value: `₦${property.price?.toLocaleString() || 'N/A'}`
-                  },
-                  {
-                    header: "Bedrooms",
-                    value: property.additionalFeatures?.noOfBedrooms?.toString() || "0"
-                  },
-                  {
-                    header: "Bathrooms",
-                    value: property.additionalFeatures?.noOfBathrooms?.toString() || "0"
-                  },
-                  {
-                    header: "Location",
-                    value: `${property.location.area}, ${property.location.localGovernment}, ${property.location.state}`
-                  }
-                ];
+                // Create card data using the helper function
+                const cardData = createPropertyCardData(property);
 
                 // Transform images data
                 const images = property.pictures?.map((picture, idx) => ({
