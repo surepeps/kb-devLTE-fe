@@ -126,6 +126,25 @@ const DocumentVerificationPage: React.FC = () => {
     return allowedExtensions.includes(fileExtension || '');
   };
 
+  const deleteFile = async (url: string): Promise<void> => {
+    try {
+      const response = await fetch(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete file');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      throw new Error('Failed to delete file');
+    }
+  };
+
   const uploadFile = async (file: File, document: DocumentType): Promise<string> => {
     // Validate file type before upload
     if (!validateFileType(file)) {
