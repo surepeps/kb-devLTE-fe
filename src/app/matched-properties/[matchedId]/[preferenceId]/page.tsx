@@ -10,6 +10,7 @@ import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
+import EnhancedGlobalPropertyCard from "@/components/common/property-cards/EnhancedGlobalPropertyCard";
 
 interface MatchDetails {
   _id: string;
@@ -42,20 +43,76 @@ interface Preference {
 }
 
 interface MatchedProperty {
-  _id: string;
-  title: string;
+  id: string;
+  _id?: string;
+  image: string;
+  owner: {
+    id: string;
+    fullName: string;
+  };
+  propertyType: string;
+  propertyCategory: string;
+  propertyCondition: string;
+  typeOfBuilding: string;
+  rentalType: string;
+  shortletDuration: string;
+  holdDuration: string;
+  price: number;
   location: {
     state: string;
-    lga: string;
+    localGovernment: string;
     area: string;
   };
-  price: number;
-  bedroom: number;
-  bathroom: number;
-  type: string;
-  documentType: string;
-  desireFeatures: string[];
-  homeCondition: string;
+  landSize: {
+    measurementType: string;
+    size: number;
+  };
+  docOnProperty: {
+    isProvided: boolean;
+    _id: string;
+    docName: string;
+  }[];
+  areYouTheOwner: boolean;
+  features: string[];
+  tenantCriteria: string[];
+  additionalFeatures: {
+    noOfBedrooms: number;
+    noOfBathrooms: number;
+    noOfToilets: number;
+    noOfCarParks: number;
+  };
+  jvConditions: string[];
+  shortletDetails: {
+    streetAddress: string;
+    maxGuests: number;
+    availability: {
+      minStay: number;
+    };
+    pricing: {
+      nightly: number;
+      weeklyDiscount: number;
+    };
+    houseRules: {
+      checkIn: string;
+      checkOut: string;
+    };
+  };
+  pictures: string[];
+  videos: string[];
+  description: string;
+  additionalInfo: string;
+  isTenanted: string;
+  isAvailable: string;
+  status: string;
+  reason: string;
+  briefType: string;
+  isPremium: boolean;
+  isApproved: boolean;
+  isRejected: boolean;
+  isDeleted: boolean;
+  createdByRole: string;
+  createdAt: string;
+  updatedAt: string;
   matchedId: string;
 }
 
@@ -331,16 +388,80 @@ const MatchedPropertiesPage = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {matchedProperties.map((property, index) => (
-                <motion.div
-                  key={property._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                 {/* Display properties */}
-                </motion.div>
-              ))}
+              {matchedProperties.map((property, index) => {
+                // Transform the property data to match the expected format
+                const transformedProperty = {
+                  _id: property.id,
+                  id: property.id,
+                  price: property.price,
+                  title: property.description || `${property.propertyType} in ${property.location.area}`,
+                  description: property.description,
+                  additionalFeatures: property.additionalFeatures,
+                  location: {
+                    state: property.location.state,
+                    lga: property.location.localGovernment,
+                    area: property.location.area
+                  },
+                  propertyType: property.propertyType,
+                  briefType: property.briefType,
+                  isPremium: property.isPremium
+                };
+
+                // Create card data for the property
+                const cardData = [
+                  {
+                    header: "Property Type",
+                    value: property.propertyType || "Residential"
+                  },
+                  {
+                    header: "Price",
+                    value: `₦${property.price?.toLocaleString() || 'N/A'}`
+                  },
+                  {
+                    header: "Bedrooms",
+                    value: property.additionalFeatures?.noOfBedrooms?.toString() || "0"
+                  },
+                  {
+                    header: "Bathrooms",
+                    value: property.additionalFeatures?.noOfBathrooms?.toString() || "0"
+                  },
+                  {
+                    header: "Location",
+                    value: `${property.location.area}, ${property.location.localGovernment}, ${property.location.state}`
+                  }
+                ];
+
+                // Transform images data
+                const images = property.pictures?.map((picture, idx) => ({
+                  id: `${property.id}-${idx}`,
+                  url: picture,
+                  alt: `Property image ${idx + 1}`
+                })) || [];
+
+                return (
+                  <motion.div
+                    key={property.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <EnhancedGlobalPropertyCard
+                      type="standard"
+                      tab="buy"
+                      property={transformedProperty}
+                      cardData={cardData}
+                      images={images}
+                      isPremium={property.isPremium}
+                      onPropertyClick={() => {
+                        // Navigate to property details page
+                        const marketType = property.briefType === "Outright Sales" ? "buy" : "rent";
+                        router.push(`/property/${marketType}/${property.id}`);
+                      }}
+                      className="mx-auto"
+                    />
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </motion.div>
