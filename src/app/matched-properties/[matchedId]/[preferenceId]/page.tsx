@@ -1,0 +1,389 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { GET_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import Loading from "@/components/loading-component/loading";
+import { GlobalPropertyCard } from "@/components/common/property-cards";
+import { motion } from "framer-motion";
+import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface MatchDetails {
+  _id: string;
+  status: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Preference {
+  _id: string;
+  buyer: string;
+  preferenceType: string;
+  location: {
+    state: string;
+    localGovernmentAreas: string[];
+  };
+  budget: {
+    minPrice: number;
+    maxPrice: number;
+  };
+  bedroom: number;
+  bathroom: number;
+  type: string;
+  documentType: string[];
+  desireFeature: string[];
+  tenantCriteria: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MatchedProperty {
+  _id: string;
+  title: string;
+  location: {
+    state: string;
+    lga: string;
+    area: string;
+  };
+  price: number;
+  bedroom: number;
+  bathroom: number;
+  type: string;
+  documentType: string;
+  desireFeatures: string[];
+  homeCondition: string;
+  matchedId: string;
+}
+
+interface MatchedPropertiesData {
+  matchDetails: MatchDetails;
+  preference: Preference;
+  matchedProperties: MatchedProperty[];
+}
+
+interface ApiResponse {
+  success: boolean;
+  data: MatchedPropertiesData;
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    total: number;
+  };
+}
+
+const MatchedPropertiesPage = () => {
+  const router = useRouter();
+  const params = useParams();
+  const { matchedId, preferenceId } = params;
+  
+  const [data, setData] = useState<MatchedPropertiesData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMatchedProperties = async () => {
+      try {
+        setLoading(true);
+        const response = await GET_REQUEST(
+          `${URLS.BASE}/properties/${matchedId}/${preferenceId}/matches`,
+          Cookies.get("token")
+        );
+
+        if (response?.success) {
+          setData(response.data);
+        } else {
+          setError(response?.error || "Failed to fetch matched properties");
+          toast.error("Failed to load matched properties");
+        }
+      } catch (error) {
+        console.error("Error fetching matched properties:", error);
+        setError("An error occurred while fetching data");
+        toast.error("An error occurred while fetching data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (matchedId && preferenceId) {
+      fetchMatchedProperties();
+    }
+  }, [matchedId, preferenceId]);
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-gray-600 mb-4">{error || "Failed to load data"}</p>
+          <button
+            onClick={() => router.back()}
+            className="bg-[#8DDB90] text-white px-6 py-2 rounded-lg hover:bg-[#7BC87F] transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const { matchDetails, preference, matchedProperties } = data;
+
+  return (
+    <div className="min-h-screen bg-[#EEF1F1] py-6">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Header */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-[#09391C] hover:text-[#8DDB90] transition-colors mb-4"
+          >
+            <ArrowLeft size={20} />
+            <span>Back to Previous Page</span>
+          </button>
+          
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h1 className="text-3xl font-bold text-[#09391C] font-display mb-2">
+              Matched Properties
+            </h1>
+            <p className="text-[#5A5D63] text-lg">
+              Properties matching your preferences • {matchedProperties.length} match{matchedProperties.length !== 1 ? 'es' : ''} found
+            </p>
+          </div>
+        </div>
+
+        {/* Match Details Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl shadow-sm p-6 mb-6"
+        >
+          <h2 className="text-xl font-semibold text-[#09391C] mb-4">Match Summary</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <FileText size={20} className="text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Match Status</p>
+                <p className="font-medium capitalize">{matchDetails.status}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <Calendar size={20} className="text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Last Updated</p>
+                <p className="font-medium">{formatDate(matchDetails.updatedAt)}</p>
+              </div>
+            </div>
+          </div>
+          {matchDetails.notes && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>Notes:</strong> {matchDetails.notes}
+              </p>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Preference Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-xl shadow-sm p-6 mb-8"
+        >
+          <h2 className="text-xl font-semibold text-[#09391C] mb-6">Your Preference Details</h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Location */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <MapPin size={20} className="text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Location</p>
+                <p className="font-medium text-gray-900">{preference.location.state}</p>
+                <p className="text-sm text-gray-600">
+                  {preference.location.localGovernmentAreas.join(", ")}
+                </p>
+              </div>
+            </div>
+
+            {/* Budget */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <DollarSign size={20} className="text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Budget Range</p>
+                <p className="font-medium text-gray-900">
+                  {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
+                </p>
+                <p className="text-sm text-gray-600 capitalize">{preference.preferenceType}</p>
+              </div>
+            </div>
+
+            {/* Property Details */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Home size={20} className="text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Property Requirements</p>
+                <p className="font-medium text-gray-900 capitalize">{preference.type}</p>
+                <p className="text-sm text-gray-600">
+                  {preference.bedroom} beds • {preference.bathroom} baths
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Details */}
+          <div className="mt-6 grid md:grid-cols-2 gap-6">
+            {/* Documents */}
+            {preference.documentType && preference.documentType.length > 0 && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2">Required Documents</h3>
+                <div className="flex flex-wrap gap-2">
+                  {preference.documentType.map((doc, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full border border-blue-200"
+                    >
+                      {doc}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Desired Features */}
+            {preference.desireFeature && preference.desireFeature.length > 0 && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2">Desired Features</h3>
+                <div className="flex flex-wrap gap-2">
+                  {preference.desireFeature.map((feature, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-green-50 text-green-700 text-sm rounded-full border border-green-200"
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Tenant Criteria */}
+          {preference.tenantCriteria && preference.tenantCriteria.length > 0 && (
+            <div className="mt-4">
+              <h3 className="font-medium text-gray-900 mb-2">Tenant Criteria</h3>
+              <div className="flex flex-wrap gap-2">
+                {preference.tenantCriteria.map((criteria, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-purple-50 text-purple-700 text-sm rounded-full border border-purple-200"
+                  >
+                    {criteria}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Matched Properties Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-[#09391C]">
+              Matched Properties ({matchedProperties.length})
+            </h2>
+          </div>
+
+          {matchedProperties.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Home size={32} className="text-gray-400" />
+              </div>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">No Properties Found</h3>
+              <p className="text-gray-600">
+                No properties currently match your preferences. Check back later for new listings.
+              </p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {matchedProperties.map((property, index) => (
+                <motion.div
+                  key={property._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <GlobalPropertyCard
+                    property={{
+                      _id: property._id,
+                      title: property.title,
+                      price: property.price,
+                      location: {
+                        state: property.location.state,
+                        lga: property.location.lga,
+                        area: property.location.area
+                      },
+                      bedrooms: property.bedroom,
+                      bathrooms: property.bathroom,
+                      propertyType: property.type,
+                      propertyCondition: property.homeCondition,
+                      features: property.desireFeatures,
+                      documents: [property.documentType],
+                      images: [],
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString()
+                    }}
+                    showActions={true}
+                    variant="marketplace"
+                  />
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default MatchedPropertiesPage;
