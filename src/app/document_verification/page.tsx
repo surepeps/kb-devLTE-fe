@@ -317,12 +317,102 @@ const DocumentVerificationPage: React.FC = () => {
     }));
   };
 
-  const handleReceiptUpload = (fileList: FileList | null) => {
+  const handleReceiptUpload = async (fileList: FileList | null) => {
     if (fileList && fileList[0]) {
+      const file = fileList[0];
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Invalid file type for receipt. Only images and PDF files are allowed.');
+        return;
+      }
+
+      // Check file size (10MB limit)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        toast.error('File too large. Maximum size is 10MB.');
+        return;
+      }
+
+      // Update state to show uploading
       setPaymentDetails(prev => ({
         ...prev,
-        receiptFile: fileList[0]
+        receiptFile: file,
+        receiptUploadStatus: 'uploading'
       }));
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('for', 'property-file');
+
+        const response = await fetch(`${URLS.BASE}${URLS.uploadSingleImg}`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.data?.url) {
+          setPaymentDetails(prev => ({
+            ...prev,
+            receiptUrl: result.data.url,
+            receiptUploadStatus: 'success'
+          }));
+          toast.success('Receipt uploaded successfully! ✅');
+        } else {
+          throw new Error(result.message || 'Upload failed');
+        }
+      } catch (error) {
+        setPaymentDetails(prev => ({
+          ...prev,
+          receiptUploadStatus: 'error'
+        }));
+
+        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        toast.error(`Failed to upload receipt: ${errorMessage}`);
+      }
+    }
+  };
+
+  const handleReceiptDelete = async () => {
+    if (paymentDetails.receiptUrl) {
+      try {
+        await deleteFile(paymentDetails.receiptUrl);
+        setPaymentDetails(prev => ({
+          ...prev,
+          receiptFile: null,
+          receiptUrl: '',
+          receiptUploadStatus: 'idle'
+        }));
+        if (receiptInputRef.current) {
+          receiptInputRef.current.value = '';
+        }
+        toast.success('Receipt deleted successfully');
+      } catch (error) {
+        toast.error('Failed to delete receipt');
+      }
+    }
+  };
+
+  const handleReceiptPreview = () => {
+    if (paymentDetails.receiptFile) {
+      const url = URL.createObjectURL(paymentDetails.receiptFile);
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleReceiptDownload = () => {
+    if (paymentDetails.receiptFile) {
+      const url = URL.createObjectURL(paymentDetails.receiptFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = paymentDetails.receiptFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   };
 
