@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar } from "lucide-react";
+import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
 
@@ -130,6 +130,8 @@ const MatchedPropertiesPage = () => {
   const [data, setData] = useState<MatchedPropertiesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [propertiesPerPage] = useState(8); // 2 rows of 4 properties each
 
   useEffect(() => {
     const fetchMatchedProperties = async () => {
@@ -374,6 +376,11 @@ const MatchedPropertiesPage = () => {
             <h2 className="text-2xl font-semibold text-[#09391C]">
               Matched Properties ({matchedProperties.length})
             </h2>
+            {matchedProperties.length > propertiesPerPage && (
+              <div className="text-sm text-gray-600">
+                Page {currentPage} of {Math.ceil(matchedProperties.length / propertiesPerPage)}
+              </div>
+            )}
           </div>
 
           {matchedProperties.length === 0 ? (
@@ -387,61 +394,119 @@ const MatchedPropertiesPage = () => {
               </p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {matchedProperties.map((property, index) => {
-                // Transform the property data to match the expected format
-                const transformedProperty = {
-                  _id: property.id,
-                  id: property.id,
-                  price: property.price,
-                  title: property.description || `${property.propertyType} in ${property.location.area}`,
-                  description: property.description,
-                  additionalFeatures: property.additionalFeatures,
-                  location: {
-                    state: property.location.state,
-                    lga: property.location.localGovernment,
-                    area: property.location.area
-                  },
-                  propertyType: property.propertyType,
-                  briefType: property.briefType,
-                  isPremium: property.isPremium
-                };
+            <>
+              {/* Properties Grid - 4 columns, minimal gaps */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {matchedProperties
+                  .slice((currentPage - 1) * propertiesPerPage, currentPage * propertiesPerPage)
+                  .map((property, index) => {
+                    // Transform the property data to match the expected format
+                    const transformedProperty = {
+                      _id: property.id,
+                      id: property.id,
+                      price: property.price,
+                      title: property.description || `${property.propertyType} in ${property.location.area}`,
+                      description: property.description,
+                      additionalFeatures: property.additionalFeatures,
+                      location: {
+                        state: property.location.state,
+                        lga: property.location.localGovernment,
+                        area: property.location.area
+                      },
+                      propertyType: property.propertyType,
+                      briefType: property.briefType,
+                      isPremium: property.isPremium
+                    };
 
-                // Create card data using the helper function
-                const cardData = createPropertyCardData(property);
+                    // Create card data using the helper function
+                    const cardData = createPropertyCardData(property);
 
-                // Transform images data
-                const images = property.pictures?.map((picture, idx) => ({
-                  id: `${property.id}-${idx}`,
-                  url: picture,
-                  alt: `Property image ${idx + 1}`
-                })) || [];
+                    // Transform images data
+                    const images = property.pictures?.map((picture, idx) => ({
+                      id: `${property.id}-${idx}`,
+                      url: picture,
+                      alt: `Property image ${idx + 1}`
+                    })) || [];
 
-                return (
-                  <motion.div
-                    key={property.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * index }}
+                    return (
+                      <motion.div
+                        key={property.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05 * index }}
+                        className="w-full"
+                      >
+                        <EnhancedGlobalPropertyCard
+                          type="standard"
+                          tab="buy"
+                          property={transformedProperty}
+                          cardData={cardData}
+                          images={images}
+                          isPremium={property.isPremium}
+                          onPropertyClick={() => {
+                            // Navigate to property details page
+                            const marketType = property.briefType === "Outright Sales" ? "buy" : "rent";
+                            router.push(`/property/${marketType}/${property.id}`);
+                          }}
+                          className="w-full h-full"
+                        />
+                      </motion.div>
+                    );
+                  })}
+              </div>
+
+              {/* Pagination */}
+              {matchedProperties.length > propertiesPerPage && (
+                <div className="flex items-center justify-center mt-8 space-x-4">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`flex items-center px-4 py-2 rounded-lg border transition-colors ${
+                      currentPage === 1
+                        ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                    }`}
                   >
-                    <EnhancedGlobalPropertyCard
-                      type="standard"
-                      tab="buy"
-                      property={transformedProperty}
-                      cardData={cardData}
-                      images={images}
-                      isPremium={property.isPremium}
-                      onPropertyClick={() => {
-                        // Navigate to property details page
-                        const marketType = property.briefType === "Outright Sales" ? "buy" : "rent";
-                        router.push(`/property/${marketType}/${property.id}`);
-                      }}
-                      className="mx-auto"
-                    />
-                  </motion.div>
-                );
-              })}
-            </div>
+                    <ChevronLeft size={16} className="mr-1" />
+                    Previous
+                  </button>
+
+                  <div className="flex space-x-2">
+                    {Array.from({ length: Math.ceil(matchedProperties.length / propertiesPerPage) }, (_, i) => i + 1)
+                      .slice(
+                        Math.max(0, currentPage - 3),
+                        Math.min(Math.ceil(matchedProperties.length / propertiesPerPage), currentPage + 2)
+                      )
+                      .map((pageNum) => (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-2 rounded-lg border transition-colors ${
+                            pageNum === currentPage
+                              ? 'bg-[#8DDB90] border-[#8DDB90] text-white'
+                              : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(matchedProperties.length / propertiesPerPage)))}
+                    disabled={currentPage === Math.ceil(matchedProperties.length / propertiesPerPage)}
+                    className={`flex items-center px-4 py-2 rounded-lg border transition-colors ${
+                      currentPage === Math.ceil(matchedProperties.length / propertiesPerPage)
+                        ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                    }`}
+                  >
+                    Next
+                    <ChevronRight size={16} className="ml-1" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </motion.div>
       </div>
