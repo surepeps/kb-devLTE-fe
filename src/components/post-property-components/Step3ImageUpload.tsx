@@ -48,7 +48,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const [fileInputKey, setFileInputKey] = React.useState(0);
-  const [videoInputKey, setVideoInputKey] = React.useState(0);
+  const [videoInputKey, setVideoInputKey] = React.useState(1000);
 
   // Get videos from propertyData or initialize empty array
   const videos: PropertyVideo[] = propertyData.videos || [];
@@ -358,7 +358,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
 
       {/* Hidden file inputs */}
       <input
-        key={fileInputKey}
+        key={`file-input-${fileInputKey}`}
         ref={fileInputRef}
         type="file"
         multiple
@@ -367,7 +367,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
         className="hidden"
       />
       <input
-        key={videoInputKey}
+        key={`video-input-${videoInputKey}`}
         ref={videoInputRef}
         type="file"
         accept="video/*"
