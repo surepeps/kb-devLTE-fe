@@ -5,16 +5,18 @@ import { useRouter } from 'next/navigation';
 import { useDocumentVerification } from '@/context/document-verification-context';
 import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
+import { DELETE_REQUEST, POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 
 // Define the document types as a union type
 const documentOptions = [
-  'Certificate of Occupancy',
-  'Deed of Partition',
-  'Deed of Assignment',
-  "Governor's Consent",
-  'Survey plan',
-  'Deed of Lease',
+  'certificate-of-occupancy',
+  'deed-of-partition',
+  'deed-of-assignment',
+  'governors-consent',
+  'survey-plan',
+  'deed-of-lease',
 ] as const;
+
 
 type DocumentType = typeof documentOptions[number];
 
@@ -43,13 +45,14 @@ type PaymentDetails = {
 };
 
 const initialDocumentNumbers: DocumentNumbers = {
-  'Certificate of Occupancy': '',
-  'Deed of Partition': '',
-  'Deed of Assignment': '',
-  "Governor's Consent": '',
-  'Survey plan': '',
-  'Deed of Lease': '',
+  'certificate-of-occupancy': '',
+  'deed-of-partition': '',
+  'deed-of-assignment': '',
+  'governors-consent': '',
+  'survey-plan': '',
+  'deed-of-lease': '',
 };
+
 
 const DocumentVerificationPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
@@ -105,12 +108,12 @@ const DocumentVerificationPage: React.FC = () => {
 
   const getDocumentDisplayName = (document: DocumentType): string => {
     const displayNames: Record<DocumentType, string> = {
-      'Certificate of Occupancy': 'Certificate of Occupancy',
-      'Deed of Partition': 'Deed of Partition',
-      'Deed of Assignment': 'Deed of Assignment',
-      "Governor's Consent": "Governor's Consent",
-      'Survey plan': 'Survey plan',
-      'Deed of Lease': 'Deed of Lease',
+      'certificate-of-occupancy': 'Certificate of Occupancy',
+      'deed-of-partition': 'Deed of Partition',
+      'deed-of-assignment': 'Deed of Assignment',
+      "governors-consent": "Governor's Consent",
+      'survey-plan': 'Survey plan',
+      'deed-of-lease': 'Deed of Lease',
     };
     return displayNames[document] || document;
   };
@@ -126,19 +129,13 @@ const DocumentVerificationPage: React.FC = () => {
     return allowedExtensions.includes(fileExtension || '');
   };
 
-  const deleteFile = async (url: string): Promise<void> => {
+  const deleteFile = async (url: string): Promise<any> => {
     try {
-      const response = await fetch(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete file');
+      const response = await DELETE_REQUEST(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, { url });
+      if (!response.success) {
+        toast.error("Failed to delete file")
       }
+      return response;
     } catch (error) {
       console.error('Delete error:', error);
       throw new Error('Failed to delete file');
@@ -156,17 +153,12 @@ const DocumentVerificationPage: React.FC = () => {
     formData.append('for', 'property-file');
 
     try {
-      const response = await fetch(`${URLS.BASE}${URLS.uploadSingleImg}`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData)
 
-      const result = await response.json();
-
-      if (response.ok && result.data?.url) {
-        return result.data.url;
+      if (response.success) {
+        return response.data.url;
       } else {
-        throw new Error(result.message || 'Upload failed');
+        throw new Error(response.message || 'Upload failed');
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -184,8 +176,8 @@ const DocumentVerificationPage: React.FC = () => {
         return;
       }
 
-      // Check file size (10MB limit)
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      // Check file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
         toast.error(`File too large. Maximum size is 10MB.`);
         return;
@@ -328,10 +320,10 @@ const DocumentVerificationPage: React.FC = () => {
         return;
       }
 
-      // Check file size (10MB limit)
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      // Check file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
-        toast.error('File too large. Maximum size is 10MB.');
+        toast.error('File too large. Maximum size is 5MB.');
         return;
       }
 
@@ -345,24 +337,19 @@ const DocumentVerificationPage: React.FC = () => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('for', 'property-file');
+        formData.append('for', 'default');
 
-        const response = await fetch(`${URLS.BASE}${URLS.uploadSingleImg}`, {
-          method: 'POST',
-          body: formData,
-        });
+        const response = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
 
-        const result = await response.json();
-
-        if (response.ok && result.data?.url) {
+        if (response.success) {
           setPaymentDetails(prev => ({
             ...prev,
-            receiptUrl: result.data.url,
+            receiptUrl: response.data.url,
             receiptUploadStatus: 'success'
           }));
           toast.success('Receipt uploaded successfully! ✅');
         } else {
-          throw new Error(result.message || 'Upload failed');
+          toast.error("'Upload failed")
         }
       } catch (error) {
         setPaymentDetails(prev => ({
@@ -379,17 +366,19 @@ const DocumentVerificationPage: React.FC = () => {
   const handleReceiptDelete = async () => {
     if (paymentDetails.receiptUrl) {
       try {
-        await deleteFile(paymentDetails.receiptUrl);
-        setPaymentDetails(prev => ({
-          ...prev,
-          receiptFile: null,
-          receiptUrl: '',
-          receiptUploadStatus: 'idle'
-        }));
-        if (receiptInputRef.current) {
-          receiptInputRef.current.value = '';
+        const response = await deleteFile(paymentDetails.receiptUrl);
+        if (response.success) {
+          setPaymentDetails(prev => ({
+            ...prev,
+            receiptFile: null,
+            receiptUrl: '',
+            receiptUploadStatus: 'idle'
+          }));
+          if (receiptInputRef.current) {
+            receiptInputRef.current.value = '';
+          }
+          toast.success('Receipt deleted successfully');
         }
-        toast.success('Receipt deleted successfully');
       } catch (error) {
         toast.error('Failed to delete receipt');
       }
@@ -416,50 +405,37 @@ const DocumentVerificationPage: React.FC = () => {
     }
   };
 
+
   const handleFinalSubmit = async () => {
     if (!validateStep3()) return;
 
     setIsSubmitting(true);
     try {
-      // Prepare data for submission
+
       const docsMeta = selectedDocuments.map((doc) => ({
         documentType: doc,
         documentNumber: documentNumbers[doc],
         uploadedUrl: uploadedFiles[doc]?.url || '',
       }));
 
-      const files = selectedDocuments
-        .map((doc) => uploadedFiles[doc]?.file)
-        .filter(Boolean) as File[];
+      // Prepare the JSON payload
+      const payload = {
+        contactInfo: {
+          fullName: contactInfo.fullName,
+          email: contactInfo.email,
+          phoneNumber: contactInfo.phoneNumber,
+          address: contactInfo.address,
+        },
+        paymentInfo: {
+          amountPaid: paymentDetails.amountPaid,
+          receipt: paymentDetails.receiptUrl,
+        },
+        documentsMetadata: docsMeta,
+      };
 
-      // Use context to store data
-      setDocumentsMetadata(docsMeta);
-      setDocumentFiles(files);
-      setContextContactInfo(contactInfo);
-      setReceiptFile(paymentDetails.receiptFile);
-      setAmountPaid(paymentDetails.amountPaid);
+      const response = await POST_REQUEST(`${URLS.BASE}${URLS.submitVerificationDocs}`, payload);
 
-      // Submit to the final endpoint (if needed)
-      const formData = new FormData();
-      formData.append('fullName', contactInfo.fullName);
-      formData.append('email', contactInfo.email);
-      formData.append('phoneNumber', contactInfo.phoneNumber);
-      formData.append('address', contactInfo.address);
-      formData.append('amountPaid', paymentDetails.amountPaid.toString());
-      formData.append('documentsMetadata', JSON.stringify(docsMeta));
-      if (paymentDetails.receiptFile) {
-        formData.append('receipt', paymentDetails.receiptFile);
-      }
-      files.forEach(file => formData.append('documents', file));
-
-      const response = await fetch('https://khabiteq-realty.onrender.com/api/submit-docs', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
+      if (response.success) {
         setShowSuccessModal(true);
         reset();
       } else {
@@ -472,6 +448,7 @@ const DocumentVerificationPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
@@ -1089,7 +1066,7 @@ const DocumentVerificationPage: React.FC = () => {
               className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded-md"
               onClick={() => {
                 setShowSuccessModal(false);
-                router.push('/document_verification');
+                router.push('/document-verification');
               }}
             >
               Close

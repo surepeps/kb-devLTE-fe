@@ -40,7 +40,7 @@ export const mainNavigationData: NavigationItem[] = [
       },
       {
         name: "Verify Documents",
-        url: "/document_verification",
+        url: "/document-verification",
         isClicked: false,
       },
     ],
@@ -112,7 +112,7 @@ export const agentNavigationData: NavigationItem[] = [
       },
       {
         name: "Verify Documents",
-        url: "/document_verification",
+        url: "/document-verification",
         isClicked: false,
       },
     ],
@@ -180,7 +180,7 @@ export const marketplaceDropdownData: NavigationItem[] = [
   },
   {
     name: "Verify Documents",
-    url: "/document_verification",
+    url: "/document-verification",
     isClicked: false,
   },
 ];

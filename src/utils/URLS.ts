@@ -11,6 +11,8 @@ export const URLS = {
 
   deleteUploadedSingleImg: "/delete-single-file",
 
+  submitVerificationDocs: "/submitVerificationDocs",
+
   /**
    * Upload file
    */

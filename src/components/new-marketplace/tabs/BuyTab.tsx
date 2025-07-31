@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import BuyPropertySearch from "../search/BuyPropertySearch";
 import PropertyGrid from "../PropertyGrid";
-
+ 
 const BuyTab = () => {
   const {
     buyTab,

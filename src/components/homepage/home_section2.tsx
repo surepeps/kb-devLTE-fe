@@ -111,7 +111,7 @@ const cardData: CardProps[] = [
     color: '#6A1B9A',
     secondaryColor: '#F3E5F5',
     buttonText: 'Verify',
-    link: '/document_verification',
+    link: '/document-verification',
   },
 ];
 
