@@ -9,29 +9,19 @@ import { useRouter } from "next/navigation";
 interface PreferenceSuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  propertyData?: {
-    propertyType: string;
-    price: string;
-    location: string;
-  };
-  preferenceId: string;
   buyerName?: string;
 }
 
 const PreferenceSuccessModal: React.FC<PreferenceSuccessModalProps> = ({
   isOpen,
   onClose,
-  propertyData,
-  preferenceId,
   buyerName,
 }) => {
   const router = useRouter();
 
   const handleCreateAnother = () => {
-    // Stay on the same page with the same preference - just reset the form
     onClose();
-    // The form will be reset via the existing resetForm function in the parent component
-    window.location.reload(); // Refresh to reset the form with same preference data
+    window.location.reload();
   };
 
   const handleBackToMarketplace = () => {
@@ -85,32 +75,6 @@ const PreferenceSuccessModal: React.FC<PreferenceSuccessModalProps> = ({
 
           {/* Content */}
           <div className="p-6">
-            {propertyData && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-[#09391C] mb-3 text-center">
-                  Property Summary
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Type:</span>
-                    <span className="font-medium capitalize">
-                      {propertyData.propertyType}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Price:</span>
-                    <span className="font-medium text-[#8DDB90]">
-                      ₦{parseInt(propertyData.price).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Location:</span>
-                    <span className="font-medium">{propertyData.location}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* What happens next */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-800 mb-2">
@@ -119,7 +83,7 @@ const PreferenceSuccessModal: React.FC<PreferenceSuccessModalProps> = ({
               <ul className="text-sm text-blue-700 space-y-1">
                 <li>• The buyer will be notified about your property</li>
                 <li>• Your property will be prioritized in their search results</li>
-                <li>• You'll receive notifications for any inquiries</li>
+                <li>• You&apos;ll receive notifications for any inquiries</li>
                 <li>• The buyer can schedule inspections directly</li>
               </ul>
             </div>

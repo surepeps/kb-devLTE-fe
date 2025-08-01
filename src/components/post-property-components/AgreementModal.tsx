@@ -8,6 +8,7 @@ interface AgreementModalProps {
   onAccept: () => void;
   userName?: string;
   userType?: "landowner" | "agent";
+  textValue?: string;
 }
 
 const AgreementModal: React.FC<AgreementModalProps> = ({
@@ -16,6 +17,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
   onAccept,
   userName = "User",
   userType = "landowner",
+  textValue = "Agree and Post Property"
 }) => {
   const getUserTypeText = () => {
     return userType === "agent" ? "Agent" : "Property Owner";
@@ -67,19 +69,20 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                value="Cancel"
-                type="button"
-                onClick={onClose}
-                className="flex-1 border-2 border-[#E5E7EB] text-[#5A5D63] hover:bg-[#F9FAFB] text-base font-semibold min-h-[50px] py-3 px-6 rounded-lg transition-colors"
-              />
-              <Button
-                value="Agree and Post Property"
-                type="button"
-                onClick={onAccept}
-                className="flex-1 bg-[#09391C] hover:bg-[#062f14] text-white text-base font-semibold min-h-[50px] py-3 px-6 rounded-lg transition-colors"
-              />
+                <Button
+                    value="Cancel"
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 border-2 border-[#E5E7EB] text-[#5A5D63] hover:bg-[#F9FAFB] text-base font-semibold min-h-[50px] py-3 px-6 rounded-lg transition-colors whitespace-nowrap"
+                />
+                <Button
+                    value={textValue}
+                    type="button"
+                    onClick={onAccept}
+                    className="flex-1 text-md bg-[#09391C] hover:bg-[#062f14] text-white text-base font-semibold min-h-[50px] py-3 px-6 rounded-lg transition-colors whitespace-nowrap"
+                />
             </div>
+
           </motion.div>
         </motion.div>
       )}

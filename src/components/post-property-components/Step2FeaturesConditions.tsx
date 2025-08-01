@@ -33,11 +33,8 @@ import {
   PROPERTY_CATEGORIES,
 } from "@/data/comprehensive-post-property-config";
 
-interface StepProps {
-  // No props needed as we'll use Formik validation internally
-}
 
-const Step2FeaturesConditions: React.FC<StepProps> = () => {
+const Step2FeaturesConditions: React.FC = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { errors, touched, setFieldTouched, setFieldValue } =
     useFormikContext<any>();
@@ -246,7 +243,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
           </div>
         )}
 
-                {/* Features & Amenities - NOT for Joint Venture */}
+        {/* Features & Amenities - NOT for Joint Venture */}
         {propertyData.propertyType !== BRIEF_TYPES.JV && (
           <div className="border border-[#E5E7EB] rounded-lg p-6">
             <div className="mb-6">
@@ -520,7 +517,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
           </div>
         )}
 
-                {/* Rental Conditions - Different for each property type */}
+        {/* Rental Conditions - Different for each property type */}
         {propertyData.propertyType === BRIEF_TYPES.RENT && (
           <div className="space-y-6">
             {/* Residential Rental Properties */}
@@ -1133,6 +1130,7 @@ const Step2FeaturesConditions: React.FC<StepProps> = () => {
                 handleChange={() =>
                   handleFieldChange("isTenanted", option.value)
                 }
+                title={option.label}
                 type="radio"
                 value={option.value}
                 name="isTenanted"

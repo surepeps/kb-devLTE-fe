@@ -27,9 +27,6 @@ import Preloader from "@/components/general-components/preloader";
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
 import Step4OwnershipDeclaration from "@/components/post-property-components/Step4OwnershipDeclaration";
 
-// Import configuration helpers
-import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
-
 // Import step-specific validation schemas
 import {
   step2ValidationSchema,
@@ -37,6 +34,7 @@ import {
 } from "@/utils/validation/post-property-validation";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 import AgreementModal from "@/components/post-property-components/AgreementModal";
+import Breadcrumb from "@/components/extrals/Breadcrumb";
 
 // Simplified validation schemas for each step - only validate basic fields to avoid cross-step validation
 const getValidationSchema = (currentStep: number, propertyData: Record<string, unknown>) => {
@@ -141,7 +139,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
     );
   }
 
-        if (propertyData.propertyType === "jv") {
+  if (propertyData.propertyType === "jv") {
     // JV ALWAYS requires land size for ALL property categories
     // JV does NOT require property condition, building type, or bedrooms for ANY category
     requiredFields.push("measurementType", "landSize");
@@ -245,7 +243,6 @@ const PostProperty = () => {
     setShowCommissionModal,
     showPropertySummary,
     setShowPropertySummary,
-    getUserCommissionRate,
     getUserType,
   } = usePostPropertyContext();
 
@@ -424,10 +421,11 @@ const PostProperty = () => {
     }, 50);
   };
 
-  const handleCommissionAccept = () => {
-    setShowCommissionModal(false);
-    handleSubmit();
-  };
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Post Property" },
+  ];
 
   const handleSubmit = async () => {
     try {
@@ -600,14 +598,8 @@ const PostProperty = () => {
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
         <div className="container mx-auto px-4 md:px-6">
           {/* Breadcrumb */}
-          <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
-            <span>Home</span>
-            <span className="mx-2">›</span>
-            <span>Post Property</span>
-            <span className="mx-2">›</span>
-            <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
-          </nav>
-
+          <Breadcrumb items={breadcrumbItems} />
+          
           {/* Header */}
           <div className="text-center mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-4">
@@ -727,9 +719,10 @@ const PostProperty = () => {
             onClose={() => setShowCommissionModal(false)}
             onAccept={() => {
               setShowCommissionModal(false);
-              handleSubmit(); // your form submission or posting logic
+              handleSubmit();
             }}
-            userName={user.firstName}
+            textValue={"Agree and Post Property"}
+            userName={`${user.firstName} ${user.lastName}`}
             userType={user?.userType === "Agent" ? "agent" : "landowner"}
           />
 
@@ -836,11 +829,6 @@ const PostProperty = () => {
           <SuccessModal
             isOpen={showSuccessModal}
             onClose={() => setShowSuccessModal(false)}
-            propertyData={{
-              propertyType: propertyData.propertyType,
-              price: propertyData.price,
-              location: `${propertyData.area}, ${propertyData.lga?.label}, ${propertyData.state?.label}`
-            }}
           />
         </div>
       </div>
