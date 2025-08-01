@@ -7,19 +7,18 @@ import Image from "next/image";
 import { usePostPropertyContext } from "@/context/post-property-context";
 import { getBriefTypeConfig } from "@/data/post-property-form-config";
 import Button from "@/components/general-components/button";
+import { kebabToTitleCase } from "@/utils/helpers";
 
 const EnhancedPropertySummary: React.FC = () => {
   const {
     propertyData,
     images,
-    getUserCommissionRate,
     getUserType,
     setShowCommissionModal,
     setShowPropertySummary,
   } = usePostPropertyContext();
 
   const briefConfig = getBriefTypeConfig(propertyData.propertyType);
-  const commissionRate = getUserCommissionRate();
   const userType = getUserType();
 
   const formatPrice = (price: string | number | undefined) => {
@@ -33,7 +32,9 @@ const EnhancedPropertySummary: React.FC = () => {
     return `₦${numericPrice.toLocaleString()}`;
   };
 
-  const validImages = images.filter((img) => img.file !== null);
+  const validImages = images.filter(
+    (img) => img.file !== null || img.url || img.preview
+  );
 
   const handleProceedToCommission = () => {
     setShowPropertySummary(false);
@@ -65,7 +66,7 @@ const EnhancedPropertySummary: React.FC = () => {
       summary.push({
         title: "Property Details",
         items: [
-          { label: "Type of Building", value: propertyData.typeOfBuilding },
+          { label: "Type of Building", value: kebabToTitleCase(propertyData.typeOfBuilding) },
           ...(propertyData.bedrooms > 0
             ? [{ label: "Bedrooms", value: propertyData.bedrooms.toString() }]
             : []),
@@ -96,22 +97,22 @@ const EnhancedPropertySummary: React.FC = () => {
       if (propertyData.rentalType)
         rentalItems.push({
           label: "Rental Type",
-          value: propertyData.rentalType,
+          value: kebabToTitleCase(propertyData.rentalType),
         });
       if (propertyData.propertyCondition)
         rentalItems.push({
           label: "Property Condition",
-          value: propertyData.propertyCondition,
+          value: kebabToTitleCase(propertyData.propertyCondition),
         });
       if (propertyData.shortletDuration)
         rentalItems.push({
           label: "Shortlet Duration",
-          value: propertyData.shortletDuration,
+          value: kebabToTitleCase(propertyData.shortletDuration),
         });
       if (propertyData.leaseHold)
         rentalItems.push({
           label: "Lease Hold",
-          value: propertyData.leaseHold,
+          value: kebabToTitleCase(propertyData.leaseHold),
         });
 
       if (rentalItems.length > 0) {
@@ -136,7 +137,7 @@ const EnhancedPropertySummary: React.FC = () => {
         items: [
           {
             label: "Land Size",
-            value: `${propertyData.landSize} ${propertyData.measurementType}`,
+            value: `${propertyData.landSize} ${kebabToTitleCase(propertyData.measurementType)}`,
           },
         ],
       });
@@ -149,7 +150,7 @@ const EnhancedPropertySummary: React.FC = () => {
         items: [
           {
             label: "Selected Features",
-            value: propertyData.features.join(", "),
+            value:  propertyData.features.map(kebabToTitleCase).join(", "),
           },
         ],
       });
@@ -166,7 +167,7 @@ const EnhancedPropertySummary: React.FC = () => {
         items: [
           {
             label: "Available Documents",
-            value: propertyData.documents.join(", "),
+            value: propertyData.documents.map(kebabToTitleCase).join(", "),
           },
         ],
       });
@@ -208,7 +209,7 @@ const EnhancedPropertySummary: React.FC = () => {
       if (propertyData.isTenanted)
         additionalItems.push({
           label: "Tenancy Status",
-          value: propertyData.isTenanted,
+          value: kebabToTitleCase(propertyData.isTenanted),
         });
       if (propertyData.additionalInfo)
         additionalItems.push({
@@ -327,12 +328,6 @@ const EnhancedPropertySummary: React.FC = () => {
                   <span className="text-[#5A5D63]">Images:</span>
                   <span className="text-[#09391C] font-medium">
                     {validImages.length}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#5A5D63]">Commission:</span>
-                  <span className="text-[#09391C] font-medium">
-                    {commissionRate}%
                   </span>
                 </div>
                 <div className="flex justify-between">

@@ -9,18 +9,12 @@ import { useRouter } from "next/navigation";
 interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  propertyData?: {
-    propertyType: string;
-    price: string;
-    location: string;
-  };
   isUpdate?: boolean; // New prop to differentiate between create and update
 } 
 
 const SuccessModal: React.FC<SuccessModalProps> = ({
   isOpen,
   onClose,
-  propertyData,
   isUpdate = false,
 }) => {
   const router = useRouter();

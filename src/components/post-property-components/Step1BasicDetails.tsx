@@ -22,7 +22,6 @@ import {
   shouldShowField,
   getFieldsToClearOnCategoryChange,
 } from "@/data/comprehensive-post-property-config";
-import { formatCurrency } from "@/utils/validation/post-property-validation";
 import { PropertyFormData, StepProps } from "@/types/post-property.types";
 import {
   formatPriceForDisplay,
@@ -36,7 +35,7 @@ interface Option {
 }
 
 
-
+ 
 const Step1BasicDetails: React.FC<StepProps> = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { errors, touched, setFieldTouched, setFieldValue } =
@@ -285,7 +284,7 @@ const Step1BasicDetails: React.FC<StepProps> = () => {
         <div>
           <h3 className="text-lg font-semibold text-[#09391C] mb-4">
             Property Category <span className="text-red-500">*</span>
-          </h3>
+          </h3> 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {briefTypeConfig[
               propertyData.propertyType as keyof typeof briefTypeConfig

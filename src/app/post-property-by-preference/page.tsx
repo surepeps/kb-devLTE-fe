@@ -19,7 +19,6 @@ import Step0PropertyTypeSelection from "@/components/post-property-components/St
 import Step1BasicDetails from "@/components/post-property-components/Step1BasicDetails";
 import Step3ImageUpload from "@/components/post-property-components/Step3ImageUpload";
 import EnhancedPropertySummary from "@/components/post-property-components/EnhancedPropertySummary";
-import CommissionModal from "@/components/post-property-components/CommissionModal";
 import PreferenceSuccessModal from "@/components/post-property-components/PreferenceSuccessModal";
 import Button from "@/components/general-components/button";
 import Loading from "@/components/loading-component/loading";
@@ -29,15 +28,14 @@ import Preloader from "@/components/general-components/preloader";
 import Step2FeaturesConditions from "@/components/post-property-components/Step2FeaturesConditions";
 import Step4OwnershipDeclaration from "@/components/post-property-components/Step4OwnershipDeclaration";
 
-// Import configuration helpers
-import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
-
 // Import step-specific validation schemas
 import {
   step2ValidationSchema,
   step4ValidationSchema,
 } from "@/utils/validation/post-property-validation";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
+import AgreementModal from "@/components/post-property-components/AgreementModal";
+import Breadcrumb from "@/components/extrals/Breadcrumb";
 
 // Preference interfaces
 interface Buyer {
@@ -511,6 +509,19 @@ const PostPropertyByPreference = () => {
       }
   }, [preferenceId]);
 
+  // Scroll to top on page load
+  useEffect(() => {
+    // Immediate scroll to top
+    window.scrollTo(0, 0);
+
+    // Also scroll smoothly after a delay for late-loading content
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Fetch preference details and auto-populate form
   useEffect(() => {
     fetchAndPopulatePreference();
@@ -624,11 +635,21 @@ const PostPropertyByPreference = () => {
       return; // Don't proceed if validation fails
     }
 
+
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+      // Scroll to top when moving to next step
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
     } else {
       setShowPropertySummary(true);
+      // Scroll to top when showing property summary
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
     }
+
   };
 
   const handlePrevious = () => {
@@ -640,12 +661,18 @@ const PostPropertyByPreference = () => {
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
+
+    // Scroll to top when navigating backwards
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 50);
   };
 
-  const handleCommissionAccept = () => {
-    setShowCommissionModal(false);
-    handleSubmit();
-  };
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Agent Marketplace", href: "/agent-marketplace" },
+    { label: "Post Property by Preference" },
+  ];
 
   const handleSubmit = async () => {
     try {
@@ -857,15 +884,7 @@ const PostPropertyByPreference = () => {
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
         <div className="container mx-auto px-4 md:px-6">
           {/* Breadcrumb */}
-          <nav className="text-sm text-[#5A5D63] mb-4 md:mb-6">
-            <span>Home</span>
-            <span className="mx-2">›</span>
-            <span>Agent Marketplace</span>
-            <span className="mx-2">›</span>
-            <span>Post Property by Preference</span>
-            <span className="mx-2">›</span>
-            <span className="text-[#09391C] font-medium">{getStepTitle()}</span>
-          </nav>
+          <Breadcrumb items={breadcrumbItems} />
 
           {/* Header */}
           <div className="text-center mb-6 md:mb-8">
@@ -909,12 +928,6 @@ const PostPropertyByPreference = () => {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => router.push(`/agent-marketplace/${preferenceId}`)}
-                  className="text-[#8DDB90] hover:text-[#7BC97F] text-sm font-medium"
-                >
-                  View Full Details
-                </button>
               </div>
             </div>
           )}
@@ -1018,35 +1031,22 @@ const PostPropertyByPreference = () => {
             )}
           </Formik>
 
-          {/* Commission Modal */}
-          <CommissionModal
+          <AgreementModal
             open={showCommissionModal}
             onClose={() => setShowCommissionModal(false)}
-            onAccept={handleCommissionAccept}
-            commission={`${getUserCommissionRate()}%`}
-            userName={
-              `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`.trim() ||
-              user?.firstName ||
-              "User"
-            }
+            onAccept={() => {
+              setShowCommissionModal(false);
+              handleSubmit();
+            }}
+            textValue={"Agree and Post Property"}
+            userName={`${user.firstName} ${user.lastName}`}
             userType={user?.userType === "Agent" ? "agent" : "landowner"}
-            briefType={
-              briefTypeConfig[
-                propertyData.propertyType as keyof typeof briefTypeConfig
-              ]?.label
-            }
           />
 
           {/* Success Modal */}
           <PreferenceSuccessModal
             isOpen={showSuccessModal}
             onClose={() => setShowSuccessModal(false)}
-            propertyData={{
-              propertyType: propertyData.propertyType,
-              price: propertyData.price,
-              location: `${propertyData.area}, ${propertyData.lga?.label}, ${propertyData.state?.label}`
-            }}
-            preferenceId={preferenceId || ''}
             buyerName={preference?.buyer?.fullName}
           />
         </div>
