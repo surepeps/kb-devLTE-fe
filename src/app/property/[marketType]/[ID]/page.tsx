@@ -29,6 +29,8 @@ import {
   User,
   FileText,
   Shield,
+  Play,
+  Video,
 } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
