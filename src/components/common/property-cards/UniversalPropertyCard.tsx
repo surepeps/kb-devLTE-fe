@@ -222,7 +222,10 @@ export const createPropertyCardData = (property: any, propertyType?: string): { 
       { header: "Investment Amount", value: `₦${Number(property.investmentAmount || property.price || 0).toLocaleString()}` },
       { header: "Expected ROI", value: property.expectedROI || "N/A" },
       { header: "Investment Type", value: property.investmentType || "Joint Venture" },
-      { header: "Bedrooms", value: property.additionalFeatures?.noOfBedrooms || property.noOfBedrooms || "0" },
+      { header: "Bedrooms", value: property.additionalFeatures?.noOfBedroom || property.noOfBedroom || "0" },
+      { header: "Bathrooms", value: property.additionalFeatures?.noOfBathroom || property.noOfBathroom || "0" },
+      { header: "Car Parks", value: property.additionalFeatures?.noOfCarPark || property.noOfCarPark || "0" },
+      { header: "Toilets", value: property.additionalFeatures?.noOfToilet || property.noOfToilet || "0" },
       {
         header: "Location",
         value: property.location
@@ -236,10 +239,10 @@ export const createPropertyCardData = (property: any, propertyType?: string): { 
   return [
     { header: "Property Type", value: property.propertyType || "N/A" },
     { header: "Price", value: `₦${Number(property.price || 0).toLocaleString()}` },
-    { header: "Bedrooms", value: property.additionalFeatures?.noOfBedrooms || property.noOfBedrooms || "0" },
-    { header: "Bathrooms", value: property.additionalFeatures?.noOfBathrooms || property.noOfBathrooms || "0" },
-    { header: "Toilets", value: property.additionalFeatures?.noOfToilets || property.noOfToilets || "0" },
-    { header: "CarParks", value: property.additionalFeatures?.noOfCarParks || property.noOfCarParks || "0" },
+    { header: "Bedrooms", value: property.additionalFeatures?.noOfBedroom || property.noOfBedroom || "0" },
+    { header: "Bathrooms", value: property.additionalFeatures?.noOfBathroom || property.noOfBathroom || "0" },
+    { header: "CarParks", value: property.additionalFeatures?.noOfCarPark || property.noOfCarPark || "0" },
+    { header: "Toilets", value: property.additionalFeatures?.noOfToilet || property.noOfToilet || "0" },
     {
       header: "Location",
       value: property.location
