@@ -37,7 +37,7 @@ interface UserProfile {
   phoneNumber?: string;
   address?: string;
   profileImage?: string;
-  userType: "Agent" | "Landowners";
+  userType: "Agent" | "Landowners" | "FieldAgent";
   accountApproved?: boolean;
   createdAt: string;
 }
