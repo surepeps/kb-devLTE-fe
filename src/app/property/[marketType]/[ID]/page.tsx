@@ -235,6 +235,185 @@ const ImageGallery = ({ images }: { images: string[] }) => {
   );
 };
 
+// Video Gallery Component
+const VideoGallery = ({ videos }: { videos: string[] }) => {
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [isVideoLightboxOpen, setIsVideoLightboxOpen] = useState(false);
+
+  if (!videos || videos.length === 0) return null;
+
+  const openVideoLightbox = (index: number) => {
+    setActiveVideoIndex(index);
+    setIsVideoLightboxOpen(true);
+  };
+
+  const getVideoId = (url: string) => {
+    // Extract video ID for different platforms (YouTube, Vimeo, etc.)
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+      return match ? match[1] : null;
+    }
+    if (url.includes('vimeo.com')) {
+      const match = url.match(/vimeo\.com\/(\d+)/);
+      return match ? match[1] : null;
+    }
+    return null;
+  };
+
+  const getEmbedUrl = (url: string) => {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const videoId = getVideoId(url);
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    }
+    if (url.includes('vimeo.com')) {
+      const videoId = getVideoId(url);
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : url;
+    }
+    return url;
+  };
+
+  const getThumbnailUrl = (url: string) => {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const videoId = getVideoId(url);
+      return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
+    }
+    if (url.includes('vimeo.com')) {
+      // For Vimeo, we'll use a placeholder or default thumbnail
+      return '';
+    }
+    return '';
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <Video className="w-5 h-5 mr-2 text-blue-600" />
+          Property Videos ({videos.length})
+        </h3>
+      </div>
+
+      {/* Video Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {videos.map((video, index) => {
+          const thumbnailUrl = getThumbnailUrl(video);
+
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="relative group cursor-pointer rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+              onClick={() => openVideoLightbox(index)}
+            >
+              <div className="relative aspect-video bg-gray-900">
+                {thumbnailUrl ? (
+                  <Image
+                    src={thumbnailUrl}
+                    alt={`Property video ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+                    <Video className="w-12 h-12 text-white" />
+                  </div>
+                )}
+
+                {/* Play Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/50 backdrop-blur-sm rounded-full p-4 group-hover:bg-black/70 transition-colors">
+                    <Play className="w-8 h-8 text-white fill-white" />
+                  </div>
+                </div>
+
+                {/* Video Number */}
+                <div className="absolute top-3 left-3 bg-black/70 text-white text-sm px-2 py-1 rounded-md">
+                  {index + 1} of {videos.length}
+                </div>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                <p className="text-white text-sm font-medium">
+                  Property Video {index + 1}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Video Lightbox Modal */}
+      <AnimatePresence>
+        {isVideoLightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setIsVideoLightboxOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="relative w-full max-w-5xl aspect-video"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <iframe
+                src={getEmbedUrl(videos[activeVideoIndex])}
+                title={`Property video ${activeVideoIndex + 1}`}
+                className="w-full h-full rounded-lg"
+                allowFullScreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              />
+
+              {/* Close Button */}
+              <button
+                onClick={() => setIsVideoLightboxOpen(false)}
+                className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              {/* Video Navigation */}
+              {videos.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveVideoIndex(activeVideoIndex > 0 ? activeVideoIndex - 1 : videos.length - 1);
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveVideoIndex(activeVideoIndex < videos.length - 1 ? activeVideoIndex + 1 : 0);
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Video Counter */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                {activeVideoIndex + 1} of {videos.length}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 // Property Stats Component
 const PropertyStats = ({ details }: { details: PropertyDetails }) => {
   const stats = [
