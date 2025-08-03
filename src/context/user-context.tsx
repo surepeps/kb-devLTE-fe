@@ -25,7 +25,7 @@ export interface User {
   lastName?: string;
   phoneNumber?: string;
   selectedRegion?: string[];
-  userType?: "Agent" | "Landowners";
+  userType?: "Agent" | "Landowners" | "FieldAgent";
   accountId?: string;
   profile_picture?: string;
   address?: {
