@@ -750,6 +750,7 @@ const ProductDetailsPage = () => {
               propertyData.pictures && propertyData.pictures.length > 0
                 ? propertyData.pictures
                 : [sampleImage.src],
+            videos: propertyData.videos || [],
             createdAt: propertyData.createdAt,
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
