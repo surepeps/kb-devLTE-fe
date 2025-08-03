@@ -31,7 +31,7 @@ interface GlobalPropertyCardProps {
   } | null;
   className?: string;
 }
-
+ 
 const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
   property,
   cardData,
