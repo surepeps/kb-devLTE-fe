@@ -79,6 +79,7 @@ interface PropertyDetails {
   isPreference?: boolean;
   isPremium: boolean;
   pictures: string[];
+  videos: string[];
   createdAt?: string;
   updatedAt?: string;
   owner: string;
