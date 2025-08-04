@@ -117,7 +117,7 @@ interface PostPropertyContextType {
   propertyData: PropertyData;
   setPropertyData: (data: PropertyData) => void;
   updatePropertyData: (
-    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory",
+    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory" | "initializePropertyType",
     value: any,
   ) => void;
   isSubmitting: boolean;
