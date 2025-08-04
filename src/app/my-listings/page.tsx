@@ -174,7 +174,13 @@ const MyListingPage = () => {
   };
 
   const handleEditProperty = async (property: Property) => {
-      router.push(`/update-property/${property._id}`);
+    // Determine property type route from briefType
+    const propertyType = property.briefType === "Outright Sales" ? "outright-sales" :
+                        property.briefType === "Rent" ? "rent" :
+                        property.briefType === "Shortlet" ? "shortlet" :
+                        property.briefType === "Joint Venture" ? "joint-venture" : "outright-sales";
+
+    router.push(`/update-property/${property._id}/${propertyType}`);
   };
 
   const handleViewProperty = (property: Property) => {
