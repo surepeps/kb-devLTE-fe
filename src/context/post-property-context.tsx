@@ -117,7 +117,7 @@ interface PostPropertyContextType {
   propertyData: PropertyData;
   setPropertyData: (data: PropertyData) => void;
   updatePropertyData: (
-    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory",
+    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory" | "initializePropertyType",
     value: any,
   ) => void;
   isSubmitting: boolean;
@@ -214,7 +214,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   const [showPropertySummary, setShowPropertySummary] = useState(false);
 
   const updatePropertyData = (
-    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory",
+    field: keyof PropertyData | "resetFormExcept" | "resetFieldsAfterCategory" | "initializePropertyType",
     value: any,
   ) => {
     if (field === "resetFormExcept") {
@@ -250,6 +250,21 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
       setPropertyData(newData);
       // Reset images when property category changes
       setImages([]);
+    } else if (field === "initializePropertyType") {
+      // Initialize property type when entering a specific property type page
+      const newPropertyType = value as "sell" | "rent" | "jv" | "shortlet";
+
+      // Only reset if we're changing to a different property type
+      if (propertyData.propertyType !== newPropertyType) {
+        const newData = { ...initialPropertyData };
+        newData.propertyType = newPropertyType;
+
+        setPropertyData(newData);
+        setImages([]);
+        setCurrentStep(0);
+        setShowCommissionModal(false);
+        setShowPropertySummary(false);
+      }
     } else {
       setPropertyData((prev) => ({
         ...prev,
