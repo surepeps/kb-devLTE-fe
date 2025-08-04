@@ -259,10 +259,8 @@ const SharedPostPropertyForm: React.FC<SharedPostPropertyFormProps> = ({
 
   // Set property type on component mount
   useEffect(() => {
-    if (propertyData.propertyType !== propertyType) {
-      updatePropertyData("propertyType", propertyType);
-    }
-  }, [propertyType, propertyData.propertyType, updatePropertyData]);
+    updatePropertyData("initializePropertyType", propertyType);
+  }, [propertyType, updatePropertyData]);
 
   // Scroll to top on page load
   useEffect(() => {
