@@ -14,7 +14,7 @@ const HeaderLogic = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 			(pathname?.includes("onboard") && pathname?.includes("agent")) ||
 			(pathname?.includes("under-review") &&
 				pathname?.includes("under-review")) ? (
-				<AgentHeader />
+				<AgentHeader /> 
 			) : (
 				<Header isComingSoon={isComingSoon} />
 			)}

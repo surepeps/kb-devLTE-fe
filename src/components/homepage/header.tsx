@@ -361,9 +361,12 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       className="w-[18px] h-[18px]"
                     />
                     {/* Mobile Notification Badge */}
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">3</span>
-                    </div>
+                    {unreadCount > 0 && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">{unreadCount}</span>
+                      </div>)
+                    }
+
                   </button>
                 </div>
 

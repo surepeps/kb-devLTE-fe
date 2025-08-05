@@ -22,7 +22,7 @@ import { AgentNavData } from "@/enums";
 interface UserProfileModalProps {
   closeUserProfileModal: (type: boolean) => void;
   userDetails: User | null;
-}
+} 
 
 const UserProfile: React.FC<UserProfileModalProps> = ({
   closeUserProfileModal,
@@ -68,22 +68,6 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
     ...(userType === "Agent"
       ? [
           {
-            icon: <LayoutDashboardIcon size={18} />,
-            label: "Dashboard",
-            action: () => {
-              router.push("/dashboard");
-              closeUserProfileModal(false);
-            },
-          },
-          {
-            icon: <Home size={18} />,
-            label: "List Property",
-            action: () => {
-                            router.push("/post-property");
-              closeUserProfileModal(false);
-            },
-          },
-          {
             icon: <Briefcase size={18} />,
             label: "Marketplace",
             action: () => {
@@ -93,6 +77,22 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
           },
         ]
       : []),
+    {
+      icon: <LayoutDashboardIcon size={18} />,
+      label: "Dashboard",
+      action: () => {
+        router.push("/dashboard");
+        closeUserProfileModal(false);
+      },
+    },
+    {
+      icon: <Home size={18} />,
+      label: "List Property",
+      action: () => {
+        router.push("/post-property");
+        closeUserProfileModal(false);
+      },
+    },
     {
       icon: <Users size={18} />,
       label: "Referral",
