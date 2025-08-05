@@ -31,6 +31,7 @@ import {
   Shield,
   Play,
   Video,
+  House,
 } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
@@ -48,12 +49,14 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/thumbs";
 import Loading from "@/components/loading-component/loading";
+import { kebabToTitleCase } from "@/utils/helpers";
 
 interface PropertyDetails {
   _id: string;
   propertyId: string;
   price: number;
   propertyType: string;
+  propertyCategory: string;
   bedRoom: number;
   propertyStatus: string;
   location: {
@@ -74,6 +77,8 @@ interface PropertyDetails {
   };
   features: string[];
   tenantCriteria: string[];
+  jvConditions: string[];
+  shortletDetails: any;
   areYouTheOwner: boolean;
   isAvailable: boolean;
   isApproved: boolean;
@@ -488,7 +493,7 @@ const FeatureList = ({
         {features.map((feature, index) => (
           <div key={index} className="flex items-center text-gray-700">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0" />
-            <span className="text-sm">{feature}</span>
+            <span className="text-sm">{kebabToTitleCase(feature)}</span>
           </div>
         ))}
       </div>
@@ -515,19 +520,9 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
       icon: <Shield className="w-4 h-4" />,
     },
     {
-      label: "Owner",
-      value: details.areYouTheOwner ? "Owner" : "Agent",
-      icon: <User className="w-4 h-4" />,
-    },
-    {
-      label: "Date Listed",
-      value: details.createdAt ? new Date(details.createdAt).toLocaleDateString() : "N/A",
-      icon: <Calendar className="w-4 h-4" />,
-    },
-    {
-      label: "Last Updated",
-      value: details.updatedAt ? new Date(details.updatedAt).toLocaleDateString() : "N/A",
-      icon: <Clock className="w-4 h-4" />,
+      label: "Property Category",
+      value: details.propertyCategory,
+      icon: <House className="w-4 h-4" />,
     },
   ];
 
@@ -547,7 +542,7 @@ const PropertyInfoCard = ({ details }: { details: PropertyDetails }) => {
               <span className="ml-2 text-sm">{item.label}</span>
             </div>
             <span className="text-sm font-medium text-gray-900">
-              {item.value}
+              {kebabToTitleCase(item.value)}
             </span>
           </div>
         ))}
@@ -577,7 +572,7 @@ const DocumentsList = ({
             className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg"
           >
             <span className="text-sm font-medium text-gray-900">
-              {doc.docName}
+              {kebabToTitleCase(doc.docName)}
             </span>
             <span
               className={`text-xs px-2 py-1 rounded-full ${
@@ -609,6 +604,30 @@ const ActionButtons = ({
 }) => {
   const [isLiked, setIsLiked] = useState(false);
 
+  const handleShare = async () => {
+    const shareData = {
+      title: "Property Listing",
+      text: `Check out this property in ${details.location.area}, ${details.location.state}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error("Share failed:", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard!");
+      } catch (err) {
+        console.error("Clipboard write failed:", err);
+        alert("Could not copy link.");
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Price */}
@@ -632,18 +651,18 @@ const ActionButtons = ({
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={onInspection}
-          className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center ${
+          className={`flex-1 font-semibold py-3 px-4 whitespace-nowrap text-sm rounded-xl transition-colors duration-200 flex items-center justify-center ${
             isSelected
               ? "bg-red-600 hover:bg-red-700 text-white"
               : "bg-green-600 hover:bg-green-700 text-white"
           }`}
         >
           <Eye className="w-5 h-5 mr-2" />
-          {isSelected ? "Remove from Inspection" : "Add to Inspection"}
+          {isSelected ? "Remove" : "Add to Inspection"}
         </button>
         <button
           onClick={onNegotiation}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 whitespace-nowrap text-sm text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center"
         >
           <ExternalLink className="w-5 h-5 mr-2" />
           Price Negotiation
@@ -659,7 +678,7 @@ const ActionButtons = ({
           <Heart className={`w-5 h-5 mr-2 ${isLiked ? "fill-current" : ""}`} />
           {isLiked ? "Saved" : "Save"}
         </button>
-        <button className="flex-1 border-2 border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center">
+        <button onClick={handleShare} className="flex-1 border-2 border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500 font-medium py-3 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center">
           <Share2 className="w-5 h-5 mr-2" />
           Share
         </button>
@@ -700,13 +719,11 @@ const ProductDetailsPage = () => {
     const fetchPropertyDetails = async () => {
       try {
         setLoading(true);
-        let response;
 
         // Use the new endpoint format
         const apiUrl = `${URLS.BASE}/properties/${id}/getOne`;
-        console.log(`Fetching property from: ${apiUrl}`);
 
-        response = await axios.get(apiUrl);
+        const response = await axios.get(apiUrl);
 
         if (!response || !response.data || !response.data.success) {
           throw new Error("Property not found");
@@ -720,6 +737,7 @@ const ProductDetailsPage = () => {
             _id: propertyData._id,
             propertyId: propertyData._id,
             price: propertyData.price,
+            propertyCategory: propertyData.propertyCategory,
             propertyType:
               propertyData.typeOfBuilding || propertyData.propertyType,
             bedRoom: propertyData.additionalFeatures?.noOfBedroom || 0,
@@ -848,7 +866,7 @@ const ProductDetailsPage = () => {
             Property Not Found
           </h2>
           <p className="text-gray-600 mb-4">
-            The property you're looking for doesn't exist.
+            The property you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.back()}
@@ -865,7 +883,7 @@ const ProductDetailsPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => router.back()}
@@ -883,7 +901,7 @@ const ProductDetailsPage = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
