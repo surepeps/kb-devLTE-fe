@@ -391,7 +391,6 @@ const UpdateRentPropertyForm: React.FC<UpdateRentPropertyFormProps> = ({
       const response = await PUT_REQUEST(
         `${URLS.BASE}${URLS.accountPropertyBaseUrl}/${propertyId}/update`,
         payload,
-        undefined,
         Cookies.get("token"),
       );
 
