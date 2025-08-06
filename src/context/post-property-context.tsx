@@ -410,6 +410,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     setIsLoading,
     validateCurrentStep,
     resetForm,
+    populatePropertyData,
     getMinimumRequiredImages,
     areImagesValid,
     showCommissionModal,
