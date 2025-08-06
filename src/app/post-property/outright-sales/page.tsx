@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-import SharedPostPropertyForm from "@/components/post-property-components/SharedPostPropertyForm";
+import OutrightSalesPropertyForm from "@/components/post-property-components/forms/OutrightSalesPropertyForm";
 
 const OutrightSalesPage = () => {
   return (
-    <SharedPostPropertyForm
-      propertyType="sell"
+    <OutrightSalesPropertyForm
       pageTitle="List Your Property - Outright Sales"
       pageDescription="Follow these simple steps to list your property for outright sales and connect with potential buyers"
     />
