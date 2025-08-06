@@ -126,6 +126,7 @@ interface PostPropertyContextType {
   setIsLoading: (loading: boolean) => void;
   validateCurrentStep: () => boolean;
   resetForm: () => void;
+  populatePropertyData: (propertyData: any) => void;
   getMinimumRequiredImages: () => number;
   areImagesValid: () => boolean;
   showCommissionModal: boolean;
