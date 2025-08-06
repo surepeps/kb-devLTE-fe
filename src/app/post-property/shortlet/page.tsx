@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-import SharedPostPropertyForm from "@/components/post-property-components/SharedPostPropertyForm";
+import ShortletPropertyForm from "@/components/post-property-components/forms/ShortletPropertyForm";
 
 const ShortletPage = () => {
   return (
-    <SharedPostPropertyForm
-      propertyType="shortlet"
+    <ShortletPropertyForm
       pageTitle="List Your Property - Shortlet"
       pageDescription="Follow these simple steps to list your property for shortlet and connect with potential guests"
     />

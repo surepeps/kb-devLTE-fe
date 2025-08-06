@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-import SharedUpdatePropertyForm from "@/components/post-property-components/SharedUpdatePropertyForm";
+import UpdateShortletPropertyForm from "@/components/post-property-components/forms/update/UpdateShortletPropertyForm";
 
 const UpdateShortletPage = () => {
   return (
-    <SharedUpdatePropertyForm
-      propertyType="shortlet"
+    <UpdateShortletPropertyForm
       pageTitle="Update Property - Shortlet"
       pageDescription="Update your property information to keep your listing current and attractive to potential guests"
     />
