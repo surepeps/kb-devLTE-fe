@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-import SharedUpdatePropertyForm from "@/components/post-property-components/SharedUpdatePropertyForm";
+import UpdateJointVenturePropertyForm from "@/components/post-property-components/forms/update/UpdateJointVenturePropertyForm";
 
 const UpdateJointVenturePage = () => {
   return (
-    <SharedUpdatePropertyForm
-      propertyType="jv"
+    <UpdateJointVenturePropertyForm
       pageTitle="Update Property - Joint Venture"
       pageDescription="Update your property information to keep your listing current and attractive to potential investment partners"
     />
