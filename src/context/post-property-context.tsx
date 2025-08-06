@@ -309,6 +309,70 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     setShowPropertySummary(false);
   };
 
+  const populatePropertyData = (property: any) => {
+    const populatedData: PropertyData = {
+      propertyType: property.briefType === "Outright Sales" ? "sell" :
+                   property.briefType === "Rent" ? "rent" :
+                   property.briefType === "Shortlet" ? "shortlet" :
+                   property.briefType === "Joint Venture" ? "jv" : "",
+      propertyCategory: property.propertyCategory || "Residential",
+      propertyCondition: property.propertyCondition || "",
+      typeOfBuilding: property.typeOfBuilding || "",
+      rentalType: property.rentalType || "",
+      price: property.price?.toString() || "",
+      leaseHold: property.leaseHold || "",
+      holdDuration: property.holdDuration || "",
+      shortletDuration: property.shortletDuration || "",
+      state: property.location?.state ? { value: property.location.state, label: property.location.state } : null,
+      lga: property.location?.localGovernment ? { value: property.location.localGovernment, label: property.location.localGovernment } : null,
+      area: property.location?.area || "",
+      streetAddress: property.location?.streetAddress || "",
+      landSize: property.landSize?.size || "",
+      measurementType: property.landSize?.measurementType || "",
+      bedrooms: parseInt(property.additionalFeatures?.noOfBedroom) || 0,
+      bathrooms: parseInt(property.additionalFeatures?.noOfBathroom) || 0,
+      toilets: parseInt(property.additionalFeatures?.noOfToilet) || 0,
+      parkingSpaces: parseInt(property.additionalFeatures?.noOfCarPark) || 0,
+      maxGuests: parseInt(property.additionalFeatures?.maxGuests) || 0,
+      features: property.features || [],
+      tenantCriteria: property.tenantCriteria || [],
+      rentalConditions: property.rentalConditions || [],
+      employmentType: property.employmentType || "",
+      tenantGenderPreference: property.tenantGenderPreference || "",
+      jvConditions: property.jvConditions || [],
+      documents: property.docOnProperty?.map((doc: any) => doc.docName) || [],
+      contactInfo: {
+        firstName: property.owner?.fullName?.split(' ')[0] || "",
+        lastName: property.owner?.fullName?.split(' ').slice(1).join(' ') || "",
+        email: property.owner?.email || "",
+        phone: property.owner?.phoneNumber || "",
+      },
+      isLegalOwner: property.areYouTheOwner || false,
+      ownershipDocuments: property.ownershipDocuments || [],
+      isTenanted: property.isTenanted || "",
+      description: property.description || "",
+      additionalInfo: property.addtionalInfo || "",
+      videos: property.videos || [],
+      pricing: property.pricing || null,
+      availability: property.availability || null,
+      houseRules: property.houseRules || null,
+    };
+
+    setPropertyData(populatedData);
+
+    // Populate images if they exist
+    if (property.pictures && property.pictures.length > 0) {
+      const imageData = property.pictures.map((url: string, index: number) => ({
+        file: null,
+        preview: url,
+        id: `existing-${index}`,
+        url: url,
+        isUploading: false,
+      }));
+      setImages(imageData);
+    }
+  };
+
   const getUserType = (): "landowner" | "agent" => {
     // Import useUserContext here to avoid circular dependencies
     if (typeof window !== "undefined") {
