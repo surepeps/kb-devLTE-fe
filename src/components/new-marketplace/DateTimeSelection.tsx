@@ -226,6 +226,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
           // Check if payment authorization URL is provided
           if (response.data?.transaction?.authorization_url) {
             toast.success("🎉 Inspection request submitted successfully! Redirecting to payment...");
+            setIsRedirectingToPayment(true);
 
             // Redirect to payment after short delay
             setTimeout(() => {
