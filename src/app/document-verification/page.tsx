@@ -124,7 +124,7 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const validateFileType = (file: File): boolean => {
-    const allowedExtensions = ['pdf', 'doc', 'docx'];
+    const allowedExtensions = ['pdf', 'doc', 'docx', 'png', 'jpeg', 'jpg'];
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     return allowedExtensions.includes(fileExtension || '');
   };
@@ -145,7 +145,7 @@ const DocumentVerificationPage: React.FC = () => {
   const uploadFile = async (file: File, document: DocumentType): Promise<string> => {
     // Validate file type before upload
     if (!validateFileType(file)) {
-      throw new Error('Invalid file type. Only PDF, DOC, and DOCX files are allowed.');
+      throw new Error('Invalid file type. Only PNG, JPEG, JPG, PDF, DOC, and DOCX files are allowed.');
     }
 
     const formData = new FormData();
@@ -172,7 +172,7 @@ const DocumentVerificationPage: React.FC = () => {
 
       // Validate file type first
       if (!validateFileType(file)) {
-        toast.error(`Invalid file type for ${getDocumentDisplayName(document)}. Only PDF, DOC, and DOCX files are allowed.`);
+        toast.error(`Invalid file type for ${getDocumentDisplayName(document)}. Only Only PNG, JPEG, JPG, PDF, DOC, and DOCX files are allowed.`);
         return;
       }
 
@@ -283,11 +283,12 @@ const DocumentVerificationPage: React.FC = () => {
   const handleNext = () => {
     if (currentStep === 1 && validateStep1()) {
       setCurrentStep(2);
+      setPaymentDetails(prev => ({ ...prev, amountPaid: calculateFee() }));
     } else if (currentStep === 2 && validateStep2()) {
       setPaymentDetails(prev => ({ ...prev, amountPaid: calculateFee() }));
     }
   };
-
+ 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3);
