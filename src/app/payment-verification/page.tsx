@@ -60,9 +60,24 @@ const PaymentVerificationPage = () => {
   };
 
   const handleRedirect = () => {
-    // Redirect based on verification data or default to dashboard
+    // Redirect based on transaction type and verification data
     if (verificationData?.redirectUrl) {
       window.location.href = verificationData.redirectUrl;
+    } else if (verificationData?.transaction?.transactionType) {
+      // Redirect based on transaction type
+      switch (verificationData.transaction.transactionType) {
+        case 'document-verification':
+          router.push('/dashboard');
+          break;
+        case 'inspection-request':
+          router.push('/my-inspection-requests');
+          break;
+        case 'subscription':
+          router.push('/dashboard');
+          break;
+        default:
+          router.push('/dashboard');
+      }
     } else {
       router.push('/dashboard');
     }
