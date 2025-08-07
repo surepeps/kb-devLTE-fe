@@ -73,6 +73,7 @@ const DocumentVerificationPage: React.FC = () => {
     receiptUploadStatus: 'idle',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const fileInputRefs = useRef<{ [key in DocumentType]?: HTMLInputElement | null }>({});
   const receiptInputRef = useRef<HTMLInputElement | null>(null);
