@@ -101,7 +101,7 @@ const PropertySlots: React.FC<PropertySlotsProps> = ({
   negotiatedPrices = [],
   loiDocuments = [],
 }) => {
-
+ 
   const slots = Array.from({ length: maxSlots }, (_, index) => {
     const property = selectedProperties[index];
     return { index, property };

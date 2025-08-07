@@ -1,31 +1,32 @@
 /** @format */
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { format, addDays } from "date-fns";
 import toast from "react-hot-toast";
 import Button from "@/components/general-components/button";
+import { POST_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 interface DateTimeSelectionProps {
   selectedProperties: any[];
   inspectionFee: number;
-  onProceed: (data: {
-    date: string;
-    time: string;
-    inspectionMode: "in_person" | "virtual";
-    buyerInfo: {
-      fullName: string;
-      email: string;
-      phoneNumber: string;
-    };
-  }) => void;
+  negotiatedPrices: any[];
+  activeTab: "buy" | "jv" | "rent" | "shortlet";
+  loiDocuments: any[];
+  onComplete: () => void;
   onBack: () => void;
 }
 
 const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   selectedProperties,
   inspectionFee,
-  onProceed,
+  negotiatedPrices,
+  activeTab,
+  loiDocuments,
+  onComplete,
   onBack,
 }) => {
   // Auto-select current date (or next available date if today is Sunday)
@@ -95,6 +96,20 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   });
 
   const [showMoreDates, setShowMoreDates] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Lock body scroll when uploading or submitting
+  useEffect(() => {
+    if (isSubmitting) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isSubmitting]);
 
   // Generate available dates (at least 10 weekdays, excluding Sundays)
   const getAvailableDates = (count: number = 10) => {
@@ -128,7 +143,45 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const availableDates = getAvailableDates(showMoreDates ? 20 : 10);
 
-  const handleProceed = () => {
+  const handleBuyerInfoChange = (field: string, value: string) => {
+    setBuyerInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+
+  const buildInspectionPayload = () => {
+    const payload = selectedProperties.map((property) => {
+      const negotiatedPrice = negotiatedPrices.find(
+        (price) => price.propertyId === property.propertyId,
+      );
+
+      const loiDoc = loiDocuments.find(
+        (doc) => doc.propertyId === property.propertyId,
+      );
+
+      return {
+        propertyId: property.propertyId,
+        inspectionType: property.sourceTab === "jv" ? "LOI" : "price",
+        negotiationPrice: negotiatedPrice?.negotiatedPrice || undefined,
+        letterOfIntention: loiDoc?.documentUrl || undefined,
+      };
+    });
+
+    return {
+      requestedBy: buyerInfo,
+      inspectionDetails: {
+        inspectionDate: selectedDate,
+        inspectionTime: selectedTime,
+        inspectionMode: inspectionMode,
+      },
+      inspectionAmount: inspectionFee,
+      properties: payload
+    };
+  };
+
+  const handleSubmitInspectionRequest = async () => {
     if (!selectedDate || !selectedTime) {
       toast.error("Please select both date and time for inspection.");
       return;
@@ -159,24 +212,56 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       return;
     }
 
-    // Pass data to parent component
-    onProceed({
-      date: selectedDate,
-      time: selectedTime,
-      inspectionMode,
-      buyerInfo,
-    });
-  };
-
-  const handleBuyerInfoChange = (field: string, value: string) => {
-    setBuyerInfo((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+      setIsSubmitting(true);
+  
+      try {
+        const payload = buildInspectionPayload();
+        // console.log(payload, "my payload");
+        // return;
+  
+        const response = await POST_REQUEST(URLS.BASE + URLS.requestInspection, payload);
+  
+        if (response.success) {
+          toast.success("🎉 Inspection request submitted successfully! Your payment link has also been generated!");
+  
+          setTimeout(() => {
+            onComplete();
+          }, 1000);
+        }else{
+          toast.error("Failed to submit request. Please try again.");
+        }
+        
+      } catch (error) {
+        console.error("Submission error:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to submit request. Please try again.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+
+      {/* Loading Overlay */}
+      {(isSubmitting) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
+            <FontAwesomeIcon
+              icon={faSpinner}
+              className="text-[#8DDB90] text-4xl mb-4 animate-spin"
+            />
+            <h3 className="text-lg font-semibold text-[#24272C] mb-2">Submitting Request</h3>
+            <p className="text-[#5A5D63] text-sm">
+              Please wait while we generate your inspection payment link request...
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Inspection Summary */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
@@ -404,8 +489,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         </button>
 
         <Button
-          onClick={handleProceed}
-          value="Proceed to Payment"
+          onClick={handleSubmitInspectionRequest}
+          value="Submit to Payment"
           isDisabled={
             !selectedDate ||
             !selectedTime ||

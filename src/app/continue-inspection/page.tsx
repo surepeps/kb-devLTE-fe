@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { IsMobile } from "@/hooks/isMobile"; 
 import PropertySlots from "@/components/new-marketplace/PropertySlots";
 import DateTimeSelection from "@/components/new-marketplace/DateTimeSelection";
-import PaymentUpload from "@/components/new-marketplace/PaymentUpload";
 import Button from "@/components/general-components/button";
 import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
 import InspectionSuccessModal from "@/components/modals/InspectionSuccessModal";
@@ -30,32 +29,11 @@ const ContinueInspectionPage = () => {
   } = useGlobalInspectionState();
 
   const [currentStep, setCurrentStep] = useState<
-    "selection" | "datetime" | "payment"
+    "selection" | "datetime"
   >("selection");
 
   // Success modal state
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  // Store inspection details between steps
-  const [inspectionDetails, setInspectionDetails] = useState<{
-    date: string;
-    time: string;
-    inspectionMode: "in_person" | "virtual";
-    buyerInfo: {
-      fullName: string;
-      email: string;
-      phoneNumber: string;
-    };
-  }>({
-    date: "",
-    time: "",
-    inspectionMode: "in_person",
-    buyerInfo: {
-      fullName: "",
-      email: "",
-      phoneNumber: "",
-    },
-  });
 
   // Track if we started with properties to avoid immediate redirect
   const [initialLoad, setInitialLoad] = useState(true);
@@ -77,7 +55,7 @@ const ContinueInspectionPage = () => {
 
   // Calculate inspection fee
   const inspectionFee = useMemo(() => {
-    const baseAmount = 10000;
+    const baseAmount = 5000;
     const additionalAmount = 5000;
 
     if (selectedProperties.length === 1) {
@@ -101,8 +79,6 @@ const ContinueInspectionPage = () => {
       router.back();
     } else if (currentStep === "datetime") {
       setCurrentStep("selection");
-    } else if (currentStep === "payment") {
-      setCurrentStep("datetime");
     }
   };
 
@@ -126,18 +102,12 @@ const ContinueInspectionPage = () => {
     setCurrentStep("datetime");
   };
 
-  const handleProceedToPayment = () => {
-    setCurrentStep("payment");
-  };
-
   const getStepTitle = () => {
     switch (currentStep) {
       case "selection":
         return "Selected Properties for Inspection";
       case "datetime":
         return "Select Inspection Date & Time";
-      case "payment":
-        return "Upload Payment Proof";
       default:
         return "Continue Inspection";
     }
@@ -257,14 +227,14 @@ const ContinueInspectionPage = () => {
         {/* Progress Indicator */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-center space-x-2 sm:space-x-4">
-            {["selection", "datetime", "payment"].map((step, index) => (
+            {["selection", "datetime"].map((step, index) => (
               <div key={step} className="flex items-center">
                 <div
                   className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${
                     currentStep === step
                       ? "bg-[#8DDB90] text-white"
                       : index <
-                          ["selection", "datetime", "payment"].indexOf(
+                          ["selection", "datetime"].indexOf(
                             currentStep,
                           )
                         ? "bg-[#09391C] text-white"
@@ -273,11 +243,11 @@ const ContinueInspectionPage = () => {
                 >
                   {index + 1}
                 </div>
-                {index < 2 && (
+                {index < 1 && (
                   <div
                     className={`w-8 sm:w-16 h-1 mx-1 sm:mx-2 ${
                       index <
-                      ["selection", "datetime", "payment"].indexOf(currentStep)
+                      ["selection", "datetime"].indexOf(currentStep)
                         ? "bg-[#09391C]"
                         : "bg-gray-200"
                     }`}
@@ -289,7 +259,6 @@ const ContinueInspectionPage = () => {
           <div className="flex justify-center space-x-6 sm:space-x-12 mt-2">
             <span className="text-xs text-[#5A5D63]">Selection</span>
             <span className="text-xs text-[#5A5D63]">Date & Time</span>
-            <span className="text-xs text-[#5A5D63]">Payment</span>
           </div>
         </div>
 
@@ -369,34 +338,13 @@ const ContinueInspectionPage = () => {
               <DateTimeSelection
                 selectedProperties={selectedProperties}
                 inspectionFee={inspectionFee}
-                onProceed={(data) => {
-                  setInspectionDetails(data);
-                  handleProceedToPayment();
-                }}
-                onBack={() => setCurrentStep("selection")}
-              />
-            </motion.div>
-          )}
-
-          {currentStep === "payment" && (
-            <motion.div
-              key="payment"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <PaymentUpload
-                selectedProperties={selectedProperties}
-                inspectionFee={inspectionFee}
-                inspectionDetails={inspectionDetails}
                 activeTab={getDominantTab()}
                 negotiatedPrices={negotiatedPrices}
                 loiDocuments={loiDocuments}
-                onBack={() => setCurrentStep("datetime")}
                 onComplete={() => {
-                  // Show success modal instead of immediate redirect
                   setShowSuccessModal(true);
                 }}
+                onBack={() => setCurrentStep("selection")}
               />
             </motion.div>
           )}
