@@ -42,7 +42,7 @@ const PaymentVerificationPage = () => {
       setVerificationStatus('verifying');
       
       const paymentReference = reference || transactionId;
-      const response = await GET_REQUEST(`${URLS.BASE}/verify-endpoint?reference=${paymentReference}`);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.verifyPayment}?reference=${paymentReference}`);
       
       if (response.success) {
         setVerificationData(response.data);
