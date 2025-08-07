@@ -19,6 +19,7 @@ import {
   Star as StarIcon,
   Plus as PlusIcon,
   Calendar as CalendarIcon,
+  CreditCard as CreditCardIcon,
   Eye,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
