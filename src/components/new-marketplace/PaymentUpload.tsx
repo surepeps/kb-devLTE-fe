@@ -50,6 +50,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
   const [uploadedReceiptUrl, setUploadedReceiptUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -244,6 +245,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
         // Check if payment authorization URL is provided
         if (response.data?.transaction?.authorization_url) {
           toast.success("Inspection request submitted successfully! Redirecting to payment...");
+          setIsRedirectingToPayment(true);
 
           // Redirect to payment after short delay
           setTimeout(() => {
@@ -287,7 +289,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
   return (
     <div className="max-w-2xl mx-auto space-y-6 relative">
       {/* Loading Overlay */}
-      {(isUploading || isSubmitting) && (
+      {(isUploading || isSubmitting || isRedirectingToPayment) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
             <FontAwesomeIcon
@@ -295,11 +297,13 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
               className="text-[#8DDB90] text-4xl mb-4 animate-spin"
             />
             <h3 className="text-lg font-semibold text-[#24272C] mb-2">
-              {isUploading ? "Uploading Receipt" : "Submitting Request"}
+              {isUploading ? "Uploading Receipt" : isRedirectingToPayment ? "Redirecting to Payment" : "Submitting Request"}
             </h3>
             <p className="text-[#5A5D63] text-sm">
               {isUploading
                 ? "Please wait while we upload your payment receipt..."
+                : isRedirectingToPayment
+                ? "Your inspection request has been processed. You will be redirected to the payment page shortly..."
                 : "Please wait while we process your inspection request and generate your payment link..."}
             </p>
           </div>
