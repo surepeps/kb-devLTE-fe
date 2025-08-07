@@ -223,18 +223,6 @@ const EnhancedPropertySummary: React.FC = () => {
       });
     }
 
-    // Contact Information
-    summary.push({
-      title: "Contact Information",
-      items: [
-        {
-          label: "Full Name",
-          value: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
-        },
-        { label: "Email", value: propertyData.contactInfo.email },
-        { label: "Phone", value: propertyData.contactInfo.phone },
-      ],
-    });
 
     return summary;
   };

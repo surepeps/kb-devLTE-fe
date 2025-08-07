@@ -144,16 +144,9 @@ const checkShortletStep2RequiredFields = (propertyData: any) => {
 
 // Helper function to check step 4 required fields
 const checkStep4RequiredFields = (propertyData: any) => {
-  const contactInfo = propertyData.contactInfo;
-  return (
-    !!(
-      contactInfo.firstName &&
-      contactInfo.lastName &&
-      contactInfo.email &&
-      contactInfo.phone
-    ) && propertyData.isLegalOwner !== undefined
-  );
+  return propertyData.isLegalOwner !== undefined;
 };
+
 
 const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
   pageTitle,
@@ -299,10 +292,6 @@ const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
         setFieldTouched("houseRules.checkIn", true);
         setFieldTouched("houseRules.checkOut", true);
       } else if (currentStep === 3) {
-        setFieldTouched("contactInfo.firstName", true);
-        setFieldTouched("contactInfo.lastName", true);
-        setFieldTouched("contactInfo.email", true);
-        setFieldTouched("contactInfo.phone", true);
         setFieldTouched("isLegalOwner", true);
       }
       return;
@@ -373,11 +362,6 @@ const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
           streetAddress: propertyData.streetAddress,
         },
         price: extractNumericValue(propertyData.price),
-        owner: {
-          fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
-          phoneNumber: propertyData.contactInfo.phone,
-          email: propertyData.contactInfo.email,
-        },
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {

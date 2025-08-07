@@ -67,35 +67,6 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     }
   };
 
-  // Initialize contact info with user data
-  useEffect(() => {
-    if (
-      user &&
-      (!propertyData.contactInfo.firstName || !propertyData.contactInfo.email)
-    ) {
-      updatePropertyData("contactInfo", {
-        ...propertyData.contactInfo,
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-      });
-    }
-  }, [user]);
-
-  const handleContactInfoChange = (
-    field: keyof typeof propertyData.contactInfo,
-    value: string,
-  ) => {
-    const fieldName = `contactInfo.${field}`;
-    setFieldTouched(fieldName, true);
-    setFieldValue(fieldName, value);
-
-    const newContactInfo = {
-      ...propertyData.contactInfo,
-      [field]: value,
-    };
-    updatePropertyData("contactInfo", newContactInfo);
-  };
 
   const handleDocumentToggle = (document: string) => {
     const currentDocs = propertyData.ownershipDocuments;
@@ -109,7 +80,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     updatePropertyData("isLegalOwner", isOwner);
   };
 
-  const getUserType = (): "landowner" | "agent" => {
+  const getUserType: any = (): "landowner" | "agent" => {
     return user?.userType === "Agent" ? "agent" : "landowner";
   };
 
@@ -126,10 +97,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   };
 
   const getUserName = () => {
-    const firstName =
-      propertyData.contactInfo.firstName || user?.firstName || "";
-    const lastName = propertyData.contactInfo.lastName || user?.lastName || "";
-    return `${firstName} ${lastName}`.trim() || "User";
+    return user?.firstName+ " "+ user?.lastName
   };
 
   const getCommissionAgreementText = () => {
@@ -259,13 +227,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
         {/* Legal Ownership Declaration */}
         <div className="border border-[#E5E7EB] rounded-lg p-6">
           <h3 className="text-xl font-semibold text-[#09391C] mb-4">
-            Ownership Verification
+            Declaration of property
           </h3>
           <div className="space-y-4">
             <div className="p-4 border border-gray-200 rounded-lg">
               <p className="text-sm text-[#5A5D63] mb-4">
-                Please confirm that you are the legal owner of this property or
-                have been authorized by the legal owner to list this property.
+                Declare your authorisation to list this property
               </p>
               <div className="space-y-3">
                 <RadioCheck
@@ -281,7 +248,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   value="owner"
                   name="legalOwner"
                   variant="card"
-                  title="Yes, I am the legal owner of this property"
+                  title="Yes, I am the legal owner of this property (direct ownership)"
                   error={
                     propertyData.isLegalOwner === undefined ||
                     !!(touched.isLegalOwner && errors.isLegalOwner)
@@ -300,7 +267,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                   value="authorized"
                   name="legalOwner"
                   variant="card"
-                  title="I am authorized by the legal owner to list this property"
+                  title="Mandate"
                   error={
                     propertyData.isLegalOwner === undefined ||
                     !!(touched.isLegalOwner && errors.isLegalOwner)
@@ -342,175 +309,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
                 Agreement Statement
               </h4>
               <p className="text-sm text-[#1E1E1E] leading-relaxed">
-                "{getCommissionAgreementText()}"
+                {getCommissionAgreementText()}
               </p>
             </div>
           </div>
         )}
 
-        {/* Contact Information */}
-        <div className="border border-[#E5E7EB] rounded-lg p-6">
-          <h3 className="text-xl font-semibold text-[#09391C] mb-4">
-            Contact Information
-          </h3>
-          <p className="text-[#5A5D63] mb-6">
-            This information will be used to contact you about this property
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Input
-                name="firstName"
-                label="First Name"
-                type="text"
-                placeholder="Enter first name"
-                value={propertyData.contactInfo.firstName}
-                onChange={(e) =>
-                  handleContactInfoChange("firstName", e.target.value)
-                }
-                error={
-                  !propertyData.contactInfo.firstName
-                    ? "First name is required"
-                    : typeof errors?.contactInfo === "object" &&
-                        errors.contactInfo
-                      ? (errors.contactInfo as any).firstName
-                      : undefined
-                }
-                touched={
-                  true // Always show validation state
-                }
-              />
-              {typeof errors?.contactInfo === "object" &&
-                errors.contactInfo &&
-                (errors.contactInfo as any).firstName &&
-                typeof touched?.contactInfo === "object" &&
-                touched.contactInfo &&
-                (touched.contactInfo as any).firstName && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {(errors.contactInfo as any).firstName}
-                  </p>
-                )}
-            </div>
-            <div>
-              <Input
-                name="lastName"
-                label="Last Name"
-                type="text"
-                placeholder="Enter last name"
-                value={propertyData.contactInfo.lastName}
-                onChange={(e) =>
-                  handleContactInfoChange("lastName", e.target.value)
-                }
-                error={
-                  !propertyData.contactInfo.lastName
-                    ? "Last name is required"
-                    : typeof errors?.contactInfo === "object" &&
-                        errors.contactInfo
-                      ? (errors.contactInfo as any).lastName
-                      : undefined
-                }
-                touched={
-                  true // Always show validation state
-                }
-              />
-              {typeof errors?.contactInfo === "object" &&
-                errors.contactInfo &&
-                (errors.contactInfo as any).lastName &&
-                typeof touched?.contactInfo === "object" &&
-                touched.contactInfo &&
-                (touched.contactInfo as any).lastName && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {(errors.contactInfo as any).lastName}
-                  </p>
-                )}
-            </div>
-            <div>
-              <Input
-                name="email"
-                label="Email Address"
-                type="email"
-                placeholder="Enter email address"
-                value={propertyData.contactInfo.email}
-                onChange={(e) =>
-                  handleContactInfoChange("email", e.target.value)
-                }
-                error={
-                  !propertyData.contactInfo.email
-                    ? "Email is required"
-                    : typeof errors?.contactInfo === "object" &&
-                        errors.contactInfo
-                      ? (errors.contactInfo as any).email
-                      : undefined
-                }
-                touched={
-                  true // Always show validation state
-                }
-              />
-              {typeof errors?.contactInfo === "object" &&
-                errors.contactInfo &&
-                (errors.contactInfo as any).email &&
-                typeof touched?.contactInfo === "object" &&
-                touched.contactInfo &&
-                (touched.contactInfo as any).email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {(errors.contactInfo as any).email}
-                  </p>
-                )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#707281] mb-2">
-                Phone Number <span className="text-red-500">*</span>
-              </label>
-              <div
-                className={`phone-input-container ${
-                  !propertyData.contactInfo.phone ||
-                  (typeof errors?.contactInfo === "object" &&
-                    errors.contactInfo &&
-                    (errors.contactInfo as any).phone &&
-                    typeof touched?.contactInfo === "object" &&
-                    touched.contactInfo &&
-                    (touched.contactInfo as any).phone)
-                    ? "has-error"
-                    : propertyData.contactInfo.phone &&
-                        !(
-                          typeof errors?.contactInfo === "object" &&
-                          errors.contactInfo &&
-                          (errors.contactInfo as any).phone
-                        )
-                      ? "has-success"
-                      : ""
-                }`}
-              >
-                <PhoneInput
-                  international
-                  countryCallingCodeEditable={false}
-                  defaultCountry="NG"
-                  value={propertyData.contactInfo.phone}
-                  onChange={(value) =>
-                    handleContactInfoChange("phone", value || "")
-                  }
-                  placeholder="Enter phone number"
-                  className="enhanced-phone-input"
-                />
-              </div>
-              {typeof errors?.contactInfo === "object" &&
-                errors.contactInfo &&
-                (errors.contactInfo as any).phone &&
-                typeof touched?.contactInfo === "object" &&
-                touched.contactInfo &&
-                (touched.contactInfo as any).phone && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {(errors.contactInfo as any).phone}
-                  </p>
-                )}
-              {propertyData.contactInfo.phone &&
-                !isValidPhoneNumber(propertyData.contactInfo.phone) && (
-                  <p className="text-yellow-600 text-sm mt-1">
-                    Please enter a valid phone number
-                  </p>
-                )}
-            </div>
-          </div>
-        </div>
 
         {/* Terms and Conditions */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">

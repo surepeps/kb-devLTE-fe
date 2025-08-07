@@ -238,6 +238,7 @@ const RentStep2FeaturesConditions: React.FC = () => {
                         updatePropertyData("employmentType", option.value)
                       }
                       type="radio"
+                      title={option.label}
                       value={option.value}
                       name="employmentType"
                       variant="card"
@@ -263,6 +264,7 @@ const RentStep2FeaturesConditions: React.FC = () => {
                         )
                       }
                       type="radio"
+                      title={option.label}
                       value={option.value}
                       name="tenantGenderPreference"
                       variant="card"

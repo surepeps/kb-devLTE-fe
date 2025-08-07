@@ -276,6 +276,7 @@ const RentStep1BasicDetails: React.FC = () => {
                     handleFieldChange("propertyCondition", option.value)
                   }
                   type="radio"
+                  title={option.label}
                   value={option.value}
                   name="propertyCondition"
                   variant="card"
