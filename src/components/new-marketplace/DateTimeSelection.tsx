@@ -265,7 +265,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             />
             <h3 className="text-lg font-semibold text-[#24272C] mb-2">Submitting Request</h3>
             <p className="text-[#5A5D63] text-sm">
-              Please wait while we generate your inspection payment link request...
+              Please wait while we process your inspection request and generate your payment link...
             </p>
           </div>
         </div>
