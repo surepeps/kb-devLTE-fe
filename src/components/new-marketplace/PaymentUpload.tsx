@@ -50,6 +50,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
   const [uploadedReceiptUrl, setUploadedReceiptUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
