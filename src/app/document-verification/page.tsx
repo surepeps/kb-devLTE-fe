@@ -331,7 +331,17 @@ const DocumentVerificationPage: React.FC = () => {
       const response = await POST_REQUEST(`${URLS.BASE}${URLS.submitVerificationDocs}`, payload);
 
       if (response.success) {
-        setShowSuccessModal(true);
+        // Check if payment authorization URL is provided
+        if (response.data?.transaction?.authorization_url) {
+          toast.success('Document verification request submitted! Redirecting to payment...');
+
+          // Show overlay and redirect to payment
+          setTimeout(() => {
+            window.location.href = response.data.transaction.authorization_url;
+          }, 2000);
+        } else {
+          setShowSuccessModal(true);
+        }
         reset();
       } else {
         toast.error('Submission failed. Please try again.');
