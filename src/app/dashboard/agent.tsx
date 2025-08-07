@@ -168,6 +168,13 @@ export default function AgentDashboard() {
               <span className="hidden sm:inline">Inspection</span>Requests
             </Link>
             <Link
+              href="/agent-subscriptions"
+              className="bg-white hover:bg-gray-50 text-[#09391C] border border-[#8DDB90] px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
+            >
+              <CreditCardIcon size={20} />
+              <span className="hidden sm:inline">Manage</span>Plans
+            </Link>
+            <Link
               href="/agent-marketplace"
               className="bg-white hover:bg-gray-50 text-[#09391C] border border-gray-300 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
             >
