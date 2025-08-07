@@ -107,14 +107,20 @@ const PaymentVerificationPage = () => {
             {verificationData && (
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
                 <div className="text-sm text-gray-600 space-y-2">
-                  {verificationData.reference && (
-                    <p><span className="font-medium">Reference:</span> {verificationData.reference}</p>
+                  {verificationData.transaction?.reference && (
+                    <p><span className="font-medium">Reference:</span> {verificationData.transaction.reference}</p>
                   )}
-                  {verificationData.amount && (
-                    <p><span className="font-medium">Amount:</span> ₦{verificationData.amount.toLocaleString()}</p>
+                  {verificationData.transaction?.amount && (
+                    <p><span className="font-medium">Amount:</span> ₦{verificationData.transaction.amount.toLocaleString()}</p>
                   )}
-                  {verificationData.status && (
-                    <p><span className="font-medium">Status:</span> {verificationData.status}</p>
+                  {verificationData.transaction?.status && (
+                    <p><span className="font-medium">Status:</span> {verificationData.transaction.status}</p>
+                  )}
+                  {verificationData.transaction?.transactionType && (
+                    <p><span className="font-medium">Type:</span> {verificationData.transaction.transactionType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                  )}
+                  {verificationData.typeEffect && (
+                    <p><span className="font-medium">Service:</span> {verificationData.typeEffect.status === 'successful' ? 'Processed Successfully' : 'Processing'}</p>
                   )}
                 </div>
               </div>
