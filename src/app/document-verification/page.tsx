@@ -331,7 +331,17 @@ const DocumentVerificationPage: React.FC = () => {
       const response = await POST_REQUEST(`${URLS.BASE}${URLS.submitVerificationDocs}`, payload);
 
       if (response.success) {
-        setShowSuccessModal(true);
+        // Check if payment authorization URL is provided
+        if (response.data?.transaction?.authorization_url) {
+          toast.success('Document verification request submitted! Redirecting to payment...');
+
+          // Show overlay and redirect to payment
+          setTimeout(() => {
+            window.location.href = response.data.transaction.authorization_url;
+          }, 2000);
+        } else {
+          setShowSuccessModal(true);
+        }
         reset();
       } else {
         toast.error('Submission failed. Please try again.');
@@ -809,6 +819,19 @@ const DocumentVerificationPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Payment Redirect Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
+            <div className="mb-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+            </div>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Processing Request</h2>
+            <p className="mb-6 text-gray-600">Please wait while we process your document verification request and generate your payment link...</p>
+          </div>
+        </div>
+      )}
 
       {/* Success Modal */}
       {showSuccessModal && (

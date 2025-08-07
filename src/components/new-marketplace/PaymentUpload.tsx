@@ -241,11 +241,20 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
       const response = await POST_REQUEST(URLS.BASE + URLS.requestInspection, payload);
 
       if (response.success) {
-        toast.success("Inspection request submitted successfully!");
+        // Check if payment authorization URL is provided
+        if (response.data?.transaction?.authorization_url) {
+          toast.success("Inspection request submitted successfully! Redirecting to payment...");
 
-        setTimeout(() => {
-          onComplete();
-        }, 1000);
+          // Redirect to payment after short delay
+          setTimeout(() => {
+            window.location.href = response.data.transaction.authorization_url;
+          }, 2000);
+        } else {
+          toast.success("Inspection request submitted successfully!");
+          setTimeout(() => {
+            onComplete();
+          }, 1000);
+        }
       }else{
         toast.error("Failed to submit request. Please try again.");
       }
@@ -291,7 +300,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
             <p className="text-[#5A5D63] text-sm">
               {isUploading
                 ? "Please wait while we upload your payment receipt..."
-                : "Please wait while we process your inspection request..."}
+                : "Please wait while we process your inspection request and generate your payment link..."}
             </p>
           </div>
         </div>
