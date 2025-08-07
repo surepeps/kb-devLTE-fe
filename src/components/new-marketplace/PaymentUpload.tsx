@@ -300,7 +300,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
             <p className="text-[#5A5D63] text-sm">
               {isUploading
                 ? "Please wait while we upload your payment receipt..."
-                : "Please wait while we process your inspection request..."}
+                : "Please wait while we process your inspection request and generate your payment link..."}
             </p>
           </div>
         </div>
