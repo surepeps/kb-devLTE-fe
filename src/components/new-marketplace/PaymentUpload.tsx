@@ -34,7 +34,7 @@ interface PaymentUploadProps {
   loiDocuments: any[];
   onBack: () => void;
   onComplete: () => void;
-}
+} 
 
 const PaymentUpload: React.FC<PaymentUploadProps> = ({
   selectedProperties,
@@ -261,7 +261,7 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
       setIsSubmitting(false);
     }
   };
-
+ 
   // Lock body scroll when uploading or submitting
   useEffect(() => {
     if (isUploading || isSubmitting) {

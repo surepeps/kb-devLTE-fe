@@ -150,7 +150,7 @@ const DocumentVerificationPage: React.FC = () => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('for', 'property-file');
+    formData.append('for', 'default');
 
     try {
       const response = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData)
@@ -279,19 +279,11 @@ const DocumentVerificationPage: React.FC = () => {
     return true;
   };
 
-  const validateStep3 = (): boolean => {
-    if (!paymentDetails.receiptFile || paymentDetails.receiptUploadStatus !== 'success') {
-      toast.error('Please upload payment receipt');
-      return false;
-    }
-    return true;
-  };
 
   const handleNext = () => {
     if (currentStep === 1 && validateStep1()) {
       setCurrentStep(2);
     } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3);
       setPaymentDetails(prev => ({ ...prev, amountPaid: calculateFee() }));
     }
   };
@@ -309,105 +301,9 @@ const DocumentVerificationPage: React.FC = () => {
     }));
   };
 
-  const handleReceiptUpload = async (fileList: FileList | null) => {
-    if (fileList && fileList[0]) {
-      const file = fileList[0];
-
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error('Invalid file type for receipt. Only images and PDF files are allowed.');
-        return;
-      }
-
-      // Check file size (5MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSize) {
-        toast.error('File too large. Maximum size is 5MB.');
-        return;
-      }
-
-      // Update state to show uploading
-      setPaymentDetails(prev => ({
-        ...prev,
-        receiptFile: file,
-        receiptUploadStatus: 'uploading'
-      }));
-
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('for', 'default');
-
-        const response = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
-
-        if (response.success) {
-          setPaymentDetails(prev => ({
-            ...prev,
-            receiptUrl: response.data.url,
-            receiptUploadStatus: 'success'
-          }));
-          toast.success('Receipt uploaded successfully! ✅');
-        } else {
-          toast.error("'Upload failed")
-        }
-      } catch (error) {
-        setPaymentDetails(prev => ({
-          ...prev,
-          receiptUploadStatus: 'error'
-        }));
-
-        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-        toast.error(`Failed to upload receipt: ${errorMessage}`);
-      }
-    }
-  };
-
-  const handleReceiptDelete = async () => {
-    if (paymentDetails.receiptUrl) {
-      try {
-        const response = await deleteFile(paymentDetails.receiptUrl);
-        if (response.success) {
-          setPaymentDetails(prev => ({
-            ...prev,
-            receiptFile: null,
-            receiptUrl: '',
-            receiptUploadStatus: 'idle'
-          }));
-          if (receiptInputRef.current) {
-            receiptInputRef.current.value = '';
-          }
-          toast.success('Receipt deleted successfully');
-        }
-      } catch (error) {
-        toast.error('Failed to delete receipt');
-      }
-    }
-  };
-
-  const handleReceiptPreview = () => {
-    if (paymentDetails.receiptFile) {
-      const url = URL.createObjectURL(paymentDetails.receiptFile);
-      window.open(url, '_blank');
-    }
-  };
-
-  const handleReceiptDownload = () => {
-    if (paymentDetails.receiptFile) {
-      const url = URL.createObjectURL(paymentDetails.receiptFile);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = paymentDetails.receiptFile.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-  };
-
 
   const handleFinalSubmit = async () => {
-    if (!validateStep3()) return;
+    if (!validateStep2()) return;
 
     setIsSubmitting(true);
     try {
@@ -428,7 +324,6 @@ const DocumentVerificationPage: React.FC = () => {
         },
         paymentInfo: {
           amountPaid: paymentDetails.amountPaid,
-          receipt: paymentDetails.receiptUrl,
         },
         documentsMetadata: docsMeta,
       };
@@ -453,7 +348,7 @@ const DocumentVerificationPage: React.FC = () => {
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
       <div className="flex items-center space-x-4">
-        {[1, 2, 3].map((step) => (
+        {[1, 2].map((step) => (
           <React.Fragment key={step}>
             <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
               currentStep >= step 
@@ -462,7 +357,7 @@ const DocumentVerificationPage: React.FC = () => {
             }`}>
               {currentStep > step ? <Check size={20} /> : step}
             </div>
-            {step < 3 && (
+            {step < 2 && (
               <ChevronRight className={`w-5 h-5 ${
                 currentStep > step ? 'text-green-500' : 'text-gray-300'
               }`} />
@@ -796,143 +691,6 @@ const DocumentVerificationPage: React.FC = () => {
     </div>
   );
 
-  const renderStep3 = () => (
-    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Step 3: Payment Information</h2>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Payment Details */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">Make payment</h3>
-          <div className="mb-6">
-            <div className="text-3xl font-bold text-gray-900 mb-4">₦{paymentDetails.amountPaid.toLocaleString()}</div>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-lg font-medium text-gray-800">Account details</h4>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Bank</span>
-                <span className="text-gray-900 font-medium">FCMB</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Account Number</span>
-                <span className="text-gray-900 font-medium">2004766765</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Account Name</span>
-                <span className="text-gray-900 font-medium">Khabiteq limited</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-blue-600 text-sm">
-              Note that this process is subject to Approval by khabiteq realty
-            </p>
-          </div>
-        </div>
-
-        {/* Receipt Upload */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">Provide receipt Details</h3>
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Amount Paid
-              </label>
-              <input
-                type="number"
-                value={paymentDetails.amountPaid}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                📧 Upload your receipt
-              </label>
-
-              {paymentDetails.receiptUploadStatus === 'idle' || paymentDetails.receiptUploadStatus === 'error' ? (
-                <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                    paymentDetails.receiptUploadStatus === 'error'
-                      ? 'border-red-300 bg-red-50'
-                      : 'border-gray-300 hover:border-green-400'
-                  }`}
-                  onClick={() => receiptInputRef.current?.click()}
-                >
-                  <input
-                    type="file"
-                    ref={receiptInputRef}
-                    accept="image/*,.pdf"
-                    onChange={(e) => handleReceiptUpload(e.target.files)}
-                    className="hidden"
-                  />
-                  {paymentDetails.receiptUploadStatus === 'error' ? (
-                    <>
-                      <X className="w-8 h-8 text-red-500 mb-2 mx-auto" />
-                      <p className="text-red-600 font-medium">Upload Failed</p>
-                      <p className="text-xs text-red-500 mb-3">Click to try again</p>
-                    </>
-                  ) : (
-                    <>
-                      <Paperclip className="w-8 h-8 text-green-500 mb-2 mx-auto" />
-                      <p className="text-green-600 font-medium">Attach Receipt</p>
-                      <p className="text-gray-500 text-sm mt-1">
-                        Click to upload or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-400 mt-2">
-                        Supports images and PDF files (max 10MB)
-                      </p>
-                    </>
-                  )}
-                </div>
-              ) : paymentDetails.receiptUploadStatus === 'uploading' ? (
-                <div className="border-2 border-blue-300 bg-blue-50 rounded-lg p-6 text-center">
-                  <Upload className="w-8 h-8 text-blue-500 mb-2 mx-auto animate-pulse" />
-                  <p className="text-blue-600 font-medium">Uploading Receipt...</p>
-                  <p className="text-xs text-blue-500">Please wait while we process your file</p>
-                </div>
-              ) : (
-                <div className="border-2 border-green-300 bg-green-50 rounded-lg p-6">
-                  <div className="text-center mb-4">
-                    <Check className="w-8 h-8 text-green-500 mb-2 mx-auto" />
-                    <p className="text-green-600 font-medium">Receipt Uploaded Successfully!</p>
-                    <p className="text-xs text-green-600 truncate">
-                      {paymentDetails.receiptFile?.name}
-                    </p>
-                  </div>
-
-                  <div className="flex justify-center space-x-2">
-                    <button
-                      onClick={handleReceiptPreview}
-                      className="px-3 py-2 text-sm bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors flex items-center"
-                    >
-                      <Eye size={14} className="mr-1" />
-                      Preview
-                    </button>
-                    <button
-                      onClick={handleReceiptDownload}
-                      className="px-3 py-2 text-sm bg-green-100 text-green-600 rounded-md hover:bg-green-200 transition-colors flex items-center"
-                    >
-                      <Download size={14} className="mr-1" />
-                      Download
-                    </button>
-                    <button
-                      onClick={handleReceiptDelete}
-                      className="px-3 py-2 text-sm bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors flex items-center"
-                    >
-                      <Trash2 size={14} className="mr-1" />
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -1016,7 +774,6 @@ const DocumentVerificationPage: React.FC = () => {
         {/* Step Content */}
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
-        {currentStep === 3 && renderStep3()}
 
         {/* Navigation Buttons */}
         <div className="flex justify-between items-center">
@@ -1033,7 +790,7 @@ const DocumentVerificationPage: React.FC = () => {
             Back
           </button>
 
-          {currentStep < 3 ? (
+          {currentStep < 2 ? (
             <button
               onClick={handleNext}
               className="flex items-center px-6 py-3 bg-green-500 text-white rounded-md font-medium hover:bg-green-600 transition-colors"
