@@ -12,7 +12,7 @@ export const URLS = {
   deleteUploadedSingleImg: "/delete-single-file",
 
   submitVerificationDocs: "/submitVerificationDocs",
-  verifyPayment: "/verify-endpoint",
+  verifyPayment: "/verify-payment",
 
   /**
    * Upload file
