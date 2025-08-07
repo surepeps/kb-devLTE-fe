@@ -17,42 +17,10 @@ interface BudgetSelectionProps {
   className?: string;
 }
 
-// Memoized preset budget ranges for different preference types
-const BUDGET_PRESETS = {
-  buy: [
-    { label: "₦5M - ₦15M", min: 5000000, max: 15000000 },
-    { label: "₦15M - ₦30M", min: 15000000, max: 30000000 },
-    { label: "₦30M - ₦50M", min: 30000000, max: 50000000 },
-    { label: "₦50M - ₦100M", min: 50000000, max: 100000000 },
-    { label: "₦100M+", min: 100000000, max: 500000000 },
-  ],
-  rent: [
-    { label: "₦100K - ₦300K", min: 100000, max: 300000 },
-    { label: "₦300K - ₦500K", min: 300000, max: 500000 },
-    { label: "₦500K - ₦1M", min: 500000, max: 1000000 },
-    { label: "₦1M - ₦2M", min: 1000000, max: 2000000 },
-    { label: "₦2M+", min: 2000000, max: 10000000 },
-  ],
-  "joint-venture": [
-    { label: "₦10M - ₦50M", min: 10000000, max: 50000000 },
-    { label: "₦50M - ₦100M", min: 50000000, max: 100000000 },
-    { label: "₦100M - ₦250M", min: 100000000, max: 250000000 },
-    { label: "₦250M - ₦500M", min: 250000000, max: 500000000 },
-    { label: "₦500M+", min: 500000000, max: 2000000000 },
-  ],
-  shortlet: [
-    { label: "₦10K - ₦25K", min: 10000, max: 25000 },
-    { label: "₦25K - ���50K", min: 25000, max: 50000 },
-    { label: "₦50K - ₦100K", min: 50000, max: 100000 },
-    { label: "₦100K - ₦200K", min: 100000, max: 200000 },
-    { label: "₦200K+", min: 200000, max: 1000000 },
-  ],
-};
-
 // Memoized budget period labels
 const BUDGET_PERIOD_LABELS = {
   buy: "Total Purchase Budget",
-  rent: "Monthly Rent Budget",
+  rent: "Yealy Rent Budget",
   "joint-venture": "Investment Budget",
   shortlet: "Per Night Budget",
 };
@@ -69,11 +37,6 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
     const [selectedPreset, setSelectedPreset] = useState<string>("");
     const [isCustomBudget, setIsCustomBudget] = useState(false);
 
-    // Memoized budget presets for current preference type
-    const budgetPresets = useMemo(
-      () => BUDGET_PRESETS[preferenceType] || [],
-      [preferenceType],
-    );
 
     // Memoized budget label
     const budgetLabel = useMemo(
@@ -106,27 +69,15 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
         setIsCustomBudget(false);
         return;
       }
-
+ 
       if (budgetData) {
         setMinPrice(budgetData.minPrice || 0);
         setMaxPrice(budgetData.maxPrice || 0);
 
-        // Check if current budget matches any preset
-        const matchingPreset = budgetPresets.find(
-          (preset) =>
-            preset.min === budgetData.minPrice &&
-            preset.max === budgetData.maxPrice,
-        );
-
-        if (matchingPreset) {
-          setSelectedPreset(matchingPreset.label);
-          setIsCustomBudget(false);
-        } else if (budgetData.minPrice || budgetData.maxPrice) {
-          setIsCustomBudget(true);
-          setSelectedPreset("");
-        }
+        setIsCustomBudget(true);
+        setSelectedPreset("");
       }
-    }, [state.formData, budgetPresets, state.currentStep]); // Watch for changes in form data and step
+    }, [state.formData, state.currentStep]); // Watch for changes in form data and step
 
     // Format number with commas
     const formatNumberWithCommas = useCallback((value: number): string => {
@@ -160,22 +111,6 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
       }
     }, [minPrice, maxPrice, debouncedUpdateFormData]);
 
-    // Handle preset selection
-    const handlePresetSelect = useCallback(
-      (preset: (typeof budgetPresets)[0]) => {
-        setMinPrice(preset.min);
-        setMaxPrice(preset.max);
-        setSelectedPreset(preset.label);
-        setIsCustomBudget(false);
-      },
-      [],
-    );
-
-    // Handle custom budget toggle
-    const handleCustomBudgetToggle = useCallback(() => {
-      setIsCustomBudget(true);
-      setSelectedPreset("");
-    }, []);
 
     // Handle min price change
     const handleMinPriceChange = useCallback(
@@ -240,36 +175,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
           </p>
         </div>
 
-        {/* Budget Presets */}
-        <div className="space-y-4">
-          <h4 className="text-sm font-semibold text-gray-800">
-            Quick Budget Selection
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {budgetPresets.map((preset) => (
-              <motion.button
-                key={preset.label}
-                type="button"
-                onClick={() => handlePresetSelect(preset)}
-                className={`p-4 border-2 rounded-lg text-left transition-all duration-200 ${
-                  selectedPreset === preset.label
-                    ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100"
-                    : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50"
-                }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="font-semibold text-gray-900 text-sm">
-                  {preset.label}
-                </div>
-                <div className="text-xs text-gray-600 mt-1">
-                  ₦{formatNumberWithCommas(preset.min)} - ₦
-                  {formatNumberWithCommas(preset.max)}
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
+ 
 
         {/* Custom Budget Option */}
         <div className="space-y-4">
@@ -277,17 +183,6 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
             <h4 className="text-sm font-semibold text-gray-800">
               Custom Budget Range
             </h4>
-            <button
-              type="button"
-              onClick={handleCustomBudgetToggle}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isCustomBudget
-                  ? "bg-emerald-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {isCustomBudget ? "Custom Selected" : "Set Custom Range"}
-            </button>
           </div>
 
           {/* Custom Budget Inputs */}

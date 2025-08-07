@@ -136,16 +136,9 @@ const checkRentStep2RequiredFields = (propertyData: any) => {
 
 // Helper function to check step 4 required fields
 const checkStep4RequiredFields = (propertyData: any) => {
-  const contactInfo = propertyData.contactInfo;
-  return (
-    !!(
-      contactInfo.firstName &&
-      contactInfo.lastName &&
-      contactInfo.email &&
-      contactInfo.phone
-    ) && propertyData.isLegalOwner !== undefined
-  );
+  return propertyData.isLegalOwner !== undefined;
 };
+
 
 const RentPropertyForm: React.FC<RentPropertyFormProps> = ({
   pageTitle,
@@ -282,10 +275,6 @@ const RentPropertyForm: React.FC<RentPropertyFormProps> = ({
       } else if (currentStep === 1) {
         setFieldTouched("isTenanted", true);
       } else if (currentStep === 3) {
-        setFieldTouched("contactInfo.firstName", true);
-        setFieldTouched("contactInfo.lastName", true);
-        setFieldTouched("contactInfo.email", true);
-        setFieldTouched("contactInfo.phone", true);
         setFieldTouched("isLegalOwner", true);
       }
       return;
@@ -357,11 +346,6 @@ const RentPropertyForm: React.FC<RentPropertyFormProps> = ({
         },
         price: extractNumericValue(propertyData.price),
         leaseHold: propertyData.leaseHold,
-        owner: {
-          fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
-          phoneNumber: propertyData.contactInfo.phone,
-          email: propertyData.contactInfo.email,
-        },
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {

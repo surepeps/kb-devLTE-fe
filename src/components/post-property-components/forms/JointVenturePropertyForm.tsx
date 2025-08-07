@@ -11,7 +11,7 @@ import { extractNumericValue } from "@/utils/price-helpers";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-
+ 
 // Components
 import Stepper from "@/components/post-property-components/Stepper";
 import JVStep1BasicDetails from "@/components/post-property-components/steps/joint-venture/JVStep1BasicDetails";
@@ -135,15 +135,7 @@ const checkJVStep2RequiredFields = (propertyData: any) => {
 
 // Helper function to check step 4 required fields
 const checkStep4RequiredFields = (propertyData: any) => {
-  const contactInfo = propertyData.contactInfo;
-  return (
-    !!(
-      contactInfo.firstName &&
-      contactInfo.lastName &&
-      contactInfo.email &&
-      contactInfo.phone
-    ) && propertyData.isLegalOwner !== undefined
-  );
+  return propertyData.isLegalOwner !== undefined;
 };
 
 const JointVenturePropertyForm: React.FC<JointVenturePropertyFormProps> = ({
@@ -284,10 +276,6 @@ const JointVenturePropertyForm: React.FC<JointVenturePropertyFormProps> = ({
         setFieldTouched("documents", true);
         setFieldTouched("jvConditions", true);
       } else if (currentStep === 3) {
-        setFieldTouched("contactInfo.firstName", true);
-        setFieldTouched("contactInfo.lastName", true);
-        setFieldTouched("contactInfo.email", true);
-        setFieldTouched("contactInfo.phone", true);
         setFieldTouched("isLegalOwner", true);
       }
       return;
@@ -358,11 +346,6 @@ const JointVenturePropertyForm: React.FC<JointVenturePropertyFormProps> = ({
           streetAddress: propertyData.streetAddress,
         },
         price: extractNumericValue(propertyData.price),
-        owner: {
-          fullName: `${propertyData.contactInfo.firstName} ${propertyData.contactInfo.lastName}`,
-          phoneNumber: propertyData.contactInfo.phone,
-          email: propertyData.contactInfo.email,
-        },
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {
