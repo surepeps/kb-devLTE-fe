@@ -820,6 +820,19 @@ const DocumentVerificationPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Payment Redirect Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
+            <div className="mb-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+            </div>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Processing Request</h2>
+            <p className="mb-6 text-gray-600">Please wait while we process your document verification request and generate your payment link...</p>
+          </div>
+        </div>
+      )}
+
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
