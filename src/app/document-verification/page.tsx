@@ -336,6 +336,7 @@ const DocumentVerificationPage: React.FC = () => {
         // Check if payment authorization URL is provided
         if (response.data?.transaction?.authorization_url) {
           toast.success('Document verification request submitted! Redirecting to payment...');
+          setIsRedirectingToPayment(true);
 
           // Show overlay and redirect to payment
           setTimeout(() => {
