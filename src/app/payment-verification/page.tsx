@@ -116,8 +116,14 @@ const PaymentVerificationPage = () => {
                   {verificationData.transaction?.status && (
                     <p><span className="font-medium">Status:</span> {verificationData.transaction.status}</p>
                   )}
+
                   {verificationData.transaction?.transactionType && (
-                    <p><span className="font-medium">Type:</span> {verificationData.transaction.transactionType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                    <p>
+                      <span className="font-medium">Type:</span>{' '}
+                      {verificationData.transaction.transactionType
+                        .replace('-', ' ')
+                        .replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                    </p>
                   )}
                   {verificationData.typeEffect && (
                     <p><span className="font-medium">Service:</span> {verificationData.typeEffect.status === 'successful' ? 'Processed Successfully' : 'Processing'}</p>
@@ -139,7 +145,7 @@ const PaymentVerificationPage = () => {
             </div>
             <h2 className="text-2xl font-bold text-red-600 mb-2">Payment Verification Failed</h2>
             <p className="text-gray-600 mb-6">
-              We couldn't verify your payment. This could be due to a cancelled transaction or network issue.
+              We couldn&apos;t verify your payment. This could be due to a cancelled transaction or network issue.
             </p>
             <div className="space-y-3">
               <button

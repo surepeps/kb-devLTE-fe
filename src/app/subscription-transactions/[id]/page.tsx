@@ -105,7 +105,6 @@ export default function SubscriptionTransactionDetailsPage() {
 
   const handleRetryPayment = () => {
     // Implementation for retrying failed payments
-    toast.info('Retry payment feature coming soon!');
   };
 
   if (user?.userType !== 'Agent') {
