@@ -67,4 +67,15 @@ export const URLS = {
   authResendVerficationToken: "/auth/resendVerificationToken",
   authResetPassword: "/auth/resetPassword",
   authVerifyAccount: "/auth/verifyAccount",
+
+  /**
+   * Subscription Endpoints
+   */
+  subscriptionBaseUrl: "/subscriptions",
+  getAgentSubscriptions: "/subscriptions/agent",
+  createSubscription: "/subscriptions/create",
+  renewSubscription: "/subscriptions/renew",
+  cancelSubscription: "/subscriptions/cancel",
+  getSubscriptionPlans: "/subscriptions/plans",
+  getSubscriptionTransactions: "/subscriptions/transactions",
 };
