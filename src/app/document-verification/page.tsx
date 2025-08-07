@@ -73,6 +73,7 @@ const DocumentVerificationPage: React.FC = () => {
     receiptUploadStatus: 'idle',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const fileInputRefs = useRef<{ [key in DocumentType]?: HTMLInputElement | null }>({});
   const receiptInputRef = useRef<HTMLInputElement | null>(null);
@@ -335,6 +336,7 @@ const DocumentVerificationPage: React.FC = () => {
         // Check if payment authorization URL is provided
         if (response.data?.transaction?.authorization_url) {
           toast.success('Document verification request submitted! Redirecting to payment...');
+          setIsRedirectingToPayment(true);
 
           // Show overlay and redirect to payment
           setTimeout(() => {
@@ -821,15 +823,24 @@ const DocumentVerificationPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Payment Redirect Overlay */}
-      {isSubmitting && (
+      {/* Submission and Payment Redirect Overlay */}
+      {(isSubmitting || isRedirectingToPayment) && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
             <div className="mb-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
             </div>
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Processing Request</h2>
-            <p className="mb-6 text-gray-600">Please wait while we process your document verification request and generate your payment link...</p>
+            {isRedirectingToPayment ? (
+              <>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Redirecting to Payment</h2>
+                <p className="mb-6 text-gray-600">Your document verification request has been processed. You will be redirected to the payment page shortly...</p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Processing Request</h2>
+                <p className="mb-6 text-gray-600">Please wait while we process your document verification request and generate your payment link...</p>
+              </>
+            )}
           </div>
         </div>
       )}

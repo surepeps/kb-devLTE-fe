@@ -19,6 +19,7 @@ import {
   Star as StarIcon,
   Plus as PlusIcon,
   Calendar as CalendarIcon,
+  CreditCard as CreditCardIcon,
   Eye,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
@@ -165,6 +166,13 @@ export default function AgentDashboard() {
             >
               <CalendarIcon size={20} />
               <span className="hidden sm:inline">Inspection</span>Requests
+            </Link>
+            <Link
+              href="/agent-subscriptions"
+              className="bg-white hover:bg-gray-50 text-[#09391C] border border-[#8DDB90] px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
+            >
+              <CreditCardIcon size={20} />
+              <span className="hidden sm:inline">Manage</span>Plans
             </Link>
             <Link
               href="/agent-marketplace"
@@ -387,6 +395,19 @@ export default function AgentDashboard() {
                 <div className="flex-1">
                   <h3 className="font-semibold">Notifications</h3>
                   <p className="text-sm text-[#5A5D63]">View notifications</p>
+                </div>
+              </Link>
+
+              <Link
+                href="/agent-subscriptions"
+                className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
+              >
+                <div className="p-2 bg-blue-500 bg-opacity-10 rounded-lg">
+                  <CreditCardIcon size={20} className="text-blue-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Manage Subscriptions</h3>
+                  <p className="text-sm text-[#5A5D63]">View plans & renewals</p>
                 </div>
               </Link>
 
