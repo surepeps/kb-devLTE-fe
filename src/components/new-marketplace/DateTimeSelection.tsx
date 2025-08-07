@@ -97,6 +97,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const [showMoreDates, setShowMoreDates] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
 
   // Lock body scroll when uploading or submitting
   useEffect(() => {
