@@ -11,5 +11,5 @@ const OutrightSalesPage = () => {
     />
   );
 };
-
+ 
 export default OutrightSalesPage;
