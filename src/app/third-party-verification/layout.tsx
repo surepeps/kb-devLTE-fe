@@ -54,11 +54,11 @@ const VerificationHeader = () => {
 const VerificationFooter = () => {
   return (
     <footer className="bg-[#0B423D] text-white border-t-4 border-[#8DDB90]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
           {/* Brand Section */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center space-x-3">
+          <div className="sm:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-3">
               <div className="bg-[#8DDB90] p-2 rounded-lg">
                 <img
                   src="/khabi-teq.svg"
@@ -66,28 +66,27 @@ const VerificationFooter = () => {
                   className="h-6 w-auto"
                 />
               </div>
-              <div>
-                <h3 className="text-2xl font-bold text-white">Khabi-Teq</h3>
+              <div className="text-center sm:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold text-white">Khabi-Teq</h3>
                 <p className="text-[#8DDB90] font-medium">Document Verification Services</p>
               </div>
             </div>
-            <p className="text-gray-300 leading-relaxed max-w-lg">
+            <p className="text-gray-300 leading-relaxed max-w-lg text-center sm:text-left">
               Nigeria's leading document verification platform. We provide secure, fast, and reliable
               verification services for real estate documents across Lagos and Ogun State.
-              Your trusted partner in property transactions.
             </p>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-3 py-2 rounded-lg">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4">
+              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-2 sm:px-3 py-1 sm:py-2 rounded-lg">
                 <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
                 <span className="text-xs text-gray-300">Verified Platform</span>
               </div>
-              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-3 py-2 rounded-lg">
+              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-2 sm:px-3 py-1 sm:py-2 rounded-lg">
                 <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
                 <span className="text-xs text-gray-300">Bank Grade Security</span>
               </div>
-              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-3 py-2 rounded-lg">
+              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-2 sm:px-3 py-1 sm:py-2 rounded-lg">
                 <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
                 <span className="text-xs text-gray-300">24/7 Support</span>
               </div>
@@ -95,74 +94,64 @@ const VerificationFooter = () => {
           </div>
 
           {/* Services */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 text-center sm:text-left">
             <h4 className="text-lg font-semibold text-[#8DDB90]">Verification Services</h4>
-            <ul className="space-y-3 text-sm text-gray-300">
-              <li className="flex items-center space-x-2">
+            <ul className="space-y-2 sm:space-y-3 text-sm text-gray-300">
+              <li className="flex items-center justify-center sm:justify-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Certificate of Occupancy</span>
               </li>
-              <li className="flex items-center space-x-2">
+              <li className="flex items-center justify-center sm:justify-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Deed of Assignment</span>
               </li>
-              <li className="flex items-center space-x-2">
+              <li className="flex items-center justify-center sm:justify-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Governor's Consent</span>
               </li>
-              <li className="flex items-center space-x-2">
+              <li className="flex items-center justify-center sm:justify-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Survey Plan Documents</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
-                <span>Property Title Verification</span>
               </li>
             </ul>
           </div>
 
           {/* Contact & Support */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 text-center sm:text-left">
             <h4 className="text-lg font-semibold text-[#8DDB90]">Verification Support</h4>
-            <div className="space-y-4 text-sm text-gray-300">
-              <div className="space-y-2">
+            <div className="space-y-3 sm:space-y-4 text-sm text-gray-300">
+              <div className="space-y-1 sm:space-y-2">
                 <p className="font-medium text-white">24/7 Verification Hotline</p>
-                <p className="text-[#8DDB90]">+234 (0) 801 234 5678</p>
+                <a href="tel:+2348012345678" className="text-[#8DDB90] hover:underline block">
+                  +234 (0) 801 234 5678
+                </a>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1 sm:space-y-2">
                 <p className="font-medium text-white">Email Support</p>
-                <p className="text-[#8DDB90]">verification@khabi-teq.com</p>
+                <a href="mailto:verification@khabi-teq.com" className="text-[#8DDB90] hover:underline block">
+                  verification@khabi-teq.com
+                </a>
               </div>
 
-              <div className="space-y-2">
-                <p className="font-medium text-white">Emergency Line</p>
-                <p className="text-red-300">+234 (0) 800 URGENT 1</p>
-              </div>
-
-              <div className="bg-[#0B423D]/60 border border-[#8DDB90]/20 p-3 rounded-lg mt-4">
-                <p className="text-xs text-gray-400">Business Hours</p>
-                <p className="text-sm font-medium text-white">Monday - Friday: 8:00 AM - 8:00 PM</p>
-                <p className="text-sm font-medium text-white">Saturday: 9:00 AM - 5:00 PM</p>
-                <p className="text-xs text-gray-400 mt-1">Emergency support available 24/7</p>
+              <div className="bg-[#0B423D]/60 border border-[#8DDB90]/20 p-3 rounded-lg">
+                <p className="text-xs text-gray-400 mb-1">Business Hours</p>
+                <p className="text-xs sm:text-sm font-medium text-white">Mon-Fri: 8AM-8PM</p>
+                <p className="text-xs sm:text-sm font-medium text-white">Sat: 9AM-5PM</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-[#8DDB90]/30 mt-12 pt-8">
-          <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
-            <div className="text-sm text-gray-400">
+        <div className="border-t border-[#8DDB90]/30 mt-8 sm:mt-12 pt-6 sm:pt-8">
+          <div className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0">
+            <div className="text-xs sm:text-sm text-gray-400 text-center lg:text-left">
               <p>© 2024 Khabi-Teq Realty Limited. All rights reserved.</p>
-              <p className="mt-1">Licensed Document Verification Provider • Registration No: RC-1234567</p>
+              <p className="mt-1 hidden sm:block">Licensed Document Verification Provider • Registration No: RC-1234567</p>
             </div>
 
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
-                <span>Powered by Khabi-Teq Verification Engine v2.0</span>
-              </div>
-
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end space-y-2 sm:space-y-0 sm:space-x-4 lg:space-x-6">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-[#8DDB90] rounded-full animate-pulse"></div>
                 <span className="text-xs text-[#8DDB90] font-medium">All Systems Operational</span>
