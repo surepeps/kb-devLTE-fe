@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
   // Optimize for faster compilation and prevent memory issues
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
+    // Improve dev performance
+    turbo: {
+      resolveAlias: {
+        canvas: './empty-module.js',
+      },
+    },
   },
   images: {
     remotePatterns: [
