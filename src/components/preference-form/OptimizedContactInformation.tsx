@@ -371,7 +371,7 @@ const OptimizedContactInformation: React.FC<ContactInformationProps> = memo(
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleFormSubmit}
-          enableReinitialize={false} // Prevent unnecessary reinitializations
+          enableReinitialize={true} // Allow reinitializations when form data changes
         >
           {({ values, setFieldValue, submitForm }) => {
             // Auto-submit on value changes with debouncing
