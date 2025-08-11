@@ -67,30 +67,53 @@ const ThirdPartyVerificationPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateToken = async () => {
-    if (!token.trim()) {
-      toast.error('Please enter the validation token');
+    if (!accessCode.trim()) {
+      toast.error('Please enter the access code');
       return;
     }
 
     setIsValidatingToken(true);
     try {
-      const response = await POST_REQUEST(`${URLS.BASE}${URLS.validateVerificationToken}`, {
-        token,
-        documentID
+      const response = await POST_REQUEST(`${URLS.BASE}${URLS.verifyAccessCode}`, {
+        documentId: documentID,
+        accessCode
       });
 
-      if (response.success && response.data) {
-        setDocuments(response.data.documents || []);
+      if (response.success) {
+        // Fetch document details after successful access code verification
+        await fetchDocumentDetails();
         setIsTokenValidated(true);
-        toast.success('Token validated successfully!');
+        toast.success('Access code verified successfully!');
       } else {
-        toast.error(response.message || 'Invalid token. Please check your email for the correct token.');
+        toast.error(response.message || 'Invalid access code. Please check your email for the correct code.');
       }
     } catch (error) {
-      console.error('Token validation error:', error);
-      toast.error('Failed to validate token. Please try again.');
+      console.error('Access code validation error:', error);
+      toast.error('Failed to validate access code. Please try again.');
     } finally {
       setIsValidatingToken(false);
+    }
+  };
+
+  const fetchDocumentDetails = async () => {
+    try {
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getDocumentDetails}/${documentID}`);
+
+      if (response.success && response.data) {
+        setDocumentDetails(response.data);
+        // Initialize reports array based on documents
+        const initialReports = response.data.documents.map((doc: Document) => ({
+          originalDocumentType: doc.documentType,
+          description: '',
+          status: 'verified' as const
+        }));
+        setReports(initialReports);
+      } else {
+        toast.error('Failed to fetch document details');
+      }
+    } catch (error) {
+      console.error('Error fetching document details:', error);
+      toast.error('Failed to fetch document details');
     }
   };
 
