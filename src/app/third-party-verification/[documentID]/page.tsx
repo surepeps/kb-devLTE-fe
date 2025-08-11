@@ -221,6 +221,25 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
     setIsSubmittingReport(true);
     try {
+      // Check if API base URL is configured
+      if (!URLS.BASE || URLS.BASE === 'undefined') {
+        console.warn('API base URL not configured, using mock submission');
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Update document status to completed
+        if (documentDetails) {
+          setDocumentDetails({
+            ...documentDetails,
+            status: 'completed'
+          });
+        }
+
+        toast.success('Report submitted successfully! (Demo Mode)');
+        setShowReportModal(false);
+        return;
+      }
+
       const response = await POST_REQUEST(`${URLS.BASE}${URLS.submitReport}/${documentID}`, {
         reports
       });
