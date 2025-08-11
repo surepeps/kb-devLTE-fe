@@ -4,7 +4,7 @@ import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle, L
 import toast from 'react-hot-toast';
 import { useParams } from 'next/navigation';
 import { URLS } from '@/utils/URLS';
-import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
+import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD, GET_REQUEST } from '@/utils/requests';
 
 // Types for verification data
 type DocumentStatus = 'pending' | 'validated' | 'rejected';
