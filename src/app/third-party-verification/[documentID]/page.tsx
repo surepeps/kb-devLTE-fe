@@ -340,25 +340,25 @@ const ThirdPartyVerificationPage: React.FC = () => {
   // Token validation view
   if (!isTokenValidated) {
     return (
-      <div className="min-h-full bg-gray-50">
-        <div className="flex items-center justify-center py-12 px-4">
+      <div className="min-h-screen bg-[#EEF1F1] py-6 sm:py-12 px-4">
+        <div className="flex items-center justify-center">
           <div className="max-w-md w-full">
-            <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
               <div className="text-center mb-8">
-                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-                  <Lock className="h-8 w-8 text-blue-600" />
+                <div className="mx-auto flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-[#0B423D] to-[#8DDB90] mb-6">
+                  <Lock className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
                   Document Verification Access
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
                   Please enter the access code sent to your email to verify the documents.
                 </p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Access Code
                   </label>
                   <div className="relative">
@@ -367,22 +367,22 @@ const ThirdPartyVerificationPage: React.FC = () => {
                       value={accessCode}
                       onChange={(e) => setAccessCode(e.target.value)}
                       placeholder="Enter your access code"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-10"
+                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] pl-12 text-lg font-mono tracking-wider"
                       onKeyPress={(e) => e.key === 'Enter' && validateToken()}
                     />
-                    <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    <Mail className="absolute left-4 top-4.5 h-5 w-5 text-gray-400" />
                   </div>
                 </div>
 
                 <button
                   onClick={validateToken}
                   disabled={isValidatingToken || !accessCode.trim()}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-[#0B423D] to-[#8DDB90] text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg transform transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isValidatingToken ? (
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Verifying...
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                      Verifying Access Code...
                     </div>
                   ) : (
                     'Verify Access Code'
@@ -390,10 +390,14 @@ const ThirdPartyVerificationPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-500">
-                  Document ID: <span className="font-mono font-medium">{documentID}</span>
+              <div className="mt-8 p-4 bg-gray-50 rounded-xl">
+                <p className="text-xs sm:text-sm text-gray-500 text-center">
+                  Document ID: <span className="font-mono font-medium text-[#0B423D]">{documentID}</span>
                 </p>
+                <div className="flex items-center justify-center mt-2">
+                  <div className="w-2 h-2 bg-[#8DDB90] rounded-full animate-pulse mr-2"></div>
+                  <span className="text-xs text-gray-500">Secure Connection</span>
+                </div>
               </div>
             </div>
           </div>
