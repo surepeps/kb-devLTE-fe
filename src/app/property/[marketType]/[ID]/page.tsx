@@ -710,8 +710,18 @@ const ProductDetailsPage = () => {
   const { setPropertySelectedForInspection, setIsComingFromPriceNeg } =
     usePageContext();
   const { selectedBriefs } = useSelectedBriefs();
-  const { toggleInspectionSelection, isSelectedForInspection } =
-    useGlobalPropertyActions();
+  const {
+    toggleInspectionSelection,
+    isSelectedForInspection,
+    addNegotiatedPrice,
+    getNegotiatedPrice
+  } = useGlobalPropertyActions();
+
+  // Price negotiation modal state
+  const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
+    isOpen: boolean;
+    property: PropertyDetails | null;
+  }>({ isOpen: false, property: null });
 
   const marketType = params?.marketType ?? "";
   const id = params?.ID ?? "";
