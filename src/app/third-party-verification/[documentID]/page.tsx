@@ -55,21 +55,15 @@ const ThirdPartyVerificationPage: React.FC = () => {
   
   // Token validation state
   const [isTokenValidated, setIsTokenValidated] = useState(false);
-  const [token, setToken] = useState('');
+  const [accessCode, setAccessCode] = useState('');
   const [isValidatingToken, setIsValidatingToken] = useState(false);
-  
+
   // Document verification state
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documentDetails, setDocumentDetails] = useState<DocumentDetails | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  const [showValidationModal, setShowValidationModal] = useState(false);
-  const [showRejectionModal, setShowRejectionModal] = useState(false);
-  const [rejectionData, setRejectionData] = useState<RejectionData>({
-    reason: '',
-    report: '',
-    expectedDocumentFile: null,
-    expectedDocumentUrl: ''
-  });
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reports, setReports] = useState<ReportDocument[]>([]);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateToken = async () => {
