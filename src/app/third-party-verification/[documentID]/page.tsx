@@ -99,21 +99,29 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
     setIsProcessing(true);
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setDocuments(prev => 
-        prev.map(doc => 
-          doc.id === selectedDocument.id 
-            ? { ...doc, status: 'validated' as DocumentStatus }
-            : doc
-        )
-      );
-      
-      toast.success('Document validated successfully!');
-      setShowValidationModal(false);
-      setSelectedDocument(null);
+      const response = await POST_REQUEST(`${URLS.BASE}${URLS.validateDocument}`, {
+        documentId: selectedDocument.id,
+        documentType: selectedDocument.type,
+        verificationToken: token
+      });
+
+      if (response.success) {
+        setDocuments(prev =>
+          prev.map(doc =>
+            doc.id === selectedDocument.id
+              ? { ...doc, status: 'validated' as DocumentStatus }
+              : doc
+          )
+        );
+
+        toast.success('Document validated successfully!');
+        setShowValidationModal(false);
+        setSelectedDocument(null);
+      } else {
+        toast.error(response.message || 'Failed to validate document');
+      }
     } catch (error) {
+      console.error('Validation error:', error);
       toast.error('Failed to validate document');
     } finally {
       setIsProcessing(false);
