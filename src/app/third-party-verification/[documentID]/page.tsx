@@ -10,14 +10,30 @@ import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD, GET_REQUEST } from '@/utils/req
 type DocumentStatus = 'pending' | 'validated' | 'rejected';
 
 type Document = {
-  id: string;
-  type: string;
-  fileName: string;
-  uploadedAt: string;
-  submittedBy: string;
-  status: DocumentStatus;
-  documentUrl?: string;
-  thumbnailUrl?: string;
+  documentType: string;
+  documentNumber: string;
+  documentUrl: string;
+};
+
+type DocumentDetails = {
+  _id: string;
+  customId: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  amountPaid: number;
+  documents: Document[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ReportDocument = {
+  originalDocumentType: string;
+  newDocumentUrl?: string;
+  description: string;
+  status: 'verified' | 'rejected';
 };
 
 type RejectionData = {
