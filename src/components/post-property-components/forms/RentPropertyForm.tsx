@@ -339,10 +339,6 @@ const RentPropertyForm: React.FC<RentPropertyFormProps> = ({
         leaseHold: propertyData.leaseHold,
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
-        landSize: {
-          measurementType: propertyData.measurementType,
-          size: propertyData.landSize,
-        },
         briefType: "Rent",
         additionalFeatures: {
           noOfBedroom: propertyData.bedrooms?.toString() || "0",
