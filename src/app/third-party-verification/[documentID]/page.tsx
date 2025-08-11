@@ -161,120 +161,33 @@ const ThirdPartyVerificationPage: React.FC = () => {
     }
   };
 
-  const confirmValidation = async () => {
-    if (!selectedDocument) return;
-
-    setIsProcessing(true);
-    try {
-      const response = await POST_REQUEST(`${URLS.BASE}${URLS.validateDocument}`, {
-        documentId: selectedDocument.id,
-        documentType: selectedDocument.type,
-        verificationToken: token
-      });
-
-      if (response.success) {
-        setDocuments(prev =>
-          prev.map(doc =>
-            doc.id === selectedDocument.id
-              ? { ...doc, status: 'validated' as DocumentStatus }
-              : doc
-          )
-        );
-
-        toast.success('Document validated successfully!');
-        setShowValidationModal(false);
-        setSelectedDocument(null);
-      } else {
-        toast.error(response.message || 'Failed to validate document');
-      }
-    } catch (error) {
-      console.error('Validation error:', error);
-      toast.error('Failed to validate document');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error('Please upload a PDF, JPEG, or PNG file');
-        return;
-      }
-
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        toast.error('File size must be less than 5MB');
-        return;
-      }
-
-      setRejectionData(prev => ({
-        ...prev,
-        expectedDocumentFile: file,
-        expectedDocumentUrl: URL.createObjectURL(file)
-      }));
-      toast.success('Expected document uploaded');
-    }
-  };
-
-  const confirmRejection = async () => {
-    if (!selectedDocument || !rejectionData.reason.trim()) {
-      toast.error('Please provide a reason for rejection');
+  const submitReport = async () => {
+    // Validate all reports have descriptions
+    const hasEmptyDescriptions = reports.some(report => !report.description.trim());
+    if (hasEmptyDescriptions) {
+      toast.error('Please provide descriptions for all documents');
       return;
     }
 
-    setIsProcessing(true);
+    setIsSubmittingReport(true);
     try {
-      // Upload expected document if provided
-      let expectedDocumentUrl = '';
-      if (rejectionData.expectedDocumentFile) {
-        const formData = new FormData();
-        formData.append('file', rejectionData.expectedDocumentFile);
-        formData.append('for', 'verification-expected');
-
-        const uploadResponse = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
-        if (uploadResponse.success) {
-          expectedDocumentUrl = uploadResponse.data.url;
-        }
-      }
-
-      const response = await POST_REQUEST(`${URLS.BASE}${URLS.rejectDocument}`, {
-        documentId: selectedDocument.id,
-        documentType: selectedDocument.type,
-        verificationToken: token,
-        rejectionReason: rejectionData.reason,
-        report: rejectionData.report,
-        expectedDocumentUrl
+      const response = await POST_REQUEST(`${URLS.BASE}${URLS.submitReport}/${documentID}`, {
+        reports
       });
 
       if (response.success) {
-        setDocuments(prev =>
-          prev.map(doc =>
-            doc.id === selectedDocument.id
-              ? { ...doc, status: 'rejected' as DocumentStatus }
-              : doc
-          )
-        );
-
-        toast.success('Document rejected with feedback sent');
-        setShowRejectionModal(false);
-        setSelectedDocument(null);
-        setRejectionData({
-          reason: '',
-          report: '',
-          expectedDocumentFile: null,
-          expectedDocumentUrl: ''
-        });
+        toast.success('Report submitted successfully!');
+        setShowReportModal(false);
+        // Refresh document details to show updated status
+        await fetchDocumentDetails();
       } else {
-        toast.error(response.message || 'Failed to reject document');
+        toast.error(response.message || 'Failed to submit report');
       }
     } catch (error) {
-      console.error('Rejection error:', error);
-      toast.error('Failed to reject document');
+      console.error('Submit report error:', error);
+      toast.error('Failed to submit report');
     } finally {
-      setIsProcessing(false);
+      setIsSubmittingReport(false);
     }
   };
 
