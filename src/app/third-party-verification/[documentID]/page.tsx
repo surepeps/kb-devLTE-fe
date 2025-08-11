@@ -64,47 +64,17 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
     setIsValidatingToken(true);
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/third-party-verification/validate-token`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ token, documentID })
-      // });
-      // const data: TokenValidationResponse = await response.json();
+      const response = await POST_REQUEST(`${URLS.BASE}${URLS.validateVerificationToken}`, {
+        token,
+        documentID
+      });
 
-      // Mock API response for demonstration
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate token validation
-      if (token === 'VALID123' || token.length >= 6) {
-        const mockDocuments: Document[] = [
-          {
-            id: documentID,
-            type: 'Certificate of Occupancy',
-            fileName: 'certificate_of_occupancy_lagos_001.pdf',
-            uploadedAt: '2024-01-15T10:30:00Z',
-            submittedBy: 'John Doe (john.doe@email.com)',
-            status: 'pending',
-            documentUrl: '/placeholder-property.svg',
-            thumbnailUrl: '/placeholder-property.svg'
-          },
-          {
-            id: documentID + '_2',
-            type: 'Deed of Assignment',
-            fileName: 'deed_assignment_victoria_island.pdf',
-            uploadedAt: '2024-01-15T09:15:00Z',
-            submittedBy: 'John Doe (john.doe@email.com)',
-            status: 'pending',
-            documentUrl: '/placeholder-property.svg',
-            thumbnailUrl: '/placeholder-property.svg'
-          }
-        ];
-
-        setDocuments(mockDocuments);
+      if (response.success && response.data) {
+        setDocuments(response.data.documents || []);
         setIsTokenValidated(true);
         toast.success('Token validated successfully!');
       } else {
-        toast.error('Invalid token. Please check your email for the correct token.');
+        toast.error(response.message || 'Invalid token. Please check your email for the correct token.');
       }
     } catch (error) {
       console.error('Token validation error:', error);
