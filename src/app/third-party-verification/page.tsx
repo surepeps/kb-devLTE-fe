@@ -1,5 +1,10 @@
 "use client"
 import React, { useState, useRef } from 'react';
+
+export const metadata = {
+  title: 'Third Party Document Verification - Khabi-Teq',
+  description: 'Verify documents submitted for third-party verification',
+};
 import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
