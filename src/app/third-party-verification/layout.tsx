@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toaster } from 'react-hot-toast';
 
 export default function ThirdPartyVerificationLayout({ children }: { children: React.ReactNode }) {
   return (
