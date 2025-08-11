@@ -462,61 +462,88 @@ const ThirdPartyVerificationPage: React.FC = () => {
         )}
 
         {/* Documents List */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-lg font-medium text-gray-900">
-              Documents for Verification ({documentDetails?.documents.length || 0} document{(documentDetails?.documents.length || 0) !== 1 ? 's' : ''})
-            </h2>
-            {documentDetails?.status === 'in-progress' && (
-              <button
-                onClick={handleCreateReport}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <FileText className="w-4 h-4 mr-1" />
-                Create Verification Report
-              </button>
-            )}
+        <div className="bg-white shadow-xl rounded-2xl border border-gray-100">
+          <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                  Documents for Verification
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  {documentDetails?.documents.length || 0} document{(documentDetails?.documents.length || 0) !== 1 ? 's' : ''} submitted
+                </p>
+              </div>
+              {documentDetails?.status === 'in-progress' && (
+                <button
+                  onClick={handleCreateReport}
+                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-[#0B423D] to-[#8DDB90] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-[1.02] w-full sm:w-auto justify-center"
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Create Verification Report
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-100">
             {documentDetails?.documents.map((document, index) => (
-              <div key={index} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start space-x-4">
+              <div key={index} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Document Icon and Info */}
+                  <div className="flex items-start space-x-4 flex-1">
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-8 h-8 text-gray-400" />
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-[#0B423D] to-[#8DDB90] rounded-xl flex items-center justify-center shadow-lg">
+                        <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                       </div>
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="text-lg font-medium text-gray-900 truncate">
+                      <div className="mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 break-words">
                           {document.documentType}
                         </h3>
+                        <div className="flex items-center mt-1">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8DDB90] text-[#0B423D]">
+                            Document #{index + 1}
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-500 mb-1">
-                        Document Number: {document.documentNumber || 'Not provided'}
-                      </p>
+                      <div className="space-y-1">
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">Document Number:</span> {document.documentNumber || 'Not provided'}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3">
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-center">
                     <button
                       onClick={() => document.documentUrl && window.open(document.documentUrl, '_blank')}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center justify-center px-4 py-2.5 border-2 border-[#8DDB90] text-[#0B423D] font-medium rounded-xl hover:bg-[#8DDB90] hover:text-white transition-all duration-200 text-sm"
                     >
-                      <Eye className="w-4 h-4 mr-1" />
-                      Preview
+                      <Eye className="w-4 h-4 mr-2" />
+                      Preview Document
                     </button>
 
                     <button
                       onClick={() => document.documentUrl && window.open(document.documentUrl, '_blank')}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center justify-center px-4 py-2.5 bg-[#0B423D] text-white font-medium rounded-xl hover:bg-[#0B423D]/90 transition-all duration-200 text-sm"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      <Download className="w-4 h-4 mr-2" />
                       Download
                     </button>
+                  </div>
+                </div>
+
+                {/* Document Preview Area */}
+                <div className="mt-4 p-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                  <div className="flex items-center justify-center text-gray-500">
+                    <FileText className="w-8 h-8 mr-3" />
+                    <div className="text-center">
+                      <p className="text-sm font-medium">Document Preview</p>
+                      <p className="text-xs">Click "Preview Document" to view in full screen</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -524,10 +551,14 @@ const ThirdPartyVerificationPage: React.FC = () => {
           </div>
 
           {!documentDetails?.documents.length && (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
-              <p className="text-gray-500">There are no documents associated with this verification request.</p>
+            <div className="text-center py-12 sm:py-16">
+              <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <FileText className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No documents found</h3>
+              <p className="text-gray-500 max-w-sm mx-auto">
+                There are no documents associated with this verification request.
+              </p>
             </div>
           )}
         </div>
