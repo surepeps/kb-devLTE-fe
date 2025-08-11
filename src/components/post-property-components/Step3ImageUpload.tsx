@@ -193,9 +193,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
               ? { ...img, url, isUploading: false }
               : img,
           ));
-
-          // Show success toast for immediate feedback
-          toast.success(`Image uploaded successfully!`);
+          return { success: true, fileName: imageData.file.name };
         } else {
           // Clear failed upload immediately and show error using functional update
           setImages((prevImages: PropertyImage[]) => prevImages.map((img: PropertyImage) =>
@@ -203,13 +201,30 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
               ? { file: null, preview: null, id: generateImageId(), isUploading: false }
               : img,
           ));
-
-          toast.error(`Failed to upload ${imageData.file.name}. Please try again.`);
+          return { success: false, fileName: imageData.file.name };
         }
       }
+      return { success: false, fileName: "Unknown file" };
     });
 
-    await Promise.all(uploadPromises);
+    const results = await Promise.all(uploadPromises);
+
+    // Show single toast notification after all uploads complete
+    const successfulUploads = results.filter(result => result.success).length;
+    const failedUploads = results.filter(result => !result.success);
+
+    if (successfulUploads > 0) {
+      if (successfulUploads === 1) {
+        toast.success("Image uploaded successfully!");
+      } else {
+        toast.success(`${successfulUploads} images uploaded successfully!`);
+      }
+    }
+
+    // Show individual error messages for failed uploads
+    failedUploads.forEach(result => {
+      toast.error(`Failed to upload ${result.fileName}. Please try again.`);
+    });
   };
 
   const handleImageRemove = async (indexToRemove: number) => {
