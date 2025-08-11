@@ -345,10 +345,6 @@ const UpdateRentPropertyForm: React.FC<UpdateRentPropertyFormProps> = ({
         leaseHold: propertyData.leaseHold,
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
-        landSize: {
-          measurementType: propertyData.measurementType,
-          size: propertyData.landSize,
-        },
         briefType: "Rent",
         additionalFeatures: {
           noOfBedroom: propertyData.bedrooms?.toString() || "0",
