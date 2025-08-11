@@ -561,18 +561,21 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
             });
           }
 
-          if (!formData.propertyDetails?.measurementUnit) {
-            errors.push({
-              field: "propertyDetails.measurementUnit",
-              message: "Measurement unit is required",
-            });
-          }
+          // Only require measurement unit and land size for buy and joint-venture
+          if (formData.preferenceType !== "rent" && formData.preferenceType !== "shortlet") {
+            if (!formData.propertyDetails?.measurementUnit) {
+              errors.push({
+                field: "propertyDetails.measurementUnit",
+                message: "Measurement unit is required",
+              });
+            }
 
-          if (!formData.propertyDetails?.landSize) {
-            errors.push({
-              field: "propertyDetails.landSize",
-              message: "Land size is required",
-            });
+            if (!formData.propertyDetails?.landSize) {
+              errors.push({
+                field: "propertyDetails.landSize",
+                message: "Land size is required",
+              });
+            }
           }
 
           // Non-land property validations
