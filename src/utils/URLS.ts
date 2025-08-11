@@ -78,4 +78,12 @@ export const URLS = {
   cancelSubscription: "/subscriptions/cancel",
   getSubscriptionPlans: "/subscriptions/plans",
   getSubscriptionTransactions: "/subscriptions/transactions",
+
+  /**
+   * Third Party Verification Endpoints
+   */
+  thirdPartyVerificationBaseUrl: "/third-party",
+  verifyAccessCode: "/third-party/verifyAccessCode",
+  getDocumentDetails: "/third-party/getDocumentDetails",
+  submitReport: "/third-party/submit-report",
 };
