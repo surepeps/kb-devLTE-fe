@@ -172,7 +172,7 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
       newImageIndex++;
     }
 
-    while (updatedImages.length < Math.max(4, updatedImages.length)) {
+    while (updatedImages.length < Math.max(getMinimumRequiredImages(), 4)) {
       updatedImages.push({
         file: null,
         preview: null,
