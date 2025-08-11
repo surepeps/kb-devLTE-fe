@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
   },
   // Improve dev performance with Turbopack
-  turbo: {
+  turbopack: {
     resolveAlias: {
       canvas: './empty-module.js',
     },
