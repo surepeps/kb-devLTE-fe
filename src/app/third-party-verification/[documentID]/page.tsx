@@ -461,142 +461,110 @@ const ThirdPartyVerificationPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Validation Confirmation Modal */}
-      {showValidationModal && selectedDocument && (
+      {/* Report Modal */}
+      {showReportModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">
-                Validate Document
-              </h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to validate "{selectedDocument.type}"? 
-                  This action will mark the document as verified and authentic.
-                </p>
-              </div>
-              <div className="items-center px-4 py-3">
-                <button
-                  onClick={confirmValidation}
-                  disabled={isProcessing}
-                  className="px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 disabled:opacity-50"
-                >
-                  {isProcessing ? 'Processing...' : 'Confirm Validation'}
-                </button>
-                <button
-                  onClick={() => setShowValidationModal(false)}
-                  disabled={isProcessing}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 mt-3 disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Rejection Modal */}
-      {showRejectionModal && selectedDocument && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+          <div className="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
             <div className="mt-3">
-              <div className="flex items-center mb-4">
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                  <XCircle className="h-6 w-6 text-red-600" />
-                </div>
-                <h3 className="text-lg leading-6 font-medium text-gray-900 ml-4">
-                  Reject Document: {selectedDocument.type}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg leading-6 font-medium text-gray-900">
+                  Document Verification Report
                 </h3>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Reason for Rejection *
-                  </label>
-                  <select
-                    value={rejectionData.reason}
-                    onChange={(e) => setRejectionData(prev => ({ ...prev, reason: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  >
-                    <option value="">Select a reason</option>
-                    <option value="invalid-document">Invalid or Fake Document</option>
-                    <option value="poor-quality">Poor Image Quality</option>
-                    <option value="incomplete-information">Incomplete Information</option>
-                    <option value="wrong-document-type">Wrong Document Type</option>
-                    <option value="expired-document">Expired Document</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Upload Expected Document Type (Optional)
-                  </label>
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-400 cursor-pointer transition-colors"
-                  >
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                    />
-                    {rejectionData.expectedDocumentFile ? (
-                      <div className="flex items-center justify-center">
-                        <FileText className="h-8 w-8 text-green-500 mr-2" />
-                        <span className="text-sm text-gray-600">
-                          {rejectionData.expectedDocumentFile.name}
-                        </span>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">
-                          Click to upload an example of the expected document format
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Supports PDF, JPEG, PNG files
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Report (Optional)
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={rejectionData.report}
-                    onChange={(e) => setRejectionData(prev => ({ ...prev, report: e.target.value }))}
-                    placeholder="Provide detailed feedback about why this document was rejected and what the submitter should do to correct it..."
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end space-x-3 mt-6">
                 <button
-                  onClick={() => setShowRejectionModal(false)}
-                  disabled={isProcessing}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
+                  onClick={() => setShowReportModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {reports.map((report, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-6">
+                    <h4 className="text-lg font-medium text-gray-900 mb-4">
+                      Document {index + 1}: {report.originalDocumentType}
+                    </h4>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Status Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Verification Status *
+                        </label>
+                        <select
+                          value={report.status}
+                          onChange={(e) => handleReportChange(index, 'status', e.target.value)}
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="verified">Verified</option>
+                          <option value="rejected">Rejected</option>
+                        </select>
+                      </div>
+
+                      {/* Document Upload */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Upload Verified Document (Optional)
+                        </label>
+                        <input
+                          type="file"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleFileUpload(index, file);
+                          }}
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                        />
+                        {report.newDocumentUrl && (
+                          <p className="text-sm text-green-600 mt-1">
+                            ✓ Document uploaded successfully
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Description */}
+                      <div className="lg:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Verification Description *
+                        </label>
+                        <textarea
+                          rows={4}
+                          value={report.description}
+                          onChange={(e) => handleReportChange(index, 'description', e.target.value)}
+                          placeholder={
+                            report.status === 'verified'
+                              ? "Describe the verification process and findings (e.g., 'Document verified against official records. All details match and are authentic.')"
+                              : "Describe why the document was rejected and what issues were found (e.g., 'Document does not match official records. Inconsistencies found in...')"
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 mt-8">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  disabled={isSubmittingReport}
+                  className="px-6 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={confirmRejection}
-                  disabled={isProcessing || !rejectionData.reason.trim()}
-                  className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 disabled:opacity-50"
+                  onClick={submitReport}
+                  disabled={isSubmittingReport}
+                  className="px-6 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50"
                 >
-                  {isProcessing ? 'Processing...' : 'Confirm Rejection'}
+                  {isSubmittingReport ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Submitting...
+                    </div>
+                  ) : (
+                    'Submit Report'
+                  )}
                 </button>
               </div>
             </div>
