@@ -44,6 +44,20 @@ const ThirdPartyVerificationPage: React.FC = () => {
   // Validate document ID format
   const isValidDocumentID = documentID && documentID.length >= 5 && documentID !== 'sample-doc-123';
 
+  
+  // Token validation state
+  const [isTokenValidated, setIsTokenValidated] = useState(false);
+  const [accessCode, setAccessCode] = useState('');
+  const [isValidatingToken, setIsValidatingToken] = useState(false);
+
+  // Document verification state
+  const [documentDetails, setDocumentDetails] = useState<DocumentDetails | null>(null);
+  const [reports, setReports] = useState<ReportDocument[]>([]);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+
   if (!isValidDocumentID) {
     return (
       <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center py-8 px-4">
@@ -56,7 +70,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
               Invalid Document ID
             </h1>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              The document ID "{documentID}" is not valid. Please check your verification link.
+              The document ID {documentID} is not valid. Please check your verification link.
             </p>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-amber-700">
@@ -74,18 +88,6 @@ const ThirdPartyVerificationPage: React.FC = () => {
       </div>
     );
   }
-  
-  // Token validation state
-  const [isTokenValidated, setIsTokenValidated] = useState(false);
-  const [accessCode, setAccessCode] = useState('');
-  const [isValidatingToken, setIsValidatingToken] = useState(false);
-
-  // Document verification state
-  const [documentDetails, setDocumentDetails] = useState<DocumentDetails | null>(null);
-  const [reports, setReports] = useState<ReportDocument[]>([]);
-  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
-  const [isLoadingData, setIsLoadingData] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateToken = async () => {
     if (!accessCode.trim()) {
@@ -478,7 +480,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
             </div>
 
             {/* Verification Report Section */}
-            {documentDetails?.documents.length > 0 && documentDetails?.status === 'in-progress' && (
+            {documentDetails?.documents.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful') && (
               <div className="bg-white shadow-xl rounded-2xl border border-gray-100">
                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
