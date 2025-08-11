@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useRef, useEffect } from 'react';
-import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle, Lock, Mail } from 'lucide-react';
+import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle, Lock, Mail, File, Trash2, Image } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useParams } from 'next/navigation';
 import { URLS } from '@/utils/URLS';
@@ -55,8 +55,9 @@ const ThirdPartyVerificationPage: React.FC = () => {
   const [reports, setReports] = useState<ReportDocument[]>([]);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [uploadProgress, setUploadProgress] = useState<{[key: number]: number}>({});
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const fileInputRefs = useRef<{[key: number]: HTMLInputElement | null}>({});
 
   if (!isValidDocumentID) {
     return (
@@ -148,18 +149,41 @@ const ThirdPartyVerificationPage: React.FC = () => {
     ));
   };
 
+  const getFileTypeIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return <File className="w-6 h-6 text-red-500" />;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'webp':
+        return <Image className="w-6 h-6 text-blue-500" />;
+      default:
+        return <FileText className="w-6 h-6 text-gray-500" />;
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const handleFileUpload = async (index: number, file: File) => {
     if (!file) return;
 
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF, JPEG, or PNG file');
+      toast.error('Please upload a PDF, JPEG, PNG, or WebP file');
       return;
     }
 
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
+      toast.error('File size must be less than 10MB');
       return;
     }
 
@@ -168,22 +192,61 @@ const ThirdPartyVerificationPage: React.FC = () => {
       formData.append('file', file);
       formData.append('for', 'verification-report');
 
-      toast.promise(
-        POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData),
-        {
-          loading: 'Uploading document...',
-          success: 'Document uploaded successfully',
-          error: 'Failed to upload document'
-        }
-      ).then((uploadResponse) => {
-        if (uploadResponse.success) {
-          handleReportChange(index, 'newDocumentUrl', uploadResponse.data.url);
-        }
-      });
+      // Set upload progress
+      setUploadProgress(prev => ({ ...prev, [index]: 0 }));
+
+      const uploadResponse = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
+      
+      if (uploadResponse.success) {
+        handleReportChange(index, 'newDocumentUrl', uploadResponse.data.url);
+        setUploadProgress(prev => ({ ...prev, [index]: 100 }));
+        toast.success('Document uploaded successfully');
+        
+        // Clear progress after 2 seconds
+        setTimeout(() => {
+          setUploadProgress(prev => {
+            const newProgress = { ...prev };
+            delete newProgress[index];
+            return newProgress;
+          });
+        }, 2000);
+      } else {
+        throw new Error(uploadResponse.message || 'Upload failed');
+      }
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload document');
+      setUploadProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[index];
+        return newProgress;
+      });
     }
+  };
+
+  const handleFileDrop = (index: number, e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggedIndex(null);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileUpload(index, files[0]);
+    }
+  };
+
+  const handleDragOver = (index: number, e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggedIndex(index);
+  };
+
+  const handleDragLeave = (index: number, e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggedIndex(null);
+  };
+
+  const removeUploadedFile = (index: number) => {
+    handleReportChange(index, 'newDocumentUrl', '');
+    toast.success('File removed successfully');
   };
 
   const submitReport = async () => {
@@ -224,8 +287,22 @@ const ThirdPartyVerificationPage: React.FC = () => {
       return;
     }
     
+    // Handle Cloudinary URLs properly
+    let previewUrl = documentUrl;
+    
+    // If it's a Cloudinary URL, ensure it's optimized for viewing
+    if (documentUrl.includes('cloudinary.com')) {
+      // For PDF files, convert to image for preview
+      if (documentUrl.includes('.pdf')) {
+        previewUrl = documentUrl.replace('/upload/', '/upload/f_auto,q_auto,pg_1/');
+      } else {
+        // For images, optimize for web viewing
+        previewUrl = documentUrl.replace('/upload/', '/upload/f_auto,q_auto,w_1200/');
+      }
+    }
+    
     // Open document in a new tab for preview
-    window.open(documentUrl, '_blank', 'noopener,noreferrer');
+    window.open(previewUrl, '_blank', 'noopener,noreferrer');
   };
 
   const handleDocumentDownload = async (documentUrl: string, documentType: string) => {
@@ -235,7 +312,14 @@ const ThirdPartyVerificationPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(documentUrl);
+      // For Cloudinary URLs, get the original file
+      let downloadUrl = documentUrl;
+      if (documentUrl.includes('cloudinary.com')) {
+        // Remove any transformations to get original file
+        downloadUrl = documentUrl.replace(/\/upload\/[^\/]+\//, '/upload/');
+      }
+
+      const response = await fetch(downloadUrl);
       if (!response.ok) throw new Error('Network response was not ok');
       
       const blob = await response.blob();
@@ -243,7 +327,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = `${documentType.replace(/\s+/g, '_')}_${Date.now()}`;
+      
+      // Get file extension from URL or default to pdf
+      const urlParts = downloadUrl.split('.');
+      const extension = urlParts.length > 1 ? urlParts.pop() : 'pdf';
+      a.download = `${documentType.replace(/\s+/g, '_')}_${Date.now()}.${extension}`;
+      
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -252,7 +341,10 @@ const ThirdPartyVerificationPage: React.FC = () => {
       toast.success('Document downloaded successfully');
     } catch (error) {
       console.error('Download error:', error);
-      toast.error('Failed to download document');
+      toast.error('Failed to download document. Trying alternative method...');
+      
+      // Fallback: open in new tab for manual download
+      window.open(documentUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -514,24 +606,96 @@ const ThirdPartyVerificationPage: React.FC = () => {
                           </select>
                         </div>
 
-                        {/* Document Upload */}
+                        {/* Enhanced Document Upload */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Upload Verified Document (Optional)
                           </label>
-                          <input
-                            type="file"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleFileUpload(index, file);
-                            }}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                          />
-                          {report.newDocumentUrl && (
-                            <p className="text-sm text-green-600 mt-1">
-                              ✓ Document uploaded successfully
-                            </p>
+                          
+                          {!report.newDocumentUrl ? (
+                            <div
+                              className={`relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200 ${
+                                draggedIndex === index 
+                                  ? 'border-[#8DDB90] bg-[#8DDB90]/10' 
+                                  : 'border-gray-300 hover:border-[#8DDB90] hover:bg-gray-50'
+                              }`}
+                              onDrop={(e) => handleFileDrop(index, e)}
+                              onDragOver={(e) => handleDragOver(index, e)}
+                              onDragLeave={(e) => handleDragLeave(index, e)}
+                              onClick={() => fileInputRefs.current[index]?.click()}
+                            >
+                              <input
+                                ref={(el) => fileInputRefs.current[index] = el}
+                                type="file"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleFileUpload(index, file);
+                                }}
+                                className="hidden"
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                              />
+                              
+                              {uploadProgress[index] !== undefined ? (
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8DDB90]"></div>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div 
+                                      className="bg-[#8DDB90] h-2 rounded-full transition-all duration-300"
+                                      style={{ width: `${uploadProgress[index]}%` }}
+                                    ></div>
+                                  </div>
+                                  <p className="text-sm text-gray-600">Uploading... {uploadProgress[index]}%</p>
+                                </div>
+                              ) : (
+                                <>
+                                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                  <p className="text-lg font-medium text-gray-700 mb-2">
+                                    Drop your file here or click to browse
+                                  </p>
+                                  <p className="text-sm text-gray-500 mb-4">
+                                    Supports PDF, JPEG, PNG, WebP up to 10MB
+                                  </p>
+                                  <div className="inline-flex items-center px-4 py-2 bg-[#0B423D] text-white rounded-lg text-sm font-medium hover:bg-[#0B423D]/90 transition-colors">
+                                    <Upload className="w-4 h-4 mr-2" />
+                                    Choose File
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  {getFileTypeIcon(report.newDocumentUrl)}
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-900">
+                                      Verified Document Uploaded
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      Ready for submission
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <button
+                                    onClick={() => window.open(report.newDocumentUrl, '_blank')}
+                                    className="p-2 text-gray-400 hover:text-[#0B423D] transition-colors"
+                                    title="Preview uploaded document"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => removeUploadedFile(index)}
+                                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                    title="Remove uploaded document"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           )}
                         </div>
 
