@@ -214,7 +214,7 @@ const Register = () => {
 
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID", // Use a default for dev if env is not set
+        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "0000000000000000", // Disabled if no app ID
         cookie: true,
         xfbml: true,
         version: "v21.0",
