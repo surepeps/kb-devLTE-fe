@@ -201,13 +201,13 @@ const ThirdPartyVerificationPage: React.FC = () => {
     });
   };
 
-  const getStatusBadge = (status: DocumentStatus) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'validated':
+      case 'completed':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
             <CheckCircle className="w-3 h-3 mr-1" />
-            Validated
+            Completed
           </span>
         );
       case 'rejected':
@@ -217,11 +217,18 @@ const ThirdPartyVerificationPage: React.FC = () => {
             Rejected
           </span>
         );
-      default:
+      case 'in-progress':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
             <AlertTriangle className="w-3 h-3 mr-1" />
-            Pending Review
+            In Progress
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <AlertTriangle className="w-3 h-3 mr-1" />
+            {status}
           </span>
         );
     }
