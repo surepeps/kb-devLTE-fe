@@ -74,6 +74,50 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
     setIsValidatingToken(true);
     try {
+      // Check if API base URL is configured
+      if (!URLS.BASE || URLS.BASE === 'undefined') {
+        console.warn('API base URL not configured, using mock validation');
+        // Mock validation for demo purposes
+        if (accessCode.length >= 6) {
+          setIsTokenValidated(true);
+          // Set mock document details
+          setDocumentDetails({
+            _id: documentID,
+            customId: documentID,
+            fullName: 'John Doe',
+            email: 'john.doe@example.com',
+            phoneNumber: '+234 801 234 5678',
+            address: '123 Main Street, Lagos',
+            amountPaid: 15000,
+            documents: [
+              {
+                documentType: 'Certificate of Occupancy',
+                documentNumber: 'C/O/12345/2024',
+                documentUrl: '/placeholder-property.svg'
+              },
+              {
+                documentType: 'Survey Plan',
+                documentNumber: 'SP/67890/2024',
+                documentUrl: '/placeholder-property.svg'
+              }
+            ],
+            status: 'in-progress',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          });
+          const initialReports = [
+            { originalDocumentType: 'Certificate of Occupancy', description: '', status: 'verified' as const },
+            { originalDocumentType: 'Survey Plan', description: '', status: 'verified' as const }
+          ];
+          setReports(initialReports);
+          toast.success('Access code verified successfully! (Demo Mode)');
+          return;
+        } else {
+          toast.error('Invalid access code. Please enter at least 6 characters.');
+          return;
+        }
+      }
+
       const response = await POST_REQUEST(`${URLS.BASE}${URLS.verifyAccessCode}`, {
         documentId: documentID,
         accessCode
