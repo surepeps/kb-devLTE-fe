@@ -464,45 +464,47 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
 
         {propertySubtype && (
           <>
-            {/* Land Size and Measurement Unit */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-800">
-                  Measurement Unit <span className="text-red-500">*</span>
-                </label>
-                <Select
-                  options={MEASUREMENT_UNITS}
-                  value={measurementUnit}
-                  onChange={setMeasurementUnit}
-                  placeholder="Select unit..."
-                  styles={customSelectStyles}
-                />
-              </div>
+            {/* Land Size and Measurement Unit (exclude from rent) */}
+            {preferenceType !== "rent" && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-800">
+                    Measurement Unit <span className="text-red-500">*</span>
+                  </label>
+                  <Select
+                    options={MEASUREMENT_UNITS}
+                    value={measurementUnit}
+                    onChange={setMeasurementUnit}
+                    placeholder="Select unit..."
+                    styles={customSelectStyles}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-800">
-                  Land Size <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  value={landSize}
-                  onChange={(e) => {
-                    const value = Math.max(0, parseFloat(e.target.value) || 0);
-                    setLandSize(value.toString());
-                  }}
-                  onInput={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    if (parseFloat(target.value) < 0) {
-                      target.value = "0";
-                    }
-                  }}
-                  placeholder="Enter land size"
-                  min="0"
-                  step="0.01"
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                />
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-800">
+                    Land Size <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={landSize}
+                    onChange={(e) => {
+                      const value = Math.max(0, parseFloat(e.target.value) || 0);
+                      setLandSize(value.toString());
+                    }}
+                    onInput={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      if (parseFloat(target.value) < 0) {
+                        target.value = "0";
+                      }
+                    }}
+                    placeholder="Enter land size"
+                    min="0"
+                    step="0.01"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Document Types */}
             {(preferenceType === "buy" ||
