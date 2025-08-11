@@ -42,7 +42,7 @@ const OptimizedStepWrapper: React.FC<OptimizedStepWrapperProps> = memo(
     useEffect(() => {
       if (isVisible) {
         const timer = setTimeout(() => {
-          // On mobile, scroll to the container
+          // On mobile, scroll to the container if it exists
           if (isMobile && containerRef.current) {
             containerRef.current.scrollIntoView({
               behavior: "smooth",
@@ -55,7 +55,7 @@ const OptimizedStepWrapper: React.FC<OptimizedStepWrapperProps> = memo(
               behavior: "smooth",
             });
           }
-        }, 100);
+        }, 200); // Increased timeout for better stability
         return () => clearTimeout(timer);
       }
     }, [isVisible, isMobile]);
