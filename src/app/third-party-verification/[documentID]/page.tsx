@@ -160,27 +160,51 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
     setIsProcessing(true);
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setDocuments(prev => 
-        prev.map(doc => 
-          doc.id === selectedDocument.id 
-            ? { ...doc, status: 'rejected' as DocumentStatus }
-            : doc
-        )
-      );
-      
-      toast.success('Document rejected with feedback sent');
-      setShowRejectionModal(false);
-      setSelectedDocument(null);
-      setRejectionData({
-        reason: '',
-        report: '',
-        expectedDocumentFile: null,
-        expectedDocumentUrl: ''
+      // Upload expected document if provided
+      let expectedDocumentUrl = '';
+      if (rejectionData.expectedDocumentFile) {
+        const formData = new FormData();
+        formData.append('file', rejectionData.expectedDocumentFile);
+        formData.append('for', 'verification-expected');
+
+        const uploadResponse = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
+        if (uploadResponse.success) {
+          expectedDocumentUrl = uploadResponse.data.url;
+        }
+      }
+
+      const response = await POST_REQUEST(`${URLS.BASE}${URLS.rejectDocument}`, {
+        documentId: selectedDocument.id,
+        documentType: selectedDocument.type,
+        verificationToken: token,
+        rejectionReason: rejectionData.reason,
+        report: rejectionData.report,
+        expectedDocumentUrl
       });
+
+      if (response.success) {
+        setDocuments(prev =>
+          prev.map(doc =>
+            doc.id === selectedDocument.id
+              ? { ...doc, status: 'rejected' as DocumentStatus }
+              : doc
+          )
+        );
+
+        toast.success('Document rejected with feedback sent');
+        setShowRejectionModal(false);
+        setSelectedDocument(null);
+        setRejectionData({
+          reason: '',
+          report: '',
+          expectedDocumentFile: null,
+          expectedDocumentUrl: ''
+        });
+      } else {
+        toast.error(response.message || 'Failed to reject document');
+      }
     } catch (error) {
+      console.error('Rejection error:', error);
       toast.error('Failed to reject document');
     } finally {
       setIsProcessing(false);
