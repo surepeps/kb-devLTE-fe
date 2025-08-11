@@ -212,8 +212,6 @@ const RentStep1BasicDetails: React.FC = () => {
                     updatePropertyData("bathrooms", 0);
                     updatePropertyData("toilets", 0);
                     updatePropertyData("parkingSpaces", 0);
-                    updatePropertyData("measurementType", "");
-                    updatePropertyData("landSize", "");
                   }
                   handleFieldChange("propertyCategory", category);
                 }}
