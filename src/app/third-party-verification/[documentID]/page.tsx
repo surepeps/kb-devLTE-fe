@@ -117,14 +117,48 @@ const ThirdPartyVerificationPage: React.FC = () => {
     }
   };
 
-  const handleValidateDocument = (document: Document) => {
-    setSelectedDocument(document);
-    setShowValidationModal(true);
+  const handleCreateReport = () => {
+    setShowReportModal(true);
   };
 
-  const handleRejectDocument = (document: Document) => {
-    setSelectedDocument(document);
-    setShowRejectionModal(true);
+  const handleReportChange = (index: number, field: keyof ReportDocument, value: string) => {
+    setReports(prev => prev.map((report, i) =>
+      i === index ? { ...report, [field]: value } : report
+    ));
+  };
+
+  const handleFileUpload = async (index: number, file: File) => {
+    if (!file) return;
+
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a PDF, JPEG, or PNG file');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('for', 'verification-report');
+
+      const uploadResponse = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
+
+      if (uploadResponse.success) {
+        handleReportChange(index, 'newDocumentUrl', uploadResponse.data.url);
+        toast.success('Document uploaded successfully');
+      } else {
+        toast.error('Failed to upload document');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload document');
+    }
   };
 
   const confirmValidation = async () => {
