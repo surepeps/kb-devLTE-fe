@@ -529,48 +529,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
               </div>
             )}
 
-            {/* Optional Land Size for Rent Properties */}
-            {preferenceType === "rent" && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-800">
-                    Measurement Unit <span className="text-gray-500">(Optional)</span>
-                  </label>
-                  <Select
-                    options={MEASUREMENT_UNITS}
-                    value={measurementUnit}
-                    onChange={setMeasurementUnit}
-                    placeholder="Select unit..."
-                    styles={customSelectStyles}
-                    isClearable
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-800">
-                    Land Size <span className="text-gray-500">(Optional)</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={landSize}
-                    onChange={(e) => {
-                      const value = Math.max(0, parseFloat(e.target.value) || 0);
-                      setLandSize(value.toString());
-                    }}
-                    onInput={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      if (parseFloat(target.value) < 0) {
-                        target.value = "0";
-                      }
-                    }}
-                    placeholder="Enter land size (optional)"
-                    min="0"
-                    step="0.01"
-                    className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-            )}
 
             {/* Document Types */}
             {(preferenceType === "buy" ||
