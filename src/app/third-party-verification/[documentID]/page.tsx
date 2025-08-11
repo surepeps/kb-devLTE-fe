@@ -408,53 +408,54 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
   // Document verification view (after token validation)
   return (
-    <div className="min-h-full bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-[#EEF1F1]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Page Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Third Party Document Verification Page
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+            Document Verification Portal
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Review and verify the documents submitted for third-party verification.
           </p>
-          <div className="mt-4 text-sm text-gray-500">
-            Document ID: <span className="font-mono font-medium">{documentID}</span>
+          <div className="mt-4 p-3 bg-white rounded-lg shadow-sm inline-block">
+            <span className="text-xs sm:text-sm text-gray-500">Document ID: </span>
+            <span className="font-mono font-medium text-[#0B423D] text-sm sm:text-base">{documentID}</span>
           </div>
         </div>
 
         {/* Client Information Card */}
         {documentDetails && (
-          <div className="bg-white rounded-lg shadow mb-8 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Client Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Full Name</p>
-                <p className="text-sm text-gray-900">{documentDetails.fullName}</p>
+          <div className="bg-white rounded-2xl shadow-lg mb-6 sm:mb-8 p-4 sm:p-6 border border-gray-100">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Client Information</h2>
+              {getStatusBadge(documentDetails.status)}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Full Name</p>
+                <p className="text-sm sm:text-base font-semibold text-gray-900">{documentDetails.fullName}</p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Email</p>
-                <p className="text-sm text-gray-900">{documentDetails.email}</p>
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Email</p>
+                <p className="text-sm sm:text-base text-gray-900 break-all">{documentDetails.email}</p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Phone</p>
-                <p className="text-sm text-gray-900">{documentDetails.phoneNumber}</p>
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Phone</p>
+                <p className="text-sm sm:text-base text-gray-900">{documentDetails.phoneNumber}</p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Status</p>
-                {getStatusBadge(documentDetails.status)}
+              <div className="bg-gray-50 p-4 rounded-xl sm:col-span-2 lg:col-span-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Amount Paid</p>
+                <p className="text-lg sm:text-xl font-bold text-[#8DDB90]">₦{documentDetails.amountPaid.toLocaleString()}</p>
               </div>
-              <div className="md:col-span-2">
-                <p className="text-sm font-medium text-gray-500">Address</p>
-                <p className="text-sm text-gray-900">{documentDetails.address}</p>
+              <div className="bg-gray-50 p-4 rounded-xl sm:col-span-2">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Address</p>
+                <p className="text-sm sm:text-base text-gray-900">{documentDetails.address}</p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Amount Paid</p>
-                <p className="text-sm text-gray-900">₦{documentDetails.amountPaid.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Submitted</p>
-                <p className="text-sm text-gray-900">{formatDate(documentDetails.createdAt)}</p>
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Submitted</p>
+                <p className="text-sm sm:text-base text-gray-900">{formatDate(documentDetails.createdAt)}</p>
               </div>
             </div>
           </div>
