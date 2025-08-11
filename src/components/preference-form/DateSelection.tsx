@@ -151,9 +151,20 @@ const DateSelection: React.FC<DateSelectionProps> = memo(
       "bookingDetails.checkOutDate",
     );
 
-    // Initialize from context data
+    // Initialize from context data and reset when form is cleared
     useEffect(() => {
       const formData = state.formData as any;
+
+      // Reset all fields if form data is empty (form was reset)
+      if (!formData || Object.keys(formData).length === 0) {
+        setCheckInDate(null);
+        setCheckOutDate(null);
+        setNumberOfNights(0);
+        setPreferredCheckInTime(null);
+        setPreferredCheckOutTime(null);
+        return;
+      }
+
       if (formData.bookingDetails) {
         const checkIn = formData.bookingDetails.checkInDate;
         const checkOut = formData.bookingDetails.checkOutDate;

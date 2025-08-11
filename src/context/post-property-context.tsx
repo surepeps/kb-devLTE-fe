@@ -274,7 +274,7 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const getMinimumRequiredImages = () => 4;
+  const getMinimumRequiredImages = () => 1;
 
   const areImagesValid = () => {
     const validImages = images.filter((img) => img.file !== null || img.url);

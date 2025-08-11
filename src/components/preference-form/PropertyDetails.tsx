@@ -252,7 +252,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
     const [travelType, setTravelType] = useState<Option | null>(null);
     const [nearbyLandmark, setNearbyLandmark] = useState<string>("");
 
-    // Clear all fields when form is reset
+    // Clear all fields when form is reset or preference type changes
     useEffect(() => {
       if (!state.formData || Object.keys(state.formData).length === 0) {
         setPropertySubtype(null);
@@ -268,8 +268,31 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
         setMaxGuests("");
         setTravelType(null);
         setNearbyLandmark("");
+      } else {
+        // Initialize from existing form data
+        const propertyDetails = state.formData.propertyDetails as any;
+        if (propertyDetails) {
+          if (preferenceType === "shortlet") {
+            setPropertyType(propertyDetails.propertyType ? { value: propertyDetails.propertyType, label: propertyDetails.propertyType } : null);
+            setBedrooms(propertyDetails.bedrooms ? { value: propertyDetails.bedrooms, label: `${propertyDetails.bedrooms} Bedroom${propertyDetails.bedrooms !== '1' ? 's' : ''}` } : null);
+            setBathrooms(propertyDetails.bathrooms?.toString() || "");
+            setMaxGuests(propertyDetails.maxGuests?.toString() || "");
+            setTravelType(propertyDetails.travelType ? { value: propertyDetails.travelType, label: propertyDetails.travelType } : null);
+            setNearbyLandmark(propertyDetails.nearbyLandmark || "");
+          } else {
+            setPropertySubtype(propertyDetails.propertySubtype ? { value: propertyDetails.propertySubtype, label: propertyDetails.propertySubtype } : null);
+            setLandSize(propertyDetails.landSize || "");
+            setMeasurementUnit(propertyDetails.measurementUnit ? { value: propertyDetails.measurementUnit, label: propertyDetails.measurementUnit } : null);
+            setDocumentTypes(propertyDetails.documentTypes || []);
+            setPropertyCondition(propertyDetails.propertyCondition ? { value: propertyDetails.propertyCondition, label: propertyDetails.propertyCondition } : null);
+            setBuildingType(propertyDetails.buildingType ? { value: propertyDetails.buildingType, label: propertyDetails.buildingType } : null);
+            setBedrooms(propertyDetails.bedrooms ? { value: propertyDetails.bedrooms, label: `${propertyDetails.bedrooms} Bedroom${propertyDetails.bedrooms !== '1' ? 's' : ''}` } : null);
+            setBathrooms(propertyDetails.bathrooms?.toString() || "");
+            setLandConditions(propertyDetails.landConditions ? propertyDetails.landConditions.map((lc: string) => ({ value: lc, label: lc })) : []);
+          }
+        }
       }
-    }, [state.formData, state.currentStep]);
+    }, [state.formData, state.currentStep, preferenceType]);
 
     // Update context when values change
     useEffect(() => {
@@ -464,8 +487,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
 
         {propertySubtype && (
           <>
-            {/* Land Size and Measurement Unit (exclude from rent) */}
-            {preferenceType !== "rent" && (
+            {/* Land Size and Measurement Unit (optional for rent, required for buy/joint-venture) */}
+            {(preferenceType === "buy" || preferenceType === "joint-venture") && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-gray-800">
@@ -505,6 +528,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
                 </div>
               </div>
             )}
+
 
             {/* Document Types */}
             {(preferenceType === "buy" ||

@@ -561,18 +561,21 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
             });
           }
 
-          if (!formData.propertyDetails?.measurementUnit) {
-            errors.push({
-              field: "propertyDetails.measurementUnit",
-              message: "Measurement unit is required",
-            });
-          }
+          // Only require measurement unit and land size for buy and joint-venture
+          if (formData.preferenceType !== "rent" && formData.preferenceType !== "shortlet") {
+            if (!formData.propertyDetails?.measurementUnit) {
+              errors.push({
+                field: "propertyDetails.measurementUnit",
+                message: "Measurement unit is required",
+              });
+            }
 
-          if (!formData.propertyDetails?.landSize) {
-            errors.push({
-              field: "propertyDetails.landSize",
-              message: "Land size is required",
-            });
+            if (!formData.propertyDetails?.landSize) {
+              errors.push({
+                field: "propertyDetails.landSize",
+                message: "Land size is required",
+              });
+            }
           }
 
           // Non-land property validations
@@ -648,14 +651,14 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
               });
             }
 
-            if (!formData.propertyDetails?.bathrooms) {
+            if (!formData.propertyDetails?.bathrooms || formData.propertyDetails.bathrooms <= 0) {
               errors.push({
                 field: "propertyDetails.bathrooms",
                 message: "Number of bathrooms is required",
               });
             }
 
-            if (!formData.propertyDetails?.maxGuests) {
+            if (!formData.propertyDetails?.maxGuests || formData.propertyDetails.maxGuests <= 0) {
               errors.push({
                 field: "propertyDetails.maxGuests",
                 message: "Maximum guests is required",
@@ -664,40 +667,6 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
           }
 
           // Budget Validation
-          if (!formData.budget?.minPrice) {
-            errors.push({
-              field: "budget.minPrice",
-              message: "Minimum price is required",
-            });
-          }
-          if (!formData.budget?.maxPrice) {
-            errors.push({
-              field: "budget.maxPrice",
-              message: "Maximum price is required",
-            });
-          }
-          if (formData.budget?.minPrice && formData.budget?.maxPrice) {
-            if (formData.budget.minPrice >= formData.budget.maxPrice) {
-              errors.push({
-                field: "budget.maxPrice",
-                message: "Maximum price must be greater than minimum price",
-              });
-            }
-
-            // Check minimum budget for location
-            if (formData.location?.state && formData.preferenceType) {
-              const minRequired = getMinBudgetForLocation(
-                formData.location.state,
-                formData.preferenceType,
-              );
-              if (formData.budget.minPrice < minRequired) {
-                errors.push({
-                  field: "budget.minPrice",
-                  message: `₦${minRequired.toLocaleString()} is the minimum required for this location.`,
-                });
-              }
-            }
-          }
           if (!formData.budget?.minPrice) {
             errors.push({
               field: "budget.minPrice",
