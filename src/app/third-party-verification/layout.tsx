@@ -49,22 +49,22 @@ const VerificationHeader = () => {
 // Verification Portal Footer Component
 const VerificationFooter = () => {
   return (
-    <footer className="bg-gray-900 text-white border-t-4 border-blue-600">
+    <footer className="bg-[#0B423D] text-white border-t-4 border-[#8DDB90]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* Brand Section */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center space-x-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
+              <div className="bg-[#8DDB90] p-2 rounded-lg">
                 <img
                   src="/khabi-teq.svg"
                   alt="Khabi-Teq"
-                  className="h-6 w-auto filter brightness-0 invert"
+                  className="h-6 w-auto"
                 />
               </div>
               <div>
-                <h3 className="text-2xl font-bold">Khabi-Teq</h3>
-                <p className="text-blue-400 font-medium">Document Verification Services</p>
+                <h3 className="text-2xl font-bold text-white">Khabi-Teq</h3>
+                <p className="text-[#8DDB90] font-medium">Document Verification Services</p>
               </div>
             </div>
             <p className="text-gray-300 leading-relaxed max-w-lg">
@@ -75,16 +75,16 @@ const VerificationFooter = () => {
 
             {/* Trust Badges */}
             <div className="flex flex-wrap gap-4">
-              <div className="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-3 py-2 rounded-lg">
+                <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
                 <span className="text-xs text-gray-300">Verified Platform</span>
               </div>
-              <div className="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-3 py-2 rounded-lg">
+                <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
                 <span className="text-xs text-gray-300">Bank Grade Security</span>
               </div>
-              <div className="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-lg">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <div className="flex items-center space-x-2 bg-[#0B423D]/80 border border-[#8DDB90]/30 px-3 py-2 rounded-lg">
+                <div className="w-2 h-2 bg-[#8DDB90] rounded-full"></div>
                 <span className="text-xs text-gray-300">24/7 Support</span>
               </div>
             </div>
@@ -92,26 +92,26 @@ const VerificationFooter = () => {
 
           {/* Services */}
           <div className="space-y-6">
-            <h4 className="text-lg font-semibold text-blue-400">Verification Services</h4>
+            <h4 className="text-lg font-semibold text-[#8DDB90]">Verification Services</h4>
             <ul className="space-y-3 text-sm text-gray-300">
               <li className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Certificate of Occupancy</span>
               </li>
               <li className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Deed of Assignment</span>
               </li>
               <li className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Governor's Consent</span>
               </li>
               <li className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Survey Plan Documents</span>
               </li>
               <li className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
                 <span>Property Title Verification</span>
               </li>
             </ul>
@@ -119,16 +119,16 @@ const VerificationFooter = () => {
 
           {/* Contact & Support */}
           <div className="space-y-6">
-            <h4 className="text-lg font-semibold text-blue-400">Verification Support</h4>
+            <h4 className="text-lg font-semibold text-[#8DDB90]">Verification Support</h4>
             <div className="space-y-4 text-sm text-gray-300">
               <div className="space-y-2">
                 <p className="font-medium text-white">24/7 Verification Hotline</p>
-                <p className="text-blue-300">+234 (0) 801 234 5678</p>
+                <p className="text-[#8DDB90]">+234 (0) 801 234 5678</p>
               </div>
 
               <div className="space-y-2">
                 <p className="font-medium text-white">Email Support</p>
-                <p className="text-blue-300">verification@khabi-teq.com</p>
+                <p className="text-[#8DDB90]">verification@khabi-teq.com</p>
               </div>
 
               <div className="space-y-2">
@@ -136,10 +136,10 @@ const VerificationFooter = () => {
                 <p className="text-red-300">+234 (0) 800 URGENT 1</p>
               </div>
 
-              <div className="bg-gray-800 p-3 rounded-lg mt-4">
+              <div className="bg-[#0B423D]/60 border border-[#8DDB90]/20 p-3 rounded-lg mt-4">
                 <p className="text-xs text-gray-400">Business Hours</p>
-                <p className="text-sm font-medium">Monday - Friday: 8:00 AM - 8:00 PM</p>
-                <p className="text-sm font-medium">Saturday: 9:00 AM - 5:00 PM</p>
+                <p className="text-sm font-medium text-white">Monday - Friday: 8:00 AM - 8:00 PM</p>
+                <p className="text-sm font-medium text-white">Saturday: 9:00 AM - 5:00 PM</p>
                 <p className="text-xs text-gray-400 mt-1">Emergency support available 24/7</p>
               </div>
             </div>
@@ -147,7 +147,7 @@ const VerificationFooter = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-700 mt-12 pt-8">
+        <div className="border-t border-[#8DDB90]/30 mt-12 pt-8">
           <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
             <div className="text-sm text-gray-400">
               <p>© 2024 Khabi-Teq Realty Limited. All rights reserved.</p>
@@ -160,8 +160,8 @@ const VerificationFooter = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-400 font-medium">All Systems Operational</span>
+                <div className="w-2 h-2 bg-[#8DDB90] rounded-full animate-pulse"></div>
+                <span className="text-xs text-[#8DDB90] font-medium">All Systems Operational</span>
               </div>
             </div>
           </div>
