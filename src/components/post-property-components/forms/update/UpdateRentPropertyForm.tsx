@@ -98,17 +98,10 @@ const checkRentStep1RequiredFields = (propertyData: any) => {
     requiredFields.push("propertyCondition", "typeOfBuilding", "bedrooms");
   }
   
-  if (propertyData.propertyCategory === "Commercial") {
-    requiredFields.push("measurementType", "landSize");
-  }
-  
+  // Land size and measurement type are not required for rent properties
+
   if (propertyData.propertyCategory === "Land" && propertyData.rentalType === "Lease") {
     requiredFields.push("leaseHold");
-  }
-
-  if (propertyData.propertyCategory === "Land") {
-    if (!requiredFields.includes("measurementType")) requiredFields.push("measurementType");
-    if (!requiredFields.includes("landSize")) requiredFields.push("landSize");
   }
 
   return requiredFields.every((field) => {
