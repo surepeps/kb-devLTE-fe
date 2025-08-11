@@ -648,14 +648,14 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
               });
             }
 
-            if (!formData.propertyDetails?.bathrooms) {
+            if (!formData.propertyDetails?.bathrooms || formData.propertyDetails.bathrooms <= 0) {
               errors.push({
                 field: "propertyDetails.bathrooms",
                 message: "Number of bathrooms is required",
               });
             }
 
-            if (!formData.propertyDetails?.maxGuests) {
+            if (!formData.propertyDetails?.maxGuests || formData.propertyDetails.maxGuests <= 0) {
               errors.push({
                 field: "propertyDetails.maxGuests",
                 message: "Maximum guests is required",
