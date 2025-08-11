@@ -175,16 +175,17 @@ const OptimizedPhoneField = memo(({ name, label, required = false }: any) => (
         <label className="block text-sm font-semibold text-gray-800">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        <PhoneInput
-          international
-          defaultCountry="NG"
-          value={field.value}
-          onChange={(value) => form.setFieldValue(name, value || "")}
-          placeholder="Enter phone number"
-          className={`modern-phone-input ${
-            meta.touched && meta.error ? "error" : ""
-          }`}
-        />
+        <div className={`phone-input-container ${
+          meta.touched && meta.error ? "has-error" : ""
+        }`}>
+          <PhoneInput
+            international
+            defaultCountry="NG"
+            value={field.value}
+            onChange={(value) => form.setFieldValue(name, value || "")}
+            placeholder="Enter phone number"
+          />
+        </div>
         {meta.touched && meta.error && (
           <div className="text-sm text-red-500 font-medium flex items-center space-x-1">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
