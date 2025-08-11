@@ -52,6 +52,40 @@ type TokenValidationResponse = {
 const ThirdPartyVerificationPage: React.FC = () => {
   const params = useParams();
   const documentID = params.documentID as string;
+
+  // Validate document ID format
+  const isValidDocumentID = documentID && documentID.length >= 5 && documentID !== 'sample-doc-123';
+
+  if (!isValidDocumentID) {
+    return (
+      <div className="min-h-screen bg-[#EEF1F1] flex items-center justify-center py-8 px-4">
+        <div className="max-w-lg w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center border border-gray-100">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-red-50 mb-6">
+              <XCircle className="h-8 w-8 sm:h-10 sm:w-10 text-red-500" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+              Invalid Document ID
+            </h1>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              The document ID "{documentID}" is not valid. Please check your verification link.
+            </p>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-amber-700">
+                Valid document IDs are typically 10+ characters long and provided in your verification email.
+              </p>
+            </div>
+            <div className="bg-[#0B423D] text-white p-4 rounded-lg">
+              <p className="text-sm font-medium mb-2">Need Help?</p>
+              <p className="text-xs sm:text-sm">
+                Contact: <span className="text-[#8DDB90]">verification@khabi-teq.com</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   // Token validation state
   const [isTokenValidated, setIsTokenValidated] = useState(false);
