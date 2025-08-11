@@ -859,9 +859,24 @@ const ProductDetailsPage = () => {
 
   const handleNegotiation = () => {
     if (details) {
-      // This would open the price negotiation modal
-      // For now, we'll just show a message
-      toast.success("Price negotiation feature coming soon!");
+      setPriceNegotiationModal({
+        isOpen: true,
+        property: details,
+      });
+    }
+  };
+
+  const handleNegotiationSubmit = (property: PropertyDetails, negotiatedPrice: number) => {
+    if (property) {
+      addNegotiatedPrice(property._id, property.price, negotiatedPrice);
+
+      // Auto-add to inspection if not already selected
+      if (!isSelectedForInspection(property._id)) {
+        toggleInspectionSelection(property);
+      }
+
+      toast.success("Price negotiation submitted successfully!");
+      setPriceNegotiationModal({ isOpen: false, property: null });
     }
   };
 
