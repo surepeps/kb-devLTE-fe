@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle, Lock, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useParams } from 'next/navigation';
+import { URLS } from '@/utils/URLS';
+import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 
 // Types for verification data
 type DocumentStatus = 'pending' | 'validated' | 'rejected';
