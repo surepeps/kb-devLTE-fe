@@ -317,11 +317,12 @@ const Step3ImageUpload: React.FC<StepProps> = ({ errors, touched }) => {
     videoInputRef.current?.click();
   };
 
-  // Initialize with 4 empty slots if no images exist
+  // Initialize with minimum required empty slots if no images exist
   React.useEffect(() => {
     if (images.length === 0) {
+      const minRequired = getMinimumRequiredImages();
       const initialImages: PropertyImage[] = [];
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < Math.max(minRequired, 4); i++) { // Start with at least 4 slots for better UX
         initialImages.push({
           file: null,
           preview: null,
