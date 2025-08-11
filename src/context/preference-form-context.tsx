@@ -698,40 +698,6 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
               }
             }
           }
-          if (!formData.budget?.minPrice) {
-            errors.push({
-              field: "budget.minPrice",
-              message: "Minimum price is required",
-            });
-          }
-          if (!formData.budget?.maxPrice) {
-            errors.push({
-              field: "budget.maxPrice",
-              message: "Maximum price is required",
-            });
-          }
-          if (formData.budget?.minPrice && formData.budget?.maxPrice) {
-            if (formData.budget.minPrice >= formData.budget.maxPrice) {
-              errors.push({
-                field: "budget.maxPrice",
-                message: "Maximum price must be greater than minimum price",
-              });
-            }
-
-            // Check minimum budget for location
-            if (formData.location?.state && formData.preferenceType) {
-              const minRequired = getMinBudgetForLocation(
-                formData.location.state,
-                formData.preferenceType,
-              );
-              if (formData.budget.minPrice < minRequired) {
-                errors.push({
-                  field: "budget.minPrice",
-                  message: `₦${minRequired.toLocaleString()} is the minimum required for this location.`,
-                });
-              }
-            }
-          }
           break;
 
         case 2: // Features step (optional)
