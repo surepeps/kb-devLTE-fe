@@ -40,6 +40,7 @@ import { URLS } from "@/utils/URLS";
 import { usePageContext } from "@/context/page-context";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
 import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
+import GlobalPriceNegotiationModal from "@/components/modals/GlobalPriceNegotiationModal";
 import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Rectangle.png";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -709,8 +710,18 @@ const ProductDetailsPage = () => {
   const { setPropertySelectedForInspection, setIsComingFromPriceNeg } =
     usePageContext();
   const { selectedBriefs } = useSelectedBriefs();
-  const { toggleInspectionSelection, isSelectedForInspection } =
-    useGlobalPropertyActions();
+  const {
+    toggleInspectionSelection,
+    isSelectedForInspection,
+    addNegotiatedPrice,
+    getNegotiatedPrice
+  } = useGlobalPropertyActions();
+
+  // Price negotiation modal state
+  const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
+    isOpen: boolean;
+    property: PropertyDetails | null;
+  }>({ isOpen: false, property: null });
 
   const marketType = params?.marketType ?? "";
   const id = params?.ID ?? "";
@@ -848,9 +859,24 @@ const ProductDetailsPage = () => {
 
   const handleNegotiation = () => {
     if (details) {
-      // This would open the price negotiation modal
-      // For now, we'll just show a message
-      toast.success("Price negotiation feature coming soon!");
+      setPriceNegotiationModal({
+        isOpen: true,
+        property: details,
+      });
+    }
+  };
+
+  const handleNegotiationSubmit = (property: PropertyDetails, negotiatedPrice: number) => {
+    if (property) {
+      addNegotiatedPrice(property._id, property.price, negotiatedPrice);
+
+      // Auto-add to inspection if not already selected
+      if (!isSelectedForInspection(property._id)) {
+        toggleInspectionSelection(property);
+      }
+
+      toast.success("Price negotiation submitted successfully!");
+      setPriceNegotiationModal({ isOpen: false, property: null });
     }
   };
 
@@ -1109,6 +1135,15 @@ const ProductDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Price Negotiation Modal */}
+      <GlobalPriceNegotiationModal
+        isOpen={priceNegotiationModal.isOpen}
+        property={priceNegotiationModal.property}
+        onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
+        onSubmit={handleNegotiationSubmit}
+        existingNegotiation={details ? getNegotiatedPrice(details._id) : null}
+      />
     </div>
   );
 };
