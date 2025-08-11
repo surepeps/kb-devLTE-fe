@@ -82,9 +82,8 @@ export const URLS = {
   /**
    * Third Party Verification Endpoints
    */
-  thirdPartyVerificationBaseUrl: "/third-party-verification",
-  validateVerificationToken: "/third-party-verification/validate-token",
-  getVerificationDocuments: "/third-party-verification/documents",
-  validateDocument: "/third-party-verification/validate",
-  rejectDocument: "/third-party-verification/reject",
+  thirdPartyVerificationBaseUrl: "/third-party",
+  verifyAccessCode: "/third-party/verifyAccessCode",
+  getDocumentDetails: "/third-party/getDocumentDetails",
+  submitReport: "/third-party/submit-report",
 };
