@@ -57,6 +57,12 @@ const nextConfig: NextConfig = {
       };
     }
 
+    // Optimize for faster builds and prevent memory issues
+    config.optimization = {
+      ...config.optimization,
+      sideEffects: false,
+    };
+
     return config;
   },
 };
