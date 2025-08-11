@@ -175,37 +175,46 @@ export default function ThirdPartyVerificationLayout({ children }: { children: R
   useEffect(() => {
     // Completely hide the main application layout
     const hideMainLayout = () => {
-      // Hide the main app header
-      const mainHeader = document.querySelector('body > div:first-child header');
-      if (mainHeader) {
-        (mainHeader as HTMLElement).style.display = 'none';
+      // Hide the entire main app wrapper
+      const mainAppWrapper = document.querySelector('body > div:first-child');
+      if (mainAppWrapper && !(mainAppWrapper as HTMLElement).hasAttribute('data-verification-portal')) {
+        (mainAppWrapper as HTMLElement).style.display = 'none !important';
       }
 
-      // Hide the main app footer
-      const mainFooter = document.querySelector('body > div:first-child footer');
-      if (mainFooter) {
-        (mainFooter as HTMLElement).style.display = 'none';
-      }
+      // Hide specific elements by class names that might be visible
+      const elementsToHide = [
+        'header',
+        'nav',
+        'footer',
+        '[data-header]',
+        '[data-footer]',
+        '[data-navigation]'
+      ];
 
-      // Hide any navigation elements
-      const navElements = document.querySelectorAll('body > div:first-child nav');
-      navElements.forEach(nav => {
-        (nav as HTMLElement).style.display = 'none';
+      elementsToHide.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+          if (!(element as HTMLElement).closest('[data-verification-portal]')) {
+            (element as HTMLElement).style.display = 'none';
+          }
+        });
       });
 
       // Set body styles for the verification portal
       document.body.style.margin = '0';
       document.body.style.padding = '0';
-      document.body.style.overflow = 'auto';
-      document.body.style.background = '#f9fafb';
+      document.body.style.overflow = 'hidden';
+      document.body.style.background = '#EEF1F1';
     };
 
-    // Apply immediately and also after a short delay to catch dynamic content
+    // Apply immediately and also after delays to catch dynamic content
     hideMainLayout();
-    const timer = setTimeout(hideMainLayout, 100);
+    const timer1 = setTimeout(hideMainLayout, 100);
+    const timer2 = setTimeout(hideMainLayout, 500);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
       // Restore body styles on cleanup
       document.body.style.margin = '';
       document.body.style.padding = '';
@@ -215,36 +224,47 @@ export default function ThirdPartyVerificationLayout({ children }: { children: R
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex flex-col z-[9999] overflow-auto">
+    <div
+      data-verification-portal
+      className="fixed inset-0 bg-[#EEF1F1] flex flex-col z-[99999] overflow-auto"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 99999
+      }}
+    >
       {/* Verification Portal Header */}
       <VerificationHeader />
 
       {/* Main Content Area */}
-      <main className="flex-grow bg-gray-50">
+      <main className="flex-grow bg-[#EEF1F1]">
         {children}
       </main>
 
       {/* Verification Portal Footer */}
       <VerificationFooter />
 
-      {/* Enhanced Toast Notifications */}
+      {/* Enhanced Toast Notifications with Khabi-Teq colors */}
       <Toaster
         position="top-center"
         toastOptions={{
           duration: 5000,
           style: {
-            background: '#1f2937',
+            background: '#0B423D',
             color: '#ffffff',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid #374151',
+            boxShadow: '0 25px 50px -12px rgba(11, 66, 61, 0.4)',
+            border: '1px solid #8DDB90',
             borderRadius: '12px',
             fontSize: '14px',
             fontWeight: '500'
           },
           success: {
             style: {
-              background: '#059669',
-              color: '#ffffff',
+              background: '#8DDB90',
+              color: '#0B423D',
             },
           },
           error: {
