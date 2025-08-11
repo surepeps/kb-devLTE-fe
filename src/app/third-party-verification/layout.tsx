@@ -100,40 +100,31 @@ const ThirdPartyFooter = () => {
 
 export default function ThirdPartyVerificationLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Document Verification - Khabi-Teq</title>
-        <meta name="description" content="Secure third-party document verification portal for real estate transactions" />
-        <link rel="icon" href="/khabi-teq.svg" />
-      </head>
-      <body className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Independent Header */}
-        <ThirdPartyHeader />
+    <div className="min-h-screen bg-gray-50 flex flex-col fixed inset-0 z-50 overflow-auto">
+      {/* Independent Header */}
+      <ThirdPartyHeader />
 
-        {/* Main Content */}
-        <main className="flex-grow">
-          {children}
-        </main>
+      {/* Main Content */}
+      <main className="flex-grow">
+        {children}
+      </main>
 
-        {/* Independent Footer */}
-        <ThirdPartyFooter />
+      {/* Independent Footer */}
+      <ThirdPartyFooter />
 
-        {/* Toast Notifications */}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#fff',
-              color: '#363636',
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-              border: '1px solid #e5e7eb'
-            },
-          }}
-        />
-      </body>
-    </html>
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#fff',
+            color: '#363636',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
+          },
+        }}
+      />
+    </div>
   );
 }
