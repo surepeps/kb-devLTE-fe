@@ -2,6 +2,14 @@ import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import '../globals.css';
 
+export const metadata = {
+  title: 'Document Verification - Khabi-Teq',
+  description: 'Secure third-party document verification portal for real estate transactions',
+  icons: {
+    icon: '/khabi-teq.svg',
+  },
+};
+
 // Independent Header Component
 const ThirdPartyHeader = () => {
   return (
