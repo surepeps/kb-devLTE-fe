@@ -391,15 +391,24 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
         {/* Documents List */}
         <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-medium text-gray-900">
-              Documents for Verification ({documents.length} document{documents.length !== 1 ? 's' : ''})
+              Documents for Verification ({documentDetails?.documents.length || 0} document{(documentDetails?.documents.length || 0) !== 1 ? 's' : ''})
             </h2>
+            {documentDetails?.status === 'in-progress' && (
+              <button
+                onClick={handleCreateReport}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                Create Verification Report
+              </button>
+            )}
           </div>
 
           <div className="divide-y divide-gray-200">
-            {documents.map((document) => (
-              <div key={document.id} className="p-6">
+            {documentDetails?.documents.map((document, index) => (
+              <div key={index} className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
@@ -411,18 +420,11 @@ const ThirdPartyVerificationPage: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
                         <h3 className="text-lg font-medium text-gray-900 truncate">
-                          {document.type}
+                          {document.documentType}
                         </h3>
-                        {getStatusBadge(document.status)}
                       </div>
                       <p className="text-sm text-gray-500 mb-1">
-                        File: {document.fileName}
-                      </p>
-                      <p className="text-sm text-gray-500 mb-1">
-                        Submitted by: {document.submittedBy}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Uploaded: {formatDate(document.uploadedAt)}
+                        Document Number: {document.documentNumber || 'Not provided'}
                       </p>
                     </div>
                   </div>
@@ -443,33 +445,13 @@ const ThirdPartyVerificationPage: React.FC = () => {
                       <Download className="w-4 h-4 mr-1" />
                       Download
                     </button>
-
-                    {document.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleValidateDocument(document)}
-                          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        >
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          Validate
-                        </button>
-
-                        <button
-                          onClick={() => handleRejectDocument(document)}
-                          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                          <XCircle className="w-4 h-4 mr-1" />
-                          Reject
-                        </button>
-                      </>
-                    )}
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {documents.length === 0 && (
+          {!documentDetails?.documents.length && (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
