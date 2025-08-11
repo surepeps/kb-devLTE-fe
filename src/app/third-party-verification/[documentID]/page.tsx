@@ -237,59 +237,79 @@ const ThirdPartyVerificationPage: React.FC = () => {
   // Token validation view
   if (!isTokenValidated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full mx-4">
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="text-center mb-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-                <Lock className="h-8 w-8 text-blue-600" />
+      <div className="min-h-screen bg-gray-50">
+        {/* Simple Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center items-center h-16">
+              <div className="flex items-center">
+                <img
+                  src="/khabi-teq.svg"
+                  alt="Khabi-Teq"
+                  className="h-8 w-auto"
+                />
+                <span className="ml-3 text-xl font-bold text-gray-900">
+                  Khabi-Teq - Document Verification
+                </span>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Document Verification Access
-              </h1>
-              <p className="text-gray-600">
-                Please enter the verification token sent to your email to access the documents.
-              </p>
             </div>
+          </div>
+        </header>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Verification Token
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                    placeholder="Enter your verification token"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-10"
-                    onKeyPress={(e) => e.key === 'Enter' && validateToken()}
-                  />
-                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+        <div className="flex items-center justify-center py-12 px-4">
+          <div className="max-w-md w-full">
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="text-center mb-8">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                  <Lock className="h-8 w-8 text-blue-600" />
                 </div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  Document Verification Access
+                </h1>
+                <p className="text-gray-600">
+                  Please enter the access code sent to your email to verify the documents.
+                </p>
               </div>
 
-              <button
-                onClick={validateToken}
-                disabled={isValidatingToken || !token.trim()}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isValidatingToken ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Validating...
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Access Code
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={accessCode}
+                      onChange={(e) => setAccessCode(e.target.value)}
+                      placeholder="Enter your access code"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-10"
+                      onKeyPress={(e) => e.key === 'Enter' && validateToken()}
+                    />
+                    <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                   </div>
-                ) : (
-                  'Validate Token'
-                )}
-              </button>
-            </div>
+                </div>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-500">
-                Document ID: <span className="font-mono font-medium">{documentID}</span>
-              </p>
+                <button
+                  onClick={validateToken}
+                  disabled={isValidatingToken || !accessCode.trim()}
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isValidatingToken ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Verifying...
+                    </div>
+                  ) : (
+                    'Verify Access Code'
+                  )}
+                </button>
+              </div>
+
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-500">
+                  Document ID: <span className="font-mono font-medium">{documentID}</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
