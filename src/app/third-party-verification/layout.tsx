@@ -107,39 +107,13 @@ const ThirdPartyFooter = () => {
 };
 
 export default function ThirdPartyVerificationLayout({ children }: { children: React.ReactNode }) {
-  // Use useEffect to hide main content after component mounts
-  React.useEffect(() => {
-    // Hide the main app wrapper
-    const mainAppWrapper = document.querySelector('body > div:first-child') as HTMLElement;
-    if (mainAppWrapper && !mainAppWrapper.querySelector('[data-third-party-verification]')) {
-      mainAppWrapper.style.display = 'none';
-    }
-
-    // Show our content
-    const ourWrapper = document.querySelector('[data-third-party-verification]') as HTMLElement;
-    if (ourWrapper) {
-      ourWrapper.style.display = 'flex';
-    }
-
-    // Cleanup function
-    return () => {
-      if (mainAppWrapper) {
-        mainAppWrapper.style.display = '';
-      }
-    };
-  }, []);
-
   return (
-    <div
-      data-third-party-verification
-      className="min-h-screen bg-gray-50 flex flex-col fixed inset-0 z-[9999]"
-      style={{ display: 'none' }}
-    >
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Independent Header */}
       <ThirdPartyHeader />
 
       {/* Main Content */}
-      <main className="flex-grow overflow-auto">
+      <main className="flex-grow">
         {children}
       </main>
 
