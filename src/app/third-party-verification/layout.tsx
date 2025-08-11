@@ -35,6 +35,8 @@ export default function ThirdPartyVerificationLayout({ children }: { children: R
           </div>
         </div>
       </footer>
+
+      <Toaster />
     </div>
   );
 }
