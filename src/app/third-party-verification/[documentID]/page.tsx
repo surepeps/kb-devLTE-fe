@@ -141,6 +141,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
   const fetchDocumentDetails = async () => {
     try {
+      // Check if API base URL is configured
+      if (!URLS.BASE || URLS.BASE === 'undefined') {
+        console.warn('API base URL not configured, using mock data');
+        return; // Mock data already set in validateToken
+      }
+
       const response = await GET_REQUEST(`${URLS.BASE}${URLS.getDocumentDetails}/${documentID}`);
 
       if (response.success && response.data) {
