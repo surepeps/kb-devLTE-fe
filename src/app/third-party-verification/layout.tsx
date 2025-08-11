@@ -108,31 +108,45 @@ const ThirdPartyFooter = () => {
 
 export default function ThirdPartyVerificationLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col fixed inset-0 z-50 overflow-auto">
-      {/* Independent Header */}
-      <ThirdPartyHeader />
+    <>
+      {/* Hide main app content */}
+      <style jsx global>{`
+        body > div:first-child {
+          display: none !important;
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+        }
+      `}</style>
 
-      {/* Main Content */}
-      <main className="flex-grow">
-        {children}
-      </main>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Independent Header */}
+        <ThirdPartyHeader />
 
-      {/* Independent Footer */}
-      <ThirdPartyFooter />
+        {/* Main Content */}
+        <main className="flex-grow">
+          {children}
+        </main>
 
-      {/* Toast Notifications */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#fff',
-            color: '#363636',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-            border: '1px solid #e5e7eb'
-          },
-        }}
-      />
-    </div>
+        {/* Independent Footer */}
+        <ThirdPartyFooter />
+
+        {/* Toast Notifications */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#fff',
+              color: '#363636',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #e5e7eb'
+            },
+          }}
+        />
+      </div>
+    </>
   );
 }
