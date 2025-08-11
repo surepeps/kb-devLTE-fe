@@ -107,46 +107,58 @@ const ThirdPartyFooter = () => {
 };
 
 export default function ThirdPartyVerificationLayout({ children }: { children: React.ReactNode }) {
+  // Use useEffect to hide main content after component mounts
+  React.useEffect(() => {
+    // Hide the main app wrapper
+    const mainAppWrapper = document.querySelector('body > div:first-child') as HTMLElement;
+    if (mainAppWrapper && !mainAppWrapper.querySelector('[data-third-party-verification]')) {
+      mainAppWrapper.style.display = 'none';
+    }
+
+    // Show our content
+    const ourWrapper = document.querySelector('[data-third-party-verification]') as HTMLElement;
+    if (ourWrapper) {
+      ourWrapper.style.display = 'flex';
+    }
+
+    // Cleanup function
+    return () => {
+      if (mainAppWrapper) {
+        mainAppWrapper.style.display = '';
+      }
+    };
+  }, []);
+
   return (
-    <>
-      {/* Hide main app content */}
-      <style jsx global>{`
-        body > div:first-child {
-          display: none !important;
-        }
-        body {
-          margin: 0;
-          padding: 0;
-          overflow-x: hidden;
-        }
-      `}</style>
+    <div
+      data-third-party-verification
+      className="min-h-screen bg-gray-50 flex flex-col fixed inset-0 z-[9999]"
+      style={{ display: 'none' }}
+    >
+      {/* Independent Header */}
+      <ThirdPartyHeader />
 
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Independent Header */}
-        <ThirdPartyHeader />
+      {/* Main Content */}
+      <main className="flex-grow overflow-auto">
+        {children}
+      </main>
 
-        {/* Main Content */}
-        <main className="flex-grow">
-          {children}
-        </main>
+      {/* Independent Footer */}
+      <ThirdPartyFooter />
 
-        {/* Independent Footer */}
-        <ThirdPartyFooter />
-
-        {/* Toast Notifications */}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#fff',
-              color: '#363636',
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-              border: '1px solid #e5e7eb'
-            },
-          }}
-        />
-      </div>
-    </>
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#fff',
+            color: '#363636',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb'
+          },
+        }}
+      />
+    </div>
   );
 }
