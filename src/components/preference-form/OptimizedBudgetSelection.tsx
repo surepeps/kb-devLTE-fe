@@ -20,7 +20,7 @@ interface BudgetSelectionProps {
 // Memoized budget period labels
 const BUDGET_PERIOD_LABELS = {
   buy: "Total Purchase Budget",
-  rent: "Yealy Rent Budget",
+  rent: "Yearly Rent Budget",
   "joint-venture": "Investment Budget",
   shortlet: "Per Night Budget",
 };
@@ -215,7 +215,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
-                  ₦
+                  ��
                 </span>
                 <input
                   type="text"
