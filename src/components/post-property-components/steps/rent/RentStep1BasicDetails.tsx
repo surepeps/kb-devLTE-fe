@@ -171,10 +171,7 @@ const RentStep1BasicDetails: React.FC = () => {
     }
   }, [propertyData.state, propertyData.lga]);
 
-  // Check if land size should be shown for rent properties
-  const shouldShowLandSize = () => {
-    return propertyData.propertyCategory === "Commercial" || propertyData.propertyCategory === "Land";
-  };
+  // Land size is not required for rent properties
 
   return (
     <motion.div
@@ -333,87 +330,6 @@ const RentStep1BasicDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Land Size (for Commercial and Land categories) */}
-        {shouldShowLandSize() && (
-          <div>
-            <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-              Land Size <span className="text-red-500">*</span>
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Type of Measurement <span className="text-red-500">*</span>
-                </label>
-                <ReactSelect
-                  options={[
-                    { value: "Plot", label: "Plot" },
-                    { value: "Acres", label: "Acres" },
-                    { value: "Square Meter", label: "Square Meter" },
-                  ]}
-                  value={
-                    propertyData.measurementType
-                      ? {
-                          value: propertyData.measurementType,
-                          label: propertyData.measurementType,
-                        }
-                      : null
-                  }
-                  onChange={(option) => {
-                    const value = option?.value || "";
-                    setFieldTouched("measurementType", true);
-                    updatePropertyData("measurementType", value);
-                    setFieldValue("measurementType", value);
-                  }}
-                  placeholder="Select measurement type"
-                  styles={{
-                    ...customStyles,
-                    control: (provided, state) => ({
-                      ...customStyles.control?.(provided, state),
-                      borderColor: getSelectBorderClass("measurementType", true),
-                      minHeight: "44px",
-                    }),
-                  }}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[#707281] mb-2">
-                  Land Size <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder={`${!propertyData.measurementType ? "Select measurement type first" : `Enter size${propertyData.measurementType ? ` in ${propertyData.measurementType.toLowerCase()}` : ""}`}`}
-                    value={
-                      propertyData.landSize
-                        ? Number(
-                            propertyData.landSize
-                              .toString()
-                              .replace(/[^0-9]/g, ""),
-                          ).toLocaleString()
-                        : ""
-                    }
-                    onChange={(e) => {
-                      if (!propertyData.measurementType) return;
-                      const numericValue = e.target.value.replace(/[^0-9]/g, "");
-                      handleFieldChange("landSize", numericValue);
-                    }}
-                    disabled={!propertyData.measurementType}
-                    className={`w-full p-[12px] border rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] text-[14px] leading-[22.4px] ${propertyData.measurementType ? "pr-20" : ""} ${!propertyData.measurementType ? "bg-gray-100 cursor-not-allowed" : ""} ${getFieldBorderClass("landSize", true)}`}
-                  />
-                  {propertyData.measurementType && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                        {propertyData.measurementType === "Square Meter"
-                          ? "sqm"
-                          : propertyData.measurementType.toLowerCase()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Location */}
         <div>
