@@ -1135,6 +1135,15 @@ const ProductDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Price Negotiation Modal */}
+      <GlobalPriceNegotiationModal
+        isOpen={priceNegotiationModal.isOpen}
+        property={priceNegotiationModal.property}
+        onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
+        onSubmit={handleNegotiationSubmit}
+        existingNegotiation={details ? getNegotiatedPrice(details._id) : null}
+      />
     </div>
   );
 };
