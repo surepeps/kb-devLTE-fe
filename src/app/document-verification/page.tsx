@@ -544,7 +544,7 @@ const DocumentVerificationPage: React.FC = () => {
                             </p>
                             <div className="flex justify-center space-x-2">
                               <button
-                                onClick={() => handlePreviewFile(uploadedFiles[document]!.file)}
+                                onClick={() => handlePreviewFile(uploadedFiles[document]!.file, document)}
                                 className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"
                               >
                                 <Eye size={12} className="inline mr-1" />
