@@ -443,72 +443,90 @@ export default function InspectionDetailPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Property Type
                     </label>
-                    <p className="text-gray-900">{inspection.propertyType}</p>
+                    <p className="text-gray-900">{inspection.propertyId.propertyType}</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Address
+                      Brief Type
                     </label>
-                    <p className="text-gray-900">{inspection.propertyAddress}</p>
+                    <p className="text-gray-900">{inspection.propertyId.briefType}</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Location
                     </label>
                     <p className="text-gray-900">
-                      {inspection.location.area}, {inspection.location.localGovernment}, {inspection.location.state}
+                      {inspection.propertyId.location.area}, {inspection.propertyId.location.localGovernment}, {inspection.propertyId.location.state}
                     </p>
                   </div>
-                  
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Price
+                    </label>
+                    <p className="text-gray-900">
+                      ₦{inspection.propertyId.price.toLocaleString()}
+                    </p>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Inspection Type
                     </label>
                     <p className="text-gray-900 capitalize">
-                      {inspection.inspectionType.replace('_', ' ')} Inspection
+                      {inspection.inspectionType} Inspection
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Inspection Mode
+                    </label>
+                    <p className="text-gray-900 capitalize">
+                      {inspection.inspectionMode.replace('_', ' ')}
                     </p>
                   </div>
                 </div>
 
-                {inspection.propertyDetails && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <h3 className="text-md font-medium text-gray-900 mb-4">Property Features</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">{inspection.propertyDetails.bedrooms}</p>
-                        <p className="text-sm text-gray-600">Bedrooms</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">{inspection.propertyDetails.bathrooms}</p>
-                        <p className="text-sm text-gray-600">Bathrooms</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">{inspection.propertyDetails.parking}</p>
-                        <p className="text-sm text-gray-600">Parking</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-lg font-bold text-blue-600">{inspection.propertyDetails.landSize}</p>
-                        <p className="text-sm text-gray-600">Land Size</p>
-                      </div>
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-md font-medium text-gray-900 mb-4">Property Features</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfBedroom}</p>
+                      <p className="text-sm text-gray-600">Bedrooms</p>
                     </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Additional Features</p>
-                      <div className="flex flex-wrap gap-2">
-                        {inspection.propertyDetails.features.map((feature, index) => (
-                          <span
-                            key={index}
-                            className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
-                          >
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfBathroom}</p>
+                      <p className="text-sm text-gray-600">Bathrooms</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfCarPark}</p>
+                      <p className="text-sm text-gray-600">Parking</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-blue-600">
+                        {inspection.propertyId.landSize.size} {inspection.propertyId.landSize.measurementType}
+                      </p>
+                      <p className="text-sm text-gray-600">Land Size</p>
                     </div>
                   </div>
-                )}
+
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">Additional Features</p>
+                    <div className="flex flex-wrap gap-2">
+                      {inspection.propertyId.features.map((feature, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </motion.div>
 
               {/* Schedule Information */}
@@ -529,7 +547,7 @@ export default function InspectionDetailPage() {
                       Scheduled Date
                     </label>
                     <p className="text-gray-900">
-                      {new Date(inspection.scheduledDate).toLocaleDateString('en-US', {
+                      {new Date(inspection.inspectionDate).toLocaleDateString('en-US', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
@@ -537,12 +555,12 @@ export default function InspectionDetailPage() {
                       })}
                     </p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Scheduled Time
                     </label>
-                    <p className="text-gray-900">{inspection.scheduledTime}</p>
+                    <p className="text-gray-900">{inspection.inspectionTime}</p>
                   </div>
                 </div>
               </motion.div>
@@ -559,38 +577,38 @@ export default function InspectionDetailPage() {
                   <UserIcon className="w-5 h-5 mr-2" />
                   Buyer Information
                 </h2>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Name
                     </label>
-                    <p className="text-gray-900">{inspection.buyerName}</p>
+                    <p className="text-gray-900">{inspection.requestedBy.fullName}</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Phone
                     </label>
-                    <a 
-                      href={`tel:${inspection.buyerPhone}`}
+                    <a
+                      href={`tel:${inspection.requestedBy.phoneNumber}`}
                       className="text-blue-600 hover:text-blue-700 flex items-center"
                     >
                       <PhoneIcon className="w-4 h-4 mr-1" />
-                      {inspection.buyerPhone}
+                      {inspection.requestedBy.phoneNumber}
                     </a>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email
                     </label>
-                    <a 
-                      href={`mailto:${inspection.buyerEmail}`}
+                    <a
+                      href={`mailto:${inspection.requestedBy.email}`}
                       className="text-blue-600 hover:text-blue-700 flex items-center"
                     >
                       <MailIcon className="w-4 h-4 mr-1" />
-                      {inspection.buyerEmail}
+                      {inspection.requestedBy.email}
                     </a>
                   </div>
                 </div>
@@ -604,34 +622,35 @@ export default function InspectionDetailPage() {
               >
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <UserIcon className="w-5 h-5 mr-2" />
-                  Seller Information
+                  Inspection Status
                 </h2>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Name
+                      Current Stage
                     </label>
-                    <p className="text-gray-900">{inspection.sellerName}</p>
+                    <p className="text-gray-900 capitalize">{inspection.stage}</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone
+                      Pending Response From
                     </label>
-                    <a 
-                      href={`tel:${inspection.sellerPhone}`}
-                      className="text-blue-600 hover:text-blue-700 flex items-center"
-                    >
-                      <PhoneIcon className="w-4 h-4 mr-1" />
-                      {inspection.sellerPhone}
-                    </a>
+                    <p className="text-gray-900 capitalize">{inspection.pendingResponseFrom}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Inspection Status
+                    </label>
+                    <p className="text-gray-900 capitalize">{inspection.inspectionStatus}</p>
                   </div>
                 </div>
               </motion.div>
 
               {/* Status Update Actions */}
-              {inspection.status !== "completed" && (
+              {inspection.inspectionReport.status !== "completed" && (
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -639,21 +658,30 @@ export default function InspectionDetailPage() {
                   className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
                 >
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Update Status
+                    Actions
                   </h2>
-                  
+
                   <div className="space-y-3">
-                    {inspection.status === "assigned" && (
-                      <button
-                        onClick={() => updateInspectionStatus("in_progress")}
-                        disabled={isSubmitting}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
-                      >
-                        Start Inspection
-                      </button>
+                    {inspection.inspectionReport.status === "pending" && (
+                      <>
+                        <button
+                          onClick={startInspection}
+                          disabled={isSubmitting}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                        >
+                          Start Inspection
+                        </button>
+                        <button
+                          onClick={stopInspection}
+                          disabled={isSubmitting}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                        >
+                          Stop Inspection
+                        </button>
+                      </>
                     )}
-                    
-                    {inspection.status === "in_progress" && (
+
+                    {inspection.inspectionReport.status === "in_progress" && (
                       <p className="text-sm text-gray-600">
                         Complete the inspection report to mark as completed.
                       </p>
@@ -678,61 +706,64 @@ export default function InspectionDetailPage() {
               </h2>
 
               <div className="space-y-6">
-                {/* Condition Assessments */}
+                {/* Attendance */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { key: "overallCondition", label: "Overall Condition" },
-                    { key: "structuralIntegrity", label: "Structural Integrity" },
-                    { key: "electricalSystems", label: "Electrical Systems" },
-                    { key: "plumbingSystems", label: "Plumbing Systems" },
-                    { key: "interiorCondition", label: "Interior Condition" },
-                    { key: "exteriorCondition", label: "Exterior Condition" },
-                  ].map((field) => (
-                    <div key={field.key}>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {field.label}
-                      </label>
-                      <select
-                        value={report[field.key as keyof InspectionReport] as string}
-                        onChange={(e) => handleReportChange(field.key as keyof InspectionReport, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="excellent">Excellent</option>
-                        <option value="good">Good</option>
-                        <option value="fair">Fair</option>
-                        <option value="poor">Poor</option>
-                      </select>
-                    </div>
-                  ))}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Buyer Present
+                    </label>
+                    <select
+                      value={report.buyerPresent.toString()}
+                      onChange={(e) => handleReportChange("buyerPresent", e.target.value === "true")}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Seller Present
+                    </label>
+                    <select
+                      value={report.sellerPresent.toString()}
+                      onChange={(e) => handleReportChange("sellerPresent", e.target.value === "true")}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
                 </div>
 
-                {/* Recommendation */}
+                {/* Buyer Interest Level */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Recommendation to Client
+                    Buyer Interest Level
                   </label>
                   <select
-                    value={report.recommendationToClient}
-                    onChange={(e) => handleReportChange("recommendationToClient", e.target.value)}
+                    value={report.buyerInterest}
+                    onChange={(e) => handleReportChange("buyerInterest", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="highly_recommended">Highly Recommended</option>
-                    <option value="recommended">Recommended</option>
-                    <option value="conditional_recommendation">Conditional Recommendation</option>
-                    <option value="not_recommended">Not Recommended</option>
+                    <option value="very-interested">Very Interested</option>
+                    <option value="interested">Interested</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="not-interested">Not Interested</option>
                   </select>
                 </div>
 
-                {/* Detailed Notes */}
+                {/* Notes */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Detailed Notes <span className="text-red-500">*</span>
+                    Notes <span className="text-red-500">*</span>
                   </label>
                   <textarea
-                    value={report.detailedNotes}
-                    onChange={(e) => handleReportChange("detailedNotes", e.target.value)}
+                    value={report.notes}
+                    onChange={(e) => handleReportChange("notes", e.target.value)}
                     rows={4}
-                    placeholder="Provide detailed notes about the inspection..."
+                    placeholder="Provide notes about the inspection..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -893,7 +924,7 @@ export default function InspectionDetailPage() {
                 <div className="flex justify-end pt-6 border-t border-gray-200">
                   <button
                     onClick={submitReport}
-                    disabled={isSubmitting || !report.detailedNotes.trim()}
+                    disabled={isSubmitting || !report.notes.trim()}
                     className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                   >
                     {isSubmitting ? (
