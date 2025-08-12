@@ -895,7 +895,14 @@ const ProductDetailsPage = () => {
             The property you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                router.back();
+              } else {
+                // Fallback to marketplace if no history
+                router.push('/marketplace');
+              }
+            }}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Go Back
@@ -912,7 +919,14 @@ const ProductDetailsPage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <button
-              onClick={() => router.back()}
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.history.length > 1) {
+                  router.back();
+                } else {
+                  // Fallback to marketplace if no history
+                  router.push('/marketplace');
+                }
+              }}
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
             >
               <ChevronLeft className="w-5 h-5 mr-1" />
