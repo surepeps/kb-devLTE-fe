@@ -484,8 +484,8 @@ const SharedPostPropertyForm: React.FC<SharedPostPropertyFormProps> = ({
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {
-          measurementType: propertyData.measurementType,
-          size: propertyData.landSize,
+          measurementType: propertyData.propertyType === "shortlet" ? "" : propertyData.measurementType,
+          size: propertyData.propertyType === "shortlet" ? "" : propertyData.landSize,
         },
         briefType: briefType,
         additionalFeatures: {
