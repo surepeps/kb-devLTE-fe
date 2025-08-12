@@ -374,7 +374,7 @@ export default function FieldAgentInspections() {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Status</option>
-              <option value="assigned">Assigned</option>
+              <option value="negotiation_accepted">Accepted</option>
               <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
