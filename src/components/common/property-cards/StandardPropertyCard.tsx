@@ -218,10 +218,17 @@ const StandardPropertyCard: React.FC<StandardPropertyCardProps> = ({
                 </div>
               ) : (
                 <Button
-                  value="Price Negotiation"
+                  value={hasNegotiatedPrice
+                    ? `₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`
+                    : "Price Negotiation"
+                  }
                   type="button"
                   onClick={onPriceNegotiation}
-                  className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#1565C0] transition-colors"
+                  className={`min-h-[50px] py-[12px] px-[24px] text-[#FFFFFF] text-base leading-[25.6px] font-bold transition-colors ${
+                    hasNegotiatedPrice
+                      ? "bg-[#8DDB90] hover:bg-[#76c77a]"
+                      : "bg-[#1976D2] hover:bg-[#1565C0]"
+                  }`}
                 />
               )}
             </>
