@@ -37,7 +37,7 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
       {isOpen && (
         <div className="mb-4 bg-white rounded-2xl shadow-2xl border border-gray-200 w-80 max-w-[calc(100vw-3rem)]">
           {/* Header */}
-          <div className="bg-[#25D366] text-white p-4 rounded-t-2xl flex items-center justify-between">
+          <div className="text-white p-4 rounded-t-2xl flex items-center justify-between" style={{backgroundColor: WHATSAPP_CONFIG.appearance.primaryColor}}>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                 <MessageCircle className="w-5 h-5" />
