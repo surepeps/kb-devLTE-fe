@@ -122,8 +122,6 @@ export default function InspectionDetailPage() {
     buyerInterest: "neutral",
     notes: "",
   });
-  const [newIssue, setNewIssue] = useState("");
-  const [newRepair, setNewRepair] = useState("");
 
   const inspectionId = params?.id as string;
 
