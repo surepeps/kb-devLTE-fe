@@ -118,9 +118,7 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
 
                 <button
                   onClick={() => {
-                    const quickMessage = "I have a technical issue with the platform";
-                    const encodedMessage = encodeURIComponent(quickMessage);
-                    const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodedMessage}`;
+                    const whatsappUrl = getWhatsAppUrl(phoneNumber, WHATSAPP_CONFIG.defaultMessages.technicalIssue);
                     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
                   }}
                   className="text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
