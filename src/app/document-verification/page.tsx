@@ -76,6 +76,8 @@ const DocumentVerificationPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [previewFile, setPreviewFile] = useState<{ file: File; documentName: string } | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const fileInputRefs = useRef<{ [key in DocumentType]?: HTMLInputElement | null }>({});
   const receiptInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
@@ -576,7 +578,7 @@ const DocumentVerificationPage: React.FC = () => {
                   {/* Document Number Section */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                      🔢 Document Number (Optional)
+                      ���� Document Number (Optional)
                     </label>
                     <input
                       type="text"
