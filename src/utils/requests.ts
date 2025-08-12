@@ -16,7 +16,7 @@ export const GET_REQUEST = async <T = any>(
   try {
     // Check if URL is valid
     if (!url || url.includes("undefined")) {
-      console.warn("Invalid API URL provided:", url);
+      // Invalid API URL provided
       return {
         error: "Invalid API URL",
         success: false,
@@ -25,7 +25,7 @@ export const GET_REQUEST = async <T = any>(
       };
     }
 
-    console.log("Making request to:", url);
+    // Making request to URL
 
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
@@ -44,7 +44,7 @@ export const GET_REQUEST = async <T = any>(
     // Check if request was successful
     if (!request.ok) {
       const errorMessage = `HTTP ${request.status}: ${request.statusText}`;
-      console.warn("Request failed:", errorMessage);
+      // Request failed
       return {
         error: errorMessage,
         success: false,
@@ -56,7 +56,7 @@ export const GET_REQUEST = async <T = any>(
     // Check if response has content before parsing JSON
     const text = await request.text();
     if (!text) {
-      console.warn("Empty response received from:", url);
+      // Empty response received
       return {
         error: "Empty response",
         success: false,
@@ -69,7 +69,7 @@ export const GET_REQUEST = async <T = any>(
       const response = JSON.parse(text);
       return response;
     } catch (parseError) {
-      console.error("JSON parse error for response from:", url, "Response text:", text);
+      // JSON parse error for response
       return {
         error: "Invalid JSON response",
         success: false,
@@ -113,7 +113,7 @@ export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token
     const response = await request.json();
     return response;
   } catch (error: unknown) {
-    console.log(error);
+    // Error occurred
     return {
       error: (error as Error).message || "Unknown error",
       success: false,
@@ -157,7 +157,7 @@ export const POST_REQUEST = async <T = any>(
 
     return response;
   } catch (error: unknown) {
-    console.error("POST_REQUEST error:", error);
+    // POST_REQUEST error occurred
     throw error; // Important: throw so formik/toast can catch it
   }
 };
@@ -178,7 +178,7 @@ export const POST_REQUEST_FILE_UPLOAD = async <T = any>(
     const response = await request.json();
     return response;
   } catch (error: unknown) {
-    console.log(error);
+    // Error occurred
     return {
       error: (error as Error).message || "Unknown error",
       success: false,
@@ -210,7 +210,7 @@ export const PUT_REQUEST = async <T = any>(
     const response = await request.json();
     return response;
   } catch (error: unknown) {
-    console.log(error);
+    // Error occurred
     return {
       error: (error as Error).message || "Unknown error",
       success: false,

@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
   },
+  // Improve dev performance with Turbopack
+  turbopack: {
+    resolveAlias: {
+      canvas: './empty-module.js',
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -56,6 +62,12 @@ const nextConfig: NextConfig = {
         os: false,
       };
     }
+
+    // Optimize for faster builds and prevent memory issues
+    config.optimization = {
+      ...config.optimization,
+      sideEffects: false,
+    };
 
     return config;
   },

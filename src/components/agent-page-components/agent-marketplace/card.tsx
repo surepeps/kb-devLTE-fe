@@ -93,7 +93,13 @@ const RectangleContent = ({
         {heading}
       </h5>
       <h3 className='text-sm text-black font-medium'>
-        {value.toLocaleString()}
+        {typeof value === 'number'
+          ? value.toLocaleString()
+          : Array.isArray(value)
+            ? value.join(', ')
+            : typeof value === 'object'
+              ? JSON.stringify(value)
+              : value}
       </h3>
     </div>
   );
