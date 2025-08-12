@@ -19,6 +19,7 @@ import { GlobalPropertyActionsProvider } from '@/context/global-property-actions
 import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
 import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsFAB';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
+import WhatsAppChatWidget from '@/components/whatsapp-chat-widget';
 
 const SHOW_COMING_SOON = false;
 
@@ -50,6 +51,7 @@ export default function RootLayout({
                     <Homepage />
                     <Countdown />
                   </HeaderFooterWrapper>
+                  <WhatsAppChatWidget />
                   <Toaster />
                 </body>
               </html>
@@ -78,6 +80,7 @@ export default function RootLayout({
                               <Body>{children}</Body>
                             </HeaderFooterWrapper>
                             <GlobalPropertyActionsFAB />
+                            <WhatsAppChatWidget />
                             <Toaster />
                             <ChunkErrorHandler />
                           </body>
