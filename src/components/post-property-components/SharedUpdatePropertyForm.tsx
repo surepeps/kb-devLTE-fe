@@ -155,8 +155,8 @@ const checkStep1RequiredFields = (propertyData: any) => {
   // - All Sell properties
   // - All JV properties (already handled above)
   // - Commercial Rent properties (already handled above)
-  // - Land category for all property types
-  if (propertyData.propertyCategory === "Land") {
+  // - Land category for all property types EXCEPT shortlet
+  if (propertyData.propertyCategory === "Land" && propertyData.propertyType !== "shortlet") {
     if (!requiredFields.includes("measurementType"))
       requiredFields.push("measurementType");
     if (!requiredFields.includes("landSize")) requiredFields.push("landSize");
