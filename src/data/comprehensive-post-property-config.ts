@@ -442,7 +442,7 @@ export const shouldShowField = (
       (propertyCategory === PROPERTY_CATEGORIES.RESIDENTIAL ||
         propertyCategory === PROPERTY_CATEGORIES.COMMERCIAL),
 
-        // Land Size - for all Sell properties, for Commercial Rent, and all JV
+        // Land Size - for all Sell properties, for Commercial Rent, and all JV (NOT for shortlet)
     landSize:
       briefType === BRIEF_TYPES.SELL ||
       (briefType === BRIEF_TYPES.RENT &&
