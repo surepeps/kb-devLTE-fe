@@ -141,6 +141,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
       "streetAddress",
       "maxGuests",
     );
+    // Shortlet properties do not require land size and measurement type
   }
 
   if (propertyData.propertyType === "jv") {
