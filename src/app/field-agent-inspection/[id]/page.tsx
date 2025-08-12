@@ -19,12 +19,8 @@ import {
   Mail as MailIcon,
   Home as HomeIcon,
   FileText as FileTextIcon,
-  Camera as CameraIcon,
-  Save as SaveIcon,
   Send as SendIcon,
   ChevronLeft as ChevronLeftIcon,
-  Star as StarIcon,
-  Upload as UploadIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import Image from "next/image";
