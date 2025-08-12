@@ -356,13 +356,19 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-between p-3 border-t border-gray-200 bg-gray-50">
           <div className="text-xs text-gray-500">
-            Use controls above to zoom, rotate, or download the document
+            <span className="hidden sm:inline">
+              Keyboard shortcuts: Esc (close), Ctrl+/- (zoom), Ctrl+R (rotate), Ctrl+F (fullscreen), Ctrl+D (download)
+            </span>
+            <span className="sm:hidden">
+              Use controls above to zoom, rotate, or download
+            </span>
           </div>
-          
-          {['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(getFileType() || '') && (
+
+          {['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(getFileType() || '') && (
             <button
               onClick={resetView}
               className="text-xs text-blue-600 hover:text-blue-700 px-2 py-1 rounded transition-colors"
+              title="Reset zoom and rotation (Ctrl+0)"
             >
               Reset View
             </button>
