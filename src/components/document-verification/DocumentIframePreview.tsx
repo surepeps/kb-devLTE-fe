@@ -354,6 +354,27 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
                 <p className="text-gray-600">Loading preview...</p>
               </div>
             </div>
+          ) : hasError ? (
+            <div className="flex items-center justify-center h-full bg-red-50">
+              <div className="text-center p-8">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <X className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-red-700 mb-2">
+                  Preview Error
+                </h3>
+                <p className="text-red-600 mb-4">
+                  Unable to load the document preview. The file might be corrupted or in an unsupported format.
+                </p>
+                <button
+                  onClick={handleDownload}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <Download className="w-4 h-4 mr-2 inline" />
+                  Download File Instead
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="h-full overflow-auto">
               {renderFilePreview()}
