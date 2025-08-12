@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { MessageCircle, X, Phone, Send } from 'lucide-react';
+import { WHATSAPP_CONFIG, getWhatsAppUrl, isBusinessHours } from '@/config/whatsapp-config';
 
 interface WhatsAppChatWidgetProps {
   phoneNumber?: string;
@@ -9,8 +10,8 @@ interface WhatsAppChatWidgetProps {
 }
 
 const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
-  phoneNumber = "+2348012345678", // Default Nigerian number
-  message = "Hi! I need help with document verification services."
+  phoneNumber = WHATSAPP_CONFIG.phoneNumber,
+  message = WHATSAPP_CONFIG.defaultMessages.general
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
