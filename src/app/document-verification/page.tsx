@@ -6,6 +6,7 @@ import { useDocumentVerification } from '@/context/document-verification-context
 import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
 import { DELETE_REQUEST, POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
+import DocumentIframePreview from '@/components/document-verification/DocumentIframePreview';
 
 // Define the document types as a union type
 const documentOptions = [
@@ -75,6 +76,8 @@ const DocumentVerificationPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [previewFile, setPreviewFile] = useState<{ file: File; documentName: string } | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const fileInputRefs = useRef<{ [key in DocumentType]?: HTMLInputElement | null }>({});
   const receiptInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
@@ -250,9 +253,17 @@ const DocumentVerificationPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handlePreviewFile = (file: File) => {
-    const url = URL.createObjectURL(file);
-    window.open(url, '_blank');
+  const handlePreviewFile = (file: File, documentType: DocumentType) => {
+    setPreviewFile({
+      file,
+      documentName: getDocumentDisplayName(documentType)
+    });
+    setShowPreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setShowPreview(false);
+    setPreviewFile(null);
   };
 
   const validateStep1 = (): boolean => {
@@ -533,7 +544,7 @@ const DocumentVerificationPage: React.FC = () => {
                             </p>
                             <div className="flex justify-center space-x-2">
                               <button
-                                onClick={() => handlePreviewFile(uploadedFiles[document]!.file)}
+                                onClick={() => handlePreviewFile(uploadedFiles[document]!.file, document)}
                                 className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"
                               >
                                 <Eye size={12} className="inline mr-1" />
@@ -865,6 +876,16 @@ const DocumentVerificationPage: React.FC = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Document Iframe Preview Modal */}
+      {previewFile && (
+        <DocumentIframePreview
+          isOpen={showPreview}
+          onClose={handleClosePreview}
+          file={previewFile.file}
+          documentName={previewFile.documentName}
+        />
       )}
     </div>
   );
