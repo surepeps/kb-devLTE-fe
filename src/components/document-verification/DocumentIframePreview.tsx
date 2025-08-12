@@ -17,6 +17,7 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
 }) => {
   const [fileUrl, setFileUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
