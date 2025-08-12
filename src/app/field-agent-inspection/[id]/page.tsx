@@ -29,52 +29,83 @@ import {
 import Loading from "@/components/loading-component/loading";
 import Image from "next/image";
 
-interface Inspection {
-  _id: string;
-  propertyId: string;
-  propertyType: string;
-  propertyAddress: string;
+interface Property {
   location: {
     state: string;
     localGovernment: string;
     area: string;
   };
-  scheduledDate: string;
-  scheduledTime: string;
-  status: "assigned" | "in_progress" | "completed" | "cancelled";
-  priority: "low" | "medium" | "high";
-  buyerName: string;
-  buyerPhone: string;
-  buyerEmail: string;
-  sellerName: string;
-  sellerPhone: string;
-  inspectionType: "initial" | "follow_up" | "final";
-  notes?: string;
+  landSize: {
+    measurementType: string;
+    size: number;
+  };
+  additionalFeatures: {
+    noOfBedroom: number;
+    noOfBathroom: number;
+    noOfToilet: number;
+    noOfCarPark: number;
+  };
+  _id: string;
+  features: string[];
+  pictures: string[];
+  propertyType: string;
+  briefType: string;
+  price: number;
+  isAvailable: boolean;
+}
+
+interface RequestedBy {
+  _id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
   createdAt: string;
   updatedAt: string;
-  propertyDetails?: {
-    bedrooms: number;
-    bathrooms: number;
-    parking: number;
-    landSize: string;
-    features: string[];
-  };
 }
 
 interface InspectionReport {
-  overallCondition: "excellent" | "good" | "fair" | "poor";
-  structuralIntegrity: "excellent" | "good" | "fair" | "poor";
-  electricalSystems: "excellent" | "good" | "fair" | "poor";
-  plumbingSystems: "excellent" | "good" | "fair" | "poor";
-  interiorCondition: "excellent" | "good" | "fair" | "poor";
-  exteriorCondition: "excellent" | "good" | "fair" | "poor";
-  recommendationToClient: "highly_recommended" | "recommended" | "conditional_recommendation" | "not_recommended";
-  detailedNotes: string;
-  issuesFound: string[];
-  recommendedRepairs: string[];
-  estimatedRepairCost: number;
-  photos: File[];
-  additionalComments: string;
+  buyerInterest: string | null;
+  notes: string | null;
+  status: string;
+  wasSuccessful: boolean;
+  buyerPresent: boolean | null;
+  sellerPresent: boolean | null;
+}
+
+interface Inspection {
+  _id: string;
+  propertyId: Property;
+  bookedBy: string;
+  bookedByModel: string;
+  inspectionDate: string;
+  inspectionTime: string;
+  status: string;
+  requestedBy: RequestedBy;
+  transaction: string;
+  isNegotiating: boolean;
+  isLOI: boolean;
+  inspectionType: string;
+  inspectionMode: string;
+  inspectionStatus: string;
+  negotiationPrice: number;
+  letterOfIntention: any;
+  owner: string;
+  approveLOI: boolean;
+  pendingResponseFrom: string;
+  stage: string;
+  counterCount: number;
+  createdAt: string;
+  updatedAt: string;
+  assignedFieldAgent?: string;
+  id: string;
+  inspectionReport: InspectionReport;
+}
+
+interface FieldAgentReport {
+  buyerPresent: boolean;
+  sellerPresent: boolean;
+  buyerInterest: "very-interested" | "interested" | "neutral" | "not-interested";
+  notes: string;
 }
 
 export default function InspectionDetailPage() {
@@ -85,20 +116,11 @@ export default function InspectionDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "report">("details");
-  const [report, setReport] = useState<InspectionReport>({
-    overallCondition: "good",
-    structuralIntegrity: "good",
-    electricalSystems: "good",
-    plumbingSystems: "good",
-    interiorCondition: "good",
-    exteriorCondition: "good",
-    recommendationToClient: "recommended",
-    detailedNotes: "",
-    issuesFound: [],
-    recommendedRepairs: [],
-    estimatedRepairCost: 0,
-    photos: [],
-    additionalComments: "",
+  const [report, setReport] = useState<FieldAgentReport>({
+    buyerPresent: false,
+    sellerPresent: false,
+    buyerInterest: "neutral",
+    notes: "",
   });
   const [newIssue, setNewIssue] = useState("");
   const [newRepair, setNewRepair] = useState("");
@@ -114,50 +136,27 @@ export default function InspectionDetailPage() {
   const fetchInspectionDetails = async () => {
     try {
       setIsLoading(true);
-      
-      // Mock data for demonstration - replace with actual API call
-      const mockInspection: Inspection = {
-        _id: inspectionId,
-        propertyId: "prop_001",
-        propertyType: "3 Bedroom Duplex",
-        propertyAddress: "15 Adeniran Ogunsanya Street, Surulere",
-        location: {
-          state: "Lagos",
-          localGovernment: "Surulere",
-          area: "Adeniran Ogunsanya"
-        },
-        scheduledDate: "2024-01-25",
-        scheduledTime: "10:00",
-        status: "assigned",
-        priority: "high",
-        buyerName: "John Doe",
-        buyerPhone: "+234 803 123 4567",
-        buyerEmail: "john.doe@email.com",
-        sellerName: "Jane Smith",
-        sellerPhone: "+234 805 987 6543",
-        inspectionType: "initial",
-        notes: "First time inspection, buyer is very interested",
-        createdAt: "2024-01-24T09:00:00.000Z",
-        updatedAt: "2024-01-24T09:00:00.000Z",
-        propertyDetails: {
-          bedrooms: 3,
-          bathrooms: 4,
-          parking: 2,
-          landSize: "500 sqm",
-          features: ["Swimming Pool", "Security", "Generator", "BQ", "Fitted Kitchen"]
-        }
-      };
 
-      setInspection(mockInspection);
-      
-      // Replace with actual API call:
-      // const response = await GET_REQUEST(
-      //   `${URLS.BASE}/field-agent/inspections/${inspectionId}`,
-      //   Cookies.get("token")
-      // );
-      // if (response?.data) {
-      //   setInspection(response.data);
-      // }
+      const response = await GET_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}`,
+        Cookies.get("token")
+      );
+
+      if (response?.success && response.data) {
+        setInspection(response.data);
+        // Pre-populate report if exists
+        if (response.data.inspectionReport) {
+          const existingReport = response.data.inspectionReport;
+          setReport({
+            buyerPresent: existingReport.buyerPresent || false,
+            sellerPresent: existingReport.sellerPresent || false,
+            buyerInterest: existingReport.buyerInterest || "neutral",
+            notes: existingReport.notes || "",
+          });
+        }
+      } else {
+        toast.error(response?.message || "Failed to load inspection details");
+      }
     } catch (error) {
       console.error("Failed to fetch inspection details:", error);
       toast.error("Failed to load inspection details");
@@ -166,7 +165,7 @@ export default function InspectionDetailPage() {
     }
   };
 
-  const handleReportChange = (field: keyof InspectionReport, value: any) => {
+  const handleReportChange = (field: keyof FieldAgentReport, value: any) => {
     setReport(prev => ({ ...prev, [field]: value }));
   };
 
@@ -219,27 +218,47 @@ export default function InspectionDetailPage() {
     }));
   };
 
-  const updateInspectionStatus = async (newStatus: string) => {
+  const startInspection = async () => {
     try {
       setIsSubmitting(true);
-      
-      // Mock API call - replace with actual implementation
-      console.log("Updating inspection status to:", newStatus);
-      
-      // Replace with actual API call:
-      // await POST_REQUEST(
-      //   `${URLS.BASE}/field-agent/inspections/${inspectionId}/status`,
-      //   { status: newStatus },
-      //   Cookies.get("token")
-      // );
-      
+
+      await POST_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/startInspection`,
+        {},
+        undefined,
+        Cookies.get("token")
+      );
+
       if (inspection) {
-        setInspection(prev => prev ? { ...prev, status: newStatus as any } : null);
-        toast.success(`Inspection marked as ${newStatus.replace('_', ' ')}`);
+        setInspection(prev => prev ? { ...prev, status: "in_progress" } : null);
+        toast.success("Inspection started");
       }
     } catch (error) {
-      console.error("Failed to update status:", error);
-      toast.error("Failed to update inspection status");
+      console.error("Failed to start inspection:", error);
+      toast.error("Failed to start inspection");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const stopInspection = async () => {
+    try {
+      setIsSubmitting(true);
+
+      await POST_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/stopInspection`,
+        {},
+        undefined,
+        Cookies.get("token")
+      );
+
+      if (inspection) {
+        setInspection(prev => prev ? { ...prev, status: "completed" } : null);
+        toast.success("Inspection stopped");
+      }
+    } catch (error) {
+      console.error("Failed to stop inspection:", error);
+      toast.error("Failed to stop inspection");
     } finally {
       setIsSubmitting(false);
     }
@@ -248,36 +267,21 @@ export default function InspectionDetailPage() {
   const submitReport = async () => {
     try {
       setIsSubmitting(true);
-      
+
       // Validate required fields
-      if (!report.detailedNotes.trim()) {
-        toast.error("Please provide detailed notes");
+      if (!report.notes.trim()) {
+        toast.error("Please provide notes");
         return;
       }
-      
-      // Mock API call - replace with actual implementation
-      console.log("Submitting inspection report:", report);
-      
-      // Replace with actual API call:
-      // const formData = new FormData();
-      // Object.entries(report).forEach(([key, value]) => {
-      //   if (key === 'photos') {
-      //     value.forEach((photo: File) => formData.append('photos', photo));
-      //   } else if (Array.isArray(value)) {
-      //     formData.append(key, JSON.stringify(value));
-      //   } else {
-      //     formData.append(key, value.toString());
-      //   }
-      // });
-      // 
-      // await POST_REQUEST(
-      //   `${URLS.BASE}/field-agent/inspections/${inspectionId}/report`,
-      //   formData,
-      //   Cookies.get("token")
-      // );
-      
+
+      await POST_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/submitReport`,
+        report,
+        undefined,
+        Cookies.get("token")
+      );
+
       toast.success("Inspection report submitted successfully!");
-      await updateInspectionStatus("completed");
       router.push("/field-agent-inspections");
     } catch (error) {
       console.error("Failed to submit report:", error);
@@ -374,7 +378,7 @@ export default function InspectionDetailPage() {
                     Inspection Details
                   </h1>
                   <p className="text-gray-600 mt-1">
-                    {inspection.propertyType} - {inspection.location.area}
+                    {inspection.propertyId.propertyType} - {inspection.propertyId.location.area}
                   </p>
                 </div>
               </div>
@@ -382,8 +386,8 @@ export default function InspectionDetailPage() {
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(inspection.status)}`}>
                   {inspection.status.replace('_', ' ')}
                 </span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(inspection.priority)}`}>
-                  {inspection.priority} priority
+                <span className={`px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800`}>
+                  {inspection.propertyId.briefType}
                 </span>
               </div>
             </div>
