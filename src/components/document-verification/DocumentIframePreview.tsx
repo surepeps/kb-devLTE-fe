@@ -70,66 +70,89 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
 
   const renderFilePreview = () => {
     const fileType = getFileType();
-    
+
     if (['pdf'].includes(fileType || '')) {
       return (
-        <iframe
-          src={`${fileUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
-          className="w-full h-full border-0"
-          style={{
-            transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-            transformOrigin: 'center center'
-          }}
-          title={`Preview of ${documentName}`}
-        />
-      );
-    }
-
-    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileType || '')) {
-      return (
-        <div className="flex items-center justify-center h-full bg-gray-100">
-          <img
-            src={fileUrl}
-            alt={documentName}
-            className="max-w-full max-h-full object-contain"
+        <div className="h-full bg-gray-100">
+          <iframe
+            src={`${fileUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH&zoom=${zoom}`}
+            className="w-full h-full border-0"
             style={{
-              transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-              transformOrigin: 'center center'
+              transform: `rotate(${rotation}deg)`,
+              transformOrigin: 'center center',
+              minHeight: '500px'
             }}
+            title={`Preview of ${documentName}`}
+            loading="lazy"
+            allow="fullscreen"
           />
         </div>
       );
     }
 
-    if (['doc', 'docx'].includes(fileType || '')) {
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(fileType || '')) {
+      return (
+        <div className="flex items-center justify-center h-full bg-gray-100 overflow-auto">
+          <div className="relative">
+            <img
+              src={fileUrl}
+              alt={documentName}
+              className="max-w-full max-h-full object-contain transition-transform duration-200"
+              style={{
+                transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                transformOrigin: 'center center'
+              }}
+              onLoad={() => setIsLoading(false)}
+              onError={() => setIsLoading(false)}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (['doc', 'docx', 'txt', 'rtf'].includes(fileType || '')) {
       return (
         <div className="flex flex-col items-center justify-center h-full bg-gray-50">
-          <div className="text-center p-8">
-            <Eye className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <div className="text-center p-8 max-w-md">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileIcon className="w-10 h-10 text-blue-600" />
+            </div>
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Document Preview Not Available
+              Document Ready for Review
             </h3>
-            <p className="text-gray-500 mb-4">
-              Direct preview is not supported for {fileType?.toUpperCase()} files in browser.
+            <p className="text-gray-500 mb-6">
+              {fileType?.toUpperCase()} files are best viewed in their native application or downloaded for full functionality.
             </p>
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600">
-                <strong>File:</strong> {file.name}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Size:</strong> {(file.size / (1024 * 1024)).toFixed(2)} MB
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Type:</strong> {fileType?.toUpperCase()} Document
-              </p>
+            <div className="space-y-3 text-left bg-white p-4 rounded-lg border">
+              <div className="flex justify-between">
+                <span className="text-sm font-medium text-gray-600">File Name:</span>
+                <span className="text-sm text-gray-800 truncate ml-2">{file.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm font-medium text-gray-600">Size:</span>
+                <span className="text-sm text-gray-800">{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm font-medium text-gray-600">Type:</span>
+                <span className="text-sm text-gray-800">{fileType?.toUpperCase()} Document</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm font-medium text-gray-600">Last Modified:</span>
+                <span className="text-sm text-gray-800">
+                  {new Date(file.lastModified).toLocaleDateString()}
+                </span>
+              </div>
             </div>
             <button
               onClick={handleDownload}
-              className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto"
+              className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto shadow-md"
             >
               <Download className="w-4 h-4 mr-2" />
-              Download to View
+              Download to Open
             </button>
+            <p className="text-xs text-gray-500 mt-3">
+              Downloaded files can be opened in Word, Google Docs, or other compatible applications
+            </p>
           </div>
         </div>
       );
@@ -137,14 +160,31 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
 
     return (
       <div className="flex items-center justify-center h-full bg-gray-50">
-        <div className="text-center p-8">
-          <Eye className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <div className="text-center p-8 max-w-md">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FileIcon className="w-10 h-10 text-gray-400" />
+          </div>
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
-            Preview Not Available
+            File Format Not Supported
           </h3>
-          <p className="text-gray-500">
-            This file type cannot be previewed in the browser.
+          <p className="text-gray-500 mb-4">
+            Preview is not available for this file type in the browser.
           </p>
+          <div className="bg-white p-4 rounded-lg border mb-4">
+            <p className="text-sm text-gray-600">
+              <strong>File:</strong> {file.name}
+            </p>
+            <p className="text-sm text-gray-600">
+              <strong>Type:</strong> {fileType?.toUpperCase() || 'Unknown'}
+            </p>
+          </div>
+          <button
+            onClick={handleDownload}
+            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center mx-auto"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download File
+          </button>
         </div>
       </div>
     );
