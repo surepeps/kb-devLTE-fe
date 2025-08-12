@@ -25,31 +25,40 @@ import {
 import Loading from "@/components/loading-component/loading";
 
 interface Inspection {
-  _id: string;
-  propertyId: string;
-  propertyType: string;
-  location: {
-    state: string;
-    localGovernment: string;
-    area: string;
+  id: string;
+  property: {
+    id: string;
+    title: string;
+    price: number;
+    image: string;
+    status: string;
+    briefType: string;
+    isAvailable: boolean;
   };
-  scheduledDate: string;
-  status: "assigned" | "in_progress" | "completed" | "cancelled";
-  priority: "low" | "medium" | "high";
-  buyerName: string;
-  buyerPhone: string;
+  inspectionDate: string;
+  inspectionTime: string;
+  inspectionType: string;
+  inspectionMode: string;
+  inspectionStatus: string;
+  status: string;
+  isNegotiating: boolean;
+  isLOI: boolean;
+  owner: string;
+  negotiationPrice: number;
+  counterCount: number;
+  reason: string | null;
+  pendingResponseFrom: string;
+  stage: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface FieldAgentStats {
   totalInspections: number;
-  assignedInspections: number;
+  assignedToday: number;
   completedInspections: number;
-  pendingInspections: number;
-  averageResponseTime: number;
   completionRate: number;
   recentInspections: Inspection[];
-  todayInspections: number;
 }
 
 export default function FieldAgentDashboard() {
@@ -57,13 +66,10 @@ export default function FieldAgentDashboard() {
   const { user } = useUserContext();
   const [stats, setStats] = useState<FieldAgentStats>({
     totalInspections: 0,
-    assignedInspections: 0,
+    assignedToday: 0,
     completedInspections: 0,
-    pendingInspections: 0,
-    averageResponseTime: 0,
     completionRate: 0,
     recentInspections: [],
-    todayInspections: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -74,62 +80,29 @@ export default function FieldAgentDashboard() {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
-      
-      // Mock data for now - replace with actual API call
-      const mockStats: FieldAgentStats = {
-        totalInspections: 45,
-        assignedInspections: 8,
-        completedInspections: 32,
-        pendingInspections: 5,
-        averageResponseTime: 24, // hours
-        completionRate: 89,
-        todayInspections: 3,
-        recentInspections: [
-          {
-            _id: "1",
-            propertyId: "prop_001",
-            propertyType: "3 Bedroom Duplex",
-            location: {
-              state: "Lagos",
-              localGovernment: "Ikeja",
-              area: "GRA"
-            },
-            scheduledDate: "2024-01-25T10:00:00.000Z",
-            status: "assigned",
-            priority: "high",
-            buyerName: "John Doe",
-            buyerPhone: "+234 803 123 4567",
-            createdAt: "2024-01-24T09:00:00.000Z"
-          },
-          {
-            _id: "2",
-            propertyId: "prop_002",
-            propertyType: "2 Bedroom Flat",
-            location: {
-              state: "Lagos",
-              localGovernment: "Victoria Island",
-              area: "VI Extension"
-            },
-            scheduledDate: "2024-01-25T14:00:00.000Z",
-            status: "in_progress",
-            priority: "medium",
-            buyerName: "Jane Smith",
-            buyerPhone: "+234 805 987 6543",
-            createdAt: "2024-01-23T11:30:00.000Z"
-          }
-        ]
-      };
 
-      setStats(mockStats);
-      
-      // Replace with actual API call:
-      // const response = await GET_REQUEST(
-      //   `${URLS.BASE}/field-agent/dashboard-stats`,
-      //   Cookies.get("token")
-      // );
-      // if (response?.data) {
-      //   setStats(response.data);
-      // }
+      // Fetch dashboard stats
+      const statsResponse = await GET_REQUEST(
+        `${URLS.BASE}/account/dashboard`,
+        Cookies.get("token")
+      );
+
+      // Fetch recent inspections
+      const recentResponse = await GET_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/fetchRecent`,
+        Cookies.get("token")
+      );
+
+      if (statsResponse?.success && statsResponse.data) {
+        const combinedStats: FieldAgentStats = {
+          totalInspections: statsResponse.data.totalInspections,
+          assignedToday: statsResponse.data.assignedToday,
+          completedInspections: statsResponse.data.completedInspections,
+          completionRate: statsResponse.data.completionRate,
+          recentInspections: recentResponse?.success ? recentResponse.data || [] : [],
+        };
+        setStats(combinedStats);
+      }
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
       toast.error("Failed to load dashboard data");
@@ -149,7 +122,7 @@ export default function FieldAgentDashboard() {
     },
     {
       title: "Assigned Today",
-      value: stats.todayInspections,
+      value: stats.assignedToday,
       icon: <CalendarIcon className="w-6 h-6" />,
       color: "bg-orange-500",
       textColor: "text-orange-600",
@@ -206,8 +179,8 @@ export default function FieldAgentDashboard() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "assigned":
-        return <AlertCircleIcon className="w-4 h-4 text-yellow-500" />;
+      case "negotiation_accepted":
+        return <CheckCircleIcon className="w-4 h-4 text-green-500" />;
       case "in_progress":
         return <ClockIcon className="w-4 h-4 text-blue-500" />;
       case "completed":
@@ -221,8 +194,8 @@ export default function FieldAgentDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "assigned":
-        return "bg-yellow-100 text-yellow-800";
+      case "negotiation_accepted":
+        return "bg-green-100 text-green-800";
       case "in_progress":
         return "bg-blue-100 text-blue-800";
       case "completed":
@@ -335,42 +308,42 @@ export default function FieldAgentDashboard() {
                   <div className="space-y-4">
                     {stats.recentInspections.map((inspection) => (
                       <div
-                        key={inspection._id}
+                        key={inspection.id}
                         className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => router.push(`/field-agent-inspection/${inspection._id}`)}
+                        onClick={() => router.push(`/field-agent-inspection/${inspection.id}`)}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
                               <HomeIcon className="w-4 h-4 text-gray-500" />
                               <h3 className="font-medium text-gray-900">
-                                {inspection.propertyType}
+                                {inspection.property.title}
                               </h3>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(inspection.status)}`}>
                                 {inspection.status.replace('_', ' ')}
                               </span>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(inspection.priority)}`}>
-                                {inspection.priority}
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800`}>
+                                {inspection.property.briefType}
                               </span>
                             </div>
-                            
+
                             <div className="flex items-center text-sm text-gray-600 mb-2">
                               <MapPinIcon className="w-4 h-4 mr-1" />
-                              {inspection.location.area}, {inspection.location.localGovernment}, {inspection.location.state}
+                              ₦{inspection.property.price.toLocaleString()}
                             </div>
-                            
+
                             <div className="flex items-center space-x-4 text-sm text-gray-600">
                               <div className="flex items-center">
                                 <CalendarIcon className="w-4 h-4 mr-1" />
-                                {new Date(inspection.scheduledDate).toLocaleDateString()}
+                                {new Date(inspection.inspectionDate).toLocaleDateString()} at {inspection.inspectionTime}
                               </div>
                               <div className="flex items-center">
                                 <UserIcon className="w-4 h-4 mr-1" />
-                                {inspection.buyerName}
+                                {inspection.inspectionType} inspection
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center ml-4">
                             {getStatusIcon(inspection.status)}
                           </div>
