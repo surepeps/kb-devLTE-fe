@@ -253,9 +253,17 @@ const DocumentVerificationPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handlePreviewFile = (file: File) => {
-    const url = URL.createObjectURL(file);
-    window.open(url, '_blank');
+  const handlePreviewFile = (file: File, documentType: DocumentType) => {
+    setPreviewFile({
+      file,
+      documentName: getDocumentDisplayName(documentType)
+    });
+    setShowPreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setShowPreview(false);
+    setPreviewFile(null);
   };
 
   const validateStep1 = (): boolean => {
@@ -578,7 +586,7 @@ const DocumentVerificationPage: React.FC = () => {
                   {/* Document Number Section */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                      ���� Document Number (Optional)
+                      🔢 Document Number (Optional)
                     </label>
                     <input
                       type="text"
