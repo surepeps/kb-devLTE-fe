@@ -185,29 +185,19 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         {/* Action Buttons */}
         <div className="flex flex-col gap-2 mt-auto pt-4">
           {/* Price Negotiation Button */}
-          {hasNegotiatedPrice ? (
-            <div className="min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold flex items-center justify-between rounded">
-              <span className="text-xs">
-                New Offer: ₦
-                {Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemoveNegotiation(property._id);
-                }}
-                className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
-                title="Clear negotiated price"
-              >
-                <X size={16} className="text-white" />
-              </button>
-            </div>
-          ) : (
+          {(
             <Button
-              value="Price Negotiation"
+              value={hasNegotiatedPrice
+                ? `₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`
+                : "Price Negotiation"
+              }
               type="button"
               onClick={onPriceNegotiation}
-              className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#1565C0] transition-colors"
+              className={`min-h-[50px] py-[12px] px-[24px] text-[#FFFFFF] text-base leading-[25.6px] font-bold transition-colors ${
+                hasNegotiatedPrice
+                  ? "bg-[#8DDB90] hover:bg-[#76c77a]"
+                  : "bg-[#1976D2] hover:bg-[#1565C0]"
+              }`}
             />
           )}
 
