@@ -153,8 +153,7 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
               onClick={openWhatsAppChat}
               className="w-full text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
               style={{
-                backgroundColor: WHATSAPP_CONFIG.appearance.primaryColor,
-                ':hover': { backgroundColor: WHATSAPP_CONFIG.appearance.hoverColor }
+                backgroundColor: WHATSAPP_CONFIG.appearance.primaryColor
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = WHATSAPP_CONFIG.appearance.hoverColor}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = WHATSAPP_CONFIG.appearance.primaryColor}
