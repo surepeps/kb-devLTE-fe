@@ -23,7 +23,6 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
-import Image from "next/image";
 
 interface Property {
   location: {
