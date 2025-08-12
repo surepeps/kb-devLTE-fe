@@ -79,6 +79,7 @@ export default function RootLayout({
                               <Body>{children}</Body>
                             </HeaderFooterWrapper>
                             <GlobalPropertyActionsFAB />
+                            <WhatsAppChatWidget />
                             <Toaster />
                             <ChunkErrorHandler />
                           </body>
