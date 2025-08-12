@@ -24,13 +24,20 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
 
   useEffect(() => {
     if (file && isOpen) {
-      const url = URL.createObjectURL(file);
-      setFileUrl(url);
-      setIsLoading(false);
+      try {
+        const url = URL.createObjectURL(file);
+        setFileUrl(url);
+        setIsLoading(false);
+        setHasError(false);
 
-      return () => {
-        URL.revokeObjectURL(url);
-      };
+        return () => {
+          URL.revokeObjectURL(url);
+        };
+      } catch (error) {
+        console.error('Error creating object URL:', error);
+        setHasError(true);
+        setIsLoading(false);
+      }
     }
   }, [file, isOpen]);
 
