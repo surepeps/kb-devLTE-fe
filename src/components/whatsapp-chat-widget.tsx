@@ -151,7 +151,13 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
           <div className="border-t p-4">
             <button
               onClick={openWhatsAppChat}
-              className="w-full bg-[#25D366] hover:bg-[#22C55E] text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+              className="w-full text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+              style={{
+                backgroundColor: WHATSAPP_CONFIG.appearance.primaryColor,
+                ':hover': { backgroundColor: WHATSAPP_CONFIG.appearance.hoverColor }
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = WHATSAPP_CONFIG.appearance.hoverColor}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = WHATSAPP_CONFIG.appearance.primaryColor}
             >
               <Send className="w-4 h-4" />
               <span>Start WhatsApp Chat</span>
@@ -163,11 +169,16 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
       {/* Chat Button */}
       <button
         onClick={toggleChat}
-        className="bg-[#25D366] hover:bg-[#22C55E] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group relative"
+        className="text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group relative"
+        style={{
+          backgroundColor: WHATSAPP_CONFIG.appearance.primaryColor
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = WHATSAPP_CONFIG.appearance.hoverColor}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = WHATSAPP_CONFIG.appearance.primaryColor}
         aria-label="Open WhatsApp Chat"
       >
         {/* Pulse Animation */}
-        <div className="absolute inset-0 bg-[#25D366] rounded-full animate-ping opacity-30"></div>
+        <div className="absolute inset-0 rounded-full animate-ping opacity-30" style={{backgroundColor: WHATSAPP_CONFIG.appearance.primaryColor}}></div>
         
         {/* Icon */}
         <div className="relative">
