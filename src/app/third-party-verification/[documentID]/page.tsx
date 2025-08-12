@@ -572,7 +572,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
             </div>
 
             {/* Verification Report Section */}
-            {documentDetails?.documents.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful') && (
+            {documentDetails?.documents && documentDetails.documents.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful') && (
               <div className="bg-white shadow-xl rounded-2xl border border-gray-100">
                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
@@ -625,7 +625,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
                               onClick={() => fileInputRefs.current[index]?.click()}
                             >
                               <input
-                                ref={(el) => fileInputRefs.current[index] = el}
+                                ref={(el) => { fileInputRefs.current[index] = el; }}
                                 type="file"
                                 onChange={(e) => {
                                   const file = e.target.files?.[0];
