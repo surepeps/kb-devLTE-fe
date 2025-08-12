@@ -167,54 +167,6 @@ export default function InspectionDetailPage() {
     setReport(prev => ({ ...prev, [field]: value }));
   };
 
-  const addIssue = () => {
-    if (newIssue.trim()) {
-      setReport(prev => ({
-        ...prev,
-        issuesFound: [...prev.issuesFound, newIssue.trim()]
-      }));
-      setNewIssue("");
-    }
-  };
-
-  const removeIssue = (index: number) => {
-    setReport(prev => ({
-      ...prev,
-      issuesFound: prev.issuesFound.filter((_, i) => i !== index)
-    }));
-  };
-
-  const addRepair = () => {
-    if (newRepair.trim()) {
-      setReport(prev => ({
-        ...prev,
-        recommendedRepairs: [...prev.recommendedRepairs, newRepair.trim()]
-      }));
-      setNewRepair("");
-    }
-  };
-
-  const removeRepair = (index: number) => {
-    setReport(prev => ({
-      ...prev,
-      recommendedRepairs: prev.recommendedRepairs.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setReport(prev => ({
-      ...prev,
-      photos: [...prev.photos, ...files]
-    }));
-  };
-
-  const removePhoto = (index: number) => {
-    setReport(prev => ({
-      ...prev,
-      photos: prev.photos.filter((_, i) => i !== index)
-    }));
-  };
 
   const startInspection = async () => {
     try {
