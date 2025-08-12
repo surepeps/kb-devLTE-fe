@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { X, Download, RotateCw, ZoomIn, ZoomOut, Maximize2, Eye } from 'lucide-react';
+import { X, Download, RotateCw, ZoomIn, ZoomOut, Maximize2, File } from 'lucide-react';
 
 type DocumentIframePreviewProps = {
   isOpen: boolean;
@@ -186,7 +186,7 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
         <div className="flex flex-col items-center justify-center h-full bg-gray-50">
           <div className="text-center p-8 max-w-md">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileIcon className="w-10 h-10 text-blue-600" />
+              <File className="w-10 h-10 text-blue-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Document Ready for Review
@@ -233,7 +233,7 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
       <div className="flex items-center justify-center h-full bg-gray-50">
         <div className="text-center p-8 max-w-md">
           <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FileIcon className="w-10 h-10 text-gray-400" />
+            <File className="w-10 h-10 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
             File Format Not Supported
