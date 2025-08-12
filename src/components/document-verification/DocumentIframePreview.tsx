@@ -33,6 +33,69 @@ const DocumentIframePreview: React.FC<DocumentIframePreviewProps> = ({
     }
   }, [file, isOpen]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      switch (event.key) {
+        case 'Escape':
+          onClose();
+          break;
+        case '+':
+        case '=':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleZoomIn();
+          }
+          break;
+        case '-':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleZoomOut();
+          }
+          break;
+        case 'r':
+        case 'R':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleRotate();
+          }
+          break;
+        case 'f':
+        case 'F':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            toggleFullscreen();
+          }
+          break;
+        case 'd':
+        case 'D':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            handleDownload();
+          }
+          break;
+        case '0':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            resetView();
+          }
+          break;
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const handleDownload = () => {
     const a = document.createElement('a');
     a.href = fileUrl;
