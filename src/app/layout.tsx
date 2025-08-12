@@ -51,6 +51,7 @@ export default function RootLayout({
                     <Homepage />
                     <Countdown />
                   </HeaderFooterWrapper>
+                  <WhatsAppChatWidget />
                   <Toaster />
                 </body>
               </html>
