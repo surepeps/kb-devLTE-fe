@@ -210,19 +210,35 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                   className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
                 />
               </div>
+            ) : hasNegotiatedPrice ? (
+              <div className="flex gap-2">
+                <Button
+                  value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
+                  type="button"
+                  onClick={onPriceNegotiation || (() => {})}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors"
+                />
+                {onRemoveNegotiation && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (property._id) {
+                        onRemoveNegotiation(property._id);
+                      }
+                    }}
+                    className="min-h-[40px] px-3 bg-[#F44336] text-[#FFFFFF] hover:bg-[#D32F2F] transition-colors rounded flex items-center justify-center"
+                    title="Clear negotiated price"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
             ) : (
               <Button
-                value={hasNegotiatedPrice
-                  ? `₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`
-                  : "Price Negotiation"
-                }
+                value="Price Negotiation"
                 type="button"
                 onClick={onPriceNegotiation || (() => {})}
-                className={`min-h-[40px] py-[8px] px-[16px] text-[#FFFFFF] text-sm leading-[20px] font-bold transition-colors ${
-                  hasNegotiatedPrice
-                    ? "bg-[#8DDB90] hover:bg-[#76c77a]"
-                    : "bg-[#1976D2] hover:bg-[#1565C0]"
-                }`}
+                className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
               />
             )}
 
