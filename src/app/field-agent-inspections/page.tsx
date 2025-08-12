@@ -382,16 +382,15 @@ export default function FieldAgentInspections() {
               <option value="pending-reports">Pending Reports</option>
             </select>
 
-            {/* Priority Filter */}
+            {/* Inspection Type Filter */}
             <select
               value={filters.priority}
               onChange={(e) => handleFilterChange("priority", e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">All Priority</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
+              <option value="all">All Types</option>
+              <option value="price">Price Inspection</option>
+              <option value="physical">Physical Inspection</option>
             </select>
 
             {/* Date Filter */}
