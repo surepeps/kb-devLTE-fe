@@ -17,8 +17,7 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
   const [isVisible, setIsVisible] = useState(true);
 
   const openWhatsAppChat = () => {
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodedMessage}`;
+    const whatsappUrl = getWhatsAppUrl(phoneNumber, message);
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
