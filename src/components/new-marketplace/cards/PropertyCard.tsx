@@ -185,19 +185,31 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         {/* Action Buttons */}
         <div className="flex flex-col gap-2 mt-auto pt-4">
           {/* Price Negotiation Button */}
-          {(
+          {hasNegotiatedPrice ? (
+            <div className="flex gap-2">
+              <Button
+                value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
+                type="button"
+                onClick={onPriceNegotiation}
+                className="flex-1 min-h-[50px] py-[12px] px-[24px] bg-[#8DDB90] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#76c77a] transition-colors"
+              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveNegotiation(property._id);
+                }}
+                className="min-h-[50px] px-4 bg-[#F44336] text-[#FFFFFF] hover:bg-[#D32F2F] transition-colors rounded flex items-center justify-center"
+                title="Clear negotiated price"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          ) : (
             <Button
-              value={hasNegotiatedPrice
-                ? `₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`
-                : "Price Negotiation"
-              }
+              value="Price Negotiation"
               type="button"
               onClick={onPriceNegotiation}
-              className={`min-h-[50px] py-[12px] px-[24px] text-[#FFFFFF] text-base leading-[25.6px] font-bold transition-colors ${
-                hasNegotiatedPrice
-                  ? "bg-[#8DDB90] hover:bg-[#76c77a]"
-                  : "bg-[#1976D2] hover:bg-[#1565C0]"
-              }`}
+              className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#1565C0] transition-colors"
             />
           )}
 
