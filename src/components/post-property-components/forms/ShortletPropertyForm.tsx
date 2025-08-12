@@ -365,8 +365,8 @@ const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {
-          measurementType: propertyData.measurementType || "",
-          size: propertyData.landSize || "",
+          measurementType: "",
+          size: "",
         },
         briefType: "Shortlet",
         additionalFeatures: {
