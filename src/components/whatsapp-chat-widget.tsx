@@ -43,8 +43,10 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Khabi-Teq Support</h3>
-                <p className="text-xs text-green-100">Online • Responds quickly</p>
+                <h3 className="font-semibold text-white">{WHATSAPP_CONFIG.team.name}</h3>
+                <p className="text-xs text-green-100">
+                  {isBusinessHours() ? "Online" : "Offline"} • {WHATSAPP_CONFIG.team.responseTime}
+                </p>
               </div>
             </div>
             <button 
