@@ -138,10 +138,10 @@ const WhatsAppChatWidget: React.FC<WhatsAppChatWidgetProps> = ({
             {/* Contact Info */}
             <div className="border-t pt-4">
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Available 24/7</span>
+                <span>{WHATSAPP_CONFIG.team.availability}</span>
                 <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>Online</span>
+                  <div className={`w-2 h-2 rounded-full ${isBusinessHours() ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                  <span>{isBusinessHours() ? "Online" : "Offline"}</span>
                 </div>
               </div>
             </div>
