@@ -877,6 +877,16 @@ const DocumentVerificationPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Document Iframe Preview Modal */}
+      {previewFile && (
+        <DocumentIframePreview
+          isOpen={showPreview}
+          onClose={handleClosePreview}
+          file={previewFile.file}
+          documentName={previewFile.documentName}
+        />
+      )}
     </div>
   );
 };
