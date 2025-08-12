@@ -141,6 +141,7 @@ const checkStep1RequiredFields = (propertyData: any) => {
       "streetAddress",
       "maxGuests",
     );
+    // Shortlet properties do not require land size and measurement type
   }
 
   if (propertyData.propertyType === "jv") {
@@ -160,8 +161,8 @@ const checkStep1RequiredFields = (propertyData: any) => {
   // - All Sell properties
   // - All JV properties (already handled above)
   // - Commercial Rent properties (already handled above)
-  // - Land category for all property types
-  if (propertyData.propertyCategory === "Land") {
+  // - Land category for all property types EXCEPT shortlet
+  if (propertyData.propertyCategory === "Land" && propertyData.propertyType !== "shortlet") {
     if (!requiredFields.includes("measurementType"))
       requiredFields.push("measurementType");
     if (!requiredFields.includes("landSize")) requiredFields.push("landSize");
@@ -483,8 +484,8 @@ const SharedPostPropertyForm: React.FC<SharedPostPropertyFormProps> = ({
         areYouTheOwner: propertyData.isLegalOwner,
         ownershipDocuments: propertyData.ownershipDocuments || [],
         landSize: {
-          measurementType: propertyData.measurementType,
-          size: propertyData.landSize,
+          measurementType: propertyData.propertyType === "shortlet" ? "" : propertyData.measurementType,
+          size: propertyData.propertyType === "shortlet" ? "" : propertyData.landSize,
         },
         briefType: briefType,
         additionalFeatures: {
