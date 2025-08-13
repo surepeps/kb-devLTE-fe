@@ -59,7 +59,7 @@ const customSelectStyles = {
     },
     transition: "all 0.2s ease",
   }),
-  valueContainer: (provided: any) => ({
+  valueContainer: (provided: Record<string, unknown>) => ({
     ...provided,
     padding: "8px 12px",
     fontSize: "15px",
