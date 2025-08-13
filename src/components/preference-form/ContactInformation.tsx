@@ -251,6 +251,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
         </Field>
       ),
     );
+    AnimatedField.displayName = 'AnimatedField';
 
     // Memoized Custom Phone Field component
     const PhoneField = memo(({ name, label, required = false }: any) => (
