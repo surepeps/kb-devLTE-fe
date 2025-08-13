@@ -145,7 +145,7 @@ const Footer = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           <div className='min-h-[70px] w-full mt-[30px] flex lg:flex-row lg:justify-between flex-col-reverse items-center gap-[30px]'>
             <span
               className={`font-medium text-center lg:text-start text-gray-400 text-base leading-[25px] ${epilogue.className}`}>
-              2020@ Khabiteqrealty Limited. All rights reserved.
+              {new Date().getFullYear()} @ Khabiteqrealty Limited. All rights reserved.
             </span>
             <div className='flex gap-[20px]'>
               {iconsData.map((icon, idx: number) => {
