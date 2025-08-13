@@ -1,8 +1,8 @@
 /** @format */
 
 "use client";
-import React, { useCallback, useEffect, useMemo, memo, useRef } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import React, { useCallback, memo, useRef } from "react";
+import { Formik, Form, Field } from "formik";
 import PhoneInput from "react-phone-number-input";
 import Select from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,7 +47,7 @@ const CHECK_TIMES = [
 
 // Custom select styles
 const customSelectStyles = {
-  control: (provided: any, state: any) => ({
+  control: (provided: Record<string, unknown>, state: { isFocused: boolean }) => ({
     ...provided,
     minHeight: "48px",
     border: state.isFocused ? "2px solid #10B981" : "1px solid #E5E7EB",
@@ -59,17 +59,17 @@ const customSelectStyles = {
     },
     transition: "all 0.2s ease",
   }),
-  valueContainer: (provided: any) => ({
+  valueContainer: (provided: Record<string, unknown>) => ({
     ...provided,
     padding: "8px 12px",
     fontSize: "15px",
   }),
-  placeholder: (provided: any) => ({
+  placeholder: (provided: Record<string, unknown>) => ({
     ...provided,
     color: "#9CA3AF",
     fontSize: "15px",
   }),
-  option: (provided: any, state: any) => ({
+  option: (provided: Record<string, unknown>, state: { isSelected: boolean; isFocused: boolean }) => ({
     ...provided,
     backgroundColor: state.isSelected
       ? "#10B981"
@@ -191,7 +191,14 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
         type = "text",
         placeholder,
         ...props
-      }: any) => (
+      }: {
+        name: string;
+        label: string;
+        required?: boolean;
+        type?: string;
+        placeholder?: string;
+        [key: string]: unknown;
+      }) => (
         <Field name={name}>
           {({ field, meta }: any) => (
             <motion.div
@@ -244,11 +251,12 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
         </Field>
       ),
     );
+    AnimatedField.displayName = 'AnimatedField';
 
     // Memoized Custom Phone Field component
-    const PhoneField = memo(({ name, label, required = false }: any) => (
+    const PhoneField = memo(({ name, label, required = false }: { name: string; label: string; required?: boolean }) => (
       <Field name={name}>
-        {({ field, meta, form }: any) => (
+        {({ field, meta, form }: { field: { name: string; value: string }; meta: { touched: boolean; error?: string }; form: { setFieldValue: (field: string, value: string) => void } }) => (
           <motion.div
             className="space-y-2"
             initial={{ opacity: 0, y: 20 }}
@@ -295,12 +303,13 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
         )}
       </Field>
     ));
+    PhoneField.displayName = 'PhoneField';
 
     // Handle form submission - debounced
     const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSubmit = useCallback(
-      (values: any) => {
+      (values: Record<string, unknown>) => {
         updateFormData({ contactInfo: values });
       },
       [updateFormData],
@@ -308,7 +317,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
 
     // Debounced update function to prevent rapid re-renders
     const debouncedUpdate = useCallback(
-      (values: any) => {
+      (values: Record<string, unknown>) => {
         if (submitTimeoutRef.current) {
           clearTimeout(submitTimeoutRef.current);
         }
@@ -333,21 +342,6 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
           enableReinitialize
         >
           {({ values, setFieldValue, errors, touched }) => {
-            // Auto-submit when values change using useEffect with debouncing
-            React.useEffect(() => {
-              // Only update if values have actually changed and are not empty
-              if (Object.keys(values).length > 0) {
-                debouncedUpdate(values);
-              }
-
-              // Cleanup function
-              return () => {
-                if (submitTimeoutRef.current) {
-                  clearTimeout(submitTimeoutRef.current);
-                }
-              };
-            }, [values, debouncedUpdate]);
-
             return (
               <Form>
                 {/* Header */}

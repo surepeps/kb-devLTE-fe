@@ -7,7 +7,6 @@ import React, {
   useCallback,
   forwardRef,
   memo,
-  useMemo,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DatePicker from "react-datepicker";
@@ -40,7 +39,7 @@ const CHECK_TIMES = [
 
 // Custom select styles
 const customSelectStyles = {
-  control: (provided: any, state: any) => ({
+  control: (provided: Record<string, unknown>, state: { isFocused: boolean }) => ({
     ...provided,
     minHeight: "44px",
     border: state.isFocused ? "2px solid #10B981" : "1px solid #E5E7EB",
@@ -52,17 +51,17 @@ const customSelectStyles = {
     },
     transition: "all 0.2s ease",
   }),
-  valueContainer: (provided: any) => ({
+  valueContainer: (provided: Record<string, unknown>) => ({
     ...provided,
     padding: "8px 12px",
     fontSize: "14px",
   }),
-  placeholder: (provided: any) => ({
+  placeholder: (provided: Record<string, unknown>) => ({
     ...provided,
     color: "#9CA3AF",
     fontSize: "14px",
   }),
-  option: (provided: any, state: any) => ({
+  option: (provided: Record<string, unknown>, state: { isSelected: boolean; isFocused: boolean }) => ({
     ...provided,
     backgroundColor: state.isSelected
       ? "#10B981"
@@ -76,8 +75,16 @@ const customSelectStyles = {
 };
 
 // Custom DatePicker Input Component
-const CustomDateInput = forwardRef<HTMLInputElement, any>(
-  ({ value, onClick, placeholder, hasError, ...props }, ref) => (
+const CustomDateInput = forwardRef<
+  HTMLInputElement,
+  {
+    value?: string;
+    onClick?: () => void;
+    placeholder?: string;
+    hasError?: boolean;
+    [key: string]: unknown;
+  }
+>(({ value, onClick, placeholder, hasError, ...props }, ref) => (
     <motion.div
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
@@ -274,7 +281,7 @@ const DateSelection: React.FC<DateSelectionProps> = memo(
     const quickSelections = [
       { label: "1 Night", nights: 1, icon: "🌙" },
       { label: "2 Nights", nights: 2, icon: "🌛" },
-      { label: "3 Nights", nights: 3, icon: "🌜" },
+      { label: "3 Nights", nights: 3, icon: "���" },
       { label: "1 Week", nights: 7, icon: "📅" },
       { label: "2 Weeks", nights: 14, icon: "🗓️" },
       { label: "1 Month", nights: 30, icon: "📊" },
