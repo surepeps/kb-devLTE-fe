@@ -581,28 +581,31 @@ export default function InspectionDetailPage() {
                   </h2>
 
                   <div className="space-y-3">
-                    {inspection.inspectionReport.status === "pending" && (
-                      <>
-                        <button
-                          onClick={startInspection}
-                          disabled={isSubmitting}
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
-                        >
-                          Start Inspection
-                        </button>
-                        <button
-                          onClick={stopInspection}
-                          disabled={isSubmitting}
-                          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
-                        >
-                          Stop Inspection
-                        </button>
-                      </>
+                    {/* Show Start Inspection if not yet started */}
+                    {inspection.status !== "in_progress" && inspection.status !== "completed" && (
+                      <button
+                        onClick={startInspection}
+                        disabled={isSubmitting}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                      >
+                        Start Inspection
+                      </button>
                     )}
 
-                    {inspection.inspectionReport.status === "in_progress" && (
-                      <p className="text-sm text-gray-600">
-                        Complete the inspection report to mark as completed.
+                    {/* Show Stop Inspection if already started */}
+                    {inspection.status === "in_progress" && (
+                      <button
+                        onClick={stopInspection}
+                        disabled={isSubmitting}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                      >
+                        Stop Inspection
+                      </button>
+                    )}
+
+                    {inspection.status === "completed" && (
+                      <p className="text-sm text-gray-600 text-center">
+                        Inspection completed. Complete the inspection report if needed.
                       </p>
                     )}
                   </div>
