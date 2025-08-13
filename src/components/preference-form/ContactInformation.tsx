@@ -306,14 +306,14 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
     PhoneField.displayName = 'PhoneField';
 
     // Handle form submission - debounced
-    const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleSubmit = useCallback(
-      (values: Record<string, unknown>) => {
-        updateFormData({ contactInfo: values });
-      },
-      [updateFormData],
-    );
+  const handleSubmit = useCallback(
+    (values: Record<string, unknown>) => {
+      updateFormData({ contactInfo: values as any });
+    },
+    [updateFormData],
+  );
 
     // Debounced update function to prevent rapid re-renders
     const debouncedUpdate = useCallback(
