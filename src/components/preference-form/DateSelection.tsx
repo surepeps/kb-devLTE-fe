@@ -56,7 +56,7 @@ const customSelectStyles = {
     padding: "8px 12px",
     fontSize: "14px",
   }),
-  placeholder: (provided: any) => ({
+  placeholder: (provided: Record<string, unknown>) => ({
     ...provided,
     color: "#9CA3AF",
     fontSize: "14px",
