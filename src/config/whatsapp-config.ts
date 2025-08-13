@@ -1,6 +1,6 @@
 export const WHATSAPP_CONFIG = {
   // Main support number (Nigerian format)
-  phoneNumber: "+2348012345678",
+  phoneNumber: "+2348132108659",
   
   // Default messages for different scenarios
   defaultMessages: {

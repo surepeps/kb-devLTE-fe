@@ -67,12 +67,12 @@ const VerificationFooter = () => {
                 />
               </div>
               <div className="text-center sm:text-left">
-                <h3 className="text-xl sm:text-2xl font-bold text-white">Khabi-Teq</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-white">Khabiteqrealty</h3>
                 <p className="text-[#8DDB90] font-medium">Document Verification Services</p>
               </div>
             </div>
             <p className="text-gray-300 leading-relaxed max-w-lg text-center sm:text-left">
-              Nigeria's leading document verification platform. We provide secure, fast, and reliable
+              Nigeria&apos;s leading document verification platform. We provide secure, fast, and reliable
               verification services for real estate documents across Lagos and Ogun State.
             </p>
 
@@ -107,7 +107,7 @@ const VerificationFooter = () => {
               </li>
               <li className="flex items-center justify-center sm:justify-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
-                <span>Governor's Consent</span>
+                <span>Governor&apos;s Consent</span>
               </li>
               <li className="flex items-center justify-center sm:justify-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-[#8DDB90] rounded-full"></div>
@@ -123,14 +123,14 @@ const VerificationFooter = () => {
               <div className="space-y-1 sm:space-y-2">
                 <p className="font-medium text-white">24/7 Verification Hotline</p>
                 <a href="tel:+2348012345678" className="text-[#8DDB90] hover:underline block">
-                  +234 (0) 801 234 5678
+                  +234 813 210 8659
                 </a>
               </div>
 
               <div className="space-y-1 sm:space-y-2">
                 <p className="font-medium text-white">Email Support</p>
                 <a href="mailto:verification@khabi-teq.com" className="text-[#8DDB90] hover:underline block">
-                  verification@khabi-teq.com
+                  verification@khabiteqrealty.com
                 </a>
               </div>
 
@@ -147,8 +147,10 @@ const VerificationFooter = () => {
         <div className="border-t border-[#8DDB90]/30 mt-8 sm:mt-12 pt-6 sm:pt-8">
           <div className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0">
             <div className="text-xs sm:text-sm text-gray-400 text-center lg:text-left">
-              <p>© 2024 Khabi-Teq Realty Limited. All rights reserved.</p>
-              <p className="mt-1 hidden sm:block">Licensed Document Verification Provider • Registration No: RC-1234567</p>
+              <p>
+                © {new Date().getFullYear()} Khabiteqrealty Limited. All rights reserved.
+              </p>
+              <p className="mt-1 hidden sm:block">Licensed Document Verification Provider • Registration No: RC-7378200</p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end space-y-2 sm:space-y-0 sm:space-x-4 lg:space-x-6">
