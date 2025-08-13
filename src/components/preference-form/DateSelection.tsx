@@ -75,8 +75,16 @@ const customSelectStyles = {
 };
 
 // Custom DatePicker Input Component
-const CustomDateInput = forwardRef<HTMLInputElement, any>(
-  ({ value, onClick, placeholder, hasError, ...props }, ref) => (
+const CustomDateInput = forwardRef<
+  HTMLInputElement,
+  {
+    value?: string;
+    onClick?: () => void;
+    placeholder?: string;
+    hasError?: boolean;
+    [key: string]: unknown;
+  }
+>(({ value, onClick, placeholder, hasError, ...props }, ref) => (
     <motion.div
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
@@ -273,7 +281,7 @@ const DateSelection: React.FC<DateSelectionProps> = memo(
     const quickSelections = [
       { label: "1 Night", nights: 1, icon: "🌙" },
       { label: "2 Nights", nights: 2, icon: "🌛" },
-      { label: "3 Nights", nights: 3, icon: "🌜" },
+      { label: "3 Nights", nights: 3, icon: "���" },
       { label: "1 Week", nights: 7, icon: "📅" },
       { label: "2 Weeks", nights: 14, icon: "🗓️" },
       { label: "1 Month", nights: 30, icon: "📊" },
