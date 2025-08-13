@@ -342,20 +342,12 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
           enableReinitialize
         >
           {({ values, setFieldValue, errors, touched }) => {
-            // Auto-submit when values change using useEffect with debouncing
+            // Auto-submit when values change
             React.useEffect(() => {
-              // Only update if values have actually changed and are not empty
               if (Object.keys(values).length > 0) {
                 debouncedUpdate(values);
               }
-
-              // Cleanup function
-              return () => {
-                if (submitTimeoutRef.current) {
-                  clearTimeout(submitTimeoutRef.current);
-                }
-              };
-            }, [values, debouncedUpdate]);
+            }, [values]);
 
             return (
               <Form>
