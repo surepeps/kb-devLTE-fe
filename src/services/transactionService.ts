@@ -22,7 +22,7 @@ export const transactionService = {
       throw new Error(response.error || response.message || "Failed to fetch transactions");
     }
 
-    return response.data ? response : { success: false, data: [], pagination: { total: 0, page: 1, limit: 10, totalPages: 0 } };
+    return response.data || { success: false, data: [], pagination: { total: 0, page: 1, limit: 10, totalPages: 0 } };
   },
 
   /**
@@ -38,6 +38,6 @@ export const transactionService = {
       throw new Error(response.error || response.message || "Failed to fetch transaction");
     }
 
-    return response.data ? response : { success: false, data: {} as any };
+    return response.data || { success: false, data: {} as any };
   },
 };
