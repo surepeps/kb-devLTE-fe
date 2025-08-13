@@ -31,13 +31,13 @@ export const transactionService = {
   fetchTransactionById: async (transactionId: string): Promise<SingleTransactionResponse> => {
     const token = Cookies.get("token");
     const url = `${URLS.BASE}/account/transactions/${transactionId}`;
-    
+
     const response = await GET_REQUEST<SingleTransactionResponse>(url, token);
-    
+
     if (!response.success) {
       throw new Error(response.error || response.message || "Failed to fetch transaction");
     }
-    
-    return response as SingleTransactionResponse;
+
+    return response.data ? response : { success: false, data: {} as any };
   },
 };
