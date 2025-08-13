@@ -256,7 +256,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
     // Memoized Custom Phone Field component
     const PhoneField = memo(({ name, label, required = false }: { name: string; label: string; required?: boolean }) => (
       <Field name={name}>
-        {({ field, meta, form }: any) => (
+        {({ field, meta, form }: { field: { name: string; value: string }; meta: { touched: boolean; error?: string }; form: { setFieldValue: (field: string, value: string) => void } }) => (
           <motion.div
             className="space-y-2"
             initial={{ opacity: 0, y: 20 }}
