@@ -39,7 +39,7 @@ const CHECK_TIMES = [
 
 // Custom select styles
 const customSelectStyles = {
-  control: (provided: any, state: any) => ({
+  control: (provided: Record<string, unknown>, state: { isFocused: boolean }) => ({
     ...provided,
     minHeight: "44px",
     border: state.isFocused ? "2px solid #10B981" : "1px solid #E5E7EB",
