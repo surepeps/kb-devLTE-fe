@@ -69,7 +69,7 @@ const customSelectStyles = {
     color: "#9CA3AF",
     fontSize: "15px",
   }),
-  option: (provided: any, state: any) => ({
+  option: (provided: Record<string, unknown>, state: { isSelected: boolean; isFocused: boolean }) => ({
     ...provided,
     backgroundColor: state.isSelected
       ? "#10B981"
