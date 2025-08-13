@@ -254,7 +254,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
     AnimatedField.displayName = 'AnimatedField';
 
     // Memoized Custom Phone Field component
-    const PhoneField = memo(({ name, label, required = false }: any) => (
+    const PhoneField = memo(({ name, label, required = false }: { name: string; label: string; required?: boolean }) => (
       <Field name={name}>
         {({ field, meta, form }: any) => (
           <motion.div
