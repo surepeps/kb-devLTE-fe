@@ -191,7 +191,14 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
         type = "text",
         placeholder,
         ...props
-      }: any) => (
+      }: {
+        name: string;
+        label: string;
+        required?: boolean;
+        type?: string;
+        placeholder?: string;
+        [key: string]: unknown;
+      }) => (
         <Field name={name}>
           {({ field, meta }: any) => (
             <motion.div
