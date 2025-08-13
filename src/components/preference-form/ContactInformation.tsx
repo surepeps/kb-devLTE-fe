@@ -309,7 +309,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
     const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSubmit = useCallback(
-      (values: any) => {
+      (values: Record<string, unknown>) => {
         updateFormData({ contactInfo: values });
       },
       [updateFormData],
