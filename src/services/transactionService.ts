@@ -15,14 +15,14 @@ export const transactionService = {
   ): Promise<TransactionResponse> => {
     const token = Cookies.get("token");
     const url = `${URLS.BASE}/account/transactions/fetchAll?page=${page}&limit=${limit}`;
-    
+
     const response = await GET_REQUEST<TransactionResponse>(url, token);
-    
+
     if (!response.success) {
       throw new Error(response.error || response.message || "Failed to fetch transactions");
     }
-    
-    return response as TransactionResponse;
+
+    return response.data ? response : { success: false, data: [], pagination: { total: 0, page: 1, limit: 10, totalPages: 0 } };
   },
 
   /**
@@ -31,13 +31,13 @@ export const transactionService = {
   fetchTransactionById: async (transactionId: string): Promise<SingleTransactionResponse> => {
     const token = Cookies.get("token");
     const url = `${URLS.BASE}/account/transactions/${transactionId}`;
-    
+
     const response = await GET_REQUEST<SingleTransactionResponse>(url, token);
-    
+
     if (!response.success) {
       throw new Error(response.error || response.message || "Failed to fetch transaction");
     }
-    
-    return response as SingleTransactionResponse;
+
+    return response.data ? response : { success: false, data: {} as any };
   },
 };
