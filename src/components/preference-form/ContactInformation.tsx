@@ -317,7 +317,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
 
     // Debounced update function to prevent rapid re-renders
     const debouncedUpdate = useCallback(
-      (values: any) => {
+      (values: Record<string, unknown>) => {
         if (submitTimeoutRef.current) {
           clearTimeout(submitTimeoutRef.current);
         }
