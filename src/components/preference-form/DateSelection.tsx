@@ -91,11 +91,11 @@ const CustomDateInput = forwardRef<
       className="relative group"
     >
       <input
-        {...props}
+        {...(props as any)}
         ref={ref}
-        value={value}
-        onClick={onClick}
-        placeholder={placeholder}
+        value={value as string}
+        onClick={onClick as React.MouseEventHandler<HTMLInputElement>}
+        placeholder={placeholder as string}
         readOnly
         className={`w-full px-6 py-4 text-base border-2 rounded-xl bg-white focus:ring-4 focus:ring-emerald-100 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer ${
           hasError
