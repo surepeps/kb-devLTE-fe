@@ -86,96 +86,50 @@ export default function FieldAgentInspections() {
   const fetchInspections = async () => {
     try {
       setIsLoading(true);
-      
-      // Mock data for demonstration - replace with actual API call
-      const mockInspections: Inspection[] = [
-        {
-          _id: "1",
-          propertyId: "prop_001",
-          propertyType: "3 Bedroom Duplex",
-          propertyAddress: "15 Adeniran Ogunsanya Street, Surulere",
-          location: {
-            state: "Lagos",
-            localGovernment: "Surulere",
-            area: "Adeniran Ogunsanya"
-          },
-          scheduledDate: "2024-01-25",
-          scheduledTime: "10:00",
-          status: "assigned",
-          priority: "high",
-          buyerName: "John Doe",
-          buyerPhone: "+234 803 123 4567",
-          buyerEmail: "john.doe@email.com",
-          sellerName: "Jane Smith",
-          sellerPhone: "+234 805 987 6543",
-          inspectionType: "initial",
-          notes: "First time inspection, buyer is very interested",
-          createdAt: "2024-01-24T09:00:00.000Z",
-          updatedAt: "2024-01-24T09:00:00.000Z"
-        },
-        {
-          _id: "2",
-          propertyId: "prop_002",
-          propertyType: "2 Bedroom Flat",
-          propertyAddress: "45 Adeola Odeku Street, Victoria Island",
-          location: {
-            state: "Lagos",
-            localGovernment: "Victoria Island",
-            area: "VI Extension"
-          },
-          scheduledDate: "2024-01-25",
-          scheduledTime: "14:00",
-          status: "in_progress",
-          priority: "medium",
-          buyerName: "Jane Smith",
-          buyerPhone: "+234 805 987 6543",
-          buyerEmail: "jane.smith@email.com",
-          sellerName: "Bob Johnson",
-          sellerPhone: "+234 807 456 7890",
-          inspectionType: "follow_up",
-          notes: "Second inspection, addressing buyer concerns",
-          createdAt: "2024-01-23T11:30:00.000Z",
-          updatedAt: "2024-01-25T10:00:00.000Z"
-        },
-        {
-          _id: "3",
-          propertyId: "prop_003",
-          propertyType: "4 Bedroom Terrace",
-          propertyAddress: "12 Lekki Phase 1, Lekki",
-          location: {
-            state: "Lagos",
-            localGovernment: "Lekki",
-            area: "Phase 1"
-          },
-          scheduledDate: "2024-01-24",
-          scheduledTime: "16:00",
-          status: "completed",
-          priority: "low",
-          buyerName: "Mike Wilson",
-          buyerPhone: "+234 802 345 6789",
-          buyerEmail: "mike.wilson@email.com",
-          sellerName: "Sarah Davis",
-          sellerPhone: "+234 808 234 5678",
-          inspectionType: "final",
-          notes: "Final inspection completed successfully",
-          createdAt: "2024-01-22T14:00:00.000Z",
-          updatedAt: "2024-01-24T18:00:00.000Z"
-        }
-      ];
 
-      setInspections(mockInspections);
-      
-      // Replace with actual API call:
-      // const response = await GET_REQUEST(
-      //   `${URLS.BASE}/field-agent/inspections`,
-      //   Cookies.get("token")
-      // );
-      // if (response?.data) {
-      //   setInspections(response.data);
-      // }
+      const response = await GET_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/fetchAll`,
+        Cookies.get("token")
+      );
+
+      if (response?.success && response.data) {
+        // Transform the response data to match our interface
+        const transformedInspections: Inspection[] = response.data.map((inspection: any) => ({
+          _id: inspection._id || inspection.id,
+          propertyId: inspection.propertyId?._id || inspection.propertyId,
+          propertyType: inspection.propertyId?.propertyType || "Property",
+          propertyAddress: inspection.propertyId?.location ?
+            `${inspection.propertyId.location.area}, ${inspection.propertyId.location.localGovernment}, ${inspection.propertyId.location.state}` :
+            "Address not available",
+          location: inspection.propertyId?.location || {
+            state: "N/A",
+            localGovernment: "N/A",
+            area: "N/A"
+          },
+          scheduledDate: inspection.inspectionDate || inspection.scheduledDate,
+          scheduledTime: inspection.inspectionTime || inspection.scheduledTime,
+          status: inspection.status,
+          priority: inspection.priority || "medium",
+          buyerName: inspection.requestedBy?.fullName || "N/A",
+          buyerPhone: inspection.requestedBy?.phoneNumber || "N/A",
+          buyerEmail: inspection.requestedBy?.email || "N/A",
+          sellerName: "N/A", // Not available in current API response
+          sellerPhone: "N/A", // Not available in current API response
+          inspectionType: inspection.inspectionType || "initial",
+          notes: inspection.inspectionReport?.notes || "",
+          createdAt: inspection.createdAt,
+          updatedAt: inspection.updatedAt
+        }));
+
+        setInspections(transformedInspections);
+      } else {
+        toast.error(response?.message || "Failed to load inspections");
+        setInspections([]);
+      }
     } catch (error) {
       console.error("Failed to fetch inspections:", error);
       toast.error("Failed to load inspections");
+      setInspections([]);
     } finally {
       setIsLoading(false);
     }
