@@ -38,6 +38,6 @@ export const transactionService = {
       throw new Error(response.error || response.message || "Failed to fetch transaction");
     }
 
-    return response.data ? response : { success: false, data: {} as any };
+    return response.data || { success: false, data: {} as any };
   },
 };
