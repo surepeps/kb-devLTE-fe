@@ -7,7 +7,6 @@ import React, {
   useCallback,
   forwardRef,
   memo,
-  useMemo,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DatePicker from "react-datepicker";
