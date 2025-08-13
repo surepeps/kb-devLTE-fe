@@ -303,6 +303,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
         )}
       </Field>
     ));
+    PhoneField.displayName = 'PhoneField';
 
     // Handle form submission - debounced
     const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
