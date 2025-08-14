@@ -795,7 +795,11 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
               });
             }
 
-            if (!formData.propertyDetails?.maxGuests || formData.propertyDetails.maxGuests <= 0) {
+            // Allow empty maxGuests during editing, but require it when submitting
+            const maxGuestsValue = formData.propertyDetails?.maxGuests;
+            if (maxGuestsValue === undefined || maxGuestsValue === null || maxGuestsValue === "" ||
+                (typeof maxGuestsValue === "number" && maxGuestsValue <= 0) ||
+                (typeof maxGuestsValue === "string" && (maxGuestsValue === "" || parseInt(maxGuestsValue) <= 0))) {
               errors.push({
                 field: "propertyDetails.maxGuests",
                 message: "Maximum guests is required",
