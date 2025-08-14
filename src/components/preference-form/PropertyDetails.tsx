@@ -464,7 +464,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
         </div>
       );
     }
-
+ 
     // Render regular property details for Buy, Rent, Joint Venture
     return (
       <div className={`space-y-6 ${className}`}>

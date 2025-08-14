@@ -4,7 +4,6 @@
 import React, { useState, useCallback, useMemo, memo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import {
   PreferenceFormProvider,
@@ -26,6 +25,7 @@ import {
   JointVenturePreferencePayload,
   ShortletPreferencePayload,
 } from "@/types/preference-form";
+import { POST_REQUEST } from "@/utils/requests";
 
 // Preference type configurations - memoized to prevent recreation
 const PREFERENCE_CONFIGS = {
@@ -698,9 +698,9 @@ const PreferenceFormContent: React.FC = () => {
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/preferences/submit`;
 
-      const response = await axios.post(url, payload);
+      const response = await POST_REQUEST(url, payload);
 
-      if (response.status === 201 || response.status === 200) {
+      if (response.success) {
         console.log("Preference submitted successfully:", response);
         toast.success("Preference submitted successfully!");
         // Reset form data immediately after successful submission

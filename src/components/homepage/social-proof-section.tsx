@@ -5,6 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CountUp from 'react-countup';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 
 interface Testimonial {
   _id: string;
@@ -101,35 +103,23 @@ const SocialProofSection = () => {
     const fetchTestimonials = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/testimonials/');
-        
-        if (!response.ok) {
+        const response = await GET_REQUEST(
+          `${URLS.BASE}/testimonials`,
+        );
+
+        if (!response.success) {
           throw new Error('Failed to fetch testimonials');
         }
         
-        const data: ApiResponse = await response.json();
-        
-        if (data.success && data.data) {
-          setTestimonials(data.data.filter(t => t.status === 'approved'));
+        if (response.success && response.data) {
+          setTestimonials(response.data);
         } else {
           throw new Error('Invalid response format');
         }
+
       } catch (err) {
         console.error('Error fetching testimonials:', err);
         setError('Unable to load testimonials');
-        // Fallback to default testimonials
-        setTestimonials([
-          {
-            _id: "1",
-            fullName: "Adebayo Johnson",
-            occupation: "Property Buyer",
-            rating: 5,
-            message: "Khabiteq made finding my dream home effortless. The verified agents and instant notifications saved me months of searching!",
-            status: "approved",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ]);
       } finally {
         setLoading(false);
       }
@@ -194,7 +184,7 @@ const SocialProofSection = () => {
             Trusted by Thousands
           </h2>
           <p className='text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-10 md:mb-12 px-4 sm:px-0'>
-            Join the growing community of satisfied customers who've found their perfect properties through Khabiteq.
+            Join the growing community of satisfied customers who&apos;ve found their perfect properties through Khabiteq.
           </p>
 
           {/* Stats Grid */}
@@ -298,7 +288,7 @@ const SocialProofSection = () => {
 
                       {/* Testimonial Text */}
                       <p className='text-gray-600 mb-6 leading-relaxed line-clamp-4'>
-                        "{testimonial.message}"
+                        {testimonial.message}
                       </p>
 
                       {/* User Info */}
@@ -343,7 +333,7 @@ const SocialProofSection = () => {
 
                       {/* Testimonial Text */}
                       <p className='text-gray-600 mb-6 leading-relaxed'>
-                        "{testimonial.message}"
+                        {testimonial.message}
                       </p>
 
                       {/* User Info */}

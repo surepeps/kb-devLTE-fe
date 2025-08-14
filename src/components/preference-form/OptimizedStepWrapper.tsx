@@ -19,7 +19,7 @@ const OptimizedStepWrapper: React.FC<OptimizedStepWrapperProps> = memo(
     const hasBeenVisited = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isMobile, setIsMobile] = useState(false);
-
+ 
     // Detect mobile viewport
     useEffect(() => {
       const checkMobile = () => {

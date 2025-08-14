@@ -27,6 +27,7 @@ import {
   List as ListIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
+import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 interface Inspection {
   _id: string;
@@ -253,212 +254,217 @@ export default function FieldAgentInspections() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <button
-                  onClick={() => router.back()}
-                  className="mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronLeftIcon className="w-5 h-5" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    Assigned Inspections
-                  </h1>
-                  <p className="text-gray-600 mt-1">
-                    Manage your property inspection assignments
-                  </p>
+    <CombinedAuthGuard
+      requireAuth={true} // User must be logged in
+      allowedUserTypes={["FieldAgent"]} // Only these user types can access
+    >
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <button
+                    onClick={() => router.back()}
+                    className="mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronLeftIcon className="w-5 h-5" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      Assigned Inspections
+                    </h1>
+                    <p className="text-gray-600 mt-1">
+                      Manage your property inspection assignments
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                {/* View Mode Toggle */}
-                <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === "list"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    <ListIcon className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === "grid"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    <GridIcon className="w-4 h-4" />
-                  </button>
+                <div className="flex items-center space-x-4">
+                  {/* View Mode Toggle */}
+                  <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setViewMode("list")}
+                      className={`p-2 rounded-md transition-colors ${
+                        viewMode === "list"
+                          ? "bg-white text-gray-900 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      <ListIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={`p-2 rounded-md transition-colors ${
+                        viewMode === "grid"
+                          ? "bg-white text-gray-900 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      <GridIcon className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search inspections..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Filters */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
+              {/* Search */}
+              <div className="flex-1 relative">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search inspections..."
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange("search", e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
 
-            {/* Status Filter */}
-            <select
-              value={filters.status}
-              onChange={(e) => handleFilterChange("status", e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="negotiation_accepted">Accepted</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="today">Today's Inspections</option>
-              <option value="pending-reports">Pending Reports</option>
-            </select>
-
-            {/* Inspection Type Filter */}
-            <select
-              value={filters.priority}
-              onChange={(e) => handleFilterChange("priority", e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Types</option>
-              <option value="price">Price Inspection</option>
-              <option value="physical">Physical Inspection</option>
-            </select>
-
-            {/* Date Filter */}
-            <select
-              value={filters.date}
-              onChange={(e) => handleFilterChange("date", e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Dates</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Results Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-gray-600">
-              Showing {filteredInspections.length} of {inspections.length} inspections
-            </p>
-          </div>
-        </div>
-
-        {/* Inspections List/Grid */}
-        {filteredInspections.length > 0 ? (
-          <div className={`${
-            viewMode === "grid" 
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-              : "space-y-4"
-          }`}>
-            {filteredInspections.map((inspection, index) => (
-              <motion.div
-                key={inspection._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => router.push(`/field-agent-inspection/${inspection._id}`)}
+              {/* Status Filter */}
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <HomeIcon className="w-5 h-5 text-gray-500" />
-                    <h3 className="font-semibold text-gray-900">
-                      {inspection.propertyType}
-                    </h3>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(inspection.status)}`}>
-                      {inspection.status.replace('_', ' ')}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(inspection.priority)}`}>
-                      {inspection.priority}
-                    </span>
-                  </div>
-                </div>
+                <option value="all">All Status</option>
+                <option value="negotiation_accepted">Accepted</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="today">Today&apos;s Inspections</option>
+                <option value="pending-reports">Pending Reports</option>
+              </select>
 
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <MapPinIcon className="w-4 h-4 mr-2" />
-                    {inspection.propertyAddress}
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <CalendarIcon className="w-4 h-4 mr-2" />
-                    {new Date(inspection.scheduledDate).toLocaleDateString()} at {inspection.scheduledTime}
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <UserIcon className="w-4 h-4 mr-2" />
-                    Buyer: {inspection.buyerName}
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <PhoneIcon className="w-4 h-4 mr-2" />
-                    {inspection.buyerPhone}
-                  </div>
-                </div>
+              {/* Inspection Type Filter */}
+              <select
+                value={filters.priority}
+                onChange={(e) => handleFilterChange("priority", e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="price">Price Inspection</option>
+                <option value="physical">Physical Inspection</option>
+              </select>
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="flex items-center text-sm text-gray-500">
-                    {getStatusIcon(inspection.status)}
-                    <span className="ml-1 capitalize">
-                      {inspection.inspectionType.replace('_', ' ')} Inspection
-                    </span>
+              {/* Date Filter */}
+              <select
+                value={filters.date}
+                onChange={(e) => handleFilterChange("date", e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Dates</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Results Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-gray-600">
+                Showing {filteredInspections.length} of {inspections.length} inspections
+              </p>
+            </div>
+          </div>
+
+          {/* Inspections List/Grid */}
+          {filteredInspections.length > 0 ? (
+            <div className={`${
+              viewMode === "grid" 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+                : "space-y-4"
+            }`}>
+              {filteredInspections.map((inspection, index) => (
+                <motion.div
+                  key={inspection._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => router.push(`/field-agent-inspection/${inspection._id}`)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <HomeIcon className="w-5 h-5 text-gray-500" />
+                      <h3 className="font-semibold text-gray-900">
+                        {inspection.propertyType}
+                      </h3>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(inspection.status)}`}>
+                        {inspection.status.replace('_', ' ')}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(inspection.priority)}`}>
+                        {inspection.priority}
+                      </span>
+                    </div>
                   </div>
-                  
-                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center">
-                    <EyeIcon className="w-4 h-4 mr-1" />
-                    View Details
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <AlertCircleIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No inspections found
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Try adjusting your filters or check back later for new assignments.
-            </p>
-            <Link
-              href="/dashboard"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-            >
-              Back to Dashboard
-            </Link>
-          </div>
-        )}
+
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <MapPinIcon className="w-4 h-4 mr-2" />
+                      {inspection.propertyAddress}
+                    </div>
+                    
+                    <div className="flex items-center text-sm text-gray-600">
+                      <CalendarIcon className="w-4 h-4 mr-2" />
+                      {new Date(inspection.scheduledDate).toLocaleDateString()} at {inspection.scheduledTime}
+                    </div>
+                    
+                    <div className="flex items-center text-sm text-gray-600">
+                      <UserIcon className="w-4 h-4 mr-2" />
+                      Buyer: {inspection.buyerName}
+                    </div>
+                    
+                    <div className="flex items-center text-sm text-gray-600">
+                      <PhoneIcon className="w-4 h-4 mr-2" />
+                      {inspection.buyerPhone}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <div className="flex items-center text-sm text-gray-500">
+                      {getStatusIcon(inspection.status)}
+                      <span className="ml-1 capitalize">
+                        {inspection.inspectionType.replace('_', ' ')} Inspection
+                      </span>
+                    </div>
+                    
+                    <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center">
+                      <EyeIcon className="w-4 h-4 mr-1" />
+                      View Details
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <AlertCircleIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No inspections found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Try adjusting your filters or check back later for new assignments.
+              </p>
+              <Link
+                href="/dashboard"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              >
+                Back to Dashboard
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </CombinedAuthGuard>
   );
 }

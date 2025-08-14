@@ -323,7 +323,13 @@ export default function ProfileSettingsPage() {
               </p>
             </div>
             <div className="text-sm text-[#5A5D63] bg-white px-4 py-2 rounded-lg">
-              {user.userType === "Agent" ? "Agent Account" : "Landlord Account"}
+              {user.userType === "Agent"
+                ? "Agent Account"
+                : user.userType === "Landowners"
+                ? "Landowner Account"
+                : user.userType === "FieldAgent"
+                ? "Field Agent Account"
+                : ""}
             </div>
           </div>
         </div>

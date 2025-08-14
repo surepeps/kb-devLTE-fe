@@ -23,6 +23,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
+import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 interface Property {
   location: {
@@ -265,7 +266,7 @@ export default function InspectionDetailPage() {
             Inspection Not Found
           </h2>
           <p className="text-gray-600 mb-4">
-            The inspection you're looking for doesn't exist.
+            The inspection you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.back()}
@@ -279,443 +280,448 @@ export default function InspectionDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <button
-                  onClick={() => router.back()}
-                  className="mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <ChevronLeftIcon className="w-5 h-5" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    Inspection Details
-                  </h1>
-                  <p className="text-gray-600 mt-1">
-                    {inspection.propertyId.propertyType} - {inspection.propertyId.location.area}
-                  </p>
+    <CombinedAuthGuard
+      requireAuth={true} // User must be logged in
+      allowedUserTypes={["FieldAgent"]} // Only these user types can access
+    >
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <button
+                    onClick={() => router.back()}
+                    className="mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronLeftIcon className="w-5 h-5" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      Inspection Details
+                    </h1>
+                    <p className="text-gray-600 mt-1">
+                      {inspection.propertyId.propertyType} - {inspection.propertyId.location.area}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(inspection.status)}`}>
+                    {inspection.status.replace('_', ' ')}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800`}>
+                    {inspection.propertyId.briefType}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(inspection.status)}`}>
-                  {inspection.status.replace('_', ' ')}
-                </span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800`}>
-                  {inspection.propertyId.briefType}
-                </span>
-              </div>
-            </div>
-            
-            {/* Tab Navigation */}
-            <div className="mt-6">
-              <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8">
-                  <button
-                    onClick={() => setActiveTab("details")}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === "details"
-                        ? "border-blue-500 text-blue-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    Inspection Details
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("report")}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === "report"
-                        ? "border-blue-500 text-blue-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    Inspection Report
-                  </button>
-                </nav>
+              
+              {/* Tab Navigation */}
+              <div className="mt-6">
+                <div className="border-b border-gray-200">
+                  <nav className="-mb-px flex space-x-8">
+                    <button
+                      onClick={() => setActiveTab("details")}
+                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === "details"
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}
+                    >
+                      Inspection Details
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("report")}
+                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === "report"
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}
+                    >
+                      Inspection Report
+                    </button>
+                  </nav>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === "details" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Property Information */}
-            <div className="lg:col-span-2 space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-              >
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <HomeIcon className="w-5 h-5 mr-2" />
-                  Property Information
-                </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Property Type
-                    </label>
-                    <p className="text-gray-900">{inspection.propertyId.propertyType}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Brief Type
-                    </label>
-                    <p className="text-gray-900">{inspection.propertyId.briefType}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Location
-                    </label>
-                    <p className="text-gray-900">
-                      {inspection.propertyId.location.area}, {inspection.propertyId.location.localGovernment}, {inspection.propertyId.location.state}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Price
-                    </label>
-                    <p className="text-gray-900">
-                      ₦{inspection.propertyId.price.toLocaleString()}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Inspection Type
-                    </label>
-                    <p className="text-gray-900 capitalize">
-                      {inspection.inspectionType} Inspection
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Inspection Mode
-                    </label>
-                    <p className="text-gray-900 capitalize">
-                      {inspection.inspectionMode.replace('_', ' ')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-md font-medium text-gray-900 mb-4">Property Features</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfBedroom}</p>
-                      <p className="text-sm text-gray-600">Bedrooms</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {activeTab === "details" && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Property Information */}
+              <div className="lg:col-span-2 space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+                >
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <HomeIcon className="w-5 h-5 mr-2" />
+                    Property Information
+                  </h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Property Type
+                      </label>
+                      <p className="text-gray-900">{inspection.propertyId.propertyType}</p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfBathroom}</p>
-                      <p className="text-sm text-gray-600">Bathrooms</p>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Brief Type
+                      </label>
+                      <p className="text-gray-900">{inspection.propertyId.briefType}</p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfCarPark}</p>
-                      <p className="text-sm text-gray-600">Parking</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-blue-600">
-                        {inspection.propertyId.landSize.size} {inspection.propertyId.landSize.measurementType}
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location
+                      </label>
+                      <p className="text-gray-900">
+                        {inspection.propertyId.location.area}, {inspection.propertyId.location.localGovernment}, {inspection.propertyId.location.state}
                       </p>
-                      <p className="text-sm text-gray-600">Land Size</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Price
+                      </label>
+                      <p className="text-gray-900">
+                        ₦{inspection.propertyId.price.toLocaleString()}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Inspection Type
+                      </label>
+                      <p className="text-gray-900 capitalize">
+                        {inspection.inspectionType} Inspection
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Inspection Mode
+                      </label>
+                      <p className="text-gray-900 capitalize">
+                        {inspection.inspectionMode.replace('_', ' ')}
+                      </p>
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Additional Features</p>
-                    <div className="flex flex-wrap gap-2">
-                      {inspection.propertyId.features.map((feature, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
-                        >
-                          {feature}
-                        </span>
-                      ))}
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h3 className="text-md font-medium text-gray-900 mb-4">Property Features</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfBedroom}</p>
+                        <p className="text-sm text-gray-600">Bedrooms</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfBathroom}</p>
+                        <p className="text-sm text-gray-600">Bathrooms</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">{inspection.propertyId.additionalFeatures.noOfCarPark}</p>
+                        <p className="text-sm text-gray-600">Parking</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-blue-600">
+                          {inspection.propertyId.landSize.size} {inspection.propertyId.landSize.measurementType}
+                        </p>
+                        <p className="text-sm text-gray-600">Land Size</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Additional Features</p>
+                      <div className="flex flex-wrap gap-2">
+                        {inspection.propertyId.features.map((feature, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                          >
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              {/* Schedule Information */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-              >
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <CalendarIcon className="w-5 h-5 mr-2" />
-                  Schedule Information
-                </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Scheduled Date
-                    </label>
-                    <p className="text-gray-900">
-                      {new Date(inspection.inspectionDate).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
+                {/* Schedule Information */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+                >
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <CalendarIcon className="w-5 h-5 mr-2" />
+                    Schedule Information
+                  </h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Scheduled Date
+                      </label>
+                      <p className="text-gray-900">
+                        {new Date(inspection.inspectionDate).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Scheduled Time
+                      </label>
+                      <p className="text-gray-900">{inspection.inspectionTime}</p>
+                    </div>
                   </div>
+                </motion.div>
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Scheduled Time
-                    </label>
-                    <p className="text-gray-900">{inspection.inspectionTime}</p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-              >
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <UserIcon className="w-5 h-5 mr-2" />
-                  Buyer Information
-                </h2>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Name
-                    </label>
-                    <p className="text-gray-900">{inspection.requestedBy.fullName}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone
-                    </label>
-                    <a
-                      href={`tel:${inspection.requestedBy.phoneNumber}`}
-                      className="text-blue-600 hover:text-blue-700 flex items-center"
-                    >
-                      <PhoneIcon className="w-4 h-4 mr-1" />
-                      {inspection.requestedBy.phoneNumber}
-                    </a>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <a
-                      href={`mailto:${inspection.requestedBy.email}`}
-                      className="text-blue-600 hover:text-blue-700 flex items-center"
-                    >
-                      <MailIcon className="w-4 h-4 mr-1" />
-                      {inspection.requestedBy.email}
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-              >
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <UserIcon className="w-5 h-5 mr-2" />
-                  Inspection Status
-                </h2>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Current Stage
-                    </label>
-                    <p className="text-gray-900 capitalize">{inspection.stage}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Pending Response From
-                    </label>
-                    <p className="text-gray-900 capitalize">{inspection.pendingResponseFrom}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Inspection Status
-                    </label>
-                    <p className="text-gray-900 capitalize">{inspection.inspectionStatus}</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Status Update Actions */}
-              {inspection.inspectionReport.status !== "completed" && (
+              {/* Contact Information */}
+              <div className="space-y-6">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
                   className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
                 >
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Actions
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <UserIcon className="w-5 h-5 mr-2" />
+                    Buyer Information
                   </h2>
 
-                  <div className="space-y-3">
-                    {/* Show Start Inspection if not yet started */}
-                    {inspection.status !== "in_progress" && inspection.status !== "completed" && (
-                      <button
-                        onClick={startInspection}
-                        disabled={isSubmitting}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
-                      >
-                        Start Inspection
-                      </button>
-                    )}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Name
+                      </label>
+                      <p className="text-gray-900">{inspection.requestedBy.fullName}</p>
+                    </div>
 
-                    {/* Show Stop Inspection if already started */}
-                    {inspection.status === "in_progress" && (
-                      <button
-                        onClick={stopInspection}
-                        disabled={isSubmitting}
-                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone
+                      </label>
+                      <a
+                        href={`tel:${inspection.requestedBy.phoneNumber}`}
+                        className="text-blue-600 hover:text-blue-700 flex items-center"
                       >
-                        Stop Inspection
-                      </button>
-                    )}
+                        <PhoneIcon className="w-4 h-4 mr-1" />
+                        {inspection.requestedBy.phoneNumber}
+                      </a>
+                    </div>
 
-                    {inspection.status === "completed" && (
-                      <p className="text-sm text-gray-600 text-center">
-                        Inspection completed. Complete the inspection report if needed.
-                      </p>
-                    )}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                      </label>
+                      <a
+                        href={`mailto:${inspection.requestedBy.email}`}
+                        className="text-blue-600 hover:text-blue-700 flex items-center"
+                      >
+                        <MailIcon className="w-4 h-4 mr-1" />
+                        {inspection.requestedBy.email}
+                      </a>
+                    </div>
                   </div>
                 </motion.div>
-              )}
-            </div>
-          </div>
-        )}
 
-        {activeTab === "report" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto"
-          >
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                <FileTextIcon className="w-5 h-5 mr-2" />
-                Inspection Report
-              </h2>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+                >
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <UserIcon className="w-5 h-5 mr-2" />
+                    Inspection Status
+                  </h2>
 
-              <div className="space-y-6">
-                {/* Attendance */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Buyer Present
-                    </label>
-                    <select
-                      value={report.buyerPresent.toString()}
-                      onChange={(e) => handleReportChange("buyerPresent", e.target.value === "true")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="true">Yes</option>
-                      <option value="false">No</option>
-                    </select>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Current Stage
+                      </label>
+                      <p className="text-gray-900 capitalize">{inspection.stage}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Pending Response From
+                      </label>
+                      <p className="text-gray-900 capitalize">{inspection.pendingResponseFrom}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Inspection Status
+                      </label>
+                      <p className="text-gray-900 capitalize">{inspection.inspectionStatus}</p>
+                    </div>
                   </div>
+                </motion.div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Seller Present
-                    </label>
-                    <select
-                      value={report.sellerPresent.toString()}
-                      onChange={(e) => handleReportChange("sellerPresent", e.target.value === "true")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="true">Yes</option>
-                      <option value="false">No</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Buyer Interest Level */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Buyer Interest Level
-                  </label>
-                  <select
-                    value={report.buyerInterest}
-                    onChange={(e) => handleReportChange("buyerInterest", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                {/* Status Update Actions */}
+                {inspection.inspectionReport.status !== "completed" && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
                   >
-                    <option value="very-interested">Very Interested</option>
-                    <option value="interested">Interested</option>
-                    <option value="neutral">Neutral</option>
-                    <option value="not-interested">Not Interested</option>
-                  </select>
-                </div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                      Actions
+                    </h2>
 
-                {/* Notes */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    value={report.notes}
-                    onChange={(e) => handleReportChange("notes", e.target.value)}
-                    rows={4}
-                    placeholder="Provide notes about the inspection..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                    <div className="space-y-3">
+                      {/* Show Start Inspection if not yet started */}
+                      {inspection.status !== "in_progress" && inspection.status !== "completed" && (
+                        <button
+                          onClick={startInspection}
+                          disabled={isSubmitting}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                        >
+                          Start Inspection
+                        </button>
+                      )}
 
+                      {/* Show Stop Inspection if already started */}
+                      {inspection.status === "in_progress" && (
+                        <button
+                          onClick={stopInspection}
+                          disabled={isSubmitting}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
+                        >
+                          Stop Inspection
+                        </button>
+                      )}
 
-                {/* Submit Button */}
-                <div className="flex justify-end pt-6 border-t border-gray-200">
-                  <button
-                    onClick={submitReport}
-                    disabled={isSubmitting || !report.notes.trim()}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <SendIcon className="w-4 h-4 mr-2" />
-                        Submit Report
-                      </>
-                    )}
-                  </button>
-                </div>
+                      {inspection.status === "completed" && (
+                        <p className="text-sm text-gray-600 text-center">
+                          Inspection completed. Complete the inspection report if needed.
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </div>
-          </motion.div>
-        )}
+          )}
+
+          {activeTab === "report" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                  <FileTextIcon className="w-5 h-5 mr-2" />
+                  Inspection Report
+                </h2>
+
+                <div className="space-y-6">
+                  {/* Attendance */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Buyer Present
+                      </label>
+                      <select
+                        value={report.buyerPresent.toString()}
+                        onChange={(e) => handleReportChange("buyerPresent", e.target.value === "true")}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Seller Present
+                      </label>
+                      <select
+                        value={report.sellerPresent.toString()}
+                        onChange={(e) => handleReportChange("sellerPresent", e.target.value === "true")}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Buyer Interest Level */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Buyer Interest Level
+                    </label>
+                    <select
+                      value={report.buyerInterest}
+                      onChange={(e) => handleReportChange("buyerInterest", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="very-interested">Very Interested</option>
+                      <option value="interested">Interested</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="not-interested">Not Interested</option>
+                    </select>
+                  </div>
+
+                  {/* Notes */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Notes <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      value={report.notes}
+                      onChange={(e) => handleReportChange("notes", e.target.value)}
+                      rows={4}
+                      placeholder="Provide notes about the inspection..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end pt-6 border-t border-gray-200">
+                    <button
+                      onClick={submitReport}
+                      disabled={isSubmitting || !report.notes.trim()}
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <SendIcon className="w-4 h-4 mr-2" />
+                          Submit Report
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
       </div>
-    </div>
+    </CombinedAuthGuard>
   );
 }

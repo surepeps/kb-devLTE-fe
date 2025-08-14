@@ -182,7 +182,7 @@ interface LocationSelectionProps {
 const OptimizedLocationSelection: React.FC<LocationSelectionProps> = memo(
   ({ className = "" }) => {
     const { state, updateFormData } = usePreferenceForm();
-
+ 
     // Enhanced local state for LGA-area mapping with proper scoping
     const [selectedState, setSelectedState] = useState<Option | null>(null);
     const [selectedLGAs, setSelectedLGAs] = useState<Option[]>([]);

@@ -8,7 +8,7 @@ import { usePreferenceForm } from "@/context/preference-form-context";
 interface SubmitButtonProps {
   onSubmit: () => void;
   className?: string;
-  buttonText?: string; // Optional custom button text
+  buttonText?: string;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = memo(
@@ -35,6 +35,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = memo(
       return isFormValid() && isLastStep;
     }, [isFormValid, isLastStep, state.formData]); // Added formData dependency
 
+    
         // Get button text based on current step and state
     const getButtonText = useMemo(() => {
       if (isSubmitting) {

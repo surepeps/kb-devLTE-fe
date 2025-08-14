@@ -108,7 +108,7 @@ const DocumentVerificationPage: React.FC = () => {
       ...prev,
       [document]: value
     }));
-  };
+  }; 
 
   const getDocumentDisplayName = (document: DocumentType): string => {
     const displayNames: Record<DocumentType, string> = {

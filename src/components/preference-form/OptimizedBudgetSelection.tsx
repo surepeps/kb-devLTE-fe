@@ -24,7 +24,7 @@ const BUDGET_PERIOD_LABELS = {
   "joint-venture": "Investment Budget",
   shortlet: "Per Night Budget",
 };
-
+ 
 const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
   ({ preferenceType, className = "" }) => {
     const { state, updateFormData, getMinBudgetForLocation } =
@@ -42,7 +42,7 @@ const OptimizedBudgetSelection: React.FC<BudgetSelectionProps> = memo(
     const budgetLabel = useMemo(
       () => BUDGET_PERIOD_LABELS[preferenceType] || "Budget",
       [preferenceType],
-    );
+    ); 
 
     // Memoized minimum budget requirement
     const minimumBudget = useMemo(() => {
