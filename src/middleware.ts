@@ -40,10 +40,15 @@ const userProtectedRoutes = [
   "/agent-onboard",
   "/agent-under-review",
   "/update-property",
+  "/update-preference",
+  "/referral",
   "/post-property-by-preference",
   "/profile-settings",
   "/my-preferences",
-  "/notifications"
+  "/notifications",
+  "/field-agent-inspections",
+  "/field-agent-inspection",
+  "/transactions",
 ];
 
 export function middleware(request: NextRequest) {

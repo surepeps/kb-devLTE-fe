@@ -531,26 +531,31 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
 
       // Handle Joint Venture specific step validation
       if (formData.preferenceType === "joint-venture") {
+        
         switch (currentStepId) {
           case "jv-developer-info": // Step 0 for JV
+          
             if (!formData.contactInfo?.fullName?.trim()) {
               errors.push({
                 field: "contactInfo.fullName",
                 message: "Full name is required",
               });
             }
+            
             if (!formData.contactInfo?.email?.trim()) {
               errors.push({
                 field: "contactInfo.email",
                 message: "Email address is required",
               });
             }
+
             if (!formData.contactInfo?.phoneNumber?.trim()) {
               errors.push({
                 field: "contactInfo.phoneNumber",
                 message: "Phone number is required",
               });
             }
+            
             break;
 
           case "jv-development-type": // Step 1 for JV
@@ -560,10 +565,12 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
                 message: "At least one development type is required",
               });
             }
+            
             break;
 
           case "jv-land-requirements": // Step 2 for JV
             // Location validation (reuse existing logic)
+            
             if (!formData.location?.state) {
               errors.push({
                 field: "location.state",
@@ -583,12 +590,14 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
                 message: "Measurement unit is required",
               });
             }
+
             if (!formData.developmentDetails?.minLandSize) {
               errors.push({
                 field: "developmentDetails.minLandSize",
                 message: "Minimum land size is required",
               });
             }
+     
             break;
 
           case "jv-terms-proposal": // Step 3 for JV
@@ -611,10 +620,11 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
         }
         return errors;
       }
-
+    
       // Original validation for other preference types
       switch (step) {
         case 0: // Location step
+          
           if (!formData.location?.state) {
             errors.push({
               field: "location.state",
@@ -691,11 +701,13 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
         case 1: // Property details & Budget step
           // Property Details Validation
           // Basic property fields validation
-          if (!formData.propertyDetails?.propertySubtype) {
-            errors.push({
-              field: "propertyDetails.propertySubtype",
-              message: "Property type is required",
-            });
+          if (["buy", "rent"].includes(formData.preferenceType as string)) {
+            if (!formData.propertyDetails?.propertySubtype) {
+              errors.push({
+                field: "propertyDetails.propertySubtype",
+                message: "Property type is required",
+              });
+            }
           }
 
           // Only require measurement unit and land size for buy and joint-venture

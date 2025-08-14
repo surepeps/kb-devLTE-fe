@@ -15,7 +15,6 @@ import {
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { usePageContext } from "@/context/page-context";
 import { AgentNavData } from "@/enums";
 
@@ -23,7 +22,7 @@ interface UserProfileModalProps {
   closeUserProfileModal: (type: boolean) => void;
   userDetails: User | null;
 } 
-
+ 
 const UserProfile: React.FC<UserProfileModalProps> = ({
   closeUserProfileModal,
   userDetails,
@@ -31,7 +30,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const { logout } = useUserContext();
   const { setSelectedNav } = usePageContext();
-  const [userType, setUserType] = useState<"Agent" | "Landowners">("Agent");
+  const [userType, setUserType] = useState<"Agent" | "Landowners"| "FieldAgent">("Agent");
   const [position, setPosition] = useState({ top: 0, right: 0 });
 
   const router = useRouter();
@@ -39,7 +38,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
   useClickOutside(ref, () => closeUserProfileModal(false));
 
   useEffect(() => {
-    setUserType(userDetails?.userType as "Agent" | "Landowners");
+    setUserType(userDetails?.userType as "Agent" | "Landowners" | "FieldAgent");
   }, [userDetails]);
 
   // Calculate position based on screen size
@@ -65,6 +64,17 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
   }, []);
 
   const menuItems = [
+    // Dashboard for all users
+    {
+      icon: <LayoutDashboardIcon size={18} />,
+      label: "Dashboard",
+      action: () => {
+        router.push("/dashboard");
+        closeUserProfileModal(false);
+      },
+    },
+
+    // Agent-specific items
     ...(userType === "Agent"
       ? [
           {
@@ -75,46 +85,103 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
               closeUserProfileModal(false);
             },
           },
+          {
+            icon: <Home size={18} />,
+            label: "List Property",
+            action: () => {
+              router.push("/post-property");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Users size={18} />,
+            label: "Referral",
+            action: () => {
+              router.push("/referral");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Settings size={18} />,
+            label: "Account Settings",
+            action: () => {
+              setSelectedNav(AgentNavData.SETTINGS);
+              router.push("/profile-settings");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Settings size={18} />,
+            label: "Preferences",
+            action: () => {
+              router.push("/my-preferences");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Briefcase size={18} />,
+            label: "Subscription",
+            action: () => {
+              router.push("/subscription");
+              closeUserProfileModal(false);
+            },
+          },
         ]
       : []),
-    {
-      icon: <LayoutDashboardIcon size={18} />,
-      label: "Dashboard",
-      action: () => {
-        router.push("/dashboard");
-        closeUserProfileModal(false);
-      },
-    },
-    {
-      icon: <Home size={18} />,
-      label: "List Property",
-      action: () => {
-        router.push("/post-property");
-        closeUserProfileModal(false);
-      },
-    },
-    {
-      icon: <Users size={18} />,
-      label: "Referral",
-      action: () => {
-        router.push("/referral");
-        closeUserProfileModal(false);
-      },
-    },
-    {
-      icon: <Settings size={18} />,
-      label: "Account Settings",
-      action: () => {
-        if (userType === "Agent") {
-          setSelectedNav(AgentNavData.SETTINGS);
-          router.push("/settings");
-        } else {
-          router.push("/my-preferences");
-        }
-        closeUserProfileModal(false);
-      },
-    },
+
+    // Landowner-specific items
+    ...(userType === "Landowners"
+      ? [
+          {
+            icon: <Home size={18} />,
+            label: "List Property",
+            action: () => {
+              router.push("/post-property");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Settings size={18} />,
+            label: "Account Settings",
+            action: () => {
+              router.push("/profile-settings");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Users size={18} />,
+            label: "Referral",
+            action: () => {
+              router.push("/referral");
+              closeUserProfileModal(false);
+            },
+          },
+        ]
+      : []),
+
+    // FieldAgent-specific items
+    ...(userType === "FieldAgent"
+      ? [
+          {
+            icon: <Briefcase size={18} />,
+            label: "Assigned Inspection",
+            action: () => {
+              router.push("/field-agent-inspections");
+              closeUserProfileModal(false);
+            },
+          },
+          {
+            icon: <Settings size={18} />,
+            label: "Account Settings",
+            action: () => {
+              router.push("/profile-settings");
+              closeUserProfileModal(false);
+            },
+          },
+        ]
+      : []),
   ];
+
 
   return (
     <motion.div
@@ -162,7 +229,11 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             <span className="font-semibold text-gray-800">
               {userType === "Agent"
                 ? userDetails?.agentData?.agentType || "Agent"
-                : "Landowner"}
+                : userType === "Landowners"
+                ? "Landowner"
+                : userType === "FieldAgent"
+                ? "Field Agent"
+                : ""}
             </span>
           </div>
           <div>

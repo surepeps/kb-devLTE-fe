@@ -5,7 +5,7 @@ import React, { FC, MouseEventHandler } from "react";
 import { motion } from "framer-motion";
 
 interface ButtonProps {
-  value: string;
+  value?: string;
   title?: string;
   isDisabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement> | undefined;

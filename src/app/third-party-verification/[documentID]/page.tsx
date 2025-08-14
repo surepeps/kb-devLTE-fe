@@ -402,7 +402,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
       <div className="min-h-screen bg-[#EEF1F1] py-6 sm:py-12 px-4">
         <div className="flex items-center justify-center">
           <div className="max-w-md w-full">
-            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8 border border-gray-100">
               <div className="text-center mb-8">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-[#0B423D] to-[#8DDB90] mb-6">
                   <Lock className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
@@ -429,7 +429,6 @@ const ThirdPartyVerificationPage: React.FC = () => {
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] pl-12 text-lg font-mono tracking-wider"
                       onKeyPress={(e) => e.key === 'Enter' && validateToken()}
                     />
-                    <Mail className="absolute left-4 top-4.5 h-5 w-5 text-gray-400" />
                   </div>
                 </div>
 

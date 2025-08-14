@@ -254,12 +254,14 @@ export interface FormStep {
   isRequired: boolean;
 }
 
+type PreferenceType = "rent" | "shortlet" | "buy" | "joint-venture";
+ 
 // Flexible form data interface that can handle all preference types
 export interface FlexibleFormData {
   location?: LocationSelection;
   budget?: BudgetRange;
   features?: FeatureSelection;
-  preferenceType?: "buy" | "rent" | "joint-venture" | "shortlet";
+  preferenceType?: string;
   contactInfo?: any; // Can be either regular or joint-venture contact info
   additionalNotes?: string;
   propertyDetails?: any; // Can be any of the property detail types
