@@ -527,7 +527,92 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
     (step: number): ValidationError[] => {
       const errors: ValidationError[] = [];
       const { formData } = state;
+      const currentStepId = state.steps[step]?.id;
 
+      // Handle Joint Venture specific step validation
+      if (formData.preferenceType === "joint-venture") {
+        switch (currentStepId) {
+          case "jv-developer-info": // Step 0 for JV
+            if (!formData.contactInfo?.fullName?.trim()) {
+              errors.push({
+                field: "contactInfo.fullName",
+                message: "Full name is required",
+              });
+            }
+            if (!formData.contactInfo?.email?.trim()) {
+              errors.push({
+                field: "contactInfo.email",
+                message: "Email address is required",
+              });
+            }
+            if (!formData.contactInfo?.phoneNumber?.trim()) {
+              errors.push({
+                field: "contactInfo.phoneNumber",
+                message: "Phone number is required",
+              });
+            }
+            break;
+
+          case "jv-development-type": // Step 1 for JV
+            if (!formData.developmentDetails?.developmentTypes || formData.developmentDetails.developmentTypes.length === 0) {
+              errors.push({
+                field: "developmentDetails.developmentTypes",
+                message: "At least one development type is required",
+              });
+            }
+            break;
+
+          case "jv-land-requirements": // Step 2 for JV
+            // Location validation (reuse existing logic)
+            if (!formData.location?.state) {
+              errors.push({
+                field: "location.state",
+                message: "State is required",
+              });
+            }
+            if (!formData.location?.lgas?.length) {
+              errors.push({
+                field: "location.lgas",
+                message: "At least one LGA is required",
+              });
+            }
+            // Land size requirements
+            if (!formData.developmentDetails?.measurementUnit) {
+              errors.push({
+                field: "developmentDetails.measurementUnit",
+                message: "Measurement unit is required",
+              });
+            }
+            if (!formData.developmentDetails?.minLandSize) {
+              errors.push({
+                field: "developmentDetails.minLandSize",
+                message: "Minimum land size is required",
+              });
+            }
+            break;
+
+          case "jv-terms-proposal": // Step 3 for JV
+            if (!formData.developmentDetails?.preferredSharingRatio) {
+              errors.push({
+                field: "developmentDetails.preferredSharingRatio",
+                message: "Preferred sharing ratio is required",
+              });
+            }
+            break;
+
+          case "jv-title-documentation": // Step 4 for JV
+            if (!formData.developmentDetails?.minimumTitleRequirements || formData.developmentDetails.minimumTitleRequirements.length === 0) {
+              errors.push({
+                field: "developmentDetails.minimumTitleRequirements",
+                message: "At least one minimum title requirement is required",
+              });
+            }
+            break;
+        }
+        return errors;
+      }
+
+      // Original validation for other preference types
       switch (step) {
         case 0: // Location step
           if (!formData.location?.state) {
