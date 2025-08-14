@@ -367,6 +367,15 @@ function preferenceFormReducer(
         ...action.payload,
       };
 
+      // Check if preference type changed and we need to reconfigure steps
+      let newSteps = state.steps;
+      let resetCurrentStep = state.currentStep;
+
+      if (action.payload.preferenceType && action.payload.preferenceType !== state.formData.preferenceType) {
+        newSteps = getStepsForPreferenceType(action.payload.preferenceType);
+        resetCurrentStep = 0; // Reset to first step when changing preference type
+      }
+
       // Enhanced comparison for nested objects with shallow check first
       let formDataChanged = false;
       const payloadKeys = Object.keys(action.payload);
@@ -395,13 +404,15 @@ function preferenceFormReducer(
         }
       }
 
-      if (!formDataChanged) {
+      if (!formDataChanged && newSteps === state.steps) {
         return state;
       }
 
       return {
         ...state,
         formData: newFormData,
+        steps: newSteps,
+        currentStep: resetCurrentStep,
       };
 
     case "SET_VALIDATION_ERRORS":
