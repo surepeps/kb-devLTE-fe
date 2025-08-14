@@ -49,8 +49,8 @@ const NewHomepage = ({
 
   return (
     <Fragment>
-      {/* Header */}
-      <Header isComingSoon={isComingSoon} />
+      {/* Enhanced Header */}
+      <EnhancedHeader isComingSoon={isComingSoon} />
 
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
         <main className="w-full bg-white">
