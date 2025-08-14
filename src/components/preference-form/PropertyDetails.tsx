@@ -420,13 +420,25 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = memo(
                 type="number"
                 value={maxGuests}
                 onChange={(e) => {
-                  const value = Math.max(1, parseInt(e.target.value) || 1);
-                  setMaxGuests(value.toString());
+                  const inputValue = e.target.value;
+                  // Allow empty string for deletion
+                  if (inputValue === "") {
+                    setMaxGuests("");
+                    return;
+                  }
+                  // Parse and validate the number
+                  const numValue = parseInt(inputValue);
+                  if (!isNaN(numValue) && numValue >= 1) {
+                    setMaxGuests(numValue.toString());
+                  } else if (numValue < 1) {
+                    // If less than 1, set to empty (user can type a valid number)
+                    setMaxGuests("");
+                  }
                 }}
-                onInput={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  if (parseInt(target.value) < 1) {
-                    target.value = "1";
+                onBlur={(e) => {
+                  // On blur, if empty, set to default of 1
+                  if (e.target.value === "" || parseInt(e.target.value) < 1) {
+                    setMaxGuests("1");
                   }
                 }}
                 placeholder="Number of guests"
