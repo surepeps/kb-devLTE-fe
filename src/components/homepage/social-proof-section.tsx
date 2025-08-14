@@ -54,10 +54,46 @@ const SocialProofSection = () => {
   ];
 
   const partners = [
-    { name: "Paystack", logo: "💳" },
-    { name: "Flutterwave", logo: "💰" },
-    { name: "Lagos State", logo: "🏛️" },
-    { name: "NAICOM", logo: "🛡️" }
+    {
+      name: "Paystack",
+      logo: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.5 2.5V9.5H14.5V2.5H7.5Z" fill="#00C851"/>
+          <path d="M7.5 14.5V21.5H14.5V14.5H7.5Z" fill="#00C851"/>
+          <path d="M2.5 7.5V14.5H9.5V7.5H2.5Z" fill="#00C851"/>
+          <path d="M14.5 7.5V14.5H21.5V7.5H14.5Z" fill="#00C851"/>
+        </svg>
+      )
+    },
+    {
+      name: "Flutterwave",
+      logo: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="#F5A623"/>
+          <path d="M12 8L8 10V14L12 16L16 14V10L12 8Z" fill="#FFF"/>
+        </svg>
+      )
+    },
+    {
+      name: "Lagos State",
+      logo: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3H21V21H3V3Z" fill="#009639"/>
+          <path d="M3 3H21V11H3V3Z" fill="#009639"/>
+          <path d="M3 13H21V21H3V13Z" fill="#FFFFFF"/>
+          <circle cx="12" cy="12" r="3" fill="#009639"/>
+        </svg>
+      )
+    },
+    {
+      name: "NAICOM",
+      logo: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7V12C3 16.55 6.84 20.74 12 22C17.16 20.74 21 16.55 21 12V7L12 2Z" fill="#1E3A8A"/>
+          <path d="M9 12L11 14L15 10" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    }
   ];
 
   // Fetch testimonials from API
@@ -361,7 +397,7 @@ const SocialProofSection = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 className='flex items-center gap-2 sm:gap-3 bg-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300'>
-                <span className='text-xl sm:text-2xl'>{partner.logo}</span>
+                <div className='w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center'>{partner.logo}</div>
                 <span className='font-medium text-gray-700 text-sm sm:text-base'>{partner.name}</span>
               </motion.div>
             ))}
