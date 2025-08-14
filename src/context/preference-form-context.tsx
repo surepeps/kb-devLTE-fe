@@ -269,10 +269,45 @@ const DEFAULT_BUDGET_THRESHOLDS: BudgetThreshold[] = [
   { location: "default", listingType: "shortlet", minAmount: 10000 },
 ];
 
-// Initial state factory - prevents object recreation
-const createInitialState = (): PreferenceFormState => ({
-  currentStep: 0,
-  steps: [
+// Step configurations for different preference types
+const getStepsForPreferenceType = (preferenceType?: string) => {
+  if (preferenceType === "joint-venture") {
+    return [
+      {
+        id: "jv-developer-info",
+        title: "Developer Information",
+        isValid: false,
+        isRequired: true,
+      },
+      {
+        id: "jv-development-type",
+        title: "Development Type",
+        isValid: false,
+        isRequired: true,
+      },
+      {
+        id: "jv-land-requirements",
+        title: "Land Requirements",
+        isValid: false,
+        isRequired: true,
+      },
+      {
+        id: "jv-terms-proposal",
+        title: "JV Terms & Proposal",
+        isValid: false,
+        isRequired: true,
+      },
+      {
+        id: "jv-title-documentation",
+        title: "Title & Documentation",
+        isValid: false,
+        isRequired: true,
+      },
+    ];
+  }
+
+  // Default steps for buy, rent, shortlet
+  return [
     {
       id: "location",
       title: "Location & Area",
@@ -297,7 +332,13 @@ const createInitialState = (): PreferenceFormState => ({
       isValid: false,
       isRequired: true,
     },
-  ],
+  ];
+};
+
+// Initial state factory - prevents object recreation
+const createInitialState = (preferenceType?: string): PreferenceFormState => ({
+  currentStep: 0,
+  steps: getStepsForPreferenceType(preferenceType),
   formData: {},
   isSubmitting: false,
   validationErrors: [],
