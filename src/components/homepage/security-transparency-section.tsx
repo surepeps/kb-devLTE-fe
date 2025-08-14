@@ -144,8 +144,8 @@ const SecurityTransparencySection = () => {
               </div>
 
               <Link href="/document-verification">
-                <button className='bg-white text-[#09391C] px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300'>
-                  Learn More About Verification
+                <button className='bg-white text-[#09391C] px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base md:text-lg flex items-center justify-center min-h-[48px] sm:min-h-[56px]'>
+                  <span className="whitespace-nowrap">Learn More About Verification</span>
                 </button>
               </Link>
             </div>

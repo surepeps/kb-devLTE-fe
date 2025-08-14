@@ -176,8 +176,8 @@ const FinalCTASection = () => {
             {/* CTA */}
             <div className='flex-shrink-0'>
               <Link href="/preference">
-                <button className='bg-white text-[#8DDB90] px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg'>
-                  Submit Preference
+                <button className='bg-white text-[#8DDB90] px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base md:text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg flex items-center justify-center min-h-[48px] sm:min-h-[56px]'>
+                  <span className="whitespace-nowrap">Submit Preference</span>
                 </button>
               </Link>
             </div>
