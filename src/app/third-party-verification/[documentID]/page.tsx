@@ -18,7 +18,7 @@ type Document = {
 type DocumentDetails = {
   _id: string;
   customId: string;
-  documents: Document[];
+  documents: Document[] | Document;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -125,8 +125,13 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
       if (response.success && response.data) {
         setDocumentDetails(response.data);
+        // Normalize documents to always be an array
+        const documentsArray = Array.isArray(response.data.documents)
+          ? response.data.documents
+          : [response.data.documents];
+
         // Initialize reports array based on documents
-        const initialReports = response.data.documents.map((doc: Document) => ({
+        const initialReports = documentsArray.map((doc: Document) => ({
           originalDocumentType: doc.documentType,
           description: '',
           status: 'verified' as const
@@ -498,14 +503,24 @@ const ThirdPartyVerificationPage: React.FC = () => {
                       Documents for Verification
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
-                      {documentDetails?.documents.length || 0} document{(documentDetails?.documents.length || 0) !== 1 ? 's' : ''} submitted
+                      {(() => {
+                        const docsArray = Array.isArray(documentDetails?.documents)
+                          ? documentDetails.documents
+                          : documentDetails?.documents ? [documentDetails.documents] : [];
+                        const count = docsArray.length;
+                        return `${count} document${count !== 1 ? 's' : ''} submitted`;
+                      })()}
                     </p>
                   </div>
                 </div>
               </div>
 
               <div className="divide-y divide-gray-100">
-                {documentDetails?.documents.map((document, index) => (
+                {(() => {
+                  const documentsArray = Array.isArray(documentDetails?.documents)
+                    ? documentDetails.documents
+                    : documentDetails?.documents ? [documentDetails.documents] : [];
+                  return documentsArray.map((document, index) => (
                   <div key={index} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex flex-col sm:flex-row gap-4">
                       {/* Document Icon and Info */}
@@ -555,10 +570,16 @@ const ThirdPartyVerificationPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  ));
+                })()}
               </div>
 
-              {!documentDetails?.documents.length && (
+              {(() => {
+                const documentsArray = Array.isArray(documentDetails?.documents)
+                  ? documentDetails.documents
+                  : documentDetails?.documents ? [documentDetails.documents] : [];
+                return documentsArray.length === 0;
+              })() && (
                 <div className="text-center py-12 sm:py-16">
                   <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <FileText className="w-12 h-12 text-gray-400" />
@@ -572,7 +593,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
             </div>
 
             {/* Verification Report Section */}
-            {documentDetails?.documents && documentDetails.documents.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful') && (
+            {(() => {
+              const documentsArray = Array.isArray(documentDetails?.documents)
+                ? documentDetails.documents
+                : documentDetails?.documents ? [documentDetails.documents] : [];
+              return documentsArray.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful');
+            })() && (
               <div className="bg-white shadow-xl rounded-2xl border border-gray-100">
                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
