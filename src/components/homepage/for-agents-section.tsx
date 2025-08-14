@@ -133,8 +133,8 @@ const ForAgentsSection = () => {
               </ul>
 
               <Link href="/agent-onboard">
-                <button className='w-full bg-gray-100 hover:bg-gray-200 text-[#09391C] py-3 px-6 rounded-full font-bold transition-colors duration-300'>
-                  Start Free
+                <button className='w-full bg-gray-100 hover:bg-gray-200 text-[#09391C] py-3 px-4 sm:px-6 rounded-full font-bold transition-colors duration-300 text-sm sm:text-base flex items-center justify-center min-h-[48px]'>
+                  <span className="whitespace-nowrap">Start Free</span>
                 </button>
               </Link>
             </div>
@@ -164,8 +164,8 @@ const ForAgentsSection = () => {
               </ul>
 
               <Link href="/agent-subscriptions">
-                <button className='w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-3 px-6 rounded-full font-bold transition-colors duration-300'>
-                  Subscribe Now
+                <button className='w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-3 px-4 sm:px-6 rounded-full font-bold transition-colors duration-300 text-sm sm:text-base flex items-center justify-center min-h-[48px]'>
+                  <span className="whitespace-nowrap">Subscribe Now</span>
                 </button>
               </Link>
             </div>
@@ -177,8 +177,8 @@ const ForAgentsSection = () => {
               Join over 250+ verified agents already growing their business with Khabiteq
             </p>
             <Link href="/agent-onboard">
-              <button className='bg-[#09391C] hover:bg-[#0B423D] text-white px-8 py-4 rounded-full font-bold text-lg transition-colors duration-300'>
-                Become a Verified Agent
+              <button className='bg-[#09391C] hover:bg-[#0B423D] text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base md:text-lg transition-colors duration-300 flex items-center justify-center min-h-[48px] sm:min-h-[56px]'>
+                <span className="whitespace-nowrap">Become a Verified Agent</span>
               </button>
             </Link>
           </div>

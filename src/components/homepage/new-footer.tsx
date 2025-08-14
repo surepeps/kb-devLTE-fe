@@ -247,7 +247,7 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 placeholder="Enter your email"
                 className='flex-1 px-4 py-3 rounded-full bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8DDB90]'
               />
-              <button className='bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-full font-medium transition-colors duration-300 whitespace-nowrap'>
+              <button className='bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-3 rounded-full font-medium transition-colors duration-300 whitespace-nowrap text-sm sm:text-base flex items-center justify-center min-h-[48px]'>
                 Subscribe
               </button>
             </div>
