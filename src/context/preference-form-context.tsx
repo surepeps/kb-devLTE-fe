@@ -844,8 +844,22 @@ export const PreferenceFormProvider: React.FC<{ children: ReactNode }> = ({
           }
           break;
 
-        case 2: // Features step (optional)
-          // No required validations for features step
+        case 2: // Features step (optional for most, but includes dates for shortlet)
+          // Shortlet date validations (since DateSelection is shown on step 2)
+          if (formData.preferenceType === "shortlet") {
+            if (!formData.bookingDetails?.checkInDate) {
+              errors.push({
+                field: "bookingDetails.checkInDate",
+                message: "Check-in date is required",
+              });
+            }
+            if (!formData.bookingDetails?.checkOutDate) {
+              errors.push({
+                field: "bookingDetails.checkOutDate",
+                message: "Check-out date is required",
+              });
+            }
+          }
           break;
 
         case 3: // Contact step
