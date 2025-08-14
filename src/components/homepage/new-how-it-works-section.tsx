@@ -135,8 +135,8 @@ const NewHowItWorksSection = () => {
               Ready to get started?
             </span>
             <Link href="/preference">
-              <button className='bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-8 py-3 rounded-full font-bold transition-colors duration-300'>
-                Submit Your Preference Now
+              <button className='bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 md:px-8 py-3 rounded-full font-bold transition-colors duration-300 text-sm sm:text-base md:text-lg flex items-center justify-center min-h-[48px]'>
+                <span className="whitespace-nowrap">Submit Your Preference Now</span>
               </button>
             </Link>
           </div>

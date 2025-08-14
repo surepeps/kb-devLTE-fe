@@ -16,6 +16,7 @@ import ForAgentsSection from "@/components/homepage/for-agents-section";
 import SecurityTransparencySection from "@/components/homepage/security-transparency-section";
 import FinalCTASection from "@/components/homepage/final-cta-section";
 import NewFooter from "@/components/homepage/new-footer";
+import EnhancedHeader from "@/components/homepage/enhanced-header";
 
 /**
  * @NewHomepage - Modern, redesigned landing page following the new specifications
@@ -48,6 +49,9 @@ const NewHomepage = ({
 
   return (
     <Fragment>
+      {/* Enhanced Header */}
+      <EnhancedHeader isComingSoon={isComingSoon} />
+
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
         <main className="w-full bg-white">
           
