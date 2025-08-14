@@ -609,61 +609,29 @@ const UpdatePreferenceFormContent: React.FC = () => {
           preferenceType: "joint-venture",
           preferenceMode: "developer",
           developmentDetails: {
-            minLandSize: (
-              jvData.propertyDetails?.landSize ||
-              jvData.developmentDetails?.minLandSize ||
-              ""
-            ).trim(),
-            measurementUnit: (
-              jvData.propertyDetails?.measurementUnit ||
-              jvData.developmentDetails?.measurementUnit ||
-              ""
-            ).trim(),
-            jvType: jvData.developmentDetails?.jvType || "Equity Split",
-            propertyType: (
-              jvData.propertyDetails?.propertySubtype ||
-              jvData.developmentDetails?.propertyType ||
-              ""
-            ).trim(),
-            expectedStructureType: (
-              jvData.developmentDetails?.expectedStructureType || ""
-            ).trim(),
-            timeline: (jvData.developmentDetails?.timeline || "").trim(),
-            budgetRange: (jvData.developmentDetails?.budgetRange || "").trim(),
-            documentTypes:
-              jvData.propertyDetails?.documentTypes?.filter(
-                (doc: string) => doc.trim() !== "",
-              ) || [],
-            landConditions:
-              jvData.propertyDetails?.landConditions?.filter(
-                (condition: string) => condition.trim() !== "",
-              ) || [],
-            buildingType: (jvData.propertyDetails?.buildingType || "").trim(),
-            propertyCondition: (
-              jvData.propertyDetails?.propertyCondition || ""
-            ).trim(),
-            minBedrooms: (jvData.propertyDetails?.minBedrooms || "")
-              .toString()
-              .trim(),
-            minBathrooms: jvData.propertyDetails?.minBathrooms || 0,
-            purpose: (jvData.propertyDetails?.purpose || "").trim(),
+            // Land requirements from step 3
+            minLandSize: (jvData.developmentDetails?.minLandSize || "").trim(),
+            maxLandSize: (jvData.developmentDetails?.maxLandSize || "").trim(),
+            measurementUnit: (jvData.developmentDetails?.measurementUnit || "").trim(),
+
+            // Development types from step 2
+            developmentTypes: jvData.developmentDetails?.developmentTypes || [],
+
+            // JV terms from step 4
+            preferredSharingRatio: (jvData.developmentDetails?.preferredSharingRatio || "").trim(),
+            proposalDetails: (jvData.developmentDetails?.proposalDetails || "").trim(),
+
+            // Title requirements from step 5
+            minimumTitleRequirements: jvData.developmentDetails?.minimumTitleRequirements || [],
+            willingToConsiderPendingTitle: jvData.developmentDetails?.willingToConsiderPendingTitle || false,
+            additionalRequirements: (jvData.developmentDetails?.additionalRequirements || "").trim(),
           },
           contactInfo: {
-            companyName: (jvData.contactInfo?.companyName || "").trim(),
-            contactPerson: (jvData.contactInfo?.contactPerson || "").trim(),
+            // Developer info from step 1
+            fullName: (jvData.contactInfo?.fullName || "").trim(),
             email: (jvData.contactInfo?.email || "").trim(),
             phoneNumber: (jvData.contactInfo?.phoneNumber || "").trim(),
-            cacRegistrationNumber: (
-              jvData.contactInfo?.cacRegistrationNumber || ""
-            ).trim(),
           },
-          partnerExpectations: (jvData.partnerExpectations || "").trim(),
-          nearbyLandmark: (
-            jvData.propertyDetails?.nearbyLandmark ||
-            jvData.nearbyLandmark ||
-            ""
-          ).trim(),
-          additionalNotes: (jvData.additionalNotes || "").trim(),
         };
         return cleanObject(jvPayload) as JointVenturePreferencePayload;
       }
