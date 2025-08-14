@@ -16,6 +16,7 @@ import FeatureSelection from "@/components/preference-form/FeatureSelection";
 import PropertyDetails from "@/components/preference-form/PropertyDetails";
 import DateSelection from "@/components/preference-form/DateSelection";
 import OptimizedContactInformation from "@/components/preference-form/OptimizedContactInformation";
+import JointVenturePreferenceForm from "@/components/preference-form/joint-venture/JointVenturePreferenceForm";
 import SubmitButton from "@/components/preference-form/SubmitButton";
 import OptimizedStepWrapper from "@/components/preference-form/OptimizedStepWrapper";
 import {
@@ -935,53 +936,60 @@ const PreferenceFormContent: React.FC = () => {
           whileHover={{ shadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)" }}
         >
           <div className="min-h-[400px] sm:min-h-[300px]">
-            {/* Step 0: Location */}
-            <OptimizedStepWrapper
-              stepId="location"
-              currentStep={state.currentStep}
-              targetStep={0}
-            >
-              <OptimizedLocationSelection />
-            </OptimizedStepWrapper>
+            {/* Joint Venture Form - 5 steps */}
+            {selectedPreferenceType === "joint-venture" ? (
+              <JointVenturePreferenceForm />
+            ) : (
+              <>
+                {/* Step 0: Location */}
+                <OptimizedStepWrapper
+                  stepId="location"
+                  currentStep={state.currentStep}
+                  targetStep={0}
+                >
+                  <OptimizedLocationSelection />
+                </OptimizedStepWrapper>
 
-            {/* Step 1: Property Details & Budget */}
-            <OptimizedStepWrapper
-              stepId="property-budget"
-              currentStep={state.currentStep}
-              targetStep={1}
-              className="space-y-6 sm:space-y-8"
-            >
-              <div className="space-y-6 sm:space-y-8">
-                <PropertyDetails preferenceType={selectedPreferenceType} />
-                <OptimizedBudgetSelection
-                  preferenceType={selectedPreferenceType}
-                />
-              </div>
-            </OptimizedStepWrapper>
+                {/* Step 1: Property Details & Budget */}
+                <OptimizedStepWrapper
+                  stepId="property-budget"
+                  currentStep={state.currentStep}
+                  targetStep={1}
+                  className="space-y-6 sm:space-y-8"
+                >
+                  <div className="space-y-6 sm:space-y-8">
+                    <PropertyDetails preferenceType={selectedPreferenceType} />
+                    <OptimizedBudgetSelection
+                      preferenceType={selectedPreferenceType}
+                    />
+                  </div>
+                </OptimizedStepWrapper>
 
-            {/* Step 2: Features & Amenities */}
-            <OptimizedStepWrapper
-              stepId="features"
-              currentStep={state.currentStep}
-              targetStep={2}
-              className="space-y-6 sm:space-y-8"
-            >
-              <div className="space-y-6 sm:space-y-8">
-                <FeatureSelection preferenceType={selectedPreferenceType} />
-                {selectedPreferenceType === "shortlet" && <DateSelection />}
-              </div>
-            </OptimizedStepWrapper>
+                {/* Step 2: Features & Amenities */}
+                <OptimizedStepWrapper
+                  stepId="features"
+                  currentStep={state.currentStep}
+                  targetStep={2}
+                  className="space-y-6 sm:space-y-8"
+                >
+                  <div className="space-y-6 sm:space-y-8">
+                    <FeatureSelection preferenceType={selectedPreferenceType} />
+                    {selectedPreferenceType === "shortlet" && <DateSelection />}
+                  </div>
+                </OptimizedStepWrapper>
 
-            {/* Step 3: Contact */}
-            <OptimizedStepWrapper
-              stepId="contact"
-              currentStep={state.currentStep}
-              targetStep={3}
-            >
-              <OptimizedContactInformation
-                preferenceType={selectedPreferenceType}
-              />
-            </OptimizedStepWrapper>
+                {/* Step 3: Contact */}
+                <OptimizedStepWrapper
+                  stepId="contact"
+                  currentStep={state.currentStep}
+                  targetStep={3}
+                >
+                  <OptimizedContactInformation
+                    preferenceType={selectedPreferenceType}
+                  />
+                </OptimizedStepWrapper>
+              </>
+            )}
           </div>
 
           {/* Submit Button */}
