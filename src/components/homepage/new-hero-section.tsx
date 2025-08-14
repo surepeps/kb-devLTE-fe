@@ -1,12 +1,41 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../general-components/button';
 import Link from 'next/link';
 
 const NewHeroSection = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Ensure video autoplay works
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      // Force play the video after component mounts
+      const playVideo = async () => {
+        try {
+          await video.play();
+        } catch (error) {
+          console.log('Video autoplay failed:', error);
+          // Fallback: try again after user interaction
+          const handleInteraction = async () => {
+            try {
+              await video.play();
+              document.removeEventListener('click', handleInteraction);
+              document.removeEventListener('touchstart', handleInteraction);
+            } catch (e) {
+              console.log('Video play after interaction failed:', e);
+            }
+          };
+          document.addEventListener('click', handleInteraction);
+          document.addEventListener('touchstart', handleInteraction);
+        }
+      };
+      playVideo();
+    }
+  }, []);
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
@@ -45,16 +74,16 @@ const NewHeroSection = () => {
             <Link href="/preference" className='w-full sm:w-auto'>
               <Button
                 green={true}
-                className='w-full sm:w-auto h-12 sm:h-14 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold text-white bg-[#8DDB90] hover:bg-[#7BC87F] transition-all duration-300 transform hover:scale-105 shadow-lg text-center'>
-                Submit Your Property Preference
+                className='w-full sm:w-auto min-h-[48px] sm:min-h-[56px] px-4 sm:px-6 md:px-8 py-3 sm:py-4 text-sm sm:text-base md:text-lg font-bold text-white bg-[#8DDB90] hover:bg-[#7BC87F] transition-all duration-300 transform hover:scale-105 shadow-lg text-center flex items-center justify-center whitespace-nowrap'>
+                <span className="block leading-tight">Submit Your Property Preference</span>
               </Button>
             </Link>
 
             {/* Secondary CTA */}
             <Link href="/agent-onboard" className='w-full sm:w-auto'>
               <Button
-                className='w-full sm:w-auto h-12 sm:h-14 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold text-white border-2 border-white hover:bg-white hover:text-[#0B423D] transition-all duration-300 text-center'>
-                Join as an Agent
+                className='w-full sm:w-auto min-h-[48px] sm:min-h-[56px] px-4 sm:px-6 md:px-8 py-3 sm:py-4 text-sm sm:text-base md:text-lg font-bold text-white border-2 border-white hover:bg-white hover:text-[#0B423D] transition-all duration-300 text-center flex items-center justify-center whitespace-nowrap'>
+                <span className="block leading-tight">Join as an Agent</span>
               </Button>
             </Link>
           </motion.div>
@@ -69,11 +98,13 @@ const NewHeroSection = () => {
               <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden'>
                 {/* Placeholder for actual video - replace with real video URL */}
                 <video
+                  ref={videoRef}
                   className="w-full h-full object-cover"
                   autoPlay
                   muted
                   loop
                   playsInline
+                  preload="auto"
                   poster="/placeholder-property.svg">
                   {/* Add actual video source here */}
                   <source src="/khabi-demo-video.mp4" type="video/mp4" />
