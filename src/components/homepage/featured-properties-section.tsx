@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
+import { EnhancedGlobalPropertyCard, createPropertyCardData } from '@/components/common/property-cards';
 
 interface Property {
   _id: string;
@@ -43,6 +44,7 @@ interface Property {
   isApproved: boolean;
   description?: string;
   typeOfBuilding?: string;
+  isPremium?: boolean;
 }
 
 const FeaturedPropertiesSection = () => {
@@ -94,7 +96,8 @@ const FeaturedPropertiesSection = () => {
             updatedAt: new Date().toISOString(),
             isAvailable: 'yes',
             areYouTheOwner: true,
-            isApproved: true
+            isApproved: true,
+            isPremium: false
           },
           {
             _id: 'sample-2',
@@ -120,7 +123,8 @@ const FeaturedPropertiesSection = () => {
             updatedAt: new Date().toISOString(),
             isAvailable: 'yes',
             areYouTheOwner: true,
-            isApproved: true
+            isApproved: true,
+            isPremium: true
           },
           {
             _id: 'sample-3',
@@ -146,7 +150,8 @@ const FeaturedPropertiesSection = () => {
             updatedAt: new Date().toISOString(),
             isAvailable: 'yes',
             areYouTheOwner: true,
-            isApproved: true
+            isApproved: true,
+            isPremium: false
           },
           {
             _id: 'sample-4',
@@ -182,7 +187,8 @@ const FeaturedPropertiesSection = () => {
             updatedAt: new Date().toISOString(),
             isAvailable: 'yes',
             areYouTheOwner: true,
-            isApproved: true
+            isApproved: true,
+            isPremium: false
           }
         ]);
       } finally {
@@ -193,48 +199,29 @@ const FeaturedPropertiesSection = () => {
     fetchFeaturedProperties();
   }, []);
 
-  const formatPrice = (price: number) => {
-    if (price >= 1000000) {
-      return `₦${(price / 1000000).toFixed(1)}M`;
-    } else if (price >= 1000) {
-      return `₦${(price / 1000).toFixed(0)}K`;
-    }
-    return `₦${price.toLocaleString()}`;
+  // Transform pictures array to the format expected by EnhancedGlobalPropertyCard
+  const transformImages = (pictures: string[]) => {
+    return pictures.map((url, index) => ({
+      id: index.toString(),
+      url: url,
+      alt: `Property image ${index + 1}`
+    }));
   };
 
-  const formatPropertyType = (briefType: string) => {
-    switch (briefType.toLowerCase()) {
-      case 'outright sales':
-      case 'sale':
-      case 'buy':
-        return 'For Sale';
-      case 'rent':
-      case 'lease':
-        return 'For Rent';
-      case 'shortlet':
-        return 'Shortlet';
-      case 'joint-venture':
-        return 'Joint Venture';
-      default:
-        return briefType;
+  // Get property type for card data generation
+  const getPropertyType = (property: Property) => {
+    if (property.briefType === 'Joint Venture') {
+      return 'Joint Venture';
     }
+    return undefined; // Let createPropertyCardData determine from briefType
   };
 
-  const getPropertyTitle = (property: Property) => {
-    if (property.propertyType === 'Land') {
-      return `${property.landSize?.size || 1} ${property.landSize?.measurementType || 'Plot'} of Land in ${property.location.area}`;
-    }
-    
-    const bedrooms = property.additionalFeatures.noOfBedroom;
-    const bedroomText = bedrooms > 0 ? `${bedrooms} Bedroom ` : '';
-    return `${bedroomText}${property.propertyType} in ${property.location.area}`;
-  };
-
-  const getPropertyUrl = (property: Property) => {
+  // Handle property click to navigate to property details
+  const handlePropertyClick = (property: Property) => {
     const marketType = property.briefType.toLowerCase().includes('sale') ? 'buy' : 
                       property.briefType.toLowerCase().includes('rent') ? 'rent' : 
-                      property.briefType.toLowerCase();
-    return `/property/${marketType}/${property._id}`;
+                      property.briefType.toLowerCase().replace(/\s+/g, '-');
+    window.open(`/property/${marketType}/${property._id}`, '_blank');
   };
 
   if (loading) {
@@ -271,81 +258,34 @@ const FeaturedPropertiesSection = () => {
 
         {/* Properties Grid */}
         {properties.length > 0 ? (
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-            {properties.map((property, index) => (
-              <motion.div
-                key={property._id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className='bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105'>
-                
-                {/* Property Image */}
-                <div className='aspect-[4/3] relative overflow-hidden'>
-                  <img 
-                    src={property.pictures?.[0] || '/placeholder-property.svg'}
-                    alt={getPropertyTitle(property)}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center'>
+            {properties.map((property, index) => {
+              const cardData = createPropertyCardData(property, getPropertyType(property));
+              const images = transformImages(property.pictures || ['/placeholder-property.svg']);
+              const isJVProperty = property.briefType === 'Joint Venture';
+
+              return (
+                <motion.div
+                  key={property._id}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="w-full max-w-[320px]">
+                  
+                  <EnhancedGlobalPropertyCard
+                    type={isJVProperty ? "jv" : "standard"}
+                    tab={isJVProperty ? undefined : property.briefType.toLowerCase().includes('rent') ? 'rent' : 'buy'}
+                    property={property}
+                    cardData={cardData}
+                    images={images}
+                    isPremium={property.isPremium || false}
+                    onPropertyClick={() => handlePropertyClick(property)}
+                    className="hover:scale-105 transition-transform duration-300"
                   />
-                  
-                  {/* Property Type Badge */}
-                  <div className='absolute top-4 left-4'>
-                    <span className='bg-[#8DDB90] text-white px-3 py-1 rounded-full text-sm font-medium'>
-                      {formatPropertyType(property.briefType)}
-                    </span>
-                  </div>
-                  
-                  {/* Price Badge */}
-                  <div className='absolute top-4 right-4'>
-                    <span className='bg-white/90 backdrop-blur-sm text-[#09391C] px-3 py-1 rounded-full text-sm font-bold'>
-                      {formatPrice(property.price)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Property Details */}
-                <div className='p-6'>
-                  {/* Title */}
-                  <h3 className='text-lg font-bold text-[#09391C] mb-2 line-clamp-2 group-hover:text-[#8DDB90] transition-colors duration-300'>
-                    {getPropertyTitle(property)}
-                  </h3>
-
-                  {/* Location */}
-                  <div className='flex items-center gap-2 text-gray-600 mb-4'>
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    <span className='text-sm'>{property.location.localGovernment}, {property.location.state}</span>
-                  </div>
-
-                  {/* Property Features Summary */}
-                  {property.propertyType !== 'Land' && property.additionalFeatures.noOfBedroom > 0 && (
-                    <div className='flex items-center gap-4 text-gray-500 text-sm mb-4'>
-                      <span>{property.additionalFeatures.noOfBedroom} Bed</span>
-                      <span>{property.additionalFeatures.noOfBathroom} Bath</span>
-                      {property.additionalFeatures.noOfCarPark > 0 && (
-                        <span>{property.additionalFeatures.noOfCarPark} Parking</span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className='flex gap-2'>
-                    <Link href={getPropertyUrl(property)} className='flex-1'>
-                      <button className='w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300 text-sm'>
-                        Negotiate
-                      </button>
-                    </Link>
-                    <Link href={getPropertyUrl(property)} className='flex-1'>
-                      <button className='w-full border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 text-sm'>
-                        Book Inspection
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         ) : (
           <div className='text-center py-12'>
@@ -375,15 +315,6 @@ const FeaturedPropertiesSection = () => {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
     </section>
   );
 };
