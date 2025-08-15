@@ -23,7 +23,7 @@ export default function HeaderFooterWrapper({ children, isComingSoon }: Props) {
 		<Fragment>
 			<HeaderLogic isComingSoon={isComingSoon} />
 			{children}
-			<Footer isComingSoon={isComingSoon} />
+			<NewFooter isComingSoon={isComingSoon} />
 			{viewImage && <ViewImage imageData={imageData} />}
 		</Fragment>
 	);
