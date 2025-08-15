@@ -9,8 +9,9 @@ import EmailVerification from "@/components/EmailVerification";
 
 // New landing page components
 import NewHeroSection from "@/components/homepage/new-hero-section";
+import KeyFeaturesSection from "@/components/homepage/key-features-section";
 import ValuePropositionSection from "@/components/homepage/value-proposition-section";
-import NewHowItWorksSection from "@/components/homepage/new-how-it-works-section";
+import FeaturedPropertiesSection from "@/components/homepage/featured-properties-section";
 import SocialProofSection from "@/components/homepage/social-proof-section";
 import ForAgentsSection from "@/components/homepage/for-agents-section";
 import SecurityTransparencySection from "@/components/homepage/security-transparency-section";
@@ -53,9 +54,9 @@ const NewHomepage = ({
       {/* <EnhancedHeader isComingSoon={isComingSoon} /> */}
 
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
-        <main className="w-full bg-white">
-          
-          {/* 1. ABOVE THE FOLD (First Screen View) */}
+        <main className="w-full bg-[#FFFEFB]">
+
+          {/* 1. HERO SECTION */}
           <ErrorBoundary
             fallback={
               <div className="w-full min-h-[600px] bg-[#0B423D] flex items-center justify-center">
@@ -68,10 +69,23 @@ const NewHomepage = ({
             <NewHeroSection />
           </ErrorBoundary>
 
-          {/* 2. QUICK VALUE PROPOSITION SECTION */}
+          {/* 2. KEY FEATURES SECTION */}
           <ErrorBoundary
             fallback={
-              <div className="w-full py-16 bg-white">
+              <div className="w-full py-16 bg-[#FFFEFB]">
+                <div className="container mx-auto px-4 text-center">
+                  <h2 className="text-3xl font-bold text-[#09391C] mb-4">Key Features</h2>
+                  <p className="text-gray-600">Unable to load key features section.</p>
+                </div>
+              </div>
+            }>
+            <KeyFeaturesSection />
+          </ErrorBoundary>
+
+          {/* 3. VALUE PROPOSITION SECTION (Replacement from Section 2) */}
+          <ErrorBoundary
+            fallback={
+              <div className="w-full py-16 bg-[#FFFEFB]">
                 <div className="container mx-auto px-4 text-center">
                   <h2 className="text-3xl font-bold text-[#09391C] mb-4">Why Choose Khabiteq?</h2>
                   <p className="text-gray-600">Unable to load value proposition section.</p>
@@ -81,20 +95,20 @@ const NewHomepage = ({
             <ValuePropositionSection />
           </ErrorBoundary>
 
-          {/* 3. HOW KHABITEQ WORKS */}
+          {/* 4. FEATURED PROPERTIES SECTION */}
           <ErrorBoundary
             fallback={
-              <div className="w-full py-16 bg-[#0B423D]">
+              <div className="w-full py-16 bg-[#FFFEFB]">
                 <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-3xl font-bold text-white mb-4">How Khabiteq Works</h2>
-                  <p className="text-gray-200">Unable to load how it works section.</p>
+                  <h2 className="text-3xl font-bold text-[#09391C] mb-4">Featured Properties</h2>
+                  <p className="text-gray-600">Unable to load featured properties section.</p>
                 </div>
               </div>
             }>
-            <NewHowItWorksSection />
+            <FeaturedPropertiesSection />
           </ErrorBoundary>
 
-          {/* 4. SOCIAL PROOF & TRUST SIGNALS */}
+          {/* 5. REVIEWS & COUNTERS (SOCIAL PROOF & TRUST SIGNALS) */}
           <ErrorBoundary
             fallback={
               <div className="w-full py-16 bg-[#F5F7F9]">
@@ -107,10 +121,10 @@ const NewHomepage = ({
             <SocialProofSection />
           </ErrorBoundary>
 
-          {/* 5. FOR AGENTS SECTION */}
+          {/* 6. FOR REAL ESTATE AGENTS SECTION */}
           <ErrorBoundary
             fallback={
-              <div className="w-full py-16 bg-white">
+              <div className="w-full py-16 bg-[#FFFEFB]">
                 <div className="container mx-auto px-4 text-center">
                   <h2 className="text-3xl font-bold text-[#09391C] mb-4">For Real Estate Agents</h2>
                   <p className="text-gray-600">Unable to load agent information.</p>
@@ -120,7 +134,7 @@ const NewHomepage = ({
             <ForAgentsSection />
           </ErrorBoundary>
 
-          {/* 6. SECURITY & TRANSPARENCY SECTION */}
+          {/* 7. SECURITY & TRANSPARENCY SECTION */}
           <ErrorBoundary
             fallback={
               <div className="w-full py-16 bg-[#09391C]">
@@ -133,7 +147,7 @@ const NewHomepage = ({
             <SecurityTransparencySection />
           </ErrorBoundary>
 
-          {/* 7. FINAL CALL TO ACTION (BOTTOM) */}
+          {/* 8. FINAL CALL TO ACTION (BOTTOM) */}
           <ErrorBoundary
             fallback={
               <div className="w-full py-16 bg-[#8DDB90]">
