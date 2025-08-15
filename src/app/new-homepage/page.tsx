@@ -9,8 +9,9 @@ import EmailVerification from "@/components/EmailVerification";
 
 // New landing page components
 import NewHeroSection from "@/components/homepage/new-hero-section";
+import KeyFeaturesSection from "@/components/homepage/key-features-section";
 import ValuePropositionSection from "@/components/homepage/value-proposition-section";
-import NewHowItWorksSection from "@/components/homepage/new-how-it-works-section";
+import FeaturedPropertiesSection from "@/components/homepage/featured-properties-section";
 import SocialProofSection from "@/components/homepage/social-proof-section";
 import ForAgentsSection from "@/components/homepage/for-agents-section";
 import SecurityTransparencySection from "@/components/homepage/security-transparency-section";
