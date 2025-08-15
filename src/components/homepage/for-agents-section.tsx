@@ -55,7 +55,7 @@ const ForAgentsSection = () => {
   ];
 
   return (
-    <section className='w-full py-16 md:py-24 bg-white'>
+    <section className='w-full py-16 md:py-24 bg-[#FFFEFB]'>
       <div className='container mx-auto px-4 md:px-8'>
         
         {/* Section Header */}
