@@ -5,7 +5,7 @@
 import { Fragment } from "react";
 import { usePathname } from "next/navigation";
 import HeaderLogic from "@/logic/headerLogic";
-import Footer from "./footer";
+import NewFooter from "./new-footer";
 
 import { ReactNode } from "react";
 import ViewImage from "../general-components/viewImage";
