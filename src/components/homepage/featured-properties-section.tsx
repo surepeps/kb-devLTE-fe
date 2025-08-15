@@ -9,15 +9,40 @@ import { URLS } from '@/utils/URLS';
 
 interface Property {
   _id: string;
-  title: string;
+  propertyType: string;
+  propertyCondition?: string;
+  location: {
+    state: string;
+    localGovernment: string;
+    area: string;
+  };
   briefType: string;
-  state: string;
-  localGovernmentArea: string;
-  address: string;
   price: number;
-  images: string[];
-  userID: string;
+  pictures: string[];
+  landSize?: {
+    measurementType: string;
+    size: number;
+  };
+  additionalFeatures: {
+    noOfBedroom: number;
+    noOfBathroom: number;
+    noOfToilet: number;
+    noOfCarPark: number;
+  };
+  features: string[];
+  docOnProperty: Array<{
+    isProvided: boolean;
+    _id: string;
+    docName: string;
+  }>;
+  owner: string;
   createdAt: string;
+  updatedAt: string;
+  isAvailable: string;
+  areYouTheOwner: boolean;
+  isApproved: boolean;
+  description?: string;
+  typeOfBuilding?: string;
 }
 
 const FeaturedPropertiesSection = () => {
@@ -25,81 +50,139 @@ const FeaturedPropertiesSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch featured properties from marketplace
+  // Fetch featured properties from new endpoint
   useEffect(() => {
     const fetchFeaturedProperties = async () => {
       try {
         setLoading(true);
         
-        // Fetch a mix of different property types
-        const buyResponse = await GET_REQUEST(`${URLS.BASE}/briefs/buy?page=1&limit=2`);
-        const rentResponse = await GET_REQUEST(`${URLS.BASE}/briefs/rent?page=1&limit=2`);
+        const response = await GET_REQUEST(`${URLS.BASE}/properties/featuredProps`);
         
-        const allProperties = [];
-        
-        if (buyResponse.success && buyResponse.data?.briefs) {
-          allProperties.push(...buyResponse.data.briefs.slice(0, 2));
+        if (response.success && response.data) {
+          setProperties(response.data.slice(0, 4)); // Limit to 4 properties
+        } else {
+          throw new Error('Invalid response format');
         }
-        
-        if (rentResponse.success && rentResponse.data?.briefs) {
-          allProperties.push(...rentResponse.data.briefs.slice(0, 2));
-        }
-        
-        setProperties(allProperties.slice(0, 4)); // Limit to 4 properties
         
       } catch (err) {
-        console.error('Error fetching properties:', err);
+        console.error('Error fetching featured properties:', err);
         setError('Unable to load properties');
         
-        // Fallback to sample data
+        // Fallback to sample data based on the API structure
         setProperties([
           {
             _id: 'sample-1',
-            title: '3 Bedroom Apartment in Lekki',
-            briefType: 'rent',
-            state: 'Lagos',
-            localGovernmentArea: 'Lekki',
-            address: 'Lekki Phase 1, Lagos',
+            propertyType: 'Apartment',
+            location: {
+              state: 'Lagos',
+              localGovernment: 'Lekki',
+              area: 'Lekki Phase 1'
+            },
+            briefType: 'Rent',
             price: 2500000,
-            images: ['/placeholder-property.svg'],
-            userID: 'sample-user',
-            createdAt: new Date().toISOString()
+            pictures: ['/placeholder-property.svg'],
+            additionalFeatures: {
+              noOfBedroom: 3,
+              noOfBathroom: 3,
+              noOfToilet: 4,
+              noOfCarPark: 2
+            },
+            features: ['Swimming Pool', 'Gym', 'Security'],
+            docOnProperty: [],
+            owner: 'sample-user',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isAvailable: 'yes',
+            areYouTheOwner: true,
+            isApproved: true
           },
           {
             _id: 'sample-2',
-            title: '4 Bedroom Duplex in Ikeja',
-            briefType: 'sale',
-            state: 'Lagos',
-            localGovernmentArea: 'Ikeja',
-            address: 'GRA Ikeja, Lagos',
+            propertyType: 'Duplex',
+            location: {
+              state: 'Lagos',
+              localGovernment: 'Ikeja',
+              area: 'GRA Ikeja'
+            },
+            briefType: 'Outright Sales',
             price: 45000000,
-            images: ['/placeholder-property.svg'],
-            userID: 'sample-user',
-            createdAt: new Date().toISOString()
+            pictures: ['/placeholder-property.svg'],
+            additionalFeatures: {
+              noOfBedroom: 4,
+              noOfBathroom: 4,
+              noOfToilet: 5,
+              noOfCarPark: 3
+            },
+            features: ['Balcony', 'Garden', 'BQ'],
+            docOnProperty: [],
+            owner: 'sample-user',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isAvailable: 'yes',
+            areYouTheOwner: true,
+            isApproved: true
           },
           {
             _id: 'sample-3',
-            title: '2 Bedroom Flat in Victoria Island',
-            briefType: 'rent',
-            state: 'Lagos',
-            localGovernmentArea: 'Lagos Island',
-            address: 'Victoria Island, Lagos',
+            propertyType: 'Flat',
+            location: {
+              state: 'Lagos',
+              localGovernment: 'Lagos Island',
+              area: 'Victoria Island'
+            },
+            briefType: 'Rent',
             price: 1800000,
-            images: ['/placeholder-property.svg'],
-            userID: 'sample-user',
-            createdAt: new Date().toISOString()
+            pictures: ['/placeholder-property.svg'],
+            additionalFeatures: {
+              noOfBedroom: 2,
+              noOfBathroom: 2,
+              noOfToilet: 3,
+              noOfCarPark: 1
+            },
+            features: ['Elevator', 'Generator'],
+            docOnProperty: [],
+            owner: 'sample-user',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isAvailable: 'yes',
+            areYouTheOwner: true,
+            isApproved: true
           },
           {
             _id: 'sample-4',
-            title: '5 Bedroom Mansion in Banana Island',
-            briefType: 'sale',
-            state: 'Lagos',
-            localGovernmentArea: 'Lagos Island',
-            address: 'Banana Island, Lagos',
-            price: 120000000,
-            images: ['/placeholder-property.svg'],
-            userID: 'sample-user',
-            createdAt: new Date().toISOString()
+            propertyType: 'Land',
+            location: {
+              state: 'Oyo',
+              localGovernment: 'Iseyin',
+              area: 'Along Moniya'
+            },
+            briefType: 'Outright Sales',
+            price: 500000,
+            pictures: ['/placeholder-property.svg'],
+            landSize: {
+              measurementType: 'Plot',
+              size: 1
+            },
+            additionalFeatures: {
+              noOfBedroom: 0,
+              noOfBathroom: 0,
+              noOfToilet: 0,
+              noOfCarPark: 0
+            },
+            features: [],
+            docOnProperty: [
+              {
+                isProvided: true,
+                _id: 'doc-1',
+                docName: 'Deed of Assignment'
+              }
+            ],
+            owner: 'sample-user',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isAvailable: 'yes',
+            areYouTheOwner: true,
+            isApproved: true
           }
         ]);
       } finally {
@@ -121,6 +204,7 @@ const FeaturedPropertiesSection = () => {
 
   const formatPropertyType = (briefType: string) => {
     switch (briefType.toLowerCase()) {
+      case 'outright sales':
       case 'sale':
       case 'buy':
         return 'For Sale';
@@ -136,8 +220,20 @@ const FeaturedPropertiesSection = () => {
     }
   };
 
+  const getPropertyTitle = (property: Property) => {
+    if (property.propertyType === 'Land') {
+      return `${property.landSize?.size || 1} ${property.landSize?.measurementType || 'Plot'} of Land in ${property.location.area}`;
+    }
+    
+    const bedrooms = property.additionalFeatures.noOfBedroom;
+    const bedroomText = bedrooms > 0 ? `${bedrooms} Bedroom ` : '';
+    return `${bedroomText}${property.propertyType} in ${property.location.area}`;
+  };
+
   const getPropertyUrl = (property: Property) => {
-    const marketType = property.briefType.toLowerCase() === 'sale' || property.briefType.toLowerCase() === 'buy' ? 'buy' : property.briefType.toLowerCase();
+    const marketType = property.briefType.toLowerCase().includes('sale') ? 'buy' : 
+                      property.briefType.toLowerCase().includes('rent') ? 'rent' : 
+                      property.briefType.toLowerCase();
     return `/property/${marketType}/${property._id}`;
   };
 
@@ -188,8 +284,8 @@ const FeaturedPropertiesSection = () => {
                 {/* Property Image */}
                 <div className='aspect-[4/3] relative overflow-hidden'>
                   <img 
-                    src={property.images?.[0] || '/placeholder-property.svg'}
-                    alt={property.title}
+                    src={property.pictures?.[0] || '/placeholder-property.svg'}
+                    alt={getPropertyTitle(property)}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   
@@ -212,7 +308,7 @@ const FeaturedPropertiesSection = () => {
                 <div className='p-6'>
                   {/* Title */}
                   <h3 className='text-lg font-bold text-[#09391C] mb-2 line-clamp-2 group-hover:text-[#8DDB90] transition-colors duration-300'>
-                    {property.title}
+                    {getPropertyTitle(property)}
                   </h3>
 
                   {/* Location */}
@@ -220,8 +316,19 @@ const FeaturedPropertiesSection = () => {
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
-                    <span className='text-sm'>{property.localGovernmentArea}, {property.state}</span>
+                    <span className='text-sm'>{property.location.localGovernment}, {property.location.state}</span>
                   </div>
+
+                  {/* Property Features Summary */}
+                  {property.propertyType !== 'Land' && property.additionalFeatures.noOfBedroom > 0 && (
+                    <div className='flex items-center gap-4 text-gray-500 text-sm mb-4'>
+                      <span>{property.additionalFeatures.noOfBedroom} Bed</span>
+                      <span>{property.additionalFeatures.noOfBathroom} Bath</span>
+                      {property.additionalFeatures.noOfCarPark > 0 && (
+                        <span>{property.additionalFeatures.noOfCarPark} Parking</span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Action Buttons */}
                   <div className='flex gap-2'>
