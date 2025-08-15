@@ -162,18 +162,6 @@ const NewHomepage = ({
             <FinalCTASection />
           </ErrorBoundary>
         </main>
-
-        {/* 8. FOOTER */}
-        <ErrorBoundary
-          fallback={
-            <footer className="w-full bg-[#0B423D] py-16">
-              <div className="container mx-auto px-4 text-center">
-                <p className="text-white">© 2024 Khabiteq Realty Limited. All rights reserved.</p>
-              </div>
-            </footer>
-          }>
-          <NewFooter isComingSoon={isComingSoon} />
-        </ErrorBoundary>
       </section>
 
       {/* Email Verification Modal */}
