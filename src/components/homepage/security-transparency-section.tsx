@@ -50,12 +50,12 @@ const SecurityTransparencySection = () => {
   ];
 
   const documentTypes = [
-    "Certificate of Occupancy (C of O)",
+    "Certificate of Occupancy",
+    "Deed of Partition",
     "Deed of Assignment",
-    "Survey Plans",
-    "Building Approval",
-    "Tax Receipts",
-    "Power of Attorney"
+    "Governor's Consent",
+    "Survey Plan",
+    "Deed of Lease"
   ];
 
   const securityBadges = [
