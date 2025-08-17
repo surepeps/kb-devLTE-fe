@@ -61,8 +61,10 @@ export const useSystemSettings = <T>(
 
       setSettings(result);
     } catch (err) {
-      console.error(`Error fetching ${category || 'all'} settings:`, err);
+      console.warn(`System settings not available for ${category || 'all'} - using defaults:`, err);
       setError(`Failed to load ${category || 'system'} settings`);
+      // Set empty settings to allow components to use their fallbacks
+      setSettings({} as T);
     } finally {
       setLoading(false);
     }
