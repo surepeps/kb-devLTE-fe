@@ -602,12 +602,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
               )}
             </div>
 
-            {/* Verification Report Section */}
+            {/* Verification Report Section - Only show if verificationReports.status is pending */}
             {(() => {
               const documentsArray = Array.isArray(documentDetails?.documents)
                 ? documentDetails.documents
                 : documentDetails?.documents ? [documentDetails.documents] : [];
-              return documentsArray.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful');
+              return documentsArray.length > 0 && documentDetails?.verificationReports?.status === 'pending';
             })() && (
               <div className="bg-white shadow-xl rounded-2xl border border-gray-100">
                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
