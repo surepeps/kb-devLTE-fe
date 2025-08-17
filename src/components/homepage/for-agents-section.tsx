@@ -8,8 +8,7 @@ import { useSubscriptionSettings } from '@/hooks/useSystemSettings';
 import { formatSubscriptionFeatures } from '@/services/systemSettingsService';
 
 const ForAgentsSection = () => {
-  const [subscriptionSettings, setSubscriptionSettings] = useState<SubscriptionSettings>({});
-  const [loading, setLoading] = useState(true);
+  const { settings: subscriptionSettings, loading } = useSubscriptionSettings();
 
   const freeDashboardFeatures = [
     "Basic property listings",
@@ -29,21 +28,6 @@ const ForAgentsSection = () => {
     "Document verification assistance",
     "Commission tracking system"
   ];
-
-  useEffect(() => {
-    const fetchSubscriptionSettings = async () => {
-      try {
-        const settings = await getSubscriptionSettings();
-        setSubscriptionSettings(settings);
-      } catch (error) {
-        console.error('Error fetching subscription settings:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSubscriptionSettings();
-  }, []);
 
   // Get subscription features from API or use default
   const subscriptionFeatures = subscriptionSettings.features
