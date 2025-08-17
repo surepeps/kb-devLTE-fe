@@ -776,6 +776,30 @@ const ThirdPartyVerificationPage: React.FC = () => {
               </div>
             )}
 
+            {/* Message when verification is not available for officer action */}
+            {(() => {
+              const documentsArray = Array.isArray(documentDetails?.documents)
+                ? documentDetails.documents
+                : documentDetails?.documents ? [documentDetails.documents] : [];
+              const verificationStatus = documentDetails?.verificationReports?.status;
+              return documentsArray.length > 0 && verificationStatus && verificationStatus !== 'pending' && verificationStatus !== 'completed';
+            })() && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                  <AlertTriangle className="h-8 w-8 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  Verification In Progress
+                </h3>
+                <p className="text-blue-700">
+                  Verification status: <span className="font-semibold">{documentDetails?.verificationReports?.status}</span>
+                </p>
+                <p className="text-sm text-blue-600 mt-2">
+                  Officer action will be available when status is "pending"
+                </p>
+              </div>
+            )}
+
             {/* Completed Status Message */}
             {documentDetails?.verificationReports?.status === 'completed' && (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
