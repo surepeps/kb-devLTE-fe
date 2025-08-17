@@ -46,6 +46,7 @@ const KeyFeaturesSection = () => {
       title: "Submit Your Preference",
       description: "Share requirements, we'll match you.",
       videoThumbnail: "/placeholder-property.svg",
+      videoUrl: homePageSettings.submit_preference_video_url,
       link: "/preference",
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
