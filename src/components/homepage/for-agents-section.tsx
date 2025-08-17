@@ -1,11 +1,11 @@
 /** @format */
 
 'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { getSubscriptionSettings, formatSubscriptionFeatures } from '@/services/systemSettingsService';
-import { SubscriptionSettings } from '@/types/system-settings';
+import { useSubscriptionSettings } from '@/hooks/useSystemSettings';
+import { formatSubscriptionFeatures } from '@/services/systemSettingsService';
 
 const ForAgentsSection = () => {
   const [subscriptionSettings, setSubscriptionSettings] = useState<SubscriptionSettings>({});
