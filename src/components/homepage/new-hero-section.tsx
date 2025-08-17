@@ -1,12 +1,11 @@
 /** @format */
 
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../general-components/button';
 import Link from 'next/link';
-import { getHomePageSettings } from '@/services/systemSettingsService';
-import { HomePageSettings } from '@/types/system-settings';
+import { useHomePageSettings } from '@/hooks/useSystemSettings';
 
 const NewHeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
