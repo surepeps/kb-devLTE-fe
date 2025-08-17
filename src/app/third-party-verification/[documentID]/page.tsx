@@ -15,13 +15,24 @@ type Document = {
   documentUrl: string;
 };
 
+type VerificationReports = {
+  status: 'pending' | 'completed' | 'in-progress';
+  selfVerification: boolean;
+};
+
 type DocumentDetails = {
   _id: string;
-  customId: string;
+  buyerId: string;
+  docCode: string;
+  amountPaid: number;
+  transaction: string;
   documents: Document[] | Document;
   status: string;
+  docType: string;
+  verificationReports: VerificationReports;
   createdAt: string;
   updatedAt: string;
+  __v: number;
 };
 
 type ReportDocument = {
