@@ -492,8 +492,22 @@ const ThirdPartyVerificationPage: React.FC = () => {
             <span className="font-mono font-medium text-[#0B423D] text-sm sm:text-base">{documentID}</span>
           </div>
           {documentDetails && (
-            <div className="mt-2">
+            <div className="mt-2 space-y-2">
               {getStatusBadge(documentDetails.status)}
+              {documentDetails.verificationReports && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Verification Status: </span>
+                  <span className={`font-semibold ${
+                    documentDetails.verificationReports.status === 'pending'
+                      ? 'text-amber-600'
+                      : documentDetails.verificationReports.status === 'completed'
+                      ? 'text-green-600'
+                      : 'text-blue-600'
+                  }`}>
+                    {documentDetails.verificationReports.status}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
