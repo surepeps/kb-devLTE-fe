@@ -622,7 +622,11 @@ const DocumentVerificationPage: React.FC = () => {
                 </p>
               )}
               <div className="text-3xl font-bold text-green-600 mb-2">
-                ₦{calculateFee().toLocaleString()}
+                {settingsLoading ? (
+                  <div className="animate-pulse bg-gray-200 h-8 w-32 mx-auto rounded"></div>
+                ) : (
+                  `₦${calculateFee().toLocaleString()}`
+                )}
               </div>
               <p className="text-gray-600 text-sm">
                 One-time fee for {selectedDocuments.length} document{selectedDocuments.length > 1 ? 's' : ''}
