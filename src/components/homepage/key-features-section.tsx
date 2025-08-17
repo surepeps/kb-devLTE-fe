@@ -60,6 +60,7 @@ const KeyFeaturesSection = () => {
       title: "Agent Marketplace",
       description: "Access verified client preferences matching your listings.",
       videoThumbnail: "/placeholder-property.svg",
+      videoUrl: homePageSettings.agent_marketplace_video_url,
       link: "/agent-marketplace",
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
