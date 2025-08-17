@@ -86,4 +86,9 @@ export const URLS = {
   verifyAccessCode: "/third-party/verifyAccessCode",
   getDocumentDetails: "/third-party/getDocumentDetails",
   submitReport: "/third-party/submit-report",
+
+  /**
+   * System Settings Endpoints
+   */
+  getSystemSettings: "/getSystemSettings",
 };

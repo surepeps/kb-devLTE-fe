@@ -7,6 +7,7 @@ import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
 import { DELETE_REQUEST, POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 import DocumentIframePreview from '@/components/document-verification/DocumentIframePreview';
+import { useDocumentVerificationSettings } from '@/hooks/useSystemSettings';
 
 // Define the document types as a union type
 const documentOptions = [
@@ -56,6 +57,9 @@ const initialDocumentNumbers: DocumentNumbers = {
 
 
 const DocumentVerificationPage: React.FC = () => {
+  // System settings for dynamic pricing
+  const { settings: docVerificationSettings, loading: settingsLoading } = useDocumentVerificationSettings();
+
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [showGuideline, setShowGuideline] = useState<boolean>(false);
   const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
@@ -123,8 +127,12 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): number => {
-    if (selectedDocuments.length === 0) return 20000;
-    return selectedDocuments.length === 1 ? 20000 : 40000;
+    // Use dynamic pricing from system settings with fallback to original prices
+    const singleDocPrice = docVerificationSettings.verification_price || 20000;
+    const multiDocPrice = docVerificationSettings.multi_document_price || 40000;
+
+    if (selectedDocuments.length === 0) return singleDocPrice;
+    return selectedDocuments.length === 1 ? singleDocPrice : multiDocPrice;
   };
 
   const validateFileType = (file: File): boolean => {
@@ -614,7 +622,11 @@ const DocumentVerificationPage: React.FC = () => {
                 </p>
               )}
               <div className="text-3xl font-bold text-green-600 mb-2">
-                ₦{calculateFee().toLocaleString()}
+                {settingsLoading ? (
+                  <div className="animate-pulse bg-gray-200 h-8 w-32 mx-auto rounded"></div>
+                ) : (
+                  `₦${calculateFee().toLocaleString()}`
+                )}
               </div>
               <p className="text-gray-600 text-sm">
                 One-time fee for {selectedDocuments.length} document{selectedDocuments.length > 1 ? 's' : ''}
