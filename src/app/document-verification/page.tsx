@@ -127,8 +127,12 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): number => {
-    if (selectedDocuments.length === 0) return 20000;
-    return selectedDocuments.length === 1 ? 20000 : 40000;
+    // Use dynamic pricing from system settings with fallback to original prices
+    const singleDocPrice = docVerificationSettings.verification_price || 20000;
+    const multiDocPrice = docVerificationSettings.multi_document_price || 40000;
+
+    if (selectedDocuments.length === 0) return singleDocPrice;
+    return selectedDocuments.length === 1 ? singleDocPrice : multiDocPrice;
   };
 
   const validateFileType = (file: File): boolean => {
