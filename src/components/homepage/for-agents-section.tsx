@@ -4,8 +4,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useSubscriptionSettings } from '@/hooks/useSystemSettings';
+import { formatSubscriptionFeatures } from '@/services/systemSettingsService';
 
 const ForAgentsSection = () => {
+  const { settings: subscriptionSettings, loading } = useSubscriptionSettings();
+
   const freeDashboardFeatures = [
     "Basic property listings",
     "Client contact information",
@@ -13,7 +17,8 @@ const ForAgentsSection = () => {
     "Community support"
   ];
 
-  const subscriptionFeatures = [
+  // Default subscription features (fallback)
+  const defaultSubscriptionFeatures = [
     "Unlimited property listings",
     "Advanced lead management",
     "Priority customer support",
@@ -23,6 +28,14 @@ const ForAgentsSection = () => {
     "Document verification assistance",
     "Commission tracking system"
   ];
+
+  // Get subscription features from API or use default
+  const subscriptionFeatures = subscriptionSettings.features
+    ? formatSubscriptionFeatures(subscriptionSettings.features)
+    : defaultSubscriptionFeatures;
+
+  // Get monthly fee from API or use default
+  const monthlyFee = subscriptionSettings.monthly_fee || 25000;
 
   const agentBenefits = [
     {
@@ -148,19 +161,35 @@ const ForAgentsSection = () => {
 
               <div className='text-center mb-8'>
                 <h4 className='text-2xl font-bold text-[#09391C] mb-2'>Subscription Dashboard</h4>
-                <div className='text-4xl font-bold text-[#8DDB90] mb-4'>₦25,000<span className='text-lg text-gray-500'>/month</span></div>
+                <div className='text-4xl font-bold text-[#8DDB90] mb-4'>
+                  {loading ? (
+                    <div className="animate-pulse bg-gray-200 h-10 w-32 mx-auto rounded"></div>
+                  ) : (
+                    <>₦{monthlyFee.toLocaleString()}<span className='text-lg text-gray-500'>/month</span></>
+                  )}
+                </div>
                 <p className='text-gray-600'>For serious professionals</p>
               </div>
 
               <ul className='space-y-4 mb-8'>
-                {subscriptionFeatures.map((feature, index) => (
-                  <li key={index} className='flex items-center gap-3'>
-                    <svg className="w-5 h-5 text-[#8DDB90]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className='text-gray-700'>{feature}</span>
-                  </li>
-                ))}
+                {loading ? (
+                  // Loading skeleton
+                  Array.from({ length: 8 }).map((_, index) => (
+                    <li key={index} className='flex items-center gap-3'>
+                      <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="bg-gray-200 h-4 rounded animate-pulse flex-1"></div>
+                    </li>
+                  ))
+                ) : (
+                  subscriptionFeatures.map((feature, index) => (
+                    <li key={index} className='flex items-center gap-3'>
+                      <svg className="w-5 h-5 text-[#8DDB90]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className='text-gray-700'>{feature.trim()}</span>
+                    </li>
+                  ))
+                )}
               </ul>
 
               <Link href="/agent-subscriptions">
