@@ -10,6 +10,27 @@ import { HomePageSettings } from '@/types/system-settings';
 
 const NewHeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [homePageSettings, setHomePageSettings] = useState<HomePageSettings>({});
+  const [settingsLoading, setSettingsLoading] = useState(true);
+
+  // Fetch home page settings
+  useEffect(() => {
+    const fetchHomePageSettings = async () => {
+      try {
+        const settings = await getHomePageSettings();
+        setHomePageSettings(settings);
+      } catch (error) {
+        console.error('Error fetching home page settings:', error);
+      } finally {
+        setSettingsLoading(false);
+      }
+    };
+
+    fetchHomePageSettings();
+  }, []);
+
+  // Get hero video URL from settings or use default
+  const heroVideoUrl = homePageSettings.hero_video_url || "/khabi-demo-video.mp4";
 
   // Ensure video autoplay works
   useEffect(() => {
