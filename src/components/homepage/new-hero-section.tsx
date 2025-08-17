@@ -5,9 +5,14 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../general-components/button';
 import Link from 'next/link';
+import { useHomePageSettings } from '@/hooks/useSystemSettings';
 
 const NewHeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { settings: homePageSettings, loading: settingsLoading } = useHomePageSettings();
+
+  // Get hero video URL from settings or use default
+  const heroVideoUrl = homePageSettings.hero_video_url || "/khabi-demo-video.mp4";
 
   // Ensure video autoplay works
   useEffect(() => {
@@ -96,7 +101,13 @@ const NewHeroSection = () => {
             className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
             <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
               <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden'>
-                {/* Placeholder for actual video - replace with real video URL */}
+                {/* Loading state for video */}
+                {settingsLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  </div>
+                )}
+                {/* Dynamic video from system settings */}
                 <video
                   ref={videoRef}
                   className="w-full h-full object-cover"
@@ -106,8 +117,8 @@ const NewHeroSection = () => {
                   playsInline
                   preload="auto"
                   poster="/placeholder-property.svg">
-                  {/* Add actual video source here */}
-                  <source src="/khabi-demo-video.mp4" type="video/mp4" />
+                  {/* Dynamic video source from system settings */}
+                  {heroVideoUrl && <source src={heroVideoUrl} type="video/mp4" />}
                   {/* Fallback content */}
                   <div className='absolute inset-0 flex items-center justify-center'>
                     <div className='text-center'>
