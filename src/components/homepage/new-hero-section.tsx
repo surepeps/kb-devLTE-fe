@@ -119,7 +119,13 @@ const NewHeroSection = () => {
             className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
             <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
               <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden'>
-                {/* Placeholder for actual video - replace with real video URL */}
+                {/* Loading state for video */}
+                {settingsLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  </div>
+                )}
+                {/* Dynamic video from system settings */}
                 <video
                   ref={videoRef}
                   className="w-full h-full object-cover"
