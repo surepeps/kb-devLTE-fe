@@ -57,6 +57,9 @@ const initialDocumentNumbers: DocumentNumbers = {
 
 
 const DocumentVerificationPage: React.FC = () => {
+  // System settings for dynamic pricing
+  const { settings: docVerificationSettings, loading: settingsLoading } = useDocumentVerificationSettings();
+
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [showGuideline, setShowGuideline] = useState<boolean>(false);
   const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
