@@ -8,6 +8,24 @@ import { getHomePageSettings } from '@/services/systemSettingsService';
 import { HomePageSettings } from '@/types/system-settings';
 
 const KeyFeaturesSection = () => {
+  const [homePageSettings, setHomePageSettings] = useState<HomePageSettings>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHomePageSettings = async () => {
+      try {
+        const settings = await getHomePageSettings();
+        setHomePageSettings(settings);
+      } catch (error) {
+        console.error('Error fetching home page settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomePageSettings();
+  }, []);
+
   const features = [
     {
       id: 1,
