@@ -177,7 +177,13 @@ const ForAgentsSection = () => {
 
               <div className='text-center mb-8'>
                 <h4 className='text-2xl font-bold text-[#09391C] mb-2'>Subscription Dashboard</h4>
-                <div className='text-4xl font-bold text-[#8DDB90] mb-4'>₦25,000<span className='text-lg text-gray-500'>/month</span></div>
+                <div className='text-4xl font-bold text-[#8DDB90] mb-4'>
+                  {loading ? (
+                    <div className="animate-pulse bg-gray-200 h-10 w-32 mx-auto rounded"></div>
+                  ) : (
+                    <>₦{monthlyFee.toLocaleString()}<span className='text-lg text-gray-500'>/month</span></>
+                  )}
+                </div>
                 <p className='text-gray-600'>For serious professionals</p>
               </div>
 
