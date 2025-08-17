@@ -19,19 +19,29 @@ export const getSystemSettings = async (
   category?: SystemSettingsCategory
 ): Promise<SystemSettingsApiResponse> => {
   try {
-    const url = category 
+    // Check if BASE URL is configured
+    if (!URLS.BASE || URLS.BASE.includes('undefined')) {
+      console.warn('API base URL not configured, using default settings');
+      return {
+        success: false,
+        message: 'API not configured',
+        data: []
+      };
+    }
+
+    const url = category
       ? `${URLS.BASE}${URLS.getSystemSettings}?category=${category}`
       : `${URLS.BASE}${URLS.getSystemSettings}`;
-    
+
     const response = await GET_REQUEST<SystemSetting[]>(url);
-    
+
     return {
       success: response.success || false,
       message: response.message || '',
       data: response.data || []
     };
   } catch (error) {
-    console.error('Error fetching system settings:', error);
+    console.warn('System settings API not available, using defaults:', error);
     return {
       success: false,
       message: 'Failed to fetch system settings',
