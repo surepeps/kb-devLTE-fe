@@ -129,8 +129,8 @@ const NewHeroSection = () => {
                   playsInline
                   preload="auto"
                   poster="/placeholder-property.svg">
-                  {/* Add actual video source here */}
-                  <source src="/khabi-demo-video.mp4" type="video/mp4" />
+                  {/* Dynamic video source from system settings */}
+                  {heroVideoUrl && <source src={heroVideoUrl} type="video/mp4" />}
                   {/* Fallback content */}
                   <div className='absolute inset-0 flex items-center justify-center'>
                     <div className='text-center'>
