@@ -15,13 +15,24 @@ type Document = {
   documentUrl: string;
 };
 
+type VerificationReports = {
+  status: 'pending' | 'completed' | 'in-progress';
+  selfVerification: boolean;
+};
+
 type DocumentDetails = {
   _id: string;
-  customId: string;
+  buyerId: string;
+  docCode: string;
+  amountPaid: number;
+  transaction: string;
   documents: Document[] | Document;
   status: string;
+  docType: string;
+  verificationReports: VerificationReports;
   createdAt: string;
   updatedAt: string;
+  __v: number;
 };
 
 type ReportDocument = {
@@ -481,8 +492,22 @@ const ThirdPartyVerificationPage: React.FC = () => {
             <span className="font-mono font-medium text-[#0B423D] text-sm sm:text-base">{documentID}</span>
           </div>
           {documentDetails && (
-            <div className="mt-2">
+            <div className="mt-2 space-y-2">
               {getStatusBadge(documentDetails.status)}
+              {documentDetails.verificationReports && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Verification Status: </span>
+                  <span className={`font-semibold ${
+                    documentDetails.verificationReports.status === 'pending'
+                      ? 'text-amber-600'
+                      : documentDetails.verificationReports.status === 'completed'
+                      ? 'text-green-600'
+                      : 'text-blue-600'
+                  }`}>
+                    {documentDetails.verificationReports.status}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -591,12 +616,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
               )}
             </div>
 
-            {/* Verification Report Section */}
+            {/* Verification Report Section - Only show if verificationReports.status is pending */}
             {(() => {
               const documentsArray = Array.isArray(documentDetails?.documents)
                 ? documentDetails.documents
                 : documentDetails?.documents ? [documentDetails.documents] : [];
-              return documentsArray.length > 0 && (documentDetails?.status === 'in-progress' || documentDetails?.status === 'successful');
+              return documentsArray.length > 0 && documentDetails?.verificationReports?.status === 'pending';
             })() && (
               <div className="bg-white shadow-xl rounded-2xl border border-gray-100">
                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
@@ -606,6 +631,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
                   <p className="text-sm text-gray-500 mt-1">
                     Provide verification status and description for each document
                   </p>
+                  <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm text-amber-700">
+                      <span className="font-medium">Officer Action Required:</span>
+                      {' '}Verification reports status is "{documentDetails?.verificationReports?.status}" - Submit your report to complete the verification process.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="p-4 sm:p-6 space-y-6">
@@ -765,8 +796,32 @@ const ThirdPartyVerificationPage: React.FC = () => {
               </div>
             )}
 
+            {/* Message when verification is not available for officer action */}
+            {(() => {
+              const documentsArray = Array.isArray(documentDetails?.documents)
+                ? documentDetails.documents
+                : documentDetails?.documents ? [documentDetails.documents] : [];
+              const verificationStatus = documentDetails?.verificationReports?.status;
+              return documentsArray.length > 0 && verificationStatus && verificationStatus !== 'pending' && verificationStatus !== 'completed';
+            })() && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                  <AlertTriangle className="h-8 w-8 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  Verification In Progress
+                </h3>
+                <p className="text-blue-700">
+                  Verification status: <span className="font-semibold">{documentDetails?.verificationReports?.status}</span>
+                </p>
+                <p className="text-sm text-blue-600 mt-2">
+                  Officer action will be available when status is "pending"
+                </p>
+              </div>
+            )}
+
             {/* Completed Status Message */}
-            {documentDetails?.status === 'completed' && (
+            {documentDetails?.verificationReports?.status === 'completed' && (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
                   <CheckCircle className="h-8 w-8 text-green-500" />
