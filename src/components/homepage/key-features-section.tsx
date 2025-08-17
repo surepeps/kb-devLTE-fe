@@ -1,10 +1,9 @@
 /** @format */
 
 'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { getHomePageSettings } from '@/services/systemSettingsService';
-import { HomePageSettings } from '@/types/system-settings';
+import { useHomePageSettings } from '@/hooks/useSystemSettings';
 import FeatureCard from './FeatureCard';
 
 const KeyFeaturesSection = () => {
