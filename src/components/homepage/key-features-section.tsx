@@ -3,9 +3,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { getHomePageSettings } from '@/services/systemSettingsService';
 import { HomePageSettings } from '@/types/system-settings';
+import FeatureCard from './FeatureCard';
 
 const KeyFeaturesSection = () => {
   const [homePageSettings, setHomePageSettings] = useState<HomePageSettings>({});
