@@ -32,6 +32,7 @@ const KeyFeaturesSection = () => {
       title: "Document Verification",
       description: "Verify property ownership and documents.",
       videoThumbnail: "/placeholder-property.svg",
+      videoUrl: homePageSettings.document_verification_video_url,
       link: "/document-verification",
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
