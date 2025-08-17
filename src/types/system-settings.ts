@@ -37,6 +37,7 @@ export interface HomePageSettings {
 
 export interface DocumentVerificationSettings {
   verification_price?: number;
+  multi_document_price?: number;
 }
 
 export interface InspectionSettings {
