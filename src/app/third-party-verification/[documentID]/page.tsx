@@ -777,7 +777,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
             )}
 
             {/* Completed Status Message */}
-            {documentDetails?.status === 'completed' && (
+            {documentDetails?.verificationReports?.status === 'completed' && (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
                   <CheckCircle className="h-8 w-8 text-green-500" />
