@@ -88,6 +88,7 @@ const KeyFeaturesSection = () => {
       title: "Post a Property",
       description: "List your property for sale or rent in minutes.",
       videoThumbnail: "/placeholder-property.svg",
+      videoUrl: homePageSettings.post_property_video_url,
       link: "/post-property",
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
