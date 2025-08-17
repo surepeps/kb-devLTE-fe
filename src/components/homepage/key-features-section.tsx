@@ -74,6 +74,7 @@ const KeyFeaturesSection = () => {
       title: "Subscription Plans",
       description: "Unlock premium tools for agents and landlords.",
       videoThumbnail: "/placeholder-property.svg",
+      videoUrl: homePageSettings.subscription_plan_video_url,
       link: "/agent-subscriptions",
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
