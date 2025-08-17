@@ -1,9 +1,11 @@
 /** @format */
 
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { getSubscriptionSettings, formatSubscriptionFeatures } from '@/services/systemSettingsService';
+import { SubscriptionSettings } from '@/types/system-settings';
 
 const ForAgentsSection = () => {
   const freeDashboardFeatures = [
