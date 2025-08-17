@@ -8,6 +8,9 @@ import { getSubscriptionSettings, formatSubscriptionFeatures } from '@/services/
 import { SubscriptionSettings } from '@/types/system-settings';
 
 const ForAgentsSection = () => {
+  const [subscriptionSettings, setSubscriptionSettings] = useState<SubscriptionSettings>({});
+  const [loading, setLoading] = useState(true);
+
   const freeDashboardFeatures = [
     "Basic property listings",
     "Client contact information",
@@ -15,7 +18,8 @@ const ForAgentsSection = () => {
     "Community support"
   ];
 
-  const subscriptionFeatures = [
+  // Default subscription features (fallback)
+  const defaultSubscriptionFeatures = [
     "Unlimited property listings",
     "Advanced lead management",
     "Priority customer support",
@@ -25,6 +29,29 @@ const ForAgentsSection = () => {
     "Document verification assistance",
     "Commission tracking system"
   ];
+
+  useEffect(() => {
+    const fetchSubscriptionSettings = async () => {
+      try {
+        const settings = await getSubscriptionSettings();
+        setSubscriptionSettings(settings);
+      } catch (error) {
+        console.error('Error fetching subscription settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscriptionSettings();
+  }, []);
+
+  // Get subscription features from API or use default
+  const subscriptionFeatures = subscriptionSettings.features
+    ? formatSubscriptionFeatures(subscriptionSettings.features)
+    : defaultSubscriptionFeatures;
+
+  // Get monthly fee from API or use default
+  const monthlyFee = subscriptionSettings.monthly_fee || 25000;
 
   const agentBenefits = [
     {
