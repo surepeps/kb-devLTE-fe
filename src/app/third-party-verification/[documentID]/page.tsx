@@ -631,6 +631,12 @@ const ThirdPartyVerificationPage: React.FC = () => {
                   <p className="text-sm text-gray-500 mt-1">
                     Provide verification status and description for each document
                   </p>
+                  <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm text-amber-700">
+                      <span className="font-medium">Officer Action Required:</span>
+                      {' '}Verification reports status is "{documentDetails?.verificationReports?.status}" - Submit your report to complete the verification process.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="p-4 sm:p-6 space-y-6">
