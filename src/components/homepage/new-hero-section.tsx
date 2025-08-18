@@ -140,17 +140,19 @@ const NewHeroSection = () => {
               transition={{ duration: 1, delay: 0.6 }}
               className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
               <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
-                <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden'>
+                <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden group'>
                   {/* Dynamic video from system settings */}
                   <video
                     ref={videoRef}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer"
                     autoPlay
                     muted
                     loop
                     playsInline
                     preload="auto"
-                    poster="/placeholder-property.svg">
+                    poster="/placeholder-property.svg"
+                    onClick={handlePlayPause}
+                    onEnded={handleVideoEnded}>
                     <source src={heroVideoUrl} type="video/mp4" />
                     {/* Fallback content if video fails to load */}
                     <div className='absolute inset-0 flex items-center justify-center'>
@@ -165,6 +167,52 @@ const NewHeroSection = () => {
                       </div>
                     </div>
                   </video>
+
+                  {/* Video Controls Overlay */}
+                  <div className='absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
+                    {/* Main play/pause button */}
+                    <div
+                      className='absolute inset-0 flex items-center justify-center cursor-pointer pointer-events-auto'
+                      onClick={handlePlayPause}>
+                      <div className='w-16 h-16 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
+                        {isPlaying ? (
+                          // Pause icon
+                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 002 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        ) : (
+                          // Play icon
+                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Mute/Unmute button */}
+                    <div className='absolute bottom-4 right-4 pointer-events-auto'>
+                      <button
+                        onClick={handleMuteToggle}
+                        className='w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
+                        {isMuted ? (
+                          // Muted icon
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.792L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.792a1 1 0 011.617-.792zM12.22 6.22a1 1 0 011.414 0L15 7.586l1.364-1.364a1 1 0 111.414 1.414L16.414 9l1.364 1.364a1 1 0 11-1.414 1.414L15 10.414l-1.364 1.364a1 1 0 11-1.414-1.414L13.586 9l-1.364-1.364a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        ) : (
+                          // Unmuted icon
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.792L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.792a1 1 0 011.617-.792zM12 6a1 1 0 011 1v6a1 1 0 01-2 0V7a1 1 0 011-1zm3-1a1 1 0 000 2 3 3 0 010 6 1 1 0 000 2 5 5 0 000-10z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Status indicator */}
+                  <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                    {isPlaying ? 'Playing' : 'Paused'} • Click to {isPlaying ? 'pause' : 'play'}
+                  </div>
                 </div>
               </div>
             </motion.div>
