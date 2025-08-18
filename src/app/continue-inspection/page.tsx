@@ -18,6 +18,9 @@ const ContinueInspectionPage = () => {
   const router = useRouter();
   const isMobile = IsMobile();
 
+  // System settings for dynamic pricing
+  const { settings: inspectionSettings, loading: settingsLoading } = useInspectionSettings();
+
   const {
     selectedProperties,
     negotiatedPrices,
