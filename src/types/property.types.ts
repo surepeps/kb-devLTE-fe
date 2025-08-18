@@ -30,7 +30,7 @@ export interface PropertyDocument {
   type: string;
   verified: boolean;
   url?: string;
-}
+} 
 
 export interface PropertyImage {
   id: string;
