@@ -39,47 +39,25 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 <div className="text-gray-400">Loading...</div>
               </div>
             ) : feature.videoUrl ? (
-<<<<<<< HEAD
-              <video 
-=======
               <video
->>>>>>> e996957891402c4a7c0bebb6fa7f989a1b57bd8d
                 className="w-full h-full object-cover"
                 muted
                 poster={feature.videoThumbnail}
                 preload="metadata">
                 <source src={feature.videoUrl} type="video/mp4" />
-<<<<<<< HEAD
-                <img 
-=======
                 <img
->>>>>>> e996957891402c4a7c0bebb6fa7f989a1b57bd8d
                   src={feature.videoThumbnail}
                   alt={feature.title}
                   className="w-full h-full object-cover"
                 />
               </video>
             ) : (
-<<<<<<< HEAD
-              <img 
-=======
               <img
->>>>>>> e996957891402c4a7c0bebb6fa7f989a1b57bd8d
                 src={feature.videoThumbnail}
                 alt={feature.title}
                 className="w-full h-full object-cover"
               />
             )}
-<<<<<<< HEAD
-            {/* Play button overlay */}
-            <div className='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300'>
-              <div className={`w-12 h-12 ${feature.color} rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                </svg>
-              </div>
-            </div>
-=======
             {/* Play button overlay - only show if video URL exists */}
             {(loading || feature.videoUrl) && (
               <div className='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300'>
@@ -94,7 +72,6 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 </div>
               </div>
             )}
->>>>>>> e996957891402c4a7c0bebb6fa7f989a1b57bd8d
           </div>
 
           {/* Icon */}
