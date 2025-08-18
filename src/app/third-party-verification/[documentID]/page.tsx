@@ -1,13 +1,13 @@
 "use client"
-import React, { useState, useRef, useEffect } from 'react';
-import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle, Lock, Mail, File, Trash2, Image } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { CheckCircle, XCircle, Upload, FileText, Download, Eye, AlertTriangle, Lock, File, Trash2, Image } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useParams } from 'next/navigation';
 import { URLS } from '@/utils/URLS';
 import { POST_REQUEST, POST_REQUEST_FILE_UPLOAD, GET_REQUEST } from '@/utils/requests';
 
 // Types for verification data
-type DocumentStatus = 'pending' | 'validated' | 'rejected';
+type DocumentStatus = 'pending' | 'registered' | 'unregistered' | 'in-progress';
 
 type Document = {
   documentType: string;
@@ -16,7 +16,7 @@ type Document = {
 };
 
 type VerificationReports = {
-  status: 'pending' | 'completed' | 'in-progress';
+  status: 'pending' | 'registered' | 'unregistered';
   selfVerification: boolean;
 };
 
@@ -39,7 +39,7 @@ type ReportDocument = {
   originalDocumentType: string;
   newDocumentUrl?: string;
   description: string;
-  status: 'verified' | 'rejected';
+  status: 'registered' | 'unregistered';
 };
 
 type TokenValidationResponse = {
@@ -63,12 +63,14 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
   // Document verification state
   const [documentDetails, setDocumentDetails] = useState<DocumentDetails | null>(null);
-  const [reports, setReports] = useState<ReportDocument[]>([]);
+  // const [reports, setReports] = useState<ReportDocument[]>([]);
+  const [report, setReport] = useState<ReportDocument | null>(null);
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{[key: number]: number}>({});
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const fileInputRefs = useRef<{[key: number]: HTMLInputElement | null}>({});
+  const [uploadProgress, setUploadProgress] = useState<number | undefined>(undefined);
+  const [dragged, setDragged] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
 
   if (!isValidDocumentID) {
     return (
@@ -136,18 +138,21 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
       if (response.success && response.data) {
         setDocumentDetails(response.data);
-        // Normalize documents to always be an array
-        const documentsArray = Array.isArray(response.data.documents)
-          ? response.data.documents
-          : [response.data.documents];
+ 
+        // Use single document instead of array
+        const documentObj = Array.isArray(response.data.documents)
+          ? response.data.documents[0]
+          : response.data.documents;
 
-        // Initialize reports array based on documents
-        const initialReports = documentsArray.map((doc: Document) => ({
-          originalDocumentType: doc.documentType,
+        // Initialize reports data based on documents
+        const initialReport: ReportDocument = {
+          originalDocumentType: documentObj.documentType,
           description: '',
-          status: 'verified' as const
-        }));
-        setReports(initialReports);
+          status: 'registered'
+        };
+
+        setReport(initialReport);
+
       } else {
         toast.error('Failed to fetch document details');
       }
@@ -159,10 +164,8 @@ const ThirdPartyVerificationPage: React.FC = () => {
     }
   };
 
-  const handleReportChange = (index: number, field: keyof ReportDocument, value: string) => {
-    setReports(prev => prev.map((report, i) =>
-      i === index ? { ...report, [field]: value } : report
-    ));
+  const handleReportChange = (field: keyof ReportDocument, value: string) => {
+    setReport(prev => prev ? { ...prev, [field]: value } : prev);
   };
 
   const getFileTypeIcon = (fileName: string) => {
@@ -188,88 +191,114 @@ const ThirdPartyVerificationPage: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const handleFileUpload = async (index: number, file: File) => {
+  const handleFileUpload = async (file: File) => {
     if (!file) return;
 
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const allowedTypes = [
+      "application/pdf",
+
+      // Images
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+
+      // Word
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+      // Excel
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+
+      // PowerPoint
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+
+      // Text & CSV
+      "text/plain",
+      "text/csv",
+
+      // Archives
+      "application/zip",
+      "application/x-zip-compressed",
+    ];
+
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF, JPEG, PNG, or WebP file');
+      toast.error("Unsupported file type. Please upload a valid document or image.");
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 50 * 1024 * 1024; // 50MB, since backend allows bigger
     if (file.size > maxSize) {
-      toast.error('File size must be less than 10MB');
+      toast.error("File size must be less than 50MB");
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('for', 'verification-report');
+      formData.append("file", file);
+      formData.append("for", "default");
 
-      // Set upload progress
-      setUploadProgress(prev => ({ ...prev, [index]: 0 }));
+      setUploadProgress(0);
 
-      const uploadResponse = await POST_REQUEST_FILE_UPLOAD(`${URLS.BASE}${URLS.uploadSingleImg}`, formData);
-      
+      const uploadResponse = await POST_REQUEST_FILE_UPLOAD(
+        `${URLS.BASE}${URLS.uploadSingleImg}`,
+        formData
+      );
+
       if (uploadResponse.success) {
-        handleReportChange(index, 'newDocumentUrl', uploadResponse.data.url);
-        setUploadProgress(prev => ({ ...prev, [index]: 100 }));
-        toast.success('Document uploaded successfully');
-        
-        // Clear progress after 2 seconds
-        setTimeout(() => {
-          setUploadProgress(prev => {
-            const newProgress = { ...prev };
-            delete newProgress[index];
-            return newProgress;
-          });
-        }, 2000);
+        handleReportChange("newDocumentUrl", uploadResponse.data.url);
+        setUploadProgress(100);
+        toast.success("Document uploaded successfully");
+
+        setTimeout(() => setUploadProgress(undefined), 2000);
       } else {
-        throw new Error(uploadResponse.message || 'Upload failed');
+        throw new Error(uploadResponse.message || "Upload failed");
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Failed to upload document');
-      setUploadProgress(prev => {
-        const newProgress = { ...prev };
-        delete newProgress[index];
-        return newProgress;
-      });
+      console.error("Upload error:", error);
+      toast.error("Failed to upload document");
+      setUploadProgress(undefined);
     }
   };
 
-  const handleFileDrop = (index: number, e: React.DragEvent) => {
+
+  const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    setDraggedIndex(null);
-    
+    setDragged(false);
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
-      handleFileUpload(index, files[0]);
+      handleFileUpload(files[0]);
     }
   };
 
-  const handleDragOver = (index: number, e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    setDraggedIndex(index);
+    setDragged(true);
   };
 
-  const handleDragLeave = (index: number, e: React.DragEvent) => {
+  const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    setDraggedIndex(null);
+    setDragged(false);
   };
 
-  const removeUploadedFile = (index: number) => {
-    handleReportChange(index, 'newDocumentUrl', '');
+
+  const removeUploadedFile = () => {
+    handleReportChange('newDocumentUrl', '');
     toast.success('File removed successfully');
   };
 
   const submitReport = async () => {
-    // Validate all reports have descriptions
-    const hasEmptyDescriptions = reports.some(report => !report.description.trim());
-    if (hasEmptyDescriptions) {
-      toast.error('Please provide descriptions for all documents');
+    if (!report) {
+      toast.error('No report data available');
+      return;
+    }
+
+    // Validate report have descriptions
+    if (!report.description.trim()) {
+      toast.error('Please provide a description for the document');
       return;
     }
 
@@ -277,7 +306,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
     try {
       const response = await toast.promise(
         POST_REQUEST(`${URLS.BASE}${URLS.submitReport}/${documentID}`, {
-          reports
+          report
         }),
         {
           loading: 'Submitting verification report...',
@@ -299,27 +328,53 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
   const handleDocumentPreview = (documentUrl: string) => {
     if (!documentUrl) {
-      toast.error('Document URL not available');
+      toast.error("Document URL not available");
       return;
     }
-    
-    // Handle Cloudinary URLs properly
+
     let previewUrl = documentUrl;
-    
-    // If it's a Cloudinary URL, ensure it's optimized for viewing
-    if (documentUrl.includes('cloudinary.com')) {
-      // For PDF files, convert to image for preview
-      if (documentUrl.includes('.pdf')) {
-        previewUrl = documentUrl.replace('/upload/', '/upload/f_auto,q_auto,pg_1/');
+    const lowerUrl = documentUrl.toLowerCase();
+
+    if (documentUrl.includes("cloudinary.com")) {
+      if (lowerUrl.endsWith(".pdf")) {
+        // PDF → Cloudinary optimized preview
+        previewUrl = documentUrl.replace(
+          "/upload/",
+          "/upload/f_auto,q_auto,pg_1/"
+        );
+      } else if (
+        lowerUrl.endsWith(".jpg") ||
+        lowerUrl.endsWith(".jpeg") ||
+        lowerUrl.endsWith(".png") ||
+        lowerUrl.endsWith(".webp")
+      ) {
+        // Images → optimized preview
+        previewUrl = documentUrl.replace(
+          "/upload/",
+          "/upload/f_auto,q_auto,w_1200/"
+        );
+      } else if (
+        lowerUrl.endsWith(".doc") ||
+        lowerUrl.endsWith(".docx") ||
+        lowerUrl.endsWith(".xls") ||
+        lowerUrl.endsWith(".xlsx") ||
+        lowerUrl.endsWith(".ppt") ||
+        lowerUrl.endsWith(".pptx")
+      ) {
+        // Word, Excel, PowerPoint → Google Docs Viewer
+        previewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(
+          documentUrl
+        )}&embedded=true`;
       } else {
-        // For images, optimize for web viewing
-        previewUrl = documentUrl.replace('/upload/', '/upload/f_auto,q_auto,w_1200/');
+        // Other file types (zip, rar, etc.) → just open directly (browser may download)
+        previewUrl = documentUrl;
       }
     }
-    
-    // Open document in a new tab for preview
-    window.open(previewUrl, '_blank', 'noopener,noreferrer');
+
+    // Open in new tab
+    window.open(previewUrl, "_blank", "noopener,noreferrer");
   };
+
 
   const handleDocumentDownload = async (documentUrl: string, documentType: string) => {
     if (!documentUrl) {
@@ -491,25 +546,6 @@ const ThirdPartyVerificationPage: React.FC = () => {
             <span className="text-xs sm:text-sm text-gray-500">Document ID: </span>
             <span className="font-mono font-medium text-[#0B423D] text-sm sm:text-base">{documentID}</span>
           </div>
-          {documentDetails && (
-            <div className="mt-2 space-y-2">
-              {getStatusBadge(documentDetails.status)}
-              {documentDetails.verificationReports && (
-                <div className="text-sm">
-                  <span className="text-gray-600">Verification Status: </span>
-                  <span className={`font-semibold ${
-                    documentDetails.verificationReports.status === 'pending'
-                      ? 'text-amber-600'
-                      : documentDetails.verificationReports.status === 'completed'
-                      ? 'text-green-600'
-                      : 'text-blue-600'
-                  }`}>
-                    {documentDetails.verificationReports.status}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {isLoadingData ? (
@@ -634,147 +670,149 @@ const ThirdPartyVerificationPage: React.FC = () => {
                   <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                     <p className="text-sm text-amber-700">
                       <span className="font-medium">Officer Action Required:</span>
-                      {' '}Verification reports status is "{documentDetails?.verificationReports?.status}" - Submit your report to complete the verification process.
+                      {' '}Verification reports status is {documentDetails?.verificationReports?.status} - Submit your report to complete the verification process.
                     </p>
                   </div>
                 </div>
 
                 <div className="p-4 sm:p-6 space-y-6">
-                  {reports.map((report, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-6">
-                      <h4 className="text-lg font-medium text-gray-900 mb-4">
-                        Document {index + 1}: {report.originalDocumentType}
-                      </h4>
+                  {report && (
+                  <div className="border border-gray-200 rounded-lg p-6">
+                    <h4 className="text-lg font-medium text-gray-900 mb-4">
+                      Document: {report.originalDocumentType}
+                    </h4>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Status Selection */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Verification Status *
-                          </label>
-                          <select
-                            value={report.status}
-                            onChange={(e) => handleReportChange(index, 'status', e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Status Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Verification Status *
+                        </label>
+                        <select
+                          value={report.status}
+                          onChange={(e) => handleReportChange('status', e.target.value)}
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                        >
+                          <option value="registered">Registered</option>
+                          <option value="unregistered">Not Registered</option>
+                        </select>
+                      </div>
+
+                      {/* Enhanced Document Upload */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Upload Verified Document (Optional)
+                        </label>
+                        
+                        {!report.newDocumentUrl ? (
+                          <div
+                            className={`relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200 ${
+                              dragged
+                                ? "border-[#8DDB90] bg-[#8DDB90]/10"
+                                : "border-gray-300 hover:border-[#8DDB90] hover:bg-gray-50"
+                            }`}
+                            onDrop={handleFileDrop}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onClick={() => fileInputRef.current?.click()} // ✅ simpler
                           >
-                            <option value="verified">Verified</option>
-                            <option value="rejected">Rejected</option>
-                          </select>
-                        </div>
+                            <input
+                              ref={fileInputRef} // ✅ direct ref
+                              type="file"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleFileUpload(file);
+                              }}
+                              className="hidden"
+                              accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                            />
 
-                        {/* Enhanced Document Upload */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Upload Verified Document (Optional)
-                          </label>
-                          
-                          {!report.newDocumentUrl ? (
-                            <div
-                              className={`relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200 ${
-                                draggedIndex === index 
-                                  ? 'border-[#8DDB90] bg-[#8DDB90]/10' 
-                                  : 'border-gray-300 hover:border-[#8DDB90] hover:bg-gray-50'
-                              }`}
-                              onDrop={(e) => handleFileDrop(index, e)}
-                              onDragOver={(e) => handleDragOver(index, e)}
-                              onDragLeave={(e) => handleDragLeave(index, e)}
-                              onClick={() => fileInputRefs.current[index]?.click()}
-                            >
-                              <input
-                                ref={(el) => { fileInputRefs.current[index] = el; }}
-                                type="file"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) handleFileUpload(index, file);
-                                }}
-                                className="hidden"
-                                accept=".pdf,.jpg,.jpeg,.png,.webp"
-                              />
-                              
-                              {uploadProgress[index] !== undefined ? (
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-center">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8DDB90]"></div>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div 
-                                      className="bg-[#8DDB90] h-2 rounded-full transition-all duration-300"
-                                      style={{ width: `${uploadProgress[index]}%` }}
-                                    ></div>
-                                  </div>
-                                  <p className="text-sm text-gray-600">Uploading... {uploadProgress[index]}%</p>
+                            {uploadProgress !== undefined ? (
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-center">
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8DDB90]"></div>
                                 </div>
-                              ) : (
-                                <>
-                                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                                  <p className="text-lg font-medium text-gray-700 mb-2">
-                                    Drop your file here or click to browse
-                                  </p>
-                                  <p className="text-sm text-gray-500 mb-4">
-                                    Supports PDF, JPEG, PNG, WebP up to 10MB
-                                  </p>
-                                  <div className="inline-flex items-center px-4 py-2 bg-[#0B423D] text-white rounded-lg text-sm font-medium hover:bg-[#0B423D]/90 transition-colors">
-                                    <Upload className="w-4 h-4 mr-2" />
-                                    Choose File
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                  {getFileTypeIcon(report.newDocumentUrl)}
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                      Verified Document Uploaded
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                      Ready for submission
-                                    </p>
-                                  </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className="bg-[#8DDB90] h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${uploadProgress}%` }}
+                                  ></div>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                  <button
-                                    onClick={() => window.open(report.newDocumentUrl, '_blank')}
-                                    className="p-2 text-gray-400 hover:text-[#0B423D] transition-colors"
-                                    title="Preview uploaded document"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={() => removeUploadedFile(index)}
-                                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                                    title="Remove uploaded document"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                                <p className="text-sm text-gray-600">
+                                  Uploading... {uploadProgress}%
+                                </p>
+                              </div>
+                            ) : (
+                              <>
+                                <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                <p className="text-lg font-medium text-gray-700 mb-2">
+                                  Drop your file here or click to browse
+                                </p>
+                                <p className="text-sm text-gray-500 mb-4">
+                                  Supports PDF, JPEG, PNG, WebP up to 10MB
+                                </p>
+                                <div className="inline-flex items-center px-4 py-2 bg-[#0B423D] text-white rounded-lg text-sm font-medium hover:bg-[#0B423D]/90 transition-colors">
+                                  <Upload className="w-4 h-4 mr-2" />
+                                  Choose File
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                {getFileTypeIcon(report.newDocumentUrl)}
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">
+                                    Verified Document Uploaded
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Ready for submission
+                                  </p>
                                 </div>
                               </div>
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => window.open(report.newDocumentUrl, '_blank')}
+                                  className="p-2 text-gray-400 hover:text-[#0B423D] transition-colors"
+                                  title="Preview uploaded document"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => removeUploadedFile()}
+                                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                  title="Remove uploaded document"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
+                      </div>
 
-                        {/* Description */}
-                        <div className="lg:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Verification Description *
-                          </label>
-                          <textarea
-                            rows={4}
-                            value={report.description}
-                            onChange={(e) => handleReportChange(index, 'description', e.target.value)}
-                            placeholder={
-                              report.status === 'verified'
-                                ? "Describe the verification process and findings (e.g., 'Document verified against official records. All details match and are authentic.')"
-                                : "Describe why the document was rejected and what issues were found (e.g., 'Document does not match official records. Inconsistencies found in...')"
-                            }
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                          />
-                        </div>
+                      {/* Description */}
+                      <div className="lg:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Verification Description *
+                        </label>
+                        <textarea
+                          rows={4}
+                          value={report.description}
+                          onChange={(e) => handleReportChange('description', e.target.value)}
+                          placeholder={
+                            report.status === 'registered'
+                              ? "Describe the verification process and findings (e.g., 'Document verified against official records. All details match and are authentic.')"
+                              : "Describe why the document was rejected and what issues were found (e.g., 'Document does not match official records. Inconsistencies found in...')"
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                        />
                       </div>
                     </div>
-                  ))}
+                  </div>)
+                  }
 
                   <div className="flex items-center justify-end space-x-3 mt-8">
                     <button
@@ -802,7 +840,7 @@ const ThirdPartyVerificationPage: React.FC = () => {
                 ? documentDetails.documents
                 : documentDetails?.documents ? [documentDetails.documents] : [];
               const verificationStatus = documentDetails?.verificationReports?.status;
-              return documentsArray.length > 0 && verificationStatus && verificationStatus !== 'pending' && verificationStatus !== 'completed';
+              return documentsArray.length > 0 && verificationStatus && verificationStatus !== 'pending' && verificationStatus !== 'registered';
             })() && (
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
@@ -815,13 +853,13 @@ const ThirdPartyVerificationPage: React.FC = () => {
                   Verification status: <span className="font-semibold">{documentDetails?.verificationReports?.status}</span>
                 </p>
                 <p className="text-sm text-blue-600 mt-2">
-                  Officer action will be available when status is "pending"
+                  Officer action will be available when status is pending
                 </p>
               </div>
             )}
 
             {/* Completed Status Message */}
-            {documentDetails?.verificationReports?.status === 'completed' && (
+            {documentDetails?.verificationReports?.status === 'registered' && (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
                   <CheckCircle className="h-8 w-8 text-green-500" />
