@@ -286,15 +286,26 @@ const ContinueInspectionPage = () => {
                     </h3>
                     <p className="text-sm text-[#5A5D63]">
                       {selectedProperties.length === 2
-                        ? inspectionFee > 10000
+                        ? inspectionFee > (inspectionSettings.inspection_base_fee || 5000)
                           ? "Two properties in different areas"
                           : "Two properties in same area"
                         : "Single property inspection"}
                     </p>
+                    {/* Show fee breakdown if multiple properties in different areas */}
+                    {selectedProperties.length === 2 && inspectionFee > (inspectionSettings.inspection_base_fee || 5000) && (
+                      <p className="text-xs text-[#5A5D63] mt-1">
+                        Base fee: ₦{(inspectionSettings.inspection_base_fee || 5000).toLocaleString()} +
+                        Different LGA fee: ₦{(inspectionSettings.inspection_different_lga_fee || 10000).toLocaleString()}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="text-2xl font-bold text-[#09391C]">
-                      ₦{inspectionFee.toLocaleString()}
+                      {settingsLoading ? (
+                        <div className="animate-pulse bg-gray-200 h-8 w-24 rounded"></div>
+                      ) : (
+                        `₦${inspectionFee.toLocaleString()}`
+                      )}
                     </span>
                   </div>
                 </div>
