@@ -57,10 +57,11 @@ const ContinueInspectionPage = () => {
     }
   }, [selectedProperties.length, router, initialLoad]);
 
-  // Calculate inspection fee
+  // Calculate inspection fee using system settings
   const inspectionFee = useMemo(() => {
-    const baseAmount = 5000;
-    const additionalAmount = 5000;
+    // Use dynamic pricing from system settings with fallback to original prices
+    const baseAmount = inspectionSettings.inspection_base_fee || 5000;
+    const additionalAmount = inspectionSettings.inspection_different_lga_fee || 10000;
 
     if (selectedProperties.length === 1) {
       return baseAmount;
@@ -76,7 +77,7 @@ const ContinueInspectionPage = () => {
     }
 
     return baseAmount;
-  }, [selectedProperties]);
+  }, [selectedProperties, inspectionSettings]);
 
   const handleBack = () => {
     if (currentStep === "selection") {
