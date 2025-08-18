@@ -16,6 +16,40 @@ const NewHeroSection = () => {
   // Get hero video URL from settings - only use if explicitly set
   const heroVideoUrl = homePageSettings.hero_video_url;
 
+  // Video control functions
+  const handlePlayPause = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!videoRef.current) return;
+
+    try {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await videoRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.log('Video control failed:', error);
+    }
+  };
+
+  const handleMuteToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!videoRef.current) return;
+
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+  };
+
   // Ensure video autoplay works
   useEffect(() => {
     const video = videoRef.current;
@@ -24,12 +58,15 @@ const NewHeroSection = () => {
       const playVideo = async () => {
         try {
           await video.play();
+          setIsPlaying(true);
         } catch (error) {
           console.log('Video autoplay failed:', error);
+          setIsPlaying(false);
           // Fallback: try again after user interaction
           const handleInteraction = async () => {
             try {
               await video.play();
+              setIsPlaying(true);
               document.removeEventListener('click', handleInteraction);
               document.removeEventListener('touchstart', handleInteraction);
             } catch (e) {
@@ -42,7 +79,7 @@ const NewHeroSection = () => {
       };
       playVideo();
     }
-  }, []);
+  }, [heroVideoUrl]);
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
