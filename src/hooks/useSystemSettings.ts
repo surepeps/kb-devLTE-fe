@@ -1,12 +1,13 @@
 /** @format */
 
 import { useState, useEffect } from 'react';
-import { 
-  getSystemSettings, 
-  getSubscriptionSettings, 
-  getHomePageSettings, 
-  getDocumentVerificationSettings, 
-  getInspectionSettings 
+import {
+  getSystemSettings,
+  getSubscriptionSettings,
+  getHomePageSettings,
+  getDocumentVerificationSettings,
+  getInspectionSettings,
+  getDocumentVerificationPrices
 } from '@/services/systemSettingsService';
 import { 
   SystemSettingsCategory, 
