@@ -1,12 +1,13 @@
 /** @format */
 
 import { useState, useEffect } from 'react';
-import { 
-  getSystemSettings, 
-  getSubscriptionSettings, 
-  getHomePageSettings, 
-  getDocumentVerificationSettings, 
-  getInspectionSettings 
+import {
+  getSystemSettings,
+  getSubscriptionSettings,
+  getHomePageSettings,
+  getDocumentVerificationSettings,
+  getInspectionSettings,
+  getDocumentVerificationPrices
 } from '@/services/systemSettingsService';
 import { 
   SystemSettingsCategory, 
@@ -99,4 +100,39 @@ export const useDocumentVerificationSettings = (): UseSystemSettingsReturn<Docum
 
 export const useInspectionSettings = (): UseSystemSettingsReturn<InspectionSettings> => {
   return useSystemSettings<InspectionSettings>('continue-inspection');
+};
+
+/**
+ * Hook for fetching document verification prices with individual document pricing
+ */
+export const useDocumentVerificationPrices = (): UseSystemSettingsReturn<{ [key: string]: number }> => {
+  const [settings, setSettings] = useState<{ [key: string]: number }>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPrices = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await getDocumentVerificationPrices();
+      setSettings(result);
+    } catch (err) {
+      console.warn('Document verification prices not available - using defaults:', err);
+      setError('Failed to load document verification prices');
+      setSettings({});
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrices();
+  }, []);
+
+  return {
+    settings,
+    loading,
+    error,
+    refetch: fetchPrices,
+  };
 };

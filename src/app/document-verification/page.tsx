@@ -7,7 +7,7 @@ import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
 import { DELETE_REQUEST, POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 import DocumentIframePreview from '@/components/document-verification/DocumentIframePreview';
-import { useDocumentVerificationSettings } from '@/hooks/useSystemSettings';
+import { useDocumentVerificationSettings, useDocumentVerificationPrices } from '@/hooks/useSystemSettings';
 
 // Define the document types as a union type
 const documentOptions = [
@@ -59,6 +59,7 @@ const initialDocumentNumbers: DocumentNumbers = {
 const DocumentVerificationPage: React.FC = () => {
   // System settings for dynamic pricing
   const { settings: docVerificationSettings, loading: settingsLoading } = useDocumentVerificationSettings();
+  const { settings: documentPrices, loading: pricesLoading } = useDocumentVerificationPrices();
 
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [showGuideline, setShowGuideline] = useState<boolean>(false);
@@ -127,12 +128,15 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): number => {
-    // Use dynamic pricing from system settings with fallback to original prices
-    const singleDocPrice = docVerificationSettings.verification_price || 20000;
-    const multiDocPrice = docVerificationSettings.multi_document_price || 40000;
+    if (selectedDocuments.length === 0) return 0;
 
-    if (selectedDocuments.length === 0) return singleDocPrice;
-    return selectedDocuments.length === 1 ? singleDocPrice : multiDocPrice;
+    // Calculate total fee based on individual document pricing from system settings
+    const totalFee = selectedDocuments.reduce((total, documentType) => {
+      const price = documentPrices[documentType] || 20000; // fallback to 20000 if price not found
+      return total + price;
+    }, 0);
+
+    return totalFee;
   };
 
   const validateFileType = (file: File): boolean => {
@@ -616,20 +620,42 @@ const DocumentVerificationPage: React.FC = () => {
           <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6 text-center">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Verification Fee</h3>
-              {selectedDocuments.length > 1 && (
-                <p className="text-sm text-blue-600 mb-3">
-                  💡 Fee increased for multiple document verification
-                </p>
+
+              {/* Individual document pricing breakdown */}
+              {selectedDocuments.length > 0 && (
+                <div className="mb-4 space-y-2">
+                  {selectedDocuments.map((doc) => (
+                    <div key={doc} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-700">{getDocumentDisplayName(doc)}</span>
+                      <span className="font-medium text-gray-800">
+                        {pricesLoading ? (
+                          <div className="animate-pulse bg-gray-200 h-4 w-16 rounded"></div>
+                        ) : (
+                          `₦${(documentPrices[doc] || 20000).toLocaleString()}`
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                  {selectedDocuments.length > 1 && (
+                    <div className="border-t pt-2 mt-2">
+                      <div className="flex justify-between items-center font-semibold">
+                        <span>Total</span>
+                        <span>₦{calculateFee().toLocaleString()}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
+
               <div className="text-3xl font-bold text-green-600 mb-2">
-                {settingsLoading ? (
+                {(settingsLoading || pricesLoading) ? (
                   <div className="animate-pulse bg-gray-200 h-8 w-32 mx-auto rounded"></div>
                 ) : (
                   `₦${calculateFee().toLocaleString()}`
                 )}
               </div>
               <p className="text-gray-600 text-sm">
-                One-time fee for {selectedDocuments.length} document{selectedDocuments.length > 1 ? 's' : ''}
+                Total fee for {selectedDocuments.length} document{selectedDocuments.length > 1 ? 's' : ''}
               </p>
             </div>
 
