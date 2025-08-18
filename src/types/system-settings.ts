@@ -38,6 +38,13 @@ export interface HomePageSettings {
 export interface DocumentVerificationSettings {
   verification_price?: number;
   multi_document_price?: number;
+  // Individual document prices
+  'certificate-of-occupancy'?: number;
+  'deed-of-partition'?: number;
+  'deed-of-assignment'?: number;
+  'governors-consent'?: number;
+  'survey-plan'?: number;
+  'deed-of-lease'?: number;
 }
 
 export interface InspectionSettings {
