@@ -11,8 +11,8 @@ const NewHeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { settings: homePageSettings, loading: settingsLoading } = useHomePageSettings();
 
-  // Get hero video URL from settings or use default
-  const heroVideoUrl = homePageSettings.hero_video_url || "/khabi-demo-video.mp4";
+  // Get hero video URL from settings - only use if explicitly set
+  const heroVideoUrl = homePageSettings.hero_video_url;
 
   // Ensure video autoplay works
   useEffect(() => {
@@ -93,48 +93,51 @@ const NewHeroSection = () => {
             </Link>
           </motion.div>
 
-          {/* Hero video with autoplay */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
-            <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
-              <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden'>
-                {/* Loading state for video */}
-                {settingsLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                  </div>
-                )}
-                {/* Dynamic video from system settings */}
-                <video
-                  ref={videoRef}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  poster="/placeholder-property.svg">
-                  {/* Dynamic video source from system settings */}
-                  {heroVideoUrl && <source src={heroVideoUrl} type="video/mp4" />}
-                  {/* Fallback content */}
-                  <div className='absolute inset-0 flex items-center justify-center'>
-                    <div className='text-center'>
-                      <div className='w-12 sm:w-16 h-12 sm:h-16 bg-[#8DDB90] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4'>
-                        <svg className="w-6 sm:w-8 h-6 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <p className='text-white/80 text-xs sm:text-sm'>Watch how Khabiteq works</p>
-                      <p className='text-white/60 text-xs mt-1'>Property matchmaking in action</p>
+          {/* Hero video with autoplay - only show if video URL is set */}
+          {(settingsLoading || heroVideoUrl) && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.6 }}
+              className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
+              <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
+                <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden'>
+                  {/* Loading state for video */}
+                  {settingsLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                     </div>
-                  </div>
-                </video>
+                  )}
+                  {/* Dynamic video from system settings */}
+                  {!settingsLoading && heroVideoUrl && (
+                    <video
+                      ref={videoRef}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      poster="/placeholder-property.svg">
+                      <source src={heroVideoUrl} type="video/mp4" />
+                      {/* Fallback content if video fails to load */}
+                      <div className='absolute inset-0 flex items-center justify-center'>
+                        <div className='text-center'>
+                          <div className='w-12 sm:w-16 h-12 sm:h-16 bg-[#8DDB90] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4'>
+                            <svg className="w-6 sm:w-8 h-6 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <p className='text-white/80 text-xs sm:text-sm'>Watch how Khabiteq works</p>
+                          <p className='text-white/60 text-xs mt-1'>Property matchmaking in action</p>
+                        </div>
+                      </div>
+                    </video>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* Trust indicators */}
           <motion.div
