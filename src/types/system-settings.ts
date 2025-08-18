@@ -48,7 +48,9 @@ export interface DocumentVerificationSettings {
 }
 
 export interface InspectionSettings {
-  inspection_price?: number;
+  inspection_base_fee?: number;
+  inspection_different_lga_fee?: number;
+  max_counter_counts?: number;
 }
 
 export type SystemSettingsCategory = 'home-page' | 'subscription' | 'document-verification' | 'continue-inspection';
