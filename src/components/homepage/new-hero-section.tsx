@@ -1,7 +1,7 @@
 /** @format */
 
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../general-components/button';
 import Link from 'next/link';
@@ -10,6 +10,8 @@ import { useHomePageSettings } from '@/hooks/useSystemSettings';
 const NewHeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { settings: homePageSettings, loading: settingsLoading } = useHomePageSettings();
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
 
   // Get hero video URL from settings - only use if explicitly set
   const heroVideoUrl = homePageSettings.hero_video_url;
