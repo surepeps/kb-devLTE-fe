@@ -11,8 +11,8 @@ const NewHeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { settings: homePageSettings, loading: settingsLoading } = useHomePageSettings();
 
-  // Get hero video URL from settings or use default
-  const heroVideoUrl = homePageSettings.hero_video_url || "/khabi-demo-video.mp4";
+  // Get hero video URL from settings - only use if explicitly set
+  const heroVideoUrl = homePageSettings.hero_video_url;
 
   // Ensure video autoplay works
   useEffect(() => {
