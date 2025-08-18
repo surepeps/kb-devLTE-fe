@@ -12,10 +12,14 @@ import DateTimeSelection from "@/components/new-marketplace/DateTimeSelection";
 import Button from "@/components/general-components/button";
 import { useGlobalInspectionState } from "@/hooks/useGlobalInspectionState";
 import InspectionSuccessModal from "@/components/modals/InspectionSuccessModal";
+import { useInspectionSettings } from "@/hooks/useSystemSettings";
 
 const ContinueInspectionPage = () => {
   const router = useRouter();
   const isMobile = IsMobile();
+
+  // System settings for dynamic pricing
+  const { settings: inspectionSettings, loading: settingsLoading } = useInspectionSettings();
 
   const {
     selectedProperties,
@@ -53,10 +57,11 @@ const ContinueInspectionPage = () => {
     }
   }, [selectedProperties.length, router, initialLoad]);
 
-  // Calculate inspection fee
+  // Calculate inspection fee using system settings
   const inspectionFee = useMemo(() => {
-    const baseAmount = 5000;
-    const additionalAmount = 5000;
+    // Use dynamic pricing from system settings with fallback to original prices
+    const baseAmount = inspectionSettings.inspection_base_fee || 5000;
+    const additionalAmount = inspectionSettings.inspection_different_lga_fee || 10000;
 
     if (selectedProperties.length === 1) {
       return baseAmount;
@@ -72,7 +77,7 @@ const ContinueInspectionPage = () => {
     }
 
     return baseAmount;
-  }, [selectedProperties]);
+  }, [selectedProperties, inspectionSettings]);
 
   const handleBack = () => {
     if (currentStep === "selection") {
@@ -281,15 +286,26 @@ const ContinueInspectionPage = () => {
                     </h3>
                     <p className="text-sm text-[#5A5D63]">
                       {selectedProperties.length === 2
-                        ? inspectionFee > 10000
+                        ? inspectionFee > (inspectionSettings.inspection_base_fee || 5000)
                           ? "Two properties in different areas"
                           : "Two properties in same area"
                         : "Single property inspection"}
                     </p>
+                    {/* Show fee breakdown if multiple properties in different areas */}
+                    {selectedProperties.length === 2 && inspectionFee > (inspectionSettings.inspection_base_fee || 5000) && (
+                      <p className="text-xs text-[#5A5D63] mt-1">
+                        Base fee: ₦{(inspectionSettings.inspection_base_fee || 5000).toLocaleString()} +
+                        Different LGA fee: ₦{(inspectionSettings.inspection_different_lga_fee || 10000).toLocaleString()}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="text-2xl font-bold text-[#09391C]">
-                      ₦{inspectionFee.toLocaleString()}
+                      {settingsLoading ? (
+                        <div className="animate-pulse bg-gray-200 h-8 w-24 rounded"></div>
+                      ) : (
+                        `₦${inspectionFee.toLocaleString()}`
+                      )}
                     </span>
                   </div>
                 </div>

@@ -114,6 +114,30 @@ export const getDocumentVerificationSettings = async (): Promise<DocumentVerific
 };
 
 /**
+ * Get document verification prices with individual document pricing
+ */
+export const getDocumentVerificationPrices = async (): Promise<{ [key: string]: number }> => {
+  try {
+    const response = await getSystemSettings('document-verification');
+    if (response.success && response.data) {
+      const prices: { [key: string]: number } = {};
+      response.data.forEach(setting => {
+        if (setting.key.endsWith('_price') && setting.status === 'active') {
+          // Extract document type from key (e.g., "certificate-of-occupancy_price" -> "certificate-of-occupancy")
+          const documentType = setting.key.replace('_price', '');
+          prices[documentType] = Number(setting.value) || 0;
+        }
+      });
+      return prices;
+    }
+    return {};
+  } catch (error) {
+    console.error('Error fetching document verification prices:', error);
+    return {};
+  }
+};
+
+/**
  * Get inspection settings as typed object
  */
 export const getInspectionSettings = async (): Promise<InspectionSettings> => {

@@ -99,30 +99,51 @@ const KeyFeaturesSection = () => {
           </p>
         </motion.div>
 
-        {/* Features Grid - Two rows on desktop, stacked on mobile */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12'>
-          {/* First row - 3 cards */}
-          {features.slice(0, 3).map((feature, index) => (
-            <FeatureCard
-              key={feature.id}
-              feature={feature}
-              index={index}
-              loading={loading}
-            />
-          ))}
-        </div>
+        {/* Filter features to only show those with video URLs available */}
+        {(() => {
+          // Filter features that have video URLs (only show cards with videos)
+          const featuresWithVideos = loading ? features : features.filter(feature => feature.videoUrl && feature.videoUrl.trim() !== '');
 
-        {/* Second row - 2 cards centered */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mt-8 lg:mt-12 max-w-4xl mx-auto'>
-          {features.slice(3, 5).map((feature, index) => (
-            <FeatureCard
-              key={feature.id}
-              feature={feature}
-              index={index + 3}
-              loading={loading}
-            />
-          ))}
-        </div>
+          if (!loading && featuresWithVideos.length === 0) {
+            return null; // Hide entire section if no features have videos
+          }
+
+          // Split into groups for responsive layout
+          const firstRow = featuresWithVideos.slice(0, 3);
+          const secondRow = featuresWithVideos.slice(3, 5);
+
+          return (
+            <>
+              {/* Features Grid - Dynamic based on available videos */}
+              {firstRow.length > 0 && (
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12'>
+                  {firstRow.map((feature, index) => (
+                    <FeatureCard
+                      key={feature.id}
+                      feature={feature}
+                      index={index}
+                      loading={loading}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Second row - Only show if there are more features */}
+              {secondRow.length > 0 && (
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mt-8 lg:mt-12 max-w-4xl mx-auto'>
+                  {secondRow.map((feature, index) => (
+                    <FeatureCard
+                      key={feature.id}
+                      feature={feature}
+                      index={index + firstRow.length}
+                      loading={loading}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          );
+        })()}
       </div>
     </section>
   );
