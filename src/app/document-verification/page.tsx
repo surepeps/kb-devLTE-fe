@@ -128,12 +128,15 @@ const DocumentVerificationPage: React.FC = () => {
   };
 
   const calculateFee = (): number => {
-    // Use dynamic pricing from system settings with fallback to original prices
-    const singleDocPrice = docVerificationSettings.verification_price || 20000;
-    const multiDocPrice = docVerificationSettings.multi_document_price || 40000;
+    if (selectedDocuments.length === 0) return 0;
 
-    if (selectedDocuments.length === 0) return singleDocPrice;
-    return selectedDocuments.length === 1 ? singleDocPrice : multiDocPrice;
+    // Calculate total fee based on individual document pricing from system settings
+    const totalFee = selectedDocuments.reduce((total, documentType) => {
+      const price = documentPrices[documentType] || 20000; // fallback to 20000 if price not found
+      return total + price;
+    }, 0);
+
+    return totalFee;
   };
 
   const validateFileType = (file: File): boolean => {
