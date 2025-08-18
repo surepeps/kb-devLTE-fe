@@ -48,6 +48,8 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
 }) => {
   const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
   
+  console.log(images, "ppppp")
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
