@@ -7,7 +7,7 @@ import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
 import { DELETE_REQUEST, POST_REQUEST, POST_REQUEST_FILE_UPLOAD } from '@/utils/requests';
 import DocumentIframePreview from '@/components/document-verification/DocumentIframePreview';
-import { useDocumentVerificationSettings } from '@/hooks/useSystemSettings';
+import { useDocumentVerificationSettings, useDocumentVerificationPrices } from '@/hooks/useSystemSettings';
 
 // Define the document types as a union type
 const documentOptions = [
