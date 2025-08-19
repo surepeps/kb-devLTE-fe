@@ -28,19 +28,31 @@ const NewHeroSection = () => {
     homePageSettings.hero_video_2_url,
   ].filter(Boolean); // Remove empty/null values
 
+  // Carousel navigation
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
   // Video control functions
+  const getCurrentVideo = () => videoRefs.current[currentVideoIndex];
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!videoRef.current) return;
+    const currentVideo = getCurrentVideo();
+    if (!currentVideo) return;
 
     try {
       if (isPlaying) {
-        videoRef.current.pause();
+        currentVideo.pause();
         setIsPlaying(false);
       } else {
-        await videoRef.current.play();
+        await currentVideo.play();
         setIsPlaying(true);
       }
     } catch (error) {
@@ -52,15 +64,39 @@ const NewHeroSection = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!videoRef.current) return;
+    const currentVideo = getCurrentVideo();
+    if (!currentVideo) return;
 
-    videoRef.current.muted = !isMuted;
+    currentVideo.muted = !isMuted;
     setIsMuted(!isMuted);
   };
 
   const handleVideoEnded = () => {
     setIsPlaying(false);
   };
+
+  // Handle slide selection
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    const selectedIndex = emblaApi.selectedScrollSnap();
+    setCurrentVideoIndex(selectedIndex);
+
+    // Pause all videos
+    videoRefs.current.forEach(video => {
+      if (video) video.pause();
+    });
+
+    // Play the current video
+    const currentVideo = videoRefs.current[selectedIndex];
+    if (currentVideo) {
+      currentVideo.play().then(() => {
+        setIsPlaying(true);
+      }).catch(error => {
+        console.log('Video play failed:', error);
+        setIsPlaying(false);
+      });
+    }
+  }, [emblaApi]);
 
   // Ensure video autoplay works
   useEffect(() => {
