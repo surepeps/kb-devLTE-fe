@@ -45,6 +45,8 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   loiDocument,
   className = "",
 }) => {
+
+  console.log("from JV", images)
   const hasLOIDocument = loiDocument != null && loiDocument !== undefined;
   return (
     <motion.div

@@ -123,7 +123,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   className="w-full"
-                >
+                > 
                   <EnhancedGlobalPropertyCard
                     type={tab === "jv" ? "jv" : "standard"}
                     tab={tab === "jv" ? "buy" : tab}
