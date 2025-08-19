@@ -28,6 +28,8 @@ export interface SubscriptionSettings {
 
 export interface HomePageSettings {
   hero_video_url?: string;
+  hero_video_1_url?: string;
+  hero_video_2_url?: string;
   document_verification_video_url?: string;
   submit_preference_video_url?: string;
   agent_marketplace_video_url?: string;
