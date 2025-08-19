@@ -44,7 +44,6 @@ const userProtectedRoutes = [
   "/referral",
   "/post-property-by-preference",
   "/profile-settings",
-  "/my-preferences",
   "/notifications",
   "/field-agent-inspections",
   "/field-agent-inspection",
