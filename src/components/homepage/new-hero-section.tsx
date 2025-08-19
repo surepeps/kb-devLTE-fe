@@ -9,13 +9,24 @@ import { useHomePageSettings } from '@/hooks/useSystemSettings';
 import useEmblaCarousel from 'embla-carousel-react';
 
 const NewHeroSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const { settings: homePageSettings, loading: settingsLoading } = useHomePageSettings();
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: 'center',
+    containScroll: 'trimSnaps'
+  });
+
+  // Video refs for each video in slider
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
 
-  // Get hero video URL from settings - only use if explicitly set
-  const heroVideoUrl = homePageSettings.hero_video_url;
+  // Get hero video URLs from settings
+  const heroVideos = [
+    homePageSettings.hero_video_1_url,
+    homePageSettings.hero_video_2_url,
+  ].filter(Boolean); // Remove empty/null values
 
   // Video control functions
   const handlePlayPause = async (e: React.MouseEvent) => {
