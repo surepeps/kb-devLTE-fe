@@ -40,6 +40,14 @@ const NewHeroSection = () => {
   // Video control functions
   const getCurrentVideo = () => videoRefs.current[currentVideoIndex];
 
+  const pauseAllVideos = () => {
+    videoRefs.current.forEach((video, index) => {
+      if (video && !video.paused) {
+        video.pause();
+      }
+    });
+  };
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,6 +60,8 @@ const NewHeroSection = () => {
         currentVideo.pause();
         setIsPlaying(false);
       } else {
+        // Pause all other videos before playing current one
+        pauseAllVideos();
         await currentVideo.play();
         setIsPlaying(true);
       }
