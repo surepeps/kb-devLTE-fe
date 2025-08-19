@@ -230,7 +230,7 @@ const NewHeroSection = () => {
                               videoRefs.current[index] = el;
                             }}
                             className="w-full h-full object-cover cursor-pointer"
-                            autoPlay={index === 0}
+                            autoPlay={index === 0 && currentVideoIndex === 0}
                             muted
                             loop
                             playsInline
