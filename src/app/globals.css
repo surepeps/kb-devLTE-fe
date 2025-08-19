@@ -226,3 +226,17 @@ body {
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 999;
 }
+
+/* Embla Carousel Styles */
+.embla {
+  overflow: hidden;
+}
+
+.embla__container {
+  display: flex;
+}
+
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}

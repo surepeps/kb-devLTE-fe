@@ -52,6 +52,54 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       viewport={{ once: true }}
+<<<<<<< HEAD
+      className='group hover:scale-105 transition-transform duration-300'>
+      
+      <Link href={feature.link}>
+        <div className='bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer'>
+          
+          {/* Video Thumbnail/Preview */}
+          <div className='aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-6 relative overflow-hidden group-hover:scale-105 transition-transform duration-300'>
+            {loading ? (
+              <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
+                <div className="text-gray-400">Loading...</div>
+              </div>
+            ) : feature.videoUrl ? (
+              <video
+                className="w-full h-full object-cover"
+                muted
+                poster={feature.videoThumbnail}
+                preload="metadata">
+                <source src={feature.videoUrl} type="video/mp4" />
+                <img
+                  src={feature.videoThumbnail}
+                  alt={feature.title}
+                  className="w-full h-full object-cover"
+                />
+              </video>
+            ) : (
+              <img
+                src={feature.videoThumbnail}
+                alt={feature.title}
+                className="w-full h-full object-cover"
+              />
+            )}
+            {/* Play button overlay - only show if video URL exists */}
+            {(loading || feature.videoUrl) && (
+              <div className='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300'>
+                <div className={`w-12 h-12 ${feature.color} rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+=======
       className='group hover:scale-105 transition-transform duration-300'
     >
       <div className='bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer'>
@@ -81,6 +129,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
               className="w-full h-full object-cover"
             />
           )}
+>>>>>>> refs/remotes/origin/main
 
           {/* Overlay Controls */}
           {feature.videoUrl && (
