@@ -111,14 +111,6 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             },
           },
           {
-            icon: <Settings size={18} />,
-            label: "Preferences",
-            action: () => {
-              router.push("/my-preferences");
-              closeUserProfileModal(false);
-            },
-          },
-          {
             icon: <Briefcase size={18} />,
             label: "Subscription",
             action: () => {
