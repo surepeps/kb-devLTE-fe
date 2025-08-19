@@ -40,6 +40,14 @@ const NewHeroSection = () => {
   // Video control functions
   const getCurrentVideo = () => videoRefs.current[currentVideoIndex];
 
+  const pauseAllVideos = () => {
+    videoRefs.current.forEach((video, index) => {
+      if (video && !video.paused) {
+        video.pause();
+      }
+    });
+  };
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,6 +60,8 @@ const NewHeroSection = () => {
         currentVideo.pause();
         setIsPlaying(false);
       } else {
+        // Pause all other videos before playing current one
+        pauseAllVideos();
         await currentVideo.play();
         setIsPlaying(true);
       }
@@ -81,21 +91,22 @@ const NewHeroSection = () => {
     const selectedIndex = emblaApi.selectedScrollSnap();
     setCurrentVideoIndex(selectedIndex);
 
-    // Pause all videos
-    videoRefs.current.forEach(video => {
-      if (video) video.pause();
-    });
+    // Pause all videos first
+    pauseAllVideos();
+    setIsPlaying(false);
 
-    // Play the current video
-    const currentVideo = videoRefs.current[selectedIndex];
-    if (currentVideo) {
-      currentVideo.play().then(() => {
-        setIsPlaying(true);
-      }).catch(error => {
-        console.log('Video play failed:', error);
-        setIsPlaying(false);
-      });
-    }
+    // Play the current video after a brief delay to ensure all others have stopped
+    setTimeout(() => {
+      const currentVideo = videoRefs.current[selectedIndex];
+      if (currentVideo) {
+        currentVideo.play().then(() => {
+          setIsPlaying(true);
+        }).catch(error => {
+          console.log('Video play failed:', error);
+          setIsPlaying(false);
+        });
+      }
+    }, 100);
   }, [emblaApi]);
 
   // Setup embla carousel event listeners
@@ -110,11 +121,49 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect]);
 
-  // Ensure video autoplay works for the first video
+  // Add event listeners to videos to ensure mutual exclusion
+  useEffect(() => {
+    const videos = videoRefs.current.filter(Boolean);
+
+    const handlePlay = (playingVideo: HTMLVideoElement) => {
+      // When any video starts playing, pause all others
+      videos.forEach(video => {
+        if (video && video !== playingVideo && !video.paused) {
+          video.pause();
+        }
+      });
+    };
+
+    // Add play event listeners to all videos
+    videos.forEach((video, index) => {
+      if (video) {
+        const playHandler = () => handlePlay(video);
+        video.addEventListener('play', playHandler);
+
+        // Store the handler for cleanup
+        (video as any).__playHandler = playHandler;
+      }
+    });
+
+    return () => {
+      // Cleanup event listeners
+      videos.forEach(video => {
+        if (video && (video as any).__playHandler) {
+          video.removeEventListener('play', (video as any).__playHandler);
+          delete (video as any).__playHandler;
+        }
+      });
+    };
+  }, [heroVideos]);
+
+  // Ensure video autoplay works for the first video only
   useEffect(() => {
     if (heroVideos.length > 0) {
+      // First pause all videos to ensure clean state
+      pauseAllVideos();
+
       const firstVideo = videoRefs.current[0];
-      if (firstVideo) {
+      if (firstVideo && currentVideoIndex === 0) {
         const playVideo = async () => {
           try {
             await firstVideo.play();
@@ -125,6 +174,8 @@ const NewHeroSection = () => {
             // Fallback: try again after user interaction
             const handleInteraction = async () => {
               try {
+                // Ensure all other videos are paused before playing
+                pauseAllVideos();
                 await firstVideo.play();
                 setIsPlaying(true);
                 document.removeEventListener('click', handleInteraction);
@@ -140,7 +191,7 @@ const NewHeroSection = () => {
         playVideo();
       }
     }
-  }, [heroVideos]);
+  }, [heroVideos, currentVideoIndex]);
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
@@ -214,7 +265,7 @@ const NewHeroSection = () => {
                               videoRefs.current[index] = el;
                             }}
                             className="w-full h-full object-cover cursor-pointer"
-                            autoPlay={index === 0}
+                            autoPlay={index === 0 && currentVideoIndex === 0}
                             muted
                             loop
                             playsInline
