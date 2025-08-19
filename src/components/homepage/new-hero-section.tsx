@@ -121,6 +121,41 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect]);
 
+  // Add event listeners to videos to ensure mutual exclusion
+  useEffect(() => {
+    const videos = videoRefs.current.filter(Boolean);
+
+    const handlePlay = (playingVideo: HTMLVideoElement) => {
+      // When any video starts playing, pause all others
+      videos.forEach(video => {
+        if (video && video !== playingVideo && !video.paused) {
+          video.pause();
+        }
+      });
+    };
+
+    // Add play event listeners to all videos
+    videos.forEach((video, index) => {
+      if (video) {
+        const playHandler = () => handlePlay(video);
+        video.addEventListener('play', playHandler);
+
+        // Store the handler for cleanup
+        (video as any).__playHandler = playHandler;
+      }
+    });
+
+    return () => {
+      // Cleanup event listeners
+      videos.forEach(video => {
+        if (video && (video as any).__playHandler) {
+          video.removeEventListener('play', (video as any).__playHandler);
+          delete (video as any).__playHandler;
+        }
+      });
+    };
+  }, [heroVideos]);
+
   // Ensure video autoplay works for the first video only
   useEffect(() => {
     if (heroVideos.length > 0) {
