@@ -98,36 +98,49 @@ const NewHeroSection = () => {
     }
   }, [emblaApi]);
 
-  // Ensure video autoplay works
+  // Setup embla carousel event listeners
   useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      // Force play the video after component mounts
-      const playVideo = async () => {
-        try {
-          await video.play();
-          setIsPlaying(true);
-        } catch (error) {
-          console.log('Video autoplay failed:', error);
-          setIsPlaying(false);
-          // Fallback: try again after user interaction
-          const handleInteraction = async () => {
-            try {
-              await video.play();
-              setIsPlaying(true);
-              document.removeEventListener('click', handleInteraction);
-              document.removeEventListener('touchstart', handleInteraction);
-            } catch (e) {
-              console.log('Video play after interaction failed:', e);
-            }
-          };
-          document.addEventListener('click', handleInteraction);
-          document.addEventListener('touchstart', handleInteraction);
-        }
-      };
-      playVideo();
+    if (!emblaApi) return;
+
+    emblaApi.on('select', onSelect);
+    onSelect(); // Initialize with current selection
+
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  // Ensure video autoplay works for the first video
+  useEffect(() => {
+    if (heroVideos.length > 0) {
+      const firstVideo = videoRefs.current[0];
+      if (firstVideo) {
+        const playVideo = async () => {
+          try {
+            await firstVideo.play();
+            setIsPlaying(true);
+          } catch (error) {
+            console.log('Video autoplay failed:', error);
+            setIsPlaying(false);
+            // Fallback: try again after user interaction
+            const handleInteraction = async () => {
+              try {
+                await firstVideo.play();
+                setIsPlaying(true);
+                document.removeEventListener('click', handleInteraction);
+                document.removeEventListener('touchstart', handleInteraction);
+              } catch (e) {
+                console.log('Video play after interaction failed:', e);
+              }
+            };
+            document.addEventListener('click', handleInteraction);
+            document.addEventListener('touchstart', handleInteraction);
+          }
+        };
+        playVideo();
+      }
     }
-  }, [heroVideoUrl]);
+  }, [heroVideos]);
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
