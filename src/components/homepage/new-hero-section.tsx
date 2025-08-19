@@ -91,21 +91,22 @@ const NewHeroSection = () => {
     const selectedIndex = emblaApi.selectedScrollSnap();
     setCurrentVideoIndex(selectedIndex);
 
-    // Pause all videos
-    videoRefs.current.forEach(video => {
-      if (video) video.pause();
-    });
+    // Pause all videos first
+    pauseAllVideos();
+    setIsPlaying(false);
 
-    // Play the current video
-    const currentVideo = videoRefs.current[selectedIndex];
-    if (currentVideo) {
-      currentVideo.play().then(() => {
-        setIsPlaying(true);
-      }).catch(error => {
-        console.log('Video play failed:', error);
-        setIsPlaying(false);
-      });
-    }
+    // Play the current video after a brief delay to ensure all others have stopped
+    setTimeout(() => {
+      const currentVideo = videoRefs.current[selectedIndex];
+      if (currentVideo) {
+        currentVideo.play().then(() => {
+          setIsPlaying(true);
+        }).catch(error => {
+          console.log('Video play failed:', error);
+          setIsPlaying(false);
+        });
+      }
+    }, 100);
   }, [emblaApi]);
 
   // Setup embla carousel event listeners
