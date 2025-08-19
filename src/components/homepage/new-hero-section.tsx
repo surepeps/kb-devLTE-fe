@@ -121,11 +121,14 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect]);
 
-  // Ensure video autoplay works for the first video
+  // Ensure video autoplay works for the first video only
   useEffect(() => {
     if (heroVideos.length > 0) {
+      // First pause all videos to ensure clean state
+      pauseAllVideos();
+
       const firstVideo = videoRefs.current[0];
-      if (firstVideo) {
+      if (firstVideo && currentVideoIndex === 0) {
         const playVideo = async () => {
           try {
             await firstVideo.play();
@@ -136,6 +139,8 @@ const NewHeroSection = () => {
             // Fallback: try again after user interaction
             const handleInteraction = async () => {
               try {
+                // Ensure all other videos are paused before playing
+                pauseAllVideos();
                 await firstVideo.play();
                 setIsPlaying(true);
                 document.removeEventListener('click', handleInteraction);
@@ -151,7 +156,7 @@ const NewHeroSection = () => {
         playVideo();
       }
     }
-  }, [heroVideos]);
+  }, [heroVideos, currentVideoIndex]);
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
