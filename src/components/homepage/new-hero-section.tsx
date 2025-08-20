@@ -19,8 +19,10 @@ const NewHeroSection = () => {
   // Video refs for each video in slider
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [sliderIsActive, setSliderIsActive] = useState(true);
 
   // Get hero video URLs from settings
   const heroVideos = [
@@ -48,6 +50,26 @@ const NewHeroSection = () => {
     });
   };
 
+  const pauseVideoAtIndex = (index: number) => {
+    const video = videoRefs.current[index];
+    if (video && !video.paused) {
+      video.pause();
+    }
+  };
+
+  const playCurrentVideo = async () => {
+    const currentVideo = getCurrentVideo();
+    if (!currentVideo || !sliderIsActive) return;
+
+    try {
+      await currentVideo.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.log('Video play failed:', error);
+      setIsPlaying(false);
+    }
+  };
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -59,8 +81,10 @@ const NewHeroSection = () => {
       if (isPlaying) {
         currentVideo.pause();
         setIsPlaying(false);
+        setSliderIsActive(false); // Mark slider as paused when video is manually paused
       } else {
-        // Pause all other videos before playing current one
+        // Enable slider and pause all other videos before playing current one
+        setSliderIsActive(true);
         pauseAllVideos();
         await currentVideo.play();
         setIsPlaying(true);
@@ -89,37 +113,63 @@ const NewHeroSection = () => {
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const selectedIndex = emblaApi.selectedScrollSnap();
+
+    // Store previous index before updating
+    setPreviousVideoIndex(currentVideoIndex);
     setCurrentVideoIndex(selectedIndex);
 
-    // Pause all videos first
+    // Immediately pause the previous video if it was playing
+    if (previousVideoIndex >= 0 && previousVideoIndex !== selectedIndex) {
+      pauseVideoAtIndex(previousVideoIndex);
+    }
+
+    // Pause all videos to ensure clean state
     pauseAllVideos();
     setIsPlaying(false);
 
-    // Play the current video after a brief delay to ensure all others have stopped
-    setTimeout(() => {
-      const currentVideo = videoRefs.current[selectedIndex];
-      if (currentVideo) {
-        currentVideo.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.log('Video play failed:', error);
-          setIsPlaying(false);
-        });
-      }
-    }, 100);
-  }, [emblaApi]);
+    // Only play the new video if slider is active
+    if (sliderIsActive) {
+      setTimeout(() => {
+        playCurrentVideo();
+      }, 150);
+    }
+  }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
 
-  // Setup embla carousel event listeners
+  // Setup embla carousel event listeners with slider state management
   useEffect(() => {
     if (!emblaApi) return;
 
+    // Handle slide selection
     emblaApi.on('select', onSelect);
+
+    // Handle slider interactions (detect when user is actively using slider)
+    const handlePointerDown = () => {
+      setSliderIsActive(true);
+    };
+
+    const handleSettle = () => {
+      // Slider has settled, ensure current video can play if needed
+      if (sliderIsActive) {
+        setTimeout(() => {
+          const currentVideo = getCurrentVideo();
+          if (currentVideo && currentVideo.paused) {
+            playCurrentVideo();
+          }
+        }, 200);
+      }
+    };
+
+    emblaApi.on('pointerDown', handlePointerDown);
+    emblaApi.on('settle', handleSettle);
+
     onSelect(); // Initialize with current selection
 
     return () => {
       emblaApi.off('select', onSelect);
+      emblaApi.off('pointerDown', handlePointerDown);
+      emblaApi.off('settle', handleSettle);
     };
-  }, [emblaApi, onSelect]);
+  }, [emblaApi, onSelect, sliderIsActive]);
 
   // Add event listeners to videos to ensure mutual exclusion
   useEffect(() => {
@@ -309,8 +359,48 @@ const NewHeroSection = () => {
                               </div>
                             </div>
 
-                            {/* Mute/Unmute button */}
-                            <div className='absolute bottom-4 right-4 pointer-events-auto'>
+                            {/* Control buttons container */}
+                            <div className='absolute bottom-4 right-4 flex gap-2 pointer-events-auto'>
+                              {/* Slider pause/resume toggle */}
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const newSliderState = !sliderIsActive;
+                                  setSliderIsActive(newSliderState);
+
+                                  if (!newSliderState) {
+                                    // Pause current video when slider is disabled
+                                    const currentVideo = getCurrentVideo();
+                                    if (currentVideo && !currentVideo.paused) {
+                                      currentVideo.pause();
+                                      setIsPlaying(false);
+                                    }
+                                  } else {
+                                    // Resume current video when slider is re-enabled
+                                    playCurrentVideo();
+                                  }
+                                }}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 ${
+                                  sliderIsActive
+                                    ? 'bg-black/50 hover:bg-black/70'
+                                    : 'bg-red-500/70 hover:bg-red-600/80'
+                                }`}
+                                title={sliderIsActive ? 'Pause Slider' : 'Resume Slider'}>
+                                {sliderIsActive ? (
+                                  // Slider active icon (pause slider)
+                                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (
+                                  // Slider paused icon (resume slider)
+                                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                  </svg>
+                                )}
+                              </button>
+
+                              {/* Mute/Unmute button */}
                               <button
                                 onClick={handleMuteToggle}
                                 className='w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
@@ -332,6 +422,9 @@ const NewHeroSection = () => {
                           {/* Status indicator */}
                           <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                             {isPlaying ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
+                            {!sliderIsActive && currentVideoIndex === index && (
+                              <span className='block text-yellow-300 text-xs mt-1'>Slider Paused</span>
+                            )}
                           </div>
                         </div>
                       </div>
