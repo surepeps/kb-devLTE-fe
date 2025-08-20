@@ -23,16 +23,41 @@ interface FeatureCardProps {
 const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlayPending, setIsPlayPending] = useState(false);
 
-  const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
+  const pauseAllOtherVideos = () => {
+    // Pause all videos on the page except current one
+    const allVideos = document.querySelectorAll('video');
+    allVideos.forEach(video => {
+      if (video !== videoRef.current && !video.paused) {
+        video.pause();
       }
+    });
+  };
+
+  const handlePlayPause = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (!videoRef.current || isPlayPending) return;
+
+    try {
+      if (videoRef.current.paused) {
+        setIsPlayPending(true);
+        // Pause all other videos before playing this one
+        pauseAllOtherVideos();
+        await videoRef.current.play();
+        setIsPlayPending(false);
+        // State will be updated by onPlay event
+      } else {
+        videoRef.current.pause();
+        // State will be updated by onPause event
+      }
+    } catch (error) {
+      console.log('Video control failed:', error);
+      setIsPlayPending(false);
     }
   };
 
@@ -88,7 +113,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 {!isPlaying && !loading && (
                   <button
                     onClick={handlePlayPause}
-                    className={`w-12 h-12 ${feature.color} rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}
+                    disabled={isPlayPending}
+                    className={`w-12 h-12 ${feature.color} rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 ${isPlayPending ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <svg
                       className="w-6 h-6"
@@ -107,6 +133,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 {isPlaying && (
                   <button
                     onClick={handlePlayPause}
+                    disabled={isPlayPending}
                     className="absolute bottom-4 left-4 w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white hover:bg-black/80 transition"
                   >
                     <svg
@@ -120,7 +147,11 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 )}
 
                 <button
-                  onClick={handleFullscreen}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleFullscreen();
+                  }}
                   className="absolute bottom-4 right-4 w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white hover:bg-black/80 transition"
                 >
                   <svg
