@@ -177,40 +177,62 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect, sliderIsActive]);
 
-  // Add event listeners to videos to ensure mutual exclusion
+  // Add event listeners to videos to ensure mutual exclusion and state sync
   useEffect(() => {
     const videos = videoRefs.current.filter(Boolean);
 
-    const handlePlay = (playingVideo: HTMLVideoElement) => {
+    const handlePlay = (playingVideo: HTMLVideoElement, index: number) => {
       // When any video starts playing, pause all others
       videos.forEach(video => {
         if (video && video !== playingVideo && !video.paused) {
           video.pause();
         }
       });
+
+      // Update playing state if this is the current video
+      if (index === currentVideoIndex) {
+        setIsPlaying(true);
+      }
     };
 
-    // Add play event listeners to all videos
+    const handlePause = (pausedVideo: HTMLVideoElement, index: number) => {
+      // Update playing state if this is the current video
+      if (index === currentVideoIndex) {
+        setIsPlaying(false);
+      }
+    };
+
+    // Add play and pause event listeners to all videos
     videos.forEach((video, index) => {
       if (video) {
-        const playHandler = () => handlePlay(video);
-        video.addEventListener('play', playHandler);
+        const playHandler = () => handlePlay(video, index);
+        const pauseHandler = () => handlePause(video, index);
 
-        // Store the handler for cleanup
+        video.addEventListener('play', playHandler);
+        video.addEventListener('pause', pauseHandler);
+
+        // Store the handlers for cleanup
         (video as any).__playHandler = playHandler;
+        (video as any).__pauseHandler = pauseHandler;
       }
     });
 
     return () => {
       // Cleanup event listeners
       videos.forEach(video => {
-        if (video && (video as any).__playHandler) {
-          video.removeEventListener('play', (video as any).__playHandler);
-          delete (video as any).__playHandler;
+        if (video) {
+          if ((video as any).__playHandler) {
+            video.removeEventListener('play', (video as any).__playHandler);
+            delete (video as any).__playHandler;
+          }
+          if ((video as any).__pauseHandler) {
+            video.removeEventListener('pause', (video as any).__pauseHandler);
+            delete (video as any).__pauseHandler;
+          }
         }
       });
     };
-  }, [heroVideos]);
+  }, [heroVideos, currentVideoIndex]);
 
   // Ensure video autoplay works for the first video only
   useEffect(() => {
