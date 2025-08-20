@@ -19,8 +19,10 @@ const NewHeroSection = () => {
   // Video refs for each video in slider
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [sliderIsActive, setSliderIsActive] = useState(true);
 
   // Get hero video URLs from settings
   const heroVideos = [
@@ -48,6 +50,26 @@ const NewHeroSection = () => {
     });
   };
 
+  const pauseVideoAtIndex = (index: number) => {
+    const video = videoRefs.current[index];
+    if (video && !video.paused) {
+      video.pause();
+    }
+  };
+
+  const playCurrentVideo = async () => {
+    const currentVideo = getCurrentVideo();
+    if (!currentVideo || !sliderIsActive) return;
+
+    try {
+      await currentVideo.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.log('Video play failed:', error);
+      setIsPlaying(false);
+    }
+  };
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -59,8 +81,10 @@ const NewHeroSection = () => {
       if (isPlaying) {
         currentVideo.pause();
         setIsPlaying(false);
+        setSliderIsActive(false); // Mark slider as paused when video is manually paused
       } else {
-        // Pause all other videos before playing current one
+        // Enable slider and pause all other videos before playing current one
+        setSliderIsActive(true);
         pauseAllVideos();
         await currentVideo.play();
         setIsPlaying(true);
@@ -89,37 +113,63 @@ const NewHeroSection = () => {
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const selectedIndex = emblaApi.selectedScrollSnap();
+
+    // Store previous index before updating
+    setPreviousVideoIndex(currentVideoIndex);
     setCurrentVideoIndex(selectedIndex);
 
-    // Pause all videos first
+    // Immediately pause the previous video if it was playing
+    if (previousVideoIndex >= 0 && previousVideoIndex !== selectedIndex) {
+      pauseVideoAtIndex(previousVideoIndex);
+    }
+
+    // Pause all videos to ensure clean state
     pauseAllVideos();
     setIsPlaying(false);
 
-    // Play the current video after a brief delay to ensure all others have stopped
-    setTimeout(() => {
-      const currentVideo = videoRefs.current[selectedIndex];
-      if (currentVideo) {
-        currentVideo.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.log('Video play failed:', error);
-          setIsPlaying(false);
-        });
-      }
-    }, 100);
-  }, [emblaApi]);
+    // Only play the new video if slider is active
+    if (sliderIsActive) {
+      setTimeout(() => {
+        playCurrentVideo();
+      }, 150);
+    }
+  }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
 
-  // Setup embla carousel event listeners
+  // Setup embla carousel event listeners with slider state management
   useEffect(() => {
     if (!emblaApi) return;
 
+    // Handle slide selection
     emblaApi.on('select', onSelect);
+
+    // Handle slider interactions (detect when user is actively using slider)
+    const handlePointerDown = () => {
+      setSliderIsActive(true);
+    };
+
+    const handleSettle = () => {
+      // Slider has settled, ensure current video can play if needed
+      if (sliderIsActive) {
+        setTimeout(() => {
+          const currentVideo = getCurrentVideo();
+          if (currentVideo && currentVideo.paused) {
+            playCurrentVideo();
+          }
+        }, 200);
+      }
+    };
+
+    emblaApi.on('pointerDown', handlePointerDown);
+    emblaApi.on('settle', handleSettle);
+
     onSelect(); // Initialize with current selection
 
     return () => {
       emblaApi.off('select', onSelect);
+      emblaApi.off('pointerDown', handlePointerDown);
+      emblaApi.off('settle', handleSettle);
     };
-  }, [emblaApi, onSelect]);
+  }, [emblaApi, onSelect, sliderIsActive]);
 
   // Add event listeners to videos to ensure mutual exclusion
   useEffect(() => {
@@ -332,6 +382,9 @@ const NewHeroSection = () => {
                           {/* Status indicator */}
                           <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                             {isPlaying ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
+                            {!sliderIsActive && currentVideoIndex === index && (
+                              <span className='block text-yellow-300 text-xs mt-1'>Slider Paused</span>
+                            )}
                           </div>
                         </div>
                       </div>
