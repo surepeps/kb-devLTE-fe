@@ -359,8 +359,48 @@ const NewHeroSection = () => {
                               </div>
                             </div>
 
-                            {/* Mute/Unmute button */}
-                            <div className='absolute bottom-4 right-4 pointer-events-auto'>
+                            {/* Control buttons container */}
+                            <div className='absolute bottom-4 right-4 flex gap-2 pointer-events-auto'>
+                              {/* Slider pause/resume toggle */}
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const newSliderState = !sliderIsActive;
+                                  setSliderIsActive(newSliderState);
+
+                                  if (!newSliderState) {
+                                    // Pause current video when slider is disabled
+                                    const currentVideo = getCurrentVideo();
+                                    if (currentVideo && !currentVideo.paused) {
+                                      currentVideo.pause();
+                                      setIsPlaying(false);
+                                    }
+                                  } else {
+                                    // Resume current video when slider is re-enabled
+                                    playCurrentVideo();
+                                  }
+                                }}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 ${
+                                  sliderIsActive
+                                    ? 'bg-black/50 hover:bg-black/70'
+                                    : 'bg-red-500/70 hover:bg-red-600/80'
+                                }`}
+                                title={sliderIsActive ? 'Pause Slider' : 'Resume Slider'}>
+                                {sliderIsActive ? (
+                                  // Slider active icon (pause slider)
+                                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (
+                                  // Slider paused icon (resume slider)
+                                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                  </svg>
+                                )}
+                              </button>
+
+                              {/* Mute/Unmute button */}
                               <button
                                 onClick={handleMuteToggle}
                                 className='w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
