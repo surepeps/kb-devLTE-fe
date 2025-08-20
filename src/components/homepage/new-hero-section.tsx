@@ -20,7 +20,7 @@ const NewHeroSection = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [sliderIsActive, setSliderIsActive] = useState(true);
 
@@ -59,7 +59,7 @@ const NewHeroSection = () => {
 
   const playCurrentVideo = async () => {
     const currentVideo = getCurrentVideo();
-    if (!currentVideo || !sliderIsActive) return;
+    if (!currentVideo) return;
 
     try {
       await currentVideo.play();
@@ -70,6 +70,14 @@ const NewHeroSection = () => {
     }
   };
 
+  const pauseCurrentVideo = () => {
+    const currentVideo = getCurrentVideo();
+    if (!currentVideo) return;
+
+    currentVideo.pause();
+    setIsPlaying(false);
+  };
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -78,16 +86,14 @@ const NewHeroSection = () => {
     if (!currentVideo) return;
 
     try {
-      if (isPlaying) {
-        currentVideo.pause();
-        setIsPlaying(false);
-        setSliderIsActive(false); // Mark slider as paused when video is manually paused
-      } else {
-        // Enable slider and pause all other videos before playing current one
-        setSliderIsActive(true);
+      if (currentVideo.paused) {
+        // Pause all other videos before playing current one
         pauseAllVideos();
         await currentVideo.play();
         setIsPlaying(true);
+      } else {
+        currentVideo.pause();
+        setIsPlaying(false);
       }
     } catch (error) {
       console.log('Video control failed:', error);
@@ -127,12 +133,12 @@ const NewHeroSection = () => {
     pauseAllVideos();
     setIsPlaying(false);
 
-    // Only play the new video if slider is active
-    if (sliderIsActive) {
-      setTimeout(() => {
+    // Auto-play the new video after slide change
+    setTimeout(() => {
+      if (sliderIsActive) {
         playCurrentVideo();
-      }, 150);
-    }
+      }
+    }, 150);
   }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
 
   // Setup embla carousel event listeners with slider state management
@@ -171,40 +177,62 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect, sliderIsActive]);
 
-  // Add event listeners to videos to ensure mutual exclusion
+  // Add event listeners to videos to ensure mutual exclusion and state sync
   useEffect(() => {
     const videos = videoRefs.current.filter(Boolean);
 
-    const handlePlay = (playingVideo: HTMLVideoElement) => {
+    const handlePlay = (playingVideo: HTMLVideoElement, index: number) => {
       // When any video starts playing, pause all others
       videos.forEach(video => {
         if (video && video !== playingVideo && !video.paused) {
           video.pause();
         }
       });
+
+      // Update playing state if this is the current video
+      if (index === currentVideoIndex) {
+        setIsPlaying(true);
+      }
     };
 
-    // Add play event listeners to all videos
+    const handlePause = (pausedVideo: HTMLVideoElement, index: number) => {
+      // Update playing state if this is the current video
+      if (index === currentVideoIndex) {
+        setIsPlaying(false);
+      }
+    };
+
+    // Add play and pause event listeners to all videos
     videos.forEach((video, index) => {
       if (video) {
-        const playHandler = () => handlePlay(video);
-        video.addEventListener('play', playHandler);
+        const playHandler = () => handlePlay(video, index);
+        const pauseHandler = () => handlePause(video, index);
 
-        // Store the handler for cleanup
+        video.addEventListener('play', playHandler);
+        video.addEventListener('pause', pauseHandler);
+
+        // Store the handlers for cleanup
         (video as any).__playHandler = playHandler;
+        (video as any).__pauseHandler = pauseHandler;
       }
     });
 
     return () => {
       // Cleanup event listeners
       videos.forEach(video => {
-        if (video && (video as any).__playHandler) {
-          video.removeEventListener('play', (video as any).__playHandler);
-          delete (video as any).__playHandler;
+        if (video) {
+          if ((video as any).__playHandler) {
+            video.removeEventListener('play', (video as any).__playHandler);
+            delete (video as any).__playHandler;
+          }
+          if ((video as any).__pauseHandler) {
+            video.removeEventListener('pause', (video as any).__pauseHandler);
+            delete (video as any).__pauseHandler;
+          }
         }
       });
     };
-  }, [heroVideos]);
+  }, [heroVideos, currentVideoIndex]);
 
   // Ensure video autoplay works for the first video only
   useEffect(() => {
@@ -345,7 +373,7 @@ const NewHeroSection = () => {
                               className='absolute inset-0 flex items-center justify-center cursor-pointer pointer-events-auto'
                               onClick={handlePlayPause}>
                               <div className='w-16 h-16 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
-                                {isPlaying ? (
+                                {!getCurrentVideo()?.paused ? (
                                   // Pause icon
                                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 002 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -371,11 +399,7 @@ const NewHeroSection = () => {
 
                                   if (!newSliderState) {
                                     // Pause current video when slider is disabled
-                                    const currentVideo = getCurrentVideo();
-                                    if (currentVideo && !currentVideo.paused) {
-                                      currentVideo.pause();
-                                      setIsPlaying(false);
-                                    }
+                                    pauseCurrentVideo();
                                   } else {
                                     // Resume current video when slider is re-enabled
                                     playCurrentVideo();
