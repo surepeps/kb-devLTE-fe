@@ -20,7 +20,7 @@ const NewHeroSection = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [sliderIsActive, setSliderIsActive] = useState(true);
 
@@ -59,7 +59,7 @@ const NewHeroSection = () => {
 
   const playCurrentVideo = async () => {
     const currentVideo = getCurrentVideo();
-    if (!currentVideo || !sliderIsActive) return;
+    if (!currentVideo) return;
 
     try {
       await currentVideo.play();
@@ -70,6 +70,14 @@ const NewHeroSection = () => {
     }
   };
 
+  const pauseCurrentVideo = () => {
+    const currentVideo = getCurrentVideo();
+    if (!currentVideo) return;
+
+    currentVideo.pause();
+    setIsPlaying(false);
+  };
+
   const handlePlayPause = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -78,16 +86,14 @@ const NewHeroSection = () => {
     if (!currentVideo) return;
 
     try {
-      if (isPlaying) {
-        currentVideo.pause();
-        setIsPlaying(false);
-        setSliderIsActive(false); // Mark slider as paused when video is manually paused
-      } else {
-        // Enable slider and pause all other videos before playing current one
-        setSliderIsActive(true);
+      if (currentVideo.paused) {
+        // Pause all other videos before playing current one
         pauseAllVideos();
         await currentVideo.play();
         setIsPlaying(true);
+      } else {
+        currentVideo.pause();
+        setIsPlaying(false);
       }
     } catch (error) {
       console.log('Video control failed:', error);
