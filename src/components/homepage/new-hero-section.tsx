@@ -133,12 +133,12 @@ const NewHeroSection = () => {
     pauseAllVideos();
     setIsPlaying(false);
 
-    // Only play the new video if slider is active
-    if (sliderIsActive) {
-      setTimeout(() => {
+    // Auto-play the new video after slide change
+    setTimeout(() => {
+      if (sliderIsActive) {
         playCurrentVideo();
-      }, 150);
-    }
+      }
+    }, 150);
   }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
 
   // Setup embla carousel event listeners with slider state management
@@ -377,11 +377,7 @@ const NewHeroSection = () => {
 
                                   if (!newSliderState) {
                                     // Pause current video when slider is disabled
-                                    const currentVideo = getCurrentVideo();
-                                    if (currentVideo && !currentVideo.paused) {
-                                      currentVideo.pause();
-                                      setIsPlaying(false);
-                                    }
+                                    pauseCurrentVideo();
                                   } else {
                                     // Resume current video when slider is re-enabled
                                     playCurrentVideo();
