@@ -23,6 +23,7 @@ const NewHeroSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [sliderIsActive, setSliderIsActive] = useState(true);
+  const [isPlayPending, setIsPlayPending] = useState(false);
 
   // Get hero video URLs from settings
   const heroVideos = [
@@ -42,6 +43,14 @@ const NewHeroSection = () => {
   // Video control functions
   const getCurrentVideo = () => videoRefs.current[currentVideoIndex];
 
+  const pauseOtherVideos = (currentIndex: number) => {
+    videoRefs.current.forEach((video, index) => {
+      if (video && index !== currentIndex && !video.paused) {
+        video.pause();
+      }
+    });
+  };
+
   const pauseAllVideos = () => {
     videoRefs.current.forEach((video, index) => {
       if (video && !video.paused) {
@@ -59,14 +68,17 @@ const NewHeroSection = () => {
 
   const playCurrentVideo = async () => {
     const currentVideo = getCurrentVideo();
-    if (!currentVideo) return;
+    if (!currentVideo || isPlayPending) return;
 
     try {
+      setIsPlayPending(true);
+      pauseOtherVideos(currentVideoIndex);
       await currentVideo.play();
-      setIsPlaying(true);
+      setIsPlayPending(false);
+      // State will be updated by event listener
     } catch (error) {
       console.log('Video play failed:', error);
-      setIsPlaying(false);
+      setIsPlayPending(false);
     }
   };
 
@@ -75,7 +87,7 @@ const NewHeroSection = () => {
     if (!currentVideo) return;
 
     currentVideo.pause();
-    setIsPlaying(false);
+    // State will be updated by event listener
   };
 
   const handlePlayPause = async (e: React.MouseEvent) => {
@@ -83,20 +95,23 @@ const NewHeroSection = () => {
     e.stopPropagation();
 
     const currentVideo = getCurrentVideo();
-    if (!currentVideo) return;
+    if (!currentVideo || isPlayPending) return;
 
     try {
       if (currentVideo.paused) {
-        // Pause all other videos before playing current one
-        pauseAllVideos();
+        setIsPlayPending(true);
+        // Pause only other videos, not the current one
+        pauseOtherVideos(currentVideoIndex);
         await currentVideo.play();
-        setIsPlaying(true);
+        setIsPlayPending(false);
+        // State will be updated by event listener
       } else {
         currentVideo.pause();
-        setIsPlaying(false);
+        // State will be updated by event listener
       }
     } catch (error) {
       console.log('Video control failed:', error);
+      setIsPlayPending(false);
     }
   };
 
@@ -112,7 +127,7 @@ const NewHeroSection = () => {
   };
 
   const handleVideoEnded = () => {
-    setIsPlaying(false);
+    // State will be updated by pause event listener when video ends
   };
 
   // Handle slide selection
@@ -129,9 +144,8 @@ const NewHeroSection = () => {
       pauseVideoAtIndex(previousVideoIndex);
     }
 
-    // Pause all videos to ensure clean state
-    pauseAllVideos();
-    setIsPlaying(false);
+    // Pause other videos, but let event listeners handle state
+    pauseOtherVideos(selectedIndex);
 
     // Auto-play the new video after slide change
     setTimeout(() => {
@@ -189,7 +203,7 @@ const NewHeroSection = () => {
         }
       });
 
-      // Update playing state if this is the current video
+      // Update playing state only if this is the current video
       if (index === currentVideoIndex) {
         setIsPlaying(true);
       }
@@ -237,25 +251,21 @@ const NewHeroSection = () => {
   // Ensure video autoplay works for the first video only
   useEffect(() => {
     if (heroVideos.length > 0) {
-      // First pause all videos to ensure clean state
-      pauseAllVideos();
-
       const firstVideo = videoRefs.current[0];
       if (firstVideo && currentVideoIndex === 0) {
         const playVideo = async () => {
           try {
+            pauseOtherVideos(0);
             await firstVideo.play();
-            setIsPlaying(true);
+            // State will be updated by event listener
           } catch (error) {
             console.log('Video autoplay failed:', error);
-            setIsPlaying(false);
             // Fallback: try again after user interaction
             const handleInteraction = async () => {
               try {
-                // Ensure all other videos are paused before playing
-                pauseAllVideos();
+                pauseOtherVideos(0);
                 await firstVideo.play();
-                setIsPlaying(true);
+                // State will be updated by event listener
                 document.removeEventListener('click', handleInteraction);
                 document.removeEventListener('touchstart', handleInteraction);
               } catch (e) {
@@ -373,7 +383,7 @@ const NewHeroSection = () => {
                               className='absolute inset-0 flex items-center justify-center cursor-pointer pointer-events-auto'
                               onClick={handlePlayPause}>
                               <div className='w-16 h-16 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
-                                {!getCurrentVideo()?.paused ? (
+                                {isPlaying ? (
                                   // Pause icon
                                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 002 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
