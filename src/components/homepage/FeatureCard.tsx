@@ -46,9 +46,10 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
     try {
       if (videoRef.current.paused) {
         setIsPlayPending(true);
-        // Pause all other videos before playing this one
-        pauseAllOtherVideos();
+        // Start playing current video first
         await videoRef.current.play();
+        // Then pause others to avoid flicker
+        pauseAllOtherVideos();
         setIsPlayPending(false);
         // State will be updated by onPlay event
       } else {
