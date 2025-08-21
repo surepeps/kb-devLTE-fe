@@ -119,7 +119,7 @@ const SocialProofSection = () => {
         }
 
       } catch (err) {
-        console.error('Error fetching testimonials:', err);
+        console.warn('💬 Testimonials API not available - using sample testimonials:', err instanceof Error ? err.message : err);
         // Fallback to sample testimonials - don't show error to user
         setError(null);
         setTestimonials([
