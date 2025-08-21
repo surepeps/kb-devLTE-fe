@@ -4,6 +4,7 @@
 import React, { Fragment, Suspense } from "react";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
+import { useHomePageSettings } from "@/hooks/useSystemSettings";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import EmailVerification from "@/components/EmailVerification";
 
