@@ -172,6 +172,9 @@ const NewHomepage = ({
       <Suspense fallback={<Loading />}>
         <EmailVerification />
       </Suspense>
+
+      {/* Development Notice */}
+      <DevelopmentNotice />
     </Fragment>
   );
 };
