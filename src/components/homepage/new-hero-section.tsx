@@ -161,15 +161,8 @@ const NewHeroSection = () => {
     };
 
     const handleSettle = () => {
-      // Slider has settled, ensure current video can play if needed
-      if (sliderIsActive) {
-        setTimeout(() => {
-          const currentVideo = getCurrentVideo();
-          if (currentVideo && currentVideo.paused) {
-            playCurrentVideo();
-          }
-        }, 200);
-      }
+      // Slider has settled - videos remain paused for manual control
+      // Removed auto-play to prevent unwanted behavior
     };
 
     emblaApi.on('pointerDown', handlePointerDown);
