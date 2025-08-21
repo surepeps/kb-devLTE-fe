@@ -88,17 +88,26 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 <div className="text-gray-400">Loading...</div>
               </div>
             ) : feature.videoUrl ? (
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                poster={feature.videoThumbnail}
-                preload="metadata"
-                onPause={() => setIsPlaying(false)}
-                onPlay={() => setIsPlaying(true)}
-                controls={false} // custom controls only
-              >
-                <source src={feature.videoUrl} type="video/mp4" />
-              </video>
+              <>
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  poster={feature.videoThumbnail}
+                  preload="metadata"
+                  onPause={() => setIsPlaying(false)}
+                  onPlay={() => setIsPlaying(true)}
+                  controls={false} // custom controls only
+                >
+                  <source src={feature.videoUrl} type="video/mp4" />
+                </video>
+                {/* Fallback thumbnail image in case video poster fails */}
+                <img
+                  src={feature.videoThumbnail}
+                  alt={feature.title}
+                  className="w-full h-full object-cover absolute inset-0 -z-10"
+                  style={{ display: isPlaying ? 'none' : 'block' }}
+                />
+              </>
             ) : (
               <img
                 src={feature.videoThumbnail}
