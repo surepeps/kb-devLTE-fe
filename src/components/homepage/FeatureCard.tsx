@@ -81,7 +81,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
       className="group hover:scale-105 transition-transform duration-300"
     >
       <Link href={feature.link}>
-        <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer h-full flex flex-col">
+        <div className="feature-card bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer h-full flex flex-col">
           {/* Video Thumbnail/Preview */}
           <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-6 relative overflow-hidden group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
             {loading ? (
