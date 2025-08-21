@@ -72,8 +72,10 @@ const NewHeroSection = () => {
 
     try {
       setIsPlayPending(true);
-      pauseOtherVideos(currentVideoIndex);
+      // Start playing current video first
       await currentVideo.play();
+      // Only pause others after current video starts playing
+      pauseOtherVideos(currentVideoIndex);
       setIsPlayPending(false);
       // State will be updated by event listener
     } catch (error) {
