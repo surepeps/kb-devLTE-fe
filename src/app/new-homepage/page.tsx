@@ -7,6 +7,7 @@ import { useLoading } from "@/hooks/useLoading";
 import { useHomePageSettings } from "@/hooks/useSystemSettings";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import EmailVerification from "@/components/EmailVerification";
+import DevelopmentNotice from "@/components/general-components/DevelopmentNotice";
 
 // New landing page components
 import NewHeroSection from "@/components/homepage/new-hero-section";
@@ -171,6 +172,9 @@ const NewHomepage = ({
       <Suspense fallback={<Loading />}>
         <EmailVerification />
       </Suspense>
+
+      {/* Development Notice */}
+      <DevelopmentNotice />
     </Fragment>
   );
 };
