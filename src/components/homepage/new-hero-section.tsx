@@ -418,7 +418,7 @@ const NewHeroSection = () => {
 
                           {/* Status indicator */}
                           <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                            {isPlaying ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
+                            {(isPlaying && currentVideoIndex === index) ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
                             {!sliderIsActive && currentVideoIndex === index && (
                               <span className='block text-yellow-300 text-xs mt-1'>Slider Paused</span>
                             )}
