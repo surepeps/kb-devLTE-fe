@@ -47,9 +47,9 @@ const NewHomepage = ({
   const { loading: settingsLoading } = useHomePageSettings();
 
   /**
-   * Loading state - show loading component for 3 seconds then render the page
+   * Loading state - show loading component for 3 seconds OR until settings are loaded
    */
-  if (isLoading) return <Loading />;
+  if (isLoading || settingsLoading) return <Loading />;
 
   return (
     <Fragment>
