@@ -72,8 +72,10 @@ const NewHeroSection = () => {
 
     try {
       setIsPlayPending(true);
-      pauseOtherVideos(currentVideoIndex);
+      // Start playing current video first
       await currentVideo.play();
+      // Only pause others after current video starts playing
+      pauseOtherVideos(currentVideoIndex);
       setIsPlayPending(false);
       // State will be updated by event listener
     } catch (error) {
@@ -100,9 +102,10 @@ const NewHeroSection = () => {
     try {
       if (currentVideo.paused) {
         setIsPlayPending(true);
-        // Pause only other videos, not the current one
-        pauseOtherVideos(currentVideoIndex);
+        // Start playing current video first
         await currentVideo.play();
+        // Only pause others after current video starts playing to avoid flicker
+        pauseOtherVideos(currentVideoIndex);
         setIsPlayPending(false);
         // State will be updated by event listener
       } else {
@@ -139,16 +142,11 @@ const NewHeroSection = () => {
     setPreviousVideoIndex(currentVideoIndex);
     setCurrentVideoIndex(selectedIndex);
 
-    // Immediately pause the previous video if it was playing
-    if (previousVideoIndex >= 0 && previousVideoIndex !== selectedIndex) {
-      pauseVideoAtIndex(previousVideoIndex);
-    }
-
-    // Pause other videos, but let event listeners handle state
-    pauseOtherVideos(selectedIndex);
+    // Pause all videos on slide change to prevent overlap
+    pauseAllVideos();
 
     // Videos remain paused after slide change - manual play only
-  }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
+  }, [emblaApi, currentVideoIndex]);
 
   // Setup embla carousel event listeners with slider state management
   useEffect(() => {
@@ -163,15 +161,8 @@ const NewHeroSection = () => {
     };
 
     const handleSettle = () => {
-      // Slider has settled, ensure current video can play if needed
-      if (sliderIsActive) {
-        setTimeout(() => {
-          const currentVideo = getCurrentVideo();
-          if (currentVideo && currentVideo.paused) {
-            playCurrentVideo();
-          }
-        }, 200);
-      }
+      // Slider has settled - videos remain paused for manual control
+      // Removed auto-play to prevent unwanted behavior
     };
 
     emblaApi.on('pointerDown', handlePointerDown);

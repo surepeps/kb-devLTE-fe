@@ -26,8 +26,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
   const [isPlayPending, setIsPlayPending] = useState(false);
 
   const pauseAllOtherVideos = () => {
-    // Pause all videos on the page except current one
-    const allVideos = document.querySelectorAll('video');
+    // Pause all videos on the page except current one - scoped to feature cards
+    const allVideos = document.querySelectorAll('.feature-card video');
     allVideos.forEach(video => {
       if (video !== videoRef.current && !video.paused) {
         video.pause();
@@ -46,9 +46,10 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
     try {
       if (videoRef.current.paused) {
         setIsPlayPending(true);
-        // Pause all other videos before playing this one
-        pauseAllOtherVideos();
+        // Start playing current video first
         await videoRef.current.play();
+        // Then pause others to avoid flicker
+        pauseAllOtherVideos();
         setIsPlayPending(false);
         // State will be updated by onPlay event
       } else {
@@ -80,7 +81,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
       className="group hover:scale-105 transition-transform duration-300"
     >
       <Link href={feature.link}>
-        <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer h-full flex flex-col">
+        <div className="feature-card bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer h-full flex flex-col">
           {/* Video Thumbnail/Preview */}
           <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-6 relative overflow-hidden group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
             {loading ? (
@@ -104,8 +105,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 <img
                   src={feature.videoThumbnail}
                   alt={feature.title}
-                  className="w-full h-full object-cover absolute inset-0 -z-10"
-                  style={{ display: isPlaying ? 'none' : 'block' }}
+                  className="w-full h-full object-cover absolute inset-0 -z-10 transition-opacity duration-300"
+                  style={{ opacity: isPlaying ? 0 : 1 }}
                 />
               </>
             ) : (
