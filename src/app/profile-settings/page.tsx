@@ -372,6 +372,7 @@ export default function ProfileSettingsPage() {
             {[
               { id: "profile", label: "Profile Details", icon: UserIcon },
               { id: "password", label: "Change Password", icon: LockIcon },
+              { id: "share", label: "Share Profile", icon: Share2 },
               {
                 id: "account",
                 label: "Account Settings",
