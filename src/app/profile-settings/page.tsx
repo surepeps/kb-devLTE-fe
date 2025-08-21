@@ -57,7 +57,7 @@ export default function ProfileSettingsPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
-    "profile" | "password" | "account"
+    "profile" | "password" | "account" | "share"
   >("profile");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
