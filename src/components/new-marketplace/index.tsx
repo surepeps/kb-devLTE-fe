@@ -11,7 +11,7 @@ import RentTab from "./tabs/RentTab";
 import ShortletTab from "./tabs/ShortletTab";
 
 import StandardPreloader from "./StandardPreloader";
-
+ 
 const NewMarketPlace = () => {
   const router = useRouter();
   const {

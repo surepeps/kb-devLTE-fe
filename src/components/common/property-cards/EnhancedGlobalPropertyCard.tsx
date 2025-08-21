@@ -7,6 +7,7 @@ import GlobalPropertyCard from "./GlobalPropertyCard";
 import GlobalJVPropertyCard from "./GlobalJVPropertyCard";
 import SimplifiedPriceNegotiationModal from "@/components/modals/SimplifiedPriceNegotiationModal";
 import SimplifiedLOIUploadModal from "@/components/modals/SimplifiedLOIUploadModal";
+import randomImage from "@/assets/noImageAvailable.png";
  
 interface EnhancedGlobalPropertyCardProps {
   type: "standard" | "jv";
@@ -18,7 +19,7 @@ interface EnhancedGlobalPropertyCardProps {
   onPropertyClick?: () => void;
   onInspectionToggle?: () => void; // Optional override for inspection toggle
   className?: string;
-}
+} 
 
 const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   type,
@@ -78,6 +79,20 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     });
   };
 
+
+  const transformImages = (pictures: any[]) => {
+    return pictures.map((item, index) => {
+      if (typeof item === "string") {
+        return { id: index.toString(), url: item, alt: `Property image ${index + 1}` };
+      }
+      if (item?.url) {
+        return { id: item.id || index.toString(), url: item.url, alt: item.alt || `Property image ${index + 1}` };
+      }
+      return { id: index.toString(), url: randomImage, alt: "Fallback image" };
+    });
+  };
+
+
   const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
     const originalPrice = property.price || property.rentalPrice || 0;
     addNegotiatedPrice(property._id, originalPrice, negotiatedPriceValue);
@@ -117,13 +132,16 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     removeLOIDocument(propertyId);
   };
 
+  const transformedImages = transformImages(images || []);
+
+
   if (type === "jv") {
     return (
       <>
         <GlobalJVPropertyCard
           property={property}
           cardData={cardData}
-          images={images}
+          images={transformedImages}
           isPremium={isPremium}
           onPropertyClick={onPropertyClick}
           onLOIUpload={handleLOIUpload}
@@ -153,7 +171,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
       <GlobalPropertyCard
         property={property}
         cardData={cardData}
-        images={images}
+        images={transformedImages}
         isPremium={isPremium}
         onPropertyClick={onPropertyClick}
         onPriceNegotiation={handlePriceNegotiation}

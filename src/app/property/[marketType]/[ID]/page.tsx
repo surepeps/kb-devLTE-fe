@@ -1,18 +1,14 @@
 /** @format */
 "use client";
 
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   MapPin,
-  Calendar,
   Share2,
   Heart,
-  Phone,
-  Mail,
-  Star,
   Bed,
   Bath,
   Car,
@@ -24,9 +20,7 @@ import {
   ArrowRight,
   X,
   Eye,
-  Clock,
   Home,
-  User,
   FileText,
   Shield,
   Play,
@@ -37,11 +31,9 @@ import Image from "next/image";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { URLS } from "@/utils/URLS";
-import { usePageContext } from "@/context/page-context";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
 import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import GlobalPriceNegotiationModal from "@/components/modals/GlobalPriceNegotiationModal";
-import { epilogue } from "@/styles/font";
 import sampleImage from "@/assets/Rectangle.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, Thumbs } from "swiper/modules";
@@ -109,7 +101,6 @@ const ImageGallery = ({ images }: { images: string[] }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const { setImageData, setViewImage } = usePageContext();
 
   const validImages = images.length > 0 ? images : [sampleImage.src];
 
@@ -707,8 +698,6 @@ const ProductDetailsPage = () => {
   const [details, setDetails] = useState<PropertyDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
-  const { setPropertySelectedForInspection, setIsComingFromPriceNeg } =
-    usePageContext();
   const { selectedBriefs } = useSelectedBriefs();
   const {
     toggleInspectionSelection,
@@ -899,8 +888,8 @@ const ProductDetailsPage = () => {
               if (typeof window !== 'undefined' && window.history.length > 1) {
                 router.back();
               } else {
-                // Fallback to marketplace if no history
-                router.push('/marketplace');
+                // Fallback to market-place if no history
+                router.push('/market-place');
               }
             }}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -923,8 +912,8 @@ const ProductDetailsPage = () => {
                 if (typeof window !== 'undefined' && window.history.length > 1) {
                   router.back();
                 } else {
-                  // Fallback to marketplace if no history
-                  router.push('/marketplace');
+                  // Fallback to market-place if no history
+                  router.push('/market-place');
                 }
               }}
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"

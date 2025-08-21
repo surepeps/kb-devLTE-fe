@@ -7,7 +7,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { usePageContext } from "@/context/page-context";
 import randomImage from "@/assets/noImageAvailable.png";
-import CloudinaryImage from "@/components/general-components/CloudinaryImage";
 
 // Import Swiper styles
 import "swiper/css";
@@ -83,17 +82,6 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
                 }}
                 key={i}
               >
-                {/* <CloudinaryImage
-                  width={1000}
-                  height={1000}
-                  src={validImageUrl}
-                  alt={`Slide ${i + 1}`}
-                  className="w-full h-full object-cover cursor-pointer"
-                  fallbackSrc={randomImage.src}
-                  priority={i === 0} // Only first image is priority
-                  timeout={8000} // 8 second timeout
-                /> */}
-
                 <Image
                   width={1000}
                   height={1000}
