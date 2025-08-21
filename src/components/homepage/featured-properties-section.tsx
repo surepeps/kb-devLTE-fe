@@ -313,14 +313,6 @@ const FeaturedPropertiesSection = () => {
             </button>
           </Link>
         </motion.div>
-
-        {error && (
-          <div className='text-center mt-8'>
-            <p className='text-red-600 text-sm'>
-              {error} - Showing sample properties
-            </p>
-          </div>
-        )}
       </div>
     </section>
   );
