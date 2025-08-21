@@ -57,19 +57,26 @@ const FeaturedPropertiesSection = () => {
     const fetchFeaturedProperties = async () => {
       try {
         setLoading(true);
-        
-        const response = await GET_REQUEST(`${URLS.BASE}/properties/featuredProps`);
-        
-        if (response.success && response.data) {
-          setProperties(response.data.slice(0, 4)); // Limit to 4 properties
-        } else {
-          throw new Error('Invalid response format');
+
+        // Check if API base URL is properly configured
+        if (!URLS.BASE || URLS.BASE.includes('undefined')) {
+          throw new Error('API configuration missing');
         }
-        
+
+        const response = await GET_REQUEST(`${URLS.BASE}/properties/featuredProps`);
+
+        if (response.success && response.data && Array.isArray(response.data)) {
+          setProperties(response.data.slice(0, 4)); // Limit to 4 properties
+          setError(null); // Clear any previous errors
+        } else {
+          throw new Error(response.error || 'Invalid response format');
+        }
+
       } catch (err) {
         console.error('Error fetching featured properties:', err);
-        setError('Unable to load properties');
-        
+        // Only show error in console, not to user - fallback gracefully
+        setError(null);
+
         // Fallback to sample data based on the API structure
         setProperties([
           {
