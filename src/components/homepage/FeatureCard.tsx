@@ -82,7 +82,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
       <Link href={feature.link}>
         <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer h-full flex flex-col">
           {/* Video Thumbnail/Preview */}
-          <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-6 relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+          <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-6 relative overflow-hidden group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
             {loading ? (
               <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
                 <div className="text-gray-400">Loading...</div>
@@ -166,25 +166,27 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
             )}
           </div>
 
-          {/* Icon */}
-          <div
-            className={`w-12 h-12 ${feature.color} rounded-full flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300`}
-          >
-            {feature.icon}
-          </div>
+          {/* Content Container */}
+          <div className="flex-grow flex flex-col">
+            {/* Icon */}
+            <div
+              className={`w-12 h-12 ${feature.color} rounded-full flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300`}
+            >
+              {feature.icon}
+            </div>
 
-          {/* Title */}
-          <h3 className="text-xl md:text-2xl font-bold text-[#09391C] mb-3 group-hover:text-[#8DDB90] transition-colors duration-300">
-            {feature.title}
-          </h3>
+            {/* Title */}
+            <h3 className="text-xl md:text-2xl font-bold text-[#09391C] mb-3 group-hover:text-[#8DDB90] transition-colors duration-300">
+              {feature.title}
+            </h3>
 
-          {/* Description */}
-          <p className="text-gray-600 leading-relaxed mb-4">
-            {feature.description}
-          </p>
+            {/* Description */}
+            <p className="text-gray-600 leading-relaxed mb-4 flex-grow">
+              {feature.description}
+            </p>
 
-          {/* Link/Button */}
-          <div className="flex items-center gap-2 text-[#8DDB90] group-hover:text-[#7BC87F] transition-colors duration-300">
+            {/* Link/Button */}
+            <div className="flex items-center gap-2 text-[#8DDB90] group-hover:text-[#7BC87F] transition-colors duration-300 mt-auto">
             <span className="font-medium">Learn More</span>
             <svg
               className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
@@ -197,6 +199,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 clipRule="evenodd"
               />
             </svg>
+            </div>
           </div>
         </div>
       </Link>
