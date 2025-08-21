@@ -102,9 +102,10 @@ const NewHeroSection = () => {
     try {
       if (currentVideo.paused) {
         setIsPlayPending(true);
-        // Pause only other videos, not the current one
-        pauseOtherVideos(currentVideoIndex);
+        // Start playing current video first
         await currentVideo.play();
+        // Only pause others after current video starts playing to avoid flicker
+        pauseOtherVideos(currentVideoIndex);
         setIsPlayPending(false);
         // State will be updated by event listener
       } else {
