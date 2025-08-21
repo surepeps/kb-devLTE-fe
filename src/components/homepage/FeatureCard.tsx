@@ -105,8 +105,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 <img
                   src={feature.videoThumbnail}
                   alt={feature.title}
-                  className="w-full h-full object-cover absolute inset-0 -z-10"
-                  style={{ display: isPlaying ? 'none' : 'block' }}
+                  className="w-full h-full object-cover absolute inset-0 -z-10 transition-opacity duration-300"
+                  style={{ opacity: isPlaying ? 0 : 1 }}
                 />
               </>
             ) : (
