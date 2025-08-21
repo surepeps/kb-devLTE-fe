@@ -756,6 +756,114 @@ export default function ProfileSettingsPage() {
               </div>
             )}
 
+            {/* Share Profile Tab */}
+            {activeTab === "share" && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-[#09391C] mb-2">
+                    Share Your Profile
+                  </h3>
+                  <p className="text-sm text-[#5A5D63] mb-6">
+                    Share your public profile with clients and colleagues
+                  </p>
+                </div>
+
+                {/* Profile Preview */}
+                <div className="bg-gradient-to-r from-[#8DDB90] to-[#7BC87F] p-6 rounded-xl text-white">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+                      {userProfile.profileImage ? (
+                        <img
+                          src={userProfile.profileImage}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <UserIcon className="w-8 h-8 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold">
+                        {userProfile.firstName} {userProfile.lastName}
+                      </h4>
+                      <p className="text-white/80">{userProfile.userType} • Khabiteq</p>
+                    </div>
+                  </div>
+                  <p className="text-white/90 mb-4">
+                    Verified real estate professional on Khabiteq platform
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-white/20 rounded-full text-sm">
+                      Verified Agent
+                    </span>
+                    <span className="px-3 py-1 bg-white/20 rounded-full text-sm">
+                      Lagos, Nigeria
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sharing Options */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    onClick={shareProfile}
+                    className="flex items-center justify-center gap-3 p-4 border-2 border-[#8DDB90] text-[#8DDB90] rounded-lg hover:bg-[#8DDB90] hover:text-white transition-colors">
+                    <Share2 className="w-5 h-5" />
+                    <span className="font-medium">Share Profile</span>
+                  </button>
+
+                  <button
+                    onClick={copyProfileLink}
+                    className="flex items-center justify-center gap-3 p-4 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors">
+                    <Copy className="w-5 h-5" />
+                    <span className="font-medium">Copy Link</span>
+                  </button>
+                </div>
+
+                {/* Profile URL Display */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Public Profile URL
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={`${typeof window !== 'undefined' ? window.location.origin : 'https://khabiteq.com'}/agent-profile/${userProfile._id}`}
+                      readOnly
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+                    />
+                    <button
+                      onClick={copyProfileLink}
+                      className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors">
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* View Public Profile */}
+                <div className="text-center">
+                  <a
+                    href={`/agent-profile/${userProfile._id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#09391C] text-white rounded-lg hover:bg-[#0B423D] transition-colors">
+                    <ExternalLink className="w-5 h-5" />
+                    View Public Profile
+                  </a>
+                </div>
+
+                {/* Tips */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">💡 Profile Tips</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Complete your profile information to build trust with clients</li>
+                    <li>• Add a professional profile photo</li>
+                    <li>• Share your profile link on business cards and social media</li>
+                    <li>• Keep your contact information up to date</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
             {/* Account Settings Tab */}
             {activeTab === "account" && (
               <div className="space-y-6">
