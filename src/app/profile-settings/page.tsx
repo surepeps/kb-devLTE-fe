@@ -290,6 +290,35 @@ export default function ProfileSettingsPage() {
     }
   };
 
+  const copyProfileLink = async () => {
+    const profileUrl = `${window.location.origin}/agent-profile/${userProfile?._id}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      toast.success('Profile link copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy link');
+    }
+  };
+
+  const shareProfile = async () => {
+    const profileUrl = `${window.location.origin}/agent-profile/${userProfile?._id}`;
+    const shareData = {
+      title: `${userProfile?.firstName} ${userProfile?.lastName} - Khabiteq Agent`,
+      text: 'Check out my profile on Khabiteq',
+      url: profileUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        copyProfileLink();
+      }
+    } else {
+      copyProfileLink();
+    }
+  };
+
   if (isLoading) {
     return <Loading />;
   }
