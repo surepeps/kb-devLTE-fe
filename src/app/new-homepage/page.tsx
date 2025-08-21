@@ -4,6 +4,7 @@
 import React, { Fragment, Suspense } from "react";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
+import { useHomePageSettings } from "@/hooks/useSystemSettings";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import EmailVerification from "@/components/EmailVerification";
 
@@ -42,11 +43,13 @@ const NewHomepage = ({
 }: { isComingSoon?: boolean } = {}) => {
   // Simulating the loading page
   const isLoading = useLoading();
+  // Get settings loading state
+  const { loading: settingsLoading } = useHomePageSettings();
 
   /**
-   * Loading state - show loading component for 3 seconds then render the page
+   * Loading state - show loading component for 3 seconds OR until settings are loaded
    */
-  if (isLoading) return <Loading />;
+  if (isLoading || settingsLoading) return <Loading />;
 
   return (
     <Fragment>
