@@ -1,7 +1,19 @@
 /** @format */
 
+// Validate environment variables and provide fallback
+const getApiBaseUrl = (): string => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!baseUrl || baseUrl.includes('undefined')) {
+    console.warn('⚠️ NEXT_PUBLIC_API_URL not configured. API features may not work. Set this environment variable for full functionality.');
+    return 'http://localhost:3001/api';
+  }
+
+  return baseUrl;
+};
+
 export const URLS = {
-  BASE: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  BASE: getApiBaseUrl(),
 
   /**
    * Upload Image
