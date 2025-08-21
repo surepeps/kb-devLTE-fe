@@ -73,7 +73,7 @@ const FeaturedPropertiesSection = () => {
         }
 
       } catch (err) {
-        console.error('Error fetching featured properties:', err);
+        console.warn('📦 Featured properties API not available - using sample data:', err instanceof Error ? err.message : err);
         // Only show error in console, not to user - fallback gracefully
         setError(null);
 
