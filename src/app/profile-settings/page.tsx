@@ -24,6 +24,9 @@ import {
   EyeOff as EyeOffIcon,
   AlertTriangle as AlertTriangleIcon,
   X,
+  Share2,
+  Copy,
+  ExternalLink,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import { useFormik } from "formik";
