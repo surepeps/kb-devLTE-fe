@@ -142,16 +142,11 @@ const NewHeroSection = () => {
     setPreviousVideoIndex(currentVideoIndex);
     setCurrentVideoIndex(selectedIndex);
 
-    // Immediately pause the previous video if it was playing
-    if (previousVideoIndex >= 0 && previousVideoIndex !== selectedIndex) {
-      pauseVideoAtIndex(previousVideoIndex);
-    }
-
-    // Pause other videos, but let event listeners handle state
-    pauseOtherVideos(selectedIndex);
+    // Pause all videos on slide change to prevent overlap
+    pauseAllVideos();
 
     // Videos remain paused after slide change - manual play only
-  }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
+  }, [emblaApi, currentVideoIndex]);
 
   // Setup embla carousel event listeners with slider state management
   useEffect(() => {
