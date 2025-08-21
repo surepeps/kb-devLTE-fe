@@ -147,12 +147,7 @@ const NewHeroSection = () => {
     // Pause other videos, but let event listeners handle state
     pauseOtherVideos(selectedIndex);
 
-    // Auto-play the new video after slide change
-    setTimeout(() => {
-      if (sliderIsActive) {
-        playCurrentVideo();
-      }
-    }, 150);
+    // Videos remain paused after slide change - manual play only
   }, [emblaApi, currentVideoIndex, previousVideoIndex, sliderIsActive]);
 
   // Setup embla carousel event listeners with slider state management
@@ -248,38 +243,7 @@ const NewHeroSection = () => {
     };
   }, [heroVideos, currentVideoIndex]);
 
-  // Ensure video autoplay works for the first video only
-  useEffect(() => {
-    if (heroVideos.length > 0) {
-      const firstVideo = videoRefs.current[0];
-      if (firstVideo && currentVideoIndex === 0) {
-        const playVideo = async () => {
-          try {
-            pauseOtherVideos(0);
-            await firstVideo.play();
-            // State will be updated by event listener
-          } catch (error) {
-            console.log('Video autoplay failed:', error);
-            // Fallback: try again after user interaction
-            const handleInteraction = async () => {
-              try {
-                pauseOtherVideos(0);
-                await firstVideo.play();
-                // State will be updated by event listener
-                document.removeEventListener('click', handleInteraction);
-                document.removeEventListener('touchstart', handleInteraction);
-              } catch (e) {
-                console.log('Video play after interaction failed:', e);
-              }
-            };
-            document.addEventListener('click', handleInteraction);
-            document.addEventListener('touchstart', handleInteraction);
-          }
-        };
-        playVideo();
-      }
-    }
-  }, [heroVideos, currentVideoIndex]);
+  // Removed auto-play functionality - videos now start paused by default
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
@@ -353,11 +317,10 @@ const NewHeroSection = () => {
                               videoRefs.current[index] = el;
                             }}
                             className="w-full h-full object-cover cursor-pointer"
-                            autoPlay={index === 0 && currentVideoIndex === 0}
                             muted
                             loop
                             playsInline
-                            preload="auto"
+                            preload="metadata"
                             poster="/placeholder-property.svg"
                             onClick={handlePlayPause}
                             onEnded={handleVideoEnded}>
