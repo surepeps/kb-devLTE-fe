@@ -11,11 +11,12 @@ import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "@/components/new-marketplace/ImageSwiper";
 import Button from "@/components/general-components/button";
 import { X } from "lucide-react";
+import { PropertyImage } from "@/types";
 
 interface GlobalJVPropertyCardProps {
   property: any;
   cardData: { header: string; value: string }[];
-  images: any[];
+  images: PropertyImage[];
   isPremium: boolean;
   onPropertyClick?: () => void;
   onLOIUpload?: () => void;
@@ -29,7 +30,7 @@ interface GlobalJVPropertyCardProps {
     documentUrl?: string;
   } | null;
   className?: string;
-}
+} 
 
 const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   property,
@@ -46,7 +47,6 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   className = "",
 }) => {
 
-  console.log("from JV", images)
   const hasLOIDocument = loiDocument != null && loiDocument !== undefined;
   return (
     <motion.div

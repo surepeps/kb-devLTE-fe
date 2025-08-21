@@ -77,127 +77,6 @@ const FeaturedPropertiesSection = () => {
         // Only show error in console, not to user - fallback gracefully
         setError(null);
 
-        // Fallback to sample data based on the API structure
-        setProperties([
-          {
-            _id: 'sample-1',
-            propertyType: 'Apartment',
-            location: {
-              state: 'Lagos',
-              localGovernment: 'Lekki',
-              area: 'Lekki Phase 1'
-            },
-            briefType: 'Rent',
-            price: 2500000,
-            pictures: ['/placeholder-property.svg'],
-            additionalFeatures: {
-              noOfBedroom: 3,
-              noOfBathroom: 3,
-              noOfToilet: 4,
-              noOfCarPark: 2
-            },
-            features: ['Swimming Pool', 'Gym', 'Security'],
-            docOnProperty: [],
-            owner: 'sample-user',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            isAvailable: 'yes',
-            areYouTheOwner: true,
-            isApproved: true,
-            isPremium: false
-          },
-          {
-            _id: 'sample-2',
-            propertyType: 'Duplex',
-            location: {
-              state: 'Lagos',
-              localGovernment: 'Ikeja',
-              area: 'GRA Ikeja'
-            },
-            briefType: 'Outright Sales',
-            price: 45000000,
-            pictures: ['/placeholder-property.svg'],
-            additionalFeatures: {
-              noOfBedroom: 4,
-              noOfBathroom: 4,
-              noOfToilet: 5,
-              noOfCarPark: 3
-            },
-            features: ['Balcony', 'Garden', 'BQ'],
-            docOnProperty: [],
-            owner: 'sample-user',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            isAvailable: 'yes',
-            areYouTheOwner: true,
-            isApproved: true,
-            isPremium: true
-          },
-          {
-            _id: 'sample-3',
-            propertyType: 'Flat',
-            location: {
-              state: 'Lagos',
-              localGovernment: 'Lagos Island',
-              area: 'Victoria Island'
-            },
-            briefType: 'Rent',
-            price: 1800000,
-            pictures: ['/placeholder-property.svg'],
-            additionalFeatures: {
-              noOfBedroom: 2,
-              noOfBathroom: 2,
-              noOfToilet: 3,
-              noOfCarPark: 1
-            },
-            features: ['Elevator', 'Generator'],
-            docOnProperty: [],
-            owner: 'sample-user',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            isAvailable: 'yes',
-            areYouTheOwner: true,
-            isApproved: true,
-            isPremium: false
-          },
-          {
-            _id: 'sample-4',
-            propertyType: 'Land',
-            location: {
-              state: 'Oyo',
-              localGovernment: 'Iseyin',
-              area: 'Along Moniya'
-            },
-            briefType: 'Outright Sales',
-            price: 500000,
-            pictures: ['/placeholder-property.svg'],
-            landSize: {
-              measurementType: 'Plot',
-              size: 1
-            },
-            additionalFeatures: {
-              noOfBedroom: 0,
-              noOfBathroom: 0,
-              noOfToilet: 0,
-              noOfCarPark: 0
-            },
-            features: [],
-            docOnProperty: [
-              {
-                isProvided: true,
-                _id: 'doc-1',
-                docName: 'Deed of Assignment'
-              }
-            ],
-            owner: 'sample-user',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            isAvailable: 'yes',
-            areYouTheOwner: true,
-            isApproved: true,
-            isPremium: false
-          }
-        ]);
       } finally {
         setLoading(false);
       }
@@ -206,14 +85,6 @@ const FeaturedPropertiesSection = () => {
     fetchFeaturedProperties();
   }, []);
 
-  // Transform pictures array to the format expected by EnhancedGlobalPropertyCard
-  const transformImages = (pictures: string[]) => {
-    return pictures.map((url, index) => ({
-      id: index.toString(),
-      url: url,
-      alt: `Property image ${index + 1}`
-    }));
-  };
 
   // Get property type for card data generation
   const getPropertyType = (property: Property) => {
@@ -268,7 +139,6 @@ const FeaturedPropertiesSection = () => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center'>
             {properties.map((property, index) => {
               const cardData = createPropertyCardData(property, getPropertyType(property));
-              const images = transformImages(property.pictures || ['/placeholder-property.svg']);
               const isJVProperty = property.briefType === 'Joint Venture';
 
               return (
@@ -285,7 +155,7 @@ const FeaturedPropertiesSection = () => {
                     tab={isJVProperty ? undefined : property.briefType.toLowerCase().includes('rent') ? 'rent' : 'buy'}
                     property={property}
                     cardData={cardData}
-                    images={images}
+                    images={property.pictures}
                     isPremium={property.isPremium || false}
                     onPropertyClick={() => handlePropertyClick(property)}
                     className="hover:scale-105 transition-transform duration-300"
