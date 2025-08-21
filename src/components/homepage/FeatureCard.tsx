@@ -26,13 +26,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
   const [isPlayPending, setIsPlayPending] = useState(false);
 
   const pauseAllOtherVideos = () => {
-    // Pause all videos on the page except current one - scoped to feature cards
-    const allVideos = document.querySelectorAll('.feature-card video');
+    
+    const allVideos = document.querySelectorAll<HTMLVideoElement>('.feature-card video');
     allVideos.forEach(video => {
       if (video !== videoRef.current && !video.paused) {
         video.pause();
       }
     });
+
   };
 
   const handlePlayPause = async (e?: React.MouseEvent) => {
