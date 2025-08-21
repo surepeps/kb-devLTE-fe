@@ -25,10 +25,10 @@ const NewHeroSection = () => {
   const [sliderIsActive, setSliderIsActive] = useState(true);
   const [isPlayPending, setIsPlayPending] = useState(false);
 
-  // Get hero video URLs from settings
+  // Get hero video URLs from settings with fallbacks
   const heroVideos = [
-    homePageSettings.hero_video_1_url,
-    homePageSettings.hero_video_2_url,
+    homePageSettings?.hero_video_1_url,
+    homePageSettings?.hero_video_2_url,
   ].filter(Boolean); // Remove empty/null values
 
   // Carousel navigation
