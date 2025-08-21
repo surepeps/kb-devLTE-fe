@@ -4,12 +4,12 @@
 
 import { Fragment } from 'react';
 import '@/styles/stylish.modules.css';
-import Homepage from '@/app/homepage/page';
+import NewHomepage from '@/app/new-homepage/page';
 
 export default function Home() {
   return (
     <Fragment>
-      <Homepage />
+      <NewHomepage />
     </Fragment>
   );
 }
