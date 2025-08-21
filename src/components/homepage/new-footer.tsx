@@ -112,7 +112,7 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               />
               
               <p className={`text-[#D6DDEB] text-base leading-relaxed mb-6 max-w-md ${epilogue.className}`}>
-                Simplifying real estate transactions in Nigeria. Buy, sell, rent, and manage properties with ease through Khabi-Teq's trusted platform. Verified agents, secure transactions, and transparent deals.
+                Simplifying real estate transactions in Nigeria. Buy, sell, rent, and manage properties with ease through Khabi-Teq&apos;s trusted platform. Verified agents, secure transactions, and transparent deals.
               </p>
 
               {/* Quick Actions */}
@@ -209,10 +209,10 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               <div className='mt-6 pt-6 border-t border-white/20'>
                 <div className='space-y-2'>
                   <p className={`text-[#D6DDEB] text-sm ${epilogue.className}`}>
-                    📧 hello@khabiteq.com
+                    📧 info@khabiteqrealty.com
                   </p>
                   <p className={`text-[#D6DDEB] text-sm ${epilogue.className}`}>
-                    📞 +234 (0) 123 456 7890
+                    📞 +234 813 210 8659, 02013306352
                   </p>
                   <p className={`text-[#D6DDEB] text-sm ${epilogue.className}`}>
                     📍 Lagos, Nigeria

@@ -68,8 +68,10 @@ const ImageSwiper: React.FC<ImageSwiperProps> = ({ images }) => {
       >
         {validImages
           .map((src, i) => {
-            const validImageUrl = getValidImageUrl(src.url);
-         
+
+             const rawUrl = typeof src === "string" ? src : src.url ?? src;
+            const validImageUrl = getValidImageUrl(rawUrl);
+
             if (!validImageUrl || typeof validImageUrl !== "string") {
               return null;
             }
