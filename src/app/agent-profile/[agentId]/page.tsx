@@ -198,7 +198,7 @@ const AgentProfilePage = () => {
         <div className="text-center">
           <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-700 mb-2">Agent Not Found</h1>
-          <p className="text-gray-600 mb-6">The agent profile you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-6">The agent profile you&apos;re looking for doesn&apos;t exist.</p>
           <Link 
             href="/agent-marketplace" 
             className="bg-[#8DDB90] text-white px-6 py-3 rounded-lg hover:bg-[#7BC87F] transition-colors">
