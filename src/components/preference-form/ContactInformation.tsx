@@ -732,18 +732,24 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                       placeholder="Enter your full name"
                     />
 
+                    <AnimatedField
+                      name="email"
+                      label="Email Address"
+                      type="email"
+                      required
+                      placeholder="Enter email address"
+                    />
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <PhoneField
                         name="phoneNumber"
                         label="Phone Number"
                         required
                       />
-                      <AnimatedField
-                        name="email"
-                        label="Email Address"
-                        type="email"
-                        required
-                        placeholder="Enter email address"
+                      <PhoneField
+                        name="whatsappNumber"
+                        label="WhatsApp Number (Optional)"
+                        required={false}
                       />
                     </div>
                   </motion.div>
