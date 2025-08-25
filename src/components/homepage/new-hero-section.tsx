@@ -169,8 +169,10 @@ const NewHeroSection = () => {
     };
 
     const handleSettle = () => {
-      // Slider has settled - videos remain paused for manual control
-      // Removed auto-play to prevent unwanted behavior
+      // Slider has settled - auto-play current video
+      if (!isPlayPending) {
+        playCurrentVideo();
+      }
     };
 
     emblaApi.on('pointerDown', handlePointerDown);
