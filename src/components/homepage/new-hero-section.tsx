@@ -145,8 +145,16 @@ const NewHeroSection = () => {
     // Pause all videos on slide change to prevent overlap
     pauseAllVideos();
 
-    // Videos remain paused after slide change - manual play only
-  }, [emblaApi, currentVideoIndex]);
+    // Auto-play the new current video after a short delay to ensure it's ready
+    setTimeout(() => {
+      const newCurrentVideo = videoRefs.current[selectedIndex];
+      if (newCurrentVideo && !isPlayPending) {
+        newCurrentVideo.play().catch((error) => {
+          console.log('Auto-play failed:', error);
+        });
+      }
+    }, 100);
+  }, [emblaApi, currentVideoIndex, isPlayPending]);
 
   // Setup embla carousel event listeners with slider state management
   useEffect(() => {
@@ -161,8 +169,10 @@ const NewHeroSection = () => {
     };
 
     const handleSettle = () => {
-      // Slider has settled - videos remain paused for manual control
-      // Removed auto-play to prevent unwanted behavior
+      // Slider has settled - auto-play current video
+      if (!isPlayPending) {
+        playCurrentVideo();
+      }
     };
 
     emblaApi.on('pointerDown', handlePointerDown);
@@ -234,7 +244,23 @@ const NewHeroSection = () => {
     };
   }, [heroVideos, currentVideoIndex]);
 
-  // Removed auto-play functionality - videos now start paused by default
+  // Auto-play functionality - videos auto-play on load and slide change
+  useEffect(() => {
+    if (heroVideos.length > 0 && videoRefs.current[0] && !isPlayPending) {
+      // Small delay to ensure video is ready
+      const timer = setTimeout(() => {
+        const firstVideo = videoRefs.current[0];
+        if (firstVideo && firstVideo.readyState >= 3) { // HAVE_FUTURE_DATA or better
+          firstVideo.play().catch((error) => {
+            console.log('Initial auto-play failed:', error);
+          });
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [heroVideos.length, isPlayPending]);
+
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
