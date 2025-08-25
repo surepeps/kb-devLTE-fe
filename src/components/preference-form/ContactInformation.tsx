@@ -414,11 +414,18 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                       />
                     </div>
 
-                    <AnimatedField
-                      name="cacRegistrationNumber"
-                      label="CAC Registration Number"
-                      placeholder="Enter CAC registration number (e.g., RC123456)"
-                    />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <AnimatedField
+                        name="cacRegistrationNumber"
+                        label="CAC Registration Number"
+                        placeholder="Enter CAC registration number (e.g., RC123456)"
+                      />
+                      <PhoneField
+                        name="whatsappNumber"
+                        label="WhatsApp Number (Optional)"
+                        required={false}
+                      />
+                    </div>
                   </motion.div>
                 )}
 
