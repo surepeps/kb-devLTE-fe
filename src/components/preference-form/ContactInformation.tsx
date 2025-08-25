@@ -443,17 +443,12 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                         Contact Information
                       </h4>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 lg:grid-2 gap-6">
                         <AnimatedField
                           name="fullName"
                           label="Full Name"
                           required
                           placeholder="Enter your full name"
-                        />
-                        <PhoneField
-                          name="phoneNumber"
-                          label="Phone Number"
-                          required
                         />
                         <AnimatedField
                           name="email"
@@ -461,6 +456,19 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                           type="email"
                           required
                           placeholder="Enter email address"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <PhoneField
+                          name="phoneNumber"
+                          label="Phone Number"
+                          required
+                        />
+                        <PhoneField
+                          name="whatsappNumber"
+                          label="WhatsApp Number (Optional)"
+                          required={false}
                         />
                       </div>
                     </div>
