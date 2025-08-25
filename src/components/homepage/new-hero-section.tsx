@@ -244,7 +244,23 @@ const NewHeroSection = () => {
     };
   }, [heroVideos, currentVideoIndex]);
 
-  // Removed auto-play functionality - videos now start paused by default
+  // Auto-play initial video when videos are loaded
+  useEffect(() => {
+    if (heroVideos.length > 0 && videoRefs.current[0] && !isPlayPending) {
+      // Small delay to ensure video is ready
+      const timer = setTimeout(() => {
+        const firstVideo = videoRefs.current[0];
+        if (firstVideo && firstVideo.readyState >= 3) { // HAVE_FUTURE_DATA or better
+          firstVideo.play().catch((error) => {
+            console.log('Initial auto-play failed:', error);
+          });
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [heroVideos.length, isPlayPending]);
+
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
