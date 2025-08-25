@@ -145,8 +145,16 @@ const NewHeroSection = () => {
     // Pause all videos on slide change to prevent overlap
     pauseAllVideos();
 
-    // Videos remain paused after slide change - manual play only
-  }, [emblaApi, currentVideoIndex]);
+    // Auto-play the new current video after a short delay to ensure it's ready
+    setTimeout(() => {
+      const newCurrentVideo = videoRefs.current[selectedIndex];
+      if (newCurrentVideo && !isPlayPending) {
+        newCurrentVideo.play().catch((error) => {
+          console.log('Auto-play failed:', error);
+        });
+      }
+    }, 100);
+  }, [emblaApi, currentVideoIndex, isPlayPending]);
 
   // Setup embla carousel event listeners with slider state management
   useEffect(() => {
