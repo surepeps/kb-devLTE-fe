@@ -244,7 +244,7 @@ const NewHeroSection = () => {
     };
   }, [heroVideos, currentVideoIndex]);
 
-  // Auto-play initial video when videos are loaded
+  // Auto-play functionality - videos auto-play on load and slide change
   useEffect(() => {
     if (heroVideos.length > 0 && videoRefs.current[0] && !isPlayPending) {
       // Small delay to ensure video is ready
