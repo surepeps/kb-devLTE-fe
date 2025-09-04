@@ -62,9 +62,10 @@ export const URLS = {
   /**
    * Account endpoints
    */
-  accountInspectionBaseUrl: "/account/my-inspections", 
+  accountInspectionBaseUrl: "/account/my-inspections",
   accountPropertyBaseUrl: "/account/properties", // Create, edit, delete, getOne
   fetchDashboardStats: "/account/dashboard",
+  submitKyc: "/account/submitKyc",
 
   /**
    * Auth Endpoints
