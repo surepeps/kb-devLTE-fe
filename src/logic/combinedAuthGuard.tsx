@@ -43,6 +43,29 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
 }) => {
   const { user, isLoading, isInitialized } = useUserContext();
 
+  // Helper function to determine agent state
+  const getAgentState = (): AgentState => {
+    if (!user || user.userType !== "Agent") return "free";
+
+    // Check if user has agent data with subscription info
+    const agentData = user.agentData || (user as any).agentState;
+
+    // If user has active subscription and completed verification
+    if (agentData?.hasActiveSubscription && agentData?.isKYCCompleted) {
+      return "verified";
+    }
+
+    // If user had subscription but it expired
+    if (agentData?.hasActiveSubscription === false && agentData?.isKYCCompleted) {
+      return "expired";
+    }
+
+    // Default to free agent
+    return "free";
+  };
+
+  const agentState = getAgentState();
+
   // --- AuthGuard Logic ---
 
   // ⏳ While loading user context
