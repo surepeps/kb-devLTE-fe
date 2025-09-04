@@ -4,8 +4,9 @@ import React, { ReactNode } from "react";
 import { useUserContext } from "@/context/user-context";
 import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
-import { Clock, User } from "lucide-react";
+import { Clock, User, Star, Shield, CreditCard, Crown } from "lucide-react";
 import Link from "next/link";
+import { AgentState } from "@/types/agent-upgrade.types";
 
 interface CombinedAuthGuardProps {
   children: ReactNode;
@@ -14,6 +15,11 @@ interface CombinedAuthGuardProps {
   redirectTo?: string;
   requireAgentOnboarding?: boolean;
   requireAgentApproval?: boolean;
+  // New props for agent verification
+  requireVerifiedAgent?: boolean;
+  allowFreeAgents?: boolean;
+  allowExpiredAgents?: boolean;
+  requireActiveSubscription?: boolean;
   agentCustomMessage?: string;
 }
 
