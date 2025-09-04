@@ -153,7 +153,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
     </div>
   );
 };
-
+ 
 const AgentOnboard: React.FC = () => {
   const router = useRouter();
   const { user } = useUserContext();
@@ -247,7 +247,7 @@ const AgentOnboard: React.FC = () => {
       setSelectedLGA(null);
     }
   };
-
+  
   const handleLGAChange = (selected: Option | null) => {
     formik.setFieldValue("localGovtArea", selected?.value || "");
     setSelectedLGA(selected);
