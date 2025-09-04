@@ -62,9 +62,10 @@ export const URLS = {
   /**
    * Account endpoints
    */
-  accountInspectionBaseUrl: "/account/my-inspections", 
+  accountInspectionBaseUrl: "/account/my-inspections",
   accountPropertyBaseUrl: "/account/properties", // Create, edit, delete, getOne
   fetchDashboardStats: "/account/dashboard",
+  submitKyc: "/account/submitKyc",
 
   /**
    * Auth Endpoints
@@ -90,6 +91,17 @@ export const URLS = {
   cancelSubscription: "/subscriptions/cancel",
   getSubscriptionPlans: "/subscriptions/plans",
   getSubscriptionTransactions: "/subscriptions/transactions",
+
+  /**
+   * Agent Verification & Upgrade Endpoints
+   */
+  agentBaseUrl: "/agent",
+  agentUpgrade: "/agent/upgrade",
+  agentVerificationStatus: "/agent/verification-status",
+  agentPublicProfile: "/agent/public-profile",
+  updateAgentProfile: "/agent/profile",
+  setInspectionFee: "/agent/inspection-fee",
+  getAgentStats: "/agent/stats",
 
   /**
    * Third Party Verification Endpoints
