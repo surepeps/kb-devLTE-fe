@@ -98,6 +98,12 @@ const shortletContactSchema = Yup.object({
       "Please enter a valid Nigerian phone number",
     )
     .required("Phone number is required"),
+  whatsappNumber: Yup.string()
+    .matches(
+      /^(\+234|0)[789][01]\d{8}$/,
+      "Please enter a valid Nigerian WhatsApp number",
+    )
+    .nullable(),
   preferredCheckInTime: Yup.string().nullable(),
   preferredCheckOutTime: Yup.string().nullable(),
   petsAllowed: Yup.boolean().default(false),
@@ -139,6 +145,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
           contactPerson: contactInfo.contactPerson || "",
           email: contactInfo.email || "",
           phoneNumber: contactInfo.phoneNumber || "",
+          whatsappNumber: contactInfo.whatsappNumber || "",
           cacRegistrationNumber: contactInfo.cacRegistrationNumber || "",
         };
       } else if (preferenceType === "shortlet") {
@@ -146,6 +153,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
           fullName: contactInfo.fullName || "",
           email: contactInfo.email || "",
           phoneNumber: contactInfo.phoneNumber || "",
+          whatsappNumber: contactInfo.whatsappNumber || "",
           preferredCheckInTime: contactInfo.preferredCheckInTime || "",
           preferredCheckOutTime: contactInfo.preferredCheckOutTime || "",
           petsAllowed: contactInfo.petsAllowed || false,
@@ -163,6 +171,7 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
           fullName: contactInfo.fullName || "",
           email: contactInfo.email || "",
           phoneNumber: contactInfo.phoneNumber || "",
+          whatsappNumber: contactInfo.whatsappNumber || "",
         };
       }
     }, [
@@ -405,11 +414,18 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                       />
                     </div>
 
-                    <AnimatedField
-                      name="cacRegistrationNumber"
-                      label="CAC Registration Number"
-                      placeholder="Enter CAC registration number (e.g., RC123456)"
-                    />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <AnimatedField
+                        name="cacRegistrationNumber"
+                        label="CAC Registration Number"
+                        placeholder="Enter CAC registration number (e.g., RC123456)"
+                      />
+                      <PhoneField
+                        name="whatsappNumber"
+                        label="WhatsApp Number (Optional)"
+                        required={false}
+                      />
+                    </div>
                   </motion.div>
                 )}
 
@@ -427,17 +443,12 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                         Contact Information
                       </h4>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 lg:grid-2 gap-6">
                         <AnimatedField
                           name="fullName"
                           label="Full Name"
                           required
                           placeholder="Enter your full name"
-                        />
-                        <PhoneField
-                          name="phoneNumber"
-                          label="Phone Number"
-                          required
                         />
                         <AnimatedField
                           name="email"
@@ -445,6 +456,19 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                           type="email"
                           required
                           placeholder="Enter email address"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <PhoneField
+                          name="phoneNumber"
+                          label="Phone Number"
+                          required
+                        />
+                        <PhoneField
+                          name="whatsappNumber"
+                          label="WhatsApp Number (Optional)"
+                          required={false}
                         />
                       </div>
                     </div>
@@ -708,18 +732,24 @@ const ContactInformation: React.FC<ContactInformationProps> = memo(
                       placeholder="Enter your full name"
                     />
 
+                    <AnimatedField
+                      name="email"
+                      label="Email Address"
+                      type="email"
+                      required
+                      placeholder="Enter email address"
+                    />
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <PhoneField
                         name="phoneNumber"
                         label="Phone Number"
                         required
                       />
-                      <AnimatedField
-                        name="email"
-                        label="Email Address"
-                        type="email"
-                        required
-                        placeholder="Enter email address"
+                      <PhoneField
+                        name="whatsappNumber"
+                        label="WhatsApp Number (Optional)"
+                        required={false}
                       />
                     </div>
                   </motion.div>

@@ -61,6 +61,12 @@ const contactInfoSchema = Yup.object({
       "Please enter a valid Nigerian phone number",
     )
     .required("Phone number is required"),
+  whatsappNumber: Yup.string()
+    .matches(
+      /^(\+234|0)[789][01]\d{8}$/,
+      "Please enter a valid Nigerian WhatsApp number",
+    )
+    .nullable(),
 });
 
 const jointVentureContactSchema = Yup.object({
@@ -85,6 +91,12 @@ const jointVentureContactSchema = Yup.object({
       "Please enter a valid Nigerian phone number",
     )
     .required("Phone number is required"),
+  whatsappNumber: Yup.string()
+    .matches(
+      /^(\+234|0)[789][01]\d{8}$/,
+      "Please enter a valid Nigerian WhatsApp number",
+    )
+    .nullable(),
   cacRegistrationNumber: Yup.string()
     .matches(
       /^RC\d{6,7}$/,

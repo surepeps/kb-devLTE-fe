@@ -97,6 +97,12 @@ const shortletContactSchema = Yup.object({
       "Please enter a valid Nigerian phone number",
     )
     .required("Phone number is required"),
+  whatsappNumber: Yup.string()
+    .matches(
+      /^(\+234|0)[789][01]\d{8}$/,
+      "Please enter a valid Nigerian WhatsApp number",
+    )
+    .nullable(),
   preferredCheckInTime: Yup.string().nullable(),
   preferredCheckOutTime: Yup.string().nullable(),
   petsAllowed: Yup.boolean().default(false),
@@ -287,6 +293,7 @@ const OptimizedContactInformation: React.FC<ContactInformationProps> = memo(
           contactPerson: contactInfo.contactPerson || "",
           email: contactInfo.email || "",
           phoneNumber: contactInfo.phoneNumber || "",
+          whatsappNumber: contactInfo.whatsappNumber || "",
           cacRegistrationNumber: contactInfo.cacRegistrationNumber || "",
         };
       } else if (preferenceType === "shortlet") {
@@ -294,6 +301,7 @@ const OptimizedContactInformation: React.FC<ContactInformationProps> = memo(
           fullName: contactInfo.fullName || "",
           email: contactInfo.email || "",
           phoneNumber: contactInfo.phoneNumber || "",
+          whatsappNumber: contactInfo.whatsappNumber || "",
           preferredCheckInTime: contactInfo.preferredCheckInTime || "",
           preferredCheckOutTime: contactInfo.preferredCheckOutTime || "",
           petsAllowed: contactInfo.petsAllowed || false,
@@ -311,6 +319,7 @@ const OptimizedContactInformation: React.FC<ContactInformationProps> = memo(
           fullName: contactInfo.fullName || "",
           email: contactInfo.email || "",
           phoneNumber: contactInfo.phoneNumber || "",
+          whatsappNumber: contactInfo.whatsappNumber || "",
         };
       }
     }, [
