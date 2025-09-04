@@ -30,7 +30,7 @@ export interface AgentSubscription {
 }
 
 export interface SubscriptionPlan {
-  type: 'basic' | 'premium' | 'corporate';
+  type: 'monthly' | 'quarterly' | 'yearly'; // Updated to match new plans
   name: string;
   description: string;
   features: string[];
@@ -38,6 +38,10 @@ export interface SubscriptionPlan {
     [key: number]: number; // duration in months -> price
   };
   popular?: boolean;
+  // New fields for agent verification
+  discount?: number; // percentage discount
+  savings?: number; // amount saved
+  originalPrice?: number; // price before discount
 }
 
 export interface SubscriptionTransaction {
