@@ -83,3 +83,75 @@ export interface RenewSubscriptionPayload {
   duration: number;
   amount: number;
 }
+
+// New interfaces for agent verification integration
+export interface AgentVerificationSubscriptionPayload {
+  subscriptionType: 'monthly' | 'quarterly' | 'yearly';
+  duration: 1 | 3 | 12;
+  amount: number;
+  // Agent verification data
+  agentVerificationData: {
+    basicProfile: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phoneNumber: string;
+      profilePicture?: string;
+      address: {
+        street: string;
+        localGovtArea: string;
+        state: string;
+      };
+    };
+    extendedProfile: {
+      profileBio: string;
+      specializations: string[];
+      languagesSpoken: string[];
+      servicesOffered: string[];
+      idUpload: {
+        type: string;
+        documentUrl: string;
+        documentNumber: string;
+      };
+      businessRegistration?: {
+        cacNumber?: string;
+        businessLicense?: string;
+        documentUrl?: string;
+      };
+      agentLicenseNumber?: string;
+      achievements?: Array<{
+        title: string;
+        description: string;
+        certificateUrl?: string;
+        dateReceived?: string;
+      }>;
+    };
+    inspectionFee: {
+      inspectionFee: number;
+      currency: string;
+      description?: string;
+      terms?: string;
+    };
+  };
+}
+
+export interface AgentVerificationResponse extends SubscriptionApiResponse {
+  data?: {
+    subscription: AgentSubscription;
+    agentState: 'free' | 'verified' | 'expired';
+    publicProfileUrl?: string;
+    verificationStatus: {
+      kycCompleted: boolean;
+      profileCompleted: boolean;
+      inspectionFeeSet: boolean;
+      paymentCompleted: boolean;
+    };
+    // Payment gateway response
+    paymentUrl?: string;
+    transaction?: {
+      reference: string;
+      authorization_url?: string;
+      access_code?: string;
+    };
+  };
+}
