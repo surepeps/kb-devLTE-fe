@@ -34,6 +34,11 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
   redirectTo = "/auth/login",
   requireAgentOnboarding = true,
   requireAgentApproval = true,
+  // New props with defaults
+  requireVerifiedAgent = false,
+  allowFreeAgents = true,
+  allowExpiredAgents = true,
+  requireActiveSubscription = false,
   agentCustomMessage,
 }) => {
   const { user, isLoading, isInitialized } = useUserContext();
