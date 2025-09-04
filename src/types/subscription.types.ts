@@ -3,8 +3,8 @@
 export interface AgentSubscription {
   _id: string;
   agentId: string;
-  subscriptionType: 'basic' | 'premium' | 'corporate';
-  duration: 1 | 2 | 3 | 6 | 12; // in months
+  subscriptionType: 'monthly' | 'quarterly' | 'yearly'; // Updated to match new plans
+  duration: 1 | 3 | 12; // in months - simplified to match new plans
   startDate: string;
   endDate: string;
   status: 'active' | 'expired' | 'cancelled' | 'pending';
@@ -16,6 +16,14 @@ export interface AgentSubscription {
     gateway: string;
     status: string;
     paidAt: string;
+  };
+  // New fields for agent verification integration
+  isVerificationSubscription?: boolean; // Indicates this is from agent upgrade
+  agentVerificationData?: {
+    kycCompleted: boolean;
+    profileCompleted: boolean;
+    inspectionFeeSet: boolean;
+    publicProfileUrl?: string;
   };
   createdAt: string;
   updatedAt: string;
