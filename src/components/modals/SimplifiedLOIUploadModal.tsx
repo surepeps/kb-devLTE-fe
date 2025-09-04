@@ -96,7 +96,7 @@ const SimplifiedLOIUploadModal: React.FC<SimplifiedLOIUploadModalProps> = ({
       formData.append('for', 'property-file');
 
       const uploadSingleFileUrl = URLS.BASE + URLS.uploadSingleImg;
-      const response = await POST_REQUEST(uploadSingleFileUrl, formData, {
+      const response = await POST_REQUEST(uploadSingleFileUrl, formData, undefined, {
         'Content-Type': 'multipart/form-data',
       });
 
