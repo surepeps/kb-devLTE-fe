@@ -125,40 +125,46 @@ export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token
 export const POST_REQUEST = async <T = any>(
   url: string,
   data: unknown,
-  customHeaders?: Record<string, string>,
   token?: string,
+  customHeaders?: Record<string, string>,
 ): Promise<T> => {
   try {
-    const headers: Record<string, string> = customHeaders || {
+    // Build headers with sensible defaults
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      ...(customHeaders || {}),
     };
 
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const isFormData = data instanceof FormData;
-    if (isFormData && headers["Content-Type"] === "multipart/form-data") {
+    const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
+    // Let the browser set the correct Content-Type boundary for FormData
+    if (isFormData) {
       delete headers["Content-Type"];
     }
 
     const request = await fetch(url, {
       method: "POST",
       headers,
-      body: isFormData ? data : JSON.stringify(data),
+      body: isFormData ? (data as FormData) : JSON.stringify(data),
     });
 
-    const response = await request.json();
+    // Read response body safely only once
+    const text = await request.text();
+    const parsed = text ? (() => { try { return JSON.parse(text); } catch { return { success: false, error: "Invalid JSON response" }; } })() : {};
 
     if (!request.ok) {
-      // Throw error so toast.promise handles it properly
-      throw new Error(response?.error || response?.message || "Request failed");
+      const errMsg = (parsed as any)?.error || (parsed as any)?.message || `HTTP ${request.status}`;
+      throw new Error(errMsg);
     }
 
-    return response;
+    return parsed as T;
   } catch (error: unknown) {
-    // POST_REQUEST error occurred
-    throw error; // Important: throw so formik/toast can catch it
+    // Ensure consistent error objects
+    const e = error as Error;
+    throw new Error(e.message || "Network error");
   }
 };
 

@@ -4,8 +4,9 @@ import React, { ReactNode } from "react";
 import { useUserContext } from "@/context/user-context";
 import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
-import { Clock, User } from "lucide-react";
+import { Clock, User, Star, Shield, CreditCard, Crown } from "lucide-react";
 import Link from "next/link";
+import { AgentState } from "@/types/agent-upgrade.types";
 
 interface CombinedAuthGuardProps {
   children: ReactNode;
@@ -14,6 +15,11 @@ interface CombinedAuthGuardProps {
   redirectTo?: string;
   requireAgentOnboarding?: boolean;
   requireAgentApproval?: boolean;
+  // New props for agent verification
+  requireVerifiedAgent?: boolean;
+  allowFreeAgents?: boolean;
+  allowExpiredAgents?: boolean;
+  requireActiveSubscription?: boolean;
   agentCustomMessage?: string;
 }
 
@@ -28,9 +34,37 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
   redirectTo = "/auth/login",
   requireAgentOnboarding = true,
   requireAgentApproval = true,
+  // New props with defaults
+  requireVerifiedAgent = false,
+  allowFreeAgents = true,
+  allowExpiredAgents = true,
+  requireActiveSubscription = false,
   agentCustomMessage,
 }) => {
   const { user, isLoading, isInitialized } = useUserContext();
+
+  // Helper function to determine agent state
+  const getAgentState = (): AgentState => {
+    if (!user || user.userType !== "Agent") return "free";
+
+    // Check if user has agent data with subscription info
+    const agentData = user.agentData || (user as any).agentState;
+
+    // If user has active subscription and completed verification
+    if (agentData?.hasActiveSubscription && agentData?.isKYCCompleted) {
+      return "verified";
+    }
+
+    // If user had subscription but it expired
+    if (agentData?.hasActiveSubscription === false && agentData?.isKYCCompleted) {
+      return "expired";
+    }
+
+    // Default to free agent
+    return "free";
+  };
+
+  const agentState = getAgentState();
 
   // --- AuthGuard Logic ---
 
@@ -161,6 +195,97 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
           actionHref="/agent-under-review"
           bgColor="bg-white"
           iconColor="bg-yellow-50"
+        />
+      );
+    }
+
+    // --- New Agent Verification State Checks ---
+
+    // 🏆 Block if verified agent is required but user is not verified
+    if (requireVerifiedAgent && agentState !== "verified") {
+      if (agentState === "free") {
+        return (
+          <Container
+            icon={<Star size={32} className="text-[#8DDB90]" />}
+            title="Verification Required"
+            message={
+              agentCustomMessage ||
+              "This feature is only available to verified agents. Upgrade your account to unlock premium features."
+            }
+            actionLabel="Upgrade to Verified Agent"
+            actionHref="/agent-upgrade"
+            bgColor="bg-white"
+            iconColor="bg-green-50"
+          />
+        );
+      } else if (agentState === "expired") {
+        return (
+          <Container
+            icon={<CreditCard size={32} className="text-[#F59E0B]" />}
+            title="Subscription Expired"
+            message={
+              agentCustomMessage ||
+              "Your verified agent subscription has expired. Renew your subscription to continue accessing premium features."
+            }
+            actionLabel="Renew Subscription"
+            actionHref="/agent-subscriptions"
+            bgColor="bg-white"
+            iconColor="bg-amber-50"
+          />
+        );
+      }
+    }
+
+    // 🚫 Block free agents if not allowed
+    if (!allowFreeAgents && agentState === "free") {
+      return (
+        <Container
+          icon={<Shield size={32} className="text-[#8DDB90]" />}
+          title="Premium Feature"
+          message={
+            agentCustomMessage ||
+            "This feature is only available to verified agents. Upgrade your account to access this feature."
+          }
+          actionLabel="Upgrade Account"
+          actionHref="/agent-upgrade"
+          bgColor="bg-white"
+          iconColor="bg-green-50"
+        />
+      );
+    }
+
+    // 🚫 Block expired agents if not allowed
+    if (!allowExpiredAgents && agentState === "expired") {
+      return (
+        <Container
+          icon={<Crown size={32} className="text-[#F59E0B]" />}
+          title="Renew Your Subscription"
+          message={
+            agentCustomMessage ||
+            "Your subscription has expired. Renew your subscription to continue accessing this feature."
+          }
+          actionLabel="Renew Now"
+          actionHref="/agent-subscriptions"
+          bgColor="bg-white"
+          iconColor="bg-amber-50"
+        />
+      );
+    }
+
+    // 💳 Block if active subscription is required
+    if (requireActiveSubscription && agentState !== "verified") {
+      return (
+        <Container
+          icon={<CreditCard size={32} className="text-[#EF4444]" />}
+          title="Active Subscription Required"
+          message={
+            agentCustomMessage ||
+            "This feature requires an active verified agent subscription. Please upgrade or renew your subscription."
+          }
+          actionLabel={agentState === "free" ? "Upgrade Account" : "Renew Subscription"}
+          actionHref={agentState === "free" ? "/agent-upgrade" : "/agent-subscriptions"}
+          bgColor="bg-white"
+          iconColor="bg-red-50"
         />
       );
     }
