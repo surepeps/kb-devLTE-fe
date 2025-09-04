@@ -198,6 +198,97 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
         />
       );
     }
+
+    // --- New Agent Verification State Checks ---
+
+    // 🏆 Block if verified agent is required but user is not verified
+    if (requireVerifiedAgent && agentState !== "verified") {
+      if (agentState === "free") {
+        return (
+          <Container
+            icon={<Star size={32} className="text-[#8DDB90]" />}
+            title="Verification Required"
+            message={
+              agentCustomMessage ||
+              "This feature is only available to verified agents. Upgrade your account to unlock premium features."
+            }
+            actionLabel="Upgrade to Verified Agent"
+            actionHref="/agent-upgrade"
+            bgColor="bg-white"
+            iconColor="bg-green-50"
+          />
+        );
+      } else if (agentState === "expired") {
+        return (
+          <Container
+            icon={<CreditCard size={32} className="text-[#F59E0B]" />}
+            title="Subscription Expired"
+            message={
+              agentCustomMessage ||
+              "Your verified agent subscription has expired. Renew your subscription to continue accessing premium features."
+            }
+            actionLabel="Renew Subscription"
+            actionHref="/agent-subscriptions"
+            bgColor="bg-white"
+            iconColor="bg-amber-50"
+          />
+        );
+      }
+    }
+
+    // 🚫 Block free agents if not allowed
+    if (!allowFreeAgents && agentState === "free") {
+      return (
+        <Container
+          icon={<Shield size={32} className="text-[#8DDB90]" />}
+          title="Premium Feature"
+          message={
+            agentCustomMessage ||
+            "This feature is only available to verified agents. Upgrade your account to access this feature."
+          }
+          actionLabel="Upgrade Account"
+          actionHref="/agent-upgrade"
+          bgColor="bg-white"
+          iconColor="bg-green-50"
+        />
+      );
+    }
+
+    // 🚫 Block expired agents if not allowed
+    if (!allowExpiredAgents && agentState === "expired") {
+      return (
+        <Container
+          icon={<Crown size={32} className="text-[#F59E0B]" />}
+          title="Renew Your Subscription"
+          message={
+            agentCustomMessage ||
+            "Your subscription has expired. Renew your subscription to continue accessing this feature."
+          }
+          actionLabel="Renew Now"
+          actionHref="/agent-subscriptions"
+          bgColor="bg-white"
+          iconColor="bg-amber-50"
+        />
+      );
+    }
+
+    // 💳 Block if active subscription is required
+    if (requireActiveSubscription && agentState !== "verified") {
+      return (
+        <Container
+          icon={<CreditCard size={32} className="text-[#EF4444]" />}
+          title="Active Subscription Required"
+          message={
+            agentCustomMessage ||
+            "This feature requires an active verified agent subscription. Please upgrade or renew your subscription."
+          }
+          actionLabel={agentState === "free" ? "Upgrade Account" : "Renew Subscription"}
+          actionHref={agentState === "free" ? "/agent-upgrade" : "/agent-subscriptions"}
+          bgColor="bg-white"
+          iconColor="bg-red-50"
+        />
+      );
+    }
   }
 
   // ✅ Access granted if all checks pass
