@@ -402,3 +402,39 @@ export const SERVICE_OPTIONS: { value: AgentService; label: string }[] = [
 export const LANGUAGE_OPTIONS = [
   'English', 'Hausa', 'Yoruba', 'Igbo', 'Pidgin', 'French', 'Arabic', 'Fulani', 'Kanuri', 'Tiv', 'Ibibio', 'Ijaw'
 ];
+
+// Agent KYC Submission Types
+export interface AgentKycMeansOfId {
+  name: string;
+  docImg: string[];
+}
+
+export interface AgentKycAchievement {
+  title: string;
+  description: string;
+  fileUrl?: string;
+  dateAwarded: string;
+}
+
+export interface AgentKycAddress {
+  street: string;
+  homeNo: string;
+  state: string;
+  localGovtArea: string;
+}
+
+export interface AgentKycSubmissionPayload {
+  meansOfId: AgentKycMeansOfId[];
+  agentLicenseNumber?: string;
+  profileBio: string;
+  specializations: string[];
+  languagesSpoken: string[];
+  servicesOffered: string[];
+  achievements?: AgentKycAchievement[];
+  featuredListings?: string[];
+  address: AgentKycAddress;
+  regionOfOperation: string[];
+  agentType: 'Individual' | 'Company';
+}
+
+export type AgentType = 'Individual' | 'Company';
