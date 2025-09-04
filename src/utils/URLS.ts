@@ -92,6 +92,17 @@ export const URLS = {
   getSubscriptionTransactions: "/subscriptions/transactions",
 
   /**
+   * Agent Verification & Upgrade Endpoints
+   */
+  agentBaseUrl: "/agent",
+  agentUpgrade: "/agent/upgrade",
+  agentVerificationStatus: "/agent/verification-status",
+  agentPublicProfile: "/agent/public-profile",
+  updateAgentProfile: "/agent/profile",
+  setInspectionFee: "/agent/inspection-fee",
+  getAgentStats: "/agent/stats",
+
+  /**
    * Third Party Verification Endpoints
    */
   thirdPartyVerificationBaseUrl: "/third-party",
