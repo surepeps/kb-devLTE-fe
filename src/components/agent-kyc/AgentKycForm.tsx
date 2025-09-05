@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { PUT_REQUEST, GET_REQUEST } from "@/utils/requests";
@@ -27,6 +27,8 @@ import {
   Search,
 } from "lucide-react";
 import { getCookie } from "cookies-next";
+import Select from "react-select";
+import customStyles from "@/styles/inputStyle";
 import { useUserContext } from "@/context/user-context";
 import { getStates, getLGAsByState, getAreasByStateLGA, searchLocations, formatLocationString } from "@/utils/location-utils";
 
@@ -65,6 +67,8 @@ const AgentKycForm: React.FC = () => {
   const { user } = useUserContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [agentProperties, setAgentProperties] = useState<any[]>([]);
 
   const [listingQuery, setListingQuery] = useState("");
   const [listingResults, setListingResults] = useState<any[]>([]);
@@ -105,6 +109,20 @@ const AgentKycForm: React.FC = () => {
     const merged = Array.from(new Set([...(areas || []), ...(lgaOptions || [])]));
     return merged;
   }, [selectedState, lgaOptions]);
+
+  useEffect(() => {
+    const fetchProps = async () => {
+      try {
+        const token = getCookie("token") as string;
+        const res = await GET_REQUEST<any>(`${URLS.BASE}/account/properties/fetchAll?page=1&limit=12`, token);
+        if (res.success && Array.isArray(res.data)) setAgentProperties(res.data);
+        else setAgentProperties([]);
+      } catch {
+        setAgentProperties([]);
+      }
+    };
+    fetchProps();
+  }, [user]);
 
   const handleSubmit = async (values: AgentKycSubmissionPayload) => {
     setIsSubmitting(true);
@@ -237,21 +255,23 @@ const AgentKycForm: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type</label>
-                        <select
-                          value={idDoc.name}
-                          onChange={(e) => {
+                        <Select
+                          styles={customStyles}
+                          options={[
+                            { value: "International Passport", label: "International Passport" },
+                            { value: "National ID", label: "National ID" },
+                            { value: "Driver's License", label: "Driver's License" },
+                            { value: "Voter's Card", label: "Voter's Card" },
+                          ]}
+                          placeholder="Select ID Type"
+                          value={idDoc.name ? { value: idDoc.name, label: idDoc.name } as any : null}
+                          onChange={(opt: any) => {
                             const next = [...formik.values.meansOfId];
-                            next[index].name = e.target.value;
+                            next[index].name = opt?.value || "";
                             formik.setFieldValue("meansOfId", next);
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                        >
-                          <option value="">Select ID Type</option>
-                          <option value="International Passport">International Passport</option>
-                          <option value="National ID">National ID</option>
-                          <option value="Driver's License">Driver&apos;s License</option>
-                          <option value="Voter's Card">Voter&apos;s Card</option>
-                        </select>
+                          isClearable
+                        />
                       </div>
 
                       <div>
@@ -300,10 +320,13 @@ const AgentKycForm: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type</label>
-                    <select {...formik.getFieldProps("agentType")} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
-                      <option value="Individual">Individual</option>
-                      <option value="Company">Company</option>
-                    </select>
+                    <Select
+                      styles={customStyles}
+                      options={[{ value: "Individual", label: "Individual" }, { value: "Company", label: "Company" }]}
+                      value={formik.values.agentType ? { value: formik.values.agentType, label: formik.values.agentType } as any : null}
+                      onChange={(opt: any) => formik.setFieldValue("agentType", opt?.value || "")}
+                      placeholder="Select agent type"
+                    />
                     {formik.touched.agentType && formik.errors.agentType && (
                       <p className="text-red-500 text-sm mt-1">{formik.errors.agentType as string}</p>
                     )}
@@ -322,36 +345,57 @@ const AgentKycForm: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {SPECIALIZATION_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.specializations.includes(option.value)} onChange={() => handleMultiSelect("specializations", option.value)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
+                    {SPECIALIZATION_OPTIONS.map((option) => {
+                      const selected = formik.values.specializations.includes(option.value);
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleMultiSelect("specializations", option.value)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {LANGUAGE_OPTIONS.map((language) => (
-                      <label key={language} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.languagesSpoken.includes(language)} onChange={() => handleMultiSelect("languagesSpoken", language)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{language}</span>
-                      </label>
-                    ))}
+                    {LANGUAGE_OPTIONS.map((language) => {
+                      const selected = formik.values.languagesSpoken.includes(language);
+                      return (
+                        <button
+                          key={language}
+                          type="button"
+                          onClick={() => handleMultiSelect("languagesSpoken", language)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {language}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {SERVICE_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.servicesOffered.includes(option.value)} onChange={() => handleMultiSelect("servicesOffered", option.value)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
+                    {SERVICE_OPTIONS.map((option) => {
+                      const selected = formik.values.servicesOffered.includes(option.value);
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleMultiSelect("servicesOffered", option.value)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -375,25 +419,30 @@ const AgentKycForm: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State</label>
-                    <select value={formik.values.address.state} onChange={(e) => {
-                      formik.setFieldValue("address.state", e.target.value);
-                      formik.setFieldValue("address.localGovtArea", "");
-                      formik.setFieldValue("regionOfOperation", []);
-                    }} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
-                      <option value="">Select state</option>
-                      {stateOptions.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
+                    <Select
+                      styles={customStyles}
+                      options={stateOptions.map((s) => ({ value: s, label: s }))}
+                      value={formik.values.address.state ? { value: formik.values.address.state, label: formik.values.address.state } as any : null}
+                      onChange={(opt: any) => {
+                        formik.setFieldValue("address.state", opt?.value || "");
+                        formik.setFieldValue("address.localGovtArea", "");
+                        formik.setFieldValue("regionOfOperation", []);
+                      }}
+                      placeholder="Select state"
+                      isClearable
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area</label>
-                    <select value={formik.values.address.localGovtArea} onChange={(e) => formik.setFieldValue("address.localGovtArea", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent" disabled={!selectedState}>
-                      <option value="">Select LGA</option>
-                      {lgaOptions.map((l) => (
-                        <option key={l} value={l}>{l}</option>
-                      ))}
-                    </select>
+                    <Select
+                      styles={customStyles}
+                      isDisabled={!selectedState}
+                      options={lgaOptions.map((l) => ({ value: l, label: l }))}
+                      value={formik.values.address.localGovtArea ? { value: formik.values.address.localGovtArea, label: formik.values.address.localGovtArea } as any : null}
+                      onChange={(opt: any) => formik.setFieldValue("address.localGovtArea", opt?.value || "")}
+                      placeholder="Select LGA"
+                      isClearable
+                    />
                   </div>
                 </div>
 
@@ -401,12 +450,19 @@ const AgentKycForm: React.FC = () => {
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation</label>
                   <p className="text-xs text-gray-500 mb-2">Select areas/LGAs you primarily operate in for the selected state</p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto border rounded-lg p-3">
-                    {(areaOptions || []).map((area) => (
-                      <label key={area} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.regionOfOperation.includes(area)} onChange={() => handleMultiSelect("regionOfOperation", area)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{area}</span>
-                      </label>
-                    ))}
+                    {(areaOptions || []).map((area) => {
+                      const selected = formik.values.regionOfOperation.includes(area);
+                      return (
+                        <button
+                          key={area}
+                          type="button"
+                          onClick={() => handleMultiSelect("regionOfOperation", area)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {area}
+                        </button>
+                      );
+                    })}
                   </div>
                   {formik.touched.regionOfOperation && formik.errors.regionOfOperation && (
                     <p className="text-red-500 text-sm mt-1">{formik.errors.regionOfOperation as string}</p>
@@ -472,43 +528,40 @@ const AgentKycForm: React.FC = () => {
                 <div className="space-y-4">
                   <h3 className="font-semibold text-[#0C1E1B]">Featured Listings</h3>
 
-                  <div className="flex gap-3 items-center">
-                    <input type="text" placeholder="Search your listings by title or id" value={listingQuery} onChange={(e) => setListingQuery(e.target.value)} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg" />
-                    <button type="button" onClick={searchListings} className="inline-flex items-center gap-2 px-4 py-2 bg-[#0B572B] text-white rounded-lg">
-                      <Search size={16} /> {isSearchingListings ? "Searching..." : "Search"}
-                    </button>
-                  </div>
+                  <Select
+                    styles={customStyles}
+                    isMulti
+                    options={agentProperties.map((p: any) => ({ value: p._id, label: p.title || p.basicInformation?.title || p._id }))}
+                    value={(formik.values.featuredListings || []).map((id: string) => {
+                      const found = agentProperties.find((p: any) => p._id === id);
+                      const label = found ? (found.title || found.basicInformation?.title || id) : id;
+                      return { value: id, label } as any;
+                    })}
+                    onChange={(selected: any) => formik.setFieldValue("featuredListings", (selected || []).map((s: any) => s.value))}
+                    placeholder="Search and select your listings"
+                    closeMenuOnSelect={false}
+                  />
 
-                  {listingResults.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {listingResults.map((l) => (
-                        <div key={l._id} className="border rounded-lg p-3 flex items-center justify-between">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {(formik.values.featuredListings || []).map((id: string) => {
+                      const p = agentProperties.find((ap: any) => ap._id === id);
+                      if (!p) return null;
+                      return (
+                        <div key={id} className="border rounded-lg p-3 flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-[#09391C]">{l.title || l._id}</div>
-                            <div className="text-sm text-[#5A5D63]">₦{(l.price || 0).toLocaleString()}</div>
+                            <div className="font-medium text-[#09391C]">{p.title || p.basicInformation?.title || p._id}</div>
+                            <div className="text-sm text-[#5A5D63]">₦{Number(p.price || p.basicInformation?.price || 0).toLocaleString()}</div>
                           </div>
-                          <div>
-                            <button type="button" onClick={() => addFeaturedListing(l._id)} className="px-3 py-1 bg-[#8DDB90] text-white rounded-lg">Add</button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => formik.setFieldValue('featuredListings', (formik.values.featuredListings || []).filter((x: string) => x !== id))}
+                            className="text-red-500"
+                          >
+                            Remove
+                          </button>
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    {(formik.values.featuredListings || []).map((id, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <input type="text" value={id} onChange={(e) => {
-                          const copy = [...(formik.values.featuredListings || [])];
-                          copy[index] = e.target.value;
-                          formik.setFieldValue("featuredListings", copy);
-                        }} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg" />
-                        <button type="button" onClick={() => removeFeaturedListing(index)} className="text-red-500">Remove</button>
-                      </div>
-                    ))}
-                    <button type="button" onClick={() => addFeaturedListing()} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
-                      <Plus size={16} /> Add Listing ID
-                    </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
