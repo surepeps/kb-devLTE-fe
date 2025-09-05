@@ -207,85 +207,59 @@ export default function AgentDashboard() {
           </div>
         </div>
 
-        {/* Performance Overview */}
+        {/* Notices */}
+        {(() => {
+          const isKycCompleted = !!((user as any)?.verificationStatus?.kycCompleted || (user as any)?.agentVerificationData?.kycCompleted);
+          const hasActiveSub = !!((user as any)?.activeSubscription && (user as any)?.activeSubscription.status === 'active');
+          const freeDays = 7;
+          return (
+            <div className="space-y-3 mb-4">
+              {!isKycCompleted && (
+                <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg">
+                  <div>Enjoy free {freeDays} days premium by completing your agent KYC verification.</div>
+                  <Link href="/agent-kyc" className="px-3 py-1.5 bg-emerald-600 text-white rounded hover:bg-emerald-700 text-sm">Complete KYC</Link>
+                </div>
+              )}
+              {!hasActiveSub && (
+                <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                  <div>Subscribe for a plan to enjoy full features and get your public access page.</div>
+                  <Link href="/agent-subscriptions" className="px-3 py-1.5 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm">View Plans</Link>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Performance Overview + Referral */}
         <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6">
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-[#8DDB90] mb-2">
                 ₦{stats.totalCommission.toLocaleString()}
               </div>
-              <p className="text-sm sm:text-base text-[#5A5D63]">
-                Total Commission
-              </p>
+              <p className="text-sm sm:text-base text-[#5A5D63]">Total Commission</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
-                <StarIcon
-                  size={20}
-                  className="text-yellow-500 fill-current sm:w-6 sm:h-6"
-                />
-                <span className="text-2xl sm:text-3xl font-bold text-[#09391C] ml-2">
-                  {stats.averageRating}
-                </span>
+                <StarIcon size={20} className="text-yellow-500 fill-current sm:w-6 sm:h-6" />
+                <span className="text-2xl sm:text-3xl font-bold text-[#09391C] ml-2">{stats.averageRating}</span>
               </div>
-              <p className="text-sm sm:text-base text-[#5A5D63]">
-                Average Rating
-              </p>
+              <p className="text-sm sm:text-base text-[#5A5D63]">Average Rating</p>
             </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-[#09391C] mb-2">
-                {/* Ensure totalBriefs is not zero to avoid division by zero */}
-                {stats.totalBriefs > 0
-                  ? Math.round((stats.completedDeals / stats.totalBriefs) * 100)
-                  : 0}
-                %
+                {stats.totalBriefs > 0 ? Math.round((stats.completedDeals / stats.totalBriefs) * 100) : 0}%
               </div>
-              <p className="text-sm sm:text-base text-[#5A5D63]">
-                Success Rate
-              </p>
+              <p className="text-sm sm:text-base text-[#5A5D63]">Success Rate</p>
             </div>
-          </div>
-        </div>
-
-        {/* Referral Details */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-[#09391C]">Referral</h2>
-            <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
-              <Gift size={16} /> Earn by inviting
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="p-4 border rounded-lg">
-              <div className="text-xs text-gray-500 mb-1">Referral Code</div>
-              <div className="flex items-center gap-2">
-                <code className="font-mono text-[#09391C] text-base">{referral.code || "—"}</code>
-                <button
-                  onClick={async () => { try { await navigator.clipboard.writeText(referral.code); toast.success("Copied"); } catch { toast.error("Copy failed"); } }}
-                  className="p-2 rounded bg-gray-50 hover:bg-gray-100"
-                  aria-label="Copy referral code"
-                >
-                  <Copy size={16} />
-                </button>
+            <div className="text-center">
+              <div className="text-xs text-gray-500 mb-1">Referral</div>
+              <div className="flex items-center justify-center gap-3">
+                <code className="font-mono text-[#09391C] text-sm">{referral.code || "—"}</code>
+                <button onClick={async () => { try { await navigator.clipboard.writeText(referral.code); toast.success("Copied"); } catch { toast.error("Copy failed"); } }} className="p-1.5 rounded bg-gray-50 hover:bg-gray-100" aria-label="Copy referral code"><Copy size={14} /></button>
               </div>
+              <div className="mt-2 text-xs text-[#5A5D63]">{referral.totalReferred} referred • ₦{referral.earnings.toLocaleString()}</div>
             </div>
-            <div className="p-4 border rounded-lg">
-              <div className="text-xs text-gray-500 mb-1">Total Referred</div>
-              <div className="text-2xl font-bold text-[#09391C]">{referral.totalReferred}</div>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <div className="text-xs text-gray-500 mb-1">Referral Points</div>
-              <div className="text-2xl font-bold text-[#09391C]">{referral.points}</div>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <div className="text-xs text-gray-500 mb-1">Earnings</div>
-              <div className="text-2xl font-bold text-[#09391C]">₦{referral.earnings.toLocaleString()}</div>
-            </div>
-          </div>
-          <div className="mt-4">
-            <Link href="/referral" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#7BC87F] font-medium">
-              <LinkIcon size={16} /> Manage Referrals
-            </Link>
           </div>
         </div>
 
