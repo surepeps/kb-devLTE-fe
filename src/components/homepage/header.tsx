@@ -512,6 +512,8 @@ const DropdownOptions = ({
                 setSelectedType("Buy a property");
               } else if (item.name === "Rent") {
                 setSelectedType("Rent/Lease a property");
+              } else if (item.name === "Shortlet") {
+                setSelectedType("Shortlet");
               } else if (item.name === "Joint Venture") {
                 setSelectedType("Find property for joint venture");
               }
