@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
-import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -73,6 +74,9 @@ export default function ProfileSettingsPage() {
   const [isEmailChangeRequested, setIsEmailChangeRequested] = useState(false);
   const [newEmailRequest, setNewEmailRequest] = useState<string>("");
   const [isRequestingEmailChange, setIsRequestingEmailChange] = useState(false);
+  const [inspectionPrice, setInspectionPrice] = useState<number | "">("");
+  const [inspectionPriceEnabled, setInspectionPriceEnabled] = useState(false);
+  const [isSavingInspection, setIsSavingInspection] = useState(false);
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
 
   useEffect(() => {
@@ -900,6 +904,30 @@ export default function ProfileSettingsPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Agent Inspection Fee */}
+                {userProfile.userType === "Agent" && (
+                  <div className="border border-emerald-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-2">Inspection Fee</h3>
+                    <p className="text-sm text-[#5A5D63] mb-4">Set your inspection price and enable/disable it.</p>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+                      <div className="flex items-center gap-3">
+                        <label className="inline-flex items-center cursor-pointer select-none">
+                          <input type="checkbox" className="sr-only peer" checked={inspectionPriceEnabled} onChange={(e)=>setInspectionPriceEnabled(e.target.checked)} />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full relative transition-colors peer-checked:bg-emerald-500">
+                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${inspectionPriceEnabled ? 'translate-x-5' : ''}`}/>
+                          </div>
+                          <span className="ml-3 text-sm text-[#09391C]">Enable Inspection Fee</span>
+                        </label>
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-[#09391C] mb-1">Inspection Price (₦)</label>
+                        <input type="number" min={0} value={inspectionPrice} onChange={(e)=>setInspectionPrice(e.target.value === '' ? '' : Number(e.target.value))} className="w-full sm:w-56 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent" placeholder="e.g. 5000" />
+                      </div>
+                      <button onClick={async ()=>{ try { setIsSavingInspection(true); const token = Cookies.get('token'); const res = await PUT_REQUEST(`${URLS.BASE}${URLS.accountSettingsBaseUrl}/updateInspectionFee`, { inspectionPrice: inspectionPrice === '' ? 0 : inspectionPrice, inspectionPriceEnabled }, token); if ((res as any)?.success) { toast.success('Inspection fee updated'); } else { toast.error((res as any)?.message || 'Update failed'); } } catch { toast.error('Update failed'); } finally { setIsSavingInspection(false); } }} disabled={isSavingInspection} className="px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors disabled:opacity-50">{isSavingInspection ? 'Saving...' : 'Save'}</button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Account Deletion Section */}
                 <div className="border border-red-200 rounded-lg p-6">
