@@ -58,37 +58,24 @@ export default function AgentSubscriptionsPage() {
 
   const fetchPlans = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAllPlans`);
       if (response.success) {
-        setPlans(response.data || []);
+        // The API returns plans shaped differently; normalize to existing UI-friendly structure
+        const apiPlans = response.data || [];
+        const normalized = apiPlans.map((p: any) => ({
+          id: p._id,
+          name: p.name,
+          description: p.features?.slice(0, 2).join(", ") || "",
+          features: p.features || [],
+          prices: { 1: p.price, 12: p.price },
+          popular: false,
+          raw: p,
+        }));
+        setPlans(normalized as any);
       }
     } catch (error) {
       console.error('Failed to fetch plans:', error);
-      // Set default plans if API fails
-      setPlans([
-        {
-          type: 'basic',
-          name: 'Basic',
-          description: 'Essential features for new agents',
-          features: ['Access to marketplace', 'Basic analytics', 'Email support'],
-          prices: { 1: 5000, 2: 9000, 3: 13000, 6: 25000, 12: 48000 }
-        },
-        {
-          type: 'premium',
-          name: 'Premium',
-          description: 'Advanced features for growing agents',
-          features: ['Everything in Basic', 'Priority listings', 'Advanced analytics', 'Phone support'],
-          prices: { 1: 10000, 2: 18000, 3: 26000, 6: 50000, 12: 96000 },
-          popular: true
-        },
-        {
-          type: 'corporate',
-          name: 'Corporate',
-          description: 'Full features for established agents',
-          features: ['Everything in Premium', 'Unlimited listings', 'Custom branding', 'Dedicated support'],
-          prices: { 1: 20000, 2: 36000, 3: 52000, 6: 100000, 12: 192000 }
-        }
-      ]);
+      setPlans([]);
     }
   };
 
