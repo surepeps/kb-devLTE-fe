@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { GET_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import { CheckCircle2, MapPin, Phone, Mail, Star, Crown, Home, Loader2 } from "lucide-react";
@@ -49,7 +49,6 @@ const StatCard: React.FC<{ label: string; value: number; icon: React.ReactNode }
 
 export default function PublicAgentPage() {
   const params = useParams();
-  const router = useRouter();
   const publicAccessId = params?.publicAccessId as string;
 
   const [loading, setLoading] = useState(true);
@@ -89,107 +88,117 @@ export default function PublicAgentPage() {
   const verified = activeSubscription?.status === "active";
 
   return (
-    <div className="min-h-screen bg-[#EEF1F1]">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#0B572B] to-[#8DDB90]">
-        <div className="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row md:items-center gap-6">
-          <div className="w-24 h-24 rounded-full bg-white/20 overflow-hidden border-2 border-white">
-            {user.profile_picture ? (
-              <img src={user.profile_picture} alt={user.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">
-                {user.name?.charAt(0) || "A"}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <aside className="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-32 h-32 rounded-full bg-emerald-50 overflow-hidden flex items-center justify-center text-3xl font-bold text-emerald-700 mb-4 border border-emerald-100">
+                {user.profile_picture ? (
+                  <img src={user.profile_picture} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span>{user.name?.charAt(0) || "A"}</span>
+                )}
+              </div>
+
+              <h2 className="text-xl font-bold text-[#09391C]">{user.name}</h2>
+              <p className="text-sm text-[#5A5D63] mt-1">{agent.agentType || "Agent"}</p>
+
+              <div className="mt-4 flex flex-col gap-2 w-full">
+                {verified && (
+                  <div className="inline-flex items-center gap-2 justify-center bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm mx-auto">
+                    <CheckCircle2 /> Verified
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 justify-center text-sm text-[#5A5D63] mt-2">
+                  <Mail size={14} /> <span>{user.email}</span>
+                </div>
+                <div className="flex items-center gap-2 justify-center text-sm text-[#5A5D63]">
+                  <Phone size={14} /> <span>{user.phoneNumber}</span>
+                </div>
+
+                <div className="mt-4 text-sm text-[#5A5D63] text-center">
+                  <div>{agent.address?.street}</div>
+                  <div>{agent.address?.localGovtArea}, {agent.address?.state}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-gray-100 pt-4">
+              <h4 className="text-sm font-medium text-[#09391C]">Languages</h4>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {agent.languagesSpoken?.map((l) => (
+                  <span key={l} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-[#09391C]">{l}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-gray-100 pt-4">
+              <h4 className="text-sm font-medium text-[#09391C]">Services</h4>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {agent.servicesOffered?.map((s) => (
+                  <span key={s} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-[#09391C]">{s}</span>
+                ))}
+              </div>
+            </div>
+          </aside>
+
+          <main className="lg:col-span-2">
+            <div className="bg-white border border-gray-200 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-[#09391C]">About</h3>
+              <p className="text-sm text-[#5A5D63] mt-2">{agent.profileBio}</p>
+
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard label="Total Properties" value={stats.totalProperties} icon={<Home size={20} />} />
+                <StatCard label="Active" value={stats.activeProperties} icon={<Star size={20} />} />
+                <StatCard label="Inactive" value={stats.inactiveProperties} icon={<Star size={20} />} />
+                <StatCard label="Closed" value={stats.closedProperties} icon={<Star size={20} />} />
+              </div>
+
+              <div className="mt-6 border-t border-gray-100 pt-6">
+                <h4 className="text-sm font-medium text-[#09391C]">Specializations</h4>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {agent.specializations?.map((s) => (
+                    <span key={s} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-[#09391C]">{s}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6 border-t border-gray-100 pt-6">
+                <h4 className="text-sm font-medium text-[#09391C]">Regions of Operation</h4>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {agent.regionOfOperation?.map((r) => (
+                    <span key={r} className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-full text-sm">{r}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {agent.featuredListings && agent.featuredListings.length > 0 && (
+              <div className="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-[#09391C] mb-4">Featured Listings</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {agent.featuredListings.map((p) => (
+                    <div key={p._id} className="border rounded-lg overflow-hidden bg-white">
+                      <div className="relative aspect-video bg-gray-100">
+                        {p.images?.[0] ? (
+                          <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover" />
+                        ) : null}
+                      </div>
+                      <div className="p-4">
+                        <h4 className="font-semibold text-[#09391C] line-clamp-2">{p.title}</h4>
+                        <div className="text-[#0B572B] font-bold mt-1">₦{p.price.toLocaleString()}</div>
+                        <div className="text-sm text-[#5A5D63] mt-1">{p.location.city}, {p.location.state}</div>
+                        <div className="text-xs text-gray-500 mt-2">{new Date(p.createdAt).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-          </div>
-          <div className="flex-1 text-white">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-3xl font-bold">{user.name}</h1>
-              {verified && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-sm">
-                  <CheckCircle2 size={16} className="text-white" /> Verified Agent
-                </span>
-              )}
-              {activeSubscription?.plan && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-sm">
-                  <Crown size={16} /> {activeSubscription.plan}
-                </span>
-              )}
-            </div>
-            <p className="mt-2 text-white/90 max-w-3xl">{agent.profileBio}</p>
-            <div className="flex flex-wrap gap-4 mt-4 text-white/90">
-              <span className="inline-flex items-center gap-2"><Mail size={16}/> {user.email}</span>
-              <span className="inline-flex items-center gap-2"><Phone size={16}/> {user.phoneNumber}</span>
-              <span className="inline-flex items-center gap-2"><MapPin size={16}/> {agent.address.state}, {agent.address.localGovtArea}</span>
-            </div>
-          </div>
+          </main>
         </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Total Properties" value={stats.totalProperties} icon={<Home size={20} />} />
-          <StatCard label="Active" value={stats.activeProperties} icon={<Star size={20} />} />
-          <StatCard label="Inactive" value={stats.inactiveProperties} icon={<Star size={20} />} />
-          <StatCard label="Closed" value={stats.closedProperties} icon={<Star size={20} />} />
-        </div>
-
-        {/* Specializations & Services */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-[#09391C] mb-3">Specializations</h2>
-            <div className="flex flex-wrap gap-2">
-              {agent.specializations.map((s) => (
-                <span key={s} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-[#09391C]">{s}</span>
-              ))}
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-[#09391C] mb-3">Services</h2>
-            <div className="flex flex-wrap gap-2">
-              {agent.servicesOffered.map((s) => (
-                <span key={s} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-[#09391C]">{s}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Regions */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-[#09391C] mb-3">Regions of Operation</h2>
-          <div className="flex flex-wrap gap-2">
-            {agent.regionOfOperation.map((r) => (
-              <span key={r} className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-sm">{r}</span>
-            ))}
-          </div>
-        </div>
-
-        {/* Featured Listings */}
-        {agent.featuredListings && agent.featuredListings.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-[#09391C]">Featured Listings</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agent.featuredListings.map((p) => (
-                <div key={p._id} className="border rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow">
-                  <div className="relative aspect-video bg-gray-100">
-                    {p.images?.[0] ? (
-                      <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover" />
-                    ) : null}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-[#09391C] line-clamp-2">{p.title}</h3>
-                    <div className="text-[#0B572B] font-bold mt-1">₦{p.price.toLocaleString()}</div>
-                    <div className="text-sm text-[#5A5D63] mt-1">{p.location.city}, {p.location.state}</div>
-                    <div className="text-xs text-gray-500 mt-2">{new Date(p.createdAt).toLocaleDateString()}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
