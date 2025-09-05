@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { GET_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import { CheckCircle2, Phone, Mail, Star, Home, Loader2, Link as LinkIcon, Calendar } from "lucide-react";
+import PublicProfileFallback from '@/components/common/PublicProfileFallback';
 
 interface PublicListing {
   _id: string;
