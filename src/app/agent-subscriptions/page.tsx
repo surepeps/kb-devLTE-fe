@@ -518,7 +518,7 @@ export default function AgentSubscriptionsPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => router.push(`/subscription-transactions/${transaction._id}`)}
+                              onClick={() => setSelectedTransaction(transaction)}
                               className="text-green-600 hover:text-green-700"
                               title="View Details"
                             >
