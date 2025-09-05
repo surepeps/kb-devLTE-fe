@@ -371,7 +371,6 @@ const JointVenturePropertyForm: React.FC<JointVenturePropertyFormProps> = ({
       const response = await POST_REQUEST(
         `${URLS.BASE}${URLS.accountPropertyBaseUrl}/create`,
         payload,
-        undefined,
         Cookies.get("token"),
       );
 

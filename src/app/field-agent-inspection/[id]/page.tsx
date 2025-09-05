@@ -171,7 +171,6 @@ export default function InspectionDetailPage() {
       await POST_REQUEST(
         `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/startInspection`,
         {},
-        undefined,
         Cookies.get("token")
       );
 
@@ -194,7 +193,6 @@ export default function InspectionDetailPage() {
       await POST_REQUEST(
         `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/stopInspection`,
         {},
-        undefined,
         Cookies.get("token")
       );
 
@@ -223,7 +221,6 @@ export default function InspectionDetailPage() {
       await POST_REQUEST(
         `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/submitReport`,
         report,
-        undefined,
         Cookies.get("token")
       );
 

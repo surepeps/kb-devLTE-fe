@@ -5,14 +5,18 @@ import { URLS } from "@/utils/URLS";
 import React from "react";
 import toast from "react-hot-toast";
 
+
+type SetFileUrlType = React.Dispatch<React.SetStateAction<string | null>> | ((url: string | null) => void);
+
 interface AttachFileProps {
   heading: string;
-  setFileUrl?: React.Dispatch<React.SetStateAction<string | null>>;
+  setFileUrl?: SetFileUrlType;
   className?: string;
-  id: string; // Add id prop
+  id: string;
   style?: React.CSSProperties;
   acceptedFileTypes?: string;
 }
+
 
 const AttachFile: React.FC<AttachFileProps> = ({
   heading,

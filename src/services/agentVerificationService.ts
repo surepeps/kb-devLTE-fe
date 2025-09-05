@@ -105,7 +105,7 @@ export class AgentVerificationService {
         this.getAuthToken()
       );
 
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Failed to update agent profile:", error);
       throw error;
@@ -125,7 +125,7 @@ export class AgentVerificationService {
         this.getAuthToken()
       );
 
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Failed to set inspection fee:", error);
       throw error;

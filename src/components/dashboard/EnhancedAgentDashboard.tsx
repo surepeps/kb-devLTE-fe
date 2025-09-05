@@ -22,8 +22,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useUserContext } from "@/context/user-context";
-import { DashboardUpgradeButton } from "../agent-upgrade/AgentUpgradeButton";
-import { AgentUpgradePrompt } from "../agent-upgrade/AgentUpgradePromotion";
 
 interface DashboardStats {
   totalListings: number;
@@ -54,7 +52,7 @@ const EnhancedAgentDashboard: React.FC = () => {
 
   // Mock agent state - in real implementation, this would come from user context or API
   const agentState = "free"; // "free" | "verified" | "expired"
-  const isVerifiedAgent = agentState === "verified";
+  const isVerifiedAgent = false; ///
 
   // Mock data - in real implementation, this would come from API
   useEffect(() => {
@@ -170,24 +168,12 @@ const EnhancedAgentDashboard: React.FC = () => {
                 )}
               </div>
 
-              {!isVerifiedAgent && (
-                <DashboardUpgradeButton />
-              )}
+          
             </div>
           </div>
         </motion.div>
 
-        {/* Upgrade Promotion for Free Agents */}
-        {!isVerifiedAgent && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <AgentUpgradePrompt context="dashboard" />
-          </motion.div>
-        )}
-
+  
         {/* Stats Grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

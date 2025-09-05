@@ -22,8 +22,6 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
-import { NavUpgradeButton, FloatingUpgradeButton } from "../agent-upgrade/AgentUpgradeButton";
-import { AgentUpgradePrompt } from "../agent-upgrade/AgentUpgradePromotion";
 
 interface NavigationItem {
   id: string;
@@ -43,8 +41,8 @@ const AgentNavigationWithUpgrade: React.FC = () => {
 
   // Mock agent state - in real implementation, this would come from user context or API
   const agentState = "free"; // "free" | "verified" | "expired"
-  const isVerifiedAgent = agentState === "verified";
-  const hasExpiredSubscription = agentState === "expired";
+  const isVerifiedAgent = false;
+  const hasExpiredSubscription = false;
 
   const navigationItems: NavigationItem[] = [
     {
@@ -90,20 +88,6 @@ const AgentNavigationWithUpgrade: React.FC = () => {
 
   const getAgentStatusBadge = () => {
     switch (agentState) {
-      case "verified":
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-            <CheckCircle size={14} />
-            Verified Agent
-          </div>
-        );
-      case "expired":
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
-            <AlertCircle size={14} />
-            Subscription Expired
-          </div>
-        );
       default:
         return (
           <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
@@ -187,8 +171,6 @@ const AgentNavigationWithUpgrade: React.FC = () => {
           {/* Agent Status */}
           {getAgentStatusBadge()}
 
-          {/* Upgrade Button for non-verified agents */}
-          {!isVerifiedAgent && <NavUpgradeButton />}
 
           {/* User Menu */}
           <div className="relative">
@@ -277,12 +259,6 @@ const AgentNavigationWithUpgrade: React.FC = () => {
                   );
                 })}
 
-                {/* Mobile Upgrade Button */}
-                {!isVerifiedAgent && (
-                  <div className="pt-2">
-                    <NavUpgradeButton mobile />
-                  </div>
-                )}
 
                 {/* Logout */}
                 <button
@@ -322,14 +298,11 @@ const AgentNavigationWithUpgrade: React.FC = () => {
                 <X size={16} />
               </button>
               
-              <AgentUpgradePrompt context="navigation" />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Floating Upgrade Button for free agents */}
-      <FloatingUpgradeButton show={!isVerifiedAgent && !mobileMenuOpen} />
 
       {/* Subscription Expiry Banner */}
       {hasExpiredSubscription && (
