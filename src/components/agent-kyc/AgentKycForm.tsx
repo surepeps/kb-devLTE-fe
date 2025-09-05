@@ -398,25 +398,30 @@ const AgentKycForm: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State</label>
-                    <select value={formik.values.address.state} onChange={(e) => {
-                      formik.setFieldValue("address.state", e.target.value);
-                      formik.setFieldValue("address.localGovtArea", "");
-                      formik.setFieldValue("regionOfOperation", []);
-                    }} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
-                      <option value="">Select state</option>
-                      {stateOptions.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
+                    <Select
+                      styles={customStyles}
+                      options={stateOptions.map((s) => ({ value: s, label: s }))}
+                      value={formik.values.address.state ? { value: formik.values.address.state, label: formik.values.address.state } as any : null}
+                      onChange={(opt: any) => {
+                        formik.setFieldValue("address.state", opt?.value || "");
+                        formik.setFieldValue("address.localGovtArea", "");
+                        formik.setFieldValue("regionOfOperation", []);
+                      }}
+                      placeholder="Select state"
+                      isClearable
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area</label>
-                    <select value={formik.values.address.localGovtArea} onChange={(e) => formik.setFieldValue("address.localGovtArea", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent" disabled={!selectedState}>
-                      <option value="">Select LGA</option>
-                      {lgaOptions.map((l) => (
-                        <option key={l} value={l}>{l}</option>
-                      ))}
-                    </select>
+                    <Select
+                      styles={customStyles}
+                      isDisabled={!selectedState}
+                      options={lgaOptions.map((l) => ({ value: l, label: l }))}
+                      value={formik.values.address.localGovtArea ? { value: formik.values.address.localGovtArea, label: formik.values.address.localGovtArea } as any : null}
+                      onChange={(opt: any) => formik.setFieldValue("address.localGovtArea", opt?.value || "")}
+                      placeholder="Select LGA"
+                      isClearable
+                    />
                   </div>
                 </div>
 
