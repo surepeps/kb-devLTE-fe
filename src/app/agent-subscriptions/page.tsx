@@ -104,6 +104,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchTransactions = async () => {
     try {
+      setTabLoading(true);
       const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`);
       if (response.success) {
         setTransactions(response.data || []);
@@ -111,6 +112,8 @@ export default function AgentSubscriptionsPage() {
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
       toast.error('Failed to load transactions');
+    } finally {
+      setTabLoading(false);
     }
   };
 
