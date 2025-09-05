@@ -6,7 +6,43 @@ import { useRouter } from "next/navigation";
 import { GET_REQUEST, POST_REQUEST_FILE_UPLOAD, PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import toast from "react-hot-toast";
-import { Trash2, Save, Link as LinkIcon, Image as ImageIcon, ShieldCheck } from "lucide-react";
+import { Trash2, Save, Link as LinkIcon, Image as ImageIcon, ShieldCheck, AlertCircle } from "lucide-react";
+import { useUserContext } from "@/context/user-context";
+
+interface SocialLinks {
+  website?: string;
+  twitter?: string;
+  instagram?: string;
+  facebook?: string;
+  linkedin?: string;
+}
+
+interface ContactVisibility {
+  showEmail: boolean;
+  showPhone: boolean;
+  enableContactForm: boolean;
+  showWhatsAppButton: boolean;
+  whatsappNumber?: string;
+}
+
+interface FeatureSelection {
+  mode: "auto" | "manual";
+  propertyIds: string; // comma separated IDs for manual mode
+}
+
+interface MarketplaceDefaults {
+  defaultTab: "buy" | "rent" | "shortlet" | "jv";
+  defaultSort: "newest" | "price-asc" | "price-desc";
+  showVerifiedOnly: boolean;
+  enablePriceNegotiationButton: boolean;
+}
+
+interface PublicPageDesign {
+  heroTitle: string;
+  heroSubtitle: string;
+  ctaText: string;
+  ctaLink: string;
+}
 
 interface PublicAccessSettings {
   publicSlug: string;
@@ -17,6 +53,13 @@ interface PublicAccessSettings {
   theme: { primaryColor: string; secondaryColor: string };
   inspectionSettings: { allowPublicBooking: boolean; defaultInspectionFee: number };
   listingsLimit: number;
+  // New
+  socialLinks: SocialLinks;
+  contactVisibility: ContactVisibility;
+  featureSelection: FeatureSelection;
+  marketplaceDefaults: MarketplaceDefaults;
+  publicPage: PublicPageDesign;
+  testimonialsEnabled: boolean;
 }
 
 const STORAGE_KEY = "public_access_settings";
@@ -24,6 +67,7 @@ const SLUG_LOCK_KEY = "public_access_slug_locked";
 
 export default function PublicAccessSettingsPage() {
   const router = useRouter();
+  const { user } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [slugLocked, setSlugLocked] = useState(false);
@@ -37,6 +81,12 @@ export default function PublicAccessSettingsPage() {
     theme: { primaryColor: "#09391C", secondaryColor: "#8DDB90" },
     inspectionSettings: { allowPublicBooking: true, defaultInspectionFee: 0 },
     listingsLimit: 6,
+    socialLinks: {},
+    contactVisibility: { showEmail: true, showPhone: true, enableContactForm: true, showWhatsAppButton: false, whatsappNumber: "" },
+    featureSelection: { mode: "auto", propertyIds: "" },
+    marketplaceDefaults: { defaultTab: "buy", defaultSort: "newest", showVerifiedOnly: false, enablePriceNegotiationButton: true },
+    publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place" },
+    testimonialsEnabled: false,
   });
 
   const previewUrl = useMemo(() => {
@@ -51,7 +101,7 @@ export default function PublicAccessSettingsPage() {
         setLoading(true);
         const token = Cookies.get("token");
 
-        // Attempt to fetch from server
+        // Server fetch
         try {
           const res = await GET_REQUEST<any>(`${URLS.BASE}/account/public-access/settings`, token);
           if (res?.success && res.data) {
@@ -72,25 +122,24 @@ export default function PublicAccessSettingsPage() {
                 defaultInspectionFee: s.inspectionSettings?.defaultInspectionFee ?? prev.inspectionSettings.defaultInspectionFee,
               },
               listingsLimit: typeof s.listingsLimit === "number" ? s.listingsLimit : prev.listingsLimit,
+              socialLinks: s.socialLinks || prev.socialLinks,
+              contactVisibility: s.contactVisibility || prev.contactVisibility,
+              featureSelection: s.featureSelection || prev.featureSelection,
+              marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
+              publicPage: s.publicPage || prev.publicPage,
+              testimonialsEnabled: s.testimonialsEnabled ?? prev.testimonialsEnabled,
             }));
             if (s.publicSlug) setSlugLocked(true);
           }
-        } catch {
-          // ignore network/server errors and try local storage
-        }
+        } catch {}
 
-        // Fallback to localStorage
+        // Local fallback
         try {
           const cached = localStorage.getItem(STORAGE_KEY);
-          if (cached) {
-            const parsed = JSON.parse(cached) as PublicAccessSettings;
-            setForm(parsed);
-          }
+          if (cached) setForm(JSON.parse(cached));
           const locked = localStorage.getItem(SLUG_LOCK_KEY);
           if (locked === "true") setSlugLocked(true);
-        } catch {
-          // ignore parse errors
-        }
+        } catch {}
       } finally {
         setLoading(false);
       }
@@ -122,7 +171,14 @@ export default function PublicAccessSettingsPage() {
     setSaving(true);
     try {
       const token = Cookies.get("token");
-      const payload: PublicAccessSettings = { ...form, keywords: form.keywords.map(k => k.trim()).filter(Boolean) };
+      const payload: PublicAccessSettings = {
+        ...form,
+        keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+        contactVisibility: {
+          ...form.contactVisibility,
+          whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
+        },
+      };
       const res = await PUT_REQUEST(`${URLS.BASE}/account/public-access/settings`, payload, token);
       if (res?.success) {
         toast.success("Settings saved");
@@ -135,7 +191,6 @@ export default function PublicAccessSettingsPage() {
       }
       throw new Error(res?.message || "Save failed");
     } catch (err) {
-      // Fallback to localStorage
       localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
       if (!slugLocked && form.publicSlug) {
         setSlugLocked(true);
@@ -155,12 +210,24 @@ export default function PublicAccessSettingsPage() {
     );
   }
 
+  if (!user || user?.userType !== "Agent") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
+          <p className="text-gray-600">This page is only accessible to agents.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-[#09391C]">Public Access Settings</h1>
-          <p className="text-sm text-[#5A5D63] mt-1">Customize your public page and link.</p>
+          <p className="text-sm text-[#5A5D63] mt-1">Customize your public marketplace page and link.</p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-6">
@@ -176,7 +243,7 @@ export default function PublicAccessSettingsPage() {
             </div>
             <div className="grid grid-cols-1 gap-3">
               <label className="text-sm text-gray-700">Choose your public link (can be set once)</label>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <span className="text-sm text-gray-500">/pv-account/</span>
                 <input
                   type="text"
@@ -247,6 +314,29 @@ export default function PublicAccessSettingsPage() {
             </div>
           </div>
 
+          {/* Public Page Design */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-[#09391C]">Public Page Design</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Hero Title</label>
+                <input type="text" value={form.publicPage.heroTitle} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, heroTitle: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Hero Subtitle</label>
+                <input type="text" value={form.publicPage.heroSubtitle} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, heroSubtitle: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">CTA Text</label>
+                <input type="text" value={form.publicPage.ctaText} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, ctaText: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">CTA Link</label>
+                <input type="text" value={form.publicPage.ctaLink} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, ctaLink: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="/market-place?tab=buy" />
+              </div>
+            </div>
+          </div>
+
           {/* Theme */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-[#09391C] mb-4">Theme</h2>
@@ -262,28 +352,87 @@ export default function PublicAccessSettingsPage() {
             </div>
           </div>
 
-          {/* Inspection Settings */}
+          {/* Marketplace Defaults */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Inspection Settings</h2>
-            <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={form.inspectionSettings.allowPublicBooking}
-                  onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, allowPublicBooking: e.target.checked } })}
-                />
-                Allow public to book inspections
-              </label>
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-700 w-56">Default Inspection Fee (₦)</label>
-                <input
-                  type="number"
-                  min={0}
-                  value={form.inspectionSettings.defaultInspectionFee}
-                  onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, defaultInspectionFee: Number(e.target.value || 0) } })}
-                  className="px-3 py-2 border rounded-lg text-sm w-48"
-                />
+            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Marketplace Defaults</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Default Tab</label>
+                <select value={form.marketplaceDefaults.defaultTab} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, defaultTab: e.target.value as any } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+                  <option value="buy">Buy</option>
+                  <option value="rent">Rent</option>
+                  <option value="shortlet">Shortlet</option>
+                  <option value="jv">Joint Venture</option>
+                </select>
               </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Default Sort</label>
+                <select value={form.marketplaceDefaults.defaultSort} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, defaultSort: e.target.value as any } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+                  <option value="newest">Newest</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-3 space-y-2">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.marketplaceDefaults.showVerifiedOnly} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, showVerifiedOnly: e.target.checked } })} />
+                Show only listings with verified documents
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.marketplaceDefaults.enablePriceNegotiationButton} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, enablePriceNegotiationButton: e.target.checked } })} />
+                Enable price negotiation button
+              </label>
+            </div>
+          </div>
+
+          {/* Contact Visibility */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Contact & Visibility</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.showEmail} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showEmail: e.target.checked } })} /> Show Email</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.showPhone} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showPhone: e.target.checked } })} /> Show Phone</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.enableContactForm} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, enableContactForm: e.target.checked } })} /> Enable Contact Form</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.showWhatsAppButton} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showWhatsAppButton: e.target.checked } })} /> Show WhatsApp Button</label>
+            </div>
+            {form.contactVisibility.showWhatsAppButton && (
+              <div className="mt-3">
+                <label className="block text-sm text-gray-700 mb-1">WhatsApp Number</label>
+                <input type="tel" value={form.contactVisibility.whatsappNumber} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, whatsappNumber: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="e.g. +2348012345678" />
+              </div>
+            )}
+          </div>
+
+          {/* Social Links */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Social Links</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(["website","twitter","instagram","facebook","linkedin"] as (keyof SocialLinks)[]).map((key) => (
+                <div key={key}>
+                  <label className="block text-sm text-gray-700 mb-1">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                  <input type="url" value={(form.socialLinks?.[key] || "") as string} onChange={(e) => setForm({ ...form, socialLinks: { ...form.socialLinks, [key]: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder={key === "website" ? "https://your-site.com" : `https://${key}.com/your-handle`} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Featured Listings */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Featured Listings</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Mode</label>
+                <select value={form.featureSelection.mode} onChange={(e) => setForm({ ...form, featureSelection: { ...form.featureSelection, mode: e.target.value as any } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+                  <option value="auto">Auto (Top recent)</option>
+                  <option value="manual">Manual (Specify IDs)</option>
+                </select>
+              </div>
+              {form.featureSelection.mode === "manual" && (
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Property IDs (comma separated)</label>
+                  <input type="text" value={form.featureSelection.propertyIds} onChange={(e) => setForm({ ...form, featureSelection: { ...form.featureSelection, propertyIds: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="prop123, prop456" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -303,12 +452,14 @@ export default function PublicAccessSettingsPage() {
             </div>
           </div>
 
+          {/* Extras */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Extras</h2>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.testimonialsEnabled} onChange={(e) => setForm({ ...form, testimonialsEnabled: e.target.checked })} /> Show testimonials section</label>
+          </div>
+
           <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60"
-            >
+            <button type="submit" disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
               <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
             </button>
           </div>
