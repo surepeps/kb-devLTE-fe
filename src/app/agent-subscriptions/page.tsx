@@ -171,13 +171,14 @@ export default function AgentSubscriptionsPage() {
     }
   };
 
-  const handleSubscribeToPlan = async (plan: SubscriptionPlan, duration: number) => {
+  const handleSubscribeToPlan = async (plan: any, duration: number) => {
     try {
-      const amount = plan.prices[duration];
+      const amount = plan.prices?.[duration] || plan.prices?.[Object.keys(plan.prices || {})[0]] || 0;
+      const subscriptionType = plan.raw?.code || plan.name || plan.id;
       const payload = {
-        subscriptionType: plan.type,
+        subscriptionType,
         duration,
-        amount
+        amount,
       };
 
       const response = await POST_REQUEST(`${URLS.BASE}${URLS.createSubscription}`, payload);
