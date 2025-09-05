@@ -318,7 +318,9 @@ export default function AgentSubscriptionsPage() {
         {/* Tab Content */}
         {activeTab === 'subscriptions' && (
           <div className="space-y-6">
-            {subscriptions.length === 0 ? (
+            {tabLoading ? (
+              <div className="text-center py-12 text-gray-500">Loading...</div>
+            ) : subscriptions.length === 0 ? (
               <div className="text-center py-12">
                 <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Subscriptions</h3>
@@ -392,6 +394,14 @@ export default function AgentSubscriptionsPage() {
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+
+            {subscriptionsTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-2">
+                <button disabled={subscriptionsPage <= 1} onClick={() => fetchSubscriptions(subscriptionsPage - 1)} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+                <span className="text-sm text-gray-600">Page {subscriptionsPage} of {subscriptionsTotalPages}</span>
+                <button disabled={subscriptionsPage >= subscriptionsTotalPages} onClick={() => fetchSubscriptions(subscriptionsPage + 1)} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
               </div>
             )}
           </div>
