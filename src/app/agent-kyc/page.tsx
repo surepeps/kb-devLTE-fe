@@ -19,8 +19,8 @@ export default function AgentKycPage() {
     <CombinedAuthGuard
       requireAuth={true}
       allowedUserTypes={["Agent"]}
-      requireAgentOnboarding={true}
-      requireAgentApproval={true}
+      requireAgentOnboarding={false}
+      requireAgentApproval={false}
     >
       <Suspense fallback={<LoadingSpinner />}>
         <AgentKycForm />
