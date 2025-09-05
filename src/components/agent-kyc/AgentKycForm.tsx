@@ -345,36 +345,57 @@ const AgentKycForm: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {SPECIALIZATION_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.specializations.includes(option.value)} onChange={() => handleMultiSelect("specializations", option.value)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
+                    {SPECIALIZATION_OPTIONS.map((option) => {
+                      const selected = formik.values.specializations.includes(option.value);
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleMultiSelect("specializations", option.value)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {LANGUAGE_OPTIONS.map((language) => (
-                      <label key={language} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.languagesSpoken.includes(language)} onChange={() => handleMultiSelect("languagesSpoken", language)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{language}</span>
-                      </label>
-                    ))}
+                    {LANGUAGE_OPTIONS.map((language) => {
+                      const selected = formik.values.languagesSpoken.includes(language);
+                      return (
+                        <button
+                          key={language}
+                          type="button"
+                          onClick={() => handleMultiSelect("languagesSpoken", language)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {language}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {SERVICE_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.servicesOffered.includes(option.value)} onChange={() => handleMultiSelect("servicesOffered", option.value)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
+                    {SERVICE_OPTIONS.map((option) => {
+                      const selected = formik.values.servicesOffered.includes(option.value);
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleMultiSelect("servicesOffered", option.value)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
