@@ -100,8 +100,8 @@ const PostPropertyPage = () => {
     <CombinedAuthGuard
       requireAuth={true}
       allowedUserTypes={["Agent", "Landowners"]}
-      requireAgentOnboarding={true}
-      requireAgentApproval={true}
+      requireAgentOnboarding={false}
+      requireAgentApproval={false}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
