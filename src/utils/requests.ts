@@ -33,6 +33,10 @@ export const GET_REQUEST = async <T = any>(
 
     const request = await fetch(url, {
       signal: controller.signal,
+      // Explicit CORS settings
+      mode: "cors",
+      credentials: "omit",
+      cache: "no-store",
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
         "Content-Type": "application/json",
