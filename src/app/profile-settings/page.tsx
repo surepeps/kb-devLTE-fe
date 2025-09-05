@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
 import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
-import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Link from "next/link";
