@@ -20,7 +20,7 @@ export const mainNavigationData: NavigationItem[] = [
     subItems: [
       {
         name: "Buy",
-        url: "/market-place",
+        url: "/market-place?tab=buy",
         isClicked: false,
       },
       {
