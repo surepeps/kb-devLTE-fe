@@ -623,6 +623,24 @@ export default function AgentSubscriptionsPage() {
           </div>
         )}
 
+        {selectedTransaction && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Transaction Details</h3>
+              <div className="space-y-2 text-sm">
+                <div><span className="text-gray-600">Reference:</span> <span className="font-medium">{selectedTransaction.reference}</span></div>
+                <div><span className="text-gray-600">Type:</span> <span className="font-medium capitalize">{selectedTransaction.transactionType}</span></div>
+                <div><span className="text-gray-600">Amount:</span> <span className="font-medium">₦{selectedTransaction.amount.toLocaleString()}</span></div>
+                <div><span className="text-gray-600">Status:</span> <span className="font-medium capitalize">{selectedTransaction.status}</span></div>
+                <div><span className="text-gray-600">Date:</span> <span className="font-medium">{format(new Date(selectedTransaction.createdAt), 'MMM d, yyyy, h:mm a')}</span></div>
+                {selectedTransaction.paymentMode && (<div><span className="text-gray-600">Payment Mode:</span> <span className="font-medium capitalize">{selectedTransaction.paymentMode}</span></div>)}
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button onClick={() => setSelectedTransaction(null)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Close</button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Processing Overlay */}
         {isProcessingRenewal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
