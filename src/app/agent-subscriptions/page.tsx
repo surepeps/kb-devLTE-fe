@@ -22,6 +22,7 @@ import { URLS } from '@/utils/URLS';
 import toast from 'react-hot-toast';
 import { AgentSubscription, SubscriptionPlan, SubscriptionTransaction } from '@/types/subscription.types';
 import { format } from 'date-fns';
+import { getCookie } from 'cookies-next';
 
 export default function AgentSubscriptionsPage() {
   const router = useRouter();
@@ -38,6 +39,11 @@ export default function AgentSubscriptionsPage() {
   const [selectedSubscription, setSelectedSubscription] = useState<AgentSubscription | null>(null);
   const [renewalDuration, setRenewalDuration] = useState<number>(2);
   const [isProcessingRenewal, setIsProcessingRenewal] = useState(false);
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+  const [selectedPlanForSub, setSelectedPlanForSub] = useState<any | null>(null);
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
+  const [autoRenewal, setAutoRenewal] = useState<boolean>(false);
+  const [isProcessingSubscribe, setIsProcessingSubscribe] = useState(false);
 
   // Redirect non-agents
   useEffect(() => {
@@ -180,33 +186,33 @@ export default function AgentSubscriptionsPage() {
   };
 
   const handleSubscribeToPlan = async (plan: any, duration: number) => {
+    setSelectedPlanForSub(plan);
+    setSelectedDuration(duration);
+    setAutoRenewal(false);
+    setShowSubscribeModal(true);
+  };
+
+  const confirmSubscribe = async () => {
+    if (!selectedPlanForSub) return;
+    setIsProcessingSubscribe(true);
     try {
-      const amount = plan.prices?.[duration] || plan.prices?.[Object.keys(plan.prices || {})[0]] || 0;
-      const subscriptionType = plan.raw?.code || plan.name || plan.id;
-      const payload = {
-        subscriptionType,
-        duration,
-        amount,
-      };
-
-      const response = await POST_REQUEST(`${URLS.BASE}${URLS.createSubscription}`, payload);
-
-      if (response.success) {
-        if (response.data?.transaction?.authorization_url) {
-          toast.success('Subscription created! Redirecting to payment...');
-          setTimeout(() => {
-            window.location.href = response.data.transaction.authorization_url;
-          }, 2000);
-        } else {
-          toast.success('Subscription created successfully!');
-          fetchSubscriptions();
-        }
+      const planCode = selectedPlanForSub?.raw?.code || selectedPlanForSub?.id || selectedPlanForSub?.name;
+      const payload = { planCode, autoRenewal } as any;
+      const token = (getCookie('token') as string) || undefined;
+      const res = await POST_REQUEST<any>(`${URLS.BASE}/account/subscriptions/makeSub`, payload, token);
+      if ((res as any)?.success && (res as any)?.data?.paymentUrl) {
+        toast.success('Redirecting to payment...');
+        window.location.href = (res as any).data.paymentUrl;
+      } else if ((res as any)?.success) {
+        toast.success((res as any)?.message || 'Subscription initiated');
+        setShowSubscribeModal(false);
       } else {
-        toast.error(response.message || 'Failed to create subscription');
+        toast.error((res as any)?.message || 'Failed to initiate subscription');
       }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast.error('Failed to create subscription');
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to initiate subscription');
+    } finally {
+      setIsProcessingSubscribe(false);
     }
   };
 
@@ -548,6 +554,34 @@ export default function AgentSubscriptionsPage() {
                   ) : (
                     'Proceed to Payment'
                   )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Subscribe Confirmation Modal */}
+        {showSubscribeModal && selectedPlanForSub && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirm Subscription</h3>
+              <p className="text-gray-700 mb-1">You are about to subscribe to:</p>
+              <div className="mb-4 p-3 bg-gray-50 rounded border">
+                <div className="font-semibold text-gray-900">{selectedPlanForSub.name}</div>
+                {selectedDuration && (
+                  <div className="text-sm text-gray-600">Duration: {selectedDuration} month{selectedDuration > 1 ? 's' : ''}</div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 mb-6">
+                <input id="autoRenew" type="checkbox" checked={autoRenewal} onChange={(e) => setAutoRenewal(e.target.checked)} className="rounded border-gray-300 text-green-600 focus:ring-green-600" />
+                <label htmlFor="autoRenew" className="text-sm text-gray-800">Enable auto-renewal when this plan expires</label>
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={() => setShowSubscribeModal(false)} className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                <button onClick={confirmSubscribe} disabled={isProcessingSubscribe} className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                  {isProcessingSubscribe ? (<><RefreshCw size={16} className="animate-spin" />Processing...</>) : 'Proceed'}
                 </button>
               </div>
             </div>
