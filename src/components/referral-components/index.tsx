@@ -235,7 +235,7 @@ const ReferralPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+        className="bg-white p-6 rounded-xl  border border-gray-100">
         <h3 className="text-xl font-bold text-[#09391C] mb-4 flex items-center gap-2">
           <Gift className="w-6 h-6 text-[#8DDB90]" />
           Share Your Referral Link
@@ -281,7 +281,7 @@ const ReferralPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+        className="bg-white p-6 rounded-xl  border border-gray-100">
         <h3 className="text-xl font-bold text-[#09391C] mb-4 flex items-center gap-2">
           <Award className="w-6 h-6 text-[#8DDB90]" />
           How Referral Rewards Work
@@ -323,7 +323,7 @@ const ReferralPage = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+          className="bg-white p-6 rounded-xl  border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-[#09391C]">Available Balance</h3>
             <Wallet className="w-6 h-6 text-[#8DDB90]" />
@@ -335,7 +335,7 @@ const ReferralPage = () => {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+          className="bg-white p-6 rounded-xl  border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-[#09391C]">Pending Earnings</h3>
             <Calendar className="w-6 h-6 text-[#FFB800]" />
@@ -349,7 +349,7 @@ const ReferralPage = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        className="bg-white rounded-xl  border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100">
           <h3 className="text-xl font-bold text-[#09391C] flex items-center gap-2">
             <Users className="w-6 h-6 text-[#8DDB90]" />
@@ -435,14 +435,14 @@ const ReferralPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-lg border border-gray-100">
+          <div className="bg-white rounded-lg p-1  border border-gray-100">
             {['Share Invite', 'Reward History'].map((option) => (
               <button
                 key={option}
                 onClick={() => setSelectedOption(option as typeof selectedOption)}
                 className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
                   selectedOption === option
-                    ? 'bg-[#8DDB90] text-white shadow-md'
+                    ? 'bg-[#8DDB90] text-white '
                     : 'text-[#5A5D63] hover:text-[#09391C] hover:bg-gray-50'
                 }`}>
                 {option}
