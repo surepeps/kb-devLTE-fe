@@ -283,11 +283,11 @@ export default function AgentSubscriptionsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subscriptions.map((subscription) => (
-                  <div key={subscription._id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                {subscriptions.map((subscription: any) => (
+                  <div key={subscription._id} className="bg-white rounded-lg border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 capitalize">
-                        {subscription.subscriptionType} Plan
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {subscription.plan}
                       </h3>
                       <div className="flex items-center gap-2">
                         {getStatusIcon(subscription.status)}
@@ -299,36 +299,24 @@ export default function AgentSubscriptionsPage() {
 
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Duration:</span>
-                        <span className="font-medium">{subscription.duration} month{subscription.duration > 1 ? 's' : ''}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Start Date:</span>
-                        <span className="font-medium">{format(new Date(subscription.startDate), 'MMM d, yyyy')}</span>
+                        <span className="font-medium">{subscription.startDate ? format(new Date(subscription.startDate), 'MMM d, yyyy') : '-'}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">End Date:</span>
-                        <span className="font-medium">{format(new Date(subscription.endDate), 'MMM d, yyyy')}</span>
+                        <span className="font-medium">{subscription.endDate ? format(new Date(subscription.endDate), 'MMM d, yyyy') : '-'}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Amount:</span>
-                        <span className="font-medium">₦{subscription.amount.toLocaleString()}</span>
+                        <span className="font-medium">₦{(subscription.transaction?.amount || subscription.amount || 0).toLocaleString()}</span>
                       </div>
                     </div>
 
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Features:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        {subscription.features.slice(0, 3).map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
-                            <CheckCircle size={12} className="text-green-500 flex-shrink-0" />
-                            {feature}
-                          </li>
-                        ))}
-                        {subscription.features.length > 3 && (
-                          <li className="text-gray-400">+{subscription.features.length - 3} more</li>
-                        )}
-                      </ul>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Transaction</h4>
+                      <div className="text-xs text-gray-600">
+                        Ref: {subscription.transaction?._id || subscription.transaction?.reference || '-'} • {subscription.transaction?.status || '-'}
+                      </div>
                     </div>
 
                     {subscription.status === 'active' && (
@@ -362,13 +350,11 @@ export default function AgentSubscriptionsPage() {
 
         {activeTab === 'plans' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {plans.map((plan) => (
-              <div key={plan.type} className={`bg-white rounded-lg shadow-sm border-2 p-6 relative ${plan.popular ? 'border-green-500' : 'border-gray-200'}`}>
+            {plans.map((plan: any) => (
+              <div key={plan.id || plan.name} className={`bg-white rounded-lg border-2 p-6 relative ${plan.popular ? 'border-green-500' : 'border-gray-200'}`}>
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      Most Popular
-                    </span>
+                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
                   </div>
                 )}
 
@@ -380,7 +366,7 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Features:</h4>
                   <ul className="space-y-2">
-                    {plan.features.map((feature, index) => (
+                    {(plan.features || []).map((feature: string, index: number) => (
                       <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
                         <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
                         {feature}
@@ -392,13 +378,13 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
                   <div className="space-y-2">
-                    {Object.entries(plan.prices).map(([duration, price]) => (
+                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => (
                       <div key={duration} className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
                         <div className="flex items-center gap-3">
-                          <span className="font-medium">���{price.toLocaleString()}</span>
+                          <span className="font-medium">₦{Number(price).toLocaleString()}</span>
                           <button
-                            onClick={() => handleSubscribeToPlan(plan, parseInt(duration))}
+                            onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
                             className="bg-green-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-green-700 transition-colors"
                           >
                             Subscribe
