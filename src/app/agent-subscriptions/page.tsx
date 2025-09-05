@@ -45,6 +45,8 @@ export default function AgentSubscriptionsPage() {
   const [autoRenewal, setAutoRenewal] = useState<boolean>(false);
   const [isProcessingSubscribe, setIsProcessingSubscribe] = useState(false);
 
+  const token = (getCookie('token') as string) || undefined;
+
   // Redirect non-agents
   useEffect(() => {
     if (user && user.userType !== 'Agent') {
@@ -55,7 +57,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchSubscriptions = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll`);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll`, token);
       if (response.success) {
         setSubscriptions(response.data || []);
       }
@@ -67,7 +69,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchPlans = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`, token);
       if (response.success) {
         const apiPlans = response.data || [];
         const normalized = apiPlans.map((p: any) => {
@@ -92,7 +94,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchTransactions = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`, token);
       if (response.success) {
         setTransactions(response.data || []);
       }
@@ -198,7 +200,6 @@ export default function AgentSubscriptionsPage() {
     try {
       const planCode = selectedPlanForSub?.raw?.code || selectedPlanForSub?.id || selectedPlanForSub?.name;
       const payload = { planCode, autoRenewal } as any;
-      const token = (getCookie('token') as string) || undefined;
       const res = await POST_REQUEST<any>(`${URLS.BASE}/account/subscriptions/makeSub`, payload, token);
       if ((res as any)?.success && (res as any)?.data?.paymentUrl) {
         toast.success('Redirecting to payment...');
