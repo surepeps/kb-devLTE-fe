@@ -450,12 +450,19 @@ const AgentKycForm: React.FC = () => {
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation</label>
                   <p className="text-xs text-gray-500 mb-2">Select areas/LGAs you primarily operate in for the selected state</p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto border rounded-lg p-3">
-                    {(areaOptions || []).map((area) => (
-                      <label key={area} className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" checked={formik.values.regionOfOperation.includes(area)} onChange={() => handleMultiSelect("regionOfOperation", area)} className="rounded border-gray-300 text-[#8DDB90] focus:ring-[#8DDB90]" />
-                        <span>{area}</span>
-                      </label>
-                    ))}
+                    {(areaOptions || []).map((area) => {
+                      const selected = formik.values.regionOfOperation.includes(area);
+                      return (
+                        <button
+                          key={area}
+                          type="button"
+                          onClick={() => handleMultiSelect("regionOfOperation", area)}
+                          className={`px-3 py-1 rounded-full border text-sm ${selected ? "bg-[#0B572B] text-white border-[#0B572B]" : "bg-white text-[#0C1E1B] border-gray-300 hover:border-[#0B572B]"}`}
+                        >
+                          {area}
+                        </button>
+                      );
+                    })}
                   </div>
                   {formik.touched.regionOfOperation && formik.errors.regionOfOperation && (
                     <p className="text-red-500 text-sm mt-1">{formik.errors.regionOfOperation as string}</p>
