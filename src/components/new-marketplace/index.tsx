@@ -19,8 +19,22 @@ const NewMarketPlace = () => {
     setActiveTab,
   } = useNewMarketplace();
 
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const urlTab = (searchParams.get('tab') || undefined) as ("buy" | "jv" | "rent" | "shortlet") | undefined;
+
   const [hasError, setHasError] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // Apply URL tab if provided
+  useEffect(() => {
+    if (urlTab) {
+      // Validate and set
+      const allowed = ['buy', 'jv', 'rent', 'shortlet'];
+      if (allowed.includes(urlTab)) {
+        setActiveTab(urlTab as any);
+      }
+    }
+  }, [urlTab, setActiveTab]);
 
   // Track initial loading state
   useEffect(() => {
