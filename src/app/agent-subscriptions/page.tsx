@@ -401,7 +401,7 @@ export default function AgentSubscriptionsPage() {
         )}
 
         {activeTab === 'transactions' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg border border-gray-200">
             {transactions.length === 0 ? (
               <div className="text-center py-12">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
