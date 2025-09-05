@@ -75,14 +75,7 @@ export default function PublicAgentPage() {
   }
 
   if (!resp?.success || !resp.data) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="max-w-xl w-full bg-white border border-gray-200 rounded-2xl p-8 text-center">
-          <h1 className="text-2xl font-bold text-[#09391C] mb-2">Profile Unavailable</h1>
-          <p className="text-[#5A5D63]">{resp?.message || 'This agent profile is not available. They may not have public access enabled.'}</p>
-        </div>
-      </div>
-    );
+    return <PublicProfileFallback message={resp?.message} />;
   }
 
   const { user, agent, stats, activeSubscription } = resp.data;
