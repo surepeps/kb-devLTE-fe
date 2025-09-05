@@ -261,6 +261,35 @@ export default function LandlordDashboard() {
           })}
         </div>
 
+        {/* Referral Section */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Referral</h2>
+            <Link href="/referral" className="text-green-700 hover:text-green-800 text-sm font-medium">Manage</Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Referral Code</div>
+              <div className="flex items-center gap-2">
+                <code className="font-mono text-gray-900 text-base">{(user?.email ? `${user.email.split('@')[0].toUpperCase()}2024` : 'KHABITEQ2024')}</code>
+                <button onClick={async () => { try { await navigator.clipboard.writeText(user?.email ? `${user.email.split('@')[0].toUpperCase()}2024` : 'KHABITEQ2024'); toast.success('Copied'); } catch { toast.error('Copy failed'); } }} className="p-2 rounded bg-gray-50 hover:bg-gray-100" aria-label="Copy referral code">📋</button>
+              </div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Total Referred</div>
+              <div className="text-2xl font-bold text-gray-900">0</div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Referral Points</div>
+              <div className="text-2xl font-bold text-gray-900">0</div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Earnings</div>
+              <div className="text-2xl font-bold text-gray-900">₦0</div>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Properties Overview */}
           <div className="lg:col-span-2">
