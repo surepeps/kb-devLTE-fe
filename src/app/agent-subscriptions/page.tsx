@@ -437,20 +437,24 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
                   <div className="space-y-2">
-                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => (
-                      <div key={duration} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium">₦{Number(price).toLocaleString()}</span>
-                          <button
-                            onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-green-700 transition-colors"
-                          >
-                            Subscribe
-                          </button>
+                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => {
+                      const disabled = !!(activeSubscriptionFromProfile && activeSubscriptionFromProfile.status === 'active');
+                      return (
+                        <div key={duration} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium">₦{Number(price).toLocaleString()}</span>
+                            <button
+                              onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
+                              disabled={disabled}
+                              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
+                            >
+                              {disabled ? 'Active' : 'Subscribe'}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
