@@ -90,7 +90,7 @@ export const URLS = {
   renewSubscription: "/subscriptions/renew",
   cancelSubscription: "/subscriptions/cancel",
   getSubscriptionPlans: "/subscriptions/plans",
-  getSubscriptionTransactions: "/subscriptions/transactions",
+  getSubscriptionTransactions: "/account/transactions/fetchAll",
 
   /**
    * Agent Verification & Upgrade Endpoints

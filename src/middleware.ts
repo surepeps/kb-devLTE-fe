@@ -48,6 +48,8 @@ const userProtectedRoutes = [
   "/field-agent-inspections",
   "/field-agent-inspection",
   "/transactions",
+  "/agent-subscriptions",
+  "/agent-kyc"
 ];
 
 export function middleware(request: NextRequest) {
