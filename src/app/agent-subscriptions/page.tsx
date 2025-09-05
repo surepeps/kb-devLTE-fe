@@ -97,6 +97,8 @@ export default function AgentSubscriptionsPage() {
     } catch (error) {
       console.error('Failed to fetch plans:', error);
       setPlans([]);
+    } finally {
+      setTabLoading(false);
     }
   };
 
