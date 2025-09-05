@@ -21,6 +21,9 @@ import {
   Calendar as CalendarIcon,
   CreditCard as CreditCardIcon,
   Eye,
+  Gift,
+  Copy,
+  Link as LinkIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 
@@ -69,9 +72,11 @@ export default function AgentDashboard() {
     totalCommission: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [referral, setReferral] = useState({ code: "", totalReferred: 0, points: 0, earnings: 0 });
 
   useEffect(() => {
     fetchDashboardData();
+    fetchReferralData();
   }, [user, router]);
 
   const fetchDashboardData = async () => {
@@ -98,6 +103,31 @@ export default function AgentDashboard() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Fetch referral stats with graceful fallback
+  const fetchReferralData = async () => {
+    try {
+      const token = Cookies.get("token");
+      const response = await GET_REQUEST<any>(`${URLS.BASE}/account/referrals/stats`, token);
+      if (response?.success && response.data) {
+        const data = response.data as any;
+        setReferral({
+          code: (data.code || "").toString(),
+          totalReferred: Number(data.totalReferred || 0),
+          points: Number(data.points || 0),
+          earnings: Number(data.earnings || 0),
+        });
+        return;
+      }
+    } catch (e) {
+      // ignore and use fallback
+    }
+    const email = (user as any)?.email || "";
+    const fallbackCode = email
+      ? `${email.split("@")[0].toUpperCase()}2024`
+      : `${(user?.firstName || "USER").toUpperCase()}2024`;
+    setReferral((prev) => ({ ...prev, code: fallbackCode }));
   };
 
   if (isLoading) {
@@ -214,6 +244,48 @@ export default function AgentDashboard() {
                 Success Rate
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Referral Details */}
+        <div className="bg-white rounded-lg p-4 sm:p-6 mb-8 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-[#09391C]">Referral</h2>
+            <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
+              <Gift size={16} /> Earn by inviting
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Referral Code</div>
+              <div className="flex items-center gap-2">
+                <code className="font-mono text-[#09391C] text-base">{referral.code || "—"}</code>
+                <button
+                  onClick={async () => { try { await navigator.clipboard.writeText(referral.code); toast.success("Copied"); } catch { toast.error("Copy failed"); } }}
+                  className="p-2 rounded bg-gray-50 hover:bg-gray-100"
+                  aria-label="Copy referral code"
+                >
+                  <Copy size={16} />
+                </button>
+              </div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Total Referred</div>
+              <div className="text-2xl font-bold text-[#09391C]">{referral.totalReferred}</div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Referral Points</div>
+              <div className="text-2xl font-bold text-[#09391C]">{referral.points}</div>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">Earnings</div>
+              <div className="text-2xl font-bold text-[#09391C]">₦{referral.earnings.toLocaleString()}</div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Link href="/referral" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#7BC87F] font-medium">
+              <LinkIcon size={16} /> Manage Referrals
+            </Link>
           </div>
         </div>
 
@@ -429,6 +501,19 @@ export default function AgentDashboard() {
                   <p className="text-sm text-[#5A5D63]">
                     Manage account settings
                   </p>
+                </div>
+              </Link>
+
+              <Link
+                href="/public-access-settings"
+                className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
+              >
+                <div className="p-2 bg-emerald-500 bg-opacity-10 rounded-lg">
+                  <LinkIcon size={20} className="text-emerald-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Public Access Settings</h3>
+                  <p className="text-sm text-[#5A5D63]">Customize your public page</p>
                 </div>
               </Link>
             </div>
