@@ -46,7 +46,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchSubscriptions = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getAgentSubscriptions}`);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll`);
       if (response.success) {
         setSubscriptions(response.data || []);
       }
