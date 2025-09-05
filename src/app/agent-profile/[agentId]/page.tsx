@@ -33,11 +33,6 @@ import { PublicAgentProfile } from "@/types/agent-upgrade.types";
 import AgentVerificationService from "@/services/agentVerificationService";
 import { useUserContext } from "@/context/user-context";
 
-interface AgentProfilePageProps {
-  params: {
-    agentId: string;
-  };
-}
 
 // Mock data - in real implementation, this would come from the API
 const mockAgentProfile: PublicAgentProfile = {
@@ -123,8 +118,8 @@ const mockAgentProfile: PublicAgentProfile = {
   joinedAt: "2022-01-10T09:00:00Z"
 };
 
-const AgentProfilePage: React.FC<AgentProfilePageProps> = ({ params }) => {
-  const { agentId } = useParams() as { agentId: string };
+const AgentProfilePage: React.FC = () => {
+  const { agentId } = useParams(); // correctly get agentId from URL
   const router = useRouter();
   const { user } = useUserContext();
   const [agentProfile, setAgentProfile] = useState<PublicAgentProfile | null>(null);
@@ -240,7 +235,7 @@ const AgentProfilePage: React.FC<AgentProfilePageProps> = ({ params }) => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Agent Not Found</h1>
-          <p className="text-gray-600 mb-4">The agent profile you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-4">The agent profile you&apos;re looking for doesn&apos;t exist.</p>
           <button
             onClick={() => router.push("/")}
             className="bg-[#8DDB90] text-white px-6 py-2 rounded-lg hover:bg-[#7BC87F] transition-colors"
