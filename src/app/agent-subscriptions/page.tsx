@@ -118,16 +118,15 @@ export default function AgentSubscriptionsPage() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await Promise.all([fetchSubscriptions(), fetchPlans(), fetchTransactions()]);
+    const boot = async () => {
       setLoading(false);
+      if (!user || user.userType !== 'Agent') return;
+      if (activeTab === 'subscriptions') await fetchSubscriptions(1);
+      if (activeTab === 'plans') await fetchPlans();
+      if (activeTab === 'transactions') await fetchTransactions();
     };
-
-    if (user && user.userType === 'Agent') {
-      fetchData();
-    }
-  }, [user]);
+    boot();
+  }, [user, activeTab]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
