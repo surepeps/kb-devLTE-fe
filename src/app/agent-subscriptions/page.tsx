@@ -35,6 +35,7 @@ export default function AgentSubscriptionsPage() {
     | undefined;
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'plans' | 'transactions'>('subscriptions');
+  const [tabLoading, setTabLoading] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<AgentSubscription | null>(null);
   const [renewalDuration, setRenewalDuration] = useState<number>(2);
