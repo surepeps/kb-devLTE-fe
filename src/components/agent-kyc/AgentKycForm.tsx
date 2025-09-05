@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { PUT_REQUEST } from "@/utils/requests";
+import { PUT_REQUEST, GET_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import {
   AgentKycSubmissionPayload,
@@ -24,11 +24,12 @@ import {
   Image as ImageIcon,
   Plus,
   X,
+  Search,
 } from "lucide-react";
 import { getCookie } from "cookies-next";
-import { getAllStates, getLGAs, getAreas } from "@/data/dummy-location-data";
+import { useUserContext } from "@/context/user-context";
+import { getStates, getLGAsByState, getAreasByStateLGA, searchLocations, formatLocationString } from "@/utils/location-utils";
 
-// Validation schema
 const kycValidationSchema = Yup.object({
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
   profileBio: Yup.string().required("Profile bio is required").min(50, "Bio must be at least 50 characters").max(500, "Bio cannot exceed 500 characters"),
@@ -47,28 +48,31 @@ const kycValidationSchema = Yup.object({
     Yup.object({
       name: Yup.string().required("ID type is required"),
       docImg: Yup.array().of(Yup.string().url("Invalid image URL")).min(1, "At least one document image is required"),
-    })
+    }),
   ).min(1, "At least one form of identification is required"),
 });
 
 const steps = [
-  { key: "identity", title: "Identity Documents", icon: FileText },
-  { key: "professional", title: "Professional Info", icon: Briefcase },
-  { key: "location", title: "Address & Regions", icon: MapPin },
-  { key: "portfolio", title: "Achievements & Listings", icon: Award },
+  { key: "identity", title: "Identity Documents" },
+  { key: "professional", title: "Professional Info" },
+  { key: "location", title: "Address & Regions" },
+  { key: "portfolio", title: "Achievements & Listings" },
 ] as const;
 
 const isImage = (url?: string) => !!url && /(\.png|\.jpg|\.jpeg|\.gif|\.webp)$/i.test(url);
 
 const AgentKycForm: React.FC = () => {
+  const { user } = useUserContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [listingQuery, setListingQuery] = useState("");
+  const [listingResults, setListingResults] = useState<any[]>([]);
+  const [isSearchingListings, setIsSearchingListings] = useState(false);
+
   const formik = useFormik<AgentKycSubmissionPayload>({
     initialValues: {
-      meansOfId: [
-        { name: "", docImg: [] },
-      ],
+      meansOfId: [{ name: "", docImg: [] }],
       agentLicenseNumber: "",
       profileBio: "",
       specializations: [],
@@ -92,16 +96,15 @@ const AgentKycForm: React.FC = () => {
   });
 
   const selectedState = formik.values.address.state;
-  const stateOptions = useMemo(() => getAllStates(), []);
-  const lgaOptions = useMemo(() => (selectedState ? getLGAs(selectedState) : []), [selectedState]);
+  const stateOptions = useMemo(() => getStates(), []);
+  const lgaOptions = useMemo(() => (selectedState ? getLGAsByState(selectedState) : []), [selectedState]);
   const areaOptions = useMemo(() => {
     if (!selectedState) return [] as string[];
-    const lgas = getLGAs(selectedState);
     const areas: string[] = [];
-    lgas.forEach((lga) => areas.push(...getAreas(selectedState, lga)));
-    const merged = Array.from(new Set([...(areas || []), ...(lgas || [])]));
+    lgaOptions.forEach((lga) => areas.push(...getAreasByStateLGA(selectedState, lga)));
+    const merged = Array.from(new Set([...(areas || []), ...(lgaOptions || [])]));
     return merged;
-  }, [selectedState]);
+  }, [selectedState, lgaOptions]);
 
   const handleSubmit = async (values: AgentKycSubmissionPayload) => {
     setIsSubmitting(true);
@@ -120,7 +123,7 @@ const AgentKycForm: React.FC = () => {
     }
   };
 
-  const goNext = async () => {
+  const goNext = () => {
     if (currentStep < steps.length - 1) setCurrentStep((s) => s + 1);
   };
   const goPrev = () => setCurrentStep((s) => Math.max(0, s - 1));
@@ -146,17 +149,16 @@ const AgentKycForm: React.FC = () => {
   };
 
   const addAchievement = () => {
-    formik.setFieldValue("achievements", [
-      ...(formik.values.achievements || []),
-      { title: "", description: "", dateAwarded: "", fileUrl: "" },
-    ]);
+    formik.setFieldValue("achievements", [...(formik.values.achievements || []), { title: "", description: "", dateAwarded: "", fileUrl: "" }]);
   };
   const removeAchievement = (index: number) => {
     formik.setFieldValue("achievements", (formik.values.achievements || []).filter((_, i) => i !== index));
   };
 
-  const addFeaturedListing = () => {
-    formik.setFieldValue("featuredListings", [...(formik.values.featuredListings || []), ""]);
+  const addFeaturedListing = (id?: string) => {
+    const current = formik.values.featuredListings || [];
+    const next = id ? (current.includes(id) ? current : [...current, id]) : [...current, ""];
+    formik.setFieldValue("featuredListings", next);
   };
   const removeFeaturedListing = (index: number) => {
     formik.setFieldValue("featuredListings", (formik.values.featuredListings || []).filter((_, i) => i !== index));
@@ -168,29 +170,45 @@ const AgentKycForm: React.FC = () => {
     formik.setFieldValue(field, next);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F6F8F8] to-[#E8EEEE] py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-[#0B572B] to-[#8DDB90] px-8 py-6">
-            <h1 className="text-3xl font-bold text-white mb-2">Agent KYC Verification</h1>
-            <p className="text-white/90">Complete your verification to enhance your public agent profile</p>
-          </div>
+  const searchListings = async () => {
+    if (!listingQuery || !user) return;
+    setIsSearchingListings(true);
+    try {
+      const url = `${URLS.BASE}${URLS.accountPropertyBaseUrl}?search=${encodeURIComponent(listingQuery)}&owner=${user._id}`;
+      const res = await GET_REQUEST<any>(url);
+      if (res.success && Array.isArray(res.data)) {
+        setListingResults(res.data);
+      } else {
+        setListingResults([]);
+      }
+    } catch (error) {
+      setListingResults([]);
+    } finally {
+      setIsSearchingListings(false);
+    }
+  };
 
-          {/* Stepper */}
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Agent KYC Verification</h1>
+          <p className="text-gray-600 mt-1">Complete your verification to enhance your public agent profile</p>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="px-6 pt-6">
             <ol className="flex items-center gap-4 overflow-x-auto">
               {steps.map((s, idx) => {
-                const Icon = s.icon;
                 const active = idx === currentStep;
                 const done = idx < currentStep;
                 return (
                   <li key={s.key} className="flex items-center gap-2">
                     <div className={`flex items-center justify-center w-8 h-8 rounded-full border ${active ? "bg-[#0B572B] text-white border-[#0B572B]" : done ? "bg-[#8DDB90] text-white border-[#8DDB90]" : "border-gray-300 text-gray-600"}`}>
-                      {done ? <CheckCircle2 size={18}/> : <Icon size={18} />}
+                      {done ? <CheckCircle2 size={18} /> : <span className="text-xs">{idx + 1}</span>}
                     </div>
                     <span className={`text-sm whitespace-nowrap ${active ? "text-[#0B572B] font-medium" : "text-gray-600"}`}>{s.title}</span>
-                    {idx < steps.length - 1 && <span className="w-8 h-px bg-gray-300 mx-1"/>}
+                    {idx < steps.length - 1 && <span className="w-8 h-px bg-gray-300 mx-1" />}
                   </li>
                 );
               })}
@@ -198,7 +216,6 @@ const AgentKycForm: React.FC = () => {
           </div>
 
           <form onSubmit={formik.handleSubmit} className="p-6 space-y-8">
-            {/* Step 1: Identity */}
             {currentStep === 0 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
@@ -259,13 +276,12 @@ const AgentKycForm: React.FC = () => {
                   </div>
                 ))}
 
-                <button type="button" onClick={addMeansOfId} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg hover:bg-[#8DDB90]/10">
+                <button type="button" onClick={addMeansOfId} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
                   <Plus size={16} /> Add Another ID Document
                 </button>
               </div>
             )}
 
-            {/* Step 2: Professional */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
@@ -341,7 +357,6 @@ const AgentKycForm: React.FC = () => {
               </div>
             )}
 
-            {/* Step 3: Address & Region */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
@@ -400,7 +415,6 @@ const AgentKycForm: React.FC = () => {
               </div>
             )}
 
-            {/* Step 4: Portfolio */}
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
@@ -408,7 +422,6 @@ const AgentKycForm: React.FC = () => {
                   <h2 className="text-xl font-semibold text-[#0C1E1B]">Achievements & Featured Listings</h2>
                 </div>
 
-                {/* Achievements */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-[#0C1E1B]">Achievements</h3>
                   {(formik.values.achievements || []).map((ach, index) => (
@@ -451,43 +464,67 @@ const AgentKycForm: React.FC = () => {
                       </div>
                     </div>
                   ))}
-                  <button type="button" onClick={addAchievement} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg hover:bg-[#8DDB90]/10">
+                  <button type="button" onClick={addAchievement} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
                     <Plus size={16} /> Add Achievement
                   </button>
                 </div>
 
-                {/* Featured Listings */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-[#0C1E1B]">Featured Listings (IDs)</h3>
-                  {(formik.values.featuredListings || []).map((id, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <input type="text" value={id} onChange={(e) => {
-                        const copy = [...(formik.values.featuredListings || [])];
-                        copy[index] = e.target.value;
-                        formik.setFieldValue("featuredListings", copy);
-                      }} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent" placeholder="Property ID" />
-                      <button type="button" onClick={() => removeFeaturedListing(index)} className="text-red-500 hover:text-red-700"><X size={18} /></button>
+                  <h3 className="font-semibold text-[#0C1E1B]">Featured Listings</h3>
+
+                  <div className="flex gap-3 items-center">
+                    <input type="text" placeholder="Search your listings by title or id" value={listingQuery} onChange={(e) => setListingQuery(e.target.value)} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg" />
+                    <button type="button" onClick={searchListings} className="inline-flex items-center gap-2 px-4 py-2 bg-[#0B572B] text-white rounded-lg">
+                      <Search size={16} /> {isSearchingListings ? "Searching..." : "Search"}
+                    </button>
+                  </div>
+
+                  {listingResults.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {listingResults.map((l) => (
+                        <div key={l._id} className="border rounded-lg p-3 flex items-center justify-between">
+                          <div>
+                            <div className="font-medium text-[#09391C]">{l.title || l._id}</div>
+                            <div className="text-sm text-[#5A5D63]">₦{(l.price || 0).toLocaleString()}</div>
+                          </div>
+                          <div>
+                            <button type="button" onClick={() => addFeaturedListing(l._id)} className="px-3 py-1 bg-[#8DDB90] text-white rounded-lg">Add</button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  <button type="button" onClick={addFeaturedListing} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg hover:bg-[#8DDB90]/10">
-                    <Plus size={16} /> Add Listing ID
-                  </button>
+                  )}
+
+                  <div className="space-y-3">
+                    {(formik.values.featuredListings || []).map((id, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        <input type="text" value={id} onChange={(e) => {
+                          const copy = [...(formik.values.featuredListings || [])];
+                          copy[index] = e.target.value;
+                          formik.setFieldValue("featuredListings", copy);
+                        }} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg" />
+                        <button type="button" onClick={() => removeFeaturedListing(index)} className="text-red-500">Remove</button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => addFeaturedListing()} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
+                      <Plus size={16} /> Add Listing ID
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Footer controls */}
             <div className="flex items-center justify-between pt-6 border-t border-gray-200">
               <button type="button" onClick={goPrev} disabled={currentStep === 0} className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-[#0B572B] border-[#8DDB90] disabled:opacity-50">
                 <ChevronLeft size={18} /> Back
               </button>
 
               {currentStep < steps.length - 1 ? (
-                <button type="button" onClick={goNext} className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg hover:bg-[#094C25]">
+                <button type="button" onClick={goNext} className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg">
                   Next <ChevronRight size={18} />
                 </button>
               ) : (
-                <button type="submit" disabled={isSubmitting || !formik.isValid} className="px-8 py-2 bg-gradient-to-r from-[#0B572B] to-[#8DDB90] text-white font-semibold rounded-lg hover:from-[#094C25] hover:to-[#7BC87F] disabled:opacity-50">
+                <button type="submit" disabled={isSubmitting || !formik.isValid} className="px-8 py-2 bg-gradient-to-r from-[#0B572B] to-[#8DDB90] text-white font-semibold rounded-lg disabled:opacity-50">
                   {isSubmitting ? "Submitting..." : "Submit KYC"}
                 </button>
               )}

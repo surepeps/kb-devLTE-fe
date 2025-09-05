@@ -46,7 +46,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchSubscriptions = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getAgentSubscriptions}`);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll`);
       if (response.success) {
         setSubscriptions(response.data || []);
       }
@@ -58,37 +58,24 @@ export default function AgentSubscriptionsPage() {
 
   const fetchPlans = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAllPlans`);
       if (response.success) {
-        setPlans(response.data || []);
+        // The API returns plans shaped differently; normalize to existing UI-friendly structure
+        const apiPlans = response.data || [];
+        const normalized = apiPlans.map((p: any) => ({
+          id: p._id,
+          name: p.name,
+          description: p.features?.slice(0, 2).join(", ") || "",
+          features: p.features || [],
+          prices: { 1: p.price, 12: p.price },
+          popular: false,
+          raw: p,
+        }));
+        setPlans(normalized as any);
       }
     } catch (error) {
       console.error('Failed to fetch plans:', error);
-      // Set default plans if API fails
-      setPlans([
-        {
-          type: 'basic',
-          name: 'Basic',
-          description: 'Essential features for new agents',
-          features: ['Access to marketplace', 'Basic analytics', 'Email support'],
-          prices: { 1: 5000, 2: 9000, 3: 13000, 6: 25000, 12: 48000 }
-        },
-        {
-          type: 'premium',
-          name: 'Premium',
-          description: 'Advanced features for growing agents',
-          features: ['Everything in Basic', 'Priority listings', 'Advanced analytics', 'Phone support'],
-          prices: { 1: 10000, 2: 18000, 3: 26000, 6: 50000, 12: 96000 },
-          popular: true
-        },
-        {
-          type: 'corporate',
-          name: 'Corporate',
-          description: 'Full features for established agents',
-          features: ['Everything in Premium', 'Unlimited listings', 'Custom branding', 'Dedicated support'],
-          prices: { 1: 20000, 2: 36000, 3: 52000, 6: 100000, 12: 192000 }
-        }
-      ]);
+      setPlans([]);
     }
   };
 
@@ -184,13 +171,14 @@ export default function AgentSubscriptionsPage() {
     }
   };
 
-  const handleSubscribeToPlan = async (plan: SubscriptionPlan, duration: number) => {
+  const handleSubscribeToPlan = async (plan: any, duration: number) => {
     try {
-      const amount = plan.prices[duration];
+      const amount = plan.prices?.[duration] || plan.prices?.[Object.keys(plan.prices || {})[0]] || 0;
+      const subscriptionType = plan.raw?.code || plan.name || plan.id;
       const payload = {
-        subscriptionType: plan.type,
+        subscriptionType,
         duration,
-        amount
+        amount,
       };
 
       const response = await POST_REQUEST(`${URLS.BASE}${URLS.createSubscription}`, payload);
@@ -296,11 +284,11 @@ export default function AgentSubscriptionsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subscriptions.map((subscription) => (
-                  <div key={subscription._id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                {subscriptions.map((subscription: any) => (
+                  <div key={subscription._id} className="bg-white rounded-lg border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 capitalize">
-                        {subscription.subscriptionType} Plan
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {subscription.plan}
                       </h3>
                       <div className="flex items-center gap-2">
                         {getStatusIcon(subscription.status)}
@@ -312,36 +300,24 @@ export default function AgentSubscriptionsPage() {
 
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Duration:</span>
-                        <span className="font-medium">{subscription.duration} month{subscription.duration > 1 ? 's' : ''}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Start Date:</span>
-                        <span className="font-medium">{format(new Date(subscription.startDate), 'MMM d, yyyy')}</span>
+                        <span className="font-medium">{subscription.startDate ? format(new Date(subscription.startDate), 'MMM d, yyyy') : '-'}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">End Date:</span>
-                        <span className="font-medium">{format(new Date(subscription.endDate), 'MMM d, yyyy')}</span>
+                        <span className="font-medium">{subscription.endDate ? format(new Date(subscription.endDate), 'MMM d, yyyy') : '-'}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Amount:</span>
-                        <span className="font-medium">₦{subscription.amount.toLocaleString()}</span>
+                        <span className="font-medium">₦{(subscription.transaction?.amount || subscription.amount || 0).toLocaleString()}</span>
                       </div>
                     </div>
 
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Features:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        {subscription.features.slice(0, 3).map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
-                            <CheckCircle size={12} className="text-green-500 flex-shrink-0" />
-                            {feature}
-                          </li>
-                        ))}
-                        {subscription.features.length > 3 && (
-                          <li className="text-gray-400">+{subscription.features.length - 3} more</li>
-                        )}
-                      </ul>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Transaction</h4>
+                      <div className="text-xs text-gray-600">
+                        Ref: {subscription.transaction?._id || subscription.transaction?.reference || '-'} • {subscription.transaction?.status || '-'}
+                      </div>
                     </div>
 
                     {subscription.status === 'active' && (
@@ -375,13 +351,11 @@ export default function AgentSubscriptionsPage() {
 
         {activeTab === 'plans' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {plans.map((plan) => (
-              <div key={plan.type} className={`bg-white rounded-lg shadow-sm border-2 p-6 relative ${plan.popular ? 'border-green-500' : 'border-gray-200'}`}>
+            {plans.map((plan: any) => (
+              <div key={plan.id || plan.name} className={`bg-white rounded-lg border-2 p-6 relative ${plan.popular ? 'border-green-500' : 'border-gray-200'}`}>
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      Most Popular
-                    </span>
+                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
                   </div>
                 )}
 
@@ -393,7 +367,7 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Features:</h4>
                   <ul className="space-y-2">
-                    {plan.features.map((feature, index) => (
+                    {(plan.features || []).map((feature: string, index: number) => (
                       <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
                         <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
                         {feature}
@@ -405,13 +379,13 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
                   <div className="space-y-2">
-                    {Object.entries(plan.prices).map(([duration, price]) => (
+                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => (
                       <div key={duration} className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
                         <div className="flex items-center gap-3">
-                          <span className="font-medium">���{price.toLocaleString()}</span>
+                          <span className="font-medium">₦{Number(price).toLocaleString()}</span>
                           <button
-                            onClick={() => handleSubscribeToPlan(plan, parseInt(duration))}
+                            onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
                             className="bg-green-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-green-700 transition-colors"
                           >
                             Subscribe
@@ -427,7 +401,7 @@ export default function AgentSubscriptionsPage() {
         )}
 
         {activeTab === 'transactions' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg border border-gray-200">
             {transactions.length === 0 ? (
               <div className="text-center py-12">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
