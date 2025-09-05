@@ -277,18 +277,30 @@ export default function AgentSubscriptionsPage() {
                 { key: 'plans', label: 'Subscription Plans', icon: CreditCard },
                 { key: 'transactions', label: 'Transaction History', icon: Calendar }
               ].map(({ key, label, icon: Icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key as any)}
-                  className={`${
-                    activeTab === key
-                      ? 'border-green-500 text-green-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
-                >
-                  <Icon size={16} />
-                  {label}
-                </button>
+                <div key={key} className="flex items-center gap-2">
+                  <button
+                    onClick={() => setActiveTab(key as any)}
+                    className={`${
+                      activeTab === key
+                        ? 'border-green-500 text-green-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                  >
+                    <Icon size={16} />
+                    {label}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (key === 'subscriptions') fetchSubscriptions(1);
+                      if (key === 'plans') fetchPlans();
+                      if (key === 'transactions') fetchTransactions();
+                    }}
+                    className={`text-xs inline-flex items-center gap-1 px-2 py-1 border rounded ${activeTab === key ? 'border-green-500 text-green-600' : 'border-gray-300 text-gray-500'}`}
+                    title="Refresh"
+                  >
+                    <RefreshCw size={12} /> Refresh
+                  </button>
+                </div>
               ))}
             </nav>
           </div>
