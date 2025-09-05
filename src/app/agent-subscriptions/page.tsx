@@ -54,15 +54,20 @@ export default function AgentSubscriptionsPage() {
     }
   }, [user, router]);
 
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = async (page = 1) => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll`);
+      setTabLoading(true);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll?page=${page}&limit=10`);
       if (response.success) {
         setSubscriptions(response.data || []);
+        setSubscriptionsPage(response.pagination?.page || 1);
+        setSubscriptionsTotalPages(response.pagination?.totalPages || 1);
       }
     } catch (error) {
       console.error('Failed to fetch subscriptions:', error);
       toast.error('Failed to load subscriptions');
+    } finally {
+      setTabLoading(false);
     }
   };
 
