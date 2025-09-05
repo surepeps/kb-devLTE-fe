@@ -362,7 +362,6 @@ const RentPropertyForm: React.FC<RentPropertyFormProps> = ({
       const response = await POST_REQUEST(
         `${URLS.BASE}${URLS.accountPropertyBaseUrl}/create`,
         payload,
-        undefined,
         Cookies.get("token"),
       );
 

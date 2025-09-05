@@ -25,6 +25,8 @@ import {
   Eye,
   Filter,
   Search,
+  User,
+  Trophy,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { PublicAgentProfile } from "@/types/agent-upgrade.types";

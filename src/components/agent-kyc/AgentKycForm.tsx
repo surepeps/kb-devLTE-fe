@@ -249,8 +249,8 @@ const AgentKycForm: React.FC = () => {
                           <option value="">Select ID Type</option>
                           <option value="International Passport">International Passport</option>
                           <option value="National ID">National ID</option>
-                          <option value="Driver's License">Driver's License</option>
-                          <option value="Voter's Card">Voter's Card</option>
+                          <option value="Driver's License">Driver&apos;s License</option>
+                          <option value="Voter's Card">Voter&apos;s Card</option>
                         </select>
                       </div>
 
@@ -259,7 +259,7 @@ const AgentKycForm: React.FC = () => {
                         <div className="space-y-3">
                           {[0, 1].map((imgIndex) => (
                             <div key={imgIndex} className="space-y-2">
-                              <AttachFile heading={`Upload Image ${imgIndex + 1}`} setFileUrl={(url) => handleFileUpload(url!, "meansOfId", index, imgIndex)} id={`means-of-id-${index}-${imgIndex}`} className="w-full" />
+                              <AttachFile heading={`Upload Image ${imgIndex + 1}`} setFileUrl={(url: string | null) => handleFileUpload(url!, "meansOfId", index, imgIndex)} id={`means-of-id-${index}-${imgIndex}`} className="w-full" />
                               {idDoc.docImg?.[imgIndex] && (
                                 <div className="flex items-center gap-3">
                                   <div className="w-20 h-14 rounded overflow-hidden bg-white border">
@@ -448,7 +448,7 @@ const AgentKycForm: React.FC = () => {
                         formik.setFieldValue("achievements", copy);
                       }} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent" rows={3} placeholder="Description" />
                       <div className="space-y-2">
-                        <AttachFile heading="Upload Certificate (optional)" setFileUrl={(url) => handleFileUpload(url!, "achievements", index)} id={`achievement-${index}`} className="w-full" />
+                        <AttachFile heading="Upload Certificate (optional)" setFileUrl={(url: string | null) => handleFileUpload(url!, "achievements", index)} id={`achievement-${index}`} className="w-full" />
                         {ach.fileUrl && (
                           <div className="flex items-center gap-3">
                             {isImage(ach.fileUrl) ? (

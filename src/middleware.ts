@@ -38,7 +38,6 @@ const userProtectedRoutes = [
   "/payment-details",
   "/my-inspection-requests",
   "/agent-onboard",
-  "/agent-under-review",
   "/update-property",
   "/update-preference",
   "/referral",
