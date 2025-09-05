@@ -419,8 +419,8 @@ const OutrightSalesPropertyForm: React.FC<OutrightSalesPropertyFormProps> = ({
     <CombinedAuthGuard
       requireAuth={true}
       allowedUserTypes={["Agent", "Landowners"]}
-      requireAgentOnboarding={true}
-      requireAgentApproval={true}
+      requireAgentOnboarding={false}
+      requireAgentApproval={false}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />

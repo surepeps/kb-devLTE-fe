@@ -332,8 +332,8 @@ export default function MyInspectionRequestsPage() {
     <CombinedAuthGuard
       requireAuth={true} // User must be logged in
       allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
-      requireAgentOnboarding={true} // If an agent, require onboarding
-      requireAgentApproval={true} // If an agent, require approval
+      requireAgentOnboarding={false}
+      requireAgentApproval={false}
       agentCustomMessage="You must complete onboarding and be approved before you view inspection requests."
     >
     <div className="min-h-screen bg-[#EEF1F1]">

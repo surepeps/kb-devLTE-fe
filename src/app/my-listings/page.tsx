@@ -263,8 +263,8 @@ const MyListingPage = () => {
     <CombinedAuthGuard
       requireAuth={true} // User must be logged in
       allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
-      requireAgentOnboarding={true} // If an agent, require onboarding
-      requireAgentApproval={true} // If an agent, require approval
+      requireAgentOnboarding={false}
+      requireAgentApproval={false}
       agentCustomMessage="You must complete onboarding and be approved before you view posted properties."
     >
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">

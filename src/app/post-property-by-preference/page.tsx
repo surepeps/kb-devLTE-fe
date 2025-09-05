@@ -875,8 +875,8 @@ const PostPropertyByPreference = () => {
     <CombinedAuthGuard
       requireAuth={true} // User must be logged in
       allowedUserTypes={["Agent"]} // Only these user types can access
-      requireAgentOnboarding={true} // If an agent, require onboarding
-      requireAgentApproval={true} // If an agent, require approval
+      requireAgentOnboarding={false}
+      requireAgentApproval={false}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
