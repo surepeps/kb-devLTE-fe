@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { GET_REQUEST, POST_REQUEST_FILE_UPLOAD, PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import toast from "react-hot-toast";
-import { Upload, Trash2, Save, Link as LinkIcon, Image as ImageIcon, ShieldCheck } from "lucide-react";
+import { Trash2, Save, Link as LinkIcon, Image as ImageIcon, ShieldCheck } from "lucide-react";
 
 interface PublicAccessSettings {
   publicSlug: string;
