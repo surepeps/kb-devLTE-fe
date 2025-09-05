@@ -28,8 +28,11 @@ export default function AgentSubscriptionsPage() {
   const router = useRouter();
   const { user } = useUserContext();
   const [subscriptions, setSubscriptions] = useState<AgentSubscription[]>([]);
+  const [subscriptionsPage, setSubscriptionsPage] = useState(1);
+  const [subscriptionsTotalPages, setSubscriptionsTotalPages] = useState(1);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [transactions, setTransactions] = useState<SubscriptionTransaction[]>([]);
+  const [selectedTransaction, setSelectedTransaction] = useState<SubscriptionTransaction | null>(null);
   const activeSubscriptionFromProfile = (user as any)?.activeSubscription as
     | { _id: string; plan: string; status: string; startDate?: string; endDate?: string; subscriptionType?: string }
     | undefined;
