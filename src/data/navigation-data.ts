@@ -20,7 +20,7 @@ export const mainNavigationData: NavigationItem[] = [
     subItems: [
       {
         name: "Buy",
-        url: "/market-place",
+        url: "/market-place?tab=buy",
         isClicked: false,
       },
       {
@@ -30,12 +30,12 @@ export const mainNavigationData: NavigationItem[] = [
       },
       {
         name: "Rent",
-        url: "/market-place",
+        url: "/market-place?tab=rent",
         isClicked: false,
       },
       {
         name: "Joint Venture",
-        url: "/market-place",
+        url: "/market-place?tab=jv",
         isClicked: false,
       },
       {
@@ -97,17 +97,17 @@ export const agentNavigationData: NavigationItem[] = [
       },
       {
         name: "Buy a property",
-        url: "/market-place",
+        url: "/market-place?tab=buy",
         isClicked: false,
       },
       {
         name: "Rent a property",
-        url: "/market-place",
+        url: "/market-place?tab=rent",
         isClicked: false,
       },
       {
         name: "Joint Venture",
-        url: "/market-place",
+        url: "/market-place?tab=jv",
         isClicked: false,
       },
       {
@@ -155,7 +155,7 @@ export const agentNavigationData: NavigationItem[] = [
 export const marketplaceDropdownData: NavigationItem[] = [
   {
     name: "Buy",
-    url: "/market-place",
+    url: "/market-place?tab=buy",
     isClicked: false,
   },
   {
@@ -165,17 +165,17 @@ export const marketplaceDropdownData: NavigationItem[] = [
   },
   {
     name: "Rent",
-    url: "/market-place",
+    url: "/market-place?tab=rent",
     isClicked: false,
   },
   {
     name: "Shortlet",
-    url: "/market-place",
+    url: "/market-place?tab=shortlet",
     isClicked: false,
   },
   {
     name: "Joint Venture",
-    url: "/market-place",
+    url: "/market-place?tab=jv",
     isClicked: false,
   },
   {

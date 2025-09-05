@@ -29,6 +29,9 @@ export default function AgentSubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<AgentSubscription[]>([]);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [transactions, setTransactions] = useState<SubscriptionTransaction[]>([]);
+  const activeSubscriptionFromProfile = (user as any)?.activeSubscription as
+    | { _id: string; plan: string; status: string; startDate?: string; endDate?: string; subscriptionType?: string }
+    | undefined;
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'plans' | 'transactions'>('subscriptions');
   const [showRenewalModal, setShowRenewalModal] = useState(false);
@@ -58,19 +61,21 @@ export default function AgentSubscriptionsPage() {
 
   const fetchPlans = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAllPlans`);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
       if (response.success) {
-        // The API returns plans shaped differently; normalize to existing UI-friendly structure
         const apiPlans = response.data || [];
-        const normalized = apiPlans.map((p: any) => ({
-          id: p._id,
-          name: p.name,
-          description: p.features?.slice(0, 2).join(", ") || "",
-          features: p.features || [],
-          prices: { 1: p.price, 12: p.price },
-          popular: false,
-          raw: p,
-        }));
+        const normalized = apiPlans.map((p: any) => {
+          const months = Math.max(1, Math.round((p.durationInDays || 30) / 30));
+          return {
+            id: p._id,
+            name: p.name,
+            description: p.features?.slice(0, 2).join(', ') || '',
+            features: p.features || [],
+            prices: { [months]: p.price },
+            popular: false,
+            raw: p,
+          };
+        });
         setPlans(normalized as any);
       }
     } catch (error) {
@@ -138,8 +143,11 @@ export default function AgentSubscriptionsPage() {
 
     setIsProcessingRenewal(true);
     try {
-      const plan = plans.find(p => p.type === selectedSubscription.subscriptionType);
-      const amount = plan?.prices[renewalDuration] || 0;
+      const plan =
+        (plans as any).find((p: any) => p?.raw?.code === selectedSubscription.subscriptionType) ||
+        (plans as any).find((p: any) => p?.name === (selectedSubscription as any)?.plan) ||
+        plans[0];
+      const amount = plan?.prices?.[renewalDuration] || (Object.values(plan?.prices || {})[0] as number) || 0;
 
       const payload = {
         subscriptionId: selectedSubscription._id,
@@ -236,9 +244,22 @@ export default function AgentSubscriptionsPage() {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Agent Subscriptions</h1>
-          <p className="text-gray-600">Manage your subscriptions, view plans, and track transactions</p>
+        <div className="mb-8 space-y-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Agent Subscriptions</h1>
+            <p className="text-gray-600">Manage your subscriptions, view plans, and track transactions</p>
+          </div>
+          {activeSubscriptionFromProfile && (
+            <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+              <div className="text-sm text-green-800">
+                Active subscription: <span className="font-semibold">{activeSubscriptionFromProfile.plan || activeSubscriptionFromProfile.subscriptionType}</span>
+              </div>
+              <div className="text-xs text-green-700">
+                {activeSubscriptionFromProfile.startDate && <>Start: {new Date(activeSubscriptionFromProfile.startDate).toLocaleDateString()} • </>}
+                {activeSubscriptionFromProfile.endDate && <>Ends: {new Date(activeSubscriptionFromProfile.endDate).toLocaleDateString()}</>}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tab Navigation */}
@@ -499,7 +520,7 @@ export default function AgentSubscriptionsPage() {
                   onChange={(e) => setRenewalDuration(parseInt(e.target.value))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  {Object.entries(plans.find(p => p.type === selectedSubscription.subscriptionType)?.prices || {}).map(([duration, price]) => (
+                  {Object.entries(((plans as any).find((p: any) => p?.raw?.code === selectedSubscription.subscriptionType) || (plans as any).find((p: any) => p?.name === (selectedSubscription as any)?.plan) || plans[0] || { prices: {} }).prices || {}).map(([duration, price]) => (
                     <option key={duration} value={duration}>
                       {duration} month{parseInt(duration) > 1 ? 's' : ''} - ₦{price.toLocaleString()}
                     </option>
