@@ -34,6 +34,11 @@ export const mainNavigationData: NavigationItem[] = [
         isClicked: false,
       },
       {
+        name: "Shortlet",
+        url: "/market-place?tab=shortlet",
+        isClicked: false,
+      },
+      {
         name: "Joint Venture",
         url: "/market-place?tab=jv",
         isClicked: false,
@@ -103,6 +108,11 @@ export const agentNavigationData: NavigationItem[] = [
       {
         name: "Rent a property",
         url: "/market-place?tab=rent",
+        isClicked: false,
+      },
+      {
+        name: "Shortlet",
+        url: "/market-place?tab=shortlet",
         isClicked: false,
       },
       {
