@@ -76,6 +76,7 @@ export default function AgentSubscriptionsPage() {
 
   const fetchPlans = async () => {
     try {
+      setTabLoading(true);
       const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
       if (response.success) {
         const apiPlans = response.data || [];
