@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useUserContext } from "@/context/user-context";
+import AgentShortProfile from "@/components/dashboard/AgentShortProfile";
 
 interface DashboardStats {
   totalListings: number;
@@ -135,6 +136,14 @@ const EnhancedAgentDashboard: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm"
         >
+          {/* Agent short public profile (only shows when public URL exists) */}
+          <div className="mb-4">
+            {/** Imported dynamically to avoid hydration issues */}
+            <React.Suspense fallback={null}>
+              {/* @ts-ignore */}
+              <AgentShortProfile />
+            </React.Suspense>
+          </div>
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-[#09391C] mb-2 font-display">
