@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { PUT_REQUEST, GET_REQUEST } from "@/utils/requests";
@@ -27,6 +27,8 @@ import {
   Search,
 } from "lucide-react";
 import { getCookie } from "cookies-next";
+import Select from "react-select";
+import customStyles from "@/styles/inputStyle";
 import { useUserContext } from "@/context/user-context";
 import { getStates, getLGAsByState, getAreasByStateLGA, searchLocations, formatLocationString } from "@/utils/location-utils";
 
@@ -65,6 +67,8 @@ const AgentKycForm: React.FC = () => {
   const { user } = useUserContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [agentProperties, setAgentProperties] = useState<any[]>([]);
 
   const [listingQuery, setListingQuery] = useState("");
   const [listingResults, setListingResults] = useState<any[]>([]);
@@ -105,6 +109,20 @@ const AgentKycForm: React.FC = () => {
     const merged = Array.from(new Set([...(areas || []), ...(lgaOptions || [])]));
     return merged;
   }, [selectedState, lgaOptions]);
+
+  useEffect(() => {
+    const fetchProps = async () => {
+      try {
+        const token = getCookie("token") as string;
+        const res = await GET_REQUEST<any>(`${URLS.BASE}/account/properties/fetchAll?page=1&limit=12`, token);
+        if (res.success && Array.isArray(res.data)) setAgentProperties(res.data);
+        else setAgentProperties([]);
+      } catch {
+        setAgentProperties([]);
+      }
+    };
+    fetchProps();
+  }, [user]);
 
   const handleSubmit = async (values: AgentKycSubmissionPayload) => {
     setIsSubmitting(true);
@@ -237,21 +255,23 @@ const AgentKycForm: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type</label>
-                        <select
-                          value={idDoc.name}
-                          onChange={(e) => {
+                        <Select
+                          styles={customStyles}
+                          options={[
+                            { value: "International Passport", label: "International Passport" },
+                            { value: "National ID", label: "National ID" },
+                            { value: "Driver's License", label: "Driver's License" },
+                            { value: "Voter's Card", label: "Voter's Card" },
+                          ]}
+                          placeholder="Select ID Type"
+                          value={idDoc.name ? { value: idDoc.name, label: idDoc.name } as any : null}
+                          onChange={(opt: any) => {
                             const next = [...formik.values.meansOfId];
-                            next[index].name = e.target.value;
+                            next[index].name = opt?.value || "";
                             formik.setFieldValue("meansOfId", next);
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                        >
-                          <option value="">Select ID Type</option>
-                          <option value="International Passport">International Passport</option>
-                          <option value="National ID">National ID</option>
-                          <option value="Driver's License">Driver&apos;s License</option>
-                          <option value="Voter's Card">Voter&apos;s Card</option>
-                        </select>
+                          isClearable
+                        />
                       </div>
 
                       <div>
@@ -300,10 +320,13 @@ const AgentKycForm: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type</label>
-                    <select {...formik.getFieldProps("agentType")} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
-                      <option value="Individual">Individual</option>
-                      <option value="Company">Company</option>
-                    </select>
+                    <Select
+                      styles={customStyles}
+                      options={[{ value: "Individual", label: "Individual" }, { value: "Company", label: "Company" }]}
+                      value={formik.values.agentType ? { value: formik.values.agentType, label: formik.values.agentType } as any : null}
+                      onChange={(opt: any) => formik.setFieldValue("agentType", opt?.value || "")}
+                      placeholder="Select agent type"
+                    />
                     {formik.touched.agentType && formik.errors.agentType && (
                       <p className="text-red-500 text-sm mt-1">{formik.errors.agentType as string}</p>
                     )}
