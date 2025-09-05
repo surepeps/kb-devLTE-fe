@@ -15,12 +15,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
   },
-  // Improve dev performance with Turbopack
-  turbopack: {
-    resolveAlias: {
-      canvas: './empty-module.js',
-    },
-  },
   images: {
     remotePatterns: [
       {
@@ -42,11 +36,6 @@ const nextConfig: NextConfig = {
     // Reduce timeout to prevent hanging
     unoptimized: process.env.NODE_ENV === "development", // Skip optimization in dev to avoid timeouts
   },
-  // Fix cross-origin warnings for dev environment
-  allowedDevOrigins: [
-    "e7d15a9216da4885bec59cd01458be4a-6845b121add241b5a73be3ac1.fly.dev",
-    "*.fly.dev",
-  ],
   // Disable turbopack for now to fix build issues
   // turbopack: {
   //   // Turbopack is now stable, moved from experimental
@@ -63,11 +52,13 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // Optimize for faster builds and prevent memory issues
-    config.optimization = {
-      ...config.optimization,
-      sideEffects: false,
-    };
+    // Alias heavy native modules to empty stubs in the browser to avoid bundling errors
+    if (!isServer) {
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        canvas: require('path').resolve(__dirname, 'empty-module.js'),
+      };
+    }
 
     return config;
   },
