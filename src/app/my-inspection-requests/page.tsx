@@ -274,6 +274,13 @@ export default function MyInspectionRequestsPage() {
     [fetchInspections]
   );
 
+  // Derive source label
+  const getSourceBadge = (ins: any) => {
+    const src = (ins && (ins.source || ins.requestSource || ins.origin)) || '';
+    const isPublic = String(src).toLowerCase().includes('public');
+    return isPublic ? { label: 'Public', classes: 'bg-blue-100 text-blue-800 border-blue-200' } : { label: 'Marketplace', classes: 'bg-gray-100 text-gray-800 border-gray-200' };
+  };
+
   // Filter inspections
   const filteredInspections = inspections.filter((inspection) => {
     if (searchTerm) {

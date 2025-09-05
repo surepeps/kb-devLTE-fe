@@ -28,13 +28,17 @@ export default function AgentSubscriptionsPage() {
   const router = useRouter();
   const { user } = useUserContext();
   const [subscriptions, setSubscriptions] = useState<AgentSubscription[]>([]);
+  const [subscriptionsPage, setSubscriptionsPage] = useState(1);
+  const [subscriptionsTotalPages, setSubscriptionsTotalPages] = useState(1);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [transactions, setTransactions] = useState<SubscriptionTransaction[]>([]);
+  const [selectedTransaction, setSelectedTransaction] = useState<SubscriptionTransaction | null>(null);
   const activeSubscriptionFromProfile = (user as any)?.activeSubscription as
     | { _id: string; plan: string; status: string; startDate?: string; endDate?: string; subscriptionType?: string }
     | undefined;
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'plans' | 'transactions'>('subscriptions');
+  const [tabLoading, setTabLoading] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<AgentSubscription | null>(null);
   const [renewalDuration, setRenewalDuration] = useState<number>(2);
@@ -55,21 +59,27 @@ export default function AgentSubscriptionsPage() {
     }
   }, [user, router]);
 
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = async (page = 1) => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll`, token);
+      setTabLoading(true);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll?page=${page}&limit=10`);
       if (response.success) {
         setSubscriptions(response.data || []);
+        setSubscriptionsPage(response.pagination?.page || 1);
+        setSubscriptionsTotalPages(response.pagination?.totalPages || 1);
       }
     } catch (error) {
       console.error('Failed to fetch subscriptions:', error);
       toast.error('Failed to load subscriptions');
+    } finally {
+      setTabLoading(false);
     }
   };
 
   const fetchPlans = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`, token);
+      setTabLoading(true);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
       if (response.success) {
         const apiPlans = response.data || [];
         const normalized = apiPlans.map((p: any) => {
@@ -89,32 +99,36 @@ export default function AgentSubscriptionsPage() {
     } catch (error) {
       console.error('Failed to fetch plans:', error);
       setPlans([]);
+    } finally {
+      setTabLoading(false);
     }
   };
 
   const fetchTransactions = async () => {
     try {
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`, token);
+      setTabLoading(true);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`);
       if (response.success) {
         setTransactions(response.data || []);
       }
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
       toast.error('Failed to load transactions');
+    } finally {
+      setTabLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await Promise.all([fetchSubscriptions(), fetchPlans(), fetchTransactions()]);
+    const boot = async () => {
       setLoading(false);
+      if (!user || user.userType !== 'Agent') return;
+      if (activeTab === 'subscriptions') await fetchSubscriptions(1);
+      if (activeTab === 'plans') await fetchPlans();
+      if (activeTab === 'transactions') await fetchTransactions();
     };
-
-    if (user && user.userType === 'Agent') {
-      fetchData();
-    }
-  }, [user]);
+    boot();
+  }, [user, activeTab]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -278,18 +292,30 @@ export default function AgentSubscriptionsPage() {
                 { key: 'plans', label: 'Subscription Plans', icon: CreditCard },
                 { key: 'transactions', label: 'Transaction History', icon: Calendar }
               ].map(({ key, label, icon: Icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key as any)}
-                  className={`${
-                    activeTab === key
-                      ? 'border-green-500 text-green-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
-                >
-                  <Icon size={16} />
-                  {label}
-                </button>
+                <div key={key} className="flex items-center gap-2">
+                  <button
+                    onClick={() => setActiveTab(key as any)}
+                    className={`${
+                      activeTab === key
+                        ? 'border-green-500 text-green-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2`}
+                  >
+                    <Icon size={16} />
+                    {label}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (key === 'subscriptions') fetchSubscriptions(1);
+                      if (key === 'plans') fetchPlans();
+                      if (key === 'transactions') fetchTransactions();
+                    }}
+                    className={`text-xs inline-flex items-center gap-1 px-2 py-1 border rounded ${activeTab === key ? 'border-green-500 text-green-600' : 'border-gray-300 text-gray-500'}`}
+                    title="Refresh"
+                  >
+                    <RefreshCw size={12} /> Refresh
+                  </button>
+                </div>
               ))}
             </nav>
           </div>
@@ -298,7 +324,9 @@ export default function AgentSubscriptionsPage() {
         {/* Tab Content */}
         {activeTab === 'subscriptions' && (
           <div className="space-y-6">
-            {subscriptions.length === 0 ? (
+            {tabLoading ? (
+              <div className="text-center py-12 text-gray-500">Loading...</div>
+            ) : subscriptions.length === 0 ? (
               <div className="text-center py-12">
                 <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Subscriptions</h3>
@@ -374,6 +402,14 @@ export default function AgentSubscriptionsPage() {
                 ))}
               </div>
             )}
+
+            {subscriptionsTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-2">
+                <button disabled={subscriptionsPage <= 1} onClick={() => fetchSubscriptions(subscriptionsPage - 1)} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+                <span className="text-sm text-gray-600">Page {subscriptionsPage} of {subscriptionsTotalPages}</span>
+                <button disabled={subscriptionsPage >= subscriptionsTotalPages} onClick={() => fetchSubscriptions(subscriptionsPage + 1)} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+              </div>
+            )}
           </div>
         )}
 
@@ -407,20 +443,24 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
                   <div className="space-y-2">
-                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => (
-                      <div key={duration} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium">₦{Number(price).toLocaleString()}</span>
-                          <button
-                            onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-green-700 transition-colors"
-                          >
-                            Subscribe
-                          </button>
+                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => {
+                      const disabled = !!(activeSubscriptionFromProfile && activeSubscriptionFromProfile.status === 'active');
+                      return (
+                        <div key={duration} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium">₦{Number(price).toLocaleString()}</span>
+                            <button
+                              onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
+                              disabled={disabled}
+                              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
+                            >
+                              {disabled ? 'Active' : 'Subscribe'}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -484,7 +524,7 @@ export default function AgentSubscriptionsPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => router.push(`/subscription-transactions/${transaction._id}`)}
+                              onClick={() => setSelectedTransaction(transaction)}
                               className="text-green-600 hover:text-green-700"
                               title="View Details"
                             >
@@ -589,6 +629,24 @@ export default function AgentSubscriptionsPage() {
           </div>
         )}
 
+        {selectedTransaction && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Transaction Details</h3>
+              <div className="space-y-2 text-sm">
+                <div><span className="text-gray-600">Reference:</span> <span className="font-medium">{selectedTransaction.reference}</span></div>
+                <div><span className="text-gray-600">Type:</span> <span className="font-medium capitalize">{selectedTransaction.transactionType}</span></div>
+                <div><span className="text-gray-600">Amount:</span> <span className="font-medium">₦{selectedTransaction.amount.toLocaleString()}</span></div>
+                <div><span className="text-gray-600">Status:</span> <span className="font-medium capitalize">{selectedTransaction.status}</span></div>
+                <div><span className="text-gray-600">Date:</span> <span className="font-medium">{format(new Date(selectedTransaction.createdAt), 'MMM d, yyyy, h:mm a')}</span></div>
+                {selectedTransaction.paymentMode && (<div><span className="text-gray-600">Payment Mode:</span> <span className="font-medium capitalize">{selectedTransaction.paymentMode}</span></div>)}
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button onClick={() => setSelectedTransaction(null)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Close</button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Processing Overlay */}
         {isProcessingRenewal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
