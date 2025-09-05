@@ -528,43 +528,40 @@ const AgentKycForm: React.FC = () => {
                 <div className="space-y-4">
                   <h3 className="font-semibold text-[#0C1E1B]">Featured Listings</h3>
 
-                  <div className="flex gap-3 items-center">
-                    <input type="text" placeholder="Search your listings by title or id" value={listingQuery} onChange={(e) => setListingQuery(e.target.value)} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg" />
-                    <button type="button" onClick={searchListings} className="inline-flex items-center gap-2 px-4 py-2 bg-[#0B572B] text-white rounded-lg">
-                      <Search size={16} /> {isSearchingListings ? "Searching..." : "Search"}
-                    </button>
-                  </div>
+                  <Select
+                    styles={customStyles}
+                    isMulti
+                    options={agentProperties.map((p: any) => ({ value: p._id, label: p.title || p.basicInformation?.title || p._id }))}
+                    value={(formik.values.featuredListings || []).map((id: string) => {
+                      const found = agentProperties.find((p: any) => p._id === id);
+                      const label = found ? (found.title || found.basicInformation?.title || id) : id;
+                      return { value: id, label } as any;
+                    })}
+                    onChange={(selected: any) => formik.setFieldValue("featuredListings", (selected || []).map((s: any) => s.value))}
+                    placeholder="Search and select your listings"
+                    closeMenuOnSelect={false}
+                  />
 
-                  {listingResults.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {listingResults.map((l) => (
-                        <div key={l._id} className="border rounded-lg p-3 flex items-center justify-between">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {(formik.values.featuredListings || []).map((id: string) => {
+                      const p = agentProperties.find((ap: any) => ap._id === id);
+                      if (!p) return null;
+                      return (
+                        <div key={id} className="border rounded-lg p-3 flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-[#09391C]">{l.title || l._id}</div>
-                            <div className="text-sm text-[#5A5D63]">₦{(l.price || 0).toLocaleString()}</div>
+                            <div className="font-medium text-[#09391C]">{p.title || p.basicInformation?.title || p._id}</div>
+                            <div className="text-sm text-[#5A5D63]">₦{Number(p.price || p.basicInformation?.price || 0).toLocaleString()}</div>
                           </div>
-                          <div>
-                            <button type="button" onClick={() => addFeaturedListing(l._id)} className="px-3 py-1 bg-[#8DDB90] text-white rounded-lg">Add</button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => formik.setFieldValue('featuredListings', (formik.values.featuredListings || []).filter((x: string) => x !== id))}
+                            className="text-red-500"
+                          >
+                            Remove
+                          </button>
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    {(formik.values.featuredListings || []).map((id, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <input type="text" value={id} onChange={(e) => {
-                          const copy = [...(formik.values.featuredListings || [])];
-                          copy[index] = e.target.value;
-                          formik.setFieldValue("featuredListings", copy);
-                        }} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg" />
-                        <button type="button" onClick={() => removeFeaturedListing(index)} className="text-red-500">Remove</button>
-                      </div>
-                    ))}
-                    <button type="button" onClick={() => addFeaturedListing()} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
-                      <Plus size={16} /> Add Listing ID
-                    </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
