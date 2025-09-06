@@ -62,7 +62,7 @@ export default function AgentSubscriptionsPage() {
   const fetchSubscriptions = async (page = 1) => {
     try {
       setTabLoading(true);
-      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll?page=${page}&limit=10`);
+      const response = await GET_REQUEST(`${URLS.BASE}/account/subscriptions/fetchAll?page=${page}&limit=10`, token);
       if (response.success) {
         setSubscriptions(response.data || []);
         setSubscriptionsPage(response.pagination?.page || 1);
@@ -79,7 +79,7 @@ export default function AgentSubscriptionsPage() {
   const fetchPlans = async () => {
     try {
       setTabLoading(true);
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`, token);
       if (response.success) {
         const apiPlans = response.data || [];
         const normalized = apiPlans.map((p: any) => {
@@ -107,7 +107,7 @@ export default function AgentSubscriptionsPage() {
   const fetchTransactions = async () => {
     try {
       setTabLoading(true);
-      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`);
+      const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionTransactions}`, token);
       if (response.success) {
         setTransactions(response.data || []);
       }
