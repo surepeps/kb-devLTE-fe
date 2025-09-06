@@ -1,14 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
-import { GET_REQUEST, POST_REQUEST, PUT_REQUEST } from "@/utils/requests";
-import { URLS } from "@/utils/URLS";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   User as UserIcon,
   ArrowLeft as ArrowLeftIcon,
@@ -17,16 +12,12 @@ import {
   Mail as MailIcon,
   Phone as PhoneIcon,
   MapPin as MapPinIcon,
-  Calendar as CalendarIcon,
   Trash2 as Trash2Icon,
   Save as SaveIcon,
   Eye as EyeIcon,
   EyeOff as EyeOffIcon,
   AlertTriangle as AlertTriangleIcon,
   X,
-  Share2,
-  Copy,
-  ExternalLink,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import { useFormik } from "formik";
@@ -52,12 +43,11 @@ interface PasswordChangeData {
 }
 
 export default function ProfileSettingsPage() {
-  const router = useRouter();
   const { user, setUser } = useUserContext();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
-    "profile" | "password" | "account" | "share"
+    "profile" | "password" | "account"
   >("profile");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -73,9 +63,6 @@ export default function ProfileSettingsPage() {
   const [isEmailChangeRequested, setIsEmailChangeRequested] = useState(false);
   const [newEmailRequest, setNewEmailRequest] = useState<string>("");
   const [isRequestingEmailChange, setIsRequestingEmailChange] = useState(false);
-  const [inspectionPrice, setInspectionPrice] = useState<number | "">("");
-  const [inspectionPriceEnabled, setInspectionPriceEnabled] = useState(false);
-  const [isSavingInspection, setIsSavingInspection] = useState(false);
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
 
   useEffect(() => {
@@ -293,35 +280,6 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  const copyProfileLink = async () => {
-    const profileUrl = `${window.location.origin}/agent-profile/${userProfile?._id}`;
-    try {
-      await navigator.clipboard.writeText(profileUrl);
-      toast.success('Profile link copied to clipboard!');
-    } catch (error) {
-      toast.error('Failed to copy link');
-    }
-  };
-
-  const shareProfile = async () => {
-    const profileUrl = `${window.location.origin}/agent-profile/${userProfile?._id}`;
-    const shareData = {
-      title: `${userProfile?.firstName} ${userProfile?.lastName} - Khabiteq Agent`,
-      text: 'Check out my profile on Khabiteq',
-      url: profileUrl,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        copyProfileLink();
-      }
-    } else {
-      copyProfileLink();
-    }
-  };
-
   if (isLoading) {
     return <Loading />;
   }
@@ -375,7 +333,6 @@ export default function ProfileSettingsPage() {
             {[
               { id: "profile", label: "Profile Details", icon: UserIcon },
               { id: "password", label: "Change Password", icon: LockIcon },
-              { id: "share", label: "Share Profile", icon: Share2 },
               {
                 id: "account",
                 label: "Account Settings",
@@ -759,66 +716,6 @@ export default function ProfileSettingsPage() {
               </div>
             )}
 
-            {/* Share Profile Tab */}
-            {activeTab === "share" && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-[#09391C] mb-2">Share Your Profile</h3>
-                  <p className="text-sm text-[#5A5D63] mb-6">Manage your public access and share your profile with clients</p>
-                </div>
-
-                {/* Public Access Toggle and Slug */}
-                <div className="bg-white border border-gray-200 rounded-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-[#09391C]">Public Access</h4>
-                      <p className="text-sm text-[#5A5D63]">Make your profile publicly accessible via a shareable link</p>
-                    </div>
-                    <div>
-                      <label className="inline-flex items-center cursor-pointer select-none">
-                        <input type="checkbox" className="sr-only peer" defaultChecked={Boolean((user as any)?.publicUrl || (user as any)?.publicProfileUrl)} onChange={(e)=>{ /* noop - wired to API in real implementation */ }} />
-                        <div className="w-12 h-6 bg-gray-200 rounded-full relative transition-colors peer-checked:bg-emerald-500">
-                          <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${((user as any)?.publicUrl || (user as any)?.publicProfileUrl) ? 'translate-x-5' : ''}`}/>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                    <div>
-                      <label className="text-sm font-medium text-[#09391C] mb-1 block">Public URL Slug</label>
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-2 bg-gray-100 text-sm rounded-l-lg border border-r-0 text-[#5A5D63]">{typeof window !== 'undefined' ? window.location.origin : 'https://khabiteq.com'}/agent/</span>
-                        <input type="text" defaultValue={(user as any)?.publicProfileUrl || ''} className="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-[#8DDB90]" />
-                      </div>
-                      <p className="text-xs text-[#5A5D63] mt-2">Choose a memorable slug (e.g. john-doe). Only letters, numbers, hyphens allowed.</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="text-sm text-[#09391C]">Preview</div>
-                      <div className="px-4 py-2 bg-gray-50 rounded-lg text-sm text-[#5A5D63] break-all">{(user as any)?.publicUrl || `${typeof window !== 'undefined' ? window.location.origin : 'https://khabiteq.com'}/agent/${(user as any)?._id}`}</div>
-                      <div className="flex gap-2 mt-2">
-                        <button onClick={copyProfileLink} className="px-3 py-2 bg-[#8DDB90] text-white rounded-lg text-sm inline-flex items-center gap-2"><Copy size={14} /> Copy</button>
-                        <button onClick={shareProfile} className="px-3 py-2 border border-gray-200 rounded-lg text-sm inline-flex items-center gap-2"><Share2 size={14} /> Share</button>
-                        <a href={`/agent-profile/${userProfile?._id}`} target="_blank" rel="noreferrer" className="px-3 py-2 bg-[#09391C] text-white rounded-lg text-sm inline-flex items-center gap-2"><ExternalLink size={14} /> View</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Helpful tips */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">💡 Tips for sharing</h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Keep your slug short and professional</li>
-                    <li>• Share your public link on social profiles and email signature</li>
-                    <li>• Toggle public access off if you no longer want your profile public</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-
             {/* Account Settings Tab */}
             {activeTab === "account" && (
               <div className="space-y-6">
@@ -855,40 +752,6 @@ export default function ProfileSettingsPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Agent Inspection Fee */}
-                {userProfile.userType === "Agent" && (
-                  <div className="border border-emerald-200 rounded-lg p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold text-[#09391C] mb-1">Inspection Fee</h3>
-                        <p className="text-sm text-[#5A5D63]">Set your inspection fee and enable it for clients to book inspection services</p>
-                      </div>
-                      <div className="text-sm text-[#5A5D63]">Current status: <strong className="text-emerald-700">{inspectionPriceEnabled ? 'Enabled' : 'Disabled'}</strong></div>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                      <div>
-                        <label className="block text-sm font-medium text-[#09391C] mb-1">Price (₦)</label>
-                        <input type="number" min={0} value={inspectionPrice} onChange={(e)=>setInspectionPrice(e.target.value === '' ? '' : Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent" placeholder="e.g. 5000" />
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <label className="inline-flex items-center cursor-pointer select-none">
-                          <input type="checkbox" className="sr-only peer" checked={inspectionPriceEnabled} onChange={(e)=>setInspectionPriceEnabled(e.target.checked)} />
-                          <div className="w-12 h-6 bg-gray-200 rounded-full relative transition-colors peer-checked:bg-emerald-500">
-                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${inspectionPriceEnabled ? 'translate-x-5' : ''}`}/>
-                          </div>
-                          <span className="ml-3 text-sm text-[#09391C]">Enable</span>
-                        </label>
-                      </div>
-
-                      <div>
-                        <button onClick={async ()=>{ try { setIsSavingInspection(true); const token = Cookies.get('token'); const res = await PUT_REQUEST(`${URLS.BASE}${URLS.accountSettingsBaseUrl}/updateInspectionFee`, { inspectionPrice: inspectionPrice === '' ? 0 : inspectionPrice, inspectionPriceEnabled }, token); if ((res as any)?.success) { toast.success('Inspection fee updated'); } else { toast.error((res as any)?.message || 'Update failed'); } } catch { toast.error('Update failed'); } finally { setIsSavingInspection(false); } }} disabled={isSavingInspection} className="w-full sm:w-auto px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors disabled:opacity-50">{isSavingInspection ? 'Saving...' : 'Save'}</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Account Deletion Section */}
                 <div className="border border-red-200 rounded-lg p-6">
