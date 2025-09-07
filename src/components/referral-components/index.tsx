@@ -89,80 +89,110 @@ const ReferralPage = () => {
   });
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
   const [referralCode, setReferralCode] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [shareLoaded, setShareLoaded] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+
+  // Prefer referral code from profile
+  useEffect(() => {
+    const preferred = (user as any)?.referralCode;
+    if (preferred) {
+      setReferralCode(preferred);
+    } else if (!preferred && !referralCode) {
+      const fallback = user?.email
+        ? `${user.email.split('@')[0].toUpperCase()}2024`
+        : `${(user?.firstName || 'USER').toUpperCase()}2024`;
+      setReferralCode(fallback);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const fetchStats = async () => {
+    setIsLoading(true);
+    try {
+      const token = Cookies.get('token');
+      const statsResp = await GET_REQUEST<ReferralStatsApiResponse>(`${URLS.BASE}/account/referrals/stats`, token);
+      const stats = (statsResp && statsResp.success && statsResp.data) ? statsResp.data : ({} as ReferralStatsApiResponse);
+      setReferralStats((prev) => ({
+        ...prev,
+        totalReferred: Number(stats.totalReferred || 0),
+        totalEarnings: Number(stats.totalEarnings || 0),
+        completedReferrals: Number(stats.totalApprovedReffered || 0),
+        thisMonthEarnings: Number(stats.totalEarningsThisMonth || 0),
+      }));
+      if (!(user as any)?.referralCode && stats.code) {
+        setReferralCode(stats.code);
+      }
+      setShareLoaded(true);
+    } catch (error) {
+      toast.error('Failed to load referral stats');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchRecordsAndStats = async () => {
+    setIsLoading(true);
+    try {
+      const token = Cookies.get('token');
+      const [statsResp, recordsResp] = await Promise.all([
+        GET_REQUEST<ReferralStatsApiResponse>(`${URLS.BASE}/account/referrals/stats`, token),
+        GET_REQUEST<{ success: boolean; data: ReferralRecordItem[]; pagination?: any }>(`${URLS.BASE}/account/referrals/records?page=1&limit=50`, token),
+      ]);
+      const stats = (statsResp && statsResp.success && statsResp.data) ? statsResp.data : ({} as ReferralStatsApiResponse);
+      const records = (recordsResp && (recordsResp as any).data && Array.isArray((recordsResp as any).data))
+        ? ((recordsResp as any).data as ReferralRecordItem[])
+        : [];
+      const pendingFromLogs = records.reduce((sum, item) => {
+        const pendingSum = (item.logs || []).reduce((s, log) => s + (log.rewardStatus === 'pending' ? Number(log.rewardAmount || 0) : 0), 0);
+        return sum + pendingSum;
+      }, 0);
+      setReferralStats({
+        totalReferred: Number(stats.totalReferred || 0),
+        totalEarnings: Number(stats.totalEarnings || 0),
+        pendingEarnings: Number(pendingFromLogs || 0),
+        completedReferrals: Number(stats.totalApprovedReffered || 0),
+        thisMonthEarnings: Number(stats.totalEarningsThisMonth || 0),
+      });
+      const mappedUsers: ReferredUser[] = records.map((item) => {
+        const u = item.referredUser || ({} as ReferralRecordItem['referredUser']);
+        const fullName = u.fullName || [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown User';
+        const earliestLog = (item.logs || []).slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0];
+        const hasGranted = (item.logs || []).some((l) => l.rewardStatus === 'granted');
+        const status: ReferredUser['status'] = hasGranted ? 'completed' : (u.isAccountVerified ? 'verified' : 'pending');
+        const userType = (u.userType === 'Agent' || u.userType === 'FieldAgent' || u.userType === 'Landowner') ? u.userType : 'Agent';
+        return {
+          id: u._id || Math.random().toString(36).slice(2),
+          name: fullName,
+          email: u.email || '',
+          dateReferred: earliestLog ? earliestLog.createdAt : new Date().toISOString(),
+          status,
+          earnings: Number(item.totalRewards || 0),
+          userType,
+        };
+      });
+      setReferredUsers(mappedUsers);
+      if (!(user as any)?.referralCode && stats.code) {
+        setReferralCode(stats.code);
+      }
+      setHistoryLoaded(true);
+    } catch (error) {
+      toast.error('Failed to load referral history');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchReferralData = async () => {
-      setIsLoading(true);
-      try {
-        const token = Cookies.get('token');
-
-        // Fetch stats
-        const statsResp = await GET_REQUEST<ReferralStatsApiResponse>(`${URLS.BASE}/account/referrals/stats`, token);
-        const stats = (statsResp && statsResp.success && statsResp.data) ? statsResp.data : {} as ReferralStatsApiResponse;
-
-        // Fetch records (first page)
-        const recordsResp = await GET_REQUEST<{ success: boolean; data: ReferralRecordItem[]; pagination?: any }>(
-          `${URLS.BASE}/account/referrals/records?page=1&limit=50`,
-          token,
-        );
-        const records = (recordsResp && (recordsResp as any).data && Array.isArray((recordsResp as any).data))
-          ? (recordsResp as any).data as ReferralRecordItem[]
-          : [];
-
-        // Compute pending earnings from logs (sum of pending rewardAmount)
-        const pendingFromLogs = records.reduce((sum, item) => {
-          const pendingSum = (item.logs || []).reduce((s, log) => s + (log.rewardStatus === 'pending' ? Number(log.rewardAmount || 0) : 0), 0);
-          return sum + pendingSum;
-        }, 0);
-
-        setReferralStats({
-          totalReferred: Number(stats.totalReferred || 0),
-          totalEarnings: Number(stats.totalEarnings || 0),
-          pendingEarnings: Number(pendingFromLogs || 0),
-          completedReferrals: Number(stats.totalApprovedReffered || 0),
-          thisMonthEarnings: Number(stats.totalEarningsThisMonth || 0),
-        });
-
-        // Map referred users for table
-        const mappedUsers: ReferredUser[] = records.map((item) => {
-          const u = item.referredUser || ({} as ReferralRecordItem['referredUser']);
-          const fullName = u.fullName || [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown User';
-          const earliestLog = (item.logs || []).slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0];
-          const hasGranted = (item.logs || []).some((l) => l.rewardStatus === 'granted');
-          const status: ReferredUser['status'] = hasGranted ? 'completed' : (u.isAccountVerified ? 'verified' : 'pending');
-          const userType = (u.userType === 'Agent' || u.userType === 'FieldAgent' || u.userType === 'Landowner') ? u.userType : 'Agent';
-          return {
-            id: u._id || Math.random().toString(36).slice(2),
-            name: fullName,
-            email: u.email || '',
-            dateReferred: earliestLog ? earliestLog.createdAt : new Date().toISOString(),
-            status,
-            earnings: Number(item.totalRewards || 0),
-            userType,
-          };
-        });
-        setReferredUsers(mappedUsers);
-
-        // Build referral code
-        const fallbackCode = user?.email
-          ? `${user.email.split('@')[0].toUpperCase()}2024`
-          : `${(user?.firstName || 'USER').toUpperCase()}2024`;
-        setReferralCode(((stats as any).code as string) || fallbackCode);
-      } catch (error) {
-        console.error('Failed to fetch referral data:', error);
-        toast.error('Failed to load referral data');
-        const fallbackCode = user?.email
-          ? `${user.email.split('@')[0].toUpperCase()}2024`
-          : `${(user?.firstName || 'USER').toUpperCase()}2024`;
-        setReferralCode(fallbackCode);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchReferralData();
-  }, [user]);
+    if (!user) return;
+    if (selectedOption === 'Share Invite' && !shareLoaded) {
+      fetchStats();
+    }
+    if (selectedOption === 'Reward History' && !historyLoaded) {
+      fetchRecordsAndStats();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOption, user]);
 
   const copyReferralLink = async () => {
     const referralLink = `https://khabiteq.com/auth/register?ref=${referralCode}`;

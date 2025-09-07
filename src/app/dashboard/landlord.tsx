@@ -271,8 +271,8 @@ export default function LandlordDashboard() {
             <div className="p-4 border rounded-lg">
               <div className="text-xs text-gray-500 mb-1">Referral Code</div>
               <div className="flex items-center gap-2">
-                <code className="font-mono text-gray-900 text-base">{(user?.email ? `${user.email.split('@')[0].toUpperCase()}2024` : 'KHABITEQ2024')}</code>
-                <button onClick={async () => { try { await navigator.clipboard.writeText(user?.email ? `${user.email.split('@')[0].toUpperCase()}2024` : 'KHABITEQ2024'); toast.success('Copied'); } catch { toast.error('Copy failed'); } }} className="p-2 rounded bg-gray-50 hover:bg-gray-100" aria-label="Copy referral code">📋</button>
+                <code className="font-mono text-gray-900 text-base">{((user as any)?.referralCode || (user?.email ? `${user.email.split('@')[0].toUpperCase()}2024` : 'KHABITEQ2024'))}</code>
+                <button onClick={async () => { try { await navigator.clipboard.writeText(((user as any)?.referralCode || (user?.email ? `${user.email.split('@')[0].toUpperCase()}2024` : 'KHABITEQ2024'))); toast.success('Copied'); } catch { toast.error('Copy failed'); } }} className="p-2 rounded bg-gray-50 hover:bg-gray-100" aria-label="Copy referral code">📋</button>
               </div>
             </div>
             <div className="p-4 border rounded-lg">
