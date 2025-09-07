@@ -20,7 +20,7 @@ import { useUserContext } from "@/context/user-context";
 import { POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
 import CustomToast from "@/components/general-components/CustomToast";
@@ -44,6 +44,8 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const referralFromUrl = (searchParams.get("ref") || searchParams.get("referral") || "").trim();
   const [agreed, setAgreed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -83,6 +85,7 @@ const Register = () => {
       .max(15, "Phone number must be at most 15 digits")
       .required("Phone number is required"),
     userType: Yup.string().required("Please select account type"),
+    referralCode: Yup.string().optional(),
   });
 
   const formik = useFormik({
@@ -94,7 +97,9 @@ const Register = () => {
     phone: "",
     confirmPassword: "",
     userType: "",
+    referralCode: referralFromUrl,
   },
+  enableReinitialize: true,
   validationSchema,
   onSubmit: async (values) => {
     setIsDisabled(true);
@@ -109,6 +114,7 @@ const Register = () => {
             ...payload,
             phoneNumber: String(values.phone),
             userType: values.userType,
+            ...(values.referralCode ? { referralCode: values.referralCode } : {}),
           });
 
           if (response.success) {
@@ -166,6 +172,7 @@ const Register = () => {
         const response = await POST_REQUEST(url, {
           idToken: codeResponse.code,
           userType: formik.values.userType,
+          ...(formik.values.referralCode ? { referralCode: formik.values.referralCode } : {}),
         });
 
         if (response.success) {
@@ -249,6 +256,7 @@ const Register = () => {
                     firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
                     userType: formik.values.userType,
+                    ...(formik.values.referralCode ? { referralCode: formik.values.referralCode } : {}),
                   };
 
                   const result = await POST_REQUEST(url, payload);
@@ -486,6 +494,13 @@ const Register = () => {
               icon={mailIcon}
               type="email"
               placeholder="Enter your email"
+            />
+            <InputField
+              formik={formik}
+              label="Referral code (optional)"
+              name="referralCode"
+              type="text"
+              placeholder="Enter referral code"
             />
             <InputField
               formik={formik}
