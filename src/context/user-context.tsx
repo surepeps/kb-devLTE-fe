@@ -28,6 +28,20 @@ export interface User {
   userType?: "Agent" | "Landowners" | "FieldAgent";
   accountId?: string;
   profile_picture?: string;
+  referralCode?: string;
+  isAccountVerified?: boolean;
+  activeSubscription?: {
+    _id: string;
+    user: string;
+    plan: string;
+    status: "active" | "inactive" | string;
+    startDate: string;
+    endDate: string;
+    transaction?: string;
+    autoRenew?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+  } | null;
   address?: {
     localGovtArea: string;
     city: string;
