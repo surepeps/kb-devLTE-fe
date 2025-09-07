@@ -75,6 +75,13 @@ export default function AgentDashboard() {
   const [referral, setReferral] = useState({ code: "", totalReferred: 0, points: 0, earnings: 0 });
 
   useEffect(() => {
+    const preferred = (user as any)?.referralCode;
+    if (preferred) {
+      setReferral((prev) => ({ ...prev, code: preferred }));
+    }
+  }, [user]);
+
+  useEffect(() => {
     fetchDashboardData();
     fetchReferralData();
   }, [user, router]);
