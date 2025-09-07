@@ -132,7 +132,7 @@ const ReferralPage = () => {
   }, [user]);
 
   const copyReferralLink = async () => {
-    const referralLink = `https://khabiteq.com/register?ref=${referralCode}`;
+    const referralLink = `https://khabiteq.com/auth/register?ref=${referralCode}`;
     try {
       await navigator.clipboard.writeText(referralLink);
       toast.success('Referral link copied to clipboard!');
@@ -142,7 +142,7 @@ const ReferralPage = () => {
   };
 
   const shareReferralLink = async () => {
-    const referralLink = `https://khabiteq.com/register?ref=${referralCode}`;
+    const referralLink = `https://khabiteq.com/auth/register?ref=${referralCode}`;
     const shareData = {
       title: 'Join Khabiteq with my referral link',
       text: 'Get verified properties and trusted agents on Khabiteq. Sign up with my referral link and let\'s both earn rewards!',
