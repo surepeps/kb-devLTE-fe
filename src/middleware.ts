@@ -68,6 +68,12 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith("/agent/auth/register")) {
     return NextResponse.redirect(new URL("/auth/register", request.url));
   }
+  // Redirect legacy /register to /auth/register while preserving query params (e.g., ?ref=...)
+  if (pathname === "/register" || pathname.startsWith("/register/")) {
+    const target = new URL("/auth/register", request.url);
+    target.search = request.nextUrl.search;
+    return NextResponse.redirect(target);
+  }
 
   // Handle auth redirections for logged-in users
   if (userToken) {
