@@ -75,6 +75,13 @@ export default function AgentDashboard() {
   const [referral, setReferral] = useState({ code: "", totalReferred: 0, points: 0, earnings: 0 });
 
   useEffect(() => {
+    const preferred = (user as any)?.referralCode;
+    if (preferred) {
+      setReferral((prev) => ({ ...prev, code: preferred }));
+    }
+  }, [user]);
+
+  useEffect(() => {
     fetchDashboardData();
     fetchReferralData();
   }, [user, router]);
@@ -112,8 +119,9 @@ export default function AgentDashboard() {
       const response = await GET_REQUEST<any>(`${URLS.BASE}/account/referrals/stats`, token);
       if (response?.success && response.data) {
         const data = response.data as any;
+        const preferredCode = (user as any)?.referralCode;
         setReferral({
-          code: (data.code || "").toString(),
+          code: (preferredCode || data.code || "").toString(),
           totalReferred: Number(data.totalReferred || 0),
           points: Number(data.points || 0),
           earnings: Number(data.earnings || 0),
@@ -123,11 +131,16 @@ export default function AgentDashboard() {
     } catch (e) {
       // ignore and use fallback
     }
-    const email = (user as any)?.email || "";
-    const fallbackCode = email
-      ? `${email.split("@")[0].toUpperCase()}2024`
-      : `${(user?.firstName || "USER").toUpperCase()}2024`;
-    setReferral((prev) => ({ ...prev, code: fallbackCode }));
+    const preferredCode = (user as any)?.referralCode;
+    if (preferredCode) {
+      setReferral((prev) => ({ ...prev, code: preferredCode }));
+    } else {
+      const email = (user as any)?.email || "";
+      const fallbackCode = email
+        ? `${email.split("@")[0].toUpperCase()}2024`
+        : `${(user?.firstName || "USER").toUpperCase()}2024`;
+      setReferral((prev) => ({ ...prev, code: fallbackCode }));
+    }
   };
 
   if (isLoading) {
@@ -205,6 +218,27 @@ export default function AgentDashboard() {
               Marketplace
             </Link>
           </div>
+        </div>
+
+        {/* Account Badges */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(() => {
+            const sub = (user as any)?.activeSubscription;
+            const isVerified = !!(user as any)?.isAccountVerified;
+            const daysLeft = sub?.endDate ? Math.max(0, Math.ceil((new Date(sub.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+            return (
+              <>
+                {sub?.plan && sub?.status === 'active' && (
+                  <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium">
+                    Plan: {sub.plan} • {daysLeft} days left
+                  </span>
+                )}
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${isVerified ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'}`}>
+                  {isVerified ? 'Verified account' : 'Unverified account'}
+                </span>
+              </>
+            );
+          })()}
         </div>
 
         {/* Notices */}
