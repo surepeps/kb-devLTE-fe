@@ -18,6 +18,9 @@ import {
   CheckCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
+import { GET_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 import { useUserContext } from '@/context/user-context';
 
 interface ReferredUser {
@@ -38,6 +41,42 @@ interface ReferralStats {
   thisMonthEarnings: number;
 }
 
+// API response types
+interface ReferralStatsApiResponse {
+  totalReferred?: number;
+  totalEarnings?: number;
+  totalEarningsThisMonth?: number;
+  totalApprovedReffered?: number;
+  totalPendingReffered?: number;
+  totalSubscribedReferred?: number;
+  code?: string;
+}
+
+interface ReferralRecordLog {
+  _id: string;
+  rewardType: string;
+  rewardAmount: number;
+  rewardStatus: 'pending' | 'granted' | string;
+  triggerAction?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ReferralRecordItem {
+  referredUser: {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    fullName?: string;
+    email?: string;
+    userType?: 'Agent' | 'FieldAgent' | 'Landowner' | string;
+    accountStatus?: string;
+    isAccountVerified?: boolean;
+  };
+  logs: ReferralRecordLog[];
+  totalRewards?: number;
+}
+
 const ReferralPage = () => {
   const { user } = useUserContext();
   const [selectedOption, setSelectedOption] = useState<'Share Invite' | 'Reward History'>('Share Invite');
@@ -52,77 +91,71 @@ const ReferralPage = () => {
   const [referralCode, setReferralCode] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data - replace with actual API calls
   useEffect(() => {
     const fetchReferralData = async () => {
       setIsLoading(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock referral code
-        setReferralCode(user?.email ? user.email.split('@')[0].toUpperCase() + '2024' : 'KHABITEQ2024');
-        
-        // Mock stats
+        const token = Cookies.get('token');
+
+        // Fetch stats
+        const statsResp = await GET_REQUEST<ReferralStatsApiResponse>(`${URLS.BASE}/account/referrals/stats`, token);
+        const stats = (statsResp && statsResp.success && statsResp.data) ? statsResp.data : {} as ReferralStatsApiResponse;
+
+        // Fetch records (first page)
+        const recordsResp = await GET_REQUEST<{ success: boolean; data: ReferralRecordItem[]; pagination?: any }>(
+          `${URLS.BASE}/account/referrals/records?page=1&limit=50`,
+          token,
+        );
+        const records = (recordsResp && (recordsResp as any).data && Array.isArray((recordsResp as any).data))
+          ? (recordsResp as any).data as ReferralRecordItem[]
+          : [];
+
+        // Compute pending earnings from logs (sum of pending rewardAmount)
+        const pendingFromLogs = records.reduce((sum, item) => {
+          const pendingSum = (item.logs || []).reduce((s, log) => s + (log.rewardStatus === 'pending' ? Number(log.rewardAmount || 0) : 0), 0);
+          return sum + pendingSum;
+        }, 0);
+
         setReferralStats({
-          totalReferred: 8,
-          totalEarnings: 45000,
-          pendingEarnings: 8500,
-          completedReferrals: 6,
-          thisMonthEarnings: 12000,
+          totalReferred: Number(stats.totalReferred || 0),
+          totalEarnings: Number(stats.totalEarnings || 0),
+          pendingEarnings: Number(pendingFromLogs || 0),
+          completedReferrals: Number(stats.totalApprovedReffered || 0),
+          thisMonthEarnings: Number(stats.totalEarningsThisMonth || 0),
         });
 
-        // Mock referred users
-        setReferredUsers([
-          {
-            id: '1',
-            name: 'John Doe',
-            email: 'john.doe@email.com',
-            dateReferred: '2024-01-15',
-            status: 'completed',
-            earnings: 7500,
-            userType: 'Agent',
-          },
-          {
-            id: '2', 
-            name: 'Jane Smith',
-            email: 'jane.smith@email.com',
-            dateReferred: '2024-01-10',
-            status: 'verified',
-            earnings: 5000,
-            userType: 'Landowner',
-          },
-          {
-            id: '3',
-            name: 'Mike Johnson', 
-            email: 'mike.johnson@email.com',
-            dateReferred: '2024-01-05',
-            status: 'pending',
-            earnings: 0,
-            userType: 'Agent',
-          },
-          {
-            id: '4',
-            name: 'Sarah Wilson',
-            email: 'sarah.wilson@email.com', 
-            dateReferred: '2024-01-20',
-            status: 'completed',
-            earnings: 10000,
-            userType: 'FieldAgent',
-          },
-          {
-            id: '5',
-            name: 'David Brown',
-            email: 'david.brown@email.com',
-            dateReferred: '2024-01-25', 
-            status: 'verified',
-            earnings: 3500,
-            userType: 'Landowner',
-          },
-        ]);
+        // Map referred users for table
+        const mappedUsers: ReferredUser[] = records.map((item) => {
+          const u = item.referredUser || ({} as ReferralRecordItem['referredUser']);
+          const fullName = u.fullName || [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown User';
+          const earliestLog = (item.logs || []).slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0];
+          const hasGranted = (item.logs || []).some((l) => l.rewardStatus === 'granted');
+          const status: ReferredUser['status'] = hasGranted ? 'completed' : (u.isAccountVerified ? 'verified' : 'pending');
+          const userType = (u.userType === 'Agent' || u.userType === 'FieldAgent' || u.userType === 'Landowner') ? u.userType : 'Agent';
+          return {
+            id: u._id || Math.random().toString(36).slice(2),
+            name: fullName,
+            email: u.email || '',
+            dateReferred: earliestLog ? earliestLog.createdAt : new Date().toISOString(),
+            status,
+            earnings: Number(item.totalRewards || 0),
+            userType,
+          };
+        });
+        setReferredUsers(mappedUsers);
+
+        // Build referral code
+        const fallbackCode = user?.email
+          ? `${user.email.split('@')[0].toUpperCase()}2024`
+          : `${(user?.firstName || 'USER').toUpperCase()}2024`;
+        setReferralCode(((stats as any).code as string) || fallbackCode);
       } catch (error) {
         console.error('Failed to fetch referral data:', error);
         toast.error('Failed to load referral data');
+        const fallbackCode = user?.email
+          ? `${user.email.split('@')[0].toUpperCase()}2024`
+          : `${(user?.firstName || 'USER').toUpperCase()}2024`;
+        setReferralCode(fallbackCode);
       } finally {
         setIsLoading(false);
       }
