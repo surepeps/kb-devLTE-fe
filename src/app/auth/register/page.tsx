@@ -181,19 +181,7 @@ const Register = () => {
 
           toast.success("Authentication successful via Google!");
 
-          const userPayload = response.data.user;
-
-          if (userPayload.userType === "Agent") {
-            if (!userPayload.agentData?.agentType) {
-              router.push("/agent-onboard");
-            } else if (userPayload.accountApproved === false) {
-              router.push("/agent-under-review");
-            } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
-              router.push("/dashboard");
-            }
-          } else {
-            router.push("/dashboard");
-          }
+          router.push("/dashboard");
 
         } else if (response.error) {
           toast.error(response.error);
@@ -267,19 +255,7 @@ const Register = () => {
 
                     toast.success("Authentication successful via Facebook!");
 
-                    const userPayload = result.data.user;
-
-                    if (userPayload.userType === "Agent") {
-                      if (!userPayload.agentData?.agentType) {
-                        router.push("/agent-onboard");
-                      } else if (userPayload.accountApproved === false) {
-                        router.push("/agent-under-review");
-                      } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
-                        router.push("/dashboard");
-                      }
-                    } else {
-                      router.push("/dashboard");
-                    }
+                    router.push("/dashboard");
 
                   } else if (response.error) {
                     toast.error(response.error);

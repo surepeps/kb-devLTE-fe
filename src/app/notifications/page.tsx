@@ -273,8 +273,8 @@ const NotificationsPage: React.FC = () => {
     <CombinedAuthGuard
       requireAuth={true} // User must be logged in
       allowedUserTypes={["Agent", "Landowners", "FieldAgent"]} // Only these user types can access
-      requireAgentOnboarding={true} // If an agent, require onboarding
-      requireAgentApproval={true} // If an agent, require approval
+      requireAgentOnboarding={false} // If an agent, require onboarding
+      requireAgentApproval={false} // If an agent, require approval
       agentCustomMessage="You must complete onboarding and be approved before you view notifications."
     >
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">

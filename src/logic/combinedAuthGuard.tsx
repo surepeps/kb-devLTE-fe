@@ -174,7 +174,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
             "You need to complete your agent onboarding process before accessing this feature."
           }
           actionLabel="Complete Onboarding"
-          actionHref="/agent-onboard"
+          actionHref="/agent-kyc"
           bgColor="bg-white"
           iconColor="bg-orange-50"
         />
