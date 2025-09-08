@@ -329,7 +329,11 @@ const AgentKycForm: React.FC = () => {
             onSubmit={formik.handleSubmit}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                e.preventDefault();
+                const target = e.target as HTMLElement;
+                const tag = (target?.tagName || "").toLowerCase();
+                if (tag !== "textarea") {
+                  e.preventDefault();
+                }
               }
             }}
             className="p-6 space-y-8"
