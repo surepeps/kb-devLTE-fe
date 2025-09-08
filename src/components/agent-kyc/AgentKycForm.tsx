@@ -282,6 +282,11 @@ const AgentKycForm: React.FC = () => {
     </label>
   );
 
+  const kycStatus = (user as any)?.agentData?.kycStatus as string | undefined;
+  if (kycStatus === "pending" || kycStatus === "in_review") {
+    return <PendingKycReview />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <Preloader isVisible={isUploading} message="Uploading file..." />
