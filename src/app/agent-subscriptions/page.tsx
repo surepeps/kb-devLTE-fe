@@ -567,11 +567,26 @@ export default function AgentSubscriptionsPage() {
                   onChange={(e) => setRenewalDuration(parseInt(e.target.value))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  {Object.entries(((plans as any).find((p: any) => p?.raw?.code === selectedSubscription.subscriptionType) || (plans as any).find((p: any) => p?.name === (selectedSubscription as any)?.plan) || plans[0] || { prices: {} }).prices || {}).map(([duration, price]) => (
-                    <option key={duration} value={duration}>
-                      {duration} month{parseInt(duration) > 1 ? 's' : ''} - ₦{price.toLocaleString()}
-                    </option>
-                  ))}
+                  {Object.entries(
+                    (
+                      (plans as any).find(
+                        (p: any) => p?.raw?.code === selectedSubscription.subscriptionType
+                      ) ||
+                      (plans as any).find(
+                        (p: any) => p?.name === (selectedSubscription as any)?.plan
+                      ) ||
+                      plans[0] ||
+                      { prices: {} }
+                    ).prices || {}
+                  ).map(([duration, price]) => {
+                    const formattedPrice = (price as number) || 0; // 👈 assert as number
+                    return (
+                      <option key={duration} value={duration}>
+                        {duration} month{parseInt(duration) > 1 ? 's' : ''} - ₦
+                        {formattedPrice.toLocaleString()}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 

@@ -37,7 +37,6 @@ const userProtectedRoutes = [
   "/post-property",
   "/payment-details",
   "/my-inspection-requests",
-  "/agent-onboard",
   "/update-property",
   "/update-preference",
   "/referral",

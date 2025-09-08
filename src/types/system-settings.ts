@@ -35,6 +35,11 @@ export interface HomePageSettings {
   agent_marketplace_video_url?: string;
   subscription_plan_video_url?: string;
   post_property_video_url?: string;
+  document_verification_thumbnail_url?: string;
+  submit_preference_thumbnail_url?: string;
+  agent_marketplace_thumbnail_url?: string;
+  subscription_plan_thumbnail_url?: string;
+  post_property_thumbnail_url?: string; 
 }
 
 export interface DocumentVerificationSettings {

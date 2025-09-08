@@ -8,13 +8,13 @@ import FeatureCard from './FeatureCard';
 
 const KeyFeaturesSection = () => {
   const { settings: homePageSettings, loading } = useHomePageSettings();
-
+ 
   const features = [
     {
       id: 1,
       title: "Document Verification",
       description: "Verify property ownership and documents.",
-      videoThumbnail: "/placeholder-property.svg",
+      videoThumbnail: homePageSettings.document_verification_thumbnail_url || "/placeholder-property.svg",
       videoUrl: homePageSettings.document_verification_video_url,
       link: "/document-verification",
       icon: (
@@ -28,7 +28,7 @@ const KeyFeaturesSection = () => {
       id: 2,
       title: "Submit Your Preference",
       description: "Share requirements, we'll match you.",
-      videoThumbnail: "/placeholder-property.svg",
+      videoThumbnail: homePageSettings.submit_preference_thumbnail_url || "/placeholder-property.svg",
       videoUrl: homePageSettings.submit_preference_video_url,
       link: "/preference",
       icon: (
@@ -42,7 +42,7 @@ const KeyFeaturesSection = () => {
       id: 3,
       title: "Agent Marketplace",
       description: "Access verified client preferences matching your listings.",
-      videoThumbnail: "/placeholder-property.svg",
+      videoThumbnail: homePageSettings.agent_marketplace_thumbnail_url || "/placeholder-property.svg",
       videoUrl: homePageSettings.agent_marketplace_video_url,
       link: "/agent-marketplace",
       icon: (
@@ -56,7 +56,7 @@ const KeyFeaturesSection = () => {
       id: 4,
       title: "Subscription Plans",
       description: "Unlock premium tools for agents and landlords.",
-      videoThumbnail: "/placeholder-property.svg",
+      videoThumbnail: homePageSettings.subscription_plan_thumbnail_url || "/placeholder-property.svg",
       videoUrl: homePageSettings.subscription_plan_video_url,
       link: "/agent-subscriptions",
       icon: (
@@ -70,7 +70,7 @@ const KeyFeaturesSection = () => {
       id: 5,
       title: "Post a Property",
       description: "List your property for sale or rent in minutes.",
-      videoThumbnail: "/placeholder-property.svg",
+      videoThumbnail: homePageSettings.post_property_thumbnail_url || "/placeholder-property.svg",
       videoUrl: homePageSettings.post_property_video_url,
       link: "/post-property",
       icon: (
@@ -118,7 +118,7 @@ const KeyFeaturesSection = () => {
               {firstRow.length > 0 && (
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12'>
                   {firstRow.map((feature, index) => (
-                    <FeatureCard
+                    <FeatureCard 
                       key={feature.id}
                       feature={feature}
                       index={index}
