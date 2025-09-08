@@ -32,8 +32,8 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
   requireAuth = false,
   allowedUserTypes = [],
   redirectTo = "/auth/login",
-  requireAgentOnboarding = true,
-  requireAgentApproval = true,
+  requireAgentOnboarding = false,
+  requireAgentApproval = false,
   // New props with defaults
   requireVerifiedAgent = false,
   allowFreeAgents = true,
@@ -51,12 +51,12 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
     const agentData = user.agentData || (user as any).agentState;
 
     // If user has active subscription and completed verification
-    if (agentData?.hasActiveSubscription && agentData?.isKYCCompleted) {
+    if (user?.activeSubscription && agentData?.kycStatus == "none") {
       return "verified";
     }
 
     // If user had subscription but it expired
-    if (agentData?.hasActiveSubscription === false && agentData?.isKYCCompleted) {
+    if (!user?.activeSubscription === false && agentData?.kycStatus == "none") {
       return "expired";
     }
 
@@ -213,7 +213,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
               "This feature is only available to verified agents. Upgrade your account to unlock premium features."
             }
             actionLabel="Upgrade to Verified Agent"
-            actionHref="/agent-upgrade"
+            actionHref="/agent-kyc"
             bgColor="bg-white"
             iconColor="bg-green-50"
           />
@@ -247,7 +247,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
             "This feature is only available to verified agents. Upgrade your account to access this feature."
           }
           actionLabel="Upgrade Account"
-          actionHref="/agent-upgrade"
+          actionHref="/agent-kyc"
           bgColor="bg-white"
           iconColor="bg-green-50"
         />
@@ -283,7 +283,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
             "This feature requires an active verified agent subscription. Please upgrade or renew your subscription."
           }
           actionLabel={agentState === "free" ? "Upgrade Account" : "Renew Subscription"}
-          actionHref={agentState === "free" ? "/agent-upgrade" : "/agent-subscriptions"}
+          actionHref={agentState === "free" ? "/agent-kyc" : "/agent-subscriptions"}
           bgColor="bg-white"
           iconColor="bg-red-50"
         />
