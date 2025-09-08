@@ -125,6 +125,14 @@ const AgentKycForm: React.FC = () => {
       const response = await PUT_REQUEST(`${URLS.BASE}${URLS.submitKyc}`, values, token as string);
       if (response.success) {
         toast.success("KYC submitted successfully");
+        setUser((prev: any) => ({
+          ...(prev || {}),
+          agentData: {
+            ...((prev && prev.agentData) || {}),
+            kycStatus: "pending",
+            kycData: values,
+          },
+        }));
         downloadPayloadJson(values);
       } else {
         toast.error(response.message || "KYC submission failed");
