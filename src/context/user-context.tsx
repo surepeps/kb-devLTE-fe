@@ -57,6 +57,8 @@ export interface User {
   agentData?: {
     accountApproved: boolean;
     agentType: string;
+    kycStatus?: "none" | "pending" | "in_review" | "approved" | "rejected";
+    kycData?: import("@/types/agent-upgrade.types").AgentKycSubmissionPayload;
   };
   companyAgent?: {
     companyName: string;
