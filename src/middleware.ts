@@ -49,7 +49,7 @@ const userProtectedRoutes = [
   "/transactions",
   "/agent-subscriptions",
   "/agent-kyc",
-  "/public-access-settings"
+  "/deal-site"
 ];
 
 export function middleware(request: NextRequest) {
