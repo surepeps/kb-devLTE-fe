@@ -325,7 +325,15 @@ const AgentKycForm: React.FC = () => {
             </ol>
           </div>
 
-          <form onSubmit={formik.handleSubmit} className="p-6 space-y-8">
+          <form
+            onSubmit={formik.handleSubmit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+              }
+            }}
+            className="p-6 space-y-8"
+          >
             {currentStep === 0 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
