@@ -32,6 +32,7 @@ import customStyles from "@/styles/inputStyle";
 import { useUserContext } from "@/context/user-context";
 import { getStates, getLGAsByState, getAreasByStateLGA } from "@/utils/location-utils";
 import Preloader from "@/components/general-components/preloader";
+import PendingKycReview from "@/components/agent-kyc/PendingKycReview";
 
 const kycValidationSchema = Yup.object({
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
