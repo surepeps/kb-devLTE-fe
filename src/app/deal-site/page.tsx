@@ -19,6 +19,7 @@ import {
   Pause,
   Play,
   Trash,
+  Shield,
 } from "lucide-react";
 import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
@@ -34,6 +35,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import OverlayPreloader from "@/components/general-components/OverlayPreloader";
+import ModalWrapper from "@/components/general-components/modal-wrapper";
+import ConfirmationModal from "@/components/modals/confirmation-modal";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -94,6 +98,19 @@ interface DealSiteSettings {
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
 }
+
+type PropertyItem = {
+  _id: string;
+  propertyType?: string;
+  propertyCategory?: string;
+  price?: number;
+  location?: { state?: string; localGovernment?: string; area?: string };
+  pictures?: string[];
+  description?: string;
+  title?: string;
+  status?: string;
+  isApproved?: boolean;
+};
 
 const STORAGE_KEY = "deal_site_settings";
 const SLUG_LOCK_KEY = "deal_site_slug_locked";
@@ -160,6 +177,29 @@ export default function DealSitePage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [setupStep, setSetupStep] = useState(0);
 
+  // Global preloader state
+  const [preloader, setPreloader] = useState<{ visible: boolean; message: string }>({ visible: false, message: "" });
+  const showPreloader = (message: string) => setPreloader({ visible: true, message });
+  const hidePreloader = () => setPreloader({ visible: false, message: "" });
+
+  // Featured listings state
+  const [flLoading, setFlLoading] = useState(false);
+  const [properties, setProperties] = useState<PropertyItem[]>([]);
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    status: "active" as string | undefined,
+    propertyType: undefined as string | undefined,
+    propertyCategory: undefined as string | undefined,
+    state: undefined as string | undefined,
+    localGovernment: undefined as string | undefined,
+    area: undefined as string | undefined,
+    priceMin: undefined as number | undefined,
+    priceMax: undefined as number | undefined,
+    isApproved: true as boolean | undefined,
+  });
+  const selectedIds = useMemo<string[]>(() => form.featureSelection.propertyIds.split(",").map((s) => s.trim()).filter(Boolean), [form.featureSelection.propertyIds]);
+
   useEffect(() => {
     setActiveView(isSetupComplete ? "manage" : "setup");
   }, [isSetupComplete]);
@@ -168,7 +208,6 @@ export default function DealSitePage() {
     const init = async () => {
       try {
         setLoading(true);
-        // Load cached first
         try {
           const cached = localStorage.getItem(STORAGE_KEY);
           if (cached) setForm(JSON.parse(cached));
@@ -176,11 +215,12 @@ export default function DealSitePage() {
           if (locked === "true") setSlugLocked(true);
         } catch {}
 
-        // If we have a slug, fetch from API
         const slug = (localStorage.getItem(STORAGE_KEY) && (JSON.parse(localStorage.getItem(STORAGE_KEY) as string)?.publicSlug as string)) || "";
         if (slug) {
           const token = Cookies.get("token");
+          showPreloader("Loading Deal Site...");
           const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/${slug}`, token);
+          hidePreloader();
           if (res?.success && res.data) {
             const s = res.data as Partial<DealSiteSettings & { paused?: boolean }>;
             setForm((prev) => ({
@@ -218,7 +258,6 @@ export default function DealSitePage() {
     init();
   }, []);
 
-  // Lightweight analytics via dashboard fallback only
   useEffect(() => {
     if (activeView !== "manage") return;
     const fetchAnalytics = async () => {
@@ -231,13 +270,47 @@ export default function DealSitePage() {
     fetchAnalytics();
   }, [activeView]);
 
+  // Fetch agent properties for Featured Listings
+  const buildQuery = (obj: Record<string, any>) =>
+    Object.entries(obj)
+      .filter(([, v]) => v !== undefined && v !== null && v !== "")
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+      .join("&");
+
+  const fetchProperties = async () => {
+    try {
+      setFlLoading(true);
+      const token = Cookies.get("token");
+      const qs = buildQuery(filters);
+      showPreloader("Loading your listings...");
+      const res = await GET_REQUEST<{ data: PropertyItem[]; pagination?: any }>(`${URLS.BASE}/account/properties/fetchAll?${qs}`, token);
+      hidePreloader();
+      if (res?.success && res.data && Array.isArray(res.data)) {
+        setProperties(res.data as unknown as PropertyItem[]);
+      } else {
+        toast.error(res?.message || "Failed to load listings");
+      }
+    } finally {
+      setFlLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "featured") {
+      fetchProperties();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, JSON.stringify(filters)]);
+
   const handleUploadLogo = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("for", "public-logo");
     const token = Cookies.get("token");
 
+    showPreloader("Uploading logo...");
     const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
     if (res?.success && res.data && (res.data as any).url) {
       setForm((prev) => ({ ...prev, logoUrl: (res.data as any).url }));
       toast.success("Logo uploaded");
@@ -265,7 +338,9 @@ export default function DealSitePage() {
       };
 
       if (!slugLocked) {
+        showPreloader("Setting up your deal site. Please wait...");
         const res = await POST_REQUEST(`${URLS.BASE}/account/dealSite/setUp`, payload, token);
+        hidePreloader();
         if ((res as any)?.success) {
           toast.success("Deal Site created");
           localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -276,7 +351,9 @@ export default function DealSitePage() {
         }
         throw new Error((res as any)?.message || "Setup failed");
       } else {
+        showPreloader("Saving settings...");
         const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/update`, payload, token);
+        hidePreloader();
         if (res?.success) {
           toast.success("Settings saved");
           localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -295,6 +372,7 @@ export default function DealSitePage() {
       toast.success("Saved locally");
     } finally {
       setSaving(false);
+      hidePreloader();
     }
   };
 
@@ -309,7 +387,9 @@ export default function DealSitePage() {
   const pauseDealSite = async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
+    showPreloader("Pausing deal site...");
     const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/pause`, {}, token);
+    hidePreloader();
     if (res?.success) {
       setIsPaused(true);
       toast.success("Deal Site paused");
@@ -321,7 +401,9 @@ export default function DealSitePage() {
   const resumeDealSite = async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
+    showPreloader("Resuming deal site...");
     const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/resume`, {}, token);
+    hidePreloader();
     if (res?.success) {
       setIsPaused(false);
       toast.success("Deal Site resumed");
@@ -330,11 +412,13 @@ export default function DealSitePage() {
     }
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const deleteDealSite = async () => {
     if (!form.publicSlug) return;
-    if (!confirm("This will delete your Deal Site. Continue?")) return;
     const token = Cookies.get("token");
+    showPreloader("Deleting deal site...");
     const res = await DELETE_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/delete`, undefined, token);
+    hidePreloader();
     if (res?.success) {
       toast.success("Deal Site deleted");
       localStorage.removeItem(STORAGE_KEY);
@@ -367,16 +451,41 @@ export default function DealSitePage() {
     );
   }
 
+  const statusBadge = (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs border ${
+        !slugLocked
+          ? "bg-gray-50 text-gray-700 border-gray-200"
+          : isPaused
+          ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+      }`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${!slugLocked ? "bg-gray-400" : isPaused ? "bg-yellow-500" : "bg-emerald-500"}`} />
+      {!slugLocked ? "Draft" : isPaused ? "Paused" : "Live"}
+    </span>
+  );
+
+  const inputBase = "w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400";
+  const checkboxBase = "h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500";
+  const selectBase = inputBase;
+
   const SetupHeader = (
     <div className="mb-6">
-      <h1 className="text-2xl font-bold text-[#09391C]">Deal Site Setup</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#09391C]">Deal Site Setup</h1>
+        {statusBadge}
+      </div>
       <p className="text-sm text-[#5A5D63] mt-1">Follow the steps to get your deal site live.</p>
     </div>
   );
 
   const ManageHeader = (
     <div className="mb-6">
-      <h1 className="text-2xl font-bold text-[#09391C]">Deal Site</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#09391C]">Deal Site</h1>
+        {statusBadge}
+      </div>
       <p className="text-sm text-[#5A5D63] mt-1">Your deal site settings and analytics.</p>
     </div>
   );
@@ -398,7 +507,7 @@ export default function DealSitePage() {
             type="text"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="w-full px-3 py-2 border rounded-lg text-sm"
+            className={inputBase}
             placeholder="Page title"
           />
         </div>
@@ -408,7 +517,7 @@ export default function DealSitePage() {
             type="text"
             value={form.keywords.join(", ")}
             onChange={(e) => setForm({ ...form, keywords: e.target.value.split(",").map((k) => k.trim()).filter(Boolean) })}
-            className="w-full px-3 py-2 border rounded-lg text-sm"
+            className={inputBase}
             placeholder="agent, real estate, listings"
           />
         </div>
@@ -418,7 +527,7 @@ export default function DealSitePage() {
         <textarea
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
-          className="w-full px-3 py-2 border rounded-lg text-sm min-h-[100px]"
+          className={`${inputBase} min-h-[100px]`}
           placeholder="Tell visitors about you"
         />
       </div>
@@ -432,9 +541,9 @@ export default function DealSitePage() {
             </button>
           </div>
         ) : (
-          <label className="flex items-center justify-center gap-2 px-4 py-3 border rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+          <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadLogo(e.target.files[0])} />
-            <ImageIcon size={16} /> Upload Logo
+            <ImageIcon size={16} /> <span className="text-gray-600">Drag & drop or click to upload</span>
           </label>
         )}
       </div>
@@ -460,7 +569,7 @@ export default function DealSitePage() {
             value={form.publicSlug}
             onChange={(e) => setForm({ ...form, publicSlug: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase() })}
             disabled={slugLocked}
-            className="flex-1 px-3 py-2 border rounded-lg text-sm disabled:bg-gray-100"
+            className={`${inputBase} disabled:bg-gray-100 flex-1`}
             placeholder="your-name"
             required
           />
@@ -485,19 +594,19 @@ export default function DealSitePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Hero Title</label>
-          <input type="text" value={form.publicPage.heroTitle} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, heroTitle: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+          <input type="text" value={form.publicPage.heroTitle} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, heroTitle: e.target.value } })} className={inputBase} />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Hero Subtitle</label>
-          <input type="text" value={form.publicPage.heroSubtitle} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, heroSubtitle: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+          <input type="text" value={form.publicPage.heroSubtitle} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, heroSubtitle: e.target.value } })} className={inputBase} />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">CTA Text</label>
-          <input type="text" value={form.publicPage.ctaText} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, ctaText: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+          <input type="text" value={form.publicPage.ctaText} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, ctaText: e.target.value } })} className={inputBase} />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">CTA Link</label>
-          <input type="text" value={form.publicPage.ctaLink} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, ctaLink: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="/market-place?tab=buy" />
+          <input type="text" value={form.publicPage.ctaLink} onChange={(e) => setForm({ ...form, publicPage: { ...form.publicPage, ctaLink: e.target.value } })} className={inputBase} placeholder="/market-place?tab=buy" />
         </div>
       </div>
     </div>
@@ -525,7 +634,7 @@ export default function DealSitePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Default Tab</label>
-          <select value={form.marketplaceDefaults.defaultTab} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, defaultTab: e.target.value as any } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+          <select value={form.marketplaceDefaults.defaultTab} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, defaultTab: e.target.value as any } })} className={selectBase}>
             <option value="buy">Buy</option>
             <option value="rent">Rent</option>
             <option value="shortlet">Shortlet</option>
@@ -534,7 +643,7 @@ export default function DealSitePage() {
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Default Sort</label>
-          <select value={form.marketplaceDefaults.defaultSort} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, defaultSort: e.target.value as any } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+          <select value={form.marketplaceDefaults.defaultSort} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, defaultSort: e.target.value as any } })} className={selectBase}>
             <option value="newest">Newest</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
@@ -543,11 +652,11 @@ export default function DealSitePage() {
       </div>
       <div className="mt-3 space-y-2">
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={form.marketplaceDefaults.showVerifiedOnly} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, showVerifiedOnly: e.target.checked } })} />
+          <input className={checkboxBase} type="checkbox" checked={form.marketplaceDefaults.showVerifiedOnly} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, showVerifiedOnly: e.target.checked } })} />
           Show only listings with verified documents
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={form.marketplaceDefaults.enablePriceNegotiationButton} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, enablePriceNegotiationButton: e.target.checked } })} />
+          <input className={checkboxBase} type="checkbox" checked={form.marketplaceDefaults.enablePriceNegotiationButton} onChange={(e) => setForm({ ...form, marketplaceDefaults: { ...form.marketplaceDefaults, enablePriceNegotiationButton: e.target.checked } })} />
           Enable price negotiation button
         </label>
       </div>
@@ -558,15 +667,15 @@ export default function DealSitePage() {
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Contact & Visibility</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.showEmail} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showEmail: e.target.checked } })} /> Show Email</label>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.showPhone} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showPhone: e.target.checked } })} /> Show Phone</label>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.enableContactForm} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, enableContactForm: e.target.checked } })} /> Enable Contact Form</label>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.contactVisibility.showWhatsAppButton} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showWhatsAppButton: e.target.checked } })} /> Show WhatsApp Button</label>
+        <label className="flex items-center gap-2 text-sm"><input className={checkboxBase} type="checkbox" checked={form.contactVisibility.showEmail} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showEmail: e.target.checked } })} /> Show Email</label>
+        <label className="flex items-center gap-2 text-sm"><input className={checkboxBase} type="checkbox" checked={form.contactVisibility.showPhone} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showPhone: e.target.checked } })} /> Show Phone</label>
+        <label className="flex items-center gap-2 text-sm"><input className={checkboxBase} type="checkbox" checked={form.contactVisibility.enableContactForm} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, enableContactForm: e.target.checked } })} /> Enable Contact Form</label>
+        <label className="flex items-center gap-2 text-sm"><input className={checkboxBase} type="checkbox" checked={form.contactVisibility.showWhatsAppButton} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, showWhatsAppButton: e.target.checked } })} /> Show WhatsApp Button</label>
       </div>
       {form.contactVisibility.showWhatsAppButton && (
         <div className="mt-3">
           <label className="block text-sm text-gray-700 mb-1">WhatsApp Number</label>
-          <input type="tel" value={form.contactVisibility.whatsappNumber} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, whatsappNumber: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="e.g. +2348012345678" />
+          <input type="tel" value={form.contactVisibility.whatsappNumber} onChange={(e) => setForm({ ...form, contactVisibility: { ...form.contactVisibility, whatsappNumber: e.target.value } })} className={inputBase} placeholder="e.g. +2348012345678" />
         </div>
       )}
     </div>
@@ -579,31 +688,113 @@ export default function DealSitePage() {
         {(["website", "twitter", "instagram", "facebook", "linkedin"] as (keyof SocialLinks)[]).map((key) => (
           <div key={key}>
             <label className="block text-sm text-gray-700 mb-1">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
-            <input type="url" value={(form.socialLinks?.[key] || "") as string} onChange={(e) => setForm({ ...form, socialLinks: { ...form.socialLinks, [key]: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder={key === "website" ? "https://your-site.com" : `https://${key}.com/your-handle`} />
+            <input type="url" value={(form.socialLinks?.[key] || "") as string} onChange={(e) => setForm({ ...form, socialLinks: { ...form.socialLinks, [key]: e.target.value } })} className={inputBase} placeholder={key === "website" ? "https://your-site.com" : `https://${key}.com/your-handle`} />
           </div>
         ))}
       </div>
     </div>
   );
 
+  const toggleSelect = (id: string) => {
+    const set = new Set(selectedIds);
+    if (set.has(id)) set.delete(id); else set.add(id);
+    setForm((prev) => ({
+      ...prev,
+      featureSelection: {
+        ...prev.featureSelection,
+        mode: "manual",
+        propertyIds: Array.from(set).join(","),
+      },
+    }));
+  };
+
   const renderFeaturedListings = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Featured Listings</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Mode</label>
-          <select value={form.featureSelection.mode} onChange={(e) => setForm({ ...form, featureSelection: { ...form.featureSelection, mode: e.target.value as any } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+          <select value={form.featureSelection.mode} onChange={(e) => setForm({ ...form, featureSelection: { ...form.featureSelection, mode: e.target.value as any } })} className={selectBase}>
             <option value="auto">Auto (Top recent)</option>
-            <option value="manual">Manual (Specify IDs)</option>
+            <option value="manual">Manual (Select from your listings)</option>
           </select>
         </div>
-        {form.featureSelection.mode === "manual" && (
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">Property IDs (comma separated)</label>
-            <input type="text" value={form.featureSelection.propertyIds} onChange={(e) => setForm({ ...form, featureSelection: { ...form.featureSelection, propertyIds: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="prop123, prop456" />
-          </div>
-        )}
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Listings to display</label>
+          <input type="number" min={1} max={50} value={form.listingsLimit} onChange={(e) => setForm({ ...form, listingsLimit: Math.max(1, Math.min(50, Number(e.target.value || 1))) })} className={inputBase} />
+        </div>
       </div>
+
+      {form.featureSelection.mode === "manual" && (
+        <>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input className={inputBase} placeholder="State" value={filters.state || ""} onChange={(e) => setFilters((f) => ({ ...f, state: e.target.value || undefined, page: 1 }))} />
+              <input className={inputBase} placeholder="Local Government" value={filters.localGovernment || ""} onChange={(e) => setFilters((f) => ({ ...f, localGovernment: e.target.value || undefined, page: 1 }))} />
+              <input className={inputBase} placeholder="Area" value={filters.area || ""} onChange={(e) => setFilters((f) => ({ ...f, area: e.target.value || undefined, page: 1 }))} />
+              <select className={selectBase} value={filters.propertyType || ""} onChange={(e) => setFilters((f) => ({ ...f, propertyType: e.target.value || undefined, page: 1 }))}>
+                <option value="">All Types</option>
+                <option value="duplex">Duplex</option>
+                <option value="apartment">Apartment</option>
+                <option value="bungalow">Bungalow</option>
+              </select>
+              <select className={selectBase} value={filters.propertyCategory || ""} onChange={(e) => setFilters((f) => ({ ...f, propertyCategory: e.target.value || undefined, page: 1 }))}>
+                <option value="">All Categories</option>
+                <option value="residential">Residential</option>
+                <option value="commercial">Commercial</option>
+              </select>
+              <select className={selectBase} value={filters.status || ""} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value || undefined, page: 1 }))}>
+                <option value="">Any Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <input className={inputBase} type="number" placeholder="Min Price" value={filters.priceMin ?? ""} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value ? Number(e.target.value) : undefined, page: 1 }))} />
+              <input className={inputBase} type="number" placeholder="Max Price" value={filters.priceMax ?? ""} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value ? Number(e.target.value) : undefined, page: 1 }))} />
+              <label className="flex items-center gap-2 text-sm">
+                <input className={checkboxBase} type="checkbox" checked={!!filters.isApproved} onChange={(e) => setFilters((f) => ({ ...f, isApproved: e.target.checked ? true : undefined, page: 1 }))} /> Only approved
+              </label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {flLoading && (
+              <div className="col-span-full flex justify-center py-8 text-sm text-gray-500">Loading...</div>
+            )}
+            {!flLoading && properties.length === 0 && (
+              <div className="col-span-full text-sm text-gray-500">No listings found.</div>
+            )}
+            {properties.map((p) => (
+              <label key={p._id} className={`border rounded-lg overflow-hidden bg-white cursor-pointer transition-shadow hover:shadow-md ${selectedIds.includes(p._id) ? "ring-2 ring-emerald-300" : ""}`}>
+                <div className="h-32 w-full bg-gray-100 overflow-hidden">
+                  {p.pictures?.[0] && <img src={p.pictures[0]} alt={p.title || p.description || "Property"} className="w-full h-full object-cover" />}
+                </div>
+                <div className="p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-sm font-medium text-[#09391C] line-clamp-2">{p.title || p.description || "Property"}</div>
+                    <input className={checkboxBase} type="checkbox" checked={selectedIds.includes(p._id)} onChange={() => toggleSelect(p._id)} />
+                  </div>
+                  <div className="mt-1 text-xs text-[#5A5D63] line-clamp-2">
+                    {p.location?.area ? `${p.location.area}, ` : ""}{p.location?.localGovernment ? `${p.location.localGovernment}, ` : ""}{p.location?.state || ""}
+                  </div>
+                  {p.price ? <div className="mt-1 text-sm text-[#0B572B]">₦{p.price.toLocaleString()}</div> : null}
+                </div>
+              </label>
+            ))}
+          </div>
+
+          {selectedIds.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-semibold text-[#09391C] mb-2">Selected Listings</h4>
+              <div className="flex flex-wrap gap-2">
+                {selectedIds.map((id) => (
+                  <span key={id} className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">{id}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 
@@ -618,7 +809,7 @@ export default function DealSitePage() {
           max={50}
           value={form.listingsLimit}
           onChange={(e) => setForm({ ...form, listingsLimit: Math.max(0, Math.min(50, Number(e.target.value || 0))) })}
-          className="px-3 py-2 border rounded-lg text-sm w-32"
+          className={`${inputBase} w-32`}
         />
       </div>
     </div>
@@ -629,25 +820,35 @@ export default function DealSitePage() {
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Inspection Settings</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={form.inspectionSettings.allowPublicBooking} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, allowPublicBooking: e.target.checked } })} />
+          <input className={checkboxBase} type="checkbox" checked={form.inspectionSettings.allowPublicBooking} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, allowPublicBooking: e.target.checked } })} />
           Allow Public Booking
         </label>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Default Inspection Fee</label>
-          <input type="number" min={0} value={form.inspectionSettings.defaultInspectionFee} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, defaultInspectionFee: Math.max(0, Number(e.target.value || 0)) } })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+          <input type="number" min={0} value={form.inspectionSettings.defaultInspectionFee} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, defaultInspectionFee: Math.max(0, Number(e.target.value || 0)) } })} className={inputBase} />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Inspection Status</label>
-          <select value={form.inspectionSettings.inspectionStatus || "optional"} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, inspectionStatus: e.target.value } })} className="w-full px-3 py-2 border rounded-lg text-sm">
+          <select value={form.inspectionSettings.inspectionStatus || "optional"} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, inspectionStatus: e.target.value } })} className={selectBase}>
             <option value="optional">Optional</option>
             <option value="required">Required</option>
           </select>
         </div>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={!!form.inspectionSettings.negotiationEnabled} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, negotiationEnabled: e.target.checked } })} />
+          <input className={checkboxBase} type="checkbox" checked={!!form.inspectionSettings.negotiationEnabled} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, negotiationEnabled: e.target.checked } })} />
           Enable Negotiation
         </label>
       </div>
+    </div>
+  );
+
+  const renderSecuritySettings = (
+    <div className="bg-white rounded-lg border border-red-200 p-6">
+      <h2 className="text-lg font-semibold text-red-700 flex items-center gap-2 mb-2"><Shield size={18} /> Security Settings</h2>
+      <p className="text-sm text-[#5A5D63] mb-4">Delete your deal site. This action cannot be undone.</p>
+      <button onClick={() => setShowDeleteConfirm(true)} className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50">
+        <Trash size={16} /> Delete Deal Site
+      </button>
     </div>
   );
 
@@ -656,7 +857,7 @@ export default function DealSitePage() {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-[#09391C]">Your deal site is {isPaused ? "paused" : "live"}</h2>
+            <h2 className="text-lg font-semibold text-[#09391C]">Your deal site is {isPaused ? "paused" : slugLocked ? "live" : "in draft"}</h2>
             {previewUrl ? (
               <div className="mt-1 text-sm text-[#0B572B] flex items-center gap-2">
                 <a href={previewUrl} target="_blank" rel="noreferrer" className="underline inline-flex items-center gap-1">{previewUrl} <ExternalLink size={14} /></a>
@@ -672,7 +873,6 @@ export default function DealSitePage() {
             ) : (
               <button onClick={resumeDealSite} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm"><Play size={16} /> Resume</button>
             )}
-            <button onClick={deleteDealSite} className="inline-flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg text-sm"><Trash size={16} /> Delete</button>
             <button onClick={() => setActiveTab("branding")} className="px-4 py-2 border rounded-lg text-sm">Edit Settings</button>
           </div>
         </div>
@@ -816,6 +1016,7 @@ export default function DealSitePage() {
                   { id: "social", label: "Social Links" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
+                  { id: "security", label: "Security Settings", icon: <Shield size={14} /> },
                 ]}
               />
 
@@ -830,6 +1031,7 @@ export default function DealSitePage() {
                 {activeTab === "social" && renderSocialLinks}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
+                {activeTab === "security" && renderSecuritySettings}
 
                 {activeTab !== "overview" && (
                   <div className="flex items-center gap-3">
@@ -843,6 +1045,24 @@ export default function DealSitePage() {
           )}
         </div>
       </div>
+
+      {/* Global Preloader */}
+      <OverlayPreloader isVisible={preloader.visible} message={preloader.message} />
+
+      {/* Delete confirmation modal */}
+      <ModalWrapper isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="Confirm Deletion" size="sm">
+        <div className="p-4">
+          <ConfirmationModal
+            title="Delete Deal Site"
+            message="Are you sure you want to delete your deal site? This action cannot be undone."
+            type="danger"
+            confirmText="Delete"
+            cancelText="Cancel"
+            onConfirm={deleteDealSite}
+            onClose={() => setShowDeleteConfirm(false)}
+          />
+        </div>
+      </ModalWrapper>
     </CombinedAuthGuard>
   );
 }
