@@ -32,6 +32,7 @@ import customStyles from "@/styles/inputStyle";
 import { useUserContext } from "@/context/user-context";
 import { getStates, getLGAsByState, getAreasByStateLGA } from "@/utils/location-utils";
 import Preloader from "@/components/general-components/preloader";
+import PendingKycReview from "@/components/agent-kyc/PendingKycReview";
 
 const kycValidationSchema = Yup.object({
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
@@ -65,7 +66,7 @@ const steps = [
 const isImage = (url?: string) => !!url && /(\.png|\.jpg|\.jpeg|\.gif|\.webp)$/i.test(url);
 
 const AgentKycForm: React.FC = () => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -124,6 +125,14 @@ const AgentKycForm: React.FC = () => {
       const response = await PUT_REQUEST(`${URLS.BASE}${URLS.submitKyc}`, values, token as string);
       if (response.success) {
         toast.success("KYC submitted successfully");
+        setUser((prev: any) => ({
+          ...(prev || {}),
+          agentData: {
+            ...((prev && prev.agentData) || {}),
+            kycStatus: "pending",
+            kycData: values,
+          },
+        }));
         downloadPayloadJson(values);
       } else {
         toast.error(response.message || "KYC submission failed");
@@ -273,6 +282,11 @@ const AgentKycForm: React.FC = () => {
     </label>
   );
 
+  const kycStatus = (user as any)?.agentData?.kycStatus as string | undefined;
+  if (kycStatus === "pending" || kycStatus === "in_review") {
+    return <PendingKycReview />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <Preloader isVisible={isUploading} message="Uploading file..." />
@@ -311,7 +325,19 @@ const AgentKycForm: React.FC = () => {
             </ol>
           </div>
 
-          <form onSubmit={formik.handleSubmit} className="p-6 space-y-8">
+          <form
+            onSubmit={formik.handleSubmit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const target = e.target as HTMLElement;
+                const tag = (target?.tagName || "").toLowerCase();
+                if (tag !== "textarea") {
+                  e.preventDefault();
+                }
+              }
+            }}
+            className="p-6 space-y-8"
+          >
             {currentStep === 0 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
