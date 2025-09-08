@@ -10,7 +10,7 @@ interface FeatureCardProps {
     id: number;
     title: string;
     description: string;
-    videoThumbnail: string;
+    videoThumbnail?: string;
     videoUrl?: string;
     link: string;
     icon: React.ReactNode;
