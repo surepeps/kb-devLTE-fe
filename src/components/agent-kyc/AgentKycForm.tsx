@@ -66,7 +66,7 @@ const steps = [
 const isImage = (url?: string) => !!url && /(\.png|\.jpg|\.jpeg|\.gif|\.webp)$/i.test(url);
 
 const AgentKycForm: React.FC = () => {
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
