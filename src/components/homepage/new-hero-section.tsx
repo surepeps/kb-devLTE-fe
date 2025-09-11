@@ -244,6 +244,14 @@ const NewHeroSection = () => {
     };
   }, [heroVideos, currentVideoIndex]);
 
+  // Track readiness of each video (can play) to show skeletons until video thumbnails/content are ready
+  const [videoReady, setVideoReady] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    // reset readiness when heroVideos change
+    setVideoReady(Array(heroVideos.length).fill(false));
+  }, [heroVideos.length]);
+
   // Auto-play functionality - videos auto-play on load and slide change
   useEffect(() => {
     if (heroVideos.length > 0 && videoRefs.current[0] && !isPlayPending) {
@@ -260,6 +268,33 @@ const NewHeroSection = () => {
       return () => clearTimeout(timer);
     }
   }, [heroVideos.length, isPlayPending]);
+
+  // Attach canplaythrough / loadeddata handlers to mark videos ready
+  useEffect(() => {
+    const videos = videoRefs.current.filter(Boolean);
+    const handlers: Array<() => void> = [];
+
+    videos.forEach((video, idx) => {
+      if (!video) return;
+      const onCanPlay = () => {
+        setVideoReady(prev => {
+          const copy = [...prev];
+          copy[idx] = true;
+          return copy;
+        });
+      };
+      video.addEventListener('canplay', onCanPlay);
+      video.addEventListener('loadeddata', onCanPlay);
+      handlers.push(() => {
+        video.removeEventListener('canplay', onCanPlay);
+        video.removeEventListener('loadeddata', onCanPlay);
+      });
+    });
+
+    return () => {
+      handlers.forEach(h => h());
+    };
+  }, [heroVideos]);
 
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
@@ -313,8 +348,14 @@ const NewHeroSection = () => {
             </Link>
           </motion.div>
 
-          {/* Hero video slider with autoplay - only show if video URLs are available */}
-          {!settingsLoading && heroVideos.length > 0 && (
+          {/* Hero video slider with autoplay - show skeleton while settings or videos are loading */}
+          {settingsLoading || heroVideos.length === 0 ? (
+            <div className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
+              <div className='bg-white/5 rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
+                <div className='aspect-video rounded-lg bg-gray-200 animate-pulse'></div>
+              </div>
+            </div>
+          ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -328,6 +369,15 @@ const NewHeroSection = () => {
                     {heroVideos.map((videoUrl, index) => (
                       <div key={index} className="embla__slide flex-[0_0_100%] min-w-0">
                         <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden group'>
+                          {/* Show skeleton until this video's media is ready */}
+                          {!videoReady[index] && (
+                            <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center z-30">
+                              <div className="w-3/4 h-3/4 bg-white/5 rounded-lg flex items-center justify-center">
+                                <div className="text-gray-400">Loading video...</div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Dynamic video from system settings */}
                           <video
                             ref={(el) => {
@@ -340,7 +390,11 @@ const NewHeroSection = () => {
                             preload="metadata"
                             poster="/placeholder-property.svg"
                             onClick={handlePlayPause}
-                            onEnded={handleVideoEnded}>
+                            onEnded={handleVideoEnded}
+                            // mark ready when canplay/loadeddata fire on the element
+                            onCanPlay={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
+                            onLoadedData={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
+                          >
                             <source src={videoUrl} type="video/mp4" />
                             {/* Fallback content if video fails to load */}
                             <div className='absolute inset-0 flex items-center justify-center'>
