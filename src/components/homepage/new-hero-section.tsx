@@ -363,6 +363,15 @@ const NewHeroSection = () => {
                     {heroVideos.map((videoUrl, index) => (
                       <div key={index} className="embla__slide flex-[0_0_100%] min-w-0">
                         <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden group'>
+                          {/* Show skeleton until this video's media is ready */}
+                          {!videoReady[index] && (
+                            <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center z-30">
+                              <div className="w-3/4 h-3/4 bg-white/5 rounded-lg flex items-center justify-center">
+                                <div className="text-gray-400">Loading video...</div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Dynamic video from system settings */}
                           <video
                             ref={(el) => {
@@ -375,7 +384,11 @@ const NewHeroSection = () => {
                             preload="metadata"
                             poster="/placeholder-property.svg"
                             onClick={handlePlayPause}
-                            onEnded={handleVideoEnded}>
+                            onEnded={handleVideoEnded}
+                            // mark ready when canplay/loadeddata fire on the element
+                            onCanPlay={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
+                            onLoadedData={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
+                          >
                             <source src={videoUrl} type="video/mp4" />
                             {/* Fallback content if video fails to load */}
                             <div className='absolute inset-0 flex items-center justify-center'>
