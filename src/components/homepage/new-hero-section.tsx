@@ -348,8 +348,14 @@ const NewHeroSection = () => {
             </Link>
           </motion.div>
 
-          {/* Hero video slider with autoplay - only show if video URLs are available */}
-          {!settingsLoading && heroVideos.length > 0 && (
+          {/* Hero video slider with autoplay - show skeleton while settings or videos are loading */}
+          {settingsLoading || heroVideos.length === 0 ? (
+            <div className='mt-8 sm:mt-12 md:mt-16 relative px-4 sm:px-0'>
+              <div className='bg-white/5 rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
+                <div className='aspect-video rounded-lg bg-gray-200 animate-pulse'></div>
+              </div>
+            </div>
+          ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
