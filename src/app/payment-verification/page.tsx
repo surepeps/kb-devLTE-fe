@@ -64,13 +64,21 @@ const PaymentVerificationPage = () => {
     if (verificationData?.redirectUrl) {
       window.location.href = verificationData.redirectUrl;
     } else if (verificationData?.transaction?.transactionType) {
-      // Redirect based on transaction type
+      const trxId = verificationData?.transaction?._id;
       switch (verificationData.transaction.transactionType) {
         case 'document-verification':
-          router.push('/dashboard');
+          if (trxId) {
+            router.push(`/transactions/${trxId}`);
+          } else {
+            router.push('/dashboard');
+          }
           break;
         case 'inspection-request':
-          router.push('/my-inspection-requests');
+          if (trxId) {
+            router.push(`/transactions/${trxId}`);
+          } else {
+            router.push('/my-inspection-requests');
+          }
           break;
         case 'subscription':
           router.push('/dashboard');
