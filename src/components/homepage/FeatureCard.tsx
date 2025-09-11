@@ -24,6 +24,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPlayPending, setIsPlayPending] = useState(false);
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
+
+  // reset thumbnail when feature changes
+  React.useEffect(() => {
+    setThumbnailLoaded(false);
+  }, [feature.videoThumbnail, feature.videoUrl]);
 
   const pauseAllOtherVideos = () => {
     
