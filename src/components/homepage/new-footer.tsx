@@ -1,12 +1,14 @@
-/** @format */
-
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import khabiTeqIcon from '@/svgs/white-khabi-teq.svg';
 import { epilogue } from '@/styles/font';
+import toast from 'react-hot-toast';
+import SuccessModal from '@/components/modals/SuccessModal';
+import { POST_REQUEST } from '@/utils/requests';
+import { URLS } from '@/utils/URLS';
 
 const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const exploreLinks = [
@@ -88,13 +90,34 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
     { name: 'Browse Properties', url: '/market-place' }
   ];
 
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const handleSubscribe = async () => {
+    const trimmed = email.trim();
+    const isValid = /[^\s@]+@[^\s@]+\.[^\s@]+/.test(trimmed);
+    if (!isValid) {
+      toast.error('Please enter a valid email');
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      await POST_REQUEST(`${URLS.BASE}/emailSubscription/subscribe`, { email: trimmed });
+      setSuccessOpen(true);
+      setEmail('');
+    } catch (e: any) {
+      toast.error(e?.message || 'Subscription failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer className={`bg-[#0B423D] w-full ${isComingSoon && 'filter blur-sm'}`}>
       <div className='container mx-auto px-4 md:px-8 py-16'>
-        
         {/* Main Footer Content */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-12'>
-          
           {/* Company Info */}
           <div className='lg:col-span-2'>
             <motion.div
@@ -102,7 +125,6 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}>
-              
               <Image
                 src={khabiTeqIcon}
                 width={169}
@@ -110,11 +132,9 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 alt='Khabiteq Logo'
                 className='mb-6'
               />
-              
               <p className={`text-[#D6DDEB] text-base leading-relaxed mb-6 max-w-md ${epilogue.className}`}>
                 Simplifying real estate transactions in Nigeria. Buy, sell, rent, and manage properties with ease through Khabi-Teq&apos;s trusted platform. Verified agents, secure transactions, and transparent deals.
               </p>
-
               {/* Quick Actions */}
               <div className='space-y-3'>
                 <h4 className={`text-white font-semibold text-lg mb-4 ${epilogue.className}`}>
@@ -139,11 +159,9 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}>
-              
               <h3 className={`text-white font-semibold text-lg mb-6 ${epilogue.className}`}>
                 Explore
               </h3>
-              
               <div className='space-y-4'>
                 {exploreLinks.map((link, index) => (
                   <Link
@@ -164,11 +182,9 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}>
-              
               <h3 className={`text-white font-semibold text-lg mb-6 ${epilogue.className}`}>
                 Services
               </h3>
-              
               <div className='space-y-4'>
                 {servicesLinks.map((link, index) => (
                   <Link
@@ -179,32 +195,6 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                   </Link>
                 ))}
               </div>
-            </motion.div>
-          </div>
-
-          {/* Support */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}>
-              
-              <h3 className={`text-white font-semibold text-lg mb-6 ${epilogue.className}`}>
-                Support
-              </h3>
-              
-              <div className='space-y-4'>
-                {supportLinks.map((link, index) => (
-                  <Link
-                    key={index}
-                    href={link.url}
-                    className={`block text-[#D6DDEB] hover:text-white transition-colors duration-300 text-base ${epilogue.className}`}>
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-
               {/* Contact Info */}
               <div className='mt-6 pt-6 border-t border-white/20'>
                 <div className='space-y-2'>
@@ -230,7 +220,6 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
           className='bg-white/5 rounded-2xl p-6 md:p-8 mb-12'>
-          
           <div className='text-center md:text-left md:flex md:items-center md:justify-between'>
             <div className='mb-6 md:mb-0'>
               <h4 className={`text-white font-bold text-xl mb-2 ${epilogue.className}`}>
@@ -240,15 +229,20 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 Get notified about new properties, market insights, and exclusive offers.
               </p>
             </div>
-            
             <div className='flex gap-3 max-w-md md:max-w-none'>
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className='flex-1 px-4 py-3 rounded-full bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8DDB90]'
               />
-              <button className='bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-4 sm:px-6 py-3 rounded-full font-medium transition-colors duration-300 whitespace-nowrap text-sm sm:text-base flex items-center justify-center min-h-[48px]'>
-                Subscribe
+              <button
+                onClick={handleSubscribe}
+                disabled={isSubmitting}
+                className='bg-[#8DDB90] hover:bg-[#7BC87F] disabled:opacity-60 text-white px-4 sm:px-6 py-3 rounded-full font-medium transition-colors duration-300 whitespace-nowrap text-sm sm:text-base flex items-center justify-center min-h-[48px]'
+              >
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
             </div>
           </div>
@@ -257,7 +251,6 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
         {/* Bottom Section */}
         <div className='border-t border-white/20 pt-8'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
-            
             {/* Copyright */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -268,7 +261,6 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                 © {new Date().getFullYear()} Khabiteq Realty Limited. All rights reserved.
               </p>
             </motion.div>
-
             {/* Social Links */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -276,11 +268,9 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
               transition={{ duration: 0.6, delay: 0.6 }}
               viewport={{ once: true }}
               className='flex items-center gap-4'>
-              
               <span className={`text-[#D6DDEB] text-sm mr-2 ${epilogue.className}`}>
                 Follow us:
               </span>
-              
               {socialLinks.map((social, index) => (
                 <Link
                   key={index}
@@ -296,6 +286,13 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
           </div>
         </div>
       </div>
+
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        title="You're subscribed!"
+        message="Thank you. We'll send property deals and updates to your inbox."
+      />
     </footer>
   );
 };
