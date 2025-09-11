@@ -97,6 +97,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
               </div>
             ) : feature.videoUrl ? (
               <>
+                {/* Show thumbnail skeleton until the thumbnail image loads */}
+                {!thumbnailLoaded && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse z-20 flex items-center justify-center">
+                    <div className="text-gray-400">Loading thumbnail...</div>
+                  </div>
+                )}
+
                 <video
                   ref={videoRef}
                   className="w-full h-full object-cover"
@@ -108,20 +115,31 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
                 >
                   <source src={feature.videoUrl} type="video/mp4" />
                 </video>
-                {/* Fallback thumbnail image in case video poster fails */}
+                {/* Fallback thumbnail image in case video poster fails; used to detect load completion */}
                 <img
                   src={feature.videoThumbnail}
                   alt={feature.title}
+                  onLoad={() => setThumbnailLoaded(true)}
+                  onError={() => setThumbnailLoaded(true)}
                   className="w-full h-full object-cover absolute inset-0 -z-10 transition-opacity duration-300"
                   style={{ opacity: isPlaying ? 0 : 1 }}
                 />
               </>
             ) : (
-              <img
-                src={feature.videoThumbnail}
-                alt={feature.title}
-                className="w-full h-full object-cover"
-              />
+              <>
+                {!thumbnailLoaded && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse z-20 flex items-center justify-center">
+                    <div className="text-gray-400">Loading thumbnail...</div>
+                  </div>
+                )}
+                <img
+                  src={feature.videoThumbnail}
+                  alt={feature.title}
+                  onLoad={() => setThumbnailLoaded(true)}
+                  onError={() => setThumbnailLoaded(true)}
+                  className="w-full h-full object-cover"
+                />
+              </>
             )}
 
             {/* Overlay Controls */}
