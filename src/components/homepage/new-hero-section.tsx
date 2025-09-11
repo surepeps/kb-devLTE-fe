@@ -244,6 +244,14 @@ const NewHeroSection = () => {
     };
   }, [heroVideos, currentVideoIndex]);
 
+  // Track readiness of each video (can play) to show skeletons until video thumbnails/content are ready
+  const [videoReady, setVideoReady] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    // reset readiness when heroVideos change
+    setVideoReady(Array(heroVideos.length).fill(false));
+  }, [heroVideos.length]);
+
   // Auto-play functionality - videos auto-play on load and slide change
   useEffect(() => {
     if (heroVideos.length > 0 && videoRefs.current[0] && !isPlayPending) {
@@ -260,6 +268,33 @@ const NewHeroSection = () => {
       return () => clearTimeout(timer);
     }
   }, [heroVideos.length, isPlayPending]);
+
+  // Attach canplaythrough / loadeddata handlers to mark videos ready
+  useEffect(() => {
+    const videos = videoRefs.current.filter(Boolean);
+    const handlers: Array<() => void> = [];
+
+    videos.forEach((video, idx) => {
+      if (!video) return;
+      const onCanPlay = () => {
+        setVideoReady(prev => {
+          const copy = [...prev];
+          copy[idx] = true;
+          return copy;
+        });
+      };
+      video.addEventListener('canplay', onCanPlay);
+      video.addEventListener('loadeddata', onCanPlay);
+      handlers.push(() => {
+        video.removeEventListener('canplay', onCanPlay);
+        video.removeEventListener('loadeddata', onCanPlay);
+      });
+    });
+
+    return () => {
+      handlers.forEach(h => h());
+    };
+  }, [heroVideos]);
 
   return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
