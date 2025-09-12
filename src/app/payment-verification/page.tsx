@@ -58,10 +58,9 @@ const PaymentVerificationPage = () => {
           return;
         }
 
-        // Document verification: show receipt and then redirect to dashboard after countdown
+        // Document verification: show receipt and do NOT redirect (stay on receipt)
         if (trxType === 'document-verification') {
-          setRedirectAfterCountdown(true);
-          setCountdown(5);
+          setRedirectAfterCountdown(false);
           setVerificationStatus('success');
           toast.success('Payment verified successfully!');
           return;
@@ -98,9 +97,8 @@ const PaymentVerificationPage = () => {
 
     const trxType = verificationData?.transaction?.transactionType;
 
-    // Document verification: after showing receipt redirect to dashboard
+    // Document verification: do NOT redirect (stay on receipt)
     if (trxType === 'document-verification') {
-      router.push('/dashboard');
       return;
     }
 
