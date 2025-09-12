@@ -199,7 +199,7 @@ const ForAgentsSection = () => {
 
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-6">Join over 250+ verified agents already growing their business with Khabiteq</p>
-            <Link href="/agent-onboard">
+            <Link href="/agent-kyc">
               <button className="bg-[#09391C] hover:bg-[#0B423D] text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-full font-bold text-sm sm:text-base md:text-lg transition-colors duration-300 flex items-center justify-center min-h-[48px] sm:min-h-[56px]">
                 <span className="whitespace-nowrap">Become a Verified Agent</span>
               </button>
