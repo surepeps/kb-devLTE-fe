@@ -81,19 +81,45 @@ export default function AgentSubscriptionsPage() {
       setTabLoading(true);
       const response = await GET_REQUEST(`${URLS.BASE}${URLS.getSubscriptionPlans}`, token);
       if (response.success) {
-        const apiPlans = response.data || [];
-        const normalized = apiPlans.map((p: any) => {
-          const months = Math.max(1, Math.round((p.durationInDays || 30) / 30));
+        const apiPlans = (response.data || []) as any[];
+        let normalized = apiPlans.map((p: any) => {
+          const baseMonths = Math.max(1, Math.round((p.durationInDays || 30) / 30));
+          const prices: Record<number, number> = { [baseMonths]: Number(p.price) || 0 };
+          (p.discountedPlans || []).forEach((dp: any) => {
+            const m = Math.max(1, Math.round((dp.durationInDays || 30) / 30));
+            prices[m] = Number(dp.price) || 0;
+          });
+          const features = (Array.isArray(p.features) ? p.features : []).map((f: any) => ({
+            key: f?.feature?.key || '',
+            label: f?.feature?.label || '',
+            type: f?.type || 'boolean',
+            value: f?.value ?? 0,
+          }));
           return {
             id: p._id,
+            code: p.code,
             name: p.name,
-            description: p.features?.slice(0, 2).join(', ') || '',
-            features: p.features || [],
-            prices: { [months]: p.price },
-            popular: false,
+            description: features.slice(0, 2).map((x: any) => x.label).join(', '),
+            features,
+            prices,
+            basePrice: Number(p.price) || 0,
+            isTrial: !!p.isTrial,
             raw: p,
-          };
+            popular: false,
+          } as any;
         });
+        // Always show free plan first, then by ascending base price
+        normalized = normalized.sort((a: any, b: any) => {
+          const aFree = a.basePrice === 0 || a.isTrial || /free/i.test(a.name || '');
+          const bFree = b.basePrice === 0 || b.isTrial || /free/i.test(b.name || '');
+          if (aFree && !bFree) return -1;
+          if (!aFree && bFree) return 1;
+          return a.basePrice - b.basePrice;
+        });
+        // Mark the most expensive as popular
+        const idxMax = normalized.reduce((idx: number, cur: any, i: number, arr: any[]) =>
+          (cur.basePrice > (arr[idx]?.basePrice ?? 0) ? i : idx), 0);
+        if (normalized[idxMax]) normalized[idxMax].popular = true;
         setPlans(normalized as any);
       }
     } catch (error) {
@@ -431,12 +457,23 @@ export default function AgentSubscriptionsPage() {
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Features:</h4>
                   <ul className="space-y-2">
-                    {(plan.features || []).map((feature: string, index: number) => (
-                      <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                        <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
+                    {(plan.features || []).map((f: any, index: number) => {
+                      const type = String(f.type);
+                      const isOn = type === 'boolean' ? Number(f.value) === 1 : true;
+                      let valueText = '';
+                      if (type === 'count') valueText = `: ${f.value}`;
+                      if (type === 'unlimited') valueText = ': Unlimited';
+                      return (
+                        <li key={index} className={`flex items-center gap-2 text-sm ${isOn ? 'text-gray-700' : 'text-gray-400 line-through'}`}>
+                          {isOn ? (
+                            <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
+                          ) : (
+                            <XCircle size={14} className="text-gray-400 flex-shrink-0" />
+                          )}
+                          <span>{f.label}{valueText}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
 
