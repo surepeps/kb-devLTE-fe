@@ -11,7 +11,8 @@ const PaymentVerificationPage = () => {
   const searchParams = useSearchParams();
   const [verificationStatus, setVerificationStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
   const [verificationData, setVerificationData] = useState<any>(null);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState<number>(5);
+  const [redirectAfterCountdown, setRedirectAfterCountdown] = useState(false);
 
   const reference = searchParams.get('reference');
   const transactionId = searchParams.get('trxref') || searchParams.get('transactionId');
@@ -27,25 +28,55 @@ const PaymentVerificationPage = () => {
   }, [reference, transactionId]);
 
   useEffect(() => {
+    if (!redirectAfterCountdown) return;
+
     if (verificationStatus === 'success' && countdown > 0) {
       const timer = setTimeout(() => {
-        setCountdown(countdown - 1);
+        setCountdown(prev => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
     } else if (verificationStatus === 'success' && countdown === 0) {
       handleRedirect();
     }
-  }, [verificationStatus, countdown]);
+  }, [verificationStatus, countdown, redirectAfterCountdown]);
 
   const verifyPayment = async () => {
     try {
       setVerificationStatus('verifying');
-      
+
       const paymentReference = reference || transactionId;
       const response = await GET_REQUEST(`${URLS.BASE}${URLS.verifyPayment}?reference=${paymentReference}`);
-      
+
       if (response.success) {
         setVerificationData(response.data);
+        const trxType = response.data?.transaction?.transactionType;
+
+        // Subscription: immediately redirect to dashboard (no receipt)
+        if (trxType === 'subscription') {
+          toast.success('Payment verified. Redirecting to dashboard...');
+          router.push('/dashboard');
+          return;
+        }
+
+        // Document verification: show receipt and then redirect to dashboard after countdown
+        if (trxType === 'document-verification') {
+          setRedirectAfterCountdown(true);
+          setCountdown(5);
+          setVerificationStatus('success');
+          toast.success('Payment verified successfully!');
+          return;
+        }
+
+        // Inspection request: show receipt and do NOT redirect
+        if (trxType === 'inspection-request') {
+          setRedirectAfterCountdown(false);
+          setVerificationStatus('success');
+          toast.success('Payment verified successfully!');
+          return;
+        }
+
+        // Default behaviour: show receipt but do not auto-redirect
+        setRedirectAfterCountdown(false);
         setVerificationStatus('success');
         toast.success('Payment verified successfully!');
       } else {
@@ -60,35 +91,26 @@ const PaymentVerificationPage = () => {
   };
 
   const handleRedirect = () => {
-    // Redirect based on transaction type and verification data
     if (verificationData?.redirectUrl) {
       window.location.href = verificationData.redirectUrl;
-    } else if (verificationData?.transaction?.transactionType) {
-      const trxId = verificationData?.transaction?._id;
-      switch (verificationData.transaction.transactionType) {
-        case 'document-verification':
-          if (trxId) {
-            router.push(`/transactions/${trxId}`);
-          } else {
-            router.push('/dashboard');
-          }
-          break;
-        case 'inspection-request':
-          if (trxId) {
-            router.push(`/transactions/${trxId}`);
-          } else {
-            router.push('/my-inspection-requests');
-          }
-          break;
-        case 'subscription':
-          router.push('/dashboard');
-          break;
-        default:
-          router.push('/dashboard');
-      }
-    } else {
-      router.push('/dashboard');
+      return;
     }
+
+    const trxType = verificationData?.transaction?.transactionType;
+
+    // Document verification: after showing receipt redirect to dashboard
+    if (trxType === 'document-verification') {
+      router.push('/dashboard');
+      return;
+    }
+
+    // Inspection request: do NOT redirect (stay on receipt)
+    if (trxType === 'inspection-request') {
+      return;
+    }
+
+    // Fallback: go to dashboard
+    router.push('/dashboard');
   };
 
   const renderVerificationStatus = () => {
@@ -139,9 +161,11 @@ const PaymentVerificationPage = () => {
                 </div>
               </div>
             )}
-            <p className="text-sm text-gray-500">
-              Redirecting in {countdown} seconds...
-            </p>
+            {redirectAfterCountdown ? (
+              <p className="text-sm text-gray-500">Redirecting in {countdown} seconds...</p>
+            ) : (
+              <p className="text-sm text-gray-500">You will remain on this page. You can navigate manually when ready.</p>
+            )}
           </div>
         );
 
