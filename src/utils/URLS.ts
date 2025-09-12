@@ -89,7 +89,7 @@ export const URLS = {
   createSubscription: "/subscriptions/create",
   renewSubscription: "/subscriptions/renew",
   cancelSubscription: "/subscriptions/cancel",
-  getSubscriptionPlans: "/subscriptions/plans",
+  getSubscriptionPlans: "/subsription-plans",
   getSubscriptionTransactions: "/account/transactions/fetchAll",
 
   /**
