@@ -14,7 +14,13 @@ interface ApiPlan {
   price: number;
   currency: string;
   durationInDays: number;
-  features: string[];
+  isTrial?: boolean;
+  discountedPlans?: Array<{ name: string; price: number; durationInDays: number; discountPercentage?: number }>;
+  features: Array<{
+    feature: { _id: string; key: string; label: string; isActive: boolean };
+    type: 'boolean' | 'count' | 'unlimited';
+    value: number;
+  }>;
 }
 
 const ForAgentsSection = () => {
@@ -26,7 +32,14 @@ const ForAgentsSection = () => {
       setLoadingPlans(true);
       const res = await GET_REQUEST<{ success: boolean; data: ApiPlan[] }>(`${URLS.BASE}${URLS.getSubscriptionPlans}`);
       if (res?.success && Array.isArray(res.data)) {
-        setPlans(res.data);
+        const sorted = [...res.data].sort((a, b) => {
+          const aFree = (a.price || 0) === 0 || a.isTrial || /free/i.test(a.name || '');
+          const bFree = (b.price || 0) === 0 || b.isTrial || /free/i.test(b.name || '');
+          if (aFree && !bFree) return -1;
+          if (!aFree && bFree) return 1;
+          return (a.price || 0) - (b.price || 0);
+        });
+        setPlans(sorted);
       } else {
         setPlans([]);
       }
@@ -175,14 +188,21 @@ const ForAgentsSection = () => {
                         </p>
                       </div>
                       <ul className="space-y-3 mb-6">
-                        {(plan.features || []).map((feature, index) => (
-                          <li key={index} className="flex items-center gap-3">
-                            <svg className="w-5 h-5 text-[#8DDB90]" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                            <span className="text-gray-700">{feature}</span>
-                          </li>
-                        ))}
+                        {(plan.features || []).map((f, index) => {
+                          const type = String(f.type);
+                          const isOn = type === 'boolean' ? Number(f.value) === 1 : true;
+                          let valueText = '';
+                          if (type === 'count') valueText = `: ${f.value}`;
+                          if (type === 'unlimited') valueText = ': Unlimited';
+                          return (
+                            <li key={index} className={`flex items-center gap-3 ${isOn ? '' : 'text-gray-400 line-through'}`}>
+                              <svg className={`w-5 h-5 ${isOn ? 'text-[#8DDB90]' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              <span className="text-gray-700">{f.feature?.label}{valueText}</span>
+                            </li>
+                          );
+                        })}
                       </ul>
                       <Link href="/agent-subscriptions">
                         <button className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-3 px-4 sm:px-6 rounded-full font-bold transition-colors duration-300 text-sm sm:text-base flex items-center justify-center min-h-[48px]">
