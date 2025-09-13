@@ -114,7 +114,7 @@ const UserProfile: React.FC<UserProfileModalProps> = ({
             icon: <Briefcase size={18} />,
             label: "Subscription",
             action: () => {
-              router.push("/subscription");
+              router.push("/agent-subscriptions");
               closeUserProfileModal(false);
             },
           },

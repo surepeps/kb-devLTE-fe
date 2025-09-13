@@ -42,6 +42,18 @@ export interface HomePageSettings {
   post_property_thumbnail_url?: string; 
 }
 
+export interface SocialLinksSettings {
+  facebook_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  linkedin_url?: string;
+  youtube_url?: string;
+  tiktok_url?: string;
+  whatsapp_url?: string;
+  telegram_url?: string;
+  website_url?: string;
+}
+
 export interface DocumentVerificationSettings {
   verification_price?: number;
   multi_document_price?: number;
@@ -60,4 +72,4 @@ export interface InspectionSettings {
   max_counter_counts?: number;
 }
 
-export type SystemSettingsCategory = 'home-page' | 'subscription' | 'document-verification' | 'continue-inspection';
+export type SystemSettingsCategory = 'home-page' | 'social-links' | 'subscription' | 'document-verification' | 'continue-inspection';

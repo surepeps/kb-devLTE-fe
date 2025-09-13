@@ -42,7 +42,7 @@ const NewHomepage = ({
 }: { isComingSoon?: boolean } = {}) => {
   // Simulating the loading page
   const isLoading = useLoading();
-  // Get settings loading state
+  // Get settings loading state 
   const { loading: settingsLoading } = useHomePageSettings();
 
   /**
