@@ -290,7 +290,7 @@ export default function AgentDashboard() {
               <div className="text-xs text-gray-500 mb-1">Referral</div>
               <div className="flex items-center justify-center gap-3">
                 <code className="font-mono text-[#09391C] text-sm">{referral.code || "—"}</code>
-                <button onClick={async () => { try { await navigator.clipboard.writeText(referral.code); toast.success("Copied"); } catch { toast.error("Copy failed"); } }} className="p-1.5 rounded bg-gray-50 hover:bg-gray-100" aria-label="Copy referral code"><Copy size={14} /></button>
+                <button onClick={async () => { try { const url = `${window.location.origin}/auth/register?ref=${referral.code}`; await navigator.clipboard.writeText(url); toast.success("Referral link copied"); } catch { toast.error("Copy failed"); } }} className="p-1.5 rounded bg-gray-50 hover:bg-gray-100" aria-label="Copy referral link"><Copy size={14} /></button>
               </div>
               <div className="mt-2 text-xs text-[#5A5D63]">{referral.totalReferred} referred • ₦{referral.earnings.toLocaleString()}</div>
             </div>
