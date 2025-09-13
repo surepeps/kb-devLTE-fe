@@ -43,10 +43,10 @@ const PendingKycReview: React.FC = () => {
   const status = agent?.kycStatus as string | undefined;
   const kyc = agent?.kycData || {};
 
-  const meansOfId: any[] = agent?.meansOfId || [];
-  const address = agent?.address || {};
-  const regions: string[] = agent?.regionOfOperation || [];
-  const agentType: string | undefined = agent?.agentType;
+  const meansOfId: any[] = agent?.meansOfId || kyc?.meansOfId || [];
+  const address = agent?.address || kyc?.address || {};
+  const regions: string[] = agent?.regionOfOperation || kyc?.regionOfOperation || [];
+  const agentType: string | undefined = agent?.agentType || kyc?.agentType;
 
   const statusLabel = status === "in_review"
     ? "Your KYC is currently being reviewed"
