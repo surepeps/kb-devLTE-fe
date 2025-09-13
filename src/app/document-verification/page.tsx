@@ -285,8 +285,10 @@ const DocumentVerificationPage: React.FC = () => {
     }
 
     for (const doc of selectedDocuments) {
-      if (!uploadedFiles[doc] || uploadedFiles[doc]?.uploadStatus !== 'success') {
-        toast.error(`Please upload ${getDocumentDisplayName(doc)}`);
+      const hasFile = !!uploadedFiles[doc] && uploadedFiles[doc]?.uploadStatus === 'success';
+      const hasNumber = !!documentNumbers[doc]?.trim();
+      if (!hasFile && !hasNumber) {
+        toast.error(`Provide either a file or the ${getDocumentDisplayName(doc)} number`);
         return false;
       }
     }
@@ -598,7 +600,7 @@ const DocumentVerificationPage: React.FC = () => {
                   {/* Document Number Section */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                      🔢 Document Number (Optional)
+                      🔢 Document Number
                     </label>
                     <input
                       type="text"

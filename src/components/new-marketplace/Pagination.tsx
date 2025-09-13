@@ -47,13 +47,20 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const visiblePages = getVisiblePages();
 
+  const changePage = (page: number) => {
+    onPageChange(page);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   if (totalPages <= 1) return null;
 
   return (
     <div className="flex items-center justify-center space-x-2">
       {/* Previous Button */}
       <button
-        onClick={() => onPageChange(currentPage - 1)}
+        onClick={() => changePage(currentPage - 1)}
         disabled={currentPage === 1}
         className={`p-2 rounded-lg border transition-colors ${
           currentPage === 1
@@ -71,7 +78,7 @@ const Pagination: React.FC<PaginationProps> = ({
             <span className="px-3 py-2 text-[#5A5D63]">...</span>
           ) : (
             <button
-              onClick={() => onPageChange(page as number)}
+              onClick={() => changePage(page as number)}
               className={`px-3 py-2 rounded-lg border transition-colors ${
                 currentPage === page
                   ? "bg-[#8DDB90] text-white border-[#8DDB90]"
@@ -86,7 +93,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Next Button */}
       <button
-        onClick={() => onPageChange(currentPage + 1)}
+        onClick={() => changePage(currentPage + 1)}
         disabled={currentPage === totalPages}
         className={`p-2 rounded-lg border transition-colors ${
           currentPage === totalPages
