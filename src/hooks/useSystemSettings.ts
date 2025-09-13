@@ -7,14 +7,16 @@ import {
   getHomePageSettings,
   getDocumentVerificationSettings,
   getInspectionSettings,
-  getDocumentVerificationPrices
+  getDocumentVerificationPrices,
+  getSocialLinksSettings
 } from '@/services/systemSettingsService';
 import { 
   SystemSettingsCategory, 
   SubscriptionSettings, 
   HomePageSettings, 
   DocumentVerificationSettings, 
-  InspectionSettings 
+  InspectionSettings, 
+  SocialLinksSettings
 } from '@/types/system-settings';
 
 interface UseSystemSettingsReturn<T> {
@@ -47,6 +49,9 @@ export const useSystemSettings = <T>(
           break;
         case 'home-page':
           result = await getHomePageSettings();
+          break;
+        case 'social-links':
+          result = await getSocialLinksSettings();
           break;
         case 'document-verification':
           result = await getDocumentVerificationSettings();
@@ -88,10 +93,14 @@ export const useSystemSettings = <T>(
  */
 export const useSubscriptionSettings = (): UseSystemSettingsReturn<SubscriptionSettings> => {
   return useSystemSettings<SubscriptionSettings>('subscription');
-};
+}; 
 
 export const useHomePageSettings = (): UseSystemSettingsReturn<HomePageSettings> => {
   return useSystemSettings<HomePageSettings>('home-page');
+};
+
+export const useSocialLinskSettings = (): UseSystemSettingsReturn<SocialLinksSettings> => {
+  return useSystemSettings<SocialLinksSettings>('social-links');
 };
 
 export const useDocumentVerificationSettings = (): UseSystemSettingsReturn<DocumentVerificationSettings> => {

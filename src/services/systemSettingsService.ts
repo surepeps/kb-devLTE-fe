@@ -9,7 +9,8 @@ import {
   SubscriptionSettings,
   HomePageSettings,
   DocumentVerificationSettings,
-  InspectionSettings
+  InspectionSettings,
+  SocialLinksSettings
 } from "@/types/system-settings";
 
 /**
@@ -96,6 +97,25 @@ export const getHomePageSettings = async (): Promise<HomePageSettings> => {
     return {};
   }
 };
+
+
+/**
+ * Get home page settings as typed object
+ */
+export const getSocialLinksSettings = async (): Promise<SocialLinksSettings> => {
+  try {
+    const response = await getSystemSettings('social-links');
+    if (response.success && response.data) {
+      return convertSettingsToObject<SocialLinksSettings>(response.data);
+    }
+    return {};
+  } catch (error) {
+    console.error('Error fetching home page settings:', error);
+    return {};
+  }
+};
+
+
 
 /**
  * Get document verification settings as typed object
