@@ -9,18 +9,7 @@ import AboutUsUnit from '@/components/aboutus_unit';
 import { usePageContext } from '@/context/page-context';
 import CEO from '@/components/general-components/displayCEO';
 import { useLoading } from '@/hooks/useLoading';
-import team1 from '@/assets/Team1.png';
-import team2 from '@/assets/Team2.png';
-import Image from 'next/image';
-import abisoyeImage from '@/assets/Abisoye.png';
-import abolanleImage from '@/assets/Abolanle.png';
-import adesayoImage from '@/assets/Adesayo.png';
-import oladipoImage from '@/assets/Oladipo.png';
-import ayowoleImage from '@/assets/Ayowole.png';
-import fasimoye from '@/assets/Fasimoye.png';
-import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { AnimatePresence } from 'framer-motion';
-import { motion } from 'framer-motion';
 
 const AboutUs = () => {
   //Simulating the loading page
@@ -107,73 +96,6 @@ const AboutUs = () => {
           )}
         </div>
 
-        {/**Meet Our Team */}
-        <div className='lg:min-h-[995px] min-h-[783px] w-full lg:w-[1203px] bg-[#8DDB901A] mt-[60px] lg:px-[70px] px-[20px] py-[30px] lg:py-[50px] flex flex-col items-center gap-[20px] lg:gap-[40px]'>
-          <h2 className='lg:text-[42px] text-[24px] leading-[26.4px] font-semibold lg:leading-[46px] text-[#09391C]'>
-            Meet Our Team
-          </h2>
-          <div className='container flex flex-col gap-[50px]'>
-            <div className='flex flex-col gap-[18px] w-full'>
-              <div className='min-h-[289px] w-full flex md:flex-row flex-col gap-[20px] justify-between'>
-                <Image
-                  src={team1}
-                  alt='Team'
-                  className='md:w-1/2 w-full object-cover'
-                />
-                <Image
-                  src={team2}
-                  alt='Team'
-                  className='md:w-1/2 w-full object-cover'
-                />
-              </div>
-              <p className='text-center text-base md:text-lg text-[#09391C]'>
-                Meet the minds behind Khabi-teq Realty a passionate, driven team
-                working together to reshape the future of real estate with
-                transparency, trust, and technology at the core of everything we
-                do.
-              </p>
-            </div>
-            <div className='w-full px-[10px] flex justify-center items-center '>
-              <div className='grid md:grid-cols-3 md:gap-[40px] gap-[20px]'>
-                {teamMembers.map(
-                  (
-                    member: {
-                      image: StaticImport;
-                      name: string;
-                      positionHeld: string;
-                    },
-                    idx: number
-                  ) => (
-                    <motion.div
-                      initial={{ y: 20, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.2 }}
-                      exit={{ y: 20, opacity: 0 }}
-                      key={idx}
-                      className='flex flex-col items-center justify-center gap-[9px] lg:w-[305px]'>
-                      <Image
-                        title={`${member.name}, ${member.positionHeld}`}
-                        src={member.image}
-                        alt={member.name}
-                        className='h-[317px] w-full object-cover cursor-pointer'
-                      />
-                      <div className='flex items-center justify-center flex-col'>
-                        <h3 className='text-lg font-semibold text-[#09391C] text-center'>
-                          {member.name}
-                        </h3>
-                        <h3 className='text-lg text-center text-[#09391C]'>
-                          {member.positionHeld}
-                        </h3>
-                      </div>
-                    </motion.div>
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/**CEO */}
         <div
           ref={divRef}
@@ -190,43 +112,5 @@ const AboutUs = () => {
     </section>
   );
 };
-
-const teamMembers: {
-  image: StaticImport;
-  name: string;
-  positionHeld: string;
-}[] = [
-  {
-    image: oladipoImage,
-    name: 'Oladipo Onakoya',
-    positionHeld: 'CEO/Founder',
-  },
-  {
-    image: abisoyeImage,
-    name: 'Abisoye Onakoya',
-    positionHeld: 'Head of Operation',
-  },
-
-  {
-    image: ayowoleImage,
-    name: 'Ayowole Ajayi',
-    positionHeld: 'CTO',
-  },
-  // {
-  //   image: fasimoye,
-  //   name: 'Fasimoye Olatunji',
-  //   positionHeld: 'Product Consultant',
-  // },
-  {
-    image: abolanleImage,
-    name: 'Abolanle Okunade',
-    positionHeld: 'Executive Assistant',
-  },
-  {
-    image: adesayoImage,
-    name: 'Adesayo Okubajo',
-    positionHeld: `Business  Development & Strategy Lead`,
-  },
-];
 
 export default AboutUs;
