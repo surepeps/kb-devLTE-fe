@@ -118,7 +118,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     validateOnChange: false,
     onSubmit: async (values) => {
       const nights = values.checkIn && values.checkOut ? Math.ceil((values.checkOut.getTime() - values.checkIn.getTime()) / (1000 * 60 * 60 * 24)) : 0;
-      const total = nights > 0 ? nightly * nights : 0;
+      const total = nights > 0 ? nightly * nights + cleaningFee + securityDeposit : 0;
 
       const apiPayload: any = {
         bookedBy: {
@@ -175,7 +175,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return Math.max(0, diff);
   }, [formik.values.checkIn, formik.values.checkOut]);
 
-  const total = useMemo(() => (nights > 0 ? nightly * nights : 0), [nightly, nights]);
+  const total = useMemo(() => (nights > 0 ? nightly * nights + cleaningFee + securityDeposit : 0), [nightly, nights, cleaningFee, securityDeposit]);
 
   const proceedNext = async () => {
     try {
