@@ -38,9 +38,6 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     addNegotiatedPrice,
     removeNegotiatedPrice,
     getNegotiatedPrice,
-    addLOIDocument,
-    removeLOIDocument,
-    getLOIDocument,
   } = useGlobalPropertyActions();
 
   const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
