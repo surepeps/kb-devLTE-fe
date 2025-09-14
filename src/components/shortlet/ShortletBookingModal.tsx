@@ -23,13 +23,27 @@ interface ShortletBookingModalProps {
 }
 
 const getNightlyRate = (property: any): number => {
-  const daily = property?.pricing?.daily;
-  if (typeof daily === "number" && daily > 0) return daily;
-  const weekly = property?.pricing?.weekly;
-  const monthly = property?.pricing?.monthly;
-  if (typeof weekly === "number" && weekly > 0) return Math.round(weekly / 7);
-  if (typeof monthly === "number" && monthly > 0) return Math.round(monthly / 30);
-  return Number(property?.price || 0);
+  const sd = property?.shortletDetails;
+  const nightlyFromDetails = sd?.pricing?.nightly;
+  if (typeof nightlyFromDetails === "number" && nightlyFromDetails > 0) return nightlyFromDetails;
+
+  const dailyLegacy = property?.pricing?.daily;
+  if (typeof dailyLegacy === "number" && dailyLegacy > 0) return dailyLegacy;
+
+  const weeklyLegacy = property?.pricing?.weekly;
+  if (typeof weeklyLegacy === "number" && weeklyLegacy > 0) return Math.round(weeklyLegacy / 7);
+
+  const monthlyLegacy = property?.pricing?.monthly;
+  if (typeof monthlyLegacy === "number" && monthlyLegacy > 0) return Math.round(monthlyLegacy / 30);
+
+  const duration = property?.shortletDuration;
+  const price = Number(property?.price || 0);
+  if (price > 0 && typeof duration === "string") {
+    const divisor = duration === "Daily" ? 1 : duration === "Weekly" ? 7 : duration === "Monthly" ? 30 : 0;
+    if (divisor > 0) return Math.round(price / divisor);
+  }
+
+  return price;
 };
 
 const formatCurrency = (amount: number) =>
@@ -63,8 +77,13 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const [step, setStep] = useState<1 | 2>(1);
   const [successOpen, setSuccessOpen] = useState(false);
 
-  const maxGuests = Number(property?.maxGuests || 10);
+  const maxGuests = Number(property?.shortletDetails?.maxGuests ?? property?.maxGuests ?? 10);
   const nightly = useMemo(() => getNightlyRate(property), [property]);
+  const shortletDuration = property?.shortletDuration;
+  const listedPrice = Number(property?.price || 0);
+  const cleaningFee = Number(property?.shortletDetails?.pricing?.cleaningFee ?? property?.pricing?.cleaningFee ?? 0);
+  const securityDeposit = Number(property?.shortletDetails?.pricing?.securityDeposit ?? property?.pricing?.securityDeposit ?? 0);
+  const durationUnit = shortletDuration === "Daily" ? "day" : shortletDuration === "Weekly" ? "week" : shortletDuration === "Monthly" ? "month" : shortletDuration;
 
   // Validation schemas per step
   const step1Schema = Yup.object({
@@ -364,9 +383,29 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
 
                   <div className="md:col-span-2 bg-gray-50 rounded-lg p-3 border border-gray-200">
                     <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-600">Duration</p>
+                      <p className="text-sm font-semibold">{shortletDuration || "-"}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-600">Listed Price</p>
+                      <p className="text-sm font-semibold">{formatCurrency(listedPrice)}{shortletDuration ? ` / ${durationUnit}` : ""}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-600">Nightly</p>
                       <p className="text-sm font-semibold">{formatCurrency(nightly)}</p>
                     </div>
+                    {cleaningFee > 0 && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600">Cleaning Fee</p>
+                        <p className="text-sm font-semibold">{formatCurrency(cleaningFee)}</p>
+                      </div>
+                    )}
+                    {securityDeposit > 0 && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600">Security Deposit</p>
+                        <p className="text-sm font-semibold">{formatCurrency(securityDeposit)}</p>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-600">Nights</p>
                       <p className="text-sm font-semibold">{nights}</p>
