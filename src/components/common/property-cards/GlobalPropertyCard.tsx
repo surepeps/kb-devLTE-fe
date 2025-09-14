@@ -30,6 +30,10 @@ interface GlobalPropertyCardProps {
     negotiatedPrice: number;
   } | null;
   className?: string;
+  // Mode determines which actions to render
+  mode?: "standard" | "shortlet";
+  onBookNow?: () => void;
+  onRequestToBook?: () => void;
 } 
  
 const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
@@ -45,9 +49,13 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
   isSelected = false,
   negotiatedPrice,
   className = "",
+  mode = "standard",
+  onBookNow,
+  onRequestToBook,
 }) => {
   const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
-  
+  const computedMode = mode ?? ((property as any)?.briefType === "Shortlet" || (property as any)?.propertyType === "Shortlet" ? "shortlet" : "standard");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -185,83 +193,102 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
             </button>
           </div>
 
-          {/* Action Buttons - Always show */}
+          {/* Action Buttons */}
           <div className="flex flex-col gap-2 pt-2 mt-auto">
-            {/* Price Negotiation Button */}
-            {hasNegotiatedPrice && isSelected ? (
-              <div className="flex gap-2">
+            {computedMode === "shortlet" ? (
+              <>
                 <Button
-                  value="Edit Price"
+                  value="Book Now"
                   type="button"
-                  onClick={onEditPrice || onPriceNegotiation || (() => {})}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                  onClick={onBookNow || (() => {})}
+                  className="min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#09391C] transition-colors"
                 />
                 <Button
-                  value="Clear"
+                  value="Request to Book"
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onRemoveNegotiation) {
-                      if (property._id) {
-                        onRemoveNegotiation(property._id);
-                      }
-                    }
-                  }}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
+                  onClick={onRequestToBook || (() => {})}
+                  className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
                 />
-              </div>
-            ) : hasNegotiatedPrice ? (
-              <div className="flex gap-2">
-                <Button
-                  value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
-                  type="button"
-                  onClick={onPriceNegotiation || (() => {})}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors"
-                />
-                {onRemoveNegotiation && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (property._id) {
-                        onRemoveNegotiation(property._id);
-                      }
-                    }}
-                    className="min-h-[40px] px-3 bg-[#F44336] text-[#FFFFFF] hover:bg-[#D32F2F] transition-colors rounded flex items-center justify-center"
-                    title="Clear negotiated price"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
+              </>
             ) : (
-              <Button
-                value="Price Negotiation"
-                type="button"
-                onClick={onPriceNegotiation || (() => {})}
-                className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
-              />
-            )}
+              <>
+                {/* Price Negotiation Button */}
+                {hasNegotiatedPrice && isSelected ? (
+                  <div className="flex gap-2">
+                    <Button
+                      value="Edit Price"
+                      type="button"
+                      onClick={onEditPrice || onPriceNegotiation || (() => {})}
+                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                    />
+                    <Button
+                      value="Clear"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onRemoveNegotiation) {
+                          if (property._id) {
+                            onRemoveNegotiation(property._id);
+                          }
+                        }
+                      }}
+                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
+                    />
+                  </div>
+                ) : hasNegotiatedPrice ? (
+                  <div className="flex gap-2">
+                    <Button
+                      value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
+                      type="button"
+                      onClick={onPriceNegotiation || (() => {})}
+                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors"
+                    />
+                    {onRemoveNegotiation && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (property._id) {
+                            onRemoveNegotiation(property._id);
+                          }
+                        }}
+                        className="min-h-[40px] px-3 bg-[#F44336] text-[#FFFFFF] hover:bg-[#D32F2F] transition-colors rounded flex items-center justify-center"
+                        title="Clear negotiated price"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <Button
+                    value="Price Negotiation"
+                    type="button"
+                    onClick={onPriceNegotiation || (() => {})}
+                    className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                  />
+                )}
 
-            {/* Select for Inspection Button */}
-            <button
-              onClick={onInspectionToggle || (() => {})}
-              disabled={false}
-              className={`min-h-[40px] py-[8px] px-[16px] ${
-                isSelected
-                  ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
-                  : "bg-[#8DDB90] hover:bg-[#76c77a]"
-              } text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
-              type="button"
-            >
-              {isSelected ? (
-                <>
-                  <span>Selected</span>
-                  <X size={14} className="text-white" />
-                </>
-              ) : (
-                "Select for Inspection"
-              )}
-            </button>
+                {/* Select for Inspection Button */}
+                <button
+                  onClick={onInspectionToggle || (() => {})}
+                  disabled={false}
+                  className={`min-h-[40px] py-[8px] px-[16px] ${
+                    isSelected
+                      ? "bg-[#09391C] hover:bg-[#0B423D] cursor-pointer"
+                      : "bg-[#8DDB90] hover:bg-[#76c77a]"
+                  } text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-center gap-2 transition-colors rounded`}
+                  type="button"
+                >
+                  {isSelected ? (
+                    <>
+                      <span>Selected</span>
+                      <X size={14} className="text-white" />
+                    </>
+                  ) : (
+                    "Select for Inspection"
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

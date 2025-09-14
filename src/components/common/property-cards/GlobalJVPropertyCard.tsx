@@ -19,15 +19,15 @@ interface GlobalJVPropertyCardProps {
   images: PropertyImage[];
   isPremium: boolean;
   onPropertyClick?: () => void;
-  onLOIUpload?: () => void;
-  onUpdateLOI?: () => void;
+  onPriceNegotiation?: () => void;
+  onEditPrice?: () => void;
   onInspectionToggle?: () => void;
-  onRemoveLOI?: (propertyId: string) => void;
+  onRemoveNegotiation?: (propertyId: string) => void;
   isSelected?: boolean;
-  loiDocument?: {
+  negotiatedPrice?: {
     propertyId: string;
-    document: File | null;
-    documentUrl?: string;
+    originalPrice: number;
+    negotiatedPrice: number;
   } | null;
   className?: string;
 } 
@@ -38,16 +38,16 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   images,
   isPremium,
   onPropertyClick,
-  onLOIUpload,
-  onUpdateLOI,
+  onPriceNegotiation,
+  onEditPrice,
   onInspectionToggle,
-  onRemoveLOI,
+  onRemoveNegotiation,
   isSelected = false,
-  loiDocument,
+  negotiatedPrice,
   className = "",
 }) => {
 
-  const hasLOIDocument = loiDocument != null && loiDocument !== undefined;
+  const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -187,51 +187,60 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
             </button>
           </div>
 
-          {/* Action Buttons - Always show */}
+          {/* Action Buttons */}
           <div className="flex flex-col gap-2 pt-2 mt-auto">
-            {/* Submit LOI Button */}
-            {hasLOIDocument && isSelected ? (
+            {/* Price Negotiation Button */}
+            {hasNegotiatedPrice && isSelected ? (
               <div className="flex gap-2">
                 <Button
-                  value="Update LOI"
+                  value="Edit Price"
                   type="button"
-                  onClick={onUpdateLOI || onLOIUpload || (() => {})}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors"
+                  onClick={onEditPrice || onPriceNegotiation || (() => {})}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
                 />
                 <Button
                   value="Clear"
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (onRemoveLOI) {
-                      onRemoveLOI(property._id);
+                    if (onRemoveNegotiation) {
+                      if (property._id) {
+                        onRemoveNegotiation(property._id);
+                      }
                     }
                   }}
                   className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
                 />
               </div>
-            ) : hasLOIDocument ? (
-              <div className="min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold flex items-center justify-between rounded">
-                <span className="text-xs">LOI Document Uploaded</span>
-                {onRemoveLOI && (
+            ) : hasNegotiatedPrice ? (
+              <div className="flex gap-2">
+                <Button
+                  value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
+                  type="button"
+                  onClick={onPriceNegotiation || (() => {})}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors"
+                />
+                {onRemoveNegotiation && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onRemoveLOI(property._id);
+                      if (property._id) {
+                        onRemoveNegotiation(property._id);
+                      }
                     }}
-                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors ml-2"
-                    title="Clear LOI document"
+                    className="min-h-[40px] px-3 bg-[#F44336] text-[#FFFFFF] hover:bg-[#D32F2F] transition-colors rounded flex items-center justify-center"
+                    title="Clear negotiated price"
                   >
-                    <X size={14} className="text-white" />
+                    <X size={16} />
                   </button>
                 )}
               </div>
             ) : (
               <Button
-                value="Submit LOI"
+                value="Price Negotiation"
                 type="button"
-                onClick={onLOIUpload || (() => {})}
-                className="min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors"
+                onClick={onPriceNegotiation || (() => {})}
+                className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
               />
             )}
 
