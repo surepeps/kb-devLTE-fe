@@ -211,6 +211,13 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   };
 
   const footerButtonText = step === 1 ? "Next" : mode === "instant" ? "Proceed to Payment" : "Submit Request";
+  const canProceedStep1 = total > 0 && nights > 0;
+  const canSubmitStep2 = (
+    typeof formik.values.fullName === "string" && formik.values.fullName.trim().length > 0 &&
+    typeof formik.values.email === "string" && formik.values.email.trim().length > 0 &&
+    typeof formik.values.phoneNumber === "string" && formik.values.phoneNumber.trim().length > 0
+  );
+  const isFooterDisabled = step === 1 ? !canProceedStep1 : !canSubmitStep2;
 
   return (
     <AnimatePresence>
