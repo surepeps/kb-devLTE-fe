@@ -11,6 +11,9 @@ import toast from "react-hot-toast";
 import { POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Calendar, Clock, Users } from "lucide-react";
 
 interface ShortletBookingModalProps {
   isOpen: boolean;
@@ -32,165 +35,160 @@ const getNightlyRate = (property: any): number => {
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 }).format(amount);
 
-const StepIndicator: React.FC<{ step: 1 | 2 }> = ({ step }) => (
-  <div className="flex items-center justify-center gap-3 mb-4">
-    {[1, 2].map((s) => (
-      <div key={s} className={`h-2 w-24 rounded-full ${step === s ? "bg-emerald-600" : "bg-gray-200"}`} />
-    ))}
-  </div>
+// Custom input for DatePicker
+const DateTimeInput = React.forwardRef<HTMLButtonElement, { value?: string; onClick?: () => void; placeholder?: string; error?: string; label: string }>(
+  ({ value, onClick, placeholder, error, label }, ref) => (
+    <div className="w-full">
+      <span className="block text-sm font-medium text-gray-700 mb-1">{label}</span>
+      <button
+        type="button"
+        onClick={onClick}
+        ref={ref}
+        className={`w-full text-left bg-white border ${error ? "border-red-400" : "border-gray-300"} rounded-lg px-3 py-2 flex items-center justify-between hover:border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-200`}
+      >
+        <span className={`flex items-center gap-2 text-sm ${value ? "text-gray-900" : "text-gray-400"}`}>
+          <Calendar className="w-4 h-4 text-emerald-600" />
+          {value || placeholder}
+        </span>
+        <Clock className="w-4 h-4 text-gray-400" />
+      </button>
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+    </div>
+  )
 );
-
-const InfoBox: React.FC<{ mode: "instant" | "request" }> = ({ mode }) => (
-  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-900 text-xs leading-relaxed mb-4">
-    {mode === "instant" ? (
-      <ul className="list-disc pl-5 space-y-1">
-        <li>Select check-in/out dates and times. Add guests and an optional note.</li>
-        <li>Enter your contact information (used for receipt and support).</li>
-        <li>Proceed to secure payment. Once paid, your booking is confirmed instantly.</li>
-        <li>Notifications are sent to you and the host with full booking details.</li>
-      </ul>
-    ) : (
-      <ul className="list-disc pl-5 space-y-1">
-        <li>Select preferred check-in/out dates and times. Add guests and an optional note.</li>
-        <li>Enter your contact information (used to contact you about approval).</li>
-        <li>Submit your request. The host has a limited time window to accept.</li>
-        <li>If accepted, you’ll be prompted to complete payment to confirm the booking. If declined/expired, you’ll be notified.</li>
-      </ul>
-    )}
-  </div>
-);
+DateTimeInput.displayName = "DateTimeInput";
 
 const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onClose, property, mode }) => {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
+  const [successOpen, setSuccessOpen] = useState(false);
 
-  // Step 1
-  const [checkIn, setCheckIn] = useState<Date | null>(null);
-  const [checkOut, setCheckOut] = useState<Date | null>(null);
-  const [guests, setGuests] = useState<number>(1);
-  const [note, setNote] = useState<string>("");
+  const maxGuests = Number(property?.maxGuests || 10);
+  const nightly = useMemo(() => getNightlyRate(property), [property]);
 
-  // Step 2
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [whatsAppNumber, setWhatsAppNumber] = useState("");
+  // Validation schemas per step
+  const step1Schema = Yup.object({
+    checkIn: Yup.date().typeError("Select check-in").required("Check-in is required"),
+    checkOut: Yup.date()
+      .typeError("Select check-out")
+      .required("Check-out is required")
+      .when("checkIn", (checkIn: Date, schema: any) => (checkIn ? schema.min(checkIn, "Check-out must be after check-in") : schema)),
+    guests: Yup.number().min(1, "Min 1 guest").max(maxGuests, `Max ${maxGuests}`).required("Guests is required"),
+    note: Yup.string().max(500, "Note too long").optional(),
+  });
+
+  const step2Schema = Yup.object({
+    fullName: Yup.string().trim().min(2, "Enter full name").required("Full name is required"),
+    email: Yup.string().trim().email("Enter a valid email").required("Email is required"),
+    phoneNumber: Yup.string().trim().min(7, "Enter a valid phone").required("Phone is required"),
+    whatsAppNumber: Yup.string().trim().optional(),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      checkIn: null as Date | null,
+      checkOut: null as Date | null,
+      guests: 1,
+      note: "",
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      whatsAppNumber: "",
+    },
+    validateOnBlur: true,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      const nights = values.checkIn && values.checkOut ? Math.ceil((values.checkOut.getTime() - values.checkIn.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+      const total = nights > 0 ? nightly * nights : 0;
+
+      const apiPayload: any = {
+        bookedBy: {
+          fullName: values.fullName.trim(),
+          email: values.email.trim(),
+          phoneNumber: values.phoneNumber.trim(),
+          ...(values.whatsAppNumber.trim() ? { whatsAppNumber: values.whatsAppNumber.trim() } : {}),
+        },
+        propertyId: property?._id,
+        bookingDetails: {
+          checkInDateTime: values.checkIn?.toISOString(),
+          checkOutDateTime: values.checkOut?.toISOString(),
+          guestNumber: values.guests,
+          ...(values.note.trim() ? { note: values.note.trim() } : {}),
+        },
+        paymentDetails: {
+          amountToBePaid: total,
+        },
+        bookingMode: mode,
+      };
+
+      try {
+        const token = Cookies.get("token");
+        const url = `${URLS.BASE}/inspections/book-request`;
+        const response: any = await toast.promise(
+          POST_REQUEST(url, apiPayload, token),
+          {
+            loading: mode === "instant" ? "Initializing payment..." : "Submitting booking request...",
+            success: mode === "instant" ? "Payment initialized" : "Request submitted",
+            error: "Failed to submit. Please try again.",
+          }
+        );
+
+        if (mode === "request") {
+          setSuccessOpen(true);
+          return;
+        }
+
+        const payUrl = response?.data?.transaction?.authorizedUrl || response?.transaction?.authorizedUrl;
+        if (payUrl) {
+          window.location.href = payUrl;
+          return;
+        }
+        const q = new URLSearchParams({ amount: String(total || 0), purpose: "shortlet-booking" });
+        router.push(`/payment-details?${q.toString()}`);
+      } catch {}
+    },
+  });
 
   const nights = useMemo(() => {
+    const { checkIn, checkOut } = formik.values;
     if (!checkIn || !checkOut) return 0;
     const diff = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(0, diff);
-  }, [checkIn, checkOut]);
+  }, [formik.values.checkIn, formik.values.checkOut]);
 
-  const nightly = useMemo(() => getNightlyRate(property), [property]);
   const total = useMemo(() => (nights > 0 ? nightly * nights : 0), [nightly, nights]);
 
-  const maxGuests = Number(property?.maxGuests || 10);
-
-  const validStep1 = !!checkIn && !!checkOut && checkOut > checkIn && guests >= 1 && guests <= maxGuests;
-  const validStep2 = fullName.trim().length > 1 && /.+@.+\..+/.test(email) && phoneNumber.trim().length >= 7;
-
-  const saveDraft = (status: "draft" | "request" | "instant") => {
-    const payload = {
-      status,
-      mode,
-      propertyId: property?._id,
-      title: property?.propertyType || "Shortlet",
-      location: property?.location,
-      checkIn: checkIn?.toISOString(),
-      checkOut: checkOut?.toISOString(),
-      guests,
-      note: note.trim(),
-      nights,
-      nightly,
-      total,
-      contact: { fullName: fullName.trim(), email: email.trim(), phoneNumber: phoneNumber.trim(), whatsAppNumber: whatsAppNumber.trim() },
-    };
+  const proceedNext = async () => {
     try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("shortletBookingDraft", JSON.stringify(payload));
-      }
-    } catch {}
-    return payload;
+      await step1Schema.validate(formik.values, { abortEarly: false });
+      setStep(2);
+    } catch (err: any) {
+      const errors: Record<string, string> = {};
+      (err.inner || []).forEach((e: any) => {
+        if (e.path) errors[e.path] = e.message;
+      });
+      formik.setErrors(errors);
+      toast.error("Fix the highlighted fields");
+    }
   };
 
-  const [successOpen, setSuccessOpen] = useState(false);
+  const submitFinal = async () => {
+    try {
+      await step2Schema.validate(formik.values, { abortEarly: false });
+      await formik.handleSubmit();
+    } catch (err: any) {
+      const errors: Record<string, string> = {};
+      (err.inner || []).forEach((e: any) => {
+        if (e.path) errors[e.path] = e.message;
+      });
+      formik.setErrors(errors);
+      toast.error("Fix the highlighted fields");
+    }
+  };
 
   const resetForm = () => {
     setStep(1);
-    setCheckIn(null);
-    setCheckOut(null);
-    setGuests(1);
-    setNote("");
-    setFullName("");
-    setEmail("");
-    setPhoneNumber("");
-    setWhatsAppNumber("");
-  };
-
-  const handlePrimary = async () => {
-    if (step === 1) {
-      if (!validStep1) {
-        toast.error("Enter valid dates, times and guest count");
-        return;
-      }
-      setStep(2);
-      return;
-    }
-
-    if (!validStep2) {
-      toast.error("Fill in your contact information correctly");
-      return;
-    }
-
-    const token = Cookies.get("token");
-
-    const apiPayload: any = {
-      bookedBy: {
-        fullName: fullName.trim(),
-        email: email.trim(),
-        phoneNumber: phoneNumber.trim(),
-        ...(whatsAppNumber.trim() ? { whatsAppNumber: whatsAppNumber.trim() } : {}),
-      },
-      propertyId: property?._id,
-      bookingDetails: {
-        checkInDateTime: checkIn?.toISOString(),
-        checkOutDateTime: checkOut?.toISOString(),
-        guestNumber: guests,
-        ...(note.trim() ? { note: note.trim() } : {}),
-      },
-      paymentDetails: {
-        amountToBePaid: total,
-      },
-      bookingMode: mode,
-    };
-
-    try {
-      const url = `${URLS.BASE}/inspections/book-request`;
-      const response: any = await toast.promise(
-        POST_REQUEST(url, apiPayload, token),
-        {
-          loading: mode === "instant" ? "Initializing payment..." : "Submitting booking request...",
-          success: mode === "instant" ? "Payment initialized" : "Request submitted",
-          error: "Failed to submit. Please try again.",
-        }
-      );
-
-      if (mode === "request") {
-        setSuccessOpen(true);
-        return;
-      }
-
-      const payUrl = response?.data?.transaction?.authorizedUrl || response?.transaction?.authorizedUrl;
-      if (payUrl) {
-        window.location.href = payUrl;
-        return;
-      }
-      const q = new URLSearchParams({ amount: String(total || 0), purpose: "shortlet-booking" });
-      router.push(`/payment-details?${q.toString()}`);
-    } catch (e) {
-      // Error handled by toast
-    }
+    formik.resetForm();
   };
 
   const footerButtonText = step === 1 ? "Next" : mode === "instant" ? "Proceed to Payment" : "Submit Request";
@@ -258,68 +256,112 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
             </div>
 
             <div className="p-6">
-              <StepIndicator step={step} />
-              <InfoBox mode={mode} />
+              {/* Step indicator */}
+              <div className="flex items-center justify-center gap-3 mb-4">
+                {[1, 2].map((s) => (
+                  <div key={s} className={`h-2 w-24 rounded-full ${step === s ? "bg-emerald-600" : "bg-gray-200"}`} />
+                ))}
+              </div>
+
+              {/* Flow instructions */}
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-900 text-xs leading-relaxed mb-4">
+                {mode === "instant" ? (
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Select check-in/out dates and times. Add guests and an optional note.</li>
+                    <li>Enter your contact information (used for receipt and support).</li>
+                    <li>Proceed to secure payment. Once paid, your booking is confirmed instantly.</li>
+                    <li>Notifications are sent to you and the host with full booking details.</li>
+                  </ul>
+                ) : (
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Select preferred check-in/out dates and times. Add guests and an optional note.</li>
+                    <li>Enter your contact information (used to contact you about approval).</li>
+                    <li>Submit your request. The host has a limited time window to accept.</li>
+                    <li>If accepted, you’ll be prompted to complete payment to confirm the booking. If declined/expired, you’ll be notified.</li>
+                  </ul>
+                )}
+              </div>
 
               {step === 1 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Check-in (Date & Time)</label>
-                    <DatePicker
-                      selected={checkIn}
-                      onChange={(date) => {
-                        setCheckIn(date);
-                        if (checkOut && date && checkOut <= date) {
-                          const next = new Date(date);
-                          next.setDate(next.getDate() + 1);
-                          next.setHours(11, 0, 0, 0);
-                          setCheckOut(next);
-                        }
-                      }}
-                      minDate={new Date()}
-                      showTimeSelect
-                      timeIntervals={30}
-                      dateFormat="Pp"
-                      placeholderText="Select check-in date & time"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Check-out (Date & Time)</label>
-                    <DatePicker
-                      selected={checkOut}
-                      onChange={(date) => setCheckOut(date)}
-                      minDate={checkIn || new Date()}
-                      showTimeSelect
-                      timeIntervals={30}
-                      dateFormat="Pp"
-                      disabled={!checkIn}
-                      placeholderText={checkIn ? "Select check-out date & time" : "Pick check-in first"}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
-                  </div>
+                  <DatePicker
+                    selected={formik.values.checkIn}
+                    onChange={(date) => {
+                      formik.setFieldValue("checkIn", date);
+                      const co = formik.values.checkOut;
+                      if (co && date && co <= date) {
+                        const next = new Date(date);
+                        next.setDate(next.getDate() + 1);
+                        next.setHours(11, 0, 0, 0);
+                        formik.setFieldValue("checkOut", next);
+                      }
+                    }}
+                    minDate={new Date()}
+                    showTimeSelect
+                    timeIntervals={30}
+                    dateFormat="Pp"
+                    customInput={
+                      <DateTimeInput
+                        label="Check-in (Date & Time)"
+                        placeholder="Select check-in date & time"
+                        error={formik.errors.checkIn as string}
+                      />
+                    }
+                  />
+
+                  <DatePicker
+                    selected={formik.values.checkOut}
+                    onChange={(date) => formik.setFieldValue("checkOut", date)}
+                    minDate={formik.values.checkIn || new Date()}
+                    showTimeSelect
+                    timeIntervals={30}
+                    dateFormat="Pp"
+                    disabled={!formik.values.checkIn}
+                    customInput={
+                      <DateTimeInput
+                        label="Check-out (Date & Time)"
+                        placeholder={formik.values.checkIn ? "Select check-out date & time" : "Pick check-in first"}
+                        error={formik.errors.checkOut as string}
+                      />
+                    }
+                  />
+
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Guests</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={maxGuests}
-                      value={guests}
-                      onChange={(e) => setGuests(Math.min(maxGuests, Math.max(1, Number(e.target.value) || 1)))}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
+                    <div className={`flex items-center bg-white border ${formik.errors.guests ? "border-red-400" : "border-gray-300"} rounded-lg px-3 py-2 gap-2`}>
+                      <Users className="w-4 h-4 text-emerald-600" />
+                      <input
+                        type="number"
+                        min={1}
+                        max={maxGuests}
+                        value={formik.values.guests}
+                        onChange={(e) =>
+                          formik.setFieldValue(
+                            "guests",
+                            Math.min(maxGuests, Math.max(1, Number(e.target.value) || 1))
+                          )
+                        }
+                        className="w-full outline-none text-sm"
+                      />
+                    </div>
+                    {formik.errors.guests && (
+                      <p className="mt-1 text-xs text-red-500">{formik.errors.guests as string}</p>
+                    )}
                     <p className="text-xs text-gray-500">Max {maxGuests} guest(s)</p>
                   </div>
+
                   <div className="space-y-2 md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700">Note (optional)</label>
                     <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
+                      value={formik.values.note}
+                      onChange={formik.handleChange}
+                      name="note"
                       rows={3}
                       placeholder="Any special requests, arrival time info, or questions for the host"
                       className="w-full border border-gray-300 rounded-lg px-3 py-2"
                     />
                   </div>
+
                   <div className="md:col-span-2 bg-gray-50 rounded-lg p-3 border border-gray-200">
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-600">Nightly</p>
@@ -341,38 +383,51 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                     <label className="block text-sm font-medium text-gray-700">Full Name</label>
                     <input
                       type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      name="fullName"
+                      value={formik.values.fullName}
+                      onChange={formik.handleChange}
+                      className={`w-full border rounded-lg px-3 py-2 ${formik.errors.fullName ? "border-red-400" : "border-gray-300"}`}
                       placeholder="Enter your full name"
                     />
+                    {formik.errors.fullName && (
+                      <p className="mt-1 text-xs text-red-500">{formik.errors.fullName as string}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Email</label>
                     <input
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      name="email"
+                      value={formik.values.email}
+                      onChange={formik.handleChange}
+                      className={`w-full border rounded-lg px-3 py-2 ${formik.errors.email ? "border-red-400" : "border-gray-300"}`}
                       placeholder="you@example.com"
                     />
+                    {formik.errors.email && (
+                      <p className="mt-1 text-xs text-red-500">{formik.errors.email as string}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Phone Number</label>
                     <input
                       type="tel"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      name="phoneNumber"
+                      value={formik.values.phoneNumber}
+                      onChange={formik.handleChange}
+                      className={`w-full border rounded-lg px-3 py-2 ${formik.errors.phoneNumber ? "border-red-400" : "border-gray-300"}`}
                       placeholder="Primary phone number"
                     />
+                    {formik.errors.phoneNumber && (
+                      <p className="mt-1 text-xs text-red-500">{formik.errors.phoneNumber as string}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">WhatsApp Number</label>
                     <input
                       type="tel"
-                      value={whatsAppNumber}
-                      onChange={(e) => setWhatsAppNumber(e.target.value)}
+                      name="whatsAppNumber"
+                      value={formik.values.whatsAppNumber}
+                      onChange={formik.handleChange}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2"
                       placeholder="Optional WhatsApp number"
                     />
@@ -394,8 +449,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
               <Button
                 value={footerButtonText}
                 type="button"
-                onClick={handlePrimary}
-                disabled={step === 1 ? !validStep1 : !validStep2}
+                onClick={step === 1 ? proceedNext : submitFinal}
                 className={`px-6 ${mode === "instant" ? "bg-[#0B423D] hover:bg-[#09391C]" : "bg-[#1976D2] hover:bg-[#1565C0]"} text-white font-bold rounded-lg`}
               />
             </div>
