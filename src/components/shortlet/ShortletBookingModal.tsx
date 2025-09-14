@@ -495,8 +495,9 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
               <Button
                 value={footerButtonText}
                 type="button"
+                isDisabled={isFooterDisabled}
                 onClick={step === 1 ? proceedNext : submitFinal}
-                className={`px-6 ${mode === "instant" ? "bg-[#0B423D] hover:bg-[#09391C]" : "bg-[#1976D2] hover:bg-[#1565C0]"} text-white font-bold rounded-lg`}
+                className={`px-6 ${mode === "instant" ? "bg-[#0B423D] hover:bg-[#09391C]" : "bg-[#1976D2] hover:bg-[#1565C0]"} text-white font-bold rounded-lg disabled:opacity-60 disabled:cursor-not-allowed`}
               />
             </div>
           </motion.div>
