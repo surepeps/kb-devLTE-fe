@@ -48,13 +48,6 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     property: null,
   });
 
-  const [loiUploadModal, setLoiUploadModal] = useState<{
-    isOpen: boolean;
-    property: any;
-  }>({
-    isOpen: false,
-    property: null,
-  });
 
   const isSelected = isSelectedForInspection(property._id);
   const negotiatedPrice = type === "standard" ? getNegotiatedPrice(property._id) : null;
