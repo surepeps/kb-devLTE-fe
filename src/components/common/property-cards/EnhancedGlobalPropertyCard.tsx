@@ -6,8 +6,8 @@ import { useGlobalPropertyActions } from "@/context/global-property-actions-cont
 import GlobalPropertyCard from "./GlobalPropertyCard";
 import GlobalJVPropertyCard from "./GlobalJVPropertyCard";
 import SimplifiedPriceNegotiationModal from "@/components/modals/SimplifiedPriceNegotiationModal";
-import SimplifiedLOIUploadModal from "@/components/modals/SimplifiedLOIUploadModal";
 import randomImage from "@/assets/noImageAvailable.png";
+import ShortletBookingModal from "@/components/shortlet/ShortletBookingModal";
  
 interface EnhancedGlobalPropertyCardProps {
   type: "standard" | "jv";
