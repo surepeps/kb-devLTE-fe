@@ -114,6 +114,20 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return payload;
   };
 
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const resetForm = () => {
+    setStep(1);
+    setCheckIn(null);
+    setCheckOut(null);
+    setGuests(1);
+    setNote("");
+    setFullName("");
+    setEmail("");
+    setPhoneNumber("");
+    setWhatsAppNumber("");
+  };
+
   const handlePrimary = async () => {
     if (step === 1) {
       if (!validStep1) {
@@ -129,14 +143,53 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
       return;
     }
 
-    const payload = saveDraft(mode === "instant" ? "instant" : "request");
+    const token = Cookies.get("token");
 
-    if (mode === "instant") {
+    const apiPayload: any = {
+      bookedBy: {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phoneNumber: phoneNumber.trim(),
+        ...(whatsAppNumber.trim() ? { whatsAppNumber: whatsAppNumber.trim() } : {}),
+      },
+      propertyId: property?._id,
+      bookingDetails: {
+        checkInDateTime: checkIn?.toISOString(),
+        checkOutDateTime: checkOut?.toISOString(),
+        guestNumber: guests,
+        ...(note.trim() ? { note: note.trim() } : {}),
+      },
+      paymentDetails: {
+        amountToBePaid: total,
+      },
+      bookingMode: mode,
+    };
+
+    try {
+      const url = `${URLS.BASE}/inspections/book-request`;
+      const response: any = await toast.promise(
+        POST_REQUEST(url, apiPayload, token),
+        {
+          loading: mode === "instant" ? "Initializing payment..." : "Submitting booking request...",
+          success: mode === "instant" ? "Payment initialized" : "Request submitted",
+          error: "Failed to submit. Please try again.",
+        }
+      );
+
+      if (mode === "request") {
+        setSuccessOpen(true);
+        return;
+      }
+
+      const payUrl = response?.data?.transaction?.authorizedUrl || response?.transaction?.authorizedUrl;
+      if (payUrl) {
+        window.location.href = payUrl;
+        return;
+      }
       const q = new URLSearchParams({ amount: String(total || 0), purpose: "shortlet-booking" });
       router.push(`/payment-details?${q.toString()}`);
-    } else {
-      toast.success("Request submitted. We’ll notify you once the host responds.");
-      onClose();
+    } catch (e) {
+      // Error handled by toast
     }
   };
 
