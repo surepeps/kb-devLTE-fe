@@ -291,17 +291,29 @@ const ShortletStep1BasicDetails: React.FC = () => {
             <div>
               <EnhancedPriceInput
                 name="price"
-                label="Property Value"
+                label={
+                  propertyData.shortletDuration
+                    ? `${propertyData.shortletDuration} Price`
+                    : "Property Value"
+                }
                 value={formatPriceForDisplay(propertyData.price)}
                 onChange={handlePriceChange}
-                placeholder="Enter amount"
+                placeholder={
+                  propertyData.shortletDuration
+                    ? `Enter ${propertyData.shortletDuration.toLowerCase()} price`
+                    : "Enter amount"
+                }
                 prefix="₦"
                 error={
                   typeof errors?.price === "string" ? errors.price : undefined
                 }
                 touched={!!touched?.price}
                 required
-                description="Enter the estimated property value"
+                description={
+                  propertyData.shortletDuration
+                    ? `Enter the ${propertyData.shortletDuration.toLowerCase()} price`
+                    : "Enter the estimated property value"
+                }
               />
             </div>
           </div>
