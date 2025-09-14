@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useFormikContext } from "formik";
 import { usePostPropertyContext } from "@/context/post-property-context";
@@ -20,6 +20,22 @@ const ShortletStep2FeaturesConditions: React.FC = () => {
   const { propertyData, updatePropertyData } = usePostPropertyContext();
   const { errors, touched, setFieldTouched, setFieldValue } =
     useFormikContext<any>();
+
+  useEffect(() => {
+    const rawPrice = typeof propertyData.price === "number"
+      ? (propertyData.price as number)
+      : parseFloat((propertyData.price as any) || "0") || 0;
+    const duration = propertyData.shortletDuration;
+    let nightly = 0;
+    if (duration === "Daily") nightly = rawPrice;
+    else if (duration === "Weekly") nightly = Math.round(rawPrice / 7);
+    else if (duration === "Monthly") nightly = Math.round(rawPrice / 30);
+
+    const existingPricing = propertyData.pricing || {};
+    if (existingPricing.nightly !== nightly) {
+      updatePropertyData("pricing", { ...existingPricing, nightly });
+    }
+  }, [propertyData.price, propertyData.shortletDuration]);
 
   const handleFieldChange = async (fieldName: string, value: any) => {
     setFieldTouched(fieldName, true);
@@ -247,16 +263,14 @@ const ShortletStep2FeaturesConditions: React.FC = () => {
                 <input
                   type="text"
                   value={formatPriceForDisplay(propertyData.pricing?.nightly || 0)}
-                  onChange={(e) => {
-                    const numericValue = cleanNumericInput(e.target.value);
-                    const newValue = {
-                      ...propertyData.pricing,
-                      nightly: parseInt(numericValue) || 0,
-                    };
-                    handleFieldChange("pricing", newValue);
-                  }}
-                  placeholder="Enter nightly rate"
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
+                  readOnly
+                  disabled
+                  placeholder={
+                    propertyData.shortletDuration
+                      ? `Auto-calculated from ${propertyData.shortletDuration.toLowerCase()} price`
+                      : "Auto-calculated nightly rate"
+                  }
+                  className={`w-full p-3 border rounded-lg bg-gray-100 cursor-not-allowed focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90] ${
                     touched["pricing.nightly"] && errors["pricing.nightly"]
                       ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                       : touched["pricing.nightly"] && !errors["pricing.nightly"]
