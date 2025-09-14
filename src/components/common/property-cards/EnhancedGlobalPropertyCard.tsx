@@ -99,27 +99,6 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     removeNegotiatedPrice(propertyId);
   };
 
-  const handleLOIUpload = () => {
-    setLoiUploadModal({
-      isOpen: true,
-      property,
-    });
-  };
-
-  const handleLOISubmit = (property: any, document: File, documentUrl: string) => {
-    addLOIDocument(property._id, document, documentUrl);
-
-    // Automatically add property to inspection when LOI is submitted
-    if (!isSelectedForInspection(property._id)) {
-      toggleInspectionSelection(property, "jv", "auto-loi-submission");
-    }
-
-    setLoiUploadModal({ isOpen: false, property: null });
-  };
-
-  const handleRemoveLOI = (propertyId: string) => {
-    removeLOIDocument(propertyId);
-  };
 
   const transformedImages = transformImages(images || []);
 
