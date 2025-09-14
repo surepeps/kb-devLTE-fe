@@ -50,8 +50,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
 
 
   const isSelected = isSelectedForInspection(property._id);
-  const negotiatedPrice = type === "standard" ? getNegotiatedPrice(property._id) : null;
-  const loiDocument = type === "jv" ? getLOIDocument(property._id) : null;
+  const negotiatedPrice = getNegotiatedPrice(property._id);
 
   const handleInspectionToggle = () => {
     if (customInspectionToggle) {
