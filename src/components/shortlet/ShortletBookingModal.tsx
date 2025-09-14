@@ -8,6 +8,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import Button from "@/components/general-components/button";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { POST_REQUEST } from "@/utils/requests";
+import { URLS } from "@/utils/URLS";
+import Cookies from "js-cookie";
 
 interface ShortletBookingModalProps {
   isOpen: boolean;
