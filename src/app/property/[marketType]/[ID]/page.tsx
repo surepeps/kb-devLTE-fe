@@ -43,6 +43,7 @@ import "swiper/css/pagination";
 import "swiper/css/thumbs";
 import Loading from "@/components/loading-component/loading";
 import { kebabToTitleCase } from "@/utils/helpers";
+import ShortletBookingModal from "@/components/shortlet/ShortletBookingModal";
 
 interface PropertyDetails {
   _id: string;
@@ -698,6 +699,7 @@ const ProductDetailsPage = () => {
   const [details, setDetails] = useState<PropertyDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [similarProperties, setSimilarProperties] = useState<any[]>([]);
+  const [bookingModal, setBookingModal] = useState<{ isOpen: boolean; mode: "instant" | "request" }>({ isOpen: false, mode: "instant" });
   const { selectedBriefs } = useSelectedBriefs();
   const {
     toggleInspectionSelection,
@@ -773,6 +775,7 @@ const ProductDetailsPage = () => {
             updatedAt: propertyData.updatedAt,
             owner: propertyData.owner,
             docOnProperty: propertyData.docOnProperty || [],
+            shortletDetails: propertyData.shortletDetails || {},
             briefType:
               propertyData.briefType ||
               (propertyData.propertyCategory === "for_sale"
@@ -1042,6 +1045,33 @@ const ProductDetailsPage = () => {
               />
             </motion.div>
 
+            {/* Shortlet Booking Actions */}
+            {(details.briefType === "Shortlet" || (details as any).propertyType === "Shortlet") && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.25 }}
+                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
+              >
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setBookingModal({ isOpen: true, mode: "instant" })}
+                    className="min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-white text-sm font-bold rounded hover:bg-[#09391C] transition-colors"
+                  >
+                    Book Now
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBookingModal({ isOpen: true, mode: "request" })}
+                    className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-white text-sm font-bold rounded hover:bg-[#1565C0] transition-colors"
+                  >
+                    Request to Book
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             {/* Property Information */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -1146,6 +1176,13 @@ const ProductDetailsPage = () => {
         onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
         onSubmit={handleNegotiationSubmit}
         existingNegotiation={details ? getNegotiatedPrice(details._id) : null}
+      />
+      {/* Shortlet Booking Modal */}
+      <ShortletBookingModal
+        isOpen={bookingModal.isOpen}
+        onClose={() => setBookingModal({ isOpen: false, mode: "instant" })}
+        property={details}
+        mode={bookingModal.mode}
       />
     </div>
   );

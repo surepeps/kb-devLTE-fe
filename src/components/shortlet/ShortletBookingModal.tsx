@@ -118,7 +118,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     validateOnChange: false,
     onSubmit: async (values) => {
       const nights = values.checkIn && values.checkOut ? Math.ceil((values.checkOut.getTime() - values.checkIn.getTime()) / (1000 * 60 * 60 * 24)) : 0;
-      const total = nights > 0 ? nightly * nights : 0;
+      const total = nights > 0 ? nightly * nights + cleaningFee + securityDeposit : 0;
 
       const apiPayload: any = {
         bookedBy: {
@@ -175,7 +175,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return Math.max(0, diff);
   }, [formik.values.checkIn, formik.values.checkOut]);
 
-  const total = useMemo(() => (nights > 0 ? nightly * nights : 0), [nightly, nights]);
+  const total = useMemo(() => (nights > 0 ? nightly * nights + cleaningFee + securityDeposit : 0), [nightly, nights, cleaningFee, securityDeposit]);
 
   const proceedNext = async () => {
     try {
@@ -211,6 +211,13 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   };
 
   const footerButtonText = step === 1 ? "Next" : mode === "instant" ? "Proceed to Payment" : "Submit Request";
+  const canProceedStep1 = total > 0 && nights > 0;
+  const canSubmitStep2 = (
+    typeof formik.values.fullName === "string" && formik.values.fullName.trim().length > 0 &&
+    typeof formik.values.email === "string" && formik.values.email.trim().length > 0 &&
+    typeof formik.values.phoneNumber === "string" && formik.values.phoneNumber.trim().length > 0
+  );
+  const isFooterDisabled = step === 1 ? !canProceedStep1 : !canSubmitStep2;
 
   return (
     <AnimatePresence>
@@ -488,8 +495,9 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
               <Button
                 value={footerButtonText}
                 type="button"
+                isDisabled={isFooterDisabled}
                 onClick={step === 1 ? proceedNext : submitFinal}
-                className={`px-6 ${mode === "instant" ? "bg-[#0B423D] hover:bg-[#09391C]" : "bg-[#1976D2] hover:bg-[#1565C0]"} text-white font-bold rounded-lg`}
+                className={`px-6 ${mode === "instant" ? "bg-[#0B423D] hover:bg-[#09391C]" : "bg-[#1976D2] hover:bg-[#1565C0]"} text-white font-bold rounded-lg disabled:opacity-60 disabled:cursor-not-allowed`}
               />
             </div>
           </motion.div>
