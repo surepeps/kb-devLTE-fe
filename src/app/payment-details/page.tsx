@@ -309,8 +309,17 @@ const Input: React.FC<InputProps> = ({
 };
 
 const PaymentDetailsPage = () => {
-  // You can fetch or calculate amountToPay/payload here if needed
-  return <ProvideTransactionDetails amountToPay={0} />;
+  const [amount, setAmount] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const amt = Number(params.get('amount') || '0');
+      if (!Number.isNaN(amt) && amt >= 0) setAmount(amt);
+    }
+  }, []);
+
+  return <ProvideTransactionDetails amountToPay={amount} />;
 };
 
 export default PaymentDetailsPage;
