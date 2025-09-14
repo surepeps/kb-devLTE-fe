@@ -54,7 +54,8 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
   onRequestToBook,
 }) => {
   const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
-  
+  const computedMode = mode ?? ((property as any)?.briefType === "Shortlet" || (property as any)?.propertyType === "Shortlet" ? "shortlet" : "standard");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
