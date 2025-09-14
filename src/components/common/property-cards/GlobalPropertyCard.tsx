@@ -195,7 +195,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 pt-2 mt-auto">
-            {mode === "shortlet" ? (
+            {computedMode === "shortlet" ? (
               <>
                 <Button
                   value="Book Now"
