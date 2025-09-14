@@ -205,6 +205,45 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden"
           onClick={onClose}
         >
+          {/* Success Modal for Request Mode */}
+          <AnimatePresence>
+            {successOpen && (
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="absolute inset-0 flex items-center justify-center p-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-emerald-100">
+                  <h3 className="text-xl font-semibold text-emerald-700">Booking Request Submitted</h3>
+                  <p className="text-sm text-gray-700 mt-2">Your booking request has been submitted successfully. Please await the owner's response.</p>
+                  <p className="text-sm text-gray-600 mt-1">Would you like to book more?</p>
+                  <div className="flex gap-3 justify-end mt-6">
+                    <button
+                      onClick={() => {
+                        setSuccessOpen(false);
+                        onClose();
+                      }}
+                      className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Close
+                    </button>
+                    <Button
+                      value="Book More"
+                      type="button"
+                      onClick={() => {
+                        setSuccessOpen(false);
+                        resetForm();
+                      }}
+                      className="px-6 bg-[#0B423D] hover:bg-[#09391C] text-white font-bold rounded-lg"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
