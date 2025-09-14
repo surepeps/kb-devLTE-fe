@@ -1,6 +1,6 @@
 /** @format */
- 
-"use client"; 
+
+"use client";
 import React, { useState } from "react";
 import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import GlobalPropertyCard from "./GlobalPropertyCard";
@@ -8,7 +8,7 @@ import GlobalJVPropertyCard from "./GlobalJVPropertyCard";
 import SimplifiedPriceNegotiationModal from "@/components/modals/SimplifiedPriceNegotiationModal";
 import randomImage from "@/assets/noImageAvailable.png";
 import ShortletBookingModal from "@/components/shortlet/ShortletBookingModal";
- 
+
 interface EnhancedGlobalPropertyCardProps {
   type: "standard" | "jv";
   tab?: "buy" | "rent" | "shortlet";
@@ -17,9 +17,9 @@ interface EnhancedGlobalPropertyCardProps {
   images: any[];
   isPremium: boolean;
   onPropertyClick?: () => void;
-  onInspectionToggle?: () => void; // Optional override for inspection toggle
+  onInspectionToggle?: () => void;
   className?: string;
-} 
+}
 
 const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   type,
@@ -48,9 +48,18 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     property: null,
   });
 
+  const [bookingModal, setBookingModal] = useState<{
+    isOpen: boolean;
+    mode: "instant" | "request";
+  }>({ isOpen: false, mode: "instant" });
 
   const isSelected = isSelectedForInspection(property._id);
   const negotiatedPrice = getNegotiatedPrice(property._id);
+
+  const isShortlet =
+    tab === "shortlet" ||
+    property?.briefType === "Shortlet" ||
+    property?.propertyType === "Shortlet";
 
   const handleInspectionToggle = () => {
     if (customInspectionToggle) {
@@ -62,15 +71,11 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   };
 
   const handlePriceNegotiation = () => {
-    setPriceNegotiationModal({
-      isOpen: true,
-      property,
-    });
+    setPriceNegotiationModal({ isOpen: true, property });
   };
 
-
   const transformImages = (pictures: any[]) => {
-    return pictures.map((item, index) => {
+    return (pictures || []).map((item, index) => {
       if (typeof item === "string") {
         return { id: index.toString(), url: item, alt: `Property image ${index + 1}` };
       }
@@ -81,15 +86,13 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     });
   };
 
+  const handleNegotiationSubmit = (prop: any, negotiatedPriceValue: number) => {
+    const originalPrice = prop.price || prop.rentalPrice || 0;
+    addNegotiatedPrice(prop._id, originalPrice, negotiatedPriceValue);
 
-  const handleNegotiationSubmit = (property: any, negotiatedPriceValue: number) => {
-    const originalPrice = property.price || property.rentalPrice || 0;
-    addNegotiatedPrice(property._id, originalPrice, negotiatedPriceValue);
-
-    // Automatically add property to inspection when price is countered
-    if (!isSelectedForInspection(property._id)) {
+    if (!isSelectedForInspection(prop._id)) {
       const sourceTab = type === "jv" ? "jv" : tab;
-      toggleInspectionSelection(property, sourceTab, "auto-price-negotiation");
+      toggleInspectionSelection(prop, sourceTab, "auto-price-negotiation");
     }
 
     setPriceNegotiationModal({ isOpen: false, property: null });
@@ -99,9 +102,7 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     removeNegotiatedPrice(propertyId);
   };
 
-
-  const transformedImages = transformImages(images || []);
-
+  const transformedImages = transformImages(images);
 
   if (type === "jv") {
     return (
@@ -112,22 +113,21 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
           images={transformedImages}
           isPremium={isPremium}
           onPropertyClick={onPropertyClick}
-          onLOIUpload={handleLOIUpload}
+          onPriceNegotiation={handlePriceNegotiation}
           onInspectionToggle={handleInspectionToggle}
-          onRemoveLOI={handleRemoveLOI}
+          onRemoveNegotiation={handleRemoveNegotiation}
           isSelected={isSelected}
-          loiDocument={loiDocument}
+          negotiatedPrice={negotiatedPrice}
           className={className}
         />
 
-        {/* LOI Upload Modal */}
-        {loiUploadModal.isOpen && (
-          <SimplifiedLOIUploadModal
-            isOpen={loiUploadModal.isOpen}
-            property={loiUploadModal.property}
-            onClose={() => setLoiUploadModal({ isOpen: false, property: null })}
-            onSubmit={handleLOISubmit}
-            existingDocument={getLOIDocument(loiUploadModal.property?._id)}
+        {priceNegotiationModal.isOpen && (
+          <SimplifiedPriceNegotiationModal
+            isOpen={priceNegotiationModal.isOpen}
+            property={priceNegotiationModal.property}
+            onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
+            onSubmit={handleNegotiationSubmit}
+            existingNegotiation={getNegotiatedPrice(priceNegotiationModal.property?._id)}
           />
         )}
       </>
@@ -142,26 +142,33 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
         images={transformedImages}
         isPremium={isPremium}
         onPropertyClick={onPropertyClick}
-        onPriceNegotiation={handlePriceNegotiation}
-        onInspectionToggle={handleInspectionToggle}
-        onRemoveNegotiation={handleRemoveNegotiation}
+        onPriceNegotiation={!isShortlet ? handlePriceNegotiation : undefined}
+        onInspectionToggle={!isShortlet ? handleInspectionToggle : undefined}
+        onRemoveNegotiation={!isShortlet ? handleRemoveNegotiation : undefined}
         isSelected={isSelected}
-        negotiatedPrice={negotiatedPrice}
+        negotiatedPrice={!isShortlet ? negotiatedPrice : null}
         className={className}
+        mode={isShortlet ? "shortlet" : "standard"}
+        onBookNow={isShortlet ? () => setBookingModal({ isOpen: true, mode: "instant" }) : undefined}
+        onRequestToBook={isShortlet ? () => setBookingModal({ isOpen: true, mode: "request" }) : undefined}
       />
 
-      {/* Price Negotiation Modal */}
       {priceNegotiationModal.isOpen && (
         <SimplifiedPriceNegotiationModal
           isOpen={priceNegotiationModal.isOpen}
           property={priceNegotiationModal.property}
-          onClose={() =>
-            setPriceNegotiationModal({ isOpen: false, property: null })
-          }
+          onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
           onSubmit={handleNegotiationSubmit}
-          existingNegotiation={getNegotiatedPrice(
-            priceNegotiationModal.property?._id
-          )}
+          existingNegotiation={getNegotiatedPrice(priceNegotiationModal.property?._id)}
+        />
+      )}
+
+      {bookingModal.isOpen && (
+        <ShortletBookingModal
+          isOpen={bookingModal.isOpen}
+          onClose={() => setBookingModal({ isOpen: false, mode: "instant" })}
+          property={property}
+          mode={bookingModal.mode}
         />
       )}
     </>
