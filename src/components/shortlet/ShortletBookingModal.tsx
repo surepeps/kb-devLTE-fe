@@ -76,6 +76,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   const maxGuests = Number(property?.shortletDetails?.maxGuests ?? property?.maxGuests ?? 10);
   const nightly = useMemo(() => getNightlyRate(property), [property]);
@@ -157,11 +158,24 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
           return;
         }
 
-        const payUrl = response?.data?.transaction?.authorizedUrl || response?.transaction?.authorizedUrl;
-        if (payUrl) {
-          window.location.href = payUrl;
+        const authUrl =
+          response?.data?.transaction?.authorization_url ||
+          response?.data?.transaction?.authorizedUrl ||
+          response?.transaction?.authorization_url ||
+          response?.transaction?.authorizedUrl ||
+          response?.data?.authorization_url ||
+          response?.authorization_url ||
+          null;
+
+        if (authUrl && typeof authUrl === "string") {
+          setRedirecting(true);
+          // Small delay to render the modal before leaving the page
+          setTimeout(() => {
+            window.location.href = authUrl as string;
+          }, 100);
           return;
         }
+
         const q = new URLSearchParams({ amount: String(total || 0), purpose: "shortlet-booking" });
         router.push(`/payment-details?${q.toString()}`);
       } catch {}
@@ -263,6 +277,25 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                       className="px-6 bg-[#0B423D] hover:bg-[#09391C] text-white font-bold rounded-lg"
                     />
                   </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Redirecting to payment overlay */}
+          <AnimatePresence>
+            {redirecting && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 border border-emerald-100 text-center">
+                  <div className="mx-auto mb-3 h-10 w-10 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin" />
+                  <h3 className="text-lg font-semibold text-gray-900">Redirecting to payment</h3>
+                  <p className="text-sm text-gray-600 mt-1">Please wait while we take you to the secure payment page...</p>
                 </div>
               </motion.div>
             )}
