@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
+import { POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -51,8 +51,8 @@ interface Property {
 
 interface OwnerResponse {
   response?: string; // accepted | declined | pending
-  respondedAt?: string;
-  note?: string;
+  respondedAt?: string | null;
+  note?: string | null;
 }
 
 interface MetaPricing {
@@ -71,7 +71,7 @@ interface BookingDetailsData {
   checkInDateTime?: string;
   checkOutDateTime?: string;
   guestNumber?: number;
-  note?: string;
+  note?: string | null;
 }
 
 interface BuyerInfo {
@@ -84,9 +84,11 @@ interface BuyerInfo {
 interface TransactionInfo {
   _id?: string;
   amount?: number;
+  currency?: string;
   status?: string;
-  paymentGateway?: string;
   reference?: string;
+  paymentGateway?: string;
+  paymentMode?: string;
 }
 
 interface Booking {
@@ -157,7 +159,7 @@ export default function CheckBookingDetailsPage() {
       setCode(stored);
       setView("details");
       setRemainingMs(exp - now);
-      fetchDetails(stored);
+      verifyAndLoad(stored);
     } else {
       clearSession();
     }
@@ -186,28 +188,18 @@ export default function CheckBookingDetailsPage() {
     return `${m}:${s}`;
   }, [remainingMs]);
 
-  const verifyCode = async (bookingCode: string) => {
+  const verifyAndLoad = async (bookingCode: string) => {
     const url = `${URLS.BASE}/inspections/bookings/verify-code`;
     try {
       setVerifying(true);
-      const res: any = await POST_REQUEST(url, { code: bookingCode });
-      if (!res?.success) throw new Error(res?.message || "Invalid code");
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  const fetchDetails = async (bookingCode: string) => {
-    try {
       setLoading(true);
       setError("");
-      const url = `${URLS.BASE}/inspections/bookings/${encodeURIComponent(bookingCode)}`;
-      const res: any = await GET_REQUEST(url);
-      if (!res?.success || !res?.data) throw new Error(res?.message || "Not found");
+      const res: any = await POST_REQUEST(url, { code: bookingCode });
+      if (!res?.success || !res?.data) throw new Error(res?.message || "Invalid code");
       const payload = res.data as any;
       const normalized: Booking = {
         id: payload.id || payload._id || bookingCode,
-        code: payload.bookingCode || payload.code || bookingCode,
+        code: payload.code || payload.bookingCode || bookingCode,
         bookingCode: payload.bookingCode || payload.code || bookingCode,
         status: payload.status || "pending",
         bookingMode: payload.bookingMode,
@@ -223,9 +215,11 @@ export default function CheckBookingDetailsPage() {
       };
       setData(normalized);
     } catch (err: any) {
-      setError(err?.message || "Failed to load booking details");
+      setError(err?.message || "Unable to verify code");
       setData(null);
+      setView("form");
     } finally {
+      setVerifying(false);
       setLoading(false);
     }
   };
@@ -238,14 +232,12 @@ export default function CheckBookingDetailsPage() {
       return;
     }
     try {
-      await verifyCode(trimmed);
+      await verifyAndLoad(trimmed);
       startSession(trimmed);
       setView("details");
       toast.success("Booking code verified");
-      await fetchDetails(trimmed);
-    } catch (err: any) {
-      toast.error(err?.message || "Unable to verify code");
-      setError(err?.message || "Unable to verify code");
+    } catch {
+      // verifyAndLoad already handles errors
     }
   };
 
@@ -314,7 +306,7 @@ export default function CheckBookingDetailsPage() {
                       type="text"
                       value={code}
                       onChange={(e) => setCode(e.target.value.toUpperCase())}
-                      placeholder="e.g. SLT-2025-09-001"
+                      placeholder="e.g. BK-2025-09-001"
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-base tracking-wider uppercase"
                       autoComplete="off"
                     />
@@ -417,16 +409,7 @@ export default function CheckBookingDetailsPage() {
                       <div className="p-4 border border-gray-100 rounded-xl">
                         <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><Home size={16} /> Property</div>
                         <div className="text-sm"><span className="font-medium">Type:</span> {data?.property?.briefType || data?.property?.propertyType || "Shortlet"}</div>
-                        <div className="text-sm"><span className="font-medium">Amount:</span> {formatCurrency(data?.paymentDetails?.amountToBePaid ?? data?.meta?.totalPrice, "₦")}</div>
-                      </div>
-
-                      <div className="p-4 border border-gray-100 rounded-xl">
-                        <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">Pricing Summary</div>
-                        <div className="text-sm"><span className="font-medium">Nights:</span> {data?.meta?.nights ?? "-"}</div>
-                        <div className="text-sm"><span className="font-medium">Price/Night:</span> {formatCurrency(data?.meta?.pricePerNight, "₦")}</div>
-                        <div className="text-sm"><span className="font-medium">Cleaning Fee:</span> {formatCurrency(data?.meta?.extralFees?.cleaningFee, "₦")}</div>
-                        <div className="text-sm"><span className="font-medium">Security Deposit:</span> {formatCurrency(data?.meta?.extralFees?.securityDeposit, "₦")}</div>
-                        <div className="text-sm"><span className="font-medium">Total:</span> {formatCurrency(data?.meta?.totalPrice, "₦")}</div>
+                        <div className="text-sm"><span className="font-medium">Amount:</span> {formatCurrency(data?.paymentDetails?.amountToBePaid ?? data?.meta?.totalPrice ?? data?.transaction?.amount, "₦")}</div>
                       </div>
 
                       <div className="p-4 border border-gray-100 rounded-xl">
@@ -440,7 +423,7 @@ export default function CheckBookingDetailsPage() {
                         <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">Transaction</div>
                         <div className="text-sm"><span className="font-medium">Amount:</span> {formatCurrency(data?.transaction?.amount, "₦")}</div>
                         <div className="text-sm"><span className="font-medium">Status:</span> <span className={`px-2 py-0.5 rounded text-xs ${statusBadge(data?.transaction?.status || "").bg} ${statusBadge(data?.transaction?.status || "").text}`}>{data?.transaction?.status || "-"}</span></div>
-                        <div className="text-sm"><span className="font-medium">Gateway:</span> {data?.transaction?.paymentGateway || "-"}</div>
+                        <div className="text-sm"><span className="font-medium">Gateway:</span> {data?.transaction?.paymentGateway || data?.transaction?.paymentMode || "-"}</div>
                         <div className="text-sm"><span className="font-medium">Reference:</span> {data?.transaction?.reference || "-"}</div>
                       </div>
                     </div>
@@ -467,7 +450,7 @@ export default function CheckBookingDetailsPage() {
                       <button onClick={onDownloadJson} className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
                         <Download size={16} /> JSON
                       </button>
-                      <button onClick={() => fetchDetails(code)} disabled={loading} className="inline-flex items-center gap-2 px-3 py-2 border border-emerald-300 bg-emerald-50 text-emerald-700 rounded-lg text-sm hover:bg-emerald-100 disabled:opacity-60">
+                      <button onClick={() => verifyAndLoad(code)} disabled={loading || verifying} className="inline-flex items-center gap-2 px-3 py-2 border border-emerald-300 bg-emerald-50 text-emerald-700 rounded-lg text-sm hover:bg-emerald-100 disabled:opacity-60">
                         Refresh
                       </button>
                       <button onClick={clearSession} className="ml-auto inline-flex items-center gap-2 px-3 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100">
