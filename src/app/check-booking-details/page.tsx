@@ -157,9 +157,12 @@ export default function CheckBookingDetailsPage() {
     const now = Date.now();
     if (stored && exp > now) {
       setCode(stored);
-      setView("details");
       setRemainingMs(exp - now);
-      verifyAndLoad(stored);
+      (async () => {
+        const ok = await verifyAndLoad(stored);
+        if (ok) setView("details");
+        else setView("form");
+      })();
     } else {
       clearSession();
     }
@@ -188,7 +191,7 @@ export default function CheckBookingDetailsPage() {
     return `${m}:${s}`;
   }, [remainingMs]);
 
-  const verifyAndLoad = async (bookingCode: string) => {
+  const verifyAndLoad = async (bookingCode: string): Promise<boolean> => {
     const url = `${URLS.BASE}/inspections/bookings/verify-code`;
     try {
       setVerifying(true);
@@ -214,10 +217,14 @@ export default function CheckBookingDetailsPage() {
         createdAt: payload.createdAt,
       };
       setData(normalized);
+      return true;
     } catch (err: any) {
-      setError(err?.message || "Unable to verify code");
+      const msg = err?.message || "Unable to verify code";
+      setError(msg);
       setData(null);
       setView("form");
+      toast.error(msg);
+      return false;
     } finally {
       setVerifying(false);
       setLoading(false);
@@ -231,14 +238,11 @@ export default function CheckBookingDetailsPage() {
       toast.error("Enter your booking code");
       return;
     }
-    try {
-      await verifyAndLoad(trimmed);
-      startSession(trimmed);
-      setView("details");
-      toast.success("Booking code verified");
-    } catch {
-      // verifyAndLoad already handles errors
-    }
+    const ok = await verifyAndLoad(trimmed);
+    if (!ok) return;
+    startSession(trimmed);
+    setView("details");
+    toast.success("Booking code verified");
   };
 
   const onDownloadJson = () => {
