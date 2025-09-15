@@ -191,7 +191,7 @@ export default function CheckBookingDetailsPage() {
     return `${m}:${s}`;
   }, [remainingMs]);
 
-  const verifyAndLoad = async (bookingCode: string) => {
+  const verifyAndLoad = async (bookingCode: string): Promise<boolean> => {
     const url = `${URLS.BASE}/inspections/bookings/verify-code`;
     try {
       setVerifying(true);
@@ -217,10 +217,14 @@ export default function CheckBookingDetailsPage() {
         createdAt: payload.createdAt,
       };
       setData(normalized);
+      return true;
     } catch (err: any) {
-      setError(err?.message || "Unable to verify code");
+      const msg = err?.message || "Unable to verify code";
+      setError(msg);
       setData(null);
       setView("form");
+      toast.error(msg);
+      return false;
     } finally {
       setVerifying(false);
       setLoading(false);
