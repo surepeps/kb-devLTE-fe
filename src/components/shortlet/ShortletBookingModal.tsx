@@ -87,13 +87,28 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
 
   // Validation schemas per step
   const step1Schema = Yup.object({
-    checkIn: Yup.date().typeError("Select check-in").required("Check-in is required"),
+    checkIn: Yup.date()
+      .typeError("Select check-in")
+      .required("Check-in is required"),
+
     checkOut: Yup.date()
       .typeError("Select check-out")
       .required("Check-out is required")
-      .when("checkIn", (checkIn: Date, schema: any) => (checkIn ? schema.min(checkIn, "Check-out must be after check-in") : schema)),
-    guests: Yup.number().min(1, "Min 1 guest").max(maxGuests, `Max ${maxGuests}`).required("Guests is required"),
-    note: Yup.string().max(500, "Note too long").optional(),
+      .when('checkIn', {
+        is: (checkIn: Date | undefined) => !!checkIn, // condition
+        then: (schema: Yup.DateSchema) =>
+          schema.min(Yup.ref('checkIn'), "Check-out must be after check-in"),
+        otherwise: (schema: Yup.DateSchema) => schema,
+      }),
+
+    guests: Yup.number()
+      .min(1, "Min 1 guest")
+      .max(maxGuests, `Max ${maxGuests}`)
+      .required("Guests is required"),
+
+    note: Yup.string()
+      .max(500, "Note too long")
+      .optional(),
   });
 
   const step2Schema = Yup.object({
@@ -241,7 +256,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
               >
                 <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-emerald-100">
                   <h3 className="text-xl font-semibold text-emerald-700">Booking Request Submitted</h3>
-                  <p className="text-sm text-gray-700 mt-2">Your booking request has been submitted successfully. Please await the owner's response.</p>
+                  <p className="text-sm text-gray-700 mt-2">Your booking request has been submitted successfully. Please await the owner&apos;s response.</p>
                   <p className="text-sm text-gray-600 mt-1">Would you like to book more?</p>
                   <div className="flex gap-3 justify-end mt-6">
                     <button

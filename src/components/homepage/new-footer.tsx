@@ -98,7 +98,7 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const { settings } = useSocialLinskSettings();
 
   const computedLinks = React.useMemo(() => {
-    const map: Record<string, { name: string; icon: JSX.Element }> = {
+    const map: Record<string, { name: string; icon: React.ReactNode }> = {
       facebook_url: {
         name: 'Facebook',
         icon: (
@@ -173,7 +173,7 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
       }
     };
 
-    const links: { name: string; url: string; icon: JSX.Element }[] = [];
+    const links: { name: string; url: string; icon: React.ReactNode }[] = [];
     Object.entries(map).forEach(([key, def]) => {
       const url = (settings as any)?.[key as keyof typeof settings];
       if (typeof url === 'string' && url.trim()) {
