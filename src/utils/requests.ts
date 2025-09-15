@@ -82,18 +82,20 @@ export const GET_REQUEST = async <T = any>(
       };
     }
   } catch (error: unknown) {
-    const errorMsg = (error as Error).message || "Network error";
+    const err = error as Error & { name?: string };
+    const isAbort = err.name === "AbortError";
+    const errorMsg = err.message || (isAbort ? "Request timed out" : "Network error");
 
-    // Retry once for network errors (not for AbortError)
-    if (retryCount === 0 && (error as Error).name !== "AbortError") {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+    // Retry once for transient network errors
+    if (retryCount === 0 && !isAbort) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return GET_REQUEST(url, token, 1);
     }
 
     return {
       error: errorMsg,
       success: false,
-      message: "Unable to connect to server. Please check your connection.",
+      message: errorMsg,
       data: null,
     };
   }
