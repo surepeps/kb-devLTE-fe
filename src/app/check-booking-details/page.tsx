@@ -238,14 +238,11 @@ export default function CheckBookingDetailsPage() {
       toast.error("Enter your booking code");
       return;
     }
-    try {
-      await verifyAndLoad(trimmed);
-      startSession(trimmed);
-      setView("details");
-      toast.success("Booking code verified");
-    } catch {
-      // verifyAndLoad already handles errors
-    }
+    const ok = await verifyAndLoad(trimmed);
+    if (!ok) return;
+    startSession(trimmed);
+    setView("details");
+    toast.success("Booking code verified");
   };
 
   const onDownloadJson = () => {
