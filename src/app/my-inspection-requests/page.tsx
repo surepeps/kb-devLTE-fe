@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
 import { GET_REQUEST } from "@/utils/requests";
@@ -19,69 +19,78 @@ import {
   XCircle as XCircleIcon,
   AlertCircle as AlertCircleIcon,
   DollarSign as DollarSignIcon,
-  Eye as EyeIcon,
-  MessageSquare as MessageSquareIcon,
-  Filter as FilterIcon,
-  RefreshCw as RefreshIcon,
-  TrendingUp as TrendingUpIcon,
-  BarChart3 as BarChart3Icon,
-  Activity as ActivityIcon,
   Home as HomeIcon,
-  ChevronDown as ChevronDownIcon,
   ChevronRight as ChevronRightIcon,
   ChevronLeft as ChevronLeftIcon,
-  MoreHorizontal as MoreHorizontalIcon,
-  X as XIcon,
   Grid2X2 as GridIcon,
   List as ListIcon,
   Timer,
   Users,
-  Building,
   Video,
-  User,
   FileText,
-  Clock3,
-  ArrowUpRight,
-  Zap,
-  Target,
-  Badge,
-  CheckCircle2,
-  Package,
-  Clock4,
-  XCircle,
+  RefreshCw as RefreshIcon,
+  Building,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 
 interface Property {
-  id: string;
-  title: string;
-  price: number;
-  image: string;
-  status: string;
-  briefType: string;
-  isAvailable: boolean;
+  id?: string;
+  _id?: string;
+  title?: string;
+  price?: number;
+  image?: string;
+  status?: string;
+  briefType?: string;
+  isAvailable?: boolean;
 }
 
 interface InspectionData {
   id: string;
   property: Property | null;
-  inspectionDate: string;
-  inspectionTime: string;
-  inspectionType: "price" | "LOI";
-  inspectionMode: "in_person" | "virtual";
-  inspectionStatus: string;
+  inspectionDate: string | null;
+  inspectionTime: string | null;
+  inspectionType: string;
+  inspectionMode: string;
+  inspectionStatus?: string;
   status: string;
-  isNegotiating: boolean;
-  isLOI: boolean;
-  owner: string;
-  negotiationPrice: number;
-  counterCount: number;
-  reason: string | null;
-  pendingResponseFrom: "buyer" | "seller" | "admin";
-  stage: string;
-  createdAt: string;
-  updatedAt: string;
+  isNegotiating?: boolean;
+  isLOI?: boolean;
+  owner?: string;
+  negotiationPrice?: number;
+  counterCount?: number;
+  reason?: string | null;
+  pendingResponseFrom?: "buyer" | "seller" | "admin";
+  stage?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  source?: string;
+  requestSource?: string;
+  origin?: string;
+}
+
+interface BookingData {
+  id: string;
+  property: Property | null;
+  bookingDetails?: {
+    checkInDateTime?: string;
+    checkOutDateTime?: string;
+    guestNumber?: number;
+    note?: string;
+  };
+  bookedBy?: {
+    fullName?: string;
+    email?: string;
+    phoneNumber?: string;
+  };
+  paymentDetails?: {
+    amountToBePaid?: number;
+    currency?: string;
+  };
+  bookingMode?: "instant" | "request" | string;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface StatsResponse {
@@ -144,7 +153,7 @@ const STATUS_CONFIG = {
     borderColor: "border-yellow-200",
     icon: AlertCircleIcon,
   },
-};
+} as const;
 
 const TYPE_CONFIG = {
   price: {
@@ -161,7 +170,7 @@ const TYPE_CONFIG = {
     bgColor: "bg-purple-100",
     textColor: "text-purple-800",
   },
-};
+} as const;
 
 const MODE_CONFIG = {
   in_person: {
@@ -174,13 +183,19 @@ const MODE_CONFIG = {
     icon: Video,
     color: "text-[#8DDB90]",
   },
-};
+} as const;
+
+type TabKey = "inspections" | "bookings";
 
 export default function MyInspectionRequestsPage() {
   const router = useRouter();
   const { user } = useUserContext();
 
+  const [activeTab, setActiveTab] = useState<TabKey>("inspections");
+
   const [inspections, setInspections] = useState<InspectionData[]>([]);
+  const [bookings, setBookings] = useState<BookingData[]>([]);
+
   const [stats, setStats] = useState<StatsResponse["data"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -191,7 +206,6 @@ export default function MyInspectionRequestsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Filters
   const [filters, setFilters] = useState({
     status: "",
     inspectionType: "",
@@ -201,7 +215,8 @@ export default function MyInspectionRequestsPage() {
     dateTo: "",
   });
 
-  // Fetch inspections from API
+  const token = useMemo(() => Cookies.get("token"), []);
+
   const fetchInspections = useCallback(
     async (page = 1, showLoading = true) => {
       if (showLoading) setIsLoading(true);
@@ -209,17 +224,15 @@ export default function MyInspectionRequestsPage() {
 
       try {
         const url = `${URLS.BASE + URLS.accountInspectionBaseUrl}/fetchAll?page=${page}&limit=10`;
-        const token = Cookies.get("token");
-
         const response = await GET_REQUEST(url, token);
 
-        if (response.success) {
-          setInspections(response.data || []);
+        if (response?.success) {
+          setInspections(Array.isArray(response.data) ? response.data : []);
           setTotalPages(response.pagination?.totalPages || 1);
-          setTotalCount(response.pagination?.total || 0);
-          setCurrentPage(response.pagination?.page || 1);
+          setTotalCount(response.pagination?.total || (response.data?.length || 0));
+          setCurrentPage(response.pagination?.page || page);
         } else {
-          throw new Error(response.message || "Failed to fetch inspections");
+          throw new Error(response?.message || "Failed to fetch inspections");
         }
       } catch (error) {
         console.error("Failed to fetch inspections:", error);
@@ -230,683 +243,588 @@ export default function MyInspectionRequestsPage() {
         setIsRefreshing(false);
       }
     },
-    [router]
+    [token]
   );
 
-  // Fetch stats from API
+  const fetchBookings = useCallback(
+    async (page = 1, showLoading = true) => {
+      if (showLoading) setIsLoading(true);
+      if (!showLoading) setIsRefreshing(true);
+
+      try {
+        // Endpoint aligned with inspections namespace used for booking creation
+        const url = `${URLS.BASE + URLS.accountInspectionBaseUrl}/bookings/fetchAll?page=${page}&limit=10`;
+        const response = await GET_REQUEST(url, token);
+
+        if (response?.success) {
+          setBookings(Array.isArray(response.data) ? response.data : []);
+          setTotalPages(response.pagination?.totalPages || 1);
+          setTotalCount(response.pagination?.total || (response.data?.length || 0));
+          setCurrentPage(response.pagination?.page || page);
+        } else {
+          throw new Error(response?.message || "Failed to fetch bookings");
+        }
+      } catch (error) {
+        console.error("Failed to fetch bookings:", error);
+        // Be non-blocking: if API not available yet, show empty state
+        setBookings([]);
+        toast.error("Failed to load booking requests");
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [token]
+  );
+
   const fetchStats = useCallback(async () => {
     try {
       const url = `${URLS.BASE}/account/my-inspections/stats`;
-      const token = Cookies.get("token");
-
       if (!token) return;
-
       const response = await GET_REQUEST(url, token);
-
-      if (response.success) {
-        setStats(response.data);
-      }
+      if (response?.success) setStats(response.data);
     } catch (error) {
       console.error("Failed to fetch stats:", error);
     }
-  }, []);
+  }, [token]);
 
-  // Initialize data
   useEffect(() => {
-    if (user) {
+    if (!user) return;
+    if (activeTab === "inspections") {
       fetchInspections(1);
       fetchStats();
+    } else {
+      fetchBookings(1);
     }
-  }, [user, fetchInspections, fetchStats]);
+  }, [user, activeTab, fetchInspections, fetchBookings, fetchStats]);
 
-  // Handle refresh
   const handleRefresh = useCallback(() => {
-    fetchInspections(currentPage, false);
-    fetchStats();
-  }, [fetchInspections, fetchStats, currentPage]);
+    if (activeTab === "inspections") {
+      fetchInspections(currentPage, false);
+      fetchStats();
+    } else {
+      fetchBookings(currentPage, false);
+    }
+  }, [activeTab, fetchInspections, fetchStats, fetchBookings, currentPage]);
 
-  // Handle page change
   const handlePageChange = useCallback(
     (page: number) => {
       setCurrentPage(page);
-      fetchInspections(page);
+      if (activeTab === "inspections") fetchInspections(page);
+      else fetchBookings(page);
     },
-    [fetchInspections]
+    [activeTab, fetchInspections, fetchBookings]
   );
 
-  // Derive source label
   const getSourceBadge = (ins: any) => {
-    const src = (ins && (ins.source || ins.requestSource || ins.origin)) || '';
-    const isPublic = String(src).toLowerCase().includes('public');
-    return isPublic ? { label: 'Public', classes: 'bg-blue-100 text-blue-800 border-blue-200' } : { label: 'Marketplace', classes: 'bg-gray-100 text-gray-800 border-gray-200' };
+    const src = (ins && (ins.source || ins.requestSource || ins.origin)) || "";
+    const isPublic = String(src).toLowerCase().includes("public");
+    return isPublic
+      ? { label: "Public", classes: "bg-blue-100 text-blue-800 border-blue-200" }
+      : { label: "Marketplace", classes: "bg-gray-100 text-gray-800 border-gray-200" };
   };
 
-  // Filter inspections
-  const filteredInspections = inspections.filter((inspection) => {
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch =
-        inspection.property?.title?.toLowerCase().includes(searchLower) ||
-        inspection.inspectionType.toLowerCase().includes(searchLower) ||
-        inspection.status.toLowerCase().includes(searchLower);
-      if (!matchesSearch) return false;
-    }
+  const filteredInspections = useMemo(() => {
+    const searchLower = searchTerm.trim().toLowerCase();
+    return inspections.filter((inspection) => {
+      if (searchLower) {
+        const title = inspection.property?.title?.toLowerCase() || "";
+        const type = String(inspection.inspectionType || "").toLowerCase();
+        const status = String(inspection.status || inspection.inspectionStatus || "").toLowerCase();
+        if (!title.includes(searchLower) && !type.includes(searchLower) && !status.includes(searchLower)) return false;
+      }
 
-    if (filters.status && inspection.status !== filters.status) return false;
-    if (filters.inspectionType && inspection.inspectionType !== filters.inspectionType) return false;
-    if (filters.inspectionMode && inspection.inspectionMode !== filters.inspectionMode) return false;
+      if (filters.status && inspection.status !== filters.status) return false;
+      if (filters.inspectionType && inspection.inspectionType !== filters.inspectionType) return false;
+      if (filters.inspectionMode && inspection.inspectionMode !== filters.inspectionMode) return false;
 
-    return true;
-  });
-
-
-  // Get status config
-  const getStatusConfig = (status: string) => {
-    return STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending;
-  };
-
-  // Get type config
-  const getTypeConfig = (type: string) => {
-    return TYPE_CONFIG[type as keyof typeof TYPE_CONFIG] || TYPE_CONFIG.price;
-  };
-
-  // Get mode config
-  const getModeConfig = (mode: string) => {
-    return MODE_CONFIG[mode as keyof typeof MODE_CONFIG] || MODE_CONFIG.in_person;
-  };
-
-  // Clear filters
-  const clearFilters = () => {
-    setFilters({
-      status: "",
-      inspectionType: "",
-      inspectionMode: "",
-      sortBy: "newest",
-      dateFrom: "",
-      dateTo: "",
+      return true;
     });
+  }, [inspections, searchTerm, filters]);
+
+  const filteredBookings = useMemo(() => {
+    const searchLower = searchTerm.trim().toLowerCase();
+    return bookings.filter((b) => {
+      if (searchLower) {
+        const title = b.property?.title?.toLowerCase() || "";
+        const status = String(b.status || "").toLowerCase();
+        const mode = String(b.bookingMode || "").toLowerCase();
+        if (!title.includes(searchLower) && !status.includes(searchLower) && !mode.includes(searchLower)) return false;
+      }
+      if (filters.status && b.status !== filters.status) return false;
+      return true;
+    });
+  }, [bookings, searchTerm, filters.status]);
+
+  const getStatusConfig = (status: string) => STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.pending;
+  const getTypeConfig = (type: string) => TYPE_CONFIG[type as keyof typeof TYPE_CONFIG] || TYPE_CONFIG.price;
+  const getModeConfig = (mode: string) => MODE_CONFIG[mode as keyof typeof MODE_CONFIG] || MODE_CONFIG.in_person;
+
+  const clearFilters = () => {
+    setFilters({ status: "", inspectionType: "", inspectionMode: "", sortBy: "newest", dateFrom: "", dateTo: "" });
     setSearchTerm("");
   };
 
-  // Render loading state
-  if (isLoading) {
-    return (
-        <Loading />
-    );
-  }
+  const listTotalCount = activeTab === "inspections" ? filteredInspections.length : filteredBookings.length;
+
+  if (isLoading) return <Loading />;
 
   return (
-    <CombinedAuthGuard
-      requireAuth={true} // User must be logged in
-      allowedUserTypes={["Agent", "Landowners"]} // Only these user types can access
-      requireAgentOnboarding={false}
-      requireAgentApproval={false}
-      agentCustomMessage="You must complete onboarding and be approved before you view inspection requests."
-    >
-    <div className="min-h-screen bg-[#EEF1F1]">
-      <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors"
-            >
-              <ArrowLeftIcon size={20} />
-              Back to Dashboard
-            </Link>
-          </div>
-
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-[#09391C] font-display mb-3">
-                My Inspection Requests
-              </h1>
-              <p className="text-[#5A5D63] text-lg">
-                Monitor and manage all your property inspection requests in one place
-              </p>
+    <CombinedAuthGuard requireAuth={true} allowedUserTypes={["Agent", "Landowners"]} requireAgentOnboarding={false} requireAgentApproval={false} agentCustomMessage="You must complete onboarding and be approved before you view inspection requests.">
+      <div className="min-h-screen bg-[#EEF1F1]">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-8">
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+              <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors">
+                <ArrowLeftIcon size={20} />
+                Back to Dashboard
+              </Link>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                <RefreshIcon
-                  size={16}
-                  className={isRefreshing ? "animate-spin" : ""}
-                />
-                {isRefreshing ? "Refreshing..." : "Refresh"}
-              </button>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors"
-              >
-                <FilterIcon size={16} />
-                {showFilters ? "Hide Filters" : "Show Filters"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Dashboard */}
-        {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-xl p-6 border border-gray-100"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Building size={24} className="text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-[#09391C]">{stats.totalInspections}</p>
-                </div>
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-[#09391C] font-display mb-3">My Inspection Requests</h1>
+                <p className="text-[#5A5D63] text-lg">Monitor and manage all your property inspection and booking requests in one place</p>
               </div>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-xl p-6 border border-gray-100"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-yellow-100 rounded-lg">
-                  <AlertCircleIcon size={24} className="text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Pending</p>
-                  <p className="text-2xl font-bold text-yellow-600">{stats.pendingInspections}</p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-xl p-6 border border-gray-100"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <CheckCircleIcon size={24} className="text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Completed</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.completedInspections}</p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-white rounded-xl p-6 border border-gray-100"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-red-100 rounded-lg">
-                  <XCircleIcon size={24} className="text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Cancelled</p>
-                  <p className="text-2xl font-bold text-red-600">{stats.cancelledInspections}</p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white rounded-xl p-6 border border-gray-100"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-100 rounded-lg">
-                  <ClockIcon size={24} className="text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Avg Response</p>
-                  <p className="text-lg font-bold text-purple-600">{stats.averageResponseTimeInHours.toFixed(1)}h</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Filters Panel */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="bg-white rounded-xl p-6 mb-6 border border-gray-100 overflow-hidden"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-[#09391C] flex items-center gap-2">
-                  <FilterIcon size={20} />
-                  Advanced Filters
-                </h3>
-                <button
-                  onClick={clearFilters}
-                  className="text-sm text-[#5A5D63] hover:text-[#09391C] transition-colors"
-                >
-                  Clear All
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button onClick={handleRefresh} disabled={isRefreshing} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+                  <RefreshIcon size={16} className={isRefreshing ? "animate-spin" : ""} />
+                  {isRefreshing ? "Refreshing..." : "Refresh"}
+                </button>
+                <button onClick={() => setShowFilters(!showFilters)} className="inline-flex items-center gap-2 px-4 py-2 bg-[#8DDB90] text-white rounded-lg hover:bg-[#7BC87F] transition-colors">
+                  {/* icon space reserved by design */}
+                  {showFilters ? "Hide Filters" : "Show Filters"}
                 </button>
               </div>
+            </div>
+          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                  >
-                    <option value="">All Status</option>
-                    {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                      <option key={key} value={key}>
-                        {config.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          <div className="bg-white rounded-xl p-2 mb-6 border border-gray-100 inline-flex">
+            <button onClick={() => setActiveTab("inspections")} className={`px-4 py-2 text-sm font-medium rounded-lg ${activeTab === "inspections" ? "bg-[#09391C] text-white" : "text-[#09391C]"}`}>Inspection Requests</button>
+            <button onClick={() => setActiveTab("bookings")} className={`px-4 py-2 text-sm font-medium rounded-lg ${activeTab === "bookings" ? "bg-[#09391C] text-white" : "text-[#09391C]"}`}>Booking Requests</button>
+          </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Type
-                  </label>
-                  <select
-                    value={filters.inspectionType}
-                    onChange={(e) => setFilters({ ...filters, inspectionType: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                  >
-                    <option value="">All Types</option>
-                    <option value="price">Price Negotiation</option>
-                    <option value="LOI">Letter of Intent</option>
-                  </select>
+          {activeTab === "inspections" && stats && (
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Building size={24} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total</p>
+                    <p className="text-2xl font-bold text-[#09391C]">{stats.totalInspections}</p>
+                  </div>
                 </div>
+              </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mode
-                  </label>
-                  <select
-                    value={filters.inspectionMode}
-                    onChange={(e) => setFilters({ ...filters, inspectionMode: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                  >
-                    <option value="">All Modes</option>
-                    <option value="in_person">In Person</option>
-                    <option value="virtual">Virtual</option>
-                  </select>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <AlertCircleIcon size={24} className="text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Pending</p>
+                    <p className="text-2xl font-bold text-yellow-600">{stats.pendingInspections}</p>
+                  </div>
                 </div>
+              </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sort By
-                  </label>
-                  <select
-                    value={filters.sortBy}
-                    onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="status">By Status</option>
-                  </select>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <CheckCircleIcon size={24} className="text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Completed</p>
+                    <p className="text-2xl font-bold text-green-600">{stats.completedInspections}</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <XCircleIcon size={24} className="text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Cancelled</p>
+                    <p className="text-2xl font-bold text-red-600">{stats.cancelledInspections}</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="bg-white rounded-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <ClockIcon size={24} className="text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Avg Response</p>
+                    <p className="text-lg font-bold text-purple-600">{stats.averageResponseTimeInHours.toFixed(1)}h</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           )}
-        </AnimatePresence>
 
-        {/* Search and View Controls */}
-        <div className="bg-white rounded-xl p-6 mb-6 border border-gray-100">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <SearchIcon
-                size={20}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Search by property title, type, or status..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-lg"
-              />
-            </div>
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="bg-white rounded-xl p-6 mb-6 border border-gray-100 overflow-hidden">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-[#09391C]">Advanced Filters</h3>
+                  <button onClick={clearFilters} className="text-sm text-[#5A5D63] hover:text-[#09391C] transition-colors">Clear All</button>
+                </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-white text-[#8DDB90]"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  <GridIcon size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "list"
-                      ? "bg-white text-[#8DDB90]"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  <ListIcon size={18} />
-                </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
+                      <option value="">All Status</option>
+                      {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                        <option key={key} value={key}>{config.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {activeTab === "inspections" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                        <select value={filters.inspectionType} onChange={(e) => setFilters({ ...filters, inspectionType: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
+                          <option value="">All Types</option>
+                          <option value="price">Price Negotiation</option>
+                          <option value="LOI">Letter of Intent</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
+                        <select value={filters.inspectionMode} onChange={(e) => setFilters({ ...filters, inspectionMode: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
+                          <option value="">All Modes</option>
+                          <option value="in_person">In Person</option>
+                          <option value="virtual">Virtual</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                    <select value={filters.sortBy} onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent">
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="status">By Status</option>
+                    </select>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="bg-white rounded-xl p-6 mb-6 border border-gray-100">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1 relative">
+                <SearchIcon size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder={activeTab === "inspections" ? "Search by property title, type, or status..." : "Search by property title, status, or mode..."} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-lg" />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                  <button onClick={() => setViewMode("grid")} className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-white text-[#8DDB90]" : "text-gray-500 hover:text-gray-700"}`}>
+                    <GridIcon size={18} />
+                  </button>
+                  <button onClick={() => setViewMode("list")} className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-white text-[#8DDB90]" : "text-gray-500 hover:text-gray-700"}`}>
+                    <ListIcon size={18} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex justify-between items-center mt-4 text-sm text-[#5A5D63]">
-            <div>
-              {filteredInspections.length} of {totalCount} inspections
-              {searchTerm && ` matching "${searchTerm}"`}
+            <div className="flex justify-between items-center mt-4 text-sm text-[#5A5D63]">
+              <div>
+                {listTotalCount} of {totalCount} {activeTab === "inspections" ? "inspections" : "bookings"}
+                {searchTerm && ` matching "${searchTerm}"`}
+              </div>
+              <div>Page {currentPage} of {totalPages}</div>
             </div>
-            <div>Page {currentPage} of {totalPages}</div>
           </div>
-        </div>
 
-        {/* Inspections List */}
-        {filteredInspections.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100"
-          >
-            <Building size={64} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-xl font-medium text-gray-600 mb-2">
-              {searchTerm || Object.values(filters).some((f) => f)
-                ? "No matching inspection requests found"
-                : "No inspection requests yet"}
-            </h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm || Object.values(filters).some((f) => f)
-                ? "Try adjusting your search criteria or filters"
-                : "Inspection requests will appear here when buyers request to inspect your properties"}
-            </p>
-            {(searchTerm || Object.values(filters).some((f) => f)) && (
-              <button
-                onClick={clearFilters}
-                className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                Clear All Filters
-              </button>
-            )}
-          </motion.div>
-        ) : (
-          <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
-            {filteredInspections.map((inspection, index) => {
-              const statusConfig = getStatusConfig(inspection.status);
-              const typeConfig = getTypeConfig(inspection.inspectionType);
-              const modeConfig = getModeConfig(inspection.inspectionMode);
-              const StatusIcon = statusConfig.icon;
-              const TypeIcon = typeConfig.icon;
-              const ModeIcon = modeConfig.icon;
+          {activeTab === "inspections" ? (
+            filteredInspections.length === 0 ? (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100">
+                <Building size={64} className="mx-auto text-gray-400 mb-4" />
+                <h3 className="text-xl font-medium text-gray-600 mb-2">{searchTerm || Object.values(filters).some((f) => f) ? "No matching inspection requests found" : "No inspection requests yet"}</h3>
+                <p className="text-gray-500 mb-6">{searchTerm || Object.values(filters).some((f) => f) ? "Try adjusting your search criteria or filters" : "Inspection requests will appear here when buyers request to inspect your properties"}</p>
+                {(searchTerm || Object.values(filters).some((f) => f)) && (
+                  <button onClick={clearFilters} className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-medium transition-colors">Clear All Filters</button>
+                )}
+              </motion.div>
+            ) : (
+              <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
+                {filteredInspections.map((inspection, index) => {
+                  const statusConfig = getStatusConfig(String(inspection.status || inspection.inspectionStatus || "pending"));
+                  const typeConfig = getTypeConfig(String(inspection.inspectionType || "price"));
+                  const modeConfig = getModeConfig(String(inspection.inspectionMode || "in_person"));
+                  const StatusIcon = statusConfig.icon;
+                  const TypeIcon = typeConfig.icon;
+                  const ModeIcon = modeConfig.icon;
 
-              return (
-                <motion.div
-                  key={inspection.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${
-                    viewMode === "list" ? "flex" : ""
-                  }`}
-                >
-                  {/* Property Image for Grid View */}
-                  {viewMode === "grid" && inspection.property?.image && (
-                    <div className="h-48 relative overflow-hidden">
-                      <img
-                        src={inspection.property.image}
-                        alt={inspection.property.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-4 left-4 flex gap-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color} text-white`}>
-                          {statusConfig.label}
-                        </span>
-                        {inspection.isLOI && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
-                            LOI
-                          </span>
+                  return (
+                    <motion.div key={inspection.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
+                      {viewMode === "grid" && inspection.property?.image && (
+                        <div className="h-48 relative overflow-hidden">
+                          <img src={inspection.property.image} alt={inspection.property.title || "Property"} className="w-full h-full object-cover" />
+                          <div className="absolute top-4 left-4 flex gap-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color} text-white`}>{statusConfig.label}</span>
+                            {inspection.isLOI && <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">LOI</span>}
+                          </div>
+                        </div>
+                      )}
+
+                      {viewMode === "list" && inspection.property?.image && (
+                        <div className="w-32 h-32 relative overflow-hidden">
+                          <img src={inspection.property.image} alt={inspection.property.title || "Property"} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
+                      <div className="p-6 flex-1">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">{inspection.property?.title || "Property Unavailable"}</h3>
+                            <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
+                              <MapPinIcon size={14} />
+                              <span>Inspection Request</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4">
+                            {viewMode === "grid" && (
+                              <>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
+                                  <StatusIcon size={12} className="inline mr-1" />
+                                  {statusConfig.label}
+                                </span>
+                                {inspection.isLOI && (
+                                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">LOI</span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {typeof inspection.property?.price === "number" && (
+                          <div className="mb-4">
+                            <p className="text-lg font-semibold text-[#8DDB90]">₦{Number(inspection.property.price || 0).toLocaleString()}</p>
+                            {typeof inspection.negotiationPrice === "number" && inspection.negotiationPrice > 0 && (
+                              <p className="text-sm text-orange-600 font-medium">Offered: ₦{Number(inspection.negotiationPrice || 0).toLocaleString()}</p>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Property Image for List View */}
-                  {viewMode === "list" && inspection.property?.image && (
-                    <div className="w-32 h-32 relative overflow-hidden">
-                      <img
-                        src={inspection.property.image}
-                        alt={inspection.property.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
+                              <CalendarIcon size={14} />
+                              <span>Date & Time</span>
+                            </div>
+                            <p className="text-sm font-medium text-[#09391C]">{inspection.inspectionDate ? new Date(inspection.inspectionDate).toLocaleDateString() : "-"}</p>
+                            <p className="text-sm text-[#5A5D63]">{inspection.inspectionTime || "-"}</p>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
+                              <TypeIcon size={14} />
+                              <span>Type & Mode</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getTypeConfig(String(inspection.inspectionType || "price")).bgColor} ${getTypeConfig(String(inspection.inspectionType || "price")).textColor}`}>
+                                {getTypeConfig(String(inspection.inspectionType || "price")).label}
+                              </span>
+                              <span className={`text-xs ${getModeConfig(String(inspection.inspectionMode || "in_person")).color}`}>
+                                <ModeIcon size={12} className="inline mr-1" />
+                                {getModeConfig(String(inspection.inspectionMode || "in_person")).label}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
 
-                  <div className="p-6 flex-1">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">
-                          {inspection.property?.title || "Property Unavailable"}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
-                          <MapPinIcon size={14} />
-                          <span>Inspection Request</span>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="text-sm text-[#5A5D63]">
+                            <span>Stage: </span>
+                            <span className="font-medium capitalize">{inspection.stage || "-"}</span>
+                          </div>
+                          {typeof inspection.counterCount === "number" && inspection.counterCount > 0 && (
+                            <span className="px-2 py-1 rounded-lg text-xs font-medium bg-orange-100 text-orange-700">{inspection.counterCount} Counter{inspection.counterCount !== 1 ? "s" : ""}</span>
+                          )}
+                        </div>
+
+                        {inspection.reason && (
+                          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                            <p className="text-sm text-[#5A5D63]">{inspection.reason}</p>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+                          {inspection.pendingResponseFrom === "seller" && (
+                            <button onClick={() => router.push(`/secure-seller-response/${inspection.owner}/${inspection.id}`)} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Respond</button>
+                          )}
+
+                          {inspection.property && (
+                            <button onClick={() => router.push(`/property/buy/${inspection.property!.id || inspection.property!._id}`)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                              <HomeIcon size={16} />
+                              View Property
+                            </button>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        {viewMode === "grid" && (
-                          <>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
-                              <StatusIcon size={12} className="inline mr-1" />
-                              {statusConfig.label}
-                            </span>
-                            {inspection.isLOI && (
-                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
-                                LOI
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )
+          ) : (
+            filteredBookings.length === 0 ? (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100">
+                <Building size={64} className="mx-auto text-gray-400 mb-4" />
+                <h3 className="text-xl font-medium text-gray-600 mb-2">{searchTerm || Object.values(filters).some((f) => f) ? "No matching booking requests found" : "No booking requests yet"}</h3>
+                <p className="text-gray-500 mb-6">{searchTerm || Object.values(filters).some((f) => f) ? "Try adjusting your search criteria or filters" : "Shortlet booking requests will appear here when guests request to book your properties"}</p>
+                {(searchTerm || Object.values(filters).some((f) => f)) && (
+                  <button onClick={clearFilters} className="bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 py-3 rounded-lg font-medium transition-colors">Clear All Filters</button>
+                )}
+              </motion.div>
+            ) : (
+              <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
+                {filteredBookings.map((b, index) => {
+                  const statusConfig = getStatusConfig(String(b.status || "pending"));
+                  const StatusIcon = statusConfig.icon;
+                  const title = b.property?.title || "Property Unavailable";
+                  const amount = Number(b.paymentDetails?.amountToBePaid || 0);
+                  const currency = b.paymentDetails?.currency || "₦";
+                  const checkIn = b.bookingDetails?.checkInDateTime ? new Date(b.bookingDetails.checkInDateTime) : null;
+                  const checkOut = b.bookingDetails?.checkOutDateTime ? new Date(b.bookingDetails.checkOutDateTime) : null;
+
+                  return (
+                    <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
+                      {viewMode === "list" && b.property?.image && (
+                        <div className="w-32 h-32 relative overflow-hidden">
+                          <img src={b.property.image} alt={title} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
+                      {viewMode === "grid" && b.property?.image && (
+                        <div className="h-48 relative overflow-hidden">
+                          <img src={b.property.image} alt={title} className="w-full h-full object-cover" />
+                          <div className="absolute top-4 left-4 flex gap-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color} text-white`}>{statusConfig.label}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="p-6 flex-1">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">{title}</h3>
+                            <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
+                              <MapPinIcon size={14} />
+                              <span>Booking Request</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4">
+                            {viewMode === "grid" && (
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
+                                <StatusIcon size={12} className="inline mr-1" />
+                                {statusConfig.label}
                               </span>
                             )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* List View Status for List Mode */}
-                    {viewMode === "list" && (
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
-                          <StatusIcon size={12} className="inline mr-1" />
-                          {statusConfig.label}
-                        </span>
-                        {inspection.isLOI && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
-                            LOI
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Price Information */}
-                    {inspection.property?.price && (
-                      <div className="mb-4">
-                        <p className="text-lg font-semibold text-[#8DDB90]">
-                          ₦{inspection.property.price.toLocaleString()}
-                        </p>
-                        {inspection.negotiationPrice > 0 && (
-                          <p className="text-sm text-orange-600 font-medium">
-                            Offered: ₦{inspection.negotiationPrice.toLocaleString()}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Inspection Details */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
-                          <CalendarIcon size={14} />
-                          <span>Date & Time</span>
+                          </div>
                         </div>
-                        <p className="text-sm font-medium text-[#09391C]">
-                          {new Date(inspection.inspectionDate).toLocaleDateString()}
-                        </p>
-                        <p className="text-sm text-[#5A5D63]">{inspection.inspectionTime}</p>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
-                          <TypeIcon size={14} />
-                          <span>Type & Mode</span>
+
+                        {amount > 0 && (
+                          <div className="mb-4">
+                            <p className="text-lg font-semibold text-[#8DDB90]">{currency}{amount.toLocaleString()}</p>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
+                              <CalendarIcon size={14} />
+                              <span>Dates</span>
+                            </div>
+                            <p className="text-sm font-medium text-[#09391C]">{checkIn ? checkIn.toLocaleString() : "-"}</p>
+                            <p className="text-sm text-[#5A5D63]">{checkOut ? checkOut.toLocaleString() : "-"}</p>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 text-sm text-[#5A5D63] mb-1">
+                              <Users size={14} />
+                              <span>Guests & Mode</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700">{b.bookingDetails?.guestNumber || 1} Guest{(b.bookingDetails?.guestNumber || 1) > 1 ? "s" : ""}</span>
+                              <span className="text-xs text-gray-700 capitalize">{String(b.bookingMode || "request")}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2 py-1 rounded-lg text-xs font-medium ${typeConfig.bgColor} ${typeConfig.textColor}`}>
-                            {typeConfig.label}
-                          </span>
-                          <span className={`text-xs ${modeConfig.color}`}>
-                            <ModeIcon size={12} className="inline mr-1" />
-                            {modeConfig.label}
-                          </span>
+
+                        {b.bookedBy?.fullName && (
+                          <div className="text-sm text-[#5A5D63] mb-2">Booked by: <span className="font-medium text-[#09391C]">{b.bookedBy.fullName}</span></div>
+                        )}
+
+                        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+                          {b.property && (
+                            <button onClick={() => router.push(`/property/buy/${b.property!.id || b.property!._id}`)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                              <HomeIcon size={16} />
+                              View Property
+                            </button>
+                          )}
                         </div>
                       </div>
-                    </div>
-
-                    {/* Additional Info */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-sm text-[#5A5D63]">
-                        <span>Stage: </span>
-                        <span className="font-medium capitalize">{inspection.stage}</span>
-                      </div>
-                      {inspection.counterCount > 0 && (
-                        <span className="px-2 py-1 rounded-lg text-xs font-medium bg-orange-100 text-orange-700">
-                          {inspection.counterCount} Counter{inspection.counterCount !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Reason */}
-                    {inspection.reason && (
-                      <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                        <p className="text-sm text-[#5A5D63]">{inspection.reason}</p>
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
-                      {inspection.pendingResponseFrom === "seller" && (
-                        <button
-                          onClick={() =>
-                            router.push(
-                              `/secure-seller-response/${inspection.owner}/${inspection.id}`
-                            )
-                          }
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                        >
-                          <MessageSquareIcon size={16} />
-                          Respond
-                        </button>
-                      )}
-
-                      {inspection.property && (
-                        <button
-                          onClick={() =>
-                            router.push(`/property/buy/${inspection.property!.id}`)
-                          }
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
-                        >
-                          <HomeIcon size={16} />
-                          View Property
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="bg-white border border-gray-100 rounded-xl p-6 mt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
-                Showing {(currentPage - 1) * 10 + 1} to{" "}
-                {Math.min(currentPage * 10, totalCount)} of {totalCount} results
+                    </motion.div>
+                  );
+                })}
               </div>
+            )
+          )}
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeftIcon size={16} />
-                  Previous
-                </button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let page;
-                    if (totalPages <= 5) {
-                      page = i + 1;
-                    } else if (currentPage <= 3) {
-                      page = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      page = totalPages - 4 + i;
-                    } else {
-                      page = currentPage - 2 + i;
-                    }
-
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                          page === currentPage
-                            ? "bg-[#8DDB90] text-white"
-                            : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
+          {totalPages > 1 && (
+            <div className="bg-white border border-gray-100 rounded-xl p-6 mt-6">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, totalCount)} of {totalCount} results
                 </div>
 
-                <button
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Next
-                  <ChevronRightIcon size={16} />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handlePageChange(Math.max(1, currentPage - 1))} disabled={currentPage === 1} className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <ChevronLeftIcon size={16} />
+                    Previous
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let page;
+                      if (totalPages <= 5) page = i + 1;
+                      else if (currentPage <= 3) page = i + 1;
+                      else if (currentPage >= totalPages - 2) page = totalPages - 4 + i;
+                      else page = currentPage - 2 + i;
+
+                      return (
+                        <button key={page} onClick={() => handlePageChange(page as number)} className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${page === currentPage ? "bg-[#8DDB90] text-white" : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"}`}>
+                          {page as number}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    Next
+                    <ChevronRightIcon size={16} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-
-
-    </div>
     </CombinedAuthGuard>
   );
 }
