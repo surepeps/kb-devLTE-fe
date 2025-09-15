@@ -44,7 +44,7 @@ interface Property {
   briefType?: string;
   isAvailable?: boolean;
 }
-
+ 
 interface InspectionData {
   id: string;
   property: Property | null;
@@ -253,7 +253,7 @@ export default function MyInspectionRequestsPage() {
 
       try {
         // Endpoint aligned with inspections namespace used for booking creation
-        const url = `${URLS.BASE + URLS.accountInspectionBaseUrl}/bookings/fetchAll?page=${page}&limit=10`;
+        const url = `${URLS.BASE + URLS.accountBookingsBaseUrl}/fetchAll?page=${page}&limit=10`;
         const response = await GET_REQUEST(url, token);
 
         if (response?.success) {
