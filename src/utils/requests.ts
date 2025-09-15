@@ -38,8 +38,8 @@ export const GET_REQUEST = async <T = any>(
       credentials: "omit",
       cache: "no-store",
       headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        Accept: "application/json",
       },
     });
 
