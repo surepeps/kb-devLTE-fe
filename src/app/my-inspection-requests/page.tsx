@@ -32,7 +32,7 @@ import {
   Building,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
-import CombinedAuthGuard from "@/logic/combinedAuthGuard";
+import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
 
 interface Property {
   id?: string;
