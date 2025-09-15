@@ -21,24 +21,86 @@ import {
   Download,
   Printer,
   LogOut,
+  ExternalLink,
 } from "lucide-react";
+
+interface PropertyLocation {
+  state?: string;
+  localGovernment?: string;
+  area?: string;
+  streetAddress?: string;
+}
 
 interface Property {
   id?: string;
   _id?: string;
   title?: string;
   image?: string;
+  pictures?: string[];
+  videos?: string[];
   price?: number;
   briefType?: string;
+  propertyType?: string;
+  propertyCategory?: string;
+  propertyCondition?: string;
+  typeOfBuilding?: string;
+  shortletDuration?: string;
+  location?: PropertyLocation;
+  features?: string[];
+}
+
+interface OwnerResponse {
+  response?: string; // accepted | declined | pending
+  respondedAt?: string;
+  note?: string;
+}
+
+interface MetaPricing {
+  duration?: number;
+  nights?: number;
+  pricePerNight?: number;
+  totalPrice?: number;
+  extralFees?: {
+    cleaningFee?: number;
+    securityDeposit?: number;
+  };
+  paymentLink?: string;
+}
+
+interface BookingDetailsData {
+  checkInDateTime?: string;
+  checkOutDateTime?: string;
+  guestNumber?: number;
+  note?: string;
+}
+
+interface BuyerInfo {
+  _id?: string;
+  fullName?: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
+interface TransactionInfo {
+  _id?: string;
+  amount?: number;
+  status?: string;
+  paymentGateway?: string;
+  reference?: string;
 }
 
 interface Booking {
   id: string;
   code?: string;
+  bookingCode?: string;
   status: string;
   bookingMode?: string;
+  ownerResponse?: OwnerResponse;
+  meta?: MetaPricing;
   bookedBy?: { fullName?: string; email?: string; phoneNumber?: string };
-  bookingDetails?: { checkInDateTime?: string; checkOutDateTime?: string; guestNumber?: number; note?: string };
+  buyer?: BuyerInfo;
+  transaction?: TransactionInfo;
+  bookingDetails?: BookingDetailsData;
   paymentDetails?: { amountToBePaid?: number; currency?: string };
   property?: Property | null;
   createdAt?: string;
@@ -53,9 +115,9 @@ const formatCurrency = (amount?: number, currency = "₦") =>
 
 const statusBadge = (status: string) => {
   const s = status?.toLowerCase();
-  if (s === "completed" || s === "approved") return { label: "Completed", bg: "bg-green-100", text: "text-green-700", Icon: CheckCircle };
+  if (s === "completed" || s === "approved" || s === "accepted") return { label: "Completed", bg: "bg-green-100", text: "text-green-700", Icon: CheckCircle };
   if (s === "pending") return { label: "Pending", bg: "bg-yellow-100", text: "text-yellow-700", Icon: Clock };
-  if (s === "cancelled" || s === "rejected") return { label: "Cancelled", bg: "bg-red-100", text: "text-red-700", Icon: XCircle };
+  if (s === "cancelled" || s === "rejected" || s === "declined") return { label: "Cancelled", bg: "bg-red-100", text: "text-red-700", Icon: XCircle };
   return { label: status || "Unknown", bg: "bg-gray-100", text: "text-gray-700", Icon: Clock };
 };
 
@@ -129,7 +191,7 @@ export default function CheckBookingDetailsPage() {
     try {
       setVerifying(true);
       const res: any = await POST_REQUEST(url, { code: bookingCode });
-      if (res?.success === false) throw new Error(res?.message || "Invalid code");
+      if (!res?.success) throw new Error(res?.message || "Invalid code");
     } finally {
       setVerifying(false);
     }
@@ -140,18 +202,24 @@ export default function CheckBookingDetailsPage() {
       setLoading(true);
       setError("");
       const url = `${URLS.BASE}/inspections/bookings/${encodeURIComponent(bookingCode)}`;
-      const res = await GET_REQUEST<Booking>(url);
+      const res: any = await GET_REQUEST(url);
       if (!res?.success || !res?.data) throw new Error(res?.message || "Not found");
+      const payload = res.data as any;
       const normalized: Booking = {
-        id: (res.data as any).id || (res.data as any)._id || bookingCode,
-        code: (res.data as any).code || bookingCode,
-        status: (res.data as any).status || "pending",
-        bookingMode: (res.data as any).bookingMode,
-        bookedBy: (res.data as any).bookedBy,
-        bookingDetails: (res.data as any).bookingDetails,
-        paymentDetails: (res.data as any).paymentDetails,
-        property: (res.data as any).property || (res.data as any).propertyId || null,
-        createdAt: (res.data as any).createdAt,
+        id: payload.id || payload._id || bookingCode,
+        code: payload.bookingCode || payload.code || bookingCode,
+        bookingCode: payload.bookingCode || payload.code || bookingCode,
+        status: payload.status || "pending",
+        bookingMode: payload.bookingMode,
+        ownerResponse: payload.ownerResponse,
+        meta: payload.meta,
+        bookedBy: payload.bookedBy || payload.buyer,
+        buyer: payload.buyer,
+        transaction: payload.transaction,
+        bookingDetails: payload.bookingDetails,
+        paymentDetails: payload.paymentDetails,
+        property: payload.property || payload.propertyId || null,
+        createdAt: payload.createdAt,
       };
       setData(normalized);
     } catch (err: any) {
@@ -187,7 +255,7 @@ export default function CheckBookingDetailsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `booking-${data.code || data.id}.json`;
+    a.download = `booking-${data.bookingCode || data.code || data.id}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -196,11 +264,17 @@ export default function CheckBookingDetailsPage() {
 
   const onPrint = () => window.print();
 
-  const badge = statusBadge(data?.status || "");
+  const heroImage = data?.property?.pictures?.[0] || data?.property?.image || "";
+  const address = useMemo(() => {
+    const loc = data?.property?.location;
+    if (!loc) return "-";
+    const parts = [loc.streetAddress, loc.area, loc.localGovernment, loc.state].filter(Boolean);
+    return parts.join(", ");
+  }, [data?.property?.location]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F1F6F5] via-[#EEF1F1] to-[#E6ECEA]">
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <Link href="/" className="inline-flex items-center gap-2 text-[#0B423D] hover:underline">
             <ArrowLeft size={18} /> Home
@@ -240,7 +314,7 @@ export default function CheckBookingDetailsPage() {
                       type="text"
                       value={code}
                       onChange={(e) => setCode(e.target.value.toUpperCase())}
-                      placeholder="e.g. KB-9F2A7C"
+                      placeholder="e.g. SLT-2025-09-001"
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent text-base tracking-wider uppercase"
                       autoComplete="off"
                     />
@@ -291,9 +365,9 @@ export default function CheckBookingDetailsPage() {
                 </div>
               ) : (
                 <>
-                  {data?.property?.image && (
+                  {heroImage && (
                     <div className="w-full h-48 sm:h-64 bg-gray-100 overflow-hidden">
-                      <img src={data.property.image} alt={data.property.title || "Property"} className="w-full h-full object-cover" />
+                      <img src={heroImage} alt={data?.property?.title || "Property"} className="w-full h-full object-cover" />
                     </div>
                   )}
 
@@ -301,13 +375,31 @@ export default function CheckBookingDetailsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                       <div>
                         <h1 className="text-2xl font-bold text-[#09391C]">{data?.property?.title || "Property"}</h1>
-                        <p className="text-sm text-gray-600">Code: <span className="font-mono tracking-wider">{data?.code || code}</span></p>
+                        <p className="text-sm text-gray-600">Booking Code: <span className="font-mono tracking-wider">{data?.bookingCode || data?.code || code}</span></p>
+                        {address && <p className="text-xs text-gray-500 mt-1">{address}</p>}
                       </div>
-                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${statusBadge(data?.status || "").bg} ${statusBadge(data?.status || "").text}`}>
-                        {(() => { const b = statusBadge(data?.status || ""); const Icon = b.Icon; return <Icon size={16} />; })()}
-                        {statusBadge(data?.status || "").label}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${statusBadge(data?.status || "").bg} ${statusBadge(data?.status || "").text}`}>
+                          {(() => { const b = statusBadge(data?.status || ""); const Icon = b.Icon; return <Icon size={16} />; })()}
+                          {statusBadge(data?.status || "").label}
+                        </span>
+                        {data?.ownerResponse?.response && (
+                          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs ${statusBadge(data.ownerResponse.response).bg} ${statusBadge(data.ownerResponse.response).text}`}>
+                            Owner: {data.ownerResponse.response}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    {data?.property?.pictures && data.property.pictures.length > 1 && (
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+                        {data.property.pictures.slice(0, 6).map((src, i) => (
+                          <div key={i} className="h-16 rounded overflow-hidden bg-gray-100">
+                            <img src={src} alt={`photo ${i + 1}`} className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="p-4 border border-gray-100 rounded-xl">
@@ -324,26 +416,51 @@ export default function CheckBookingDetailsPage() {
 
                       <div className="p-4 border border-gray-100 rounded-xl">
                         <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><Home size={16} /> Property</div>
-                        <div className="text-sm"><span className="font-medium">Type:</span> {data?.property?.briefType || "Shortlet"}</div>
-                        <div className="text-sm"><span className="font-medium">Amount:</span> {formatCurrency(data?.paymentDetails?.amountToBePaid, data?.paymentDetails?.currency || "₦")}</div>
+                        <div className="text-sm"><span className="font-medium">Type:</span> {data?.property?.briefType || data?.property?.propertyType || "Shortlet"}</div>
+                        <div className="text-sm"><span className="font-medium">Amount:</span> {formatCurrency(data?.paymentDetails?.amountToBePaid ?? data?.meta?.totalPrice, "₦")}</div>
                       </div>
 
                       <div className="p-4 border border-gray-100 rounded-xl">
-                        <div className="flex items-center gap-2 text-gray-500 text-sm mb-1"><MapPin size={16} /> Contact</div>
-                        <div className="text-sm"><span className="font-medium">Name:</span> {data?.bookedBy?.fullName || "-"}</div>
-                        <div className="text-sm"><span className="font-medium">Email:</span> {data?.bookedBy?.email || "-"}</div>
-                        <div className="text-sm"><span className="font-medium">Phone:</span> {data?.bookedBy?.phoneNumber || "-"}</div>
+                        <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">Pricing Summary</div>
+                        <div className="text-sm"><span className="font-medium">Nights:</span> {data?.meta?.nights ?? "-"}</div>
+                        <div className="text-sm"><span className="font-medium">Price/Night:</span> {formatCurrency(data?.meta?.pricePerNight, "₦")}</div>
+                        <div className="text-sm"><span className="font-medium">Cleaning Fee:</span> {formatCurrency(data?.meta?.extralFees?.cleaningFee, "₦")}</div>
+                        <div className="text-sm"><span className="font-medium">Security Deposit:</span> {formatCurrency(data?.meta?.extralFees?.securityDeposit, "₦")}</div>
+                        <div className="text-sm"><span className="font-medium">Total:</span> {formatCurrency(data?.meta?.totalPrice, "₦")}</div>
+                      </div>
+
+                      <div className="p-4 border border-gray-100 rounded-xl">
+                        <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">Buyer</div>
+                        <div className="text-sm"><span className="font-medium">Name:</span> {data?.buyer?.fullName || data?.bookedBy?.fullName || "-"}</div>
+                        <div className="text-sm"><span className="font-medium">Email:</span> {data?.buyer?.email || data?.bookedBy?.email || "-"}</div>
+                        <div className="text-sm"><span className="font-medium">Phone:</span> {data?.buyer?.phoneNumber || data?.bookedBy?.phoneNumber || "-"}</div>
+                      </div>
+
+                      <div className="p-4 border border-gray-100 rounded-xl">
+                        <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">Transaction</div>
+                        <div className="text-sm"><span className="font-medium">Amount:</span> {formatCurrency(data?.transaction?.amount, "₦")}</div>
+                        <div className="text-sm"><span className="font-medium">Status:</span> <span className={`px-2 py-0.5 rounded text-xs ${statusBadge(data?.transaction?.status || "").bg} ${statusBadge(data?.transaction?.status || "").text}`}>{data?.transaction?.status || "-"}</span></div>
+                        <div className="text-sm"><span className="font-medium">Gateway:</span> {data?.transaction?.paymentGateway || "-"}</div>
+                        <div className="text-sm"><span className="font-medium">Reference:</span> {data?.transaction?.reference || "-"}</div>
                       </div>
                     </div>
 
-                    {data?.bookingDetails?.note && (
+                    {data?.ownerResponse?.note && (
                       <div className="mt-4 p-4 border border-gray-100 rounded-xl">
-                        <div className="text-gray-500 text-sm mb-1">Note</div>
-                        <div className="text-sm text-gray-800">{data.bookingDetails.note}</div>
+                        <div className="text-gray-500 text-sm mb-1">Owner Note</div>
+                        <div className="text-sm text-gray-800">{data.ownerResponse.note}</div>
+                        {data.ownerResponse.respondedAt && (
+                          <div className="text-xs text-gray-500 mt-1">Responded: {new Date(data.ownerResponse.respondedAt).toLocaleString()}</div>
+                        )}
                       </div>
                     )}
 
                     <div className="mt-6 flex flex-wrap items-center gap-2">
+                      {data?.meta?.paymentLink && (
+                        <a href={data.meta.paymentLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-2 bg-[#0B423D] text-white rounded-lg text-sm hover:bg-[#09391C]">
+                          Pay now <ExternalLink size={16} />
+                        </a>
+                      )}
                       <button onClick={onPrint} className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
                         <Printer size={16} /> Print / PDF
                       </button>
