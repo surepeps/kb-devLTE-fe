@@ -157,9 +157,12 @@ export default function CheckBookingDetailsPage() {
     const now = Date.now();
     if (stored && exp > now) {
       setCode(stored);
-      setView("details");
       setRemainingMs(exp - now);
-      verifyAndLoad(stored);
+      (async () => {
+        const ok = await verifyAndLoad(stored);
+        if (ok) setView("details");
+        else setView("form");
+      })();
     } else {
       clearSession();
     }
