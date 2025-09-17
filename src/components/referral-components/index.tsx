@@ -195,7 +195,8 @@ const ReferralPage = () => {
   }, [selectedOption, user]);
 
   const copyReferralLink = async () => {
-    const referralLink = `https://khabiteq.com/auth/register?ref=${referralCode}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://khabiteq.com';
+    const referralLink = `${origin}/auth/register?ref=${referralCode}`;
     try {
       await navigator.clipboard.writeText(referralLink);
       toast.success('Referral link copied to clipboard!');
@@ -205,7 +206,8 @@ const ReferralPage = () => {
   };
 
   const shareReferralLink = async () => {
-    const referralLink = `https://khabiteq.com/auth/register?ref=${referralCode}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://khabiteq.com';
+    const referralLink = `${origin}/auth/register?ref=${referralCode}`;
     const shareData = {
       title: 'Join Khabiteq with my referral link',
       text: 'Get verified properties and trusted agents on Khabiteq. Sign up with my referral link and let\'s both earn rewards!',
@@ -330,7 +332,10 @@ const ReferralPage = () => {
               Share Link
             </button>
             <button
-              onClick={() => window.open(`mailto:?subject=Join Khabiteq&body=Get verified properties and trusted agents on Khabiteq. Sign up with my referral link: https://khabiteq.com/auth/register?ref=${referralCode}`)}
+              onClick={() => {
+                const origin = typeof window !== 'undefined' ? window.location.origin : 'https://khabiteq.com';
+                window.open(`mailto:?subject=Join Khabiteq&body=Get verified properties and trusted agents on Khabiteq. Sign up with my referral link: ${origin}/auth/register?ref=${referralCode}`);
+              }}
               className="flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#8DDB90] text-[#8DDB90] rounded-lg hover:bg-[#8DDB90] hover:text-white transition-colors">
               <ExternalLink className="w-5 h-5" />
               Email Invite
