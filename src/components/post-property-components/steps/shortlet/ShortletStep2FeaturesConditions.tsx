@@ -282,6 +282,46 @@ const ShortletStep2FeaturesConditions: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
+                Weekly Discounted Price
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={formatPriceForDisplay(propertyData.pricing?.weeklyDiscount || 0)}
+                  onChange={(e) => {
+                    const numericValue = cleanNumericInput(e.target.value);
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      weeklyDiscount: parseInt(numericValue) || 0,
+                    });
+                  }}
+                  placeholder="Enter weekly discounted price"
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#707281] mb-2">
+                Monthly Discounted Price
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={formatPriceForDisplay(propertyData.pricing?.monthlyDiscount || 0)}
+                  onChange={(e) => {
+                    const numericValue = cleanNumericInput(e.target.value);
+                    updatePropertyData("pricing", {
+                      ...propertyData.pricing,
+                      monthlyDiscount: parseInt(numericValue) || 0,
+                    });
+                  }}
+                  placeholder="Enter monthly discounted price"
+                  className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#707281] mb-2">
                 Cleaning Fee
               </label>
               <div className="relative">
@@ -520,30 +560,6 @@ const ShortletStep2FeaturesConditions: React.FC = () => {
           </div>
         </div>
 
-        {/* Property Tenancy Status */}
-        <div>
-          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Is the property currently tenanted?{" "}
-            <span className="text-red-500">*</span>
-          </h3>
-          <div className="flex flex-col sm:flex-row gap-4">
-            {tenancyStatusOptions.map((option) => (
-              <RadioCheck
-                key={option.value}
-                selectedValue={propertyData.isTenanted}
-                handleChange={() =>
-                  handleFieldChange("isTenanted", option.value)
-                }
-                title={option.label}
-                type="radio"
-                value={option.value}
-                name="isTenanted"
-                variant="card"
-                error={!propertyData.isTenanted}
-              />
-            ))}
-          </div>
-        </div>
 
         {/* Additional Information */}
         <div>
