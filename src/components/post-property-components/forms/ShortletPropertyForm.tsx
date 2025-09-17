@@ -371,7 +371,6 @@ const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
         addtionalInfo: propertyData.additionalInfo,
         pictures: uploadedImageUrls,
         videos: uploadedVideoUrls,
-        isTenanted: propertyData.isTenanted,
         holdDuration: propertyData.holdDuration,
         // Shortlet specific fields
         availability: propertyData.availability
