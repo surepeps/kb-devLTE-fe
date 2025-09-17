@@ -612,21 +612,25 @@ const ThirdPartyVerificationPage: React.FC = () => {
 
                       {/* Action Buttons */}
                       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-center">
-                        <button
-                          onClick={() => handleDocumentPreview(document.documentUrl)}
-                          className="inline-flex items-center justify-center px-4 py-2.5 border-2 border-[#8DDB90] text-[#0B423D] font-medium rounded-xl hover:bg-[#8DDB90] hover:text-white transition-all duration-200 text-sm"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          Preview Document
-                        </button>
+                        {document.documentUrl && (
+                          <button
+                            onClick={() => handleDocumentPreview(document.documentUrl)}
+                            className="inline-flex items-center justify-center px-4 py-2.5 border-2 border-[#8DDB90] text-[#0B423D] font-medium rounded-xl hover:bg-[#8DDB90] hover:text-white transition-all duration-200 text-sm"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Preview Document
+                          </button>
+                        )}
 
-                        <button
-                          onClick={() => handleDocumentDownload(document.documentUrl, document.documentType)}
-                          className="inline-flex items-center justify-center px-4 py-2.5 bg-[#0B423D] text-white font-medium rounded-xl hover:bg-[#0B423D]/90 transition-all duration-200 text-sm"
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          Download
-                        </button>
+                        {document.documentUrl && (
+                          <button
+                            onClick={() => handleDocumentDownload(document.documentUrl, document.documentType)}
+                            className="inline-flex items-center justify-center px-4 py-2.5 bg-[#0B423D] text-white font-medium rounded-xl hover:bg-[#0B423D]/90 transition-all duration-200 text-sm"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

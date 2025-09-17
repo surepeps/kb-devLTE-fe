@@ -405,7 +405,6 @@ export default function MyInspectionRequestsPage() {
 
   const listTotalCount = activeTab === "inspections" ? filteredInspections.length : filteredBookings.length;
 
-  if (isLoading) return <Loading />;
 
   return (
     <CombinedAuthGuard requireAuth={true} allowedUserTypes={["Agent", "Landowners"]} requireAgentOnboarding={false} requireAgentApproval={false} agentCustomMessage="You must complete onboarding and be approved before you view inspection requests.">
@@ -590,7 +589,42 @@ export default function MyInspectionRequestsPage() {
           </div>
 
           {activeTab === "inspections" ? (
-            filteredInspections.length === 0 ? (
+            isLoading ? (
+              <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className={`bg-white border border-gray-100 rounded-xl overflow-hidden ${viewMode === "list" ? "flex" : ""} animate-pulse`}>
+                    {viewMode === "grid" && (
+                      <div className="h-48 bg-gray-200" />
+                    )}
+                    {viewMode === "list" && (
+                      <div className="w-32 h-32 bg-gray-200" />
+                    )}
+                    <div className="p-6 flex-1">
+                      <div className="h-5 bg-gray-200 rounded w-2/3 mb-4" />
+                      <div className="space-y-2 mb-4">
+                        <div className="h-4 bg-gray-200 rounded w-1/2" />
+                        <div className="h-4 bg-gray-200 rounded w-1/3" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-1/3" />
+                          <div className="h-3 bg-gray-200 rounded w-2/3" />
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-1/3" />
+                          <div className="h-3 bg-gray-200 rounded w-2/3" />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="h-8 bg-gray-200 rounded w-24" />
+                        <div className="h-8 bg-gray-200 rounded w-28" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              filteredInspections.length === 0 ? (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100">
                 <Building size={64} className="mx-auto text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium text-gray-600 mb-2">{searchTerm || Object.values(filters).some((f) => f) ? "No matching inspection requests found" : "No inspection requests yet"}</h3>
@@ -720,8 +754,44 @@ export default function MyInspectionRequestsPage() {
                 })}
               </div>
             )
+            )
           ) : (
-            filteredBookings.length === 0 ? (
+            isLoading ? (
+              <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className={`bg-white border border-gray-100 rounded-xl overflow-hidden ${viewMode === "list" ? "flex" : ""} animate-pulse`}>
+                    {viewMode === "grid" && (
+                      <div className="h-48 bg-gray-200" />
+                    )}
+                    {viewMode === "list" && (
+                      <div className="w-32 h-32 bg-gray-200" />
+                    )}
+                    <div className="p-6 flex-1">
+                      <div className="h-5 bg-gray-200 rounded w-2/3 mb-4" />
+                      <div className="space-y-2 mb-4">
+                        <div className="h-4 bg-gray-200 rounded w-1/2" />
+                        <div className="h-4 bg-gray-200 rounded w-1/3" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-1/3" />
+                          <div className="h-3 bg-gray-200 rounded w-2/3" />
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-1/3" />
+                          <div className="h-3 bg-gray-200 rounded w-2/3" />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="h-8 bg-gray-200 rounded w-24" />
+                        <div className="h-8 bg-gray-200 rounded w-28" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              filteredBookings.length === 0 ? (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl p-8 sm:p-12 text-center border border-gray-100">
                 <Building size={64} className="mx-auto text-gray-400 mb-4" />
                 <h3 className="text-xl font-medium text-gray-600 mb-2">{searchTerm || Object.values(filters).some((f) => f) ? "No matching booking requests found" : "No booking requests yet"}</h3>
@@ -859,6 +929,7 @@ export default function MyInspectionRequestsPage() {
                   );
                 })}
               </div>
+            )
             )
           )}
 
