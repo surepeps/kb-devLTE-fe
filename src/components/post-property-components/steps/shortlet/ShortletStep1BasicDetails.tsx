@@ -16,7 +16,6 @@ import {
 } from "@/utils/location-utils";
 import {
   briefTypeConfig,
-  propertyConditionOptions,
   buildingTypeOptions,
   numberOptions,
 } from "@/data/comprehensive-post-property-config";
@@ -258,29 +257,6 @@ const ShortletStep1BasicDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Property Condition */}
-        <div>
-          <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-            Property Condition <span className="text-red-500">*</span>
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {propertyConditionOptions.map((option) => (
-              <RadioCheck
-                key={option.value}
-                selectedValue={propertyData.propertyCondition}
-                handleChange={() =>
-                  handleFieldChange("propertyCondition", option.value)
-                }
-                type="radio"
-                title={option.label}
-                value={option.value}
-                name="propertyCondition"
-                variant="card"
-                error={!propertyData.propertyCondition}
-              />
-            ))}
-          </div>
-        </div>
 
         {/* Price */}
         <div>

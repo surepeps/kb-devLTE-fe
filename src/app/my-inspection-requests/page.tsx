@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
-import { GET_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -217,6 +217,14 @@ export default function MyInspectionRequestsPage() {
 
   const token = useMemo(() => Cookies.get("token"), []);
 
+  // UI state for bookings actions
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [viewingBooking, setViewingBooking] = useState<BookingData | null>(null);
+  const [reviewBooking, setReviewBooking] = useState<BookingData | null>(null);
+  const [reviewResponse, setReviewResponse] = useState<"available" | "unavailable">("available");
+  const [reviewNote, setReviewNote] = useState<string>("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
   const fetchInspections = useCallback(
     async (page = 1, showLoading = true) => {
       if (showLoading) setIsLoading(true);
@@ -297,6 +305,36 @@ export default function MyInspectionRequestsPage() {
       fetchBookings(1);
     }
   }, [user, activeTab, fetchInspections, fetchBookings, fetchStats]);
+
+  const respondToBookingRequest = useCallback(async (bookingId: string, responseVal: "available" | "unavailable", note?: string) => {
+    if (!token) { toast.error("Not authenticated"); return; }
+    setIsSubmittingReview(true);
+    try {
+      const base = URLS.BASE + URLS.accountBookingsBaseUrl;
+      const primary = `${base}/${bookingId}/respondToRequest`;
+      const payload = { response: responseVal, ...(note && note.trim() ? { note: note.trim() } : {}) };
+      let res: any;
+      try {
+        res = await POST_REQUEST<any>(primary, payload, token);
+      } catch (e) {
+        const fallback = `${base}/${bookingId}/repondToRequest`;
+        res = await POST_REQUEST<any>(fallback, payload, token);
+      }
+      if (res && (res.success === true || res.status === "success")) {
+        toast.success("Response submitted");
+        setReviewBooking(null);
+        setReviewNote("");
+        setReviewResponse("available");
+        fetchBookings(currentPage, false);
+      } else {
+        toast.error((res && (res.message || res.error)) || "Failed to submit response");
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to submit response");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  }, [token, fetchBookings, currentPage]);
 
   const handleRefresh = useCallback(() => {
     if (activeTab === "inspections") {
@@ -770,13 +808,51 @@ export default function MyInspectionRequestsPage() {
                           <div className="text-sm text-[#5A5D63] mb-2">Booked by: <span className="font-medium text-[#09391C]">{b.bookedBy.fullName}</span></div>
                         )}
 
-                        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+                        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200 relative">
                           {b.property && (
                             <button onClick={() => router.push(`/property/buy/${b.property!.id || b.property!._id}`)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                               <HomeIcon size={16} />
                               View Property
                             </button>
                           )}
+
+                          <div className="ml-auto">
+                            <div className="relative inline-block text-left">
+                              <button
+                                onClick={() => setOpenMenuId(openMenuId === b.id ? null : b.id)}
+                                className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-3 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                              >
+                                Actions
+                              </button>
+                              <AnimatePresence>
+                                {openMenuId === b.id && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    className="origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                                  >
+                                    <div className="py-1">
+                                      <button
+                                        onClick={() => { setViewingBooking(b); setOpenMenuId(null); }}
+                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      >
+                                        View details
+                                      </button>
+                                      {String(b.status || "").toLowerCase() === "requested" && (
+                                        <button
+                                          onClick={() => { setReviewBooking(b); setOpenMenuId(null); }}
+                                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                          Review request
+                                        </button>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -825,6 +901,117 @@ export default function MyInspectionRequestsPage() {
           )}
         </div>
       </div>
+
+      {/* Booking Details Modal */}
+      <AnimatePresence>
+        {viewingBooking && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setViewingBooking(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              className="bg-white rounded-xl max-w-lg w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-semibold text-[#09391C]">Booking Details</h3>
+                <button onClick={() => setViewingBooking(null)} className="text-gray-500 hover:text-gray-700">✕</button>
+              </div>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between"><span className="text-gray-600">Status</span><span className="font-medium capitalize">{String(viewingBooking.status || "-")}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Mode</span><span className="font-medium capitalize">{String(viewingBooking.bookingMode || "-")}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Guests</span><span className="font-medium">{viewingBooking.bookingDetails?.guestNumber || 1}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Check-in</span><span className="font-medium">{viewingBooking.bookingDetails?.checkInDateTime ? new Date(viewingBooking.bookingDetails.checkInDateTime).toLocaleString() : "-"}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Check-out</span><span className="font-medium">{viewingBooking.bookingDetails?.checkOutDateTime ? new Date(viewingBooking.bookingDetails.checkOutDateTime).toLocaleString() : "-"}</span></div>
+                {viewingBooking.bookedBy && (
+                  <div className="pt-2 border-t">
+                    <div className="text-gray-600 mb-1">Booked By</div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div><span className="text-gray-600">Name:</span> <span className="font-medium">{viewingBooking.bookedBy.fullName || "-"}</span></div>
+                      <div><span className="text-gray-600">Phone:</span> <a className="font-medium text-blue-600" href={`tel:${viewingBooking.bookedBy.phoneNumber || ""}`}>{viewingBooking.bookedBy.phoneNumber || "-"}</a></div>
+                      <div className="col-span-2"><span className="text-gray-600">Email:</span> <a className="font-medium text-blue-600" href={`mailto:${viewingBooking.bookedBy.email || ""}`}>{viewingBooking.bookedBy.email || "-"}</a></div>
+                    </div>
+                  </div>
+                )}
+                {viewingBooking.bookingDetails?.note && (
+                  <div className="pt-2 border-t">
+                    <div className="text-gray-600 mb-1">Guest Note</div>
+                    <p className="text-gray-800 whitespace-pre-wrap">{viewingBooking.bookingDetails.note}</p>
+                  </div>
+                )}
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button onClick={() => setViewingBooking(null)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">Close</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Review Request Modal */}
+      <AnimatePresence>
+        {reviewBooking && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => (isSubmittingReview ? null : setReviewBooking(null))}
+          >
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              className="bg-white rounded-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-semibold text-[#09391C]">Review Booking Request</h3>
+                <button disabled={isSubmittingReview} onClick={() => setReviewBooking(null)} className="text-gray-500 hover:text-gray-700 disabled:opacity-50">✕</button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm font-medium text-gray-700 mb-2">Your response</div>
+                  <div className="flex items-center gap-4">
+                    <label className="inline-flex items-center gap-2 text-sm">
+                      <input type="radio" name="resp" value="available" checked={reviewResponse === "available"} onChange={() => setReviewResponse("available")} />
+                      Available
+                    </label>
+                    <label className="inline-flex items-center gap-2 text-sm">
+                      <input type="radio" name="resp" value="unavailable" checked={reviewResponse === "unavailable"} onChange={() => setReviewResponse("unavailable")} />
+                      Unavailable
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
+                  <textarea value={reviewNote} onChange={(e) => setReviewNote(e.target.value)} rows={3} placeholder="Add a message for the guest (optional)" className="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button disabled={isSubmittingReview} onClick={() => setReviewBooking(null)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">Cancel</button>
+                <button
+                  disabled={isSubmittingReview}
+                  onClick={() => respondToBookingRequest(reviewBooking.id, reviewResponse, reviewNote)}
+                  className={`px-5 py-2 rounded-lg text-white ${reviewResponse === "available" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"} disabled:opacity-60`}
+                >
+                  {isSubmittingReview ? "Submitting..." : "Submit"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </CombinedAuthGuard>
   );
 }
