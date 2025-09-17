@@ -86,11 +86,38 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const securityDeposit = Number(property?.shortletDetails?.pricing?.securityDeposit ?? property?.pricing?.securityDeposit ?? 0);
   const durationUnit = shortletDuration === "Daily" ? "day" : shortletDuration === "Weekly" ? "week" : shortletDuration === "Monthly" ? "month" : shortletDuration;
 
+  const allowedCheckInStr: string = property?.shortletDetails?.houseRules?.checkIn ?? property?.houseRules?.checkIn ?? "15:00";
+  const allowedCheckOutStr: string = property?.shortletDetails?.houseRules?.checkOut ?? property?.houseRules?.checkOut ?? "11:00";
+  const parseTime = (t: string) => {
+    const [h, m] = (t || "").split(":").map((n) => parseInt(n || "0", 10));
+    return { h: isNaN(h) ? 0 : h, m: isNaN(m) ? 0 : m };
+  };
+  const withTime = (d: Date, t: string) => {
+    const { h, m } = parseTime(t);
+    const nd = new Date(d);
+    nd.setHours(h, m, 0, 0);
+    return nd;
+  };
+  const endOfDay = (d: Date) => {
+    const nd = new Date(d);
+    nd.setHours(23, 59, 59, 999);
+    return nd;
+  };
+  const compareTimeOfDay = (d: Date, t: string) => {
+    const { h, m } = parseTime(t);
+    const mins = d.getHours() * 60 + d.getMinutes();
+    return mins - (h * 60 + m);
+  };
+
   // Validation schemas per step
   const step1Schema = Yup.object({
     checkIn: Yup.date()
       .typeError("Select check-in")
-      .required("Check-in is required"),
+      .required("Check-in is required")
+      .test("afterAllowedCheckIn", "Check-in time must be on/after allowed check-in time", (value) => {
+        if (!value) return false;
+        return compareTimeOfDay(value as Date, allowedCheckInStr) >= 0;
+      }),
 
     checkOut: Yup.date()
       .typeError("Select check-out")
@@ -100,6 +127,10 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
         then: (schema: Yup.DateSchema) =>
           schema.min(Yup.ref('checkIn'), "Check-out must be after check-in"),
         otherwise: (schema: Yup.DateSchema) => schema,
+      })
+      .test("beforeAllowedCheckOut", "Check-out time must be on/before allowed check-out time", (value) => {
+        if (!value) return false;
+        return compareTimeOfDay(value as Date, allowedCheckOutStr) <= 0;
       }),
 
     guests: Yup.number()
@@ -361,19 +392,24 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                   <DatePicker
                     selected={formik.values.checkIn}
                     onChange={(date) => {
-                      formik.setFieldValue("checkIn", date);
+                      if (!date) { formik.setFieldValue("checkIn", date); return; }
+                      // Clamp check-in to allowed earliest time
+                      const clampedIn = compareTimeOfDay(date, allowedCheckInStr) < 0 ? withTime(date, allowedCheckInStr) : date;
+                      formik.setFieldValue("checkIn", clampedIn);
                       const co = formik.values.checkOut;
-                      if (co && date && co <= date) {
-                        const next = new Date(date);
+                      if (co && clampedIn && co <= clampedIn) {
+                        const next = new Date(clampedIn);
                         next.setDate(next.getDate() + 1);
-                        next.setHours(11, 0, 0, 0);
-                        formik.setFieldValue("checkOut", next);
+                        const adjusted = withTime(next, allowedCheckOutStr);
+                        formik.setFieldValue("checkOut", adjusted);
                       }
                     }}
                     minDate={new Date()}
                     showTimeSelect
                     timeIntervals={30}
                     dateFormat="Pp"
+                    minTime={withTime(formik.values.checkIn || new Date(), allowedCheckInStr)}
+                    maxTime={endOfDay(formik.values.checkIn || new Date())}
                     customInput={
                       <DateTimeInput
                         label="Check-in (Date & Time)"
@@ -385,11 +421,17 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
 
                   <DatePicker
                     selected={formik.values.checkOut}
-                    onChange={(date) => formik.setFieldValue("checkOut", date)}
+                    onChange={(date) => {
+                      if (!date) { formik.setFieldValue("checkOut", date); return; }
+                      // Clamp check-out to allowed latest time
+                      const clampedOut = compareTimeOfDay(date, allowedCheckOutStr) > 0 ? withTime(date, allowedCheckOutStr) : date;
+                      formik.setFieldValue("checkOut", clampedOut);
+                    }}
                     minDate={formik.values.checkIn || new Date()}
                     showTimeSelect
                     timeIntervals={30}
                     dateFormat="Pp"
+                    maxTime={withTime(formik.values.checkOut || (formik.values.checkIn || new Date()), allowedCheckOutStr)}
                     disabled={!formik.values.checkIn}
                     customInput={
                       <DateTimeInput
