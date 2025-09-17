@@ -16,7 +16,6 @@ import {
 } from "@/utils/location-utils";
 import {
   briefTypeConfig,
-  propertyConditionOptions,
   buildingTypeOptions,
   numberOptions,
 } from "@/data/comprehensive-post-property-config";
