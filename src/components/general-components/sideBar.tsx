@@ -42,7 +42,7 @@ const SideBar = ({
         <nav className="w-full h-[100%] pt-[10px] flex flex-col justify-between">
           <div>
             <div className="flex justify-between w-full">
-              {user?._id ? (
+              {(user?._id || user?.id) ? (
                 <div className="flex items-center gap-[10px]">
                   <button
                     type="button"
@@ -71,7 +71,7 @@ const SideBar = ({
                     className="h-full w-[50%] text-base font-bold text-[#8DDB90] border-r-[1px] border-[#A8ADB7] pr-[10px]"
                     onClick={() => {
                       setIsModalOpened(false);
-                      router.push("/auth");
+                      router.push("/auth/register");
                     }}
                     type="button"
                   >
