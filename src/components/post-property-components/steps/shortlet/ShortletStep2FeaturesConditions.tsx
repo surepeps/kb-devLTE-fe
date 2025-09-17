@@ -9,7 +9,6 @@ import EnhancedCheckbox from "@/components/general-components/EnhancedCheckbox";
 import AdvancedTimeSelector from "@/components/general-components/AdvancedTimeSelector";
 import {
   shortletOptions,
-  tenancyStatusOptions,
 } from "@/data/comprehensive-post-property-config";
 import {
   formatPriceForDisplay,
