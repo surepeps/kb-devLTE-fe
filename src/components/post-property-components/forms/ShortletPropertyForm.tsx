@@ -59,7 +59,6 @@ const getValidationSchema = (currentStep: number, propertyData: Record<string, u
         area: Yup.string().required("Area is required"),
         price: Yup.string().required("Price is required"),
         shortletDuration: Yup.string().required("Shortlet duration is required"),
-        propertyCondition: Yup.string().required("Property condition is required"),
         typeOfBuilding: Yup.string().required("Building type is required"),
         bedrooms: Yup.number().required("Number of bedrooms is required"),
         streetAddress: Yup.string().required("Street address is required"),
@@ -105,7 +104,6 @@ const checkShortletStep1RequiredFields = (propertyData: any) => {
     "area",
     "price",
     "shortletDuration",
-    "propertyCondition",
     "typeOfBuilding",
     "bedrooms",
     "streetAddress",
@@ -123,11 +121,6 @@ const checkShortletStep1RequiredFields = (propertyData: any) => {
 
 // Helper function to check step 2 required fields for shortlet
 const checkShortletStep2RequiredFields = (propertyData: any) => {
-  // isTenanted is required for all property types
-  if (!propertyData.isTenanted || propertyData.isTenanted === "") {
-    return false;
-  }
-
   // For shortlet, check required pricing and house rules
   const pricing = propertyData.pricing;
   const houseRules = propertyData.houseRules;
@@ -278,7 +271,6 @@ const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
           "area",
           "price",
           "shortletDuration",
-          "propertyCondition",
           "typeOfBuilding",
           "bedrooms",
           "streetAddress",
@@ -286,7 +278,6 @@ const ShortletPropertyForm: React.FC<ShortletPropertyFormProps> = ({
         ];
         step1Fields.forEach((field) => setFieldTouched(field, true));
       } else if (currentStep === 1) {
-        setFieldTouched("isTenanted", true);
         setFieldTouched("availability.minStay", true);
         setFieldTouched("pricing.nightly", true);
         setFieldTouched("houseRules.checkIn", true);
