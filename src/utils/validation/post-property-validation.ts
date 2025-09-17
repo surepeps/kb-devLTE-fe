@@ -166,9 +166,7 @@ const shortletPropertySchema = Yup.object({
       "Please select a valid shortlet duration",
     )
     .required(messages.required("Shortlet duration")),
-  propertyCondition: Yup.string().required(
-    messages.required("Property condition"),
-  ),
+  // Property condition not required for shortlet
   typeOfBuilding: Yup.string().required(messages.required("Building type")),
   bedrooms: Yup.number()
     .min(1, messages.min("Number of bedrooms", 1))
@@ -183,8 +181,10 @@ const shortletPropertySchema = Yup.object({
       .min(1, messages.min("Nightly rate", 1))
       .required(messages.required("Nightly rate")),
     weeklyDiscount: Yup.number()
-      .min(0, "Weekly discount cannot be negative")
-      .max(100, "Weekly discount cannot exceed 100%")
+      .min(0, "Weekly discounted price cannot be negative")
+      .nullable(),
+    monthlyDiscount: Yup.number()
+      .min(0, "Monthly discounted price cannot be negative")
       .nullable(),
   }),
   houseRules: Yup.object({
@@ -300,7 +300,6 @@ export const step1ValidationSchema = (propertyType: string) => {
       return Yup.object({
         ...baseSchema,
         shortletDuration: Yup.string().required(),
-        propertyCondition: Yup.string().required(),
         typeOfBuilding: Yup.string().required(),
         bedrooms: Yup.number().min(1).required(),
         streetAddress: Yup.string().required(),
@@ -390,13 +389,13 @@ export const step2ValidationSchema = (propertyType: string) => {
         }).required(),
         pricing: Yup.object({
           nightly: Yup.number().min(1).required("Nightly rate is required"),
-          weeklyDiscount: Yup.number().min(0).max(100).nullable(),
+          weeklyDiscount: Yup.number().min(0).nullable(),
+          monthlyDiscount: Yup.number().min(0).nullable(),
         }).required(),
         houseRules: Yup.object({
           checkIn: Yup.string().required("Check-in time is required"),
           checkOut: Yup.string().required("Check-out time is required"),
         }).required(),
-        isTenanted: Yup.string().required("Tenancy status is required"),
       });
 
     case "rent":
