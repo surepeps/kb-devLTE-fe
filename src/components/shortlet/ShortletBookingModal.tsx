@@ -85,6 +85,25 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const cleaningFee = Number(property?.shortletDetails?.pricing?.cleaningFee ?? property?.pricing?.cleaningFee ?? 0);
   const securityDeposit = Number(property?.shortletDetails?.pricing?.securityDeposit ?? property?.pricing?.securityDeposit ?? 0);
   const durationUnit = shortletDuration === "Daily" ? "day" : shortletDuration === "Weekly" ? "week" : shortletDuration === "Monthly" ? "month" : shortletDuration;
+  const weeklyDiscountPrice = Number(property?.shortletDetails?.pricing?.weeklyDiscount ?? property?.pricing?.weeklyDiscount ?? 0);
+  const monthlyDiscountPrice = Number(property?.shortletDetails?.pricing?.monthlyDiscount ?? property?.pricing?.monthlyDiscount ?? 0);
+  const computeAccommodationCost = (n: number) => {
+    if (!n || n <= 0) return 0;
+    let remaining = n;
+    let cost = 0;
+    if (monthlyDiscountPrice > 0) {
+      const months = Math.floor(remaining / 30);
+      cost += months * monthlyDiscountPrice;
+      remaining -= months * 30;
+    }
+    if (weeklyDiscountPrice > 0) {
+      const weeks = Math.floor(remaining / 7);
+      cost += weeks * weeklyDiscountPrice;
+      remaining -= weeks * 7;
+    }
+    cost += remaining * nightly;
+    return cost;
+  };
 
   const allowedCheckInStr: string = property?.shortletDetails?.houseRules?.checkIn ?? property?.houseRules?.checkIn ?? "15:00";
   const allowedCheckOutStr: string = property?.shortletDetails?.houseRules?.checkOut ?? property?.houseRules?.checkOut ?? "11:00";
@@ -165,7 +184,8 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     validateOnChange: false,
     onSubmit: async (values) => {
       const nights = values.checkIn && values.checkOut ? Math.ceil((values.checkOut.getTime() - values.checkIn.getTime()) / (1000 * 60 * 60 * 24)) : 0;
-      const total = nights > 0 ? nightly * nights + cleaningFee + securityDeposit : 0;
+      const accommodation = computeAccommodationCost(nights);
+      const total = nights > 0 ? accommodation + cleaningFee + securityDeposit : 0;
 
       const apiPayload: any = {
         bookedBy: {
@@ -235,7 +255,10 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return Math.max(0, diff);
   }, [formik.values.checkIn, formik.values.checkOut]);
 
-  const total = useMemo(() => (nights > 0 ? nightly * nights + cleaningFee + securityDeposit : 0), [nightly, nights, cleaningFee, securityDeposit]);
+  const total = useMemo(() => {
+    const acc = computeAccommodationCost(nights);
+    return nights > 0 ? acc + cleaningFee + securityDeposit : 0;
+  }, [nightly, nights, cleaningFee, securityDeposit, weeklyDiscountPrice, monthlyDiscountPrice]);
 
   const proceedNext = async () => {
     try {
