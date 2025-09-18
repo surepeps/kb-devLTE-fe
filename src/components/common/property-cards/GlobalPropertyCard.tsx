@@ -201,13 +201,13 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                   value="Book Now"
                   type="button"
                   onClick={onBookNow || (() => {})}
-                  className="min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#09391C] transition-colors"
+                  className="min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#09391C] transition-colors rounded"
                 />
                 <Button
                   value="Request to Book"
                   type="button"
                   onClick={onRequestToBook || (() => {})}
-                  className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                  className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors rounded"
                 />
               </>
             ) : (
@@ -219,7 +219,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                       value="Edit Price"
                       type="button"
                       onClick={onEditPrice || onPriceNegotiation || (() => {})}
-                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors rounded"
                     />
                     <Button
                       value="Clear"
@@ -232,7 +232,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                           }
                         }
                       }}
-                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors"
+                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors rounded"
                     />
                   </div>
                 ) : hasNegotiatedPrice ? (
@@ -241,7 +241,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                       value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
                       type="button"
                       onClick={onPriceNegotiation || (() => {})}
-                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors"
+                      className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors rounded"
                     />
                     {onRemoveNegotiation && (
                       <button
@@ -263,7 +263,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                     value="Price Negotiation"
                     type="button"
                     onClick={onPriceNegotiation || (() => {})}
-                    className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                    className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors rounded"
                   />
                 )}
 
