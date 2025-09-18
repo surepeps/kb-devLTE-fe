@@ -311,8 +311,6 @@ const checkStep4RequiredFields = (propertyData: any) => {
 
 const PostPropertyByPreference = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const showCommissionFee = useAppSelector(selectShowCommissionFee);
   const searchParams = useSearchParams();
   const { user } = useUserContext();
   const {
