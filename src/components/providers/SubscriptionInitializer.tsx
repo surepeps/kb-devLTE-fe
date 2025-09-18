@@ -1,4 +1,5 @@
 "use client";
+"use client";
 import { useEffect } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { fetchFeaturesCatalog, initializeFromProfile } from '@/store/subscriptionFeaturesSlice';
