@@ -644,7 +644,7 @@ export default function MyInspectionRequestsPage() {
                   const ModeIcon = modeConfig.icon;
 
                   return (
-                    <motion.div key={inspection.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
+                    <motion.div key={inspection.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-visible hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
                       {viewMode === "grid" && inspection.property?.image && (
                         <div className="h-48 relative overflow-hidden">
                           <img src={inspection.property.image} alt={inspection.property.title || "Property"} className="w-full h-full object-cover" />
@@ -664,7 +664,7 @@ export default function MyInspectionRequestsPage() {
                       <div className="p-6 flex-1">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">{inspection.property?.title || "Property Unavailable"}</h3>
+                            <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">{inspection.property?.title || "Property details unavailable"}</h3>
                             <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
                               <MapPinIcon size={14} />
                               <span>Inspection Request</span>
@@ -805,14 +805,14 @@ export default function MyInspectionRequestsPage() {
                 {filteredBookings.map((b, index) => {
                   const statusConfig = getStatusConfig(String(b.status || "pending"));
                   const StatusIcon = statusConfig.icon;
-                  const title = b.property?.title || "Property Unavailable";
+                  const title = b.property?.title || "Property details unavailable";
                   const amount = Number(b.paymentDetails?.amountToBePaid || 0);
                   const currency = b.paymentDetails?.currency || "₦";
                   const checkIn = b.bookingDetails?.checkInDateTime ? new Date(b.bookingDetails.checkInDateTime) : null;
                   const checkOut = b.bookingDetails?.checkOutDateTime ? new Date(b.bookingDetails.checkOutDateTime) : null;
 
                   return (
-                    <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
+                    <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-visible hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
                       {viewMode === "list" && b.property?.image && (
                         <div className="w-32 h-32 relative overflow-hidden">
                           <img src={b.property.image} alt={title} className="w-full h-full object-cover" />
@@ -900,7 +900,7 @@ export default function MyInspectionRequestsPage() {
                                     initial={{ opacity: 0, y: -8 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -8 }}
-                                    className="origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                                    className="origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                   >
                                     <div className="py-1">
                                       <button
