@@ -36,6 +36,9 @@ import {
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 import AgreementModal from "@/components/post-property-components/AgreementModal";
 import Breadcrumb from "@/components/extrals/Breadcrumb";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { decrementFeature, selectShowCommissionFee } from "@/store/subscriptionFeaturesSlice";
+import { FEATURE_KEYS } from "@/hooks/useFeatureGate";
 
 // Preference interfaces
 interface Buyer {
@@ -311,6 +314,8 @@ const checkStep4RequiredFields = (propertyData: any) => {
 
 const PostPropertyByPreference = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const showCommissionFee = useAppSelector(selectShowCommissionFee);
   const searchParams = useSearchParams();
   const { user } = useUserContext();
   const {
@@ -526,6 +531,26 @@ const PostPropertyByPreference = () => {
   useEffect(() => {
     fetchAndPopulatePreference();
   }, [fetchAndPopulatePreference]);
+
+  // Bridge Redux flag to summary component via window variable
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__khabiteq_no_commission__ = !showCommissionFee;
+    }
+  }, [showCommissionFee]);
+
+  // Allow EnhancedPropertySummary to trigger submit directly when no commission
+  useEffect(() => {
+    const handler = () => handleSubmit();
+    if (typeof window !== "undefined") {
+      window.addEventListener("khabiteq:submit-property", handler);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("khabiteq:submit-property", handler);
+      }
+    };
+  }, []);
 
   const steps = [
     {
@@ -788,6 +813,8 @@ const PostPropertyByPreference = () => {
 
       if (response && (response as any).success && (response as any).data) {
         toast.success("Property created successfully and matched to buyer preference!");
+        // Decrease LISTINGS usage on success
+        dispatch(decrementFeature({ key: FEATURE_KEYS.LISTINGS, amount: 1 }));
         resetForm();
         setShowSuccessModal(true);
       } else {
