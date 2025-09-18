@@ -877,6 +877,7 @@ const PostPropertyByPreference = () => {
       allowedUserTypes={["Agent"]} // Only these user types can access
       requireAgentOnboarding={false}
       requireAgentApproval={false}
+      requireActiveSubscription={true}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
