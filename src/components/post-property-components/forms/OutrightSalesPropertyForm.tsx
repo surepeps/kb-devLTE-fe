@@ -421,6 +421,7 @@ const OutrightSalesPropertyForm: React.FC<OutrightSalesPropertyFormProps> = ({
       allowedUserTypes={["Agent", "Landowners"]}
       requireAgentOnboarding={false}
       requireAgentApproval={false}
+      requireActiveSubscription={true}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <Preloader isVisible={isSubmitting} message="Submitting Property..." />
