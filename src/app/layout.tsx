@@ -43,36 +43,41 @@ export default function RootLayout({
 }>) {
   if (SHOW_COMING_SOON) {
     return (
-      <UserProvider>
-        <PageContextProvider>
-          <CreateBriefProvider>
-            <SelectedBriefsProvider>
-              <html lang="en">
-                <body
-                  className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                >
-                  <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
-                    <Homepage />
-                    <Countdown />
-                  </HeaderFooterWrapper>
-                  <WhatsAppChatWidget />
-                  <Toaster />
-                </body>
-              </html>
-            </SelectedBriefsProvider>
-          </CreateBriefProvider>
-        </PageContextProvider>
-      </UserProvider>
+      <Provider store={store}>
+        <UserProvider>
+          <SubscriptionInitializer />
+          <PageContextProvider>
+            <CreateBriefProvider>
+              <SelectedBriefsProvider>
+                <html lang="en">
+                  <body
+                    className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                  >
+                    <HeaderFooterWrapper isComingSoon={SHOW_COMING_SOON}>
+                      <Homepage />
+                      <Countdown />
+                    </HeaderFooterWrapper>
+                    <WhatsAppChatWidget />
+                    <Toaster />
+                  </body>
+                </html>
+              </SelectedBriefsProvider>
+            </CreateBriefProvider>
+          </PageContextProvider>
+        </UserProvider>
+      </Provider>
     );
   }
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'google-client-id-not-configured'}>
-      <UserProvider>
-        <NotificationProvider>
-          <ModalProvider>
-            <PageContextProvider>
-              <CreateBriefProvider>
-                                <SelectedBriefsProvider>
+      <Provider store={store}>
+        <UserProvider>
+          <SubscriptionInitializer />
+          <NotificationProvider>
+            <ModalProvider>
+              <PageContextProvider>
+                <CreateBriefProvider>
+                                  <SelectedBriefsProvider>
                   <NewMarketplaceProvider>
                     <GlobalPropertyActionsProvider>
                       <NegotiationContextWrapper>
@@ -97,7 +102,8 @@ export default function RootLayout({
             </PageContextProvider>
           </ModalProvider>
         </NotificationProvider>
-      </UserProvider>
+        </UserProvider>
+      </Provider>
     </GoogleOAuthProvider>
   );
 }
