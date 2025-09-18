@@ -128,6 +128,17 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return mins - (h * 60 + m);
   };
 
+  const isSameDay = (a?: Date | null, b?: Date | null) => {
+    if (!a || !b) return false;
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  };
+
+  const startOfDay = (d: Date) => {
+    const nd = new Date(d);
+    nd.setHours(0, 0, 0, 0);
+    return nd;
+  };
+
   // Validation schemas per step
   const step1Schema = Yup.object({
     checkIn: Yup.date()
@@ -142,14 +153,19 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
       .typeError("Select check-out")
       .required("Check-out is required")
       .when('checkIn', {
-        is: (checkIn: Date | undefined) => !!checkIn, // condition
-        then: (schema: Yup.DateSchema) =>
-          schema.min(Yup.ref('checkIn'), "Check-out must be after check-in"),
+        is: (checkIn: Date | undefined) => !!checkIn,
+        then: (schema: Yup.DateSchema) => schema.min(Yup.ref('checkIn'), "Check-out must be after check-in"),
         otherwise: (schema: Yup.DateSchema) => schema,
       })
-      .test("beforeAllowedCheckOut", "Check-out time must be on/before allowed check-out time", (value) => {
+      .test("beforeAllowedCheckOut", "Check-out time must be on/before allowed check-out time", function (value) {
         if (!value) return false;
-        return compareTimeOfDay(value as Date, allowedCheckOutStr) <= 0;
+        const { checkIn } = this.parent as any;
+        // If check-out is on the same day as check-in, enforce allowed check-out time
+        if (checkIn && isSameDay(value as Date, checkIn)) {
+          return compareTimeOfDay(value as Date, allowedCheckOutStr) <= 0;
+        }
+        // For later dates, allow any time (host typically expects check-out by allowed time on departure day but many hosts accept later times)
+        return true;
       }),
 
     guests: Yup.number()
@@ -446,15 +462,26 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                     selected={formik.values.checkOut}
                     onChange={(date) => {
                       if (!date) { formik.setFieldValue("checkOut", date); return; }
-                      // Clamp check-out to allowed latest time
-                      const clampedOut = compareTimeOfDay(date, allowedCheckOutStr) > 0 ? withTime(date, allowedCheckOutStr) : date;
+                      // If check-out is on same day as check-in, clamp to allowed latest time otherwise accept selected time
+                      const clampedOut = (formik.values.checkIn && isSameDay(date as Date, formik.values.checkIn))
+                        ? (compareTimeOfDay(date as Date, allowedCheckOutStr) > 0 ? withTime(date as Date, allowedCheckOutStr) : date)
+                        : date;
                       formik.setFieldValue("checkOut", clampedOut);
                     }}
                     minDate={formik.values.checkIn || new Date()}
                     showTimeSelect
                     timeIntervals={30}
                     dateFormat="Pp"
-                    maxTime={withTime(formik.values.checkOut || (formik.values.checkIn || new Date()), allowedCheckOutStr)}
+                    // For same-day checkout the minTime should be the check-in time, otherwise start of day
+                    minTime={(() => {
+                      if (!formik.values.checkIn) return withTime(new Date(), '00:00');
+                      if (formik.values.checkOut && isSameDay(formik.values.checkOut, formik.values.checkIn)) {
+                        return formik.values.checkIn as Date;
+                      }
+                      return startOfDay(new Date());
+                    })()}
+                    // Max time is allowed check-out time on any day
+                    maxTime={withTime(new Date(), allowedCheckOutStr)}
                     disabled={!formik.values.checkIn}
                     customInput={
                       <DateTimeInput
