@@ -74,6 +74,7 @@ interface PublicPageDesign {
   heroSubtitle: string;
   ctaText: string;
   ctaLink: string;
+  heroImageUrl?: string;
 }
 
 interface InspectionDesignSettings {
