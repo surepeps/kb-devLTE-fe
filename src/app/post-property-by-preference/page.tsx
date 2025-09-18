@@ -791,8 +791,6 @@ const PostPropertyByPreference = () => {
 
       if (response && (response as any).success && (response as any).data) {
         toast.success("Property created successfully and matched to buyer preference!");
-        // Decrease LISTINGS usage on success
-        dispatch(decrementFeature({ key: FEATURE_KEYS.LISTINGS, amount: 1 }));
         resetForm();
         setShowSuccessModal(true);
       } else {
