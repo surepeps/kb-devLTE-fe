@@ -529,25 +529,6 @@ const PostPropertyByPreference = () => {
     fetchAndPopulatePreference();
   }, [fetchAndPopulatePreference]);
 
-  // Bridge Redux flag to summary component via window variable
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      (window as any).__khabiteq_no_commission__ = !showCommissionFee;
-    }
-  }, [showCommissionFee]);
-
-  // Allow EnhancedPropertySummary to trigger submit directly when no commission
-  useEffect(() => {
-    const handler = () => handleSubmit();
-    if (typeof window !== "undefined") {
-      window.addEventListener("khabiteq:submit-property", handler);
-    }
-    return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("khabiteq:submit-property", handler);
-      }
-    };
-  }, []);
 
   const steps = [
     {
