@@ -481,7 +481,12 @@ export default function AgentSubscriptionsPage() {
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
                   <div className="space-y-2">
                     {Object.entries(plan.prices || {}).map(([duration, price]: any) => {
-                      const disabled = !!(activeSubscriptionFromProfile && activeSubscriptionFromProfile.status === 'active');
+                      const isFreePlan = plan.basePrice === 0 || plan.isTrial || /free/i.test(plan.name || '');
+                      const disabledByActive = !!(activeSubscriptionFromProfile && activeSubscriptionFromProfile.status === 'active');
+                      const disabledByKyc = isFreePlan && ((user as any)?.agentData?.kycStatus === 'approved');
+                      const disabled = disabledByActive || disabledByKyc;
+                      const label = disabledByKyc ? 'Expired' : (disabled ? 'Active' : 'Subscribe');
+
                       return (
                         <div key={duration} className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
@@ -492,7 +497,7 @@ export default function AgentSubscriptionsPage() {
                               disabled={disabled}
                               className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
                             >
-                              {disabled ? 'Active' : 'Subscribe'}
+                              {label}
                             </button>
                           </div>
                         </div>
