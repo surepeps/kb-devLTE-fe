@@ -367,6 +367,23 @@ export default function DealSitePage() {
     }
   };
 
+  const handleUploadHero = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-hero");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading hero image...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm((prev) => ({ ...prev, publicPage: { ...prev.publicPage, heroImageUrl: (res.data as any).url } }));
+      toast.success("Hero image uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
   const onSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!form.publicSlug) {
@@ -656,6 +673,22 @@ export default function DealSitePage() {
   const renderPublicDesign = (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
       <h2 className="text-lg font-semibold text-[#09391C]">Public Page Design</h2>
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">Hero Image</label>
+        {form.publicPage.heroImageUrl ? (
+          <div className="flex items-center gap-3">
+            <img src={form.publicPage.heroImageUrl} alt="Hero" className="h-20 w-36 rounded border object-cover bg-white" />
+            <button type="button" onClick={() => setForm({ ...form, publicPage: { ...form.publicPage, heroImageUrl: "" } })} className="px-3 py-2 text-sm border rounded-lg inline-flex items-center gap-2">
+              <Trash2 size={16} /> Remove
+            </button>
+          </div>
+        ) : (
+          <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadHero(e.target.files[0])} />
+            <ImageIcon size={16} /> <span className="text-gray-600">Drag & drop or click to upload</span>
+          </label>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Hero Title</label>
