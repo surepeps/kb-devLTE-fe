@@ -74,6 +74,7 @@ interface PublicPageDesign {
   heroSubtitle: string;
   ctaText: string;
   ctaLink: string;
+  heroImageUrl?: string;
 }
 
 interface InspectionDesignSettings {
@@ -81,6 +82,11 @@ interface InspectionDesignSettings {
   defaultInspectionFee: number;
   inspectionStatus?: string;
   negotiationEnabled?: boolean;
+}
+
+interface FooterDetails {
+  shortDescription: string;
+  copyrightText: string;
 }
 
 interface DealSiteSettings {
@@ -97,6 +103,7 @@ interface DealSiteSettings {
   featureSelection: FeatureSelection;
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
+  footer?: FooterDetails;
 }
 
 type PropertyItem = {
@@ -145,6 +152,8 @@ export default function DealSitePage() {
   const [saving, setSaving] = useState(false);
   const [slugLocked, setSlugLocked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [slugStatus, setSlugStatus] = useState<"idle" | "invalid" | "checking" | "available" | "taken">("idle");
+  const [slugMessage, setSlugMessage] = useState<string>("");
 
   const [form, setForm] = useState<DealSiteSettings>({
     publicSlug: "",
@@ -159,13 +168,13 @@ export default function DealSitePage() {
     contactVisibility: { showEmail: true, showPhone: true, enableContactForm: true, showWhatsAppButton: false, whatsappNumber: "" },
     featureSelection: { mode: "auto", propertyIds: "" },
     marketplaceDefaults: { defaultTab: "buy", defaultSort: "newest", showVerifiedOnly: false, enablePriceNegotiationButton: true },
-    publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place" },
+    publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place", heroImageUrl: "" },
+    footer: { shortDescription: "", copyrightText: "" },
   });
 
   const previewUrl = useMemo(() => {
     if (!form.publicSlug) return "";
-    if (typeof window === "undefined") return "";
-    return `${window.location.origin}/pv-account/${form.publicSlug}`;
+    return `https://${form.publicSlug}.khabiteq.com`;
   }, [form.publicSlug]);
 
   // Analytics state
@@ -246,6 +255,7 @@ export default function DealSitePage() {
               featureSelection: s.featureSelection || prev.featureSelection,
               marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
               publicPage: s.publicPage || prev.publicPage,
+              footer: s.footer || prev.footer,
             }));
             if (typeof s.paused === "boolean") setIsPaused(s.paused);
             if (s.publicSlug) setSlugLocked(true);
@@ -257,6 +267,44 @@ export default function DealSitePage() {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if (!form.publicSlug || slugLocked) {
+      setSlugStatus("idle");
+      setSlugMessage("");
+      return;
+    }
+    const sub = form.publicSlug;
+    const valid = /^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/.test(sub);
+    if (!valid) {
+      setSlugStatus("invalid");
+      setSlugMessage("Use 2-63 chars: letters, numbers, hyphens. Cannot start/end with hyphen.");
+      return;
+    }
+    let cancelled = false;
+    setSlugStatus("checking");
+    setSlugMessage("Checking availability...");
+    const token = Cookies.get("token");
+    const t = setTimeout(async () => {
+      try {
+        const resp = await POST_REQUEST<any>(`${URLS.BASE}/dealSite/slugAvailability`, { publicSlug: sub }, token);
+        const available = (resp?.data?.available ?? resp?.available ?? resp?.data?.isAvailable ?? resp?.isAvailable) === true;
+        if (!cancelled) {
+          setSlugStatus(available ? "available" : "taken");
+          setSlugMessage(available ? "Subdomain is available" : "Subdomain is taken");
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setSlugStatus("taken");
+          setSlugMessage("Unable to verify. Try again.");
+        }
+      }
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [form.publicSlug, slugLocked]);
 
   useEffect(() => {
     if (activeView !== "manage") return;
@@ -319,11 +367,39 @@ export default function DealSitePage() {
     }
   };
 
+  const handleUploadHero = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-hero");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading hero image...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm((prev) => ({ ...prev, publicPage: { ...prev.publicPage, heroImageUrl: (res.data as any).url } }));
+      toast.success("Hero image uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
   const onSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!form.publicSlug) {
       toast.error("Please set your public link");
       return;
+    }
+    if (!slugLocked) {
+      const valid = /^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/.test(form.publicSlug);
+      if (!valid) {
+        toast.error("Invalid subdomain format");
+        return;
+      }
+      if (slugStatus !== "available") {
+        toast.error("Subdomain not available");
+        return;
+      }
     }
     setSaving(true);
     try {
@@ -335,6 +411,7 @@ export default function DealSitePage() {
           ...form.contactVisibility,
           whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
         },
+        footer: form.footer || { shortDescription: "", copyrightText: "" },
       };
 
       if (!slugLocked) {
@@ -561,19 +638,24 @@ export default function DealSitePage() {
         )}
       </div>
       <div className="grid grid-cols-1 gap-3">
-        <label className="text-sm text-gray-700">Choose your public link (can be set once)</label>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <span className="text-sm text-gray-500">/pv-account/</span>
+        <label className="text-sm text-gray-700">Enter your subdomain (can be set once)</label>
+        <div className="flex items-center gap-2">
           <input
             type="text"
             value={form.publicSlug}
-            onChange={(e) => setForm({ ...form, publicSlug: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase() })}
+            onChange={(e) => setForm({ ...form, publicSlug: e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase() })}
             disabled={slugLocked}
-            className={`${inputBase} disabled:bg-gray-100 flex-1`}
-            placeholder="your-name"
+            className={`${inputBase} disabled:bg-gray-100`}
+            placeholder="yourname"
             required
           />
+          <span className="text-sm text-gray-500 whitespace-nowrap">.khabiteq.com</span>
         </div>
+        {!slugLocked && form.publicSlug && (
+          <div className={`text-xs ${slugStatus === 'available' ? 'text-emerald-700' : slugStatus === 'taken' || slugStatus === 'invalid' ? 'text-red-600' : 'text-gray-600'}`}>
+            {slugMessage}
+          </div>
+        )}
         {previewUrl && (
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <a href={previewUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1">
@@ -591,6 +673,22 @@ export default function DealSitePage() {
   const renderPublicDesign = (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
       <h2 className="text-lg font-semibold text-[#09391C]">Public Page Design</h2>
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">Hero Image</label>
+        {form.publicPage.heroImageUrl ? (
+          <div className="flex items-center gap-3">
+            <img src={form.publicPage.heroImageUrl} alt="Hero" className="h-20 w-36 rounded border object-cover bg-white" />
+            <button type="button" onClick={() => setForm({ ...form, publicPage: { ...form.publicPage, heroImageUrl: "" } })} className="px-3 py-2 text-sm border rounded-lg inline-flex items-center gap-2">
+              <Trash2 size={16} /> Remove
+            </button>
+          </div>
+        ) : (
+          <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadHero(e.target.files[0])} />
+            <ImageIcon size={16} /> <span className="text-gray-600">Drag & drop or click to upload</span>
+          </label>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Hero Title</label>
@@ -623,6 +721,33 @@ export default function DealSitePage() {
         <div className="flex items-center gap-3">
           <label className="text-sm text-gray-700 w-36">Secondary Color</label>
           <input type="color" value={form.theme.secondaryColor} onChange={(e) => setForm({ ...form, theme: { ...form.theme, secondaryColor: e.target.value } })} />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderFooterDetails = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+      <h2 className="text-lg font-semibold text-[#09391C]">Footer Details</h2>
+      <div className="grid grid-cols-1 gap-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Short Description</label>
+          <textarea
+            value={form.footer?.shortDescription || ''}
+            onChange={(e) => setForm({ ...form, footer: { ...(form.footer || { shortDescription: '', copyrightText: '' }), shortDescription: e.target.value } })}
+            className={`${inputBase} min-h-[80px]`}
+            placeholder="Brief description shown in the footer"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Copyright Text</label>
+          <input
+            type="text"
+            value={form.footer?.copyrightText || ''}
+            onChange={(e) => setForm({ ...form, footer: { ...(form.footer || { shortDescription: '', copyrightText: '' }), copyrightText: e.target.value } })}
+            className={inputBase}
+            placeholder="© 2025 Your Name. All rights reserved."
+          />
         </div>
       </div>
     </div>
@@ -945,6 +1070,7 @@ export default function DealSitePage() {
               {setupStep === 1 && (
                 <div className="space-y-6">
                   {renderPublicDesign}
+                  {renderFooterDetails}
                   {renderTheme}
                 </div>
               )}
@@ -1023,7 +1149,12 @@ export default function DealSitePage() {
               <div className="mt-6 space-y-6">
                 {activeTab === "overview" && renderOverview}
                 {activeTab === "branding" && renderBrandingSeo}
-                {activeTab === "design" && renderPublicDesign}
+                {activeTab === "design" && (
+                  <div className="space-y-6">
+                    {renderPublicDesign}
+                    {renderFooterDetails}
+                  </div>
+                )}
                 {activeTab === "theme" && renderTheme}
                 {activeTab === "marketplace" && renderMarketplaceDefaults}
                 {activeTab === "inspection" && renderInspectionSettings}
